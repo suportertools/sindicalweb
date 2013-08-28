@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Contrato Escola</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <div style="z-index: 5000; position: absolute; top: 100px; margin-left: 25px;">
+            <h:form id="formContrato1">
+                <rich:panel>
+                    <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
+                        <rich:column>
+                            <h:outputText value="Titulo: " />
+                        </rich:column>
+                        <rich:column>
+                            <h:inputText value="#{matriculaContratoBean.matriculaContrato.titulo}" size="50"/>
+                        </rich:column>
+                    </h:panelGrid>
+                    <br />
+                    <rich:column>
+                        <h:outputText value="Descrição" styleClass="fontePadraoNegrito" />
+                    </rich:column>
+                    <br /><br />
+                    <rich:column>
+                        <rich:editor toolbar="full" id="idContrato1" value="#{matriculaContratoBean.matriculaContrato.descricao}" skin="office2003"></rich:editor>                
+                    </rich:column>
+                    <br /><br />
+                    <rich:column>
+                        <h:outputText value="Observações / Variáveis " styleClass="fontePadraoNegrito" />
+                    </rich:column>
+                    <br /><br />
+                    <rich:column>
+                        <rich:editor id="idContrato2" value="#{matriculaContratoBean.matriculaContrato.observacao}" rendered="#{controleAcessoBean.botaoSalvar == false}" skin="office2003"></rich:editor>
+                        <rich:panel rendered="#{controleAcessoBean.botaoSalvar == true}">
+                            <h:outputText escape="false" value="#{matriculaContratoBean.matriculaContrato.observacao}" />                             
+                        </rich:panel>
+                        
+                    </rich:column>
+                    <br /><br />
+                    <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
+                        <rich:column>
+                            <h:outputText value="Cadastro:" />
+                        </rich:column>
+                        <rich:column>
+                            <h:inputText value="#{matriculaContratoBean.matriculaContrato.dataCadastro}" size="6" disabled="true"/>
+                        </rich:column>
+                        <rich:column>
+                            <h:outputText value="Ultima atualização:" />
+                        </rich:column>
+                        <rich:column>
+                            <h:inputText value="#{matriculaContratoBean.matriculaContrato.dataAtualizado}" size="6" disabled="true"/>
+                        </rich:column>
+                    </h:panelGrid>                    
+                    <br /><br />
+                    <rich:panel rendered="#{matriculaContratoBean.matriculaContrato.id != -1}">
+                        <h:outputLabel value="Vincular serviços a esse contrato" style="text-decoration: underline;" styleClass="fontePadraoNegrito"/>
+                        <br /><br />
+                        <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
+                            <h:selectOneMenu id="idServicos" value="#{matriculaContratoBean.idServicos}">
+                                <f:selectItems value="#{matriculaContratoBean.listaServicos}" />
+                            </h:selectOneMenu>
+                            <a4j:commandButton image="/Imagens/novo.png" action="#{matriculaContratoBean.adicionarServicos}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="tblServicos,outConfirma"/>
+                        </h:panelGrid>
+                        <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
+                            <rich:dataTable value="#{matriculaContratoBean.listaMatriculaContratoServico}" var="linha" iterationStatusVar="it" id="tblServicos">
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header">
+                                        <h:outputText value="..."/>
+                                    </f:facet>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{matriculaContratoBean.removerServicos}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoExcluir}" 
+                                                       render="tblServicos,outConfirma">
+                                        <a4j:param value="#{it.index}" assignTo="#{matriculaContratoBean.idIndexServicos}"/>
+                                    </a4j:commandButton>
+                                </rich:column>                                
+                                <rich:column>
+                                    <f:facet name="header">
+                                            <h:outputText value="Serviço"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.servicos.descricao}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </div>
+                    </rich:panel>
+                </rich:panel>
+                <br />
+                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Adicionar Contrato" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaContratoBean.novo}" render="@form"  />
+                <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idSalvar iLink" value="Excluir" title="Exluir Contrato" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaContrato()}" title="Pesquisar Contrato Escola" />
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink  styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Registro?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaContratoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma @form idForm" />
+                            <a4j:commandLink  styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink  styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir este Registro?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{matriculaContratoBean.excluir}" title="Excluir" oncomplete="modalMensagem()" render="outConfirma @form"/>
+                            <a4j:commandLink  styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink  styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{matriculaContratoBean.msg}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink  styleClass="idNovo iLink closeModal" value="OK" action="matriculaContrato" title="OK" render="@form"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                    
+            </h:form>
+        </div>
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <c:set scope="request" var="object" value="${matriculaContratoBean.matriculaContrato}"/>
+            <h:form id="formContratoEscola">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Contrato Escola" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

@@ -1,0 +1,231 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Cadastro de Turma</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formTurma">
+                <c:set scope="request" var="object" value="${turmaBean.turma}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Turma" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="left" style="width: auto">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+
+                            <h:column>
+                                <h:outputLabel value="Filial: " styleClass="fontePadrao" />
+                                <br />
+                                <br />
+                            </h:column>
+
+                            <h:column>
+                                <h:outputText value="#{turmaBean.turma.filial.filial.pessoa.nome}" />
+                                <h:outputText value="#{turmaBean.msgStatusFilial}" rendered="#{turmaBean.turma.filial.filial.pessoa.id  == -1}" />
+                                <br />
+                                <br />
+                            </h:column>
+
+                            <h:column>
+                                <h:outputLabel value="Curso: " styleClass="fontePadrao"/>
+                            </h:column>
+
+                            <h:column>
+                                <h:selectOneMenu id="idServicos" value="#{turmaBean.idServicos}">
+                                    <f:selectItems value="#{turmaBean.listaServicos}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputLabel value="Data Início: " styleClass="fontePadrao" for="idDataInicio"/>
+                            </h:column>
+
+                            <h:column>
+                                <h:inputText id="idDataInicio" value="#{turmaBean.turma.dataInicio}" size="8" maxlength="10" class="data"/>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputLabel value="Data Término: " styleClass="fontePadrao" for="idDataTermino"/>
+                            </h:column>
+
+                            <h:column>
+                                <h:inputText id="idDataTermino" value="#{turmaBean.turma.dataTermino}" size="8" maxlength="10" class="data"/>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputLabel value="Horário: " styleClass="fontePadrao"/>
+                            </h:column>
+
+                            <h:column>
+                                <h:inputText id="idHoraInicio"  value="#{turmaBean.turma.horaInicio}" size="4" maxlength="5" class="hora">
+                                    <a4j:ajax event="blur" listener="#{turmaBean.validaHoraInicio()}" render="idHoraInicio"/>
+                                </h:inputText>
+                                <h:outputLabel value=" às " styleClass="fontePadrao"/>
+                                <h:inputText id="idHoraTermino"  value="#{turmaBean.turma.horaTermino}" size="4" maxlength="5" class="hora">  
+                                    <a4j:ajax event="blur" listener="#{turmaBean.validaHoraTermino()}" render="idHoraTermino"/>
+                                </h:inputText>
+                                <h:outputLabel value=" horas " styleClass="fontePadrao"/>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <br />
+
+                        <h:panelGrid columns="2">
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.segunda}" id="idSegundaFeira"/>
+                            <h:outputLabel value=" Segunda-Feira" styleClass="fontePadrao cursor-pointer" for="idSegundaFeira"/>
+
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.terca}" id="idTercaFeira"/>
+                            <h:outputLabel value=" Terça-Feira" styleClass="fontePadrao cursor-pointer" for="idTercaFeira"/>
+
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.quarta}" id="idQuartaFeira"/>
+                            <h:outputLabel value=" Quarta-Feira" styleClass="fontePadrao cursor-pointer" for="idQuartaFeira"/>
+
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.quinta}" id="idQuintaFeira"/>
+                            <h:outputLabel value=" Quinta-Feira" styleClass="fontePadrao cursor-pointer" for="idQuintaFeira"/>
+
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.sexta}" id="idSextaFeira"/>
+                            <h:outputLabel value=" Sexta-Feira" styleClass="fontePadrao cursor-pointer" for="idSextaFeira"/>
+
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.sabado}" id="idSabado"/>
+                            <h:outputLabel value=" Sábado" styleClass="fontePadrao cursor-pointer" for="idSabado"/>
+
+                            <h:selectBooleanCheckbox value="#{turmaBean.turma.domingo}" id="idDomingo"/>
+                            <h:outputLabel value=" Domingo" styleClass="fontePadrao cursor-pointer" for="idDomingo"/> 
+                        </h:panelGrid>
+
+                        <br />
+
+                        <h:panelGrid columns="6">
+                            <h:outputLabel value="Professor: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idProfessor" value="#{turmaBean.idProfessor}">
+                                <a4j:ajax event="change"  render="this"/>
+                                <f:selectItems value="#{turmaBean.listaProfessor}"/>
+                            </h:selectOneMenu>
+
+                            <h:outputLabel value="Componente Curricular: " styleClass="fontePadrao" style="margin-left: 15px"/>
+                            <h:selectOneMenu id="idComponente" value="#{turmaBean.idComponenteCurricular}">
+                                <a4j:ajax event="change"  render="this"/>
+                                <f:selectItems value="#{turmaBean.listaComponente}"/>
+                            </h:selectOneMenu>
+
+                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{turmaBean.adicionarProfessor}" render="tbl"/>
+                        </h:panelGrid>
+
+                        <br />
+
+                        <h:panelGroup style="overflow:auto; height:100px; width: 600px;"  layout="block">
+                            <rich:dataTable value="#{turmaBean.listaProfs}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#" />
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column> 
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="..."/>
+                                    </f:facet>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{turmaBean.excluirProfessor}" disabled="#{controleAcessoBean.botaoExcluir}" render="tbl">
+                                        <a4j:param value="#{it.index}" assignTo="#{turmaBean.idIndex}" />
+                                    </a4j:commandButton>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Professor"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{linha.professor.professor.nome}" styleClass="fontePadrao"/>
+                                </rich:column>
+
+                                <rich:column> 
+                                    <f:facet name="header">
+                                        <h:outputText value="Componente Curricular"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{linha.componenteCurricular.descricao}" styleClass="fontePadrao"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </h:panelGroup>
+
+                        <h:panelGrid>
+                            <h:column>
+                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar"/>
+                                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{turmaBean.novo}"/>
+                                <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTurma}" title="Pesquisar"/>
+                            </h:column>
+                        </h:panelGrid>
+                    </div>    
+                </center>
+
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar esta Turma?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{turmaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir esta Turma?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{turmaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{turmaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="turma" value="OK" title="OK" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                                  
+
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

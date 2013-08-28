@@ -1,0 +1,279 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>web - Contabilidade</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formWebContabilidade">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Impressão de Guias" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae" style="text-align: left">
+                        <h:panelGrid columns="3">
+                            <h:column>
+                                <h:column>
+                                    <h:outputLabel value="Contabilidade: " styleClass="fontePadrao"/>
+                                    <h:outputLabel id="nomeUsuario" value="#{webContabilidadeBean.pessoa.nome}" style="color:red;" styleClass="fontePadraoNegrito" />
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="#{webContabilidadeBean.pessoa.tipoDocumento.descricao}: " style="margin-left: 20px" styleClass="fontePadrao"/>
+                                    <h:outputLabel value="#{webContabilidadeBean.pessoa.documento}" style="color:red;" styleClass="fontePadraoNegrito"/>
+                                </h:column>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1">
+                            <h:column>
+                                <div class="divFundo">
+                                    <h:column>
+                                        <h:panelGroup style="padding: 3px; overflow: auto; color: #CCFF66; width:930px; height:100px; " layout="block">
+                                            <rich:dataTable var="linha" id="tbl" value="#{webContabilidadeBean.listaEmpresasPertencentes}" iterationStatusVar="it" style="width: 100%">
+
+                                                <rich:column style="text-align: center;">
+                                                    <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                                    <h:outputText value="#{it.index}"/>
+                                                </rich:column>
+                                                
+                                                <rich:column styleClass="coluna">
+                                                    <f:facet name="header"><h:outputText value="Selecione"/></f:facet>
+                                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
+                                                        <a4j:ajax event="change" render="this"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </rich:column>
+
+                                                <rich:column>
+                                                    <f:facet name="header"><h:outputText value="Empresa" /></f:facet>
+                                                    <h:outputText value="#{linha.argumento1.pessoa.documento} - #{linha.argumento1.pessoa.nome}"/>
+                                                </rich:column>
+
+                                            </rich:dataTable>
+                                        </h:panelGroup>
+
+                                        <a4j:commandButton value="Desmarcar Todos" action="#{webContabilidadeBean.desmarcaTodas}" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)" render="tbl, outConfirma" />
+                                        <a4j:commandButton value="Marcar Todos" action="#{webContabilidadeBean.marcaTodas}" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)" render="tbl, outConfirma" />
+                                        
+                                        <h:outputText value="Filtrar por Referência " styleClass="fontePadrao" style="width: 20px"/>
+                                        <h:inputText id="idFiltroRef" size="5" value="#{webContabilidadeBean.strFiltroRef}"  class="referencia">
+                                            <a4j:ajax event="change" render="tbl1" listener="#{webContabilidadeBean.filtrarBoleto}"/>
+                                        </h:inputText>
+                                        
+                                        <a4j:commandButton value="Filtrar Boleto" action="#{webContabilidadeBean.filtrarBoleto}" render="tbl1 outConfirma" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divSalvar', false);" oncomplete="fecharModalOpcao('divProcesso', false)" />
+                                        <a4j:commandButton title="Criar um novo Boleto" value="Criar um novo Boleto" action="#{webContabilidadeBean.actionRender}" render="i_panel"/>
+                                    </h:column>
+                                </div>
+                            </h:column>
+                        </h:panelGrid>
+                        <br />
+                        <h:panelGrid id="i_panel" rendered="#{webContabilidadeBean.renderNovo}" columns="4">
+                            <h:column>
+                                <h:outputLabel value="Referência: " styleClass="fontePadrao"/>
+                                <h:inputText id="idDataReferencia" size="5" value="#{webContabilidadeBean.strReferencia}" class="referencia">
+                                    <a4j:ajax event="blur" render="idDataReferencia, cbTipoServico" listener="#{webContabilidadeBean.validaReferencia}"/>
+                                </h:inputText>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Contribuição: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu value="#{webContabilidadeBean.idServicos}">
+                                    <a4j:ajax event="change" render="cbTipoServico"/>
+                                    <f:selectItems value="#{webContabilidadeBean.listaServicos}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Tipo Serviço: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu id="cbTipoServico" value="#{webContabilidadeBean.idTipoServico}">
+                                    <a4j:ajax event="change" render="this" />
+                                    <f:selectItems value="#{webContabilidadeBean.listaTipoServico}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <a4j:commandButton image="/Imagens/novo.png" title="Salvar novo Boleto" value="Adicionar" onclick="modalOpcao('divSalvar');" render="tbl1, outConfirma"/>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGroup style="overflow: auto; color: #CCFF66 ; height:300px;" layout="block">
+                            <h:panelGrid id="i_panel_grid" columns="1">
+                                <rich:dataTable var="linha" id="tbl1" value="#{webContabilidadeBean.listaMovimentosContabil}" iterationStatusVar="it">
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </rich:column>
+
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header"><h:outputText value="Selecione" /></f:facet>
+                                        <h:selectBooleanCheckbox value="#{linha.argumento0}">
+                                            <a4j:ajax event="change" render="this" />
+                                        </h:selectBooleanCheckbox>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Ref - Contribuição - Tipo" /></f:facet>
+                                            <h:outputText value="#{linha.argumento4} - #{linha.argumento2.descricao} - #{linha.argumento3.descricao}"/>
+                                    </rich:column>
+
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
+                                        <h:outputText value="#{linha.argumento5}"/>
+                                    </rich:column>
+
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header"><h:outputText value="Pagar na Data: "/></f:facet>
+                                        <h:selectOneMenu value="#{linha.argumento20}" rendered="#{linha.argumento18}">
+                                            <a4j:ajax event="change" render="i_panel_grid"/>
+                                            <f:selectItems value="#{webContabilidadeBean.listaVencimento}"/>
+                                        </h:selectOneMenu>
+                                        <h:outputText value="#{linha.argumento5}" rendered="#{!linha.argumento18}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                                        <a4j:commandLink value="#{linha.argumento6}" rendered="#{linha.argumento19}" action="#{webContabilidadeBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="idValorMes,i_cadastro_m, qfun, lbEdit, lbEdit2">
+                                            <a4j:param value="#{it.index}" assignTo="#{webContabilidadeBean.idIndex}"/>
+                                        </a4j:commandLink>
+                                        <h:outputText value="#{linha.argumento6}" rendered="#{!linha.argumento19}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Calculado" /></f:facet>
+                                        <h:outputText value="#{linha.argumento12}" />
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Multa" /></f:facet>
+                                        <h:outputText value="#{linha.argumento8}" />
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Juros" /></f:facet>
+                                        <h:outputText value="#{linha.argumento9}" />
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Correção" /></f:facet>
+                                        <h:outputText value="#{linha.argumento10}" />
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Boleto"/></f:facet>
+                                            <h:outputText value="#{linha.argumento1}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Empresa"/></f:facet>
+                                            <h:outputText value="#{linha.argumento21}"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:panelGrid>
+                        </h:panelGroup>
+                        
+                        <h:panelGrid columns="4">
+                            <h:commandLink id="iImprimir" styleClass="idNovo iLink" style="width: 80px;" value="Imprimir" action="#{webContabilidadeBean.imprimirComValorCalculado}" target="_blank" />
+                            <h:selectBooleanCheckbox value="#{webContabilidadeBean.impVerso}">
+                                <a4j:ajax event="change" render="this"/>
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel value=" Imprime Verso" styleClass="fontePadrao"/>
+                            
+                            <h:outputText value="#{webContabilidadeBean.msgConfirma}" styleClass="corErro" style="margin-left: 20px"/>
+                        </h:panelGrid>                        
+                    </div>
+                </center>
+                <div id="boxes">
+                    <div id="divFolhaEmpresa" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid>
+                                <h:outputLabel style="margin-left: 20px;" rendered="#{not webContabilidadeBean.mostrarPainel}" id="i_cadastro_m" value="#{webContabilidadeBean.lblLink}" styleClass="fontePadraoNegrito"/>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid>
+                                <h:outputLabel id="lbEdit"  value="#{webContabilidadeBean.labelFolha}" styleClass="fonteRederencia"/>
+                                <h:inputText disabled="#{webContabilidadeBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{webContabilidadeBean.valor}" >
+                                    <a4j:ajax event="change" render="idValorMes"/>
+                                </h:inputText>
+
+                                <h:outputLabel id="lbEdit2"  value="#{webContabilidadeBean.labelFolha2}" styleClass="fonteRederencia"/>
+
+                                <h:inputText disabled="#{webContabilidadeBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{webContabilidadeBean.qtdFuncionario}" >
+                                    <a4j:ajax event="change" render="qfun"/>
+                                </h:inputText>
+                            </h:panelGrid>
+                            
+                            <br />
+                            <table border="0" align="center" cellspacing="5" >
+                                <tr align="center">
+                                    <td>
+                                        <a4j:commandLink styleClass="idNovo iLink" disabled="#{webContabilidadeBean.mostrarPainel}" render="tbl1" value="OK" id="fechar" action="#{webContabilidadeBean.atualizaValorGrid}" oncomplete="fecharModal()"/>
+                                    </td>
+                                    <td>
+                                        <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl1" value="Cancelar" />
+                                    </td>
+                                </tr>
+                            </table>                            
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                  
+                
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar"><h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/></a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja realmente criar este novo Boleto?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{webContabilidadeBean.adicionarBoleto}" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()" title="Criar novo Boleto" render="tbl1, outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divProcesso" class="window">
+                        <br />
+                        <center>
+                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{webContabilidadeBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="webContabilidade" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                   
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

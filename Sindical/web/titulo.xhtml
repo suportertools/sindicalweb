@@ -1,0 +1,170 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Título</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formTitulo">
+
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Título" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae" align="left">
+                        <div class="divFundo">
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                <h:column>
+                                    <h:outputLabel value="Data Cadastro:"  styleClass="fontePadrao" for="idDataCadastro"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idDataCadastro" value="#{tituloBean.titulo.dataString}" styleClass="fontePadrao" class="data"  maxlength="10" size="8" readonly="readonly" required="#{tituloBean.required}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Titulo:"  styleClass="fontePadrao" for="idTitulo"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idTitulo" value="#{tituloBean.titulo.descricao}" styleClass="fontePadrao" maxlength="100" size="100" required="#{tituloBean.required}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Autor:" styleClass="fontePadrao" for="idAutor"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idAutor" value="#{tituloBean.titulo.autor}" styleClass="fontePadrao" maxlength="50" size="100"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Gênero:" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{tituloBean.idGenero}" >
+                                        <f:selectItems value="#{tituloBean.listaGeneroCombo}" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Código de Barras:"  styleClass="fontePadrao" for="idCodigoDeBarras"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idCodigoDeBarras" value="#{tituloBean.titulo.barras}" styleClass="fontePadrao locadoraBarras" maxlength="15" size="16" />
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Duração:"  styleClass="fontePadrao" for="idDuracao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idDuracao" size="10" maxlength="5" value="#{tituloBean.titulo.duracao}" style="width:47px" class="hora" required="#{tituloBean.required}" ></h:inputText>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Ano de Lançamento:"  styleClass="fontePadrao" for="idAnoDeLancamento"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idAnoDeLancamento" value="#{tituloBean.titulo.anoLancamentoString}" styleClass="fontePadrao dataAno" maxlength="4" size="4" required="#{tituloBean.required}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Legenda:" styleClass="fontePadrao" />
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{tituloBean.titulo.legenda}" >
+                                            <f:selectItem itemLabel="DUBLADO" itemValue="DUBLADO"/>
+                                            <f:selectItem itemLabel="LEGENDADO" itemValue="LEGENDADO"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Formato:" styleClass="fontePadrao" /></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{tituloBean.titulo.formato}" >
+                                            <f:selectItem itemLabel="DVD" itemValue="DVD"/>
+                                            <f:selectItem itemLabel="BLU-RAY" itemValue="BLU-RAY"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>
+                                </h:column>
+                                <h:column>
+                                    <rich:panel styleClass="tooltip" style="width: 200px;" >
+                                        <h:selectBooleanCheckbox id="idImprimeEtiqueta" value="#{tituloBean.titulo.imprimeEtiqueta}"></h:selectBooleanCheckbox>
+                                        <rich:tooltip mode="ajax" layout="block">
+                                            <span>
+                                                Imprimir Etiquetas
+                                            </span>
+                                        </rich:tooltip>
+                                        <h:outputLabel value="Imprimir Etiqueta" styleClass="fontePadrao" for="idImprimeEtiqueta"/>
+                                    </rich:panel>
+
+                                </h:column>
+                            </h:panelGrid>
+                        </div>
+                        <div style="clear: both;"></div>
+                        <div style="float: left; margin-top: 15px;">
+                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{tituloBean.novo}"/>
+                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                            <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTitulo}" title="Pesquisar titulos"/>
+                        </div>
+                    </div>
+                    <div id="boxes">
+                        <div id="divSalvar" class="window">
+                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </a4j:commandLink>
+                            <br />
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Deseja salvar este Titulo?" styleClass="fontePadrao"/>
+                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                                </h:panelGrid>
+
+                                <br />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{tituloBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>
+
+                    <div id="boxes">
+                        <div id="divExcluir" class="window">
+                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </a4j:commandLink>
+                            <br />
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Deseja excluir este Titulo?" styleClass="fontePadrao"/>
+                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                                </h:panelGrid>
+                                <br />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{tituloBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" action="titulo"/>
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>
+
+                    <div id="boxes">
+                        <div id="divMensagem" class="window">
+                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </a4j:commandLink>
+                            <br />
+                            <center>
+                                <h:outputText id="outConfirma" value="#{tituloBean.msgConfirma}" styleClass="fontePadrao"/>
+                                <br /><br />
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="formTitulo" action="#{tituloBean.limpar}"/>
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

@@ -1,0 +1,30 @@
+package br.com.rtools.associativo.db;
+
+import br.com.rtools.associativo.SocioCarteirinha;
+import br.com.rtools.associativo.Socios;
+import br.com.rtools.pessoa.Pessoa;
+import java.util.List;
+import javax.persistence.EntityManager;
+
+public interface SociosDB {
+    public boolean insert(Socios socios);
+    public boolean update(Socios socios);
+    public boolean delete(Socios socios);
+    public EntityManager getEntityManager();
+    public Socios pesquisaCodigo(int id);
+    public List pesquisaTodos();
+    public Socios pesquisaSocioPorId(int idServicoPessoa);
+    public List pesquisaSocios(String desc, String por, String como, String status);
+    public List pesquisaDependentes(int idPessoaSocio);
+    public Socios pesquisaSocioPorPessoa(int idPessoa);
+    public Socios pesquisaSocioDoDependente(int idDependente);
+    public Socios pesquisaSocioDoDependente(Pessoa pessoa);
+    public List pesquisaSociosAtivos();
+    public List pesquisaSociosInativos();
+    public Socios pesquisaSocioPorPessoaAtivo(int idPessoa);
+    public List pesquisaSocioPorPessoaInativo(int idPessoa);
+    public List pesquisaDependentesOrdenado(int idPessoaSocio);
+    public float descontoSocioEve(int idPessoa, int idServico);
+    public List<SocioCarteirinha> pesquisaCarteirinhasPorSocio(int idSocios);
+    public List pesquisaMotivoInativacao();
+}

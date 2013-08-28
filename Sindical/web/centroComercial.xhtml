@@ -1,0 +1,94 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Cadastro de Centro Comercial</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="centroComercial">
+                <c:set scope="request" var="object" value="${centroComercialBean.centroComercial}"/>
+                <center>
+                    <div class="headerPanel">
+                    <h:outputText value="Cadastro de Tipo Centro" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="width: 500px" align="left">
+                        <h:panelGrid columns="7">
+                            <h:selectOneMenu  id="iTipos" value="#{centroComercialBean.idTipos}" style="margin-right: 30px">
+                                <f:selectItems value="#{centroComercialBean.listaTipos}" />
+                            </h:selectOneMenu> 
+                                <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar"/>
+                                <h:outputLabel value="Empresa: " styleClass="fontePadrao"/>
+                                <h:outputLabel value="#{centroComercialBean.centroComercial.juridica.pessoa.documento} - #{centroComercialBean.centroComercial.juridica.pessoa.nome}" styleClass="fontePadraoNegrito" />
+
+                                <a4j:commandButton image="/Imagens/novo.png" action="#{centroComercialBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                                <a4j:commandButton image="/Imagens/excluir.png" action="#{centroComercialBean.excluir}" disabled="#{controleAcessoBean.botaoExcluir}" rendered="#{centroComercialBean.centroComercial.id != -1}" oncomplete="modalMensagem()" render="outConfirma"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid>
+                            <rich:panel>
+                                <rich:dataTable value="#{centroComercialBean.listaCentros}" var="linha" style="width: 100%" iterationStatusVar="it" id="tbl">
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#"/>
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="ID"/>
+                                        </f:facet>
+                                        <h:commandLink styleClass="iLink" action="#{centroComercialBean.editar}" value="#{linha.id}">
+                                            <a4j:param value="#{it.index}" assignTo="#{centroComercialBean.idIndex}" />
+                                        </h:commandLink>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Tipo Centro"/>
+                                        </f:facet>
+                                            <h:outputText value="#{linha.tipoCentroComercial.descricao}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Empresa"/>
+                                        </f:facet>
+                                            <h:outputText value="#{linha.juridica.pessoa.documento} - #{linha.juridica.pessoa.nome}"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </rich:panel>
+                        </h:panelGrid>
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{centroComercialBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" action="centroComercial"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                    
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

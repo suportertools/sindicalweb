@@ -1,0 +1,268 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Vendas de Caravana</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formVendasCaravana">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Vendas Caravana" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="width: auto;" align="left">
+                        
+                        <h:panelGrid columns="2">
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true" title="Pesquisar Pessoa"/>
+                            <h:outputLabel id="idPessoa" value="#{vendasCaravanaBean.pessoa.documento} - #{vendasCaravanaBean.pessoa.nome}" styleClass="fontePadraoNegrito"/>
+                        </h:panelGrid>
+                        
+                        <br/>
+
+                        <rich:panel style="width: auto; height: auto;">
+                            <h:panelGrid columns="8">
+                                <h:outputLabel value="Evento: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu>
+                                <f:selectItems/>
+                                </h:selectOneMenu>
+
+                                <h:outputLabel value="Número do Quarto: " styleClass="fontePadrao" style="margin-left: 30px"/>
+                                <h:inputText size="5" value=""/>
+
+                                <h:outputLabel value="Tipo: " styleClass="fontePadrao" style="margin-left: 30px"/>
+                                <h:selectOneMenu>
+                                <f:selectItems/>
+                                </h:selectOneMenu>
+                            </h:panelGrid>
+                        </rich:panel>            
+
+                        <br/>
+
+                        <rich:panel style="width: auto; height: auto;">
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2Espaco">
+                                <h:column>
+                                    <h:outputLabel value=" Data Saída: " styleClass="fontePadrao"/>
+                                    <h:outputLabel value="  " styleClass="fontePadraoNegrito"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value=" Horário: " styleClass="fontePadrao"/>
+                                    <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
+
+                                    <h:selectBooleanCheckbox style="margin-left: 30px"/>
+                                    <h:outputLabel value=" Café " styleClass="fontePadrao"/>
+
+                                    <h:selectBooleanCheckbox style="margin-left: 30px"/>
+                                    <h:outputLabel value=" Almoço " styleClass="fontePadrao"/>
+
+                                    <h:selectBooleanCheckbox style="margin-left: 30px"/>
+                                    <h:outputLabel value=" Jantar " styleClass="fontePadrao"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Data Retorno: " styleClass="fontePadrao"/>
+                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
+                                </h:column> 
+
+                                <h:column>
+                                    <h:outputLabel value="Horário: " styleClass="fontePadrao"/>
+                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
+
+                                    <h:outputLabel value="Qntd de Poltronas: " styleClass="fontePadrao" style="margin-left: 30px"/>
+                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
+                                </h:column> 
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2Espaco">
+                                <h:column>
+                                    <h:outputLabel value="Data Chegada: " styleClass="fontePadrao"/>
+                                    <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Horário: " styleClass="fontePadrao"/>
+                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
+                                </h:column>
+                            </h:panelGrid>
+                        </rich:panel> 
+
+                        <br/>
+
+                        <rich:panel style="width: auto; height: auto">
+                            <h:panelGrid columns="2">
+                                <h:column>
+                                    <h:outputLabel value="Observações: " styleClass="fontePadrao"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:inputTextarea value="" cols="70" rows="1" styleClass="fontePadrao"/>
+                                </h:column> 
+                            </h:panelGrid>
+                            
+                            <br/>
+                            
+                            <h:panelGrid>
+                                <h:panelGroup style="overflow:auto; height:100px; width: auto;"  layout="block">
+                                    <rich:dataTable value="" var="linha" style="width:100%;">
+                                        <rich:column id="colId" styleClass="coluna">
+                                            <f:facet name="header">
+                                                <h:outputText value=" Excluir " id="lbId"/>
+                                            </f:facet>
+                                            <h:commandButton value="[x]" id="btnExcluir" title="Excluir"/>
+                                        </rich:column>
+
+                                        <rich:column id="colPassageiro">
+                                            <f:facet name="header">
+                                                <h:outputText value="Passageiro"/>
+                                            </f:facet>
+                                            <a4j:commandButton value="...[]"/>
+                                            <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
+                                        </rich:column>
+
+                                        <rich:column id="colPoltrona" styleClass="coluna">
+                                            <f:facet name="header">
+                                                <h:outputText value="Poltrona"/>
+                                            </f:facet>
+                                            <h:selectOneMenu id="idPolt" value="">
+                                            <f:selectItems/>
+                                            </h:selectOneMenu>
+                                            <h:outputLabel id="idPolt2" value="" styleClass="fontePadraoNegrito"/>
+                                        </rich:column>
+
+                                        <rich:column id="colValor">
+                                            <f:facet name="header">
+                                                <h:outputText value="Valor"/>
+                                            </f:facet>
+                                            <h:outputLabel value="" styleClass="fontePadrao"/>
+                                        </rich:column>
+
+                                        <rich:column id="colDesconto">
+                                            <f:facet name="header">
+                                                <h:outputText value="Desconto"/>
+                                            </f:facet>
+                                            <h:inputText value="" size="6" disabled="true"/>
+                                        </rich:column>
+
+                                        <rich:column id="colValorLq">
+                                            <f:facet name="header">
+                                                <h:outputText value="Tipo / Valor" id="lbValorLq"/>
+                                            </f:facet>
+                                            <h:outputLabel value=" - " styleClass="fontePadrao"/>
+                                        </rich:column>
+
+                                        <rich:column id="colAdicionar" styleClass="coluna">
+                                            <f:facet name="header">
+                                                <h:outputText value=" " id="lbAdc"/>
+                                            </f:facet>
+                                            <a4j:commandButton value="[+]" styleClass="fontePadraoNegrito" title="Adicionar"/>
+                                        </rich:column>
+
+                                        <rich:column id="colAtualizar" styleClass="coluna">
+                                            <f:facet name="header">
+                                                <h:outputText value=" " id="lbAtualizar"/>
+                                            </f:facet>
+                                            <a4j:commandButton value="[o]" styleClass="fontePadraoNegrito" title="Atualizar"/>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </h:panelGroup> 
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="8" columnClasses="coluna1, coluna2Espaco">
+                                <h:column>
+                                    <h:outputLabel value="Valor Total: " id="lbValorTotal" styleClass="fontePadrao"/>
+                                    <h:outputLabel id="idTotal" value="R$ " styleClass="fontePadraoNegrito"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Valor Pago: " id="lbValorPago" styleClass="fontePadrao"/>
+                                    <h:outputLabel id="idPago" value="R$ " styleClass="fontePadraoNegrito"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Outras Parcelas: " id="lbValorAPagar" styleClass="fontePadrao" style="margin-left: 30px"/>
+                                    <h:outputLabel id="idAPagar" value="R$ " styleClass="fontePadraoNegrito"/>
+                                </h:column>      
+                            </h:panelGrid>
+                            
+                            <br/>
+                            
+                            <h:panelGrid columns="9" columnClasses="coluna1, coluna2Espaco">
+                                <h:column>
+                                    <h:outputLabel value="Parcelas: " styleClass="fontePadrao"/>
+                                    <h:inputText id="idParcelas" size="7" value=""/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Data Entrada: " styleClass="fontePadrao"/>
+                                    <h:inputText  id="idDataEntrada" size="8" value="" maxlength="10" class="data"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Valor Entrada: " styleClass="fontePadrao" style="margin-left: 30px"/>
+                                    <h:inputText id="idVlrEntrada" size="7" value=""/>
+                                </h:column>
+
+                                <h:column>
+                                    <a4j:commandButton image="/Imagens/novo.png"  immediate="true"/>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <br/>
+                            
+                            <h:panelGroup style="overflow:auto; height:100px; width: 320px;"  layout="block">
+                                <rich:dataTable value="" var="linha" style="width:100%">
+                                    <rich:column id="colVencimento">
+                                        <f:facet name="header">
+                                            <h:outputText value="Vencimento"/>
+                                        </f:facet>
+                                        <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
+                                    </rich:column>
+
+                                    <rich:column id="colValorPar">
+                                        <f:facet name="header">
+                                            <h:outputText value="Valor da Parcela"/>
+                                        </f:facet>
+                                        <h:inputText id="idVlrParcela" size="10"  styleClass="fontePadrao" />
+                                        <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
+                                    </rich:column>
+
+                                    <rich:column id="colStatus">
+                                        <f:facet name="header">
+                                            <h:outputText value="Status"/>
+                                        </f:facet>
+                                        <h:outputLabel value="" style="color:blue;" styleClass="fontePadraoNegrito"/>
+                                        <h:outputLabel value=""  style="color:red;" styleClass="fontePadraoNegrito"/> 
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:panelGroup>
+                        </rich:panel>
+                        
+                        <br/>
+                        
+                        <h:panelGrid>
+                        <h:column>
+                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gravar Reserva" style="width: 120px;" title="Gravar Reserva"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
+                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
+                            <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" title="Pesquisar"/>
+                        </h:column>
+                        </h:panelGrid>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

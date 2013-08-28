@@ -1,0 +1,147 @@
+
+package br.com.rtools.seguranca.db;
+
+import br.com.rtools.principal.DB;
+import br.com.rtools.seguranca.PermissaoDepartamento;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Query;
+import oracle.toplink.essentials.exceptions.EJBQLException;
+
+
+
+public class PermissaoDepartamentoDBToplink extends DB implements PermissaoDepartamentoDB {
+
+    @Override
+    public boolean insert(PermissaoDepartamento permissaoDepartamento) {
+        try{
+          getEntityManager().getTransaction().begin();
+          getEntityManager().persist(permissaoDepartamento);
+          getEntityManager().flush();
+          getEntityManager().getTransaction().commit();
+          return true;
+        } catch(Exception e){
+            getEntityManager().getTransaction().rollback();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean update(PermissaoDepartamento permissaoDepartamento) {
+        try{
+        getEntityManager().merge(permissaoDepartamento);
+        getEntityManager().flush();
+        return true;
+        }
+        catch(Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(PermissaoDepartamento permissaoDepartamento) {
+        try{
+        getEntityManager().remove(permissaoDepartamento);
+        getEntityManager().flush();
+        return true;
+        }
+        catch(Exception e){
+            return false;
+        }
+
+    }
+
+    @Override
+    public PermissaoDepartamento pesquisaCodigo(int id) {
+        PermissaoDepartamento result = null;
+        try{
+            Query qry = getEntityManager().createNamedQuery("PermissaoDepartamento.pesquisaID");
+            qry.setParameter("pid", id);
+            result = (PermissaoDepartamento) qry.getSingleResult();
+        }
+        catch(Exception e){
+        }
+        return result;
+    }
+
+    @Override
+    public List pesquisaTodos() {
+        try{
+            Query qry = getEntityManager().createQuery("select pd from PermissaoDepartamento pd ");
+            return (qry.getResultList());
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public List pesquisaPermissaoDptoIdEvento(int id) {
+        try{
+            Query qry = getEntityManager().createQuery("select pd from PermissaoDepartamento pd " +
+                                                       " where pd.id = "+id);
+            return (qry.getResultList());
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
+
+    @Override
+    public List pesquisaPermissaDisponivel(String ids){
+        String textQuery = "";
+        try{
+            if (ids.length() == 0){
+                textQuery ="select p " +
+                           "  from Permissao p " +
+                           " order by p.modulo.descricao";
+            }else{
+                textQuery ="select p " +
+                           "  from Permissao p" +
+                           " where p.id not in (select pd.permissao.id " +
+                           "                      from PermissaoDepartamento pd" +
+                           "                     where pd.id in ("+ids+"))" +
+                           " order by p.modulo.descricao," +
+                           "          p.rotina.rotina" ;
+            }
+
+            Query qry = getEntityManager().createQuery(textQuery);
+            return (qry.getResultList());
+        }catch(Exception e){
+            return new ArrayList();
+        }
+    }
+
+    @Override
+    public List pesquisaPermissaoAdc(int idDepto, int idNivel){
+        try{
+            Query qry = getEntityManager().createQuery("select pd " +
+                                                       "  from PermissaoDepartamento pd " +
+                                                       " where pd.departamento.id = :idDepto " +
+                                                       "   and pd.nivel.id = :idNivel " +
+                                                       " order by pd.permissao.modulo.descricao," +
+                                                       "          pd.permissao.rotina.rotina");
+            qry.setParameter("idDepto", idDepto);
+            qry.setParameter("idNivel", idNivel);
+            return (qry.getResultList());
+        }catch(Exception e){
+            return new ArrayList();
+        }
+    }
+
+    @Override
+    public List pesquisaPermissaDepto(String ids){
+        String textQuery = "";
+        try{
+            textQuery ="select pd " +
+                       " from PermissaoDepartamento pd " +
+                       "where pd.permissao.id in ("+ids+")";
+            Query qry = getEntityManager().createQuery(textQuery);
+            return (qry.getResultList());
+        }catch(EJBQLException e){
+            return new ArrayList();
+        }
+    }
+
+}
+

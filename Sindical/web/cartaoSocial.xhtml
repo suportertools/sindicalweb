@@ -1,0 +1,184 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Cartão Social</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <script type="text/javascript">
+            function atualizar(){
+                fecharModal('divProcesso');
+            }
+        </script>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formCartaoSocial">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cartão Social" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae">
+                        <div class="divFundo" style="float: left">
+                            <h:panelGrid columns="4" columnClasses="coluna1,coluna2,coluna3,coluna4">
+                                 <h:column>
+                                     <h:outputLabel value="Filtro: " styleClass="fontePadrao"/>
+                                 </h:column>
+                                
+                                  <h:column>
+                                      <h:selectOneMenu value="#{cartaoSocialBean.indexFiltro}" onchange="modalOpcao('divProcesso');">
+                                        <a4j:ajax event="change" listener="#{cartaoSocialBean.pesquisar()}" render="tbl total id_panel" oncomplete="atualizar()"/>
+                                        <f:selectItem itemLabel="Não Impressos (Todos)" itemValue="0"/>
+                                        <f:selectItem itemLabel="Não Impressos (Empresa Especifica)" itemValue="1"/>
+                                        <f:selectItem itemLabel="Não Impressos (CNPJ Especifico)" itemValue="2"/>
+                                        <f:selectItem itemLabel="Nome Sócio Especifico" itemValue="3"/>
+                                        <f:selectItem itemLabel="Código Sócio Especifico" itemValue="4"/>
+                                        <f:selectItem itemLabel="Impressos (Empresa Especifica)" itemValue="5"/>
+                                        <f:selectItem itemLabel="Impressos (CNPJ Especifico)" itemValue="6"/>
+                                        <f:selectItem itemLabel="Impressos (Últimos 30 dias)" itemValue="7"/>
+                                        <f:selectItem itemLabel="Impressos (Todos)" itemValue="8"/>
+                                    </h:selectOneMenu>
+                                  </h:column>
+
+                                 <h:column>
+                                     <h:inputText id="idrazao" size="50" maxlength="150" value="#{cartaoSocialBean.descEmpresa}"/>
+                                 </h:column>
+                                 <h:column>
+                                     <a4j:commandButton image="/Imagens/pesquisar.png" action="#{cartaoSocialBean.pesquisar}" title="Pesquisar" render="total"/>
+                                 </h:column>
+                                
+                                 <h:column>
+                                  <h:outputLabel value="Ordem: " styleClass="fontePadrao"/>    
+                                 </h:column>
+                                
+                                  <h:column>
+                                      <h:selectOneMenu value="#{cartaoSocialBean.indexOrdem}"  onchange="modalOpcao('divProcesso');">
+                                        <a4j:ajax event="change" listener="#{cartaoSocialBean.pesquisar()}" render="tbl total" oncomplete="fecharModal('divProcesso');"/>
+                                        <f:selectItem itemLabel="Nome" itemValue="0"/>
+                                        <f:selectItem itemLabel="Empresa" itemValue="1"/>
+                                        <f:selectItem itemLabel="CNPJ" itemValue="2"/>
+                                        <f:selectItem itemLabel="Dt.Impressão, Nome" itemValue="3"/>
+                                        <f:selectItem itemLabel="Dt.Impressão, Empresa" itemValue="4"/>                                
+                                    </h:selectOneMenu>
+                                  </h:column>
+                                
+                                <h:column>
+                                    <h:selectBooleanCheckbox id="chkF" value="#{cartaoSocialBean.fantasia}">
+                                    </h:selectBooleanCheckbox>
+                                    <h:outputLabel value="Fantasia" for="chkF" style="cursor: pointer" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column></h:column>
+                            </h:panelGrid>
+                            
+                            <div style="height: 300px;  overflow: auto">
+                                <h:panelGrid id="id_panel_data">
+                                    <rich:dataTable  var="linha" iterationStatusVar="it"  value="#{cartaoSocialBean.listaCartao}" style="width: 95%;" id="tbl">
+                                        <rich:column styleClass="colunaPesquisa">
+                                            <f:facet name="header">
+                                                <h:selectBooleanCheckbox value="#{cartaoSocialBean.marcarTodos}">
+                                                    <a4j:ajax event="change" render="tbl marcados" listener="#{cartaoSocialBean.marcar()}" />
+                                                </h:selectBooleanCheckbox>
+                                            </f:facet>
+                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" >
+                                                <a4j:ajax event="change" render="marcados" listener="#{cartaoSocialBean.marcarUM()}" />
+                                            </h:selectBooleanCheckbox>
+                                        </rich:column>
+
+                                        <rich:column styleClass="colunaPesquisa">
+                                            <f:facet name="header"><h:outputText value="CÓDIGO"/></f:facet>
+                                            <a4j:commandLink  value="#{linha.argumento1[0]}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header"><h:outputText value="NOME"/></f:facet>
+                                            <h:outputText  value="#{linha.argumento1[1]}"/>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header"><h:outputText value="CNPJ"/></f:facet>
+                                            <div style="width: 100px">
+                                                <h:outputText value="#{linha.argumento1[2]}"/>
+                                            </div>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header"><h:outputText value="EMPRESA"/></f:facet>
+                                            <div>
+                                                <h:outputText value="#{linha.argumento1[3]}"/>
+                                            </div>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header"><h:outputText value="FANTASIA"/></f:facet>
+                                            <h:outputText  value="#{linha.argumento1[9]}"/>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header"><h:outputText value="CIDADE"/></f:facet>
+                                            <div>
+                                                <h:outputText value="#{linha.argumento1[5]}"/>
+                                            </div>
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header"><h:outputText value="IMPRESSO"/></f:facet>
+                                            <div>
+                                                <h:outputText value="#{linha.argumento1[4]}"/>
+                                            </div>
+                                        </rich:column>                    
+                                    </rich:dataTable>
+                                </h:panelGrid>
+                             </div>
+                             <br/><br/>
+
+                             <a4j:poll id="poll" interval="1000" enabled="#{cartaoSocialBean.updateGrid}" render="poll2" action="#{cartaoSocialBean.testex()}" oncomplete="#{rich:element('formCartaoSocial:imprimirEtiqueta')}.onclick()"/>
+                             <a4j:poll id="poll2" interval="1000" enabled="#{cartaoSocialBean.updateGridx}" render="tbl" action="#{cartaoSocialBean.pesquisar()}" />                            
+                             <h:outputLabel value="TOTAL: " styleClass="fontePadrao"/>
+                             <h:outputLabel id="total" style="font-weight: bold" value="#{cartaoSocialBean.total}" />
+                             <h:outputLabel value="MARCADOS: " styleClass="fontePadrao"/>
+                             <h:outputLabel id="marcados" value="#{cartaoSocialBean.qnt}" styleClass="fontePadrao"/>                     
+                             <h:panelGrid id="id_panel" columns="4" style="text-align: left; margin-top: 10px;">
+                                 <a4j:commandLink styleClass="idSalvar iLink" style="width: 100px" value="Visualizar" id="idVisualizar" render="poll" action="#{cartaoSocialBean.teste()}" onclick="modalOpcao('divProcesso');" oncomplete="#{rich:element('formCartaoSocial:abrir')}.onclick();atualizar();" />
+                                 <h:commandLink id="abrir" action="#{cartaoSocialBean.imprimirCartao()}"/>
+                                 
+                                 <h:commandButton style="margin-left: 20px" rendered="#{!cartaoSocialBean.disabledReimpressao}" value="Reimprimir (Gerar Via)" action="#{cartaoSocialBean.reImprimirCartao()}"/>
+                                 <rich:panel style="margin-left: 20px">
+                                     <h:outputLabel value="Etiquetas " styleClass="fonteExtratoTela"/>
+                                     <h:commandLink id="imprimirEtiqueta" action="#{cartaoSocialBean.visualizarEtiqueta()}"/>
+                                     <br />
+                                     <h:selectOneRadio id="idRadioEtiquetas" value="#{cartaoSocialBean.tipoEtiquetas}" styleClass="fontePadrao">
+                                        <a4j:ajax event="change" render="idRadioEtiquetas idVisualizar"/>
+                                        <f:selectItem itemValue="nenhuma" itemLabel="Nenhuma"/>
+                                        <f:selectItem itemValue="termica" itemLabel="Térmica"/>
+                                        <f:selectItem itemValue="colunas" itemLabel="2 Colunas"/>
+                                    </h:selectOneRadio>
+                                 </rich:panel>
+                             </h:panelGrid>
+                        </div> 
+                    </div>
+                </center>
+
+                <div id="boxes">
+                    <div id="divProcesso" class="window">
+                        <br />
+                        <center>
+                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

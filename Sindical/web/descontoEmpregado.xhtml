@@ -1,0 +1,194 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Desconto Empregado</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formDescontoEmpregado">
+                <c:set scope="request" var="object" value="${descontoEmpregadoBean.descontoEmpregado}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Desconto Empregado" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <div class="divMae" style="margin-bottom: 15px;">
+                        <div class="divFundo">
+                            <table>
+                                <tr>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="Contribuição:" for="idContribuicao" styleClass="textoDireita"/>
+                                    </td>
+                                    <td>
+                                        <h:selectOneMenu id="idContribuicao" title="Contribuição" value="#{descontoEmpregadoBean.idServicos}">
+                                            <f:selectItems value="#{descontoEmpregadoBean.listaServico}"/>
+                                        </h:selectOneMenu>                                         
+                                    </td>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="Percentual:" for="idPercentual"/> 
+                                    </td>
+                                    <td>
+                                        <h:inputText id="idPercentual" value="#{descontoEmpregadoBean.percentual}" title="Percentual" maxlength="6" size="5" />
+                                    </td>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="V. por Empregado:" title="Valor por empregado" for="idDescEmpregado"/>
+                                    </td>
+                                    <td>
+                                        <h:inputText id="idDescEmpregado" value="#{descontoEmpregadoBean.valor}" styleClass="real" title="Desconto Empregado" size="10"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="Ref. Inicial:" for="idRefIni" />
+                                    </td>
+                                    <td>
+                                        <h:inputText id="idRefIni" value="#{descontoEmpregadoBean.descontoEmpregado.referenciaInicial}" title="Referência Inicial" class="referencia" maxlength="7" size="5"/>
+                                    </td>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="Ref. Final:" for="idRefFin" />
+                                    </td>
+                                    <td>
+                                        <h:inputText id="idRefFin" value="#{descontoEmpregadoBean.descontoEmpregado.referenciaFinal}" title="Referência Final" class="referencia" maxlength="7" size="5"/>
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="Convenção:" for="idConvencao" />                                        
+                                    </td>
+                                    <td>
+                                        <h:selectOneMenu id="idConvencao" title="Convenção" value="#{descontoEmpregadoBean.idConvencao}">
+                                            <a4j:ajax event="change" render="idConvencao idGCidade" />
+                                            <f:selectItems value="#{descontoEmpregadoBean.listaConvencao}"/>
+                                        </h:selectOneMenu>
+                                    </td>
+                                    <td class="textoDireita">
+                                        <h:outputLabel value="Grupo Cidade:" for="idGCidade" />
+                                    </td>
+                                    <td>
+                                        <h:selectOneMenu id="idGCidade" title="Grupo Cidade" value="#{descontoEmpregadoBean.idGrupoCidade}">
+                                            <a4j:ajax event="change" render="this" />
+                                            <f:selectItems value="#{descontoEmpregadoBean.listaGrupoCidade}"/>
+                                        </h:selectOneMenu>
+                                    </td>
+                                    <td colspan="2"></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </center>
+                <div class="clear"></div>
+                <div class="divMae" style="margin-top: 15px;">
+                    <div>
+                        <a4j:commandLink styleClass="iLink idSalvar" value="Salvar" action="#{descontoEmpregadoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar"/>
+                        <a4j:commandLink styleClass="iLink idNovo" value="Novo" action="#{descontoEmpregadoBean.novo}" title="Novo"/>
+                    </div>
+                </div>
+                <center>
+                    <div class="divMae" style="margin-top: 15px; margin-bottom: 15px;">
+                        <div class="divFundo">
+                            <div style="overflow:auto; height:380px; width: 800px;">
+                                <rich:dataTable var="linha" value="#{descontoEmpregadoBean.listaDescontoEmpregado}" iterationStatusVar="it"  style="width: 95%; margin-top: 15px;" id="tbl">
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#" />
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </rich:column>
+                                    <rich:column styleClass="colunaPesquisa">
+                                        <f:facet name="header">
+                                            <h:outputText value="ID"/>
+                                        </f:facet>
+                                        <a4j:commandLink value="#{linha.id}" action="#{descontoEmpregadoBean.editar}" title="Editar registro" styleClass="iLink">
+                                            <a4j:param value="#{it.index}" assignTo="#{descontoEmpregadoBean.idIndex}"/>
+                                        </a4j:commandLink>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Contribuição"/>
+                                        </f:facet>
+                                        <a4j:commandLink value="#{linha.servicos.descricao}" action="#{descontoEmpregadoBean.editar}" title="Editar registro" styleClass="iLink">
+                                            <a4j:param value="#{it.index}" assignTo="#{descontoEmpregadoBean.idIndex}"/>
+                                        </a4j:commandLink>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Convenção"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.convencao.descricao}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Grupo Cidade"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.grupoCidade.descricao}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="%" title="Percentual"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.percentual}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Vr. Empregado (R$)" title="Valor Empregado"/>
+                                        </f:facet>
+                                        <center>
+                                            <h:outputText value="#{linha.valorEmpregado}" />
+                                        </center>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Ref. Inicial" title="Referência Inicia"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.referenciaInicial}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Ref. Final" title="Referência Final"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.referenciaFinal}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Excluir"/>
+                                        </f:facet>
+                                        <center>
+                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{descontoEmpregadoBean.btnExcluir}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}" immediate="true" title="Excluir esse registro?">
+                                                <a4j:param value="#{it.index}" assignTo="#{descontoEmpregadoBean.idIndex}" />
+                                            </a4j:commandButton>
+                                        </center>
+                                    </rich:column>                                    
+                                </rich:dataTable>
+                            </div>                                
+                        </div>
+                    </div>
+                </center>                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{descontoEmpregadoBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="#{descontoEmpregadoBean.limpar}" value="OK" title="OK" render="tbl"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                    
+            </h:form>            
+        </f:view>
+    </h:body>
+</ui:composition>

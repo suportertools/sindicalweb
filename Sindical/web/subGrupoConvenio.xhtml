@@ -1,0 +1,172 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Sub-Grupo Convênio</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formSubGrupoConvenio">
+                <c:set scope="request" var="object" value="${subGrupoConvenioBean.subGrupoConvenio}"/>  
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Sub-Grupo Convênio" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 830px;">
+                        <h:panelGrid columns="2" >
+                            <h:column>
+                                <table>
+                                    <tr>
+                                        <td align="right">
+                                            <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText disabled="true" size="20" value="#{subGrupoConvenioBean.grupoConvenio.descricao}">
+                                                
+                                            </h:inputText>
+                                        </td>
+                                        <td>
+                                            <a4j:commandButton image="/Imagens/excluir.png" title="Limpar" action="#{subGrupoConvenioBean.novoGrupo}"/>
+                                        </td>
+                                        <td>
+                                            <a4j:commandButton image="/Imagens/pesquisar.png"  title="Pesquisar" action="#{chamadaPaginaBean.grupoConvenio}"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">
+                                            <h:outputLabel  value="SubGrupo: " styleClass="fontePadrao"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText size="20" value="#{subGrupoConvenioBean.subGrupoConvenio.descricao}" onblur="upperCase(this);">
+                                                <a4j:ajax event="blur" render="this" />
+                                            </h:inputText>                                                
+                                        </td>
+                                        <td>
+                                            <a4j:commandButton image="/Imagens/novo.png" title="Adicionar" action="#{subGrupoConvenioBean.adicionar}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="modalMensagem()" render="tbl2, outConfirma"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </h:column>
+                            <h:column>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <h:panelGrid columns="3">
+                                            <rich:panel>
+                                            <h:panelGroup layout="block" style="overflow:auto; height:150px; width: 200px;">
+                                                <h:outputLabel value="Serviços Disponíveis: " styleClass="fonteFranklinNegrito"/>
+                                                <rich:dataTable value="#{subGrupoConvenioBean.listaServicosDisponiveis}" var="linha" style="width: 100px;" iterationStatusVar="it" id="tbl">
+                                                    <rich:column id="colSelect1">
+                                                        <f:facet name="header">
+                                                            <h:outputText value="..."/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{subGrupoConvenioBean.disabled}"/>
+                                                    </rich:column>
+
+                                                    <rich:column>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Serviços"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{linha.argumento1.descricao}" />
+                                                    </rich:column>
+                                                </rich:dataTable>
+                                            </h:panelGroup>
+                                            </rich:panel>
+
+                                            <h:column>
+                                                <h:panelGrid><a4j:commandButton value="   adc   " render="tbl,tbl2"
+                                                                                action="#{subGrupoConvenioBean.adicionarServicos}" disabled="#{controleAcessoBean.botaoSalvar}"/></h:panelGrid>
+                                                <h:panelGrid><a4j:commandButton value="   rem   " render="tbl,tbl2"
+                                                                                action="#{subGrupoConvenioBean.removerServicos}" disabled="#{controleAcessoBean.botaoExcluir}"/></h:panelGrid>
+                                            </h:column>
+
+                                            <rich:panel>
+                                            <h:panelGroup layout="block" style="overflow:auto; height:150px; width: 200px;">
+                                                <h:outputLabel value="Adicionados: " styleClass="fonteFranklinNegrito"/>
+                                                <rich:dataTable value="#{subGrupoConvenioBean.listaServicosAdicionados}" var="linha" id="tblServicos2" style="width: 100px">
+                                                    <rich:column>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="..."/>
+                                                        </f:facet>
+                                                        <h:selectBooleanCheckbox value="#{linha.argumento0}"/>
+                                                    </rich:column>
+
+                                                    <rich:column>
+                                                        <f:facet name="header">
+                                                            <h:outputText value="Serviços"/>
+                                                        </f:facet>
+                                                        <h:outputText value="#{linha.argumento1.descricao}"/>
+                                                    </rich:column>
+                                                </rich:dataTable>
+                                            </h:panelGroup>
+                                            </rich:panel>
+                                            </h:panelGrid>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </h:column>
+                        </h:panelGrid>
+                        <div style="overflow:auto; height:300px;">
+                            <rich:panel style="width: 820px;">
+                                <rich:dataTable value="#{subGrupoConvenioBean.listaSubGrupoConvenio}" var="linha" iterationStatusVar="it" style="width: 200px;" id="tbl2">
+
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#" />
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </rich:column>                                       
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Remover"/>
+                                        </f:facet>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" action="#{subGrupoConvenioBean.excluir}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoExcluir}" render="tbl2,outConfirma">
+                                            <a4j:param value="#{it.index}" assignTo="#{subGrupoConvenioBean.idIndexSub}"/>
+                                        </a4j:commandButton>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Descrição"/>
+                                        </f:facet>
+                                        <a4j:commandLink action="#{subGrupoConvenioBean.editar}" value="#{linha.descricao}">
+                                            <a4j:param value="#{it.index}" assignTo="#{subGrupoConvenioBean.idIndexSub}"/>
+                                        </a4j:commandLink>
+                                    </rich:column>
+
+                                </rich:dataTable>
+                            </rich:panel>
+                        </div>                        
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{subGrupoConvenioBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                   
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

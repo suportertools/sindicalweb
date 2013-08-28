@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:body>
+        <f:view>
+            <h:form id="formServicoPessoa">
+            
+                <h:panelGroup layout="block" style="overflow:auto; height:190px; width:600px; text-align: left">
+                    <rich:tabPanel switchType="client" activeItem="#{servicoPessoaBean.indexTab}">
+                        <a4j:ajax event="itemchange" render="this"/>
+                        <rich:tab id="socios" header="Dados Pessoais" >
+                            <h:panelGrid columns="5">
+                                <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Sócio" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" immediate="true"/>
+                                <h:outputLabel value="Sócio: " styleClass="fontePadrao"/>
+                                <h:outputText value="#{servicoPessoaBean.titular.pessoa.tipoDocumento.descricao} - #{servicoPessoaBean.titular.pessoa.documento} " styleClass="fontePadraoNegrito"/>
+                                <h:outputText value="#{servicoPessoaBean.titular.pessoa.nome}" styleClass="fontePadrao"/>
+                            </h:panelGrid>
+                            <br />
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Endereço: " styleClass="fontePadrao"/>
+                                <h:outputText value="#{servicoPessoaBean.strEndereco}" styleClass="fontePadraoNegrito"/>
+                            </h:panelGrid>
+                            <br />
+                            <h:panelGrid columns="8">
+                                <h:outputLabel value="Data de cadastro: " styleClass="fontePadrao"/>
+                                <h:outputLabel id="idDtCadastro" value="#{servicoPessoaBean.servicoPessoa.emissao}" styleClass="fontePadraoNegrito"/>
+                            </h:panelGrid>
+                            <br />
+                        </rich:tab>
+                        
+                        <rich:tab id="complemento" header="Cobrança" >
+                            <h:panelGrid columns="8">
+                                <h:selectBooleanCheckbox id="idChkContaC" value="#{servicoPessoaBean.chkContaCobranca}">
+                                    <a4j:ajax event="change" render="idChkContaC,idTipoDocumento"/>
+                                </h:selectBooleanCheckbox>
+                                <h:outputLabel for="idChkContaC" value=" Cobrança bancária" styleClass="fontePadrao" style="cursor: pointer"/>
+                                
+                                <h:outputLabel value="Desconto: " styleClass="fontePadrao" style="margin-left: 20px;"/>
+                                <h:inputText id="idNrDesconto" value="#{servicoPessoaBean.servicoPessoa.nrDesconto}" size="5">
+                                    <a4j:ajax event="change" render="this"/>
+                                </h:inputText>
+                                <h:outputLabel value=" %  " styleClass="fontePadraoNegrito"/>
+                                <h:selectBooleanCheckbox id="idChkDesFolha" value="#{servicoPessoaBean.servicoPessoa.descontoFolha}">
+                                    <a4j:ajax event="change" render="this"/>
+                                </h:selectBooleanCheckbox>
+                                <h:outputLabel for="idChkDesFolha" value=" Descontar em Folha" styleClass="fontePadrao" style="cursor: pointer"/>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                <rich:column><h:outputLabel value="Tipo do Documento: " styleClass="fontePadrao"/></rich:column>
+                                <rich:column>
+                                    <h:selectOneMenu id="idTipoDocumento" value="#{servicoPessoaBean.idTipoDocumento}">
+                                        <a4j:ajax event="change" render="this"/>
+                                        <f:selectItems value="#{servicoPessoaBean.listaTipoDocumento}"/>
+                                    </h:selectOneMenu>
+                                </rich:column>
+                                
+                                <rich:column><h:outputLabel value="Serviços: " styleClass="fontePadrao" rendered="#{servicoPessoaBean.renderServicos}"/></rich:column>
+                                <rich:column>
+                                    <h:selectOneMenu id="idServico" value="#{servicoPessoaBean.idServico}" rendered="#{servicoPessoaBean.renderServicos}">
+                                        <a4j:ajax event="change" render="this"/>
+                                        <f:selectItems value="#{servicoPessoaBean.listaServicos}"/>
+                                    </h:selectOneMenu>
+                                </rich:column>
+                                
+                                <rich:column><h:outputLabel value="Ref. Vigoração: " styleClass="fontePadrao"/></rich:column>
+                                <rich:column>
+                                    <h:inputText id="idRefVigoracao" value="#{servicoPessoaBean.servicoPessoa.referenciaVigoracao}" size="7" class="referencia">
+                                        <a4j:ajax event="change" render="this"/>
+                                    </h:inputText>
+                                </rich:column>
+                                
+                                <rich:column><h:outputLabel value="Ref. Validade: " styleClass="fontePadrao" rendered="#{servicoPessoaBean.renderServicos}"/></rich:column>
+                                <rich:column>
+                                    <h:inputText id="idRefValidade" value="#{servicoPessoaBean.servicoPessoa.referenciaValidade}" size="7" class="referencia" rendered="#{servicoPessoaBean.renderServicos}">
+                                        <a4j:ajax event="change" render="this"/>
+                                    </h:inputText>
+                                    <h:outputLabel value="Dia Vencto: " styleClass="fontePadrao"/>
+                                    <h:selectOneMenu id="idDiaVenct" value="#{servicoPessoaBean.servicoPessoa.nrDiaVencimento}">
+                                        <a4j:ajax event="change" render="this"/>
+                                        <f:selectItem itemValue="1" itemLabel="01"/>
+                                        <f:selectItem itemValue="2" itemLabel="02"/>
+                                        <f:selectItem itemValue="3" itemLabel="03"/>
+                                        <f:selectItem itemValue="4" itemLabel="04"/>
+                                        <f:selectItem itemValue="5" itemLabel="05"/>
+                                        <f:selectItem itemValue="6" itemLabel="06"/>
+                                        <f:selectItem itemValue="7" itemLabel="07"/>
+                                        <f:selectItem itemValue="8" itemLabel="08"/>
+                                        <f:selectItem itemValue="9" itemLabel="09"/>
+                                        <f:selectItem itemValue="10" itemLabel="10"/>
+                                        <f:selectItem itemValue="11" itemLabel="11"/>
+                                        <f:selectItem itemValue="12" itemLabel="12"/>
+                                        <f:selectItem itemValue="13" itemLabel="13"/>
+                                        <f:selectItem itemValue="14" itemLabel="14"/>
+                                        <f:selectItem itemValue="15" itemLabel="15"/>
+                                        <f:selectItem itemValue="16" itemLabel="16"/>
+                                        <f:selectItem itemValue="17" itemLabel="17"/>
+                                        <f:selectItem itemValue="18" itemLabel="18"/>
+                                        <f:selectItem itemValue="19" itemLabel="19"/>
+                                        <f:selectItem itemValue="20" itemLabel="20"/>
+                                        <f:selectItem itemValue="21" itemLabel="21"/>
+                                        <f:selectItem itemValue="22" itemLabel="22"/>
+                                        <f:selectItem itemValue="23" itemLabel="23"/>
+                                        <f:selectItem itemValue="24" itemLabel="24"/>
+                                        <f:selectItem itemValue="25" itemLabel="25"/>
+                                        <f:selectItem itemValue="26" itemLabel="26"/>
+                                        <f:selectItem itemValue="27" itemLabel="27"/>
+                                        <f:selectItem itemValue="28" itemLabel="28"/>
+                                        <f:selectItem itemValue="29" itemLabel="29"/>
+                                        <f:selectItem itemValue="30" itemLabel="30"/>
+                                        <f:selectItem itemValue="31" itemLabel="31"/>
+                                    </h:selectOneMenu>
+                                </rich:column>
+                            </h:panelGrid>
+                        </rich:tab>
+                    </rich:tabPanel>
+                </h:panelGroup>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

@@ -1,0 +1,203 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Profissão</title>
+    </h:head>
+        <h:body class="divMenu">
+            <f:subview id="header">
+                <ui:include src="template.xhtml"/>
+                <ui:include src="templateLinks.xhtml"/>
+            </f:subview>
+            <f:view>
+                <h:form id="formProfissao">
+                    <c:set scope="request" var="object" value="${profissaoBean.prof}"/>
+                    <center>
+                        <div class="headerPanel">
+                            <h:outputText value="Cadastro Profissão" styleClass="fontePanel" style="width: 100%;"/>
+                        </div>
+                        <div class="divMae">
+                            <div class="divFundo">
+                                <div class="alinhaFormulario">
+                                    <p>
+                                        <h:outputLabel value="CBO: " styleClass="fontePadrao" style="width: 80px;" title="CBO - Classificação Brasileira de Ocupações" for="idCBO"/>
+                                        <h:inputText id="idCBO" size="30" value="#{profissaoBean.prof.cbo}" maxlength="50"/>
+                                    </p>
+                                    <p>
+                                        <h:outputLabel value="Profissão: " styleClass="fontePadrao" style="width: 80px;" title="Profissão"/>
+                                        <h:inputText id="idProfissao" size="30" value="#{profissaoBean.prof.profissao}" maxlength="50"/>
+                                    </p>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </div>
+                            <div style="clear: both;"></div>
+                            <div style="float: left; margin-top: 15px;">
+                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar / Atualizar"/>
+                                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{profissaoBean.novaProfissao}"/>
+                                <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                                <a4j:commandLink onclick="modalOpcao('divProfissao');" styleClass="idPesquisar iLink" value="Pesquisar"/>
+                            </div>
+                        </div>
+                    </center>
+                    
+                    <!-- PESQUISAR PROFISSAO -->                                
+                   <!-- <div id="boxes">
+                        <div id="divProfissao" class="window">
+                            <a4j:commandLink styleClass="close closeModal" value="Fechar" title="Fechar"/>
+                            <br />
+                            <center>
+                                <h:panelGrid columns="6">
+                                    <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
+                                    <h:inputText id="idProf" size="20" value="# {profissaoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;"/>
+
+                                    <a4j:commandLink styleClass="idNovo iLink" value="Cbo" action="# {profissaoBean.inicial}" render="tblProf"/>
+                                    <a4j:commandLink styleClass="idPesquisar iLink" value="Profissão" action="# {profissaoBean.parcial}" render="tblProf"/>                                
+                                </h:panelGrid>       
+
+                                <h:panelGrid columns="1">
+                                    <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
+                                        <rich:dataTable var="linha" value="# {profissaoBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="tblProf">
+                                            <rich:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                                <h:outputText value="# {it.index}"/>
+                                            </rich:column>
+
+                                            <rich:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="ID"/></f:facet>
+
+                                                <a4j:commandLink id="linkPro" action="# {profissaoBean.editar}" value="# {linha.id}" render="idProf, idCBO, idProfissao" oncomplete="fecharModal()">
+                                                    <a4j:param value="# {it.index}" assignTo="# {profissaoBean.idIndexProf}" />
+                                                </a4j:commandLink>
+                                            </rich:column>
+
+                                            <rich:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="CBO"/></f:facet>
+                                                <h:outputText  value="# {linha.cbo}"/>
+                                            </rich:column>
+
+                                            <rich:column style="text-align: center;">>
+                                                <f:facet name="header"><h:outputText value="Profissão"/></f:facet>
+                                                <h:outputText  value="# {linha.profissao}"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div> -->
+                    
+                    <!-- PESQUISAR PROFISSAO -->                                
+                    <div id="boxes">
+                        <div id="divProfissao" class="window">
+                            <a4j:commandLink styleClass="close closeModal" value="Fechar" title="Fechar"/>
+                            <br />
+                            <center>
+                                <h:panelGrid columns="6">
+                                    <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
+                                    <h:inputText id="idProf" size="20" value="#{profissaoBean.descricaoProfissao}" onkeypress="return event.keyCode !== 13;" />
+
+                                    <a4j:commandLink styleClass="idNovo iLink" value="Inicial" action="#{profissaoBean.inicial}" render="tblProf"/>
+                                    <a4j:commandLink styleClass="idNovo iLink" value="Parcial" action="#{profissaoBean.parcial}" render="tblProf"/>
+
+                                    <h:outputText value="Por: " styleClass="fontePadrao"/>
+                                    <h:selectOneMenu id="idPor" value="#{profissaoBean.combo}" >
+                                        <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
+                                        <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
+                                    </h:selectOneMenu>
+                                </h:panelGrid>       
+
+                                <h:panelGrid columns="1">
+                                    <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
+                                        <rich:dataTable var="linha" value="#{profissaoBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="tblProf">
+                                            <rich:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                                <h:outputText value="#{it.index}"/>
+                                            </rich:column>
+
+                                            <rich:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="ID"/></f:facet>
+
+                                                <a4j:commandLink id="linkPro" action="#{profissaoBean.editarProfissao()}" value="#{linha.id}" render="idProf, idCBO, idProfissao" oncomplete="fecharModal()">
+                                                    <a4j:param value="#{it.index}" assignTo="#{profissaoBean.idIndexProf}" />
+                                                </a4j:commandLink>
+                                            </rich:column>
+
+                                            <rich:column style="text-align: center;">
+                                                <f:facet name="header"><h:outputText value="CBO"/></f:facet>
+                                                <h:outputText  value="#{linha.cbo}"/>
+                                            </rich:column>
+
+                                            <rich:column style="text-align: center;">>
+                                                <f:facet name="header"><h:outputText value="Profissão"/></f:facet>
+                                                <h:outputText  value="#{linha.profissao}"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>                    
+                    
+                    <div id="boxes">
+                        <div id="divSalvar" class="window">
+                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </a4j:commandLink>
+                            <br />
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Deseja salvar este Profissão?" styleClass="fontePadrao"/>
+                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                                </h:panelGrid>
+                                <br />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{profissaoBean.salvarProfissao}" oncomplete="modalMensagem()" render="outConfirma"/>
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>
+                    <div id="boxes">
+                        <div id="divExcluir" class="window">
+                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </a4j:commandLink>
+                            <br />
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <h:outputText value="Deseja excluir esta Profissão?" styleClass="fontePadrao"/>
+                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                                </h:panelGrid>
+                                <br />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{profissaoBean.excluirProfissao}" oncomplete="modalMensagem()" render="outConfirma"/>
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" action="titulo"/>
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>
+                    <div id="boxes">
+                        <div id="divMensagem" class="window">
+                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </a4j:commandLink>
+                            <br />
+                            <center>
+                                <h:outputText id="outConfirma" value="#{profissaoBean.msgConfirma}" styleClass="fontePadrao"/>
+                                <br /><br />
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" action="profissao"/>
+                            </center>
+                        </div>
+                        <div id="mask"></div>
+                    </div>
+                </h:form>
+            </f:view>
+        </h:body>
+</ui:composition>

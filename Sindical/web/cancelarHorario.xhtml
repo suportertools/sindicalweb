@@ -1,0 +1,198 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Cancelamento de horários</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+           
+        </style>        
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formHorarios">
+                <c:set scope="request" var="object" value="${cancelarHorarioBean.cancelarHorario}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cancelamento de Horários" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    
+                <br /><br />
+                
+                <div class="divMae divFundo" style="width: 850px" align="left">
+                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="5">
+                        <h:column>
+                            <h:outputLabel value="FILIAIS: " styleClass="fontePadrao"/>
+                        </h:column>
+                        <h:column>
+                            <h:selectOneMenu id="iFilial" value="#{cancelarHorarioBean.idFilial}" disabled="#{cancelarHorarioBean.desabilitaFilial}">
+                                <a4j:ajax event="change" render="iFilial idHorarios idQuantidadeHorarios idCancela tbl"/>
+                                <f:selectItems value="#{cancelarHorarioBean.listaFiliais}"/>
+                            </h:selectOneMenu>
+                        </h:column>
+                        <h:column>
+                            <h:outputLabel value="DIA: " styleClass="fontePadrao" rendered="#{cancelarHorarioBean.renderedPeriodo}"/>
+                            <h:outputLabel value="PERÍODO: " styleClass="fontePadrao" rendered="#{!cancelarHorarioBean.renderedPeriodo}"/>
+                        </h:column>
+                        <h:column>
+                            <h:panelGrid id="idPainelDataPeriodo" columns="10">
+                                <a4j:outputPanel id="calendar" layout="block">
+                                    <rich:calendar value="#{cancelarHorarioBean.data}" datePattern="dd/MM/yyyy" style="width:400px" rendered="#{cancelarHorarioBean.renderedPeriodo}">
+                                        <a4j:ajax event="change" render="idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela tbl" listener="#{cancelarHorarioBean.calculaQuantidadeDisponivel}" />
+                                    </rich:calendar>
+                                    <rich:calendar value="#{cancelarHorarioBean.data}" datePattern="dd/MM/yyyy" style="width:400px" rendered="#{!cancelarHorarioBean.renderedPeriodo}">
+                                        <a4j:ajax event="change" render="tbl"/>
+                                    </rich:calendar>
+                                    <rich:calendar value="#{cancelarHorarioBean.dataFinal}" datePattern="dd/MM/yyyy" style="width:400px" rendered="#{!cancelarHorarioBean.renderedPeriodo}">
+                                        <a4j:ajax event="change" render="tbl"/>
+                                    </rich:calendar>
+                                </a4j:outputPanel>
+                                <h:column rendered="#{cancelarHorarioBean.renderedPeriodo}">
+                                    <h:outputLabel value="HORARIOS: " styleClass="fontePadrao margin-left-max" />
+                                    <h:selectOneMenu id="idHorarios" value="#{cancelarHorarioBean.idHorariosDisponiveis}" disabled="#{cancelarHorarioBean.desabilitaBotoes}" rendered="#{cancelarHorarioBean.renderedPeriodo}">
+                                        <a4j:ajax event="change" render="idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela" listener="#{cancelarHorarioBean.calculaQuantidadeDisponivel}" />
+                                        <f:selectItems value="#{cancelarHorarioBean.listaHorariosDisponiveis}"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:outputText value="CANCELAR POR: " styleClass="fontePadrao margin-left-max"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Período" action="#{cancelarHorarioBean.cancelamentoPor}" rendered="#{cancelarHorarioBean.renderedPeriodo}" title="Cancelar todos horários para essa data" />
+                                <a4j:commandLink styleClass="idNovo iLink"  value="Dia" action="#{cancelarHorarioBean.cancelamentoPor}" rendered="#{!cancelarHorarioBean.renderedPeriodo}" title="Cancelar todos horários para essa data" />
+                            </h:panelGrid>
+                        </h:column>
+                        <h:column>
+                            <h:column rendered="#{cancelarHorarioBean.renderedPeriodo}">
+                                <h:outputText value="HORÁRIOS >>" styleClass="fontePadrao" />
+                            </h:column>
+                        </h:column>
+                        <h:column>
+                            <h:column rendered="#{cancelarHorarioBean.renderedPeriodo}">
+                                <h:panelGrid columns="10">
+                                    <h:outputLabel value="DISPONÍVEL: " styleClass="fontePadrao" />
+                                    <h:inputText id="idQuantidadeDisponivel" value="#{cancelarHorarioBean.nrQuantidadeDisponivel}" disabled="true" size="2" title="Quantidade de horários disponíveis" />
+                                    <h:outputLabel value=" CANCELAR: " styleClass="fontePadrao margin-left-max" />
+                                    <rich:inputNumberSpinner id="idQuantidadeHorarios" value="#{cancelarHorarioBean.nrQuantidadeCancelar}" maxValue="#{cancelarHorarioBean.nrQuantidadeDisponivel}" minValue="0" disabled="#{cancelarHorarioBean.desabilitaBotoes}" title="Quantidade a ser cancelada">
+                                        <a4j:ajax event="change" listener="#{cancelarHorarioBean.validaQuantidadeDisponivel}" render="idQuantidadeHorarios idQuantidadeDisponivel" />                                        
+                                        <a4j:ajax event="blur" listener="#{cancelarHorarioBean.validaQuantidadeDisponivel}" render="idQuantidadeHorarios idQuantidadeDisponivel" />                                        
+                                    </rich:inputNumberSpinner>    
+                                    <h:outputLabel value=" CANCELADOS: " styleClass="fontePadrao margin-left-max" />
+                                    <h:inputText id="idQuantidadeRestante" value="#{cancelarHorarioBean.nrQuantidadeCancelado}" disabled="true" size="2"  title="Quantidade de horários cancelados" />
+                                </h:panelGrid>                                
+                            </h:column>
+                        </h:column>
+                    </h:panelGrid>
+                    <br />
+                    <h:panelGrid id="idCancela" columns="3">
+                        <a4j:commandLink styleClass="idPesquisar iLink"  style="width: 150px;" oncomplete="modalMensagem()" value="Cancelar Horário" action="#{cancelarHorarioBean.cancelarHorario(false)}" title="Cancelar somente o horário seleciondo" rendered="#{cancelarHorarioBean.renderedPeriodo}" render="idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela outConfirma tbl"  disabled="#{controleAcessoBean.botaoSalvar}"/>
+                        <a4j:commandLink styleClass="idPesquisar iLink"  style="width: 210px;" oncomplete="modalMensagem()" value="Cancelar Todos Horários" action="#{cancelarHorarioBean.cancelarHorario(true)}" title="Cancelar todos horários para essa data" rendered="#{cancelarHorarioBean.renderedPeriodo}" render="idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela outConfirma tbl"  disabled="#{controleAcessoBean.botaoSalvar}"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" style="width: 210px;" styleClass="idExcluir iLink" value="Excluir Todos do Dia" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir todos horários para essa data" rendered="#{cancelarHorarioBean.renderedPeriodo}"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <a4j:commandLink styleClass="idPesquisar iLink"  style="width: 210px;" oncomplete="modalMensagem()" value="Cancelar Todos Horários" action="#{cancelarHorarioBean.cancelarHorarioPeriodo}" title="Cancelar todos horários do período" render="outConfirma tbl" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{!cancelarHorarioBean.renderedPeriodo}" />                        
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" style="width: 220px;" styleClass="idExcluir iLink" value="Excluir Todos do Período" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir todos horários para esse período" rendered="#{!cancelarHorarioBean.renderedPeriodo}"/>
+                    </h:panelGrid>
+                        
+                    <br /><br />
+                    <a4j:poll id="poolMonitor" interval="50000" render="poolMonitor, tbl" />
+                    <div style="overflow:auto; height:320px; width: 300px;" align="center" class="divFundo bg-white">
+                        <rich:dataTable value="#{cancelarHorarioBean.listaHorariosCancelados}" var="linha" style="width:100%" iterationStatusVar="it" id="tbl">
+                            
+                            <f:facet name="header">Horários Cancelados</f:facet>
+                            
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                <h:outputText value="#{it.index}"/>
+                            </rich:column>                            
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="..."/>
+                                </f:facet>
+                                <a4j:commandButton title="Excluir cancelamento" image="/Imagens/excluirp.png"  action="#{cancelarHorarioBean.excluir}" render="idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela tbl">
+                                    <a4j:param value="#{it.index}" assignTo="#{cancelarHorarioBean.index}"/>
+                                </a4j:commandButton>                               
+                            </rich:column>
+                            
+                            <rich:column rendered="#{!cancelarHorarioBean.renderedPeriodo}">
+                                <f:facet name="header">
+                                    <h:outputText value="Data"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.data}" />
+                            </rich:column>
+                            
+                            <rich:column styleClass="coluna">
+                                <f:facet name="header">
+                                    <h:graphicImage value="/Imagens/horario.png" alt="Horário" title="Horário" width="20" />
+                                </f:facet>
+                                <h:outputText value="#{linha.horarios.hora}" />                                    
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Qtde Disponível"/>
+                                </f:facet>
+                                <h:outputText value="#{cancelarHorarioBean.calculaQuantidadeDisponivel(linha.horarios.quantidade, linha.quantidade)}" />
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Qtde Cancelado"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.quantidade}" />
+                            </rich:column>
+                            
+                            
+                        </rich:dataTable>
+                    </div>
+                   </div>
+                </center>
+                
+                
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir este(s) Cancelamento de Horários?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{cancelarHorarioBean.excluirCancelamentos}" oncomplete="modalMensagem()" render="outConfirma idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela tbl" />
+                            <!-- <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="# {cancelarHorarioBean.excluirCancelamentos()}" title="Excluir todos horários do período"        render="outConfirma idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante tbl"            oncomplete="modalMensagem()" disabled="# {controleAcessoBean.botaoExcluir}" rendered="# { !cancelarHorarioBean.renderedPeriodo}" /> -->
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{cancelarHorarioBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" action="cancelarHorario" render="outConfirma idHorarios idQuantidadeDisponivel idQuantidadeHorarios idQuantidadeRestante idCancela tbl"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

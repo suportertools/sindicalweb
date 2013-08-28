@@ -1,0 +1,237 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Agendamento Caravana</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formCaravana">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Agendamento Caravana" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 800px">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                            <rich:column>
+                                <h:panelGrid columns="5">
+                                    <h:outputLabel value="Eventos: " styleClass="fontePadrao"/>
+                                    <h:selectOneMenu id="idGrupo" value="#{caravanaBean.idGrupoEvento}">
+                                        <a4j:ajax event="change" render="idDescricao"/>
+                                        <f:selectItems value="#{descricaoEventoBean.listaGrupoEvento}"/>
+                                    </h:selectOneMenu>
+
+                                    <h:selectOneMenu id="idDescricao" value="#{caravanaBean.idDescricaoEvento}" style="margin-left: 20px;">
+                                        <a4j:ajax event="change" render="this"/>
+                                        <f:selectItems value="#{caravanaBean.listaDescricaoEvento}"/>
+                                    </h:selectOneMenu>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                    <rich:column><h:outputLabel value="Data Saída: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.dataSaida}" size="8" class="data"/></rich:column>
+
+                                    <rich:column><h:outputLabel value="Horário: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.horaSaida}" size="5" class="hora"/></rich:column>
+                                    <rich:column /><hr />
+
+                                    <rich:column><h:outputLabel value="Data Retorno: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.dataRetorno}" size="10" class="data"/></rich:column>
+
+                                    <rich:column><h:outputLabel value="Horário: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.horaRetorno}" size="5" class="hora"/></rich:column>
+                                    <rich:column /><hr />
+
+                                    <rich:column><h:outputLabel value="Data Chegada: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.dataChegada}" size="10" class="data"/></rich:column>
+
+                                    <rich:column><h:outputLabel value="Horário: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.horaChegada}" size="5" class="hora"/></rich:column>
+                                </h:panelGrid>
+                            </rich:column>
+
+                            <rich:column>
+                                <h:panelGrid columns="8">
+                                    <h:selectBooleanCheckbox id="idChkCafe" value="#{caravanaBean.caravana.isCafe}"/>
+                                    <h:outputLabel value=" Café" styleClass="fontePadrao" for="idChkCafe" style="cursor: pointer"/>
+
+                                    <h:selectBooleanCheckbox id="idChkAlmoco" value="#{caravanaBean.caravana.isAlmoco}" style="margin-left: 20px;"/>
+                                    <h:outputLabel value=" Almoço" styleClass="fontePadrao" for="idChkAlmoco" style="cursor: pointer"/>
+
+                                    <h:selectBooleanCheckbox id="idChkJantar" value="#{caravanaBean.caravana.isJantar}" style="margin-left: 20px;"/>
+                                    <h:outputLabel value=" Jantar" styleClass="fontePadrao" for="idChkJantar" style="cursor: pointer"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                    <rich:column><h:outputLabel value="Qntd de Poltronas: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.quantidadePoltronas}" size="4"/></rich:column>
+
+                                    <rich:column><h:outputLabel value="Guia de Recolhimento: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputText value="#{caravanaBean.caravana.guiaRecolhimento}" size="20" /></rich:column>
+
+                                    <rich:column><h:outputLabel value="Observações: " styleClass="fontePadrao"/></rich:column>
+                                    <rich:column><h:inputTextarea value="#{caravanaBean.caravana.observacao}" cols="30" rows="4" onblur="upperCase(this);"/></rich:column>
+                                </h:panelGrid>                                
+                            </rich:column>
+                        </h:panelGrid>
+                    </div>
+                </center>
+                
+                <div style="clear: both" />
+                
+                <h:panelGrid columns="16" style="margin-left: 5%">
+                    <h:outputLabel value="Serviços: " styleClass="fontePadrao"/>
+                    <h:selectOneMenu id="idServicos" value="#{caravanaBean.idServicos}">
+                        <a4j:ajax event="change" render="idServicos"/>
+                        <f:selectItems value="#{caravanaBean.listaServicos}"/>
+                    </h:selectOneMenu>
+
+                    <h:outputLabel value="Idade Inicial: " styleClass="fontePadrao" style="margin-left: 20px"/>
+                    <h:inputText value="#{caravanaBean.eventoServicoValor.idadeInicial}" size="5" />
+
+                    <h:outputLabel value="Idade Final: " styleClass="fontePadrao" style="margin-left: 20px"/>
+                    <h:inputText value="#{caravanaBean.eventoServicoValor.idadeFinal}" size="5" />
+
+                    <h:outputLabel value="Valor: " styleClass="fontePadrao" style="margin-left: 20px"/>
+                    <h:inputText id="idValor" value="#{caravanaBean.valor}" size="10" styleClass="fontePadraoNegrito" dir="RTL" class="real">
+                        <a4j:ajax event="change" render="idValor"/>
+                    </h:inputText>
+
+                    <h:selectBooleanCheckbox id="idChkIndividual" value="#{caravanaBean.eventoServico.individual}" style="margin-left: 20px"/>
+                    <h:outputLabel value=" Individual" styleClass="fontePadrao" for="idChkIndividual" style="cursor: pointer"/>
+
+                    <a4j:commandButton image="/Imagens/novo.png" action="#{caravanaBean.adicionarServico}" oncomplete="modalMensagem()" style="margin-left: 20px" render="tbl, outConfirma" disabled="#{controleAcessoBean.botaoSalvar}" />
+                </h:panelGrid>
+
+                <h:panelGrid style="margin-left: 5%">
+                    <h:panelGroup style="overflow:auto; height:100px; width: 600px;"  layout="block">
+                        <rich:dataTable value="#{caravanaBean.listaServicosAdd}" var="linha" style="width:100%" iterationStatusVar="it" id="tbl">
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header">
+                                    <h:outputText value="#"/>
+                                </f:facet>
+                                <h:outputText value="#{it.index}" />
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="..."/>
+                                </f:facet>
+                                <a4j:commandButton image="/Imagens/excluirp.png" action="#{caravanaBean.excluirServicos}" oncomplete="modalMensagem()" render="tbl, outConfirma" disabled="#{controleAcessoBean.botaoExcluir}">
+                                    <a4j:param value="#{it.index}" assignTo="#{caravanaBean.idIndexServicos}"/>
+                                </a4j:commandButton>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Serviços"/>
+                                </f:facet>
+                                <h:outputLabel value="#{linha.argumento0.descricao}" styleClass="fontePadrao"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Idade Inicial"/>
+                                </f:facet>
+                                <h:outputLabel value="#{linha.argumento2.idadeInicial}" styleClass="fontePadrao"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Idade Final"/>
+                                </f:facet>
+                                <h:outputLabel value="#{linha.argumento2.idadeFinal}" styleClass="fontePadrao"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Valor"/>
+                                </f:facet>
+                                <h:outputLabel value="#{linha.argumento4}" styleClass="fontePadrao"/>
+                            </rich:column>
+
+                            <rich:column styleClass="coluna">
+                                <f:facet name="header">
+                                    <h:outputText value="Individual"/>
+                                </f:facet>
+                                <h:outputLabel value="#{linha.argumento5}" styleClass="fontePadrao"/>
+                            </rich:column>
+                        </rich:dataTable>
+                    </h:panelGroup>
+                </h:panelGrid>  
+                
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar esta caravana?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{caravanaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir esta caravana?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{caravanaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{caravanaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <h:panelGrid columns="4" style="text-align: left; margin-left: 5%;">
+                    <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="modalOpcao('divSalvar');"/>
+                    <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{caravanaBean.novo}"/>
+                    <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="modalOpcao('divExcluir');"/>
+                    <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCaravana}" />                        
+                </h:panelGrid>   
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

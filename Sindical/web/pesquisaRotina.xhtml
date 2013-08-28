@@ -1,0 +1,72 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Rotina</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPesquisaRotina">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Rotina" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae" align="center">
+                        <h:panelGroup style="overflow:auto; height:500px; border: 0px ; border-top: 0px; border-spacing: 0px" layout="block">        
+                            <rich:dataTable value="#{rotinaBean.listaRotina}" var="linha" iterationStatusVar="it" style="width: 100%;">
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#"/>
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>                                    
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:commandLink action="#{rotinaBean.editar}" value="#{linha.id}">
+                                        <a4j:param value="#{it.index}" assignTo="#{rotinaBean.idIndex}"/>
+                                    </h:commandLink>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Rotina"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.rotina}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Classe"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.classe}"/>
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="..."/>
+                                    </f:facet>
+                                    <h:outputText value="#{rotinaBean.rotinaAtiva(linha.ativo)}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </h:panelGroup>
+                    </div>
+                </center>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

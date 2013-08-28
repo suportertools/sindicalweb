@@ -1,0 +1,269 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Mensagem Boleto</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMensagem">
+                <c:set scope="request" var="object" value="${mensagemConvencaoBean.mensagemConvencao}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Mensagem Boleto" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br />
+                    <div class="divMae divFundo" style="width: 900px;">
+                        <h:panelGrid columns="10">
+                            <h:column>
+                                <table border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputLabel value="Mens. Contribuinte:" styleClass="fontePadrao"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:inputTextarea id="idMenContri" value="#{mensagemConvencaoBean.mensagemConvencao.mensagemContribuinte}" cols="50" rows="3" disabled="#{mensagemConvencaoBean.disAcordo}">
+                                                    <a4j:ajax event="change" render="this"/>
+                                                </h:inputTextarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputLabel value="Mens. Compensação:" styleClass="fontePadrao"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:inputTextarea id="idMenCompen" value="#{mensagemConvencaoBean.mensagemConvencao.mensagemCompensacao}" cols="50" rows="3">
+                                                    <a4j:ajax event="change" render="this"/>
+                                                </h:inputTextarea>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </h:column>
+                            <h:column>
+                                <table border="0">
+                                    <tbody>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputText value="Convenções:" styleClass="fontePadrao"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:selectOneMenu  id="cbConvencao" value="#{mensagemConvencaoBean.idConvencao}" disabled="#{mensagemConvencaoBean.habilitar}">
+                                                    <a4j:ajax event="change" render="cbConvencao cbGrupo"/>
+                                                    <f:selectItems value="#{mensagemConvencaoBean.listaConvencoes}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputText value="Grupo de Cidade:" styleClass="fontePadrao"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:selectOneMenu  id="cbGrupo" value="#{mensagemConvencaoBean.idGrupo}" disabled="#{mensagemConvencaoBean.habilitar}">
+                                                    <a4j:ajax event="change" render="this"/>
+                                                    <f:selectItems value="#{mensagemConvencaoBean.listaGrupoCidade}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputText value="Contribuição: " styleClass="fontePadraoNegrito" style="color:blue"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:selectOneMenu  id="cbContribuicao" value="#{mensagemConvencaoBean.idServico}" disabled="#{mensagemConvencaoBean.habilitar}">
+                                                    <a4j:ajax event="change" render="this"/>
+                                                    <f:selectItems value="#{mensagemConvencaoBean.listaServico}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputText value="Tipo: " styleClass="fontePadraoNegrito" style="color:blue"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:selectOneMenu  id="cbTipoContribuicao" value="#{mensagemConvencaoBean.idTipoServico}" disabled="#{mensagemConvencaoBean.habilitar}">
+                                                    <a4j:ajax event="change" render="idRef,idDia,idMenContri" />
+                                                    <f:selectItems value="#{mensagemConvencaoBean.listaTipoServico}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputLabel value="Referência: " styleClass="fontePadraoNegrito" style="color:blue"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:inputText id="idRef" value="#{mensagemConvencaoBean.mensagemConvencao.referencia}" disabled="#{mensagemConvencaoBean.disAcordo}" size="9" class="referencia">
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:inputText>
+                                                <a4j:commandLink styleClass="idNovo iLink" value="Filtrar" render="tbl, cbGrupo, cbConvencao, cbTipoContribuicao, cbContribuicao, idRef"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td align="right">
+                                                <h:outputLabel value="Vencimento:" styleClass="fontePadrao"/>
+                                            </td>
+                                            <td align="left">
+                                                <h:inputText id="idDia" value="#{mensagemConvencaoBean.vencimento}" disabled="#{mensagemConvencaoBean.disAcordo}" size="8" class="data"/>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </h:column>
+                        </h:panelGrid>                        
+                        
+                        <table>
+                            <tr>
+                                <td>
+                                    <a4j:commandButton id="salvar" value="Salvar" action="#{mensagemConvencaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="modalMensagem()"
+                                                       render="tbl, cbGrupo, cbConvencao, cbTipoContribuicao, cbContribuicao, outConfirma"/>
+                                    <a4j:commandButton value="Novo" action="#{mensagemConvencaoBean.novo}" render="cbGrupo, cbConvencao, cbTipoContribuicao, cbContribuicao, idMenContri, idMenCompen"/>
+                                    <a4j:commandButton value="Excluir" action="#{mensagemConvencaoBean.excluir}" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="modalMensagem()"
+                                                        render="cbGrupo, cbConvencao, cbTipoContribuicao, cbContribuicao, outConfirma"/>
+                                </td>
+                                <td align="center">
+                                    <a4j:commandButton id="btCaptura" value="Capturar ultima mensagem" action="#{mensagemConvencaoBean.capturarUltimaMensagem}"
+                                                        render="cbGrupo, cbConvencao, idMenContri, cbTipoContribuicao, cbContribuicao, idMenCompen, idVencto, idRef"/>
+                                </td>
+                                <td align="center" style="font-weight: bold; background: #ccffff" title="Replicar mensagens">
+                                     <h:selectOneMenu value="#{mensagemConvencaoBean.idReplica}">
+                                        <a4j:ajax event="change" render="lblReplica"/>
+                                        <f:selectItems value="#{mensagemConvencaoBean.listaRefReplica}" />
+                                     </h:selectOneMenu>
+                                    <h:outputLabel id="lblReplica" value=" para #{mensagemConvencaoBean.replicaPara}" />
+                                    <a4j:commandButton id="id_replica" value="Replicar" action="#{mensagemConvencaoBean.replicar}" oncomplete="modalMensagem()"
+                                                       render="cbGrupo, cbConvencao, idMenContri, cbTipoContribuicao, cbContribuicao, idMenCompen, idVencto, idRef"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table border="0">
+                            <tr>
+                                <td align="left">
+                                    <table border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <h:selectOneRadio value="#{mensagemConvencaoBean.processarGrupos}" styleClass="fontePadraoNegrito" rendered="#{mensagemConvencaoBean.novox}">
+                                                    <a4j:ajax event="change" render="this"/>
+                                                    <f:selectItem itemValue="1" itemLabel="Salvar para todos os Grupos desta Convenção."/>
+                                                    <f:selectItem itemValue="2" itemLabel="Salvar para todas as Convenções deste Grupo."/>
+                                                    <f:selectItem itemValue="3" itemLabel="Salvar para todos os Grupos e Convenções."/>
+                                                    <f:selectItem itemValue="4" itemLabel="Nenhuma das anteriores."/>
+                                                </h:selectOneRadio>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <h:selectBooleanCheckbox value="#{mensagemConvencaoBean.processarTipoServicos}" rendered="#{mensagemConvencaoBean.atualizar}">    
+                                                    <a4j:ajax event="change" render="this"/>
+                                                </h:selectBooleanCheckbox>
+                                            </td>
+                                            <td>
+                                                <h:outputText styleClass="fontePadrao" value="Alterar para todos do mesmo servico e tipo." rendered="#{mensagemConvencaoBean.atualizar}"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <table border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td>
+                                                <h:selectBooleanCheckbox id="iChk" value="#{mensagemConvencaoBean.gerarAno}" rendered="#{mensagemConvencaoBean.novox}">
+                                                    <a4j:ajax event="change" render="this"/>
+                                                </h:selectBooleanCheckbox>
+                                            </td>
+                                            <br />
+                                            <td>
+                                                <h:outputLabel for="iChk" styleClass="fontePadrao" value="Gerar mensagens para todos os meses do ano da referência ." rendered="#{mensagemConvencaoBean.novox}" style="cursor: pointer"/>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>                            
+                            </tr>
+                        </table>                        
+                        <br />
+                        <div style="overflow:auto; height:200px; width:700px">
+                            <rich:dataTable onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#FFFFFF'" value="#{mensagemConvencaoBean.listaMensagens}"
+                                            var="linha" style="width: 100%" iterationStatusVar="it" id="tbl" rows="20">
+                                <rich:column styleClass="coluna">
+                                    <f:facet name="header">
+                                        <h:outputText value="#"/>
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>                                
+                                
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
+                                    
+                                    <a4j:commandLink value="#{linha.id}" action="#{mensagemConvencaoBean.editar}" styleClass="iLink">
+                                        <a4j:param value="#{it.index}" assignTo="#{mensagemConvencaoBean.idIndex}"/>
+                                    </a4j:commandLink>                                    
+                                    
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Referência"/></f:facet>
+                                    <h:outputText value="#{linha.referencia}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Contribuição"/></f:facet>
+                                    <h:outputText value="#{linha.servicos.descricao}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
+                                    <h:outputText value="#{linha.tipoServico.descricao}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Convenção"/></f:facet>
+                                    <h:outputText value="#{linha.convencao.descricao}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Grupo"/></f:facet>
+                                    <h:outputText value="#{linha.grupoCidade.descricao}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
+                                    <h:outputText value="#{linha.vencimento}"/>
+                                </rich:column>
+                                <f:facet name="footer">
+                                    <rich:dataScroller id="datascroller" />
+                                </f:facet>
+                            </rich:dataTable>
+                        </div>                        
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{mensagemConvencaoBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="mensagem" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>  
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

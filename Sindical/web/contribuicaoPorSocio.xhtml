@@ -1,0 +1,88 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Gerar contribuição para Associados</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formContribuicao">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Geração de Contribuição" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="left" style="width: auto">
+                        
+                        <rich:panel>
+                            <h:panelGrid columns="20">
+                                <h:column>
+                                    <a4j:commandButton image="/Imagens/pesquisar.png"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Pessoa: " styleClass="fontePadrao"/>
+                                </h:column> 
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                            <h:column>
+                                <h:outputLabel value="Mês: "/>
+                                <h:selectOneMenu id="idMes" value="">
+                                    <f:selectItem itemValue="01"/>
+                                    <f:selectItem itemValue="02"/>
+                                    <f:selectItem itemValue="03"/>
+                                    <f:selectItem itemValue="04"/>
+                                    <f:selectItem itemValue="05"/>
+                                    <f:selectItem itemValue="06"/>
+                                    <f:selectItem itemValue="07"/>
+                                    <f:selectItem itemValue="08"/>
+                                    <f:selectItem itemValue="09"/>
+                                    <f:selectItem itemValue="10"/>
+                                    <f:selectItem itemValue="11"/>
+                                    <f:selectItem itemValue="12"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Ano: " style="margin-left: 15px"/>
+                                <h:inputText id="ano" value="" maxlength="4" size="5"/>
+                            </h:column>
+                        </h:panelGrid>
+                        </rich:panel>
+                        <br />
+                        <h:panelGrid>
+                            <h:column>
+                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gerar Contribuições" style="width: 150px;" title="Gerar Contribuições"/>
+                            </h:column>
+                        </h:panelGrid>
+                        <br />
+                        <h:panelGrid columns="10">
+                            <h:column>
+                                <rich:dataTable id="Lista" value="" var="linha">
+                                    <rich:column style="text-align: center">
+                                        <a4j:commandButton image="/Imagens/excluirp.png"/>
+                                    </rich:column>
+                                    <rich:column style="text-align: center">
+                                        <f:facet name="header">
+                                            <h:outputText value="Referência(s)" />
+                                        </f:facet>
+                                        <h:outputText value="#{linha}"></h:outputText><br/>
+                                   </rich:column>
+                                </rich:dataTable>
+                            </h:column>
+                        </h:panelGrid>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

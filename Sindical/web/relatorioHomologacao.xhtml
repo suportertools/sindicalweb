@@ -1,0 +1,103 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Relatório de Homologações</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            #formRelatorioHomologacao td{
+                vertical-align: top;
+            }
+        </style>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formRelatorioHomologacao">
+            
+                <rich:panel style="width: 99%; border: 0px">
+                    <rich:panel styleClass="headerPanel" style="width: 1024px; text-align: center; margin: 0 auto">
+                        <h:outputText value="Relatório de Homologações" styleClass="fontePanel" style="width: 100%;"/>
+                    </rich:panel>
+                    <br />
+                    <rich:panel style="width: 1024px;  margin: 0 auto; border: 0">
+                        <rich:panel style="border: 0">
+                            <h:outputLabel value="Tipo de Relatório: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idTipoRelatorio" value="#{relatorioHomologacaoBean.idRelatorio}">
+                                <a4j:ajax event="change" render="idTipoRelatorio"/>
+                                <f:selectItems value="#{relatorioHomologacaoBean.listaTipoRelatorios}"/>
+                            </h:selectOneMenu>
+                        </rich:panel>
+                        
+                        <rich:panel style="float: left; border: 0">
+                            <rich:accordion switchType="client" width="250" activeItem="#{relatorioHomologacaoBean.selectAccordion}">
+                                <rich:accordionItem header="Simples" name="simples">
+                                    <h:outputLabel value="Pesquisando por " styleClass="fontePadraoNegrito"/>
+                                    <br /><br />
+                                    <h:outputLabel value="* Todas Homologações" />
+                                </rich:accordionItem>
+                                <rich:accordionItem header="Personalizado" name="personalizado">
+                                    <h:outputLabel value="Pesquisando por " styleClass="fontePadraoNegrito"/>
+
+                                    <rich:list value="#{relatorioHomologacaoBean.listaMenuRHomologacao}" var="linha" rowKeyVar="it" style="list-style: none; padding: 0px">
+                                        <h:outputLabel value="#{linha.argumento0}" /><a4j:commandLink value="#{linha.argumento1}" action="#{relatorioHomologacaoBean.editarOpcao(it)}"/>
+                                        <br /><br />
+                                    </rich:list>
+                                </rich:accordionItem>
+                            </rich:accordion>
+                        </rich:panel>
+                        
+                        <rich:panel style="float: right; width: 650px; border: 0" styleClass="divFundo">
+                            <h:panelGrid columns="2" rendered="#{relatorioHomologacaoBean.booEmpresa}" style="float: left; margin: 10px ">
+                                <h:column>
+                                    <h:outputLabel value="Nome da Empresa" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Empresa"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}"/>
+                                    <h:outputText value="#{relatorioHomologacaoBean.juridica.pessoa.nome}" />
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2" rendered="#{relatorioHomologacaoBean.booFuncionario}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Nome do Funcionário" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Funcionário" action="#{chamadaPaginaBean.pesquisaPessoaFisica()}"/>
+                                    <h:outputText value="#{relatorioHomologacaoBean.fisica.pessoa.nome}" />
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="2" rendered="#{relatorioHomologacaoBean.booData}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Data inicial / final" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:panelGrid style="margin-right: 20px">
+                                        <h:outputLabel value="De" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioHomologacaoBean.datai}" size="8" class="data"/>
+                                        <h:outputLabel value="Até" styleClass="fontePadrao"/>
+                                        <h:inputText value="#{relatorioHomologacaoBean.dataf}" size="8" class="data"/>
+                                    </h:panelGrid>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                        </rich:panel> 
+                    </rich:panel>
+                
+                </rich:panel>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

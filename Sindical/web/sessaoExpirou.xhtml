@@ -1,0 +1,45 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Sessão Expirada</title> 
+    </h:head>
+    <h:body style="margin-left: 0px; margin-top: 0px">
+        <f:subview id="header">
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <br />             
+            <h:form id="formAcessoNegado">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Sessão Expirada" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div style="width: 90%; margin-left: 5%; margin-right: 5%">
+                    </div>
+                </center>
+                <center>
+                    <table> 
+                        <tr>
+                            <h:panelGrid style="text-align: center;">
+                                <br />
+                                <h:outputLabel value="Sua sessão de acesso expirou" style="font-size:larger;"/>
+                                <br />
+                                <h:graphicImage value="/Imagens/acessoNegado.jpg" style=""/>
+                                <br />
+                                <h:outputLabel value="Faça novamente seu login" style="font-size:larger;"/>  
+                                <br />
+                            </h:panelGrid>
+                        </tr>
+                    </table>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

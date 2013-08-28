@@ -1,0 +1,261 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Movimentos a Receber</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMovimentoReceber">
+
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Movimentos a Receber" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div class="fontePadrao divFundo">
+                        <h:panelGrid columns="6">
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                            <h:outputLabel value="Pesquisa Pessoa: " styleClass="fontePadrao" />
+                            <h:outputText id="i_nome" value="#{movimentosReceberBean.pessoa.nome}" title="#{movimentosReceberBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
+                            <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="#{movimentosReceberBean.removerPesquisa}" style="margin-left: 10px" rendered="#{movimentosReceberBean.pessoa.id != -1}" render="i_nome, b_remover, tbl" />
+                        </h:panelGrid>
+                        <h:panelGroup style="overflow:auto; margin-top: 20px;" layout="block">
+                        <div class="fontePadrao divFundo" style="background: white;">
+                            <rich:dataTable value="#{movimentosReceberBean.listaMovimentos}" var="linha" style="width: 100%" id="tbl" iterationStatusVar="it" onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+                                <rich:column styleClass="coluna">
+                                    <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column> 
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:selectBooleanCheckbox  value="#{movimentosReceberBean.marcarTodos}">
+                                            <a4j:ajax event="change" render="tbl soma_total soma_multa soma_juros soma_correcao soma_acrescimo soma_acrescimo_sem_sindical soma_total_receber" listener="#{movimentosReceberBean.marcar}"/>
+                                        </h:selectBooleanCheckbox>
+                                    </f:facet>
+                                    <h:selectBooleanCheckbox id="idSelecionar" value="#{linha.argumento0}">
+                                        <a4j:ajax event="change" render="soma_total soma_multa soma_juros soma_correcao soma_acrescimo soma_acrescimo_sem_sindical soma_total_receber"/>
+                                    </h:selectBooleanCheckbox>
+                                </rich:column>
+                                
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
+                                    <h:outputText value="#{linha.argumento16}"/>
+                                </rich:column>
+                                
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Boleto"/></f:facet>
+                                    <h:outputText value="#{linha.argumento1}" styleClass="todosCheckbox"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Serviço"/></f:facet>
+                                    <h:outputText value="#{linha.argumento2}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
+                                    <h:outputText value="#{linha.argumento3}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Referência"/></f:facet>
+                                    <h:outputText value="#{linha.argumento4}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
+                                    <h:outputText value="#{linha.argumento5}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                                    
+                                    <a4j:commandLink id="valor_folha" style="text-decoration: underline; color: blue;" value="#{linha.argumento6}" rendered="#{linha.argumento3 != 'Acordo'}"
+                                                     action="#{movimentosReceberBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" render="idValorMes qfun lbEdit lbEdit2 Cadastrar">
+                                        <a4j:param value="#{it.index}" assignTo="#{movimentosReceberBean.index}" />
+                                    </a4j:commandLink>
+                                    <h:outputText value="#{linha.argumento6}" rendered="#{linha.argumento3 == 'Acordo'}" />
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Valor calculado"/></f:facet>
+                                    <h:outputText id="tbl_valor_calculado" value="#{linha.argumento12}" style="font-weight: bold"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Multa"/></f:facet>
+                                    <h:outputText value="#{linha.argumento8}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Juros"/></f:facet>
+                                    <h:outputText value="#{linha.argumento9}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Correção"/></f:facet>
+                                    <h:outputText value="#{linha.argumento10}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Desconto"/></f:facet>
+                                    <h:outputText id="tbl_desconto" value="#{linha.argumento11}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Dias em atraso"/></f:facet>
+                                    <h:outputText value="#{linha.argumento14}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Beneficiário"/></f:facet>
+                                    <h:outputText value=""/>
+                                </rich:column>
+                            </rich:dataTable>
+                            </div>
+                            <div class="fontePadrao divFundo" style="background: white; margin-top: 25px;">
+                                <rich:panel style="border: 0">
+                                    <h:panelGrid columns="20">
+                                        <h:column>
+                                            <h:outputText value="Total: " styleClass="fontePadraoPequeno"/>
+                                            <h:outputText id="soma_total" value="#{movimentosReceberBean.total}" styleClass="fontePadraoNegrito" />
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <h:outputText value="Multa: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
+                                            <h:outputText id="soma_multa" value="#{movimentosReceberBean.multa}" styleClass="fontePadraoNegrito"/>
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <h:outputText value="Juros: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
+                                            <h:outputText id="soma_juros" value="#{movimentosReceberBean.juros}" styleClass="fontePadraoNegrito"/>
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <h:outputText value="Correção: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
+                                            <h:outputText id="soma_correcao" value="#{movimentosReceberBean.correcao}" styleClass="fontePadraoNegrito"/>
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <h:outputText value="Acréscimo: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
+                                            <h:outputText id="soma_acrescimo" value="#{movimentosReceberBean.acrescimo}" styleClass="fontePadraoNegrito"/>
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <h:outputText value="Acréscimo S/ Sindical: " styleClass="fontePadraoPequeno" style="margin-left: 15px"/>
+                                            <h:outputText id="soma_acrescimo_sem_sindical" value="#{movimentosReceberBean.acrescimoSemSindical}" styleClass="fontePadraoNegrito"/>
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <h:outputText value="Desconto: " styleClass="fontePadrao" style="margin-left: 15px"/>
+                                            <h:inputText id="soma_desconto" size="10" value="#{movimentosReceberBean.desconto}" styleClass="fontePadrao">
+                                                <!-- <a4j:ajax event="blur" render="soma_desconto soma_total_receber tbl" listener="# {movimentosReceberBean.limpaLista}"/> -->
+                                                <a4j:ajax event="change" render="soma_desconto soma_total_receber tbl" listener="#{movimentosReceberBean.calculoDesconto}"/>
+                                            </h:inputText>
+                                                
+                                        </h:column>
+                                        
+                                        <h:column>
+                                            <div class="divFundo" style="margin-left: 15px;">
+                                                <h:outputText value="Total à Receber: "  styleClass="fontePadraoNegrito"/>
+                                                <h:outputText id="soma_total_receber" value="#{movimentosReceberBean.totalPagar}" styleClass="fontePadraoNegrito" style="background: white; "/>
+                                            </div>
+                                        </h:column>
+                                    </h:panelGrid>
+                                </rich:panel>
+                            </div>
+
+                        </h:panelGroup>
+                    </div>
+                    <div style="clear: both;"></div>
+                    <div style="float: left; margin-top: 15px;">
+                        <!-- <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar boletos" action="# {movimentosReceberBean.telaBaixa()}" oncomplete="modalMensagem()" render="outConfirma"/> -->
+                        <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer acordo " action="#{movimentosReceberBean.telaAcordo()}" oncomplete="modalMensagem()" render="outConfirma"/>
+                        <h:commandLink styleClass="idPesquisar iLink" value="Imprimir" action="#{movimentosReceberBean.imprimir()}" title="Imprimir Boleto " target="_blank"/>
+                        <h:commandLink styleClass="idNovo iLink" action="#{movimentosReceberBean.imprimirPlanilha}" value="Planilha Débito" style="width: 150px" title="Planilha Débito" target="_blank"/>
+                        <h:outputLabel value="#{movimentosReceberBean.msgConfirma}" styleClass="corErro" />
+                    </div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divFolhaEmpresa" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid>
+                                <a4j:commandLink disabled="#{not movimentosReceberBean.mostrarPainel}" render="tbl" id="Cadastrar" value="#{movimentosReceberBean.labelLink}" action="#{chamadaPaginaBean.descontoEmpregado}" styleClass="fontePadrao"/>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid>
+                                    <h:outputText id="lbEdit"  value="#{movimentosReceberBean.labelFolha}" styleClass="fonteRederencia"/>
+                                    <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" size="10" id="idValorMes" value="#{movimentosReceberBean.valor}" >
+                                        <a4j:ajax event="change" render="idValorMes"/>
+                                    </h:inputText>
+
+                                    <h:outputText id="lbEdit2"  value="#{movimentosReceberBean.labelFolha2}" styleClass="fonteRederencia"/>
+                                    
+                                    <h:inputText disabled="#{movimentosReceberBean.mostrarPainel}" dir="RTL" id="qfun" size="10" value="#{movimentosReceberBean.qtdFuncionario}" >
+                                        <a4j:ajax event="change" render="qfun"/>
+                                    </h:inputText>
+                            </h:panelGrid>
+                            
+                            <br />
+                            <table border="0" align="center" cellspacing="5" >
+                                <tr align="center">
+                                    <td>
+                                        <a4j:commandLink styleClass="idNovo iLink" disabled="#{movimentosReceberBean.mostrarPainel}" render="tbl" value="OK" id="fechar" action="#{movimentosReceberBean.atualizaValorGrid}" onclick="modalOpcao('divProcesso'), fecharModalOpcao('divFolhaEmpresa', true);" oncomplete="fecharModalOpcao('divProcesso', false)"/>
+                                    </td>
+                                    <td>
+                                        <a4j:commandLink styleClass="idPesquisar iLink closeModal" id="cancelar" render="tbl" value="Cancelar" />
+                                    </td>
+                                </tr>
+                            </table>                            
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                  
+                
+                <div id="boxes">
+                    <div id="divProcesso" class="window">
+                        <br />
+                        <center>
+                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{movimentosReceberBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>
