@@ -1,0 +1,173 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Piso Salarial</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formSuspensao">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Piso Salarial" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div class="alinhaFormulario fontePadrao divFundo" style="width: 550px;">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                            <h:column><h:commandButton id="idPesquisaPatronal" image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.pesquisaPatronal}" immediate="true" title="Pesquisar Pessoa Jurídica"/></h:column>
+                            <h:column>
+                                <h:outputLabel styleClass="fontePadrao" value="Pesquisar Patronal" rendered="#{pisoSalarialBean.pisoSalarialLote.patronal.pessoa.id == -1}" for="idPesquisaPatronal"/>
+                                <h:outputText value="#{pisoSalarialBean.pisoSalarialLote.patronal.pessoa.nome}" styleClass="fontePadraoNegrito" title="Pessoa" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;" rendered="#{pisoSalarialBean.pisoSalarialLote.patronal.pessoa.id != -1}"/>
+                            </h:column>
+                            <h:column>
+                                <h:outputText value="Porte: " styleClass="fontePadrao"/>
+                            </h:column>
+                            <h:column>
+                                <h:selectOneMenu value="#{pisoSalarialBean.idPorte}">
+                                    <a4j:ajax event="change" render="@this"/>
+                                    <f:selectItems value="#{pisoSalarialBean.listaComboPorte}"></f:selectItems> 
+                                </h:selectOneMenu>                                
+                            </h:column>
+                            
+                            <h:column><h:outputLabel value="Ano: "/></h:column>
+                            <h:column>
+                                <h:column>
+                                    <h:inputText value="#{pisoSalarialBean.ano}" size="4" maxlength="4"/>
+                                    <h:outputLabel value="Validade: "/>
+                                    <h:inputText value="#{pisoSalarialBean.pisoSalarialLote.validade}" size="8" class="data"/>
+                                </h:column>
+                            </h:column>
+                        </h:panelGrid>
+                        <div class="margin-top-maior"></div>
+                        <h:outputLabel styleClass="fontePadraoNegrito margin-top-maior" value="Mensagem"/>
+                        <div class="clear"></div>
+                        <h:inputTextarea value="#{pisoSalarialBean.pisoSalarialLote.mensagem}" title="Mensagem" cols="65" rows="7" styleClass="margin-top-med padding">
+                            <a4j:ajax event="change" render="@this"/>
+                        </h:inputTextarea>
+                        <br /><br />
+                        <h:panelGrid style="background: #abc4eb;" columns="6">
+                            <div style="padding: 15px">
+                                <h:outputLabel value="Descrição: "/>
+                                <h:inputTextarea value="#{pisoSalarialBean.descricao}" cols="30" rows="2" onblur="upperCase(this);" title="Descrição">
+                                    <a4j:ajax event="blur" render="@this"/>
+                                </h:inputTextarea>
+
+                                <h:outputLabel value="Valor (R$): "/>
+                                <h:inputText value="#{pisoSalarialBean.valor}" size="10" maxlength="10">
+                                    <a4j:ajax event="blur" render="@this"/>                                    
+                                </h:inputText>
+                                <a4j:commandButton image="/Imagens/novo.png" action="#{pisoSalarialBean.addMais}" value="Salvar Mais" styleClass="fontePadrao" render="outMsg id_tab"/>
+                            </div>
+                        </h:panelGrid>
+                        <br />
+                        <h:outputText id="outMsg" value="#{pisoSalarialBean.msg}" styleClass="corErro"/>
+                        <br /><br />
+                        <h:panelGrid rendered="#{pisoSalarialBean.pisoSalarialLote.id != -1}">
+                            <rich:dataTable id="id_tab" value="#{pisoSalarialBean.listaPisoSalarial}" var="linha" iterationStatusVar="it" style="width: 100%;">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#"/>
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>                                    
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:commandLink value="#{linha.id}" action="#{pisoSalarialBean.editarLote(linha.id)}"/>
+                                </rich:column>
+                                
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                                    <h:outputLabel value="#{linha.valor}" styleClass="fontePadrao"/>
+                                </rich:column>
+                                
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Descrição"/></f:facet>
+                                    <h:commandLink value="#{linha.descricao}" action="#{pisoSalarialBean.editarLote(linha.id)}"/>
+                                </rich:column>
+                                
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header"><h:outputText value="Excluir"/></f:facet>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{pisoSalarialBean.excluirPiso(linha.id)}" render="outMsg id_tab"/>
+                                </rich:column>
+                            </rich:dataTable>                            
+                        </h:panelGrid>
+                    </div>
+                    <div class="clear"></div>
+                    <div style="float: left; margin-top: 15px;">
+                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{pisoSalarialBean.novoTela}"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
+                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPisoSalarial}" title="Pesquisar piso salarial"/>
+                    </div>
+                </div>
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Piso Salarial?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{pisoSalarialBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir este Piso Salarial?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{pisoSalarialBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{pisoSalarialBean.msg}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink lang="close" styleClass="idNovo iLink" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

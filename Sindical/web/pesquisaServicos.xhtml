@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Lista de Serviços</title>
+        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>
+    </h:head>
+    <h:body>
+
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPesquisaServicos">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa de Serviços" styleClass="fontePanel larguraTotal"/>
+                    </div>
+                    <div class="divMae">
+                        <h:outputLabel value="Pesquisar: " styleClass="fontePadrao"/>
+                        <h:inputText value="#{servicosBean.descPesquisa}" title="Pesquisar Serviços"/>
+                        <h:commandButton value="Inicial" action="#{servicosBean.acaoInicial}" title="Retorna somente valores referente ao primeiro caractere. Ex: a"/>
+                        <h:commandButton value="Parcial" action="#{servicosBean.acaoParcial}" title="Retorna somente valores complentos. Ex: André"/>
+                        <div class="quebraLinha"></div>
+                        <rich:dataTable value="#{servicosBean.listaServicos}" var="linha" styleClass="tbl" iterationStatusVar="it" >
+                            <rich:column style="text-align: center; visibility: hidden;">
+                                <f:facet name="header">
+                                    <h:outputText value="#"/>
+                                </f:facet>
+                                <h:outputText value="#{it.index}" styleClass="hidden"/>
+                            </rich:column>
+                            <rich:column styleClass="colunaPesquisa">
+                                <f:facet name="header">
+                                    <h:outputText value="ID"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{servicosBean.editar}" value="#{linha.id}">
+                                    <a4j:param value="#{it.index}" assignTo="#{servicosBean.idIndex}" />
+                                </a4j:commandLink>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Serviço"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.descricao}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Plano 5"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.plano5.numero} - #{linha.plano5.conta}"/>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+        <p style="text-align: center">
+            R'Tools Desenvolvimento de Sistemas LTDA ®
+        </p>
+    </h:body>
+</ui:composition>

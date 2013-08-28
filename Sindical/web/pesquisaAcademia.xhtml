@@ -1,0 +1,81 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Academias</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu" onload="#{rich:element('formPesquisaAcademia:palavraChave')}.focus();">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPesquisaAcademia">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Matrícula Academia" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    
+                    <div class="divMae">
+                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
+                        <h:inputText id="palavraChave" value="#{matriculaAcademiaBean.descPesquisa}" class="#{matriculaAcademiaBean.porPesquisa}">
+                            <a4j:ajax event="change" render="this"/>
+                        </h:inputText>
+                        <h:outputLabel value="Por: "/>
+                        <h:selectOneMenu value="#{matriculaAcademiaBean.porPesquisa}" onchange="submit();">
+                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                            <f:selectItem itemValue="cpf"  itemLabel="Documento"/>
+                        </h:selectOneMenu>
+                        
+                        <a4j:commandLink id="btnInicial" action="#{matriculaAcademiaBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl"/>
+                        <a4j:commandLink id="btnParcial" action="#{matriculaAcademiaBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl"/>
+                        <br />
+                        <div style="overflow:auto; height:380px;">
+                            <rich:panel>
+                                <rich:dataTable value="#{matriculaAcademiaBean.listaAcademia}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="#"/>
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}" />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="ID"/>
+                                        </f:facet>
+                                        <h:commandLink action="#{matriculaAcademiaBean.editar}" value="#{linha.id}" styleClass="iLink">
+                                            <a4j:param value="#{it.index}" assignTo="#{matriculaAcademiaBean.idIndex}"/>
+                                        </h:commandLink>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Documento"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.servicoPessoa.pessoa.documento}"/>
+                                    </rich:column>
+
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nome"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.servicoPessoa.pessoa.nome}"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </rich:panel>
+                        </div>                        
+                    </div>
+                </center>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

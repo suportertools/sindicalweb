@@ -1,0 +1,87 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Menu - Financeiro</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            .divMenuFinanceiro, .divMenuFinanceiro, .divBotaoPrincipal:hover {-webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px;  border: 0;}
+            .corpoAcessos { width: 200px; height: 300px; }
+            .divMenuFinanceiro {width: 980px;}
+            .divMenuFinanceiro .divBotao {background: #e0e0e0;}
+            .divMenuFinanceiro .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
+            .divMenuFinanceiro .divBotao:hover {background: #abc4eb;}            
+         </style>
+    </h:head>
+    <h:body styleClass="divMenu"><div Align="Center">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMenuFinanceiro" style="border: 0; width: 980px; height: 800px; border-bottom: 1px dashed #888; ">
+               <h:panelGrid cellpadding="0" cellspacing="0">
+                  <h:panelGrid columns="2">
+                    <h:column><h:graphicImage value="/Imagens/BarraSuperior.png"/></h:column>
+                    <h:column><h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" /></h:column>
+                  </h:panelGrid>
+                  <rich:toolbar styleClass="divMenuFinanceiro" style="background: #e0e0e0; border: 0">
+                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                        <f:facet name="label">
+                          <h:panelGroup>
+                              <h:panelGrid columns="2">
+                                  <h:graphicImage value="/Imagens/cadastro.png" styleClass="pic"/>
+                                  <h:outputText value="Cadastro" styleClass="fontePadraoNegrito"/>
+                              </h:panelGrid>
+                          </h:panelGroup>
+                        </f:facet>
+                                <rich:menuItem label="Plano Contas"           action="#{chamadaPaginaBean.plano}" styleClass="divBotao"/>
+                                <rich:menuItem label="Pessoa Física"          action="#{chamadaPaginaBean.pessoaFisica}" styleClass="divBotao"/>
+                                <rich:menuItem label="Pessoa Juridica"        action="#{chamadaPaginaBean.pessoaJuridica}" styleClass="divBotao"/>
+                                <rich:menuItem label="Serviço"                action="#{chamadaPaginaBean.servicos}" styleClass="divBotao"/>
+                                <rich:menuItem label="Tipo de Serviço"        action="#{chamadaPaginaBean.tipoServico}" styleClass="divBotao"/>
+                                <rich:menuItem label="Conta Banco"            action="#{chamadaPaginaBean.contaBanco}" styleClass="divBotao"/>
+                                <rich:menuItem label="Conta Cobrança"         action="#{chamadaPaginaBean.contaCobranca}" styleClass="divBotao"/>
+                                <rich:menuItem label="Servico Conta Cobrança" action="#{chamadaPaginaBean.servicoContaCobranca}" styleClass="divBotao"/>
+                                <rich:menuItem label="Índice"                 action="#{chamadaPaginaBean.indice}" styleClass="divBotao"/>
+                                <rich:menuItem label="Índice Mensal"          action="#{chamadaPaginaBean.indiceMensal}" styleClass="divBotao"/>
+                                <rich:menuItem label="Correção"               action="#{chamadaPaginaBean.correcao}" styleClass="divBotao"/>
+                                <rich:menuItem label="Serviço Rotina"         action="#{chamadaPaginaBean.servicoRotina}" styleClass="divBotao"/>
+                                <rich:menuItem label="Bloqueio Serviços"      action="#{chamadaPaginaBean.bloqueioServicos}" styleClass="divBotao"/>
+                      </rich:dropDownMenu>
+
+                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                        <f:facet name="label">
+                          <h:panelGroup>
+                              <h:panelGrid columns="2">
+                                  <h:graphicImage value="/Imagens/movimento.png" styleClass="pic"/>
+                                  <h:outputText value="Movimento" styleClass="fontePadraoNegrito"/>
+                              </h:panelGrid>
+                          </h:panelGroup>
+                        </f:facet>
+                           <rich:menuItem label="Caixa / Banco" styleClass="divBotao"/>
+                           <rich:menuItem label="Transferência" styleClass="divBotao"/>
+                      </rich:dropDownMenu>
+
+                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                        <f:facet name="label">
+                            <h:panelGroup>
+                                <h:panelGrid columns="2">
+                                    <h:graphicImage value="/Imagens/relatorio.png" styleClass="pic"/>
+                                    <h:outputText value="Relatórios" styleClass="fontePadraoNegrito"/>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </f:facet>
+                    </rich:dropDownMenu>
+                  </rich:toolbar>
+              </h:panelGrid>
+            </h:form>
+        </f:view>
+        </div>
+    </h:body>
+</ui:composition>

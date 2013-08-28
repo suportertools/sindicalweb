@@ -1,0 +1,141 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Index acesso Web</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>
+        
+        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/jQuery.js" charset="iso-8859-1"/>
+        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/jMarcaDagua.js" charset="iso-8859-1"/>
+        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/jMascara.js" charset="iso-8859-1"/>
+        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/jScripts.js" charset="iso-8859-1"/>        
+    </h:head>
+    <h:body onload="#{rich:element('formLogin:login')}.focus();">
+        <f:view>
+            <hr />
+            <h:form id="formLogin">
+                <h:outputText value="#{controleUsuarioBean.validaIndex}" style="visibility: hidden;" rendered="true"/>                    
+                <center>
+                    <a href="${controleAcessoWeb.linkSite}" style="color:white"><h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png"/></a>
+                    <br /><br />
+                    <h:panelGrid>
+                        <rich:panel style=" -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
+                            <div class="headerPanel" style="text-align: center">
+                                <h:outputText value="Acesso Sindical web" styleClass="fontePanel"/>
+                            </div> 
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                <rich:column><h:outputLabel value="Login: " styleClass="fontePadrao"/></rich:column>
+                                <rich:column><h:inputText id="login" size="20" value="#{controleAcessoWeb.pessoa.login}" autocomplete="off">
+                                        <a4j:ajax event="blur" render="this"/>
+                                            </h:inputText>
+                                </rich:column>
+                                
+                                <rich:column><h:outputLabel value="Senha: " styleClass="fontePadrao"/></rich:column>
+                                <rich:column>
+                                    <h:inputSecret size="20" value="#{controleAcessoWeb.pessoa.senha}" autocomplete="off" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formLogin:entrar')}.onclick();}"/>
+                                    <a4j:commandLink styleClass="idNovo iLink" id="entrar" value="Entrar" action="#{controleAcessoWeb.validacao}" render="outErro"/>
+                                </rich:column>
+                            </h:panelGrid>
+                            <h:outputText id="outErro" value="#{controleAcessoWeb.msgLoginInvalido}" styleClass="corErro"/>
+                            <h:panelGrid>
+                                <h:commandLink value="Esqueci a Senha" action="#{controleAcessoWeb.esqueciASenha}" styleClass="iLink fontePadrao" style="text-decoration: underline"/>
+                                <rich:panel  rendered="#{controleAcessoWeb.renEsqueci}">
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="E-mail: " styleClass="fontePadrao"/>
+                                        <h:inputText value="#{controleAcessoWeb.email}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="5">
+                                        <h:outputLabel value="Tipo Pesquisa:" styleClass="fontePadrao"/>
+                                        <h:selectOneMenu id="iTipo" value="#{controleAcessoWeb.strTipoPesquisa}" onchange="submit();">
+                                            <f:selectItem itemValue="cnpj" itemLabel="CNPJ"/>
+                                            <f:selectItem itemValue="cpf"  itemLabel="CPF"/>
+                                            <f:selectItem itemValue="cei"  itemLabel="CEI"/>
+                                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                                        </h:selectOneMenu>
+                                        <h:inputText id="idInput" value="#{controleAcessoWeb.descPesquisa}" class="#{controleAcessoWeb.strTipoPesquisa}"/>
+                                        <h:commandButton id="iI" value="Inicial" action="#{controleAcessoWeb.inicial}" rendered="#{controleAcessoWeb.strTipoPesquisa == 'nome'}"/>
+                                        <h:commandButton id="iP" value="Parcial" action="#{controleAcessoWeb.parcial}" rendered="#{controleAcessoWeb.strTipoPesquisa == 'nome'}"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid id="idEmp" columns="2" rendered="#{controleAcessoWeb.strTipoPesquisa == 'nome'}">
+                                        <h:outputLabel value="Empresas: " styleClass="fontePadrao"/>
+                                        <h:selectOneMenu id="iJuridica" value="#{controleAcessoWeb.idJuridica}">
+                                            <a4j:ajax event="change" render="iJuridica, idInput"/>
+                                            <f:selectItems value="#{controleAcessoWeb.listaEmpresa}"/>
+                                        </h:selectOneMenu>
+                                    </h:panelGrid>
+
+                                    <h:panelGrid>
+                                        <h:commandButton value="Solicitar Login e Senha" action="#{controleAcessoWeb.enviarEmail}"/>
+                                        <h:outputText id="idErr" styleClass="corErro" value="#{controleAcessoWeb.msgEmail}"/>
+                                    </h:panelGrid>
+                                </rich:panel>
+                            </h:panelGrid>
+                        </rich:panel>
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <br />
+                        <h:outputLink value="#{controleAcessoWeb.linkSite}" styleClass="iLink fontePadrao" style="text-decoration: underline">
+                            <f:verbatim>Voltar para Site</f:verbatim>
+                        </h:outputLink>
+                        <br />
+                    </h:panelGrid>
+                
+                    <h:panelGrid style="text-align: center">
+                        <p style="color: red; font-weight: bold;" class="fontePadrao">
+                            Importante
+                        </p>                    
+                        <p class="fontePadrao">
+                            Para visualizar as guias, é necessário ter instalado em seu computador 
+                        </p>
+                        <p class="fontePadrao">
+                            um Software que possa ler arquivo de formato PDF.
+                        </p>
+                        <p class="fontePadrao">
+                            Caso não tenha, instale o Adobe Reader que pode ser baixado por este link abaixo:
+                        </p>
+                        <p style="text-align: center;" class="fontePadrao">
+                            <h:outputLink value="http://get.adobe.com/br/reader/" target="_blank">
+                                <h:graphicImage url="/Imagens/iconPDF.png" alt="Adobe Reader" style="width: 80px; height: 80px;" title="Baixar - Adobe Reader"/>
+                            </h:outputLink>
+                        </p>
+
+                        <h:outputLabel value="Compatibilidade" styleClass="fontePadrao" style="text-align: center"/>
+                        
+                        <h:panelGrid columns="6" styleClass="fontePadrao" style="text-align: right">
+                            <h:outputLink value="http://br.mozdev.org" target="_blank" title="Firefox">
+                                <h:graphicImage url="/Imagens/iconFirefox.gif" alt="Firefox"/>
+                            </h:outputLink>
+
+                            <h:outputLink value="http://www.apple.com/br/safari/" target="_blank" title="Firefox">
+                                <h:graphicImage url="/Imagens/iconSafari.gif" alt="Safari" title="Safari"/>
+                            </h:outputLink>
+
+                            <h:outputLink value="http://www.opera.com/" target="_blank" title="Opera">
+                                <h:graphicImage url="/Imagens/iconOpera.gif" alt="Opera" title="Opera"/>
+                            </h:outputLink>
+
+                            <h:outputLink value="http://www.google.com/chrome" target="_blank" title="Chrome">
+                                <h:graphicImage url="/Imagens/iconChrome.gif" alt="Chrome" />
+                            </h:outputLink>
+
+                            <h:outputLink value="http://windows.microsoft.com/pt-BR/internet-explorer/products/ie/home" target="_blank" title="Internet Explorer">
+                                <h:graphicImage url="/Imagens/iconOffIE.gif" alt="Internet Explorer" />
+                            </h:outputLink>
+                        </h:panelGrid>
+                        <div style="clear: both;"></div>
+                    </h:panelGrid>
+                </center>
+            </h:form>
+        </f:view>
+        <table align="center">
+            <tr><td valign="baseline" ><font size="1,5"> -| R'Tools Desenvolvimento de Sistemas LTDA ® |- </font></td></tr>
+        </table>
+
+    </h:body>
+</ui:composition>

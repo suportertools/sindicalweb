@@ -1,0 +1,165 @@
+    <ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Oposição</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu" onload="#{rich:element('formPesquisaOposicao:palavraChave')}.focus();">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>           
+            <h:form id="formPesquisaOposicao">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Oposição" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <h:panelGrid columns="7">
+                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
+                        <h:inputText id="palavraChave" value="#{oposicaoBean.descricaoPesquisa}" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaOposicao:idInicial')}.onclick();}" disabled="#{oposicaoBean.porPesquisa == 'todos'}"/>
+                        <h:outputLabel value="Por: "/>
+                        <h:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}" onchange="submit();">
+                            <f:selectItem itemValue="todos"         itemLabel="Todos" />
+                            <f:selectItem itemValue="nome"          itemLabel="Nome" />
+                            <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
+                            <f:selectItem itemValue="data"          itemLabel="Emissão" />
+                            <f:selectItem itemValue="cnpj"          itemLabel="CNPJ" />
+                            <f:selectItem itemValue="cpf"           itemLabel="CPF" />
+                            <f:selectItem itemValue="rgs"           itemLabel="RG" />
+                            <f:selectItem itemValue="observacao"    itemLabel="Observação" />
+                            <rich:jQuery selector="#palavraChave" query="attr('class', '#{oposicaoBean.porPesquisa}')" timing="immediate" />
+                        </h:selectOneMenu>
+                        <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{oposicaoBean.acaoPesquisaInicial}" rendered="#{oposicaoBean.porPesquisa != 'todos'}" />
+                        <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{oposicaoBean.acaoPesquisaParcial}" rendered="#{oposicaoBean.porPesquisa != 'todos'}" />
+                        <h:commandLink value="Atualizar" styleClass="idPesquisar iLink" action="#{oposicaoBean.acaoPesquisaParcial}" rendered="#{oposicaoBean.porPesquisa == 'todos'}" />
+                        <a4j:status><f:facet name="start"><span class="loading-status"></span></f:facet></a4j:status>
+                    </h:panelGrid>                    
+                    <div class="divMae margin-top-maior">
+                        <div style="overflow:auto; height:500px;">
+                            <rich:panel styleClass="no-border">
+                                <rich:dataTable value="#{oposicaoBean.listaOposicaos}" var="linha" iterationStatusVar="it" style="width:100%;" id="tbl" styleClass="stable">
+                                    <rich:column style="text-align: center;" rendered="false">
+                                        <f:facet name="header">
+                                            <h:outputText value="#"/>
+                                        </f:facet>
+                                        <h:outputText value="#{it.index}" />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="ID"/>
+                                        </f:facet>
+                                        <h:commandLink action="#{oposicaoBean.editar(it.index)}" value="#{linha.id}" styleClass="underline-hover"  />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="DATA"/>
+                                        </f:facet>
+                                        <h:commandLink action="#{oposicaoBean.editar(it.index)}" value="#{linha.emissao}" styleClass="underline-hover" />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="CNPJ"/>
+                                        </f:facet>
+                                        <div style="width: 80px;">
+                                            <h:commandLink action="#{oposicaoBean.editar(it.index)}" value="#{linha.juridica.pessoa.documento}" styleClass="underline-hover" />
+                                        </div>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="EMPRESA"/>
+                                        </f:facet>
+                                        <h:commandLink action="#{oposicaoBean.editar(it.index)}" value="#{linha.juridica.pessoa.nome}" styleClass="underline-hover" title="Nome fantasia: #{linha.juridica.fantasia}" />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="CPF"/>
+                                        </f:facet>
+                                        <div style="width: 80px;">
+                                            <h:commandLink action="#{oposicaoBean.editar(it.index)}" value="#{linha.oposicaoPessoa.cpf}" styleClass="underline-hover" />
+                                        </div>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="RG"/>
+                                        </f:facet>
+                                        <div style="width: 70px;">
+                                            <h:outputText value="#{linha.oposicaoPessoa.rg}"/>
+                                        </div>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="NOME"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.oposicaoPessoa.nome}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="CONVENÇÃO"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.convencaoPeriodo.convencao.descricao}" />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="GRUPO CIDADE"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.convencaoPeriodo.grupoCidade.descricao}" />
+                                    </rich:column>
+                                    
+                                    <rich:column rendered="#{oposicaoBean.porPesquisa != 'observacao'}">
+                                        <f:facet name="header">
+                                            <h:outputText value="REF. INICIAL"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.convencaoPeriodo.referenciaInicial}" />
+                                    </rich:column>
+                                    
+                                    <rich:column rendered="#{oposicaoBean.porPesquisa != 'observacao'}">
+                                        <f:facet name="header">
+                                            <h:outputText value="REF. IFINAL"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.convencaoPeriodo.referenciaFinal}" />
+                                    </rich:column>
+                                    
+                                    <rich:column rendered="#{oposicaoBean.porPesquisa == 'observacao'}">
+                                        <f:facet name="header">
+                                            <h:outputText value="REF. INICIAL / FINAL"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.convencaoPeriodo.referenciaInicial} / #{linha.convencaoPeriodo.referenciaFinal}" />
+                                    </rich:column>
+                                    
+                                    <rich:column rendered="#{oposicaoBean.porPesquisa == 'observacao'}">
+                                        <f:facet name="header">
+                                            <h:outputText value="OBSERVAÇÃO"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.observacao}" />
+                                    </rich:column>
+                                </rich:dataTable>
+                            </rich:panel>
+                        </div>                        
+                    </div>
+                </center>
+            </h:form>
+            <rich:jQuery selector=".stable tr:odd" query="addClass('odd-row')" />
+            <rich:jQuery selector=".stable tr:even" query="addClass('even-row')" />
+            <rich:jQuery selector=".stable tr" event="mouseover" query="jQuery(this).addClass('active-row')" />
+            <rich:jQuery selector=".stable tr" event="mouseout" query="jQuery(this).removeClass('active-row')" />            
+        </f:view>
+    </h:body>
+</ui:composition>

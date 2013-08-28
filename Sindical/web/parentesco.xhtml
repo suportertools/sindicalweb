@@ -1,0 +1,158 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Parentesco</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <c:set scope="request" var="object" value="${parentescoBean.parentesco}"/>
+            <h:form id="formParentesco">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Parentesco" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div style="float: left">
+                        <div class="alinhaFormulario fontePadrao alinhaFormularioLeft" style="width: 500px; background: #efefef">
+                            <p>
+                                <h:outputLabel value="Parentesco: " styleClass="fontePadrao"/>
+                                <h:inputText size="40" value="#{parentescoBean.parentesco.parentesco}" onkeypress="mascara(this,uppercase);" required="required" title="Parentesco"/>
+                            </p>
+                            <p>
+                                <label>Anos Validade: </label>
+                                <h:inputText size="2" value="#{parentescoBean.parentesco.nrValidade}" maxlength="4" />
+                            </p>
+                            <p>
+                                <label for="idValidade"> </label>
+                                <h:selectBooleanCheckbox id="idValidade" value="#{parentescoBean.parentesco.validade}" title="Validade por Nascimento"/>Validade por Nascimento
+                            </p>
+                            <p>
+                                <label for="idAtivo"> </label>
+                                <h:selectBooleanCheckbox id="idAtivo" value="#{parentescoBean.parentesco.ativo}" title="Ativo" /> Ativo
+                            </p>
+                            <p>
+                                <label>Sexo: </label>
+                                <h:selectOneRadio value="#{parentescoBean.parentesco.sexo}" styleClass="itemValueSexo">
+                                    <f:selectItem itemValue="F" itemLabel="Feminino" />
+                                    <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                </h:selectOneRadio>
+                            </p>
+                        </div>
+                        <div style="clear: both"></div>
+                        <p>
+                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{parentescoBean.novo}" title="Novo"/>
+                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                        </p>
+                    </div>
+                    <div style="float: left; border-left: 1px solid #efefef; padding-left: 15px;">
+                        <p> GERENCIAR </p>
+                        <h:panelGroup style="overflow:auto; height:200px; width:300px; margin-top: 20px;" layout="block">
+                            <rich:dataTable value="#{parentescoBean.listaParentesco}" var="linha" style="width: 100%" id="tbl" iterationStatusVar="it">
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#"/>
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.id}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Parentesco"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.parentesco}" />
+                                </rich:column>
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header">
+                                        <h:outputText value="A" title="Alterar"/>
+                                    </f:facet>
+                                    <a4j:commandButton image="/Imagens/iconEdit.png" value="#{linha.id}" title="Editar registro nº#{linha.id}" action="#{parentescoBean.editar}">
+                                        <a4j:param value="#{it.index}" assignTo="#{parentescoBean.idIndex}"/>
+                                    </a4j:commandButton>
+                                </rich:column>
+
+                            </rich:dataTable>
+                        </h:panelGroup>
+                    </div>
+                </div>
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Parentesco?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{parentescoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir este Parentesco?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{parentescoBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{parentescoBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="#{parentescoBean.limpar}" value="OK" title="OK" render="formParentesco" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+            </h:form>
+        </f:view>
+        <div style="clear: both;"></div>
+        <p style="text-align: center;">
+            R'Tools Desenvolvimento de Sistemas LTDA ®
+        </p>
+    </h:body>
+</ui:composition>

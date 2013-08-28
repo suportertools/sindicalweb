@@ -1,0 +1,62 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Envio de E-mail</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formEnvioEmail">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Envio de E-mails" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="center" style="width: 235px">
+                        
+                        <rich:panel style="width: 230px" >
+                            <h:panelGrid>
+                                <h:outputText value="Envio de Logins e Senhas por e-mail" styleClass="fontePadrao"/>
+                                <h:outputText value="a todas Empresas cadastradas." styleClass="fontePadrao"/>
+                            </h:panelGrid> 
+                        </rich:panel>
+                        
+                        <br />
+                        
+                        <h:panelGrid columns="2">
+                            <a4j:commandLink styleClass="idNovo iLink" style="width: 100px;" value="Confirmar" action="#{juridicaBean.enviarEmailParaTodos}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/><h:outputText styleClass="fontePadrao" value="Enviando..."></h:outputText></f:facet></a4j:status>
+                        </h:panelGrid>
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{juridicaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                 
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

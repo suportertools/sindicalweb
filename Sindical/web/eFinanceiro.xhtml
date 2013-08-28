@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Financeiro - Matricula Escola</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formFinanceiro">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Financeiro - Matricula Escola" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="left" style="width: 400px">
+                        
+                        <h:panelGrid columns="7">
+                            <h:outputLabel value="Multa: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idServicos" value="#{eFinanceiroBean.idServicos}">
+                                <f:selectItems value="#{eFinanceiroBean.listaServicos}"/>
+                            </h:selectOneMenu>
+                            
+                            <h:outputText value="Valor por cancelamento:" styleClass="fontePadrao" style="margin-left: 50px"/>
+                            <h:inputText id="idValor" value="#{eFinanceiroBean.valorMulta}" size="10"/>
+                            
+                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{eFinanceiroBean.adicionar}" />
+                            <h:outputText value="#{eFinanceiroBean.msgConfirma}" styleClass="corErro"/>
+                        </h:panelGrid>
+                        
+                        <br />
+                        
+                        <h:panelGrid columns="3">
+                            <h:panelGroup style="overflow:auto; height:400px; width: 300px;"  layout="block">
+                                <rich:dataTable value="#{eFinanceiroBean.listaMultas}" var="linha" style="width:100%" id="tbl">
+                                    <rich:column id="colId">
+                                        <f:facet name="header">
+                                            <h:outputText value="..." id="lbId"/>
+                                        </f:facet>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir" 
+                                                           action="#{eFinanceiroBean.excluir}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column id="colMulta">
+                                        <f:facet name="header">
+                                            <h:outputText value="Multa"/>
+                                        </f:facet>
+                                        <h:outputLabel value="#{linha.multa.descricao}" styleClass="fontePadrao"/>
+                                    </rich:column>
+                                    
+                                    <rich:column id="colValor">
+                                        <f:facet name="header">
+                                            <h:outputText value="Valor"/>
+                                        </f:facet>
+                                        <h:outputLabel value="#{linha.nrMultaCancelamento}" styleClass="fontePadrao"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

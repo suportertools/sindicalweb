@@ -1,0 +1,168 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Endereço</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <f:subview id="header">
+        <ui:include src="template.xhtml"/>
+        <ui:include src="templateLinks.xhtml"/>
+    </f:subview>
+        <f:view>
+            <h:form id="formPesquisaEndereco">
+                
+            <h:body style="margin-left: 0px; margin-top: 0px" onload="if ( #{enderecoBean.blDetalhada} ) modalMensagem(); #{rich:element('formPesquisaEndereco:idCEP')}.focus();">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Endereço" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br />
+                    <h:panelGrid style="text-align: left">
+                        
+                        <h:panelGrid columns="4">
+                            <h:outputText value="CEP: " styleClass="fontePadraoNegrito"/>
+                            <h:inputText id="idCEP" value="#{enderecoBean.endereco.cep}" size="10" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaEndereco:btnPesquisar')}.onclick();}"/>
+                            <a4j:commandLink id="btnPesquisar" action="#{enderecoBean.pesquisaCep}" value="Pesquisar" styleClass="idPesquisar iLink" render="tbl"/>
+                            <h:commandLink style="margin-left: 20px;" styleClass="idPesquisar iLink" value="Cadastrar" action="#{enderecoBean.endereco()}"/>
+                        </h:panelGrid>
+                        <hr />
+                        
+                        <h:outputText value="Descrição do Endereço: " styleClass="fontePadraoNegrito"/>
+                            
+                        <h:panelGrid columns="8">
+                            <h:selectOneMenu value="#{enderecoBean.idLogradouro}">
+                                <f:selectItems value="#{enderecoBean.listaLogradouro}" />
+                            </h:selectOneMenu>
+                            <h:inputText value="#{enderecoBean.endereco.descricaoEndereco.descricao}" size="25" 
+                                         onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaEndereco:btnInicial')}.onclick();}"/>
+                            
+                            <h:selectOneMenu id="idListaCidades" value="#{enderecoBean.idCidade}">
+                                <a4j:ajax event="change" render="idListaCidades"/>
+                                <f:selectItems value="#{enderecoBean.listaCidade}" />
+                            </h:selectOneMenu>                            
+                            
+                            <h:selectOneMenu id="idUF" value="#{enderecoBean.cidadeBase.uf}" >
+                                <a4j:ajax event="change" render="idUF,idListaCidades"/>
+                                <f:selectItem itemValue="AC" itemLabel="AC"/>
+                                <f:selectItem itemValue="AL" itemLabel="AL"/>
+                                <f:selectItem itemValue="AP" itemLabel="AP"/>
+                                <f:selectItem itemValue="AM" itemLabel="AM"/>
+                                <f:selectItem itemValue="BA" itemLabel="BA"/>
+                                <f:selectItem itemValue="CE" itemLabel="CE"/>
+                                <f:selectItem itemValue="DF" itemLabel="DF"/>
+                                <f:selectItem itemValue="ES" itemLabel="ES"/>
+                                <f:selectItem itemValue="GO" itemLabel="GO"/>
+                                <f:selectItem itemValue="MA" itemLabel="MA"/>
+                                <f:selectItem itemValue="MT" itemLabel="MT"/>
+                                <f:selectItem itemValue="MS" itemLabel="MS"/>
+                                <f:selectItem itemValue="MG" itemLabel="MG"/>
+                                <f:selectItem itemValue="PA" itemLabel="PA"/>
+                                <f:selectItem itemValue="PB" itemLabel="PB"/>
+                                <f:selectItem itemValue="PR" itemLabel="PR"/>
+                                <f:selectItem itemValue="PE" itemLabel="PE"/>
+                                <f:selectItem itemValue="PI" itemLabel="PI"/>
+                                <f:selectItem itemValue="RJ" itemLabel="RJ"/>
+                                <f:selectItem itemValue="RN" itemLabel="RN"/>
+                                <f:selectItem itemValue="RS" itemLabel="RS"/>
+                                <f:selectItem itemValue="RO" itemLabel="RO"/>
+                                <f:selectItem itemValue="RR" itemLabel="RR"/>
+                                <f:selectItem itemValue="SC" itemLabel="SC"/>
+                                <f:selectItem itemValue="SP" itemLabel="SP"/>
+                                <f:selectItem itemValue="SE" itemLabel="SE"/>
+                                <f:selectItem itemValue="TO" itemLabel="TO"/>
+                            </h:selectOneMenu>
+                            
+                            <h:outputText id="tese" />
+                            <a4j:commandLink id="btnInicial" action="#{enderecoBean.pesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl"/>
+                            <a4j:commandLink id="btnParcial" action="#{enderecoBean.pesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl"/>
+                            <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+                        </h:panelGrid>
+                            
+                    </h:panelGrid>
+                    <div style="width: 90%; margin-left: 5%; margin-right: 5%; height:260px; overflow:auto;">
+                        <br />
+                        <rich:dataTable var="linha" value="#{enderecoBean.listaEndereco}" iterationStatusVar="it" style="width:100%" id="tbl">
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header">
+                                    <h:outputText value="#"/>
+                                </f:facet>
+                                <h:outputText value="#{it.index}"/>
+                            </rich:column>
+                            
+                            <rich:column styleClass="colunaPesquisa">
+                                <f:facet name="header">
+                                    <h:outputText value="ID"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{enderecoBean.editar}" value="#{linha.id}">
+                                    <a4j:param value="#{it.index}" assignTo="#{enderecoBean.idIndex}" />
+                                </a4j:commandLink>
+                            </rich:column>                            
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Cidade"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.cidade.cidade}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Bairro"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.bairro.descricao}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Logradouro"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.logradouro.descricao}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Descricao"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.descricaoEndereco.descricao}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="CEP"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.cep}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Faixa"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.faixa}"/>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" value="Fechar" title="Fechar"/>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{enderecoBean.msgDetalhada}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+            </h:body>
+        </h:form>
+    </f:view>
+</ui:composition>

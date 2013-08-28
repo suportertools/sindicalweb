@@ -1,0 +1,569 @@
+body {font-family: Verdana, "Lucida Grande", "Lucida Sans", Sans-Serif; font-size: 10pt; margin: 0; padding: 0; color: black;}
+#tbl, .tbl, .larguraTotal {width: 100%;}
+.divMenu {margin: 0;}
+.divMae {width: 90%; margin-left: 5%; margin-right: 5%;}
+.divFundo {float: left; background: #efefef; padding: 15px; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; margin-right: 50px;}
+.quebraLinha {clear: both; margin-bottom: 20px;}
+br {clear: both;}
+.idFazer {color: gray;}
+.idFazer:focus {color: black;}
+img {border: 0;}
+.clear {clear: both;}
+
+table {border-collapse: collapse; border-spacing: 0;}
+
+.alinhaFormulario {display: block;}
+.alinhaFormulario table {border-collapse: collapse; border-spacing: 0;}
+.alinhaFormulario p {width: 100%; text-align: left; height: 20px;}
+.alinhaFormulario p label {float: left; min-width: 50px; width: 150px; height: 16px; text-align: right; padding-top: 2px; padding-right: 10px;}
+.alinhaFormulario p img {float: left; vertical-align: middle;}
+.alinhaFormulario input {vertical-align: middle;}
+.alinhaFormulario table.itemValueConfirma tbody tr td label {margin: 0; padding: 0; width: 30px;}
+.alinhaFormulario table.itemValueSexo tbody tr td label {margin: 0; padding: 0; width: 100px;}
+.alinhaFormularioLeft {padding: 15px; border-radius: 15px;  -moz-border-radius: 15px; -webkit-border-radius: 15px; margin-right: 50px;}
+
+.logotipo {width: 100px; height: 40px;}
+
+.barraCima{
+    height: 12px;
+    width: 394px;
+}
+.corLink{
+    color:black;
+    font-family:"Geogia";
+    font-size:13px;
+}
+.corEndereco{
+    color:navy;
+    font-size:10pt;
+}
+
+.corMenssagem{
+    color:red; font-size:13px;
+}
+.corErro{
+    font-family:"Arial";
+    color:red; font-size:10pt;
+}
+
+.fonteCnaeContribuinte{
+    font-size: 10pt;
+    font-weight: bold;
+}
+
+.scriptdemobtn {
+    width: 75px;
+}
+.scriptdemocolumn-l {
+    padding: 2px;
+    text-align: right;
+}
+.scriptdemocolumn-r {
+    padding: 2px;
+    text-align: left;
+}
+.cor{
+    color: rgb;
+}
+.pic {
+    margin-bottom: 0px;
+    margin-right:  3px;
+}
+.vertical-menu-cell {
+    padding:0px 4px 0px 4px;
+}
+.barraMenu{
+    width:980px;
+}
+.barraMenuNome{
+    width:980px;
+    height:15px;
+    text-align:right;
+}
+.coluna {
+    text-align: center;
+}
+.picPlano{
+    margin-bottom: -4px;
+    margin-right: 2px;
+}
+.barraOperacoes{
+    width:180px
+}
+.corpoUsuario {
+    height: 80px;
+    width: 400px;
+}
+.barraCimaUsuario{
+    height: 8px;
+    width: 400px;
+}
+.corContribuinte{
+    font-family:"Lucida Sans Unicode";
+    font-size:medium;
+    color:red;
+}
+
+.negritoDescricao{
+    font-weight:bold;
+    font-style:italic;
+}
+
+.linha1 {
+    margin: 55px;
+}
+
+.negrito{
+    font-weight:bold;
+}
+.fonteExtratoTela{
+    font-family:"Franklin Gothic Medium";
+    font-size:10pt;
+}
+.fonteFranklinNormal{
+    font-family:"Franklin Gothic Medium";
+    font-size:10pt;
+}
+.fonteFranklinNegrito{
+    font-family:"Franklin Gothic Medium";
+    font-size:medium;
+}
+label, .fontePadrao{
+    font-size: 10pt;
+    font-family: Verdana;
+}
+
+.fontePadraoVermelho{
+    font-size: 10pt;
+    font-family:Verdana;
+    color: red;
+}
+
+.fontePadraoNegrito{
+    font-family:Verdana;
+    font-size:10pt;
+    font-weight:bold;
+}
+
+.fontePadraoNegritoMedio{
+    font-family:Verdana;
+    font-size:12pt;
+    font-weight:bold;
+}
+
+.fontePadraoNegritoMedioVermelho{
+    font-family:Verdana;
+    font-size:medium;
+    font-weight:bold;
+    color:red;
+}
+
+.fontePadraoMedio{
+    font-family:Verdana;
+    font-size:x-large;
+}
+.fonteNegritoPequeno{
+    font-family:Verdana;
+    font-size:9px;
+    font-weight:bold;
+}
+.fontePadraoPequeno{
+    font-family:Verdana;
+    font-size:9px;
+}
+.largura{
+    width:150px;
+}
+
+.centralizar{
+    font-family:Verdana;
+    text-align:center;
+    font-size:10pt;
+}
+
+.fonteRederencia{
+    font-size:10pt;
+}
+
+.linhaGrid{
+    height: 3px;
+    font-size:6.3pt;
+    text-align: center;
+}
+
+.linha{
+    width:20px;
+    height: 5px;
+    text-align:center;
+    font-size:10pt;
+}
+
+.popap{
+    font-size:8pt;
+    text-align: center;
+}
+
+.cabecalhoLinks{
+    text-align: left;
+    background-color: transparent;
+    padding: 0px;
+}
+
+.cabecalhoLinksSuporte{
+    background-color: transparent;
+    padding: 0px;
+}
+
+.fonteLinks{
+    font-family:Verdana;
+    font-size:9pt;
+}
+
+.fonteLinksSuporte{font-family: Verdana; font-size: 10pt; text-decoration: none; color: white; font-weight: bold; }
+.fonteLinksSuporte:hover {color: white; text-shadow: 0 0 0.2em white, 0 0 0.2em #87F,0 0 0.2em white; text-decoration:none}
+
+.fonteImagemSuporte{
+    font-size: 8pt;
+    color: white;
+    font-weight: bold;
+}
+
+.tooltip-text {
+    border: 0px;
+    cursor:auto;
+    text-align:center;
+    display: table-cell;
+    vertical-align: middle;
+    background-image: url(Imagens/suporte.png);
+}
+
+.larguraColunaNome{
+    width:100%;
+
+}
+
+span.loading-status {background: url(Imagens/espere.gif) no-repeat; background-size: 16px 16px; width: 16px; height: 16px; display: block;}
+
+.larguraColuna{
+    width: 200px;
+}
+.fontePanel{
+    font-family: Verdana;
+    font-size: 14pt;
+    color: #003399;
+    margin-bottom: 2px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+/* Padrões */
+.box-min {width: 50px; height: 50px}
+.box-h-med {width: 290px; height: 300px;}
+.box-v-med-h-min {width: 50px; height: 300px;}
+.box-v-med-h-med {width: 100px; height: 300px;}
+.box-v-med-h-max {width: 250px; height: 300px;}
+.clear {clear: both!important;}
+.position-relative {position: relative;}
+.position-absolute {position: absolute;}
+.position-fixed {position: fixed;}
+.text-center {text-align: center;}
+.float-right {float: right;}
+.float-left {float: left;}
+.border-solid {border: #efeeee 1px solid!important;}
+.border-dotted {border: #efeeee 1px dotted;}
+.border-min-top-solid {border-top-width: 1px; border-top-style: solid}
+.border-max-top-solid {border-top-width: 3px; border-top-style: solid}
+.gray-bright {border-color: #e0e0e0!important}
+.border-min-top-dotted {border-top: 1px solid white}
+.border-max-top-dotted {border-spacing: 3px; border-style: solid}
+.border-radius {border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px;}
+.opacity {filter:alpha(Opacity=90); /*IE*/ opacity:0.9; /*FIREFOX 1.5*/ -moz-opacity:0.9; /*MOZILLA*/ -khtml-opacity:0.9;}
+.padding {padding: 5px!important;}
+.padding-top {padding-top: 5px;}
+.margin-top {margin-top: 5px;}
+.margin-top-med {margin-top: 10px!important;}
+.margin-top-maior {margin-top: 15px;}
+.margin-right {margin-right: 5px;}
+.margin-left {margin-left: 5px;}
+.margin-left-med {margin-left: 10px;}
+.margin-left-max {margin-left: 15px;}
+.margin-left-col-home {margin-left: 23px!important;}
+.margin-bottom {margin-bottom: 5px;}    
+.margin-bottom-med {margin-bottom: 10px!important;}
+.margin-bottom-max {margin-bottom: 15px!important;}    
+.margin {margin: 5px!important;}
+.underline-hover {text-decoration: none; color:black}
+.underline-hover:hover {text-decoration: underline;}
+.cursor-pointer {cursor: pointer}
+.overflow-hiddem {overflow: hidden;}
+.bg-white {background: white!important;}
+.bg-black {background: black!important;}
+.bg-orange {background: orange!important;}
+.bg-purple {background: purple!important;}
+.z-index-one {z-index: 1}
+.tam-300 {width: 300px;}
+.z-index-five {z-index: 5}
+.z-index-ten {z-index: 10}
+.z-index-fifteen {z-index: 15}
+.z-index-twenty {z-index: 20}
+.z-index-twenty-five {z-index: 25}
+.icon-camera-photograph {width: 10px!important; height: 10px!important;}
+.font-pub-link-patrocinado-min {font-size: 8pt; color: gray; text-transform: uppercase;}
+.font-color-white {color: white!important;}
+.font-color-black {color: black!important;}
+.font-color-red {color: red!important;}
+.font-color-link-blue {color: #194C7F!important;}
+.no-border {border: 0!important;}
+.no-margin {margin: 0!important;}
+.no-margin-top {margin-top: 0!important;}
+.no-margin-right {margin-right: 0!important;}
+.no-margin-left {margin-left: 0!important;}
+.no-margin-bottom {margin-bottom: 0!important;}
+
+.headerPanel{
+    -webkit-border-radius: 0px 0px 15px 15px;
+    -moz-border-radius: 0px 0px 15px 15px;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border: 1px solid gray;
+    border-top: 0px;
+    min-width: 100px;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+
+#mask {
+  position:absolute;
+  left:0;
+  top:0;
+  z-index:9000;
+  background-color:#000;
+  display:none;
+}
+
+#boxes .window {
+  position:absolute;
+  left:0;
+  top:0;
+  width:440px;
+  height:200px;
+  display:none;
+  z-index:9999;
+}
+
+#boxes #divSalvar, #boxes #divMensagem, #boxes #divExcluir, #divPlano, #divCriar, #boxes #divEstornar, #boxes #divAcordo,  #boxes #divEmail{
+  width:350px;
+  height:150px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#divProcesso {
+  width:800px;
+  height:600px;
+}
+
+.boxArredondado {-moz-border-radius: 5px 5px 5px 5px; -webkit-border-radius: 5px 5px 5px 5px;border-radius: 5px 5px 5px 5px; border: 2px solid #e0dfdf;}
+.boxArredondado:hover {-moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 5px #888; }
+
+.separadorLinks {margin-left: 5px; margin-right: 5px;}
+
+#boxes #dialog .close, #boxes .close {
+  -moz-border-radius: 10px 10px 0 0 ; -webkit-border-radius: 10px 10px 0 0 ; border-radius: 10px 10px 0 0;
+}
+
+#boxes #divProfissao, #divAlterarVencimento {
+  width:500px;
+  height:400px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divMenBloqueio {
+  width:450px;
+  height:250px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divArquivosPendentes {
+  width:300px;
+  height:500px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divEndereco, #boxes #divInativarSocio, #boxes #divReativarSocio{
+  width:500px;
+  height:400px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divOposicao {
+  width:500px;
+  height:400px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divInativarContribuinte {
+  width:550px;
+  height:260px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divPesquisaContabilidade, #divFolhaEmpresa {
+  width:600px;
+  height:400px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divDependentes {
+  width:800px;
+  height:600px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+#boxes #divAtalhos {
+  width:400px;
+  height:300px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+.close{font-family: Verdana; font-size: 10pt; display:block; text-align:right; background-color: dodgerblue; color: white; padding: 5px;}
+.close:hover{display:block; text-align:right;}
+
+a.iLink {color:black; text-decoration:none; }
+a.iLink:hover {text-shadow: 0 0 0.2em dodgerblue, 0 0 0.2em #87F,0 0 0.2em dodgerblue; text-decoration:none}
+.idAdicionar, .idSalvar, .idExcluir, .idNovo, .idPesquisar {border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; font-size: 12pt; font-family: Verdana; border: 1px  solid #cccccc; text-align: center; background-color: white; margin-right: 5px; height: 25px; display: inline-block; padding-top: 5px; cursor: pointer;}
+.idSalvar{width: 60px;}
+.idAdicionar:hover, .idSalvar:hover, .idNovo:hover, .idExcluir:hover, .idPesquisar:hover {color:white; background: dodgerblue; -moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888; border-color: dodgerblue; z-index: 5;}
+.idNovo{width: 60px;}
+.idExcluir{width: 65px;}
+.idPesquisar{width: 90px;}
+.idAdicionar {width: 15px; height: 15px; margin-top: 0; padding: 0}
+
+.iButton {color:black; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; font-size: 11pt; font-family: Verdana; border: 1px  solid #cccccc; text-align: center; background-color: white; margin-right: 5px; height: 20px; display: inline-block; width: 60px; height: 35px;}
+.iButton:hover {color:white; background: dodgerblue; -moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888; border-color: dodgerblue; z-index: 5; cursor: pointer}
+
+.classDivPlanos {background: white; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px;}
+
+.colunaPesquisa {text-align: center;}
+.colunaPesquisa a {color:black; text-decoration:none; font-family: Verdana;}
+.colunaPesquisa a:hover {text-shadow: 0 0 0.2em dodgerblue, 0 0 0.2em #87F,0 0 0.2em dodgerblue;}
+
+.coluna1 {
+    text-align: right;
+}
+
+.coluna2 {
+    text-align: left;
+}
+
+.coluna2espaco {
+    text-align: left;
+    margin-left: 15px;
+}
+
+.tooltip {
+    background: none;
+    border: 0;
+}
+.tooltip-custom-body {
+    background-color: orange;
+}
+
+.tooltip-text {
+    width: 350px;
+    height: 80px;
+    cursor: arrow;
+    border-width: 2px;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.tooltipData {
+    font-weight: bold;
+}
+
+/* TOOL TIP */
+.rf-tt-cntr {
+    border: 0;
+    background: dodgerblue;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    font-size: 10pt;
+    color: white;
+    opacity:0.85;
+    -moz-opacity: 0.85;
+    filter: alpha(opacity=85);
+    -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+.divArredondada{
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px 15px;
+    border-radius: 15px;
+    -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
+.selectItem tbody tr td input {visibility: hidden;}
+.selectItem tbody tr td input:checked {visibility: visible;}
+.selectItem tbody tr td label {border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; padding: 2px; border: 1px solid white;}
+.selectItem tbody tr td label:hover {color:white; background: dodgerblue; -moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888; border-color: dodgerblue; z-index: 5;}
+
+.hidden {visibility: hidden;}
+.textoDireita {text-align: right;}
+.textoEsquerda {text-align: left;}
+
+.espacoMinimo {margin-left: 5px;}
+.espacoMedio {margin-left: 10px;}
+.espacoGrande {margin-left: 15px;}
+.espacoExtraGrange {margin-left: 40px;}
+
+
+/* Estilo --> rich:collapsiblePanel 
+.cp-hdr rf-cp-hdr-exp{border: 0}
+.rf-cp-gr{border: 0}
+.rf-cp-lbl-exp {border: 0}*/
+ 
+.rf-cp-lbl {font-size: 12px;}
+
+.listaAcesso:hover{font-weight: bold;}
+
+.divBrancoTotal{backgroundp: white; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; width: 1150px; height: 400px; overflow: no-display; position: absolute}
+.destaqueBoleto{font-size: 11pt; font-weight: bold}
+
+.tblExtratoTela{background: #ff9587; }
+.tblExtratoTela:hover {font-weight: normal; font-weight: bold; cursor: pointer}
+
+.tblListaRecepcao{background: #ccffcc; }
+.tblListaRecepcao:after{background: #ccffcc; }
+
+.even-row { background-color: #FCFFFE;}
+.odd-row { background-color: #ECF3FE;}
+.active-row { background-color: #FFEBDA !important;}
+
+.fade {
+    opacity: 1;
+    transition: opacity .50s ease-in-out;
+    -moz-transition: opacity .50s ease-in-out;
+    -webkit-transition: opacity .50s ease-in-out;
+    -o-transition: opacity .50s ease-in-out;
+}

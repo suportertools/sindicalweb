@@ -1,0 +1,296 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Relatório de Movimentos</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formRelatorioMovimentos">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Relatório de Movimentos" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="left" style="width: auto; height: auto">
+                     
+                        <h:panelGrid columns="5">
+                            <h:column>
+                                <h:outputLabel value="Tipo de Relatório: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu id="idTipoRelatorio" value="#{relatorioMovimentosBean.idRelatorios}">
+                                    <a4j:ajax event="change" render="idTipoRelatorio"/>
+                                    <f:selectItems value="#{relatorioMovimentosBean.listaTipoRelatorios}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputLabel value="Condição:" styleClass="fontePadrao" style="margin-left: 30px"/>
+                                <h:selectOneMenu id="idCondicao" value="#{relatorioMovimentosBean.comboCondicao}">
+                                <a4j:ajax event="change" render="idCondicao"/>
+                                    <f:selectItem itemValue="todos"    itemLabel="Todos"/>
+                                    <f:selectItem itemValue="ativos"   itemLabel="Ativos"/>
+                                    <f:selectItem itemValue="inativos" itemLabel="Inativos"/>
+                                </h:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <h:outputLabel value="Gerados Pela Caixa:" styleClass="fontePadrao" style="margin-left: 30px"/>
+                                <h:selectOneMenu id="idGeradosPelaCaixa" value="#{relatorioMovimentosBean.comboGeradosPelaCaixa}">
+                                <a4j:ajax event="change" render="idGeradosPelaCaixa"/>
+                                    <f:selectItem itemValue="sim"           itemLabel="Sim"/>
+                                    <f:selectItem itemValue="nao"           itemLabel="Não"/>
+                                    <f:selectItem itemValue="naoverificar"  itemLabel="Não Verificar"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <br/>
+
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <rich:panel>
+                                    <h:outputText value="Filtrar Por: " styleClass="fontePadrao" style="margin-left: 15px"/>
+                                    <h:selectOneMenu value="#{relatorioMovimentosBean.porPesquisa}">
+                                        <a4j:ajax event="change" render="@this"/>
+                                        <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                        <f:selectItem itemValue="recebidas"     itemLabel="Recebidas"/>
+                                        <f:selectItem itemValue="naorecebidas"  itemLabel="Não Recebidas"/>
+                                        <f:selectItem itemValue="atrasadas"     itemLabel="Atrasadas"/>
+                                    </h:selectOneMenu>
+                                </rich:panel>
+                                <br /><br />
+
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <h:selectBooleanCheckbox id="i_co" value="#{relatorioMovimentosBean.chkConvencao}">
+                                            <a4j:ajax event="change" render="idConv,idGrupo" />
+                                        </h:selectBooleanCheckbox>
+                                        <h:outputLabel for="i_co" value="Convenção: " styleClass="fontePadrao"/>
+                                        <h:selectOneMenu id="idConv" value="#{relatorioMovimentosBean.idConvencao}" disabled="#{!relatorioMovimentosBean.chkConvencao}">
+                                            <a4j:ajax event="change" render="idGrupo"/>
+                                            <f:selectItems value="#{relatorioMovimentosBean.listaConvencao}"/>
+                                        </h:selectOneMenu>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputText value="Grupo Cidade: " styleClass="fontePadrao" style="margin-left: 15px"/>
+                                        <h:selectOneMenu id="idGrupo" value="#{relatorioMovimentosBean.idGrupoCidade}" disabled="#{!relatorioMovimentosBean.chkConvencao}">
+                                            <a4j:ajax event="change" render="idGrupo" />
+                                            <f:selectItems value="#{relatorioMovimentosBean.listaGrupoCidade}"/>
+                                        </h:selectOneMenu>
+                                    </h:column>                    
+                                </h:panelGrid>
+
+                                <br />
+
+                                <h:panelGrid columns="5">
+                                    <h:outputText value="Filtrar por escritório: " styleClass="fontePadrao"/>
+                                    <h:selectOneRadio value="#{relatorioMovimentosBean.porContabilidade}" styleClass="fontePadrao">
+                                        <a4j:ajax event="change" render="@form" />
+                                        <f:selectItem itemValue="todos" itemLabel="Todos"/>
+                                        <f:selectItem itemValue="com"   itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem"   itemLabel="Sem"/>
+                                    </h:selectOneRadio>                                    
+
+                                    <h:panelGroup id="iGroup" layout="block" style="overflow:auto; height:120px; width:400px" rendered="#{relatorioMovimentosBean.porContabilidade == 'com'}">
+                                        <rich:dataTable value="#{relatorioMovimentosBean.listaContabilidades}" var="linha" style="width: 100%">
+                                            <rich:column>
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioMovimentosBean.chkContabilidades}">
+                                                        <a4j:ajax event="change" listener="#{relatorioMovimentosBean.marcarContabilidades}" render="@form"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}">
+                                                    <a4j:ajax event="change" render="@form"/>
+                                                </h:selectBooleanCheckbox>
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="CNPJ - Nome"/>
+                                                </f:facet>
+                                                    <h:outputText value="#{linha.argumento1.pessoa.documento} - #{linha.argumento1.pessoa.nome}"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </h:panelGroup>                                          
+
+                                </h:panelGrid>
+                                
+                                <rich:panel>
+                                    <h:panelGrid columns="5"> 
+                                        <h:panelGrid columns="1">
+                                            <h:column>
+                                                <h:selectBooleanCheckbox id="i_c" value="#{relatorioMovimentosBean.chkContribuicao}" >
+                                                    <a4j:ajax event="change" render="idContri" />
+                                                </h:selectBooleanCheckbox> 
+                                                <h:outputLabel for="i_c" value="Contribuição: " styleClass="fontePadrao" style="margin-right: 15px"/>
+                                            </h:column>
+                                            
+                                            <h:selectOneMenu id="idContri" value="#{relatorioMovimentosBean.idServicos}">
+                                                <a4j:ajax event="change" render="idContri" />
+                                                <f:selectItems value="#{relatorioMovimentosBean.listaServico}"/>
+                                            </h:selectOneMenu>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1">
+                                            <h:column>
+                                                <h:selectBooleanCheckbox id="i_t" value="#{relatorioMovimentosBean.chkTipo}">
+                                                    <a4j:ajax event="change"  render="idTipoContri" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel for="i_t" value="Tipo: " styleClass="fontePadrao" style="margin-right: 15px"/>
+                                            </h:column>
+                                            
+                                            <h:selectOneMenu id="idTipoContri" value="#{relatorioMovimentosBean.idTipoServico}">
+                                                <a4j:ajax event="change" render="idTipoContri" />
+                                                <f:selectItems value="#{relatorioMovimentosBean.listaTipoServico}"/>
+                                            </h:selectOneMenu>   
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1">
+                                            <h:column>
+                                                <h:selectBooleanCheckbox value="#{relatorioMovimentosBean.chkEmpresa}">
+                                                    <a4j:ajax event="change" render="idEmpresa,idEmpresaPes,idEmpresaCNPJ,idEnviarEmail" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:selectOneMenu value="#{relatorioMovimentosBean.relEmpresa}">
+                                                    <a4j:ajax event="change" render="idLabelEmpresa"/>
+                                                    <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
+                                                    <!-- <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/> -->
+                                                </h:selectOneMenu>
+                                            </h:column>
+                                            
+                                            <h:inputText id="idEmpresa" size="40" value="#{relatorioMovimentosBean.juridica.pessoa.nome}" disabled="true"/>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="1">
+                                            <h:outputLabel value="CNPJ: " styleClass="fontePadrao" style="font-weight: bold"/>
+                                            <h:column>
+                                                <h:inputText id="idEmpresaCNPJ" size="15" value="#{relatorioMovimentosBean.juridica.pessoa.documento}" disabled="true"/>
+                                                <h:commandButton id="idEmpresaPes" style="height: 30px" value="..." title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" disabled="#{!relatorioMovimentosBean.chkEmpresa}"/>
+                                            </h:column>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                </rich:panel>
+
+                                <br/>
+
+                                <h:panelGrid columns="3">
+                                    <h:column>
+                                        <rich:panel style="width: 200px; height: auto">
+                                            <h:panelGrid columns="2">
+                                                <h:selectBooleanCheckbox id="i_d" value="#{relatorioMovimentosBean.chkData}">
+                                                    <a4j:ajax event="change" render="idDtInicial,idDtFinal,idDtMAInicial,idDtMAFinal,idFiltroData" />
+                                                </h:selectBooleanCheckbox> 
+                                                <h:selectOneMenu id="idFiltroData" value="#{relatorioMovimentosBean.tipoDataPesquisa}" disabled="#{!relatorioMovimentosBean.chkData}" onchange="submit();">
+                                                    <f:selectItem itemValue="importacao"  itemLabel="Faixa de Importação"/>
+                                                    <f:selectItem itemValue="recebimento" itemLabel="Faixa de Recebimento"/>
+                                                    <f:selectItem itemValue="vencimento"  itemLabel="Faixa de Vencimento"/>
+                                                    <f:selectItem itemValue="referencia"  itemLabel="Faixa de Referência"/>
+                                                </h:selectOneMenu>
+                                            </h:panelGrid>  
+                                            <br />
+
+                                            <h:panelGrid columns="2">   
+                                                <h:column>
+                                                    <h:outputText value="Data Inicial: " rendered="#{relatorioMovimentosBean.tipoDataPesquisa != 'referencia'}" styleClass="fontePadrao"/>
+                                                    <h:inputText id="idDtInicial" size="7" value="#{relatorioMovimentosBean.dataInicial}" rendered="#{relatorioMovimentosBean.tipoDataPesquisa != 'referencia'}" class="data" disabled="#{!relatorioMovimentosBean.chkData}">
+                                                        <a4j:ajax event="change" render="this" />
+                                                    </h:inputText>
+                                                </h:column>
+                                                <h:column>
+                                                    <h:outputText value="Data Final: " rendered="#{relatorioMovimentosBean.tipoDataPesquisa != 'referencia'}" styleClass="fontePadrao"/>
+                                                    <h:inputText id="idDtFinal" size="7" value="#{relatorioMovimentosBean.dataFinal}" rendered="#{relatorioMovimentosBean.tipoDataPesquisa != 'referencia'}" class="data" disabled="#{!relatorioMovimentosBean.chkData}">
+                                                        <a4j:ajax event="change" render="this" />
+                                                    </h:inputText>
+                                                </h:column>
+                                            </h:panelGrid>
+
+                                            <h:panelGrid columns="2">
+                                                <h:column>
+                                                    <h:outputText value="Mês/Ano Inicial: " rendered="#{relatorioMovimentosBean.tipoDataPesquisa == 'referencia'}" styleClass="fontePadrao"/>
+                                                    <h:inputText id="idDtMAInicial" size="6" value="#{relatorioMovimentosBean.dataRefInicial}" rendered="#{relatorioMovimentosBean.tipoDataPesquisa == 'referencia'}" class="referencia" disabled="#{!relatorioMovimentosBean.chkData}">
+                                                        <a4j:ajax event="change" render="this" />
+                                                    </h:inputText>
+                                                </h:column>
+
+                                                <h:column>
+                                                    <h:outputText value="Mês/Ano Final: " rendered="#{relatorioMovimentosBean.tipoDataPesquisa == 'referencia'}" styleClass="fontePadrao"/>
+                                                    <h:inputText id="idDtMAFinal" size="6" value="#{relatorioMovimentosBean.dataRefFinal}" rendered="#{relatorioMovimentosBean.tipoDataPesquisa == 'referencia'}" class="referencia" disabled="#{!relatorioMovimentosBean.chkData}">
+                                                        <a4j:ajax event="change" render="this" />
+                                                    </h:inputText>
+                                                </h:column>
+                                                    
+                                            </h:panelGrid>
+                                        </rich:panel>
+                                    </h:column>
+
+                                    <rich:panel style="width: auto; height: 110px ; margin-left: 7px">
+                                        <h:outputLabel value="Ordernar Por: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
+                                        <br /><br />
+                                        <h:panelGrid columns="2">
+                                            <h:selectBooleanCheckbox value="#{relatorioMovimentosBean.chkPesquisaEmpresa}">
+                                                <a4j:ajax event="change" render="this"/>
+                                            </h:selectBooleanCheckbox> <h:outputText value=" Empresa" styleClass="fontePadrao"/>
+                                        </h:panelGrid>
+                                        
+                                        <h:panelGrid columns="1">
+                                            <h:selectOneRadio id="idRadioOrdem" value="#{relatorioMovimentosBean.radioOrdem}" styleClass="fontePadrao">
+                                                <a4j:ajax event="change" render="this"/>
+                                                <f:selectItem itemValue="vencimento" itemLabel="Vencimento"/>
+                                                <f:selectItem itemValue="quitacao"   itemLabel="Quitação"/>
+                                                <f:selectItem itemValue="importacao" itemLabel="Importação"/>
+                                                <f:selectItem itemValue="referencia" itemLabel="Referência"/>
+                                            </h:selectOneRadio>
+                                        </h:panelGrid>
+                                    </rich:panel>
+                                </h:panelGrid>
+                            </h:column>
+
+                            <h:column>
+                                <rich:panel style="width: 200px; height: 380px; margin-left: 7px; overflow: auto">
+                                    <h:panelGrid>
+                                        <h:outputLabel value="Cidades da Base" styleClass="fonteFranklinNegrito"/>
+                                        <rich:dataTable id="tblCidadesBase" value="#{relatorioMovimentosBean.listaCidadesBase}" var="linha">
+                                            <rich:column>
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioMovimentosBean.chkCidadesBase}">
+                                                        <a4j:ajax event="change" listener="#{relatorioMovimentosBean.marcarCidadesBase}" render="tblCidadesBase"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}"/>
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header"><h:outputText value="Cidade/UF"/></f:facet>
+                                                <h:outputText value="#{linha.argumento1.cidade} - #{linha.argumento1.uf}"/>
+                                            </rich:column>
+                                        </rich:dataTable>
+                                    </h:panelGrid>
+                                </rich:panel>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <br/>
+                        <h:commandLink styleClass="idPesquisar iLink" value="Visualizar" action="#{relatorioMovimentosBean.condicaoDePesquisa}" target="_blank" title="Visualizar"/>
+                        <h:commandLink styleClass="idNovo iLink" value="Enviar E-mail" style="width: 150px" title="Enviar Email" action="#{relatorioMovimentosBean.enviarEmail}"/>
+                        <h:outputLabel id="idMsgEmail" value="#{relatorioMovimentosBean.msgEmail}" styleClass="corErro"/>
+                        <h:selectBooleanCheckbox id="iTotaliza" value="#{relatorioMovimentosBean.totaliza}">
+                            <a4j:ajax event="change" render="this"/>
+                        </h:selectBooleanCheckbox>
+                        <h:outputLabel value="Totaliza" style="cursor: pointer" for="iTotaliza" styleClass="fontePadrao"/>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Menu - Arrecadação</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+           <style type="text/css">
+            .divMenuArrecadacao, .divBotaoPrincipal:hover {-webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px;  border: 0;}
+            .corpoAcessos { width: 200px; height: 300px; }
+            .divMenuArrecadacao {width: 980px;}
+            .divMenuArrecadacao .divBotao {background: #e0e0e0;}
+            .divMenuArrecadacao .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
+            .divMenuArrecadacao .divBotao:hover {background: #abc4eb;}            
+          </style>
+    </h:head>
+    <h:body styleClass="divMenu"><div align="center">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMenuArrecadacao" style="border: 0; width: 980px; height: 800px; border-bottom: 1px dashed #888; ">
+              <h:panelGrid cellpadding="0" cellspacing="0">
+                  <h:panelGrid columns="2">
+                    <h:column><h:graphicImage value="/Imagens/BarraSuperior.png"/></h:column>
+                    <h:column><h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" /></h:column>
+                  </h:panelGrid>
+                  <rich:toolbar styleClass="divMenuArrecadacao" style="background: #e0e0e0; border: 0">
+                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                        <f:facet name="label">
+                          <h:panelGroup>
+                              <h:panelGrid columns="2">
+                                  <h:graphicImage value="/Imagens/cadastro.png" styleClass="pic"/>
+                                  <h:outputText value="Cadastro" styleClass="fontePadraoNegrito"/>
+                              </h:panelGrid>
+                          </h:panelGroup>
+                        </f:facet>
+                            <rich:menuItem label="Empresa"               action="#{chamadaPaginaBean.pessoaJuridica}" styleClass="divBotao"/>
+                            <rich:menuItem label="Oposição"              action="#{chamadaPaginaBean.oposicao}" styleClass="divBotao"/>
+                            <rich:menuItem label="Mensagem Boleto"       action="#{chamadaPaginaBean.mensagem}" styleClass="divBotao"/>
+                            <rich:menuItem label="Desconto de Empregado" action="#{chamadaPaginaBean.descontoEmpregado}" styleClass="divBotao"/>
+                            <rich:menuItem label="Período Convenção"     action="#{chamadaPaginaBean.convencaoPeriodo}" styleClass="divBotao"/>
+                            <rich:menuGroup label="Suporte" styleClass="divBotao">
+                                <rich:menuItem label="Grupo de Cidades"      action="#{chamadaPaginaBean.grupoCidade}" styleClass="divBotao"/>
+                                <rich:menuItem label="Cidades do Grupo"      action="#{chamadaPaginaBean.grupoCidades}" styleClass="divBotao"/>
+                                <rich:menuItem label="Convenções"            action="#{chamadaPaginaBean.convencao}" styleClass="divBotao"/>
+                                <rich:menuItem label="Cnae Convenção"        action="#{chamadaPaginaBean.cnaeConvencao}" styleClass="divBotao"/>
+                                <rich:menuItem label="Motivo Inativação"     action="#{chamadaPaginaBean.motivoInativacao}" styleClass="divBotao"/>
+                                <rich:menuItem label="Tipo Centro Comercial" action="#{chamadaPaginaBean.tipoCentroComercial}" styleClass="divBotao"/>
+                                <rich:menuItem label="Centro Comercial"      action="#{chamadaPaginaBean.centroComercial}" styleClass="divBotao"/>
+                                <rich:menuItem label="Registro Empresarial"  action="#{chamadaPaginaBean.registroEmpresarial}" styleClass="divBotao"/>
+                            </rich:menuGroup>
+                      </rich:dropDownMenu>
+
+                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                        <f:facet name="label">
+                          <h:panelGroup>
+                              <h:panelGrid columns="2">
+                                  <h:graphicImage value="/Imagens/movimento.png" styleClass="pic"/>
+                                  <h:outputText value="Movimento" styleClass="fontePadraoNegrito"/>
+                              </h:panelGrid>
+                          </h:panelGroup>
+                        </f:facet>
+                            <rich:menuItem label="Movimentos a Receber"           action="#{chamadaPaginaBean.movimentosReceber}" styleClass="divBotao"/>
+                            <rich:menuItem label="Baixar Boleto"                  action="#{chamadaPaginaBean.baixaBoleto}" styleClass="divBotao"/>
+                            <rich:menuItem label="Extrato na Tela"                action="#{chamadaPaginaBean.extratoTela}" styleClass="divBotao"/>
+                            <rich:menuItem label="Gerar Contribuição"             action="#{chamadaPaginaBean.contribuicao}" styleClass="divBotao"/>
+                            <rich:menuItem label="Impressão de Boletos"           action="#{chamadaPaginaBean.impressaoBoletos}" styleClass="divBotao"/>
+                            <rich:menuItem label="Impressão Individual de Boleto" action="#{chamadaPaginaBean.processamentoIndividual}" styleClass="divBotao"/>
+                            <rich:menuItem label="Retorno Banco"                  action="#{chamadaPaginaBean.retornoBanco}" styleClass="divBotao"/>
+                            <rich:menuItem label="Retorno Padrao"                 action="#{chamadaPaginaBean.retornoPadrao}" styleClass="divBotao"/>
+                            <rich:menuItem label="Envio de Arquivos"              action="#{chamadaPaginaBean.enviarArquivos}" styleClass="divBotao"/>     
+                            <rich:menuItem label="Gerar Notificação"              action="#{chamadaPaginaBean.notificacao()}" styleClass="divBotao"/>
+                      </rich:dropDownMenu>
+
+                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
+                        <f:facet name="label">
+                            <h:panelGroup>
+                                <h:panelGrid columns="2">
+                                    <h:graphicImage value="/Imagens/relatorio.png" styleClass="pic"/>
+                                    <h:outputText value="Relatórios" styleClass="fontePadraoNegrito"/>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </f:facet>
+                        <rich:menuGroup label="Cadastros" styleClass="divBotao">
+                            <rich:menuItem label="Contribuintes" action="#{chamadaPaginaBean.relatorioContribuintes}" styleClass="divBotao"/>
+                            <rich:menuItem label="Escritórios" action="#{chamadaPaginaBean.relatorioContabilidades}" styleClass="divBotao"/>
+                            <rich:menuItem label="Convenções" styleClass="divBotao"/>
+                        </rich:menuGroup>
+                        <rich:menuGroup label="Movimentos" styleClass="divBotao">
+                            <rich:menuItem label="Movimentos" action="#{chamadaPaginaBean.relatorioMovimentos}" styleClass="divBotao"/>
+                        </rich:menuGroup>
+                           <rich:menuItem label="Fechamento de Comissão dos Acordos" action="#{chamadaPaginaBean.fechamentoComissaoAcordo}" styleClass="divBotao"/>
+                    </rich:dropDownMenu>
+                  </rich:toolbar>
+              </h:panelGrid>
+           </h:form>
+        </f:view>
+      </div>
+    </h:body>
+</ui:composition>

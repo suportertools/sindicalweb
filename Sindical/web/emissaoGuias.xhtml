@@ -1,0 +1,206 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Emissão de Guias</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="forEmissaoGuias">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Emissão de Guias" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="left">
+                        
+                        <rich:panel style="width: 650px">
+                            <h:outputLabel value="-- Beneficiário -- " styleClass="fonteFranklinNegrito"/>
+                            <h:outputLabel value="Data emissão: " styleClass="fontePadrao"/>
+                            <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
+                            
+                            <h:panelGrid columns="5">
+                                <h:outputLabel value="Código: " styleClass="fontePadrao"/>
+                                <h:outputLabel id="idCodigoBene" value="" styleClass="fontePadraoNegrito"/>
+                                <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                                <h:inputText id="nomeBene" value="" size="50" onkeypress="upperCase(this);">
+                                </h:inputText>
+                                <a4j:commandButton id="btnPesquisar" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                            </h:panelGrid>
+                        </rich:panel>
+                        
+                        <br />
+                        
+                        <rich:panel style="width: 650px">
+                            <h:outputLabel value="-- Dados do Titular -- " styleClass="fonteFranklinNegrito"/>
+                            <h:panelGrid columns="5">
+                                <h:outputLabel value="Código: " styleClass="fontePadrao"/>
+                                <h:outputLabel id="idTitular" value="" styleClass="fontePadraoNegrito"/>
+                                <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                                <h:inputText id="nomeTitular" value="" size="50" readonly="true"/>
+                            </h:panelGrid>
+                        </rich:panel>
+                        
+                        <br />
+                        
+                        <rich:panel style="width: 650px">
+                            <h:outputLabel value="-- Empresa Convêniada -- " styleClass="fonteFranklinNegrito"/>
+                            <h:panelGrid columns="4">
+                                <h:column>
+                                    <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
+                                    <h:selectOneMenu id="idGrupo" value="">
+                                        <f:selectItems/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="Sub Grupo: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                    <h:selectOneMenu id="idSubGrupo" value="">
+                                        <f:selectItems/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="Razão: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                    <h:inputText id="idRazao" value="" styleClass="fontePadraoNegrito" size="40" readonly="true"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:commandButton id="btnPesquisarRazao" action="#{chamadaPaginaBean.pesquisaJuridicaConvenio}" image="/Imagens/pesquisar.png"/>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="5">
+                                <h:column>
+                                    <h:selectOneMenu id="idServicos" value="">
+                                        <f:selectItems/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputText value="Quantidade: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                    <h:inputText id="idQntServicos" value="" size="3"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputText value="Valor: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                    <h:outputText id="idQntValor" value="R$ " styleClass="fontePadraoNegrito"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputText value="Desconto: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                    <h:inputText id="idDesconto" size="10" value="" dir="RTL" />
+                                </h:column>
+                                
+                                <h:column>
+                                    <a4j:commandButton image="/Imagens/novo.png"/>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <br />
+                            
+                            <h:panelGrid>
+                                <h:panelGroup style="overflow:auto; height:130px; width:450px;"  layout="block">
+                                    <rich:dataTable  var="linha" id="tbl" style="width: 100%;">
+                                        <rich:column id="colExcluir">
+                                            <f:facet name="header">
+                                                <h:outputText value="..." id="lbExcluir"/>
+                                            </f:facet>
+                                            <h:commandButton image="/Imagens/excluirp.png"/>
+                                        </rich:column>
+                                        
+                                        <rich:column id="colServicos">
+                                            <f:facet name="header">
+                                                <h:outputText value="Serviços" id="lbServicos"/>
+                                            </f:facet>
+                                            <h:outputText id="nomeServicos" styleClass="fontePadraoNegrito"/>
+                                        </rich:column>
+                                        
+                                        <rich:column id="colQnt" styleClass="coluna">
+                                            <f:facet name="header">
+                                                <h:outputText value="Quantidade" id="lbQnt"/>
+                                            </f:facet>
+                                            <h:outputText styleClass="fontePadrao"/>
+                                        </rich:column>
+                                        
+                                        <rich:column id="colValor">
+                                            <f:facet name="header">
+                                                <h:outputText value="Valor" id="lbValor"/>
+                                            </f:facet>
+                                            <h:outputText id="nomeValor" styleClass="fontePadraoNegrito"/>
+                                        </rich:column>
+                                        
+                                        <rich:column id="colDesconto">
+                                            <f:facet name="header">
+                                                <h:outputText value="Desconto" id="lbDesconto"/>
+                                            </f:facet>
+                                            <h:outputText id="nomeValorDesconto" styleClass="fontePadrao"/>
+                                        </rich:column>
+                                        
+                                        <rich:column id="colValorLiquido">
+                                            <f:facet name="header">
+                                                <h:outputText value="Valor Liquido" id="lbValorLiquido"/>
+                                            </f:facet>
+                                            <h:outputText id="nomeValorLiquido" styleClass="fontePadraoNegrito"/>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="3">
+                                <h:column>
+                                    <h:outputLabel id="idNumeroGuia" value="Número da Guia: " styleClass="fontePadrao"/>
+                                    <h:inputText value="" readonly="true" styleClass="fontePadraoNegrito" size="10" onkeypress="somenteNumeros(this);"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel id="idLoteBaixa" value="Lote baixa: " styleClass="fontePadrao"/>
+                                    <h:inputText value="" readonly="true" styleClass="fontePadraoNegrito" size="10" onkeypress="somenteNumeros(this);"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel id="idTotal" value="Total: " styleClass="fontePadrao"/>
+                                    <h:inputText value="" size="10" id="idTotalValor" readonly="true" styleClass="fontePadraoNegrito"/>
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <!-- <h:panelGrid columns="1">
+                                        <a4j:commandLink id="idModalObs" value="<< Observações >>" styleClass="fontePadraoNegrito">
+                                            <rich:componentControl for="panelObservacoes" attachTo="idModalObs" operation="show" event="onclick"/>
+                                        </a4j:commandLink>
+                                    </h:panelGrid> -->
+                            
+                       
+                            <h:panelGrid columns="2">
+
+                            </h:panelGrid>
+                            
+                            </rich:panel>
+                         
+                            <br />
+                         
+                            <h:panelGrid columns="6">
+                                <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Novo"   title="Novo"/>
+                                <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Baixar"  title="Baixar"/>
+                                <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Imprimir" style="width: 70px" title="Imprimir"/>
+                                <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Debitar"  title="Debitar"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar"  title="Pesquisar"/>
+                            </h:panelGrid>
+                    </div>
+                </center>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <title>#{simplesBean.sessoes[1]}</title>
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formCadastroSimples">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro #{simplesBean.sessoes[1]}" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div class="divFundo">
+                        <rich:panel style="width: 300px; height: 150px;">
+                            <h:outputText value="Novo" styleClass="fonteFranklinNormal" />
+                            <hr />
+                            <br />
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                <h:column><h:outputLabel value="Rotina: " styleClass="fontePadrao"/></h:column>
+                                <h:column><h:outputLabel value="#{simplesBean.sessoes[1]}" styleClass="fontePadraoNegrito"/></h:column>
+                                
+                                <h:column><h:outputLabel value="Descrição: " styleClass="fontePadrao" for="iDescricao"/></h:column>
+                                <h:column>
+                                    <h:panelGrid columns="3">
+                                        <h:inputText id="iDescricao" size="20" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" />
+                                        <a4j:commandButton image="/Imagens/novo.png" action="#{simplesBean.salvar}" oncomplete="modalMensagem()" render="outConfirma,tbl,iDescricao" />
+                                    </h:panelGrid>
+                                </h:column>
+                            </h:panelGrid>
+                        </rich:panel>
+                    </div>
+
+                   <div style="overflow:auto; height:330px;">
+                       <div style=" margin-bottom: 10px; margin-left: 10px; " class="divFundo" >
+                            <h:outputLabel value="PESQUISAR: " styleClass="fontePadrao" for="idPesquisar"/>
+                            <h:inputText id="idPesquisar" value="#{simplesBean.pesquisaLista}"  title="Pesquisar" >
+                                <a4j:ajax event="blur" render="this, tbl" listener="#{simplesBean.limpaLista}"/>
+                            </h:inputText>
+                            <h:graphicImage value="/Imagens/pesquisar.png" alt="Pesquisar" title="Pesquisar" style="width: 25px; height: 25px; cursor: pointer">
+                                <a4j:ajax event="click" render="idPesquisar" execute="@none" />
+                            </h:graphicImage>
+                            <a4j:status>
+                                <f:facet name="start">
+                                    <h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/>
+                                </f:facet>
+                            </a4j:status>
+                        </div>
+                       <div style="clear: both;"></div>
+                        <rich:panel style="overflow-x:auto; height: 250px; width: 280px; border-left: #d4d5d7 dashed 1px; border: 0">
+                            <rich:dataTable value="#{simplesBean.lista}" id="tbl" var="linha" iterationStatusVar="it">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#"/>
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:commandLink value="#{linha.id}" action="#{simplesBean.editar}">
+                                        <a4j:param value="#{it.index}" assignTo="#{simplesBean.idIndex}"/>
+                                    </h:commandLink>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Valores"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.descricao}"/>
+                                </rich:column>
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="Excluir"/>
+                                    </f:facet>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" oncomplete="modalMensagem()" value="#{linha.id}" action="#{simplesBean.excluir()}" render="outConfirma,tbl">
+                                        <a4j:param value="#{it.index}" assignTo="#{simplesBean.idIndex}"/>
+                                    </a4j:commandButton>
+                                </rich:column>
+                            </rich:dataTable>
+                        </rich:panel>
+                    </div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{simplesBean.mensagem}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

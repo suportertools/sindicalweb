@@ -1,0 +1,86 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Pesquisa Patronal</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <c:set scope="request" var="object" value="${registroPatronalBean.patronal}"/>
+            <h:form id="formPesquisaPessoaPatronal">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Patronal" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <h:panelGrid columns="7">
+                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
+                        <h:inputText id="palavraChave" value="#{registroPatronalBean.descPesquisa}" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaPessoaPatronal:idInicial')}.onclick();}" />
+                        <h:outputLabel value="Por: "/>
+                        <h:selectOneMenu value="#{registroPatronalBean.porPesquisa}" onchange="submit();">
+                            <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                            <f:selectItem itemValue="documento"     itemLabel="CNPJ"/>
+                        </h:selectOneMenu>
+                        <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{registroPatronalBean.acaoPesquisaInicial}" />
+                        <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{registroPatronalBean.acaoPesquisaParcial}" />
+                        <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+                    </h:panelGrid>
+                    <div class="divMae" align="center">
+                        <h:panelGroup style="overflow:auto; height:500px; border: 0px ; border-top: 0px; border-spacing: 0px" layout="block">        
+                            <rich:dataTable value="#{registroPatronalBean.listaPatronal}" var="linha" iterationStatusVar="it" style="width: 100%;">
+
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#"/>
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>                                    
+
+                                <rich:column styleClass="colunaPesquisa">
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <h:commandLink action="#{registroPatronalBean.editar}" value="#{linha.id}">
+                                        <a4j:param value="#{it.index}" assignTo="#{registroPatronalBean.idIndex}"/>
+                                    </h:commandLink>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="CNPJ / Pessoa"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.pessoa.documento} / #{linha.pessoa.nome}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Convenção"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.convencao.descricao}"/>
+                                </rich:column>
+                                
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Grupo Cidade"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.grupoCidade.descricao}"/>
+                                </rich:column>
+
+                            </rich:dataTable>
+                        </h:panelGroup>
+                    </div>
+                </center>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

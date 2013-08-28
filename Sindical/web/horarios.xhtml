@@ -1,0 +1,179 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Cadastro de horários</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+           
+        </style>        
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formHorarios">
+                <c:set scope="request" var="object" value="${horariosBean.horarios}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Horários" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    
+                <br /><br />
+                
+                <div class="divMae divFundo" style="width: 750px" align="left">
+                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="5">
+                        <h:column>
+                            <h:outputLabel value="FILIAIS: " styleClass="fontePadrao"/>
+                        </h:column>
+                        <h:column>
+                            <h:selectOneMenu id="iFilial" value="#{horariosBean.idFilial}">
+                                <a4j:ajax event="change" render="iFilial tbl" listener="#{horariosBean.limpaLista}"/>
+                                <f:selectItems value="#{horariosBean.listaFiliais}"/>
+                            </h:selectOneMenu>
+                        </h:column>
+                        <h:column>
+                            <h:outputLabel value="DIA DA SEMANA: " styleClass="fontePadrao"/>
+                        </h:column>
+                        <h:column >
+                            <h:panelGrid columns="7" id="idCores">
+                                <h:commandButton value="Domingo" action="#{horariosBean.showBottom(0)}" styleClass="iLink idSalvar" style="width: 85px; height: 30px; #{horariosBean.cor1}">
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                                <h:commandButton value="Segunda" action="#{horariosBean.showBottom(1)}" styleClass="iLink idSalvar" style="width: 80px; height: 30px; #{horariosBean.cor2}">
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                                <h:commandButton value="Terça" action="#{horariosBean.showBottom(2)}" styleClass="iLink idSalvar" style="width: 70px; height: 30px; #{horariosBean.cor3}">
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                                <h:commandButton value="Quarta" action="#{horariosBean.showBottom(3)}" styleClass="iLink idSalvar" style="width: 70px; height: 30px; #{horariosBean.cor4}">
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                                <h:commandButton value="Quinta" action="#{horariosBean.showBottom(4)}" styleClass="iLink idSalvar" style="width: 70px; height: 30px; #{horariosBean.cor5}">                            
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                                <h:commandButton value="Sexta" action="#{horariosBean.showBottom(5)}" styleClass="iLink idSalvar" style="width: 60px; height: 30px; #{horariosBean.cor6}">                            
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                                <h:commandButton value="Sábado" action="#{horariosBean.showBottom(6)}" styleClass="iLink idSalvar iSemanaClass" style="width: 75px; height: 30px; #{horariosBean.cor7}">
+                                    <a4j:ajax listener="#{horariosBean.limpaLista()}" render="idCores tbl" />
+                                </h:commandButton>
+                            </h:panelGrid>
+                        </h:column>
+                        <h:column>
+                        </h:column>
+                        <h:column>
+                            <h:commandLink value="Com Intervalo" styleClass="idNovo iLink fontePadrao" style="width: 150px; margin-top: 10px;" action="#{horariosBean.comIntervalo}" rendered="#{!horariosBean.chkReplicarTodos}"/>
+                            <h:commandLink value="Sem Intervalo" styleClass="idNovo iLink fontePadrao" style="width: 150px; margin-top: 10px;" action="#{horariosBean.comIntervalo}" rendered="#{horariosBean.chkReplicarTodos}"/>
+                        </h:column>
+                        <h:column rendered="#{horariosBean.chkReplicarTodos}">
+                            <h:outputLabel value="Das: " styleClass="fontePadrao"/>
+                        </h:column>
+                        <h:column rendered="#{horariosBean.chkReplicarTodos}">
+                            <h:inputText maxlength="5" size="5" value="#{horariosBean.horaInicial}" class="hora"/>
+                            <h:outputLabel value=" às: " styleClass="fontePadrao"/>
+                            <h:inputText maxlength="5" size="5" value="#{horariosBean.horaFinal}" class="hora"/>
+                            <h:outputLabel value=" Intervalo: " styleClass="fontePadrao"/>
+                            <h:inputText maxlength="2" size="2" value="#{horariosBean.intervalo}" />
+                            <h:outputLabel value=" em Minutos* " styleClass="fontePadraoVermelho" style="font-size: 8pt"/>
+                        </h:column>
+                        <h:column>
+                            <h:outputLabel value="Horário: " styleClass="fontePadrao" rendered="#{!horariosBean.chkReplicarTodos}"/>
+                        </h:column>
+                        <h:column>                        
+                            <h:inputText size="5" maxlength="5" value="#{horariosBean.horarios.hora}" rendered="#{!horariosBean.chkReplicarTodos}" class="hora" style="margin-right: 36px"/>
+                            <h:outputLabel value="Qntd Disponível: " styleClass="fontePadrao"/>
+                            <h:inputText maxlength="2" size="2" value="#{horariosBean.horarios.quantidade}"/>
+                            <a4j:commandButton image="/Imagens/novo.png" title="Adicionar" action="#{horariosBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="modalMensagem()" render="outConfirma, tbl"/>
+                        </h:column>
+                    </h:panelGrid>
+                    <br /><br />
+                    <div style="overflow:auto; height:320px; width: 280px;" align="center" class="divFundo bg-white">
+                        <rich:dataTable value="#{horariosBean.listaHorarios}" var="linha" style="width:100%" iterationStatusVar="it" id="tbl">
+                            <f:facet name="header">Horários</f:facet>
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                <h:outputText value="#{it.index}"/>
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header"><h:outputText value="..."/></f:facet>
+                                <a4j:commandButton image="/Imagens/excluirp.png" action="#{horariosBean.excluir}" oncomplete="modalMensagem()" render="outConfirma, tbl">
+                                    <a4j:param value="#{it.index}" assignTo="#{horariosBean.idIndex}"/>
+                                </a4j:commandButton>
+                            </rich:column>
+
+                            <rich:column styleClass="coluna">
+                                <f:facet name="header">
+                                    <h:outputText value="Horário" rendered="false"/>
+                                    <h:graphicImage value="/Imagens/horario.png" alt="Horário" title="Horário" width="20" />
+                                </f:facet>
+                                <h:outputLabel rendered="#{linha.argumento0.ativo}" value="#{linha.argumento0.hora}" styleClass="fontePadrao" />
+                                <a4j:commandLink rendered="#{!linha.argumento0.ativo}" value="#{linha.argumento0.hora}" title="** Clique para Reativar Horário" onclick="modalOpcao('divSalvar');" styleClass="fontePadrao" >
+                                    <a4j:param value="#{it.index}" assignTo="#{horariosBean.idIndex}"/>
+                                </a4j:commandLink>                                    
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header"><h:outputText value="Quantidade"/></f:facet>
+                                <h:inputText value="#{linha.argumento0.quantidade}" size="2" styleClass="text-center" disabled="#{!linha.argumento0.ativo}">
+                                    <a4j:ajax event="blur" listener="#{horariosBean.editarQuantidade(it.index)}" render="tbl" />
+                                </h:inputText>
+                            </rich:column>
+
+                            <rich:column styleClass="coluna">
+                                <f:facet name="header"><h:outputText value="Status"/></f:facet>
+                                <h:outputText value="#{linha.argumento1}"/>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                    
+                    
+                   </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja reativar esse horário?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Atualizando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{horariosBean.editar}" oncomplete="modalMensagem()" render="outConfirma, tbl"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{horariosBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>  
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

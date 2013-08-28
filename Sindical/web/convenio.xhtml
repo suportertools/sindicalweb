@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Cadastro Convênio</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formConvenio">
+                <c:set scope="request" var="object" value="${convenioBean.convenio}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro Convênio" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 500px;">
+                        <table>
+                            <tr>
+                                <td align="right">
+                                    <h:outputLabel value="Sub Grupo: " styleClass="fontePadrao"/>
+                                </td>
+                                <td>
+                                    <h:outputText id="iSub" value="#{convenioBean.subGrupoConvenio.descricao}" styleClass="fontePadraoNegrito"/>
+                                </td>
+                                <td>
+                                    <a4j:commandButton image="/Imagens/pesquisar.png"  title="Pesquisar" action="#{chamadaPaginaBean.pesquisaSubGrupoConvenio}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="right">
+                                    <h:outputLabel value="Empresa: " styleClass="fontePadrao"/>
+                                </td>
+                                <td>
+                                    <h:outputText id="iEmp" value="#{convenioBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito"/>
+                                </td>
+                                <td>
+                                    <a4j:commandButton image="/Imagens/pesquisar.png" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" />
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        <a4j:commandLink value="Salvar" styleClass="idSalvar iLink" action="#{convenioBean.salvar}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}"  render="tbl,iSub,iEmp, outConfirma"/>
+                        <a4j:commandLink value="Excluir" styleClass="idExcluir iLink" action="#{convenioBean.excluir}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoExcluir}" render="tbl,iSub,iEmp, outConfirma"/>
+                        <a4j:commandLink value="Novo" styleClass="idNovo iLink" action="#{convenioBean.novo}" render="tbl"/>
+
+                        <rich:panel>
+                            <rich:dataTable value="#{convenioBean.listaConvenio}" var="linha" iterationStatusVar="it" id="tbl">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:outputText value="#" />
+                                    </f:facet>
+                                    <h:outputText value="#{it.index}"/>
+                                </rich:column>  
+                                
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="ID"/>
+                                    </f:facet>
+                                    <a4j:commandLink action="#{convenioBean.editar}" value="#{linha.id}">
+                                        <a4j:param value="#{it.index}" assignTo="#{convenioBean.idIndex}"/>
+                                    </a4j:commandLink>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Empresa"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.juridica.pessoa.nome}"/>
+                                </rich:column>
+
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Sub Grupo do convênio"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.subGrupoConvenio.descricao}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </rich:panel>                        
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{convenioBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                 
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

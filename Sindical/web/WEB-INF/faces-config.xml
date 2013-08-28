@@ -1,0 +1,1924 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+<managed-bean>
+        <managed-bean-name>contratoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.ContratoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>cidadeBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.endereco.beans.CidadeJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>enderecoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.endereco.beans.EnderecoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>profissaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.ProfissaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>filialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.FilialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>cnaeBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.CnaeJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>usuarioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.UsuarioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>pessoaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.PessoaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>pessoaEnderecoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.PessoaEnderecoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>fisicaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.FisicaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>pessoaProfissaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.PessoaProfissaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>tipoDocumentoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.TipoDocumentoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>juridicaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.JuridicaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>controleUsuarioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>planoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.PlanoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>caixaBancoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.CaixaBancoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>transferenciaEntreContasBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.TransferenciaEntreContasJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>contribuintesBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuintesJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>agendaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.agenda.beans.AgendaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>grupoAgendaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.agenda.beans.GrupoAgendaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>motivoInativacaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.MotivoInativacaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>convencaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ConvencaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>servicosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.ServicosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>tipoServicoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.TipoServicoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>servicoValorBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.ServicoValorJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>contaCobrancaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.ContaCobrancaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>contaBancoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.ContaBancoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>rotinaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.RotinaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>pesquisaLogBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.PesquisaLogJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>permissaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.PermissaoJSFBean</managed-bean-class>
+
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>grupoCidadeBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadeJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>grupoCidadesBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadesJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>mensagemConvencaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.MensagemConvencaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>contribuicaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuicaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>updateBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.UpdateBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>impressaoBoletosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ImpressaoBoletosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>processamentoIndividualBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ProcessamentoIndividualJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>movimentosReceberBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.MovimentosReceberJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>baixaGeralBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.BaixaGeralJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>arquivoBancoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ArquivoBancoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>extratoTelaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ExtratoTelaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>tirarFotoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.TirarFotoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>acordoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.AcordoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>descontoEmpregadoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.DescontoEmpregadoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>controleAcessoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleAcessoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>controleAcessoSuporteWebBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleAcessoSuporteWebJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>servicoContaCobrancaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.ServicoContaCobrancaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>cnaeConvencaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.CnaeConvencaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>controleAcessoWeb</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleAcessoWebJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>webContribuintesBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContribuintesJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+
+    <managed-bean>
+        <managed-bean-name>webContabilidadeBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContabilidadeJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>chamadaPaginaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>indiceMensalBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.IndiceMensalJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>relatorioContribuintesBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioContribuintesJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>relatorioContabilidadesBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioContabilidadesJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>relatorioMovimentosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioMovimentosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>correcaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.CorrecaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>indiceBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.IndiceJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>registroEmpresarialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.RegistroEmpresarialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>registroPatronalBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.RegistroPatronalJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>agendamentoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.AgendamentoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>homologacaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.HomologacaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>webAgendamentoContribuinteBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.WebAgendamentoContribuinteJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>webAgendamentoContabilidadeBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.WebAgendamentoContabilidadeJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>feriadosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.FeriadosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>horariosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.HorariosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>grupoConvenioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.GrupoConvenioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>subGrupoConvenioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.SubGrupoConvenioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>parentescoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.ParentescoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>suspencaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.SuspencaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>grupoCategoriaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.GrupoCategoriaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>convenioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.ConvenioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>categoriaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.CategoriaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>servicoPessoaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.ServicoPessoaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>sociosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.SociosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>contribuicaoSocioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoSocioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>contribuicaoPorSocioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoPorSocioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>matriculaAcademiaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.MatriculaAcademiaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>matriculaConvenioMedicoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.MatriculaConvenioMedicoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>servicoRotinaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.ServicoRotinaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>lancamentoIndividualBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.LancamentoIndividualJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>emissaoGuiasBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.EmissaoGuiasJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>socioCarteirinhaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.SocioCarteirinhaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>baixaBoletoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>fechamentoComissaoAcordoJSFBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.FechamentoComissaoAcordoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>caravanaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.CaravanaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>vendasCaravanaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.VendasCaravanaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>baileBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.BaileJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>bandaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.BandaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>vendaBaileBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.VendaBaileJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>descricaoEventoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.DescricaoEventoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>vendedorBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.VendedorJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>eFinanceiroBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.EFinanceiroJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>professorBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.ProfessorJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>componenteCurricularBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.ComponenteCurricularJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>turmaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.TurmaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>matriculaEscolaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.MatriculaEscolaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>relatorioSociosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioSociosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>cartaoSocialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.CartaoSocialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>cancelarHorarioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.CancelarHorarioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>generoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.locadoraFilme.beans.GeneroJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>tituloBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.locadoraFilme.beans.TituloJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>macFilialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.MacFilialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>agendaTarefaBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.suporte.beans.AgendaTarefaJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>tipoCentroComercialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.TipoCentroComercialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>centroComercialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.CentroComercialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>simplesBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.seguranca.beans.SimplesJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>catalogoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.locadoraFilme.beans.CatalogoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>enviarArquivosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.pessoa.beans.EnviarArquivosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>atalhosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.sistema.beans.AtalhosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>oposicaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.OposicaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>webREPISBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.WebREPISJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>pisoSalarialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.PisoSalarialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>retornoPadraoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>atendimentoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.atendimento.beans.AtendimentoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>relatorioBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>convencaoPeriodoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.arrecadacao.beans.ConvencaoPeriodoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>notificacaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.NotificacaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>recepcaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.RecepcaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
+        <managed-bean-name>matriculaContratoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.escola.beans.MatriculaContratoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>bloqueioServicosBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.financeiro.beans.BloqueioServicosJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
+        <managed-bean-name>relatorioHomologacaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.homologacao.beans.RelatorioHomologacaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <navigation-rule>
+        <navigation-case>
+            <from-outcome>contrato</from-outcome>
+            <to-view-id>/contrato.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuPrincipal</from-outcome>
+            <to-view-id>/menuPrincipal.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuPrincipalSuporteWeb</from-outcome>
+            <to-view-id>/menuPrincipalSuporteWeb.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>cidade</from-outcome>
+            <to-view-id>/cidade.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>endereco</from-outcome>
+            <to-view-id>/endereco.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaEndereco</from-outcome>
+            <to-view-id>/pesquisaEndereco.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>profissao</from-outcome>
+            <to-view-id>/profissao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>filial</from-outcome>
+            <to-view-id>/filial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>cnae</from-outcome>
+            <to-view-id>/cnae.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCnae</from-outcome>
+            <to-view-id>/pesquisaCnae.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>usuario</from-outcome>
+            <to-view-id>/usuario.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaUsuario</from-outcome>
+            <to-view-id>/pesquisaUsuario.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pessoaFisica</from-outcome>
+            <to-view-id>/pessoaFisica.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPessoa</from-outcome>
+            <to-view-id>/pesquisaPessoa.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pessoaFisica</from-outcome>
+            <to-view-id>/pessoaFisica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pessoaJuridica</from-outcome>
+            <to-view-id>/pessoaJuridica.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPessoaFisica</from-outcome>
+            <to-view-id>/pesquisaPessoaFisica.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCepFisica</from-outcome>
+            <to-view-id>/pesquisaCepFisica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCepListFisica</from-outcome>
+            <to-view-id>/pesquisaCepListFisica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaEndDesFisica</from-outcome>
+            <to-view-id>/pesquisaEndDetalhesFisica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaEndDesListFisica</from-outcome>
+            <to-view-id>/pesquisaEndDesListFisica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaTipoDocumento</from-outcome>
+            <to-view-id>/pesquisaTipoDocumento.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>tipoDocumento</from-outcome>
+            <to-view-id>/tipoDocumento.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPessoaJuridica</from-outcome>
+            <to-view-id>/pesquisaPessoaJuridica.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCepJuridica</from-outcome>
+            <to-view-id>/pesquisaCepJuridica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCepListJuridica</from-outcome>
+            <to-view-id>/pesquisaCepListJuridica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaEndDesJuridica</from-outcome>
+            <to-view-id>/pesquisaEndDetalhesJuridica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaEndDesListJuridica</from-outcome>
+            <to-view-id>/pesquisaEndDesListJuridica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPessoaJuridica</from-outcome>
+            <to-view-id>/pesquisaPessoaJuridica.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaJuridicaFilial</from-outcome>
+            <to-view-id>/pesquisaJuridicaFilial.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>plano</from-outcome>
+            <to-view-id>/plano.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPlano</from-outcome>
+            <to-view-id>/pesquisaPlano.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaLote</from-outcome>
+            <to-view-id>/pesquisaLote.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>caixaBanco</from-outcome>
+            <to-view-id>/caixaBanco.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPessoaFisicaMov</from-outcome>
+            <to-view-id>/pesquisaPessoaFisicaMov.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>indexSuporte</from-outcome>
+            <to-view-id>/indexSuporte.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuFinanceiro</from-outcome>
+            <to-view-id>/menuFinanceiro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>contribuintes</from-outcome>
+            <to-view-id>/contribuintes.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>transferenciaEntreContas</from-outcome>
+            <to-view-id>/transferenciaEntreContas.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaTransferencia</from-outcome>
+            <to-view-id>/pesquisaTransferencia.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>agenda</from-outcome>
+            <to-view-id>/agenda.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>grupoAgenda</from-outcome>
+            <to-view-id>/grupoAgenda.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaGrupoAgenda</from-outcome>
+            <to-view-id>/pesquisaGrupoAgenda.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>motivoInativacao</from-outcome>
+            <to-view-id>/motivoInativacao.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaMotivoInativacao</from-outcome>
+            <to-view-id>/pesquisaMotivoInativacao.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>convencao</from-outcome>
+            <to-view-id>/convencao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaConvencao</from-outcome>
+            <to-view-id>/pesquisaConvencao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>servicos</from-outcome>
+            <to-view-id>/servicos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaServicos</from-outcome>
+            <to-view-id>/pesquisaServicos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>tipoServico</from-outcome>
+            <to-view-id>/tipoServico.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaTipoServico</from-outcome>
+            <to-view-id>/pesquisaTipoServico.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>servicoValor</from-outcome>
+            <to-view-id>/servicoValor.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaServicoValor</from-outcome>
+            <to-view-id>/pesquisaServicoValor.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>contaCobranca</from-outcome>
+            <to-view-id>/contaCobranca.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaContaCobranca</from-outcome>
+            <to-view-id>/pesquisaContaCobranca.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaContaBanco</from-outcome>
+            <to-view-id>/pesquisaContaBanco.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuArrecadacao</from-outcome>
+            <to-view-id>/menuArrecadacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuSocial</from-outcome>
+            <to-view-id>/menuSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuHomologacao</from-outcome>
+            <to-view-id>/menuHomologacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuAcademia</from-outcome>
+            <to-view-id>/menuAcademia.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuEscola</from-outcome>
+            <to-view-id>/menuEscola.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuClube</from-outcome>
+            <to-view-id>/menuClube.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>menuAtendimento</from-outcome>
+            <to-view-id>/menuAtendimento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>rotina</from-outcome>
+            <to-view-id>/rotina.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaRotina</from-outcome>
+            <to-view-id>/pesquisaRotina.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>permissao</from-outcome>
+            <to-view-id>/permissao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaPermissao</from-outcome>
+            <to-view-id>/pesquisaPermissao.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>grupoCidade</from-outcome>
+            <to-view-id>/grupoCidade.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaGrupoCidade</from-outcome>
+            <to-view-id>/pesquisaGrupoCidade.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>grupoCidades</from-outcome>
+            <to-view-id>/grupoCidades.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaGrupoCidades</from-outcome>
+            <to-view-id>/pesquisaGrupoCidades.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>mensagem</from-outcome>
+            <to-view-id>/mensagem.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>contribuicao</from-outcome>
+            <to-view-id>/contribuicao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>inativacaoContribuintes</from-outcome>
+            <to-view-id>/inativacaoContribuintes.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>processamentoIndividual</from-outcome>
+            <to-view-id>/processamentoIndividual.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>impressaoBoletos</from-outcome>
+            <to-view-id>/impressaoBoletos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>baixarMovimento</from-outcome>
+            <to-view-id>/baixarMovimento.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>movimentosReceber</from-outcome>
+            <to-view-id>/movimentosReceber.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>baixaGeral</from-outcome>
+            <to-view-id>/baixaGeral.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>arquivoBanco</from-outcome>
+            <to-view-id>/arquivoBanco.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>extratoTela</from-outcome>
+            <to-view-id>/extratoTela.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>contaBanco</from-outcome>
+            <to-view-id>/contaBanco.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>descontoEmpregado</from-outcome>
+            <to-view-id>/descontoEmpregado.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>acordo</from-outcome>
+            <to-view-id>/acordo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>acessoNegado</from-outcome>
+            <to-view-id>/acessoNegado.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>sessaoExpirou</from-outcome>
+            <to-view-id>/sessaoExpirou.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>erro</from-outcome>
+            <to-view-id>/erro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>servicoContaCobranca</from-outcome>
+            <to-view-id>/servicoContaCobranca.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>cnaeConvencao</from-outcome>
+            <to-view-id>/cnaeConvencao.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>indexAcessoWeb</from-outcome>
+            <to-view-id>/indexAcessoWeb.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuPrincipalAcessoWeb</from-outcome>
+            <to-view-id>/menuPrincipalAcessoWeb.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>webContribuinte</from-outcome>
+            <to-view-id>/webContribuinte.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>webContabilidade</from-outcome>
+            <to-view-id>/webContabilidade.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>webConfiguracoes</from-outcome>
+            <to-view-id>/webConfiguracoes.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>indiceMensal</from-outcome>
+            <to-view-id>/indiceMensal.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>relatorioContribuintes</from-outcome>
+            <to-view-id>/relatorioContribuintes.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>relatorioContabilidades</from-outcome>
+            <to-view-id>/relatorioContabilidades.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>relatorioMovimentos</from-outcome>
+            <to-view-id>/relatorioMovimentos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>correcao</from-outcome>
+            <to-view-id>/correcao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>permissaoDepartamento</from-outcome>
+            <to-view-id>/permissaoDepartamento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>retornoBanco</from-outcome>
+            <to-view-id>/retornoBanco.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>registroEmpresarial</from-outcome>
+            <to-view-id>/registroEmpresarial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>enviarEmail</from-outcome>
+            <to-view-id>/enviarEmail.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>agendamento</from-outcome>
+            <to-view-id>/agendamento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>homologacao</from-outcome>
+            <to-view-id>/homologacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>webAgendamentoContribuinte</from-outcome>
+            <to-view-id>/webAgendamentoContribuinte.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>webAgendamentoContabilidade</from-outcome>
+            <to-view-id>/webAgendamentoContabilidade.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>feriados</from-outcome>
+            <to-view-id>/feriados.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>horarios</from-outcome>
+            <to-view-id>/horarios.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>grupoConvenio</from-outcome>
+            <to-view-id>/grupoConvenio.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaGrupoConvenio</from-outcome>
+            <to-view-id>/pesquisaGrupoConvenio.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>subGrupoConvenio</from-outcome>
+            <to-view-id>/subGrupoConvenio.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaSubGrupoConvenio</from-outcome>
+            <to-view-id>/pesquisaSubGrupoConvenio.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>parentesco</from-outcome>
+            <to-view-id>/parentesco.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>suspencao</from-outcome>
+            <to-view-id>/suspencao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>grupoCategoria</from-outcome>
+            <to-view-id>/grupoCategoria.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaParentesco</from-outcome>
+            <to-view-id>/pesquisaParentesco.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaSuspencao</from-outcome>
+            <to-view-id>/pesquisaSuspencao.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>convenio</from-outcome>
+            <to-view-id>/convenio.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>categoria</from-outcome>
+            <to-view-id>/categoria.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCategoria</from-outcome>
+            <to-view-id>/pesquisaCategoria.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>servicoPessoa</from-outcome>
+            <to-view-id>/servicoPessoa.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>socios</from-outcome>
+            <to-view-id>/socios.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>contribuicaoSocio</from-outcome>
+            <to-view-id>/contribuicaoSocio.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>contribuicaoPorSocio</from-outcome>
+            <to-view-id>/contribuicaoPorSocio.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaSocios</from-outcome>
+            <to-view-id>/pesquisaSocios.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>academia</from-outcome>
+            <to-view-id>/academia.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaAcademia</from-outcome>
+            <to-view-id>/pesquisaAcademia.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>convenioMedico</from-outcome>
+            <to-view-id>/convenioMedico.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaConvenioMedico</from-outcome>
+            <to-view-id>/pesquisaConvenioMedico.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>lancamentoIndividual</from-outcome>
+            <to-view-id>/lancamentoIndividual.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>servicoRotina</from-outcome>
+            <to-view-id>/servicoRotina.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>emissaoGuias</from-outcome>
+            <to-view-id>/emissaoGuias.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaJuridicaConvenio</from-outcome>
+            <to-view-id>/pesquisaJuridicaConvenio.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaGuiasEmitidas</from-outcome>
+            <to-view-id>/pesquisaGuiasEmitidas.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>emissaoCarteirinha</from-outcome>
+            <to-view-id>/emissaoCarteirinha.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>baixaBoleto</from-outcome>
+            <to-view-id>/baixaBoleto.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    <navigation-case>
+        <from-outcome>fechamentoComissaoAcordo</from-outcome>
+        <to-view-id>/fechamentoComissaoAcordo.jsf</to-view-id>
+        <redirect/>
+    </navigation-case>
+
+        <navigation-case>
+            <from-outcome>caravana</from-outcome>
+            <to-view-id>/caravana.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>vendasCaravana</from-outcome>
+            <to-view-id>/vendasCaravana.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>vendasBaile</from-outcome>
+            <to-view-id>/vendasBaile.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>baile</from-outcome>
+            <to-view-id>/baile.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>bandas</from-outcome>
+            <to-view-id>/bandas.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>descricaoEvento</from-outcome>
+            <to-view-id>/descricaoEvento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaBanda</from-outcome>
+            <to-view-id>/pesquisaBanda.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaCaravana</from-outcome>
+            <to-view-id>/pesquisaCaravana.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaBaile</from-outcome>
+            <to-view-id>/pesquisaBaile.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaVendasCaravana</from-outcome>
+            <to-view-id>/pesquisaVendasCaravana.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>vendedor</from-outcome>
+            <to-view-id>/vendedor.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>eFinanceiro</from-outcome>
+            <to-view-id>/eFinanceiro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>professor</from-outcome>
+            <to-view-id>/professor.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>componenteCurricular</from-outcome>
+            <to-view-id>/componenteCurricular.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>turma</from-outcome>
+            <to-view-id>/turma.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaVendedor</from-outcome>
+            <to-view-id>/pesquisaVendedor.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaComponenteCurricular</from-outcome>
+            <to-view-id>/pesquisaComponenteCurricular.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaTurma</from-outcome>
+            <to-view-id>/pesquisaTurma.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>matriculaEscola</from-outcome>
+            <to-view-id>/matriculaEscola.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>relatorioSocios</from-outcome>
+            <to-view-id>/relatorioSocios.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>cartaoSocial</from-outcome>
+            <to-view-id>/cartaoSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaMatriculaEscola</from-outcome>
+            <to-view-id>/pesquisaMatriculaEscola.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>cancelarHorario</from-outcome>
+            <to-view-id>/cancelarHorario.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>genero</from-outcome>
+            <to-view-id>/genero.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>titulo</from-outcome>
+            <to-view-id>/titulo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaGenero</from-outcome>
+            <to-view-id>/pesquisaGenero.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaTitulo</from-outcome>
+            <to-view-id>/pesquisaTitulo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>macFilial</from-outcome>
+            <to-view-id>/macFilial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>agendaTarefa</from-outcome>
+            <to-view-id>/agendaTarefa.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>agendaInterrupcao</from-outcome>
+            <to-view-id>/agendaInterrupcao.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>tipoCentroComercial</from-outcome>
+            <to-view-id>/tipoCentroComercial.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>centroComercial</from-outcome>
+            <to-view-id>/centroComercial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>indexLogin</from-outcome>
+            <to-view-id>/indexLogin.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>simples</from-outcome>
+            <to-view-id>/simples.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>menuLocadora</from-outcome>
+            <to-view-id>/menuLocadora.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>catalogoFilme</from-outcome>
+            <to-view-id>/catalogoFilme.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>enviarArquivos</from-outcome>
+            <to-view-id>/enviarArquivos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>acessoLinks</from-outcome>
+            <to-view-id>/acessoLinks.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>oposicao</from-outcome>
+            <to-view-id>/oposicao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pesquisaOposicao</from-outcome>
+            <to-view-id>/pesquisaOposicao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pesquisaLog</from-outcome>
+            <to-view-id>/pesquisaLog.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>webSolicitaREPIS</from-outcome>
+            <to-view-id>/webSolicitaREPIS.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>webLiberacaoREPIS</from-outcome>
+            <to-view-id>/webLiberacaoREPIS.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>registroPatronal</from-outcome>
+            <to-view-id>/registroPatronal.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>retornoPadrao</from-outcome>
+            <to-view-id>/retornoPadrao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pesquisaPatronal</from-outcome>
+            <to-view-id>/pesquisaPatronal.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pisoSalarial</from-outcome>
+            <to-view-id>/pisoSalarial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pesquisaPisoSalarial</from-outcome>
+            <to-view-id>/pesquisaPisoSalarial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>atendimento</from-outcome>
+            <to-view-id>/atendimento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>convencaoPeriodo</from-outcome>
+            <to-view-id>/convencaoPeriodo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>relatorio</from-outcome>
+            <to-view-id>/relatorio.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pesquisaRelatorios</from-outcome>
+            <to-view-id>/pesquisaRelatorios.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>notificacao</from-outcome>
+            <to-view-id>/notificacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>recepcao</from-outcome>
+            <to-view-id>/recepcao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>matriculaContrato</from-outcome>
+            <to-view-id>/matriculaContrato.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>pesquisaMatriculaContrato</from-outcome>
+            <to-view-id>/pesquisaMatriculaContrato.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+    
+        <navigation-case>
+            <from-outcome>bloqueioServicos</from-outcome>
+            <to-view-id>/bloqueioServicos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>relatorioHomologacao</from-outcome>
+            <to-view-id>/relatorioHomologacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+    </navigation-rule>
+</faces-config>

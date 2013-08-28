@@ -1,0 +1,353 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Cadastro de Matrícula</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMatriculaEscola">            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Matrícula" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae">
+                    <div class="divFundo">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                            <h:column>
+                                <h:outputLabel value="Filial: " styleClass="fontePadrao" />
+                                <br />
+                                <br />
+                            </h:column>
+                            <h:column>
+                                <h:outputText value="#{matriculaEscolaBean.matriculaEscola.filial.filial.pessoa.nome}" />
+                                <h:outputText value="#{matriculaEscolaBean.msgStatusFilial}" rendered="#{matriculaEscolaBean.matriculaEscola.filial.filial.pessoa.id  == -1}" />
+                                <br />
+                                <br />
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Emissão: " styleClass="fontePadrao" for="idDataMatricula"/>
+                            </h:column>
+                            <h:column>
+                                <h:inputText id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatriculaString}" styleClass="fontePadrao" class="data" maxlength="10" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="6" title="Data da emissão">
+                                    <a4j:ajax event="change" render="this" />
+                                </h:inputText>
+                                <h:outputLabel value=" Status: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu  id="cbStatus" style="width: 100px;" title="Status atual" value="#{matriculaEscolaBean.idStatus}" >
+                                    <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
+                                </h:selectOneMenu>
+                                <h:outputLabel value=" Vencimento: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu id="cbDataVencimento" style="width: 40px;"  title="Dia do vencimento" value="#{matriculaEscolaBean.idDiaVencimento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                    <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
+                                </h:selectOneMenu>
+                            </h:column>
+                            <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                <a4j:ajax event="click" listener="#{matriculaEscolaBean.pesquisaFisicaAluno()}" />
+                            </a4j:commandButton>
+                            <h:column>
+                                <h:outputLabel value=" Pesquisar Aluno " styleClass="fontePadrao" style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id == -1}" for="idPesquisarAluno"/>
+                                <h:outputText id="idAluno" value=" Aluno: #{matriculaEscolaBean.matriculaEscola.aluno.nome}" styleClass="fontePadrao" style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" />
+                                <h:outputText value=" - SÓCIO" styleClass="fontePadrao" rendered="#{matriculaEscolaBean.socio}"/>
+                            </h:column>
+                            <h:outputLabel value="Responsável: " styleClass="fontePadrao" style="margin-left: 8px" for="idPesquisarAluno" />
+                            <h:column>
+                                <h:outputText id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" styleClass="fontePadrao"/>
+                                <h:outputText value=" - Pesquisar outro responsável - Pessoa Física: " styleClass="fontePadrao"  rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" />
+                                <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" >
+                                    <a4j:ajax event="click" listener="#{matriculaEscolaBean.pesquisaFisicaResponsavel()}" />
+                                </a4j:commandButton>
+                                <h:outputText value=" - Pessoa Jurídica: " styleClass="fontePadrao"  rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" />
+                                <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                            </h:column>
+                            <h:outputLabel value="Vendedor:" styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="cbVendedor" value="#{matriculaEscolaBean.idVendedor}" style="width: 150px">
+                                <f:selectItems value="#{matriculaEscolaBean.listaVendedor}" />
+                            </h:selectOneMenu>
+                            <h:outputLabel value="Mídia:" styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="cbMidia" value="#{matriculaEscolaBean.idMidia}" style="width: 150px">
+                                <f:selectItems value="#{matriculaEscolaBean.listaMidia}" />
+                            </h:selectOneMenu>                                
+                        </h:panelGrid>
+                        <div class="clear"></div>
+                        <div style="margin-top: 15px; margin-bottom: 15px;">
+                            <rich:accordion switchType="client" style="width: 600px;">
+                                <rich:accordionItem header="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" >
+                                    <a4j:ajax event="enter" listener="#{matriculaEscolaBean.clickTurma}" />
+                                    <h:panelGrid columns="2" styleClass="coluna1, coluna2">
+                                        <h:outputLabel value="Turma: " styleClass="fontePadrao" style="width: 100px;" title="Turma"/>
+                                        <h:selectOneMenu  id="cbTurma" value="#{matriculaEscolaBean.idTurma}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" >
+                                            <f:selectItems value="#{matriculaEscolaBean.listaTurma}"/>
+                                            <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                        </h:selectOneMenu>
+                                    </h:panelGrid>
+                                </rich:accordionItem>
+                                
+                                <rich:accordionItem header="Individual" id="idIndividual" disabled="#{matriculaEscolaBean.desabilitaIndividual}" rendered="#{!matriculaEscolaBean.desabilitaIndividual}">
+                                    <a4j:ajax event="enter" listener="#{matriculaEscolaBean.clickIndividual}"/>
+                                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                        <h:outputLabel value="Curso:" styleClass="fontePadrao"/>
+                                        <h:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" style="width: 100px;" disabled="#{matriculaEscolaBean.desabilitaCampo}">
+                                            <f:selectItems value="#{matriculaEscolaBean.listaIndividual}" />
+                                            <a4j:ajax event="change" listener="#{matriculaEscolaBean.atualizaValor}" render="idTabela" />
+                                            <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                        </h:selectOneMenu>
+                                        <h:outputLabel value="Data Inicío:" styleClass="fontePadrao" for="idDataInicio"/>
+                                        <h:column>
+                                            <h:inputText id="idDataInicio" size="6" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataInicioString}" class="data" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                <a4j:ajax event="change" render="this" />
+                                            </h:inputText>
+                                            <h:outputLabel value="Data Término: " styleClass="fontePadrao" for="idDataTermino"/>
+                                            <h:inputText id="idDataTermino" size="6" maxlength="10" value="#{matriculaEscolaBean.matriculaIndividual.dataTerminoString}" class="data" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                <a4j:ajax event="change" render="this" />
+                                            </h:inputText>
+                                        </h:column>
+                                        <h:outputLabel value="Horário:" styleClass="fontePadrao"/>
+                                        <h:column>
+                                            <h:inputText id="idHoraInicio"  value="#{matriculaEscolaBean.matriculaIndividual.inicio}" size="1" maxlength="5" class="hora" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                <a4j:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" render="this" />
+                                            </h:inputText>
+                                            <h:outputLabel value=" às " styleClass="fontePadrao"/>
+                                            <h:inputText id="idHoraTermino"  value="#{matriculaEscolaBean.matriculaIndividual.termino}" size="1" maxlength="5" class="hora" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                <a4j:ajax event="blur" listener="#{matriculaEscolaBean.validaHoraInicio}" render="this" />
+                                            </h:inputText>
+                                            <h:outputLabel value=" horas " styleClass="fontePadrao"/>
+                                        </h:column>
+                                        <h:outputLabel value="Professor:" styleClass="fontePadrao"/>
+                                        <h:selectOneMenu  id="cbProfessor" value="#{matriculaEscolaBean.idProfessor}" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                            <f:selectItems value="#{matriculaEscolaBean.listaProfessor}" />
+                                        </h:selectOneMenu>
+                                        <h:outputLabel value="" styleClass="fontePadrao"/>
+                                        <h:column>
+                                            <div style="padding: 5px; border: #e0dfdf solid 1px; margin-top: 5px; " class="divFundo">
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.segunda}" title="Segunda-Feira" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSegunda">
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Seg" styleClass="fontePadrao" for="idSegunda"/>
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.terca}" title="Terça-Feira" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idTerca">
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Ter" styleClass="fontePadrao" for="idTerca"/>
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.quarta}" title="Quata-Feira" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idQuarta" >
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Qua" styleClass="fontePadrao" for="idQuarta" />
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.quinta}" title="Quinta-Feira" disabled="#{matriculaEscolaBean.desabilitaIndividual}"  id="idQuinta">
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Qui" styleClass="fontePadrao" for="idQuinta"/>
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.sexta}" title="Sexta-Feira" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSexta">
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Sex" styleClass="fontePadrao" for="idSexta" />
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.sabado}" title="Sábado" disabled="#{matriculaEscolaBean.desabilitaIndividual}" id="idSabado" >
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Sab" styleClass="fontePadrao" for="idSabado"/>
+                                                <h:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaIndividual.domingo}" title="Domingo" id="idDomingo" disabled="#{matriculaEscolaBean.desabilitaIndividual}">
+                                                    <a4j:ajax event="change" render="this" />
+                                                </h:selectBooleanCheckbox>
+                                                <h:outputLabel value="Dom" styleClass="fontePadrao" for="idDomingo"/>
+                                            </div>
+                                        </h:column>
+                                    </h:panelGrid>                                
+                                </rich:accordionItem>
+                            </rich:accordion>
+                        </div>
+                        <div class="divFundo" style="background: white; margin-bottom: 10px;">
+                            <h:panelGrid columns="8" id="idTabela">
+                                <h:column>                                    
+                                    <h:outputLabel value="Valor" styleClass="fontePadrao" for="idValor"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="Desconto" styleClass="fontePadrao" for="idDesconto"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="Desc. Vecto" styleClass="fontePadrao" for="idDescontoVencimento"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="V. Liquído" styleClass="fontePadrao" for="idValorLiquido"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="Parcelas" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="Vl. da Parcela:" styleClass="fontePadrao" for="idValorParcela"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="Parcela até o Vencto:" styleClass="fontePadrao" for="idValorParcelaPagamento" />                                    
+                                </h:column>
+                                <h:column>                                    
+                                </h:column>   
+                                <h:column>                                    
+                                    <h:inputText readonly="true" dir="RTL" id="idValor" size="5" maxlength="10" value="#{matriculaEscolaBean.valorString}" styleClass="real" title="Valor" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                    </h:inputText>
+                                </h:column>                                
+                                <h:column>                                    
+                                    <h:inputText dir="RTL" id="idDesconto" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoString}" styleClass="real"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <a4j:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                        <a4j:ajax event="blur" render="idValorLiquido, idValorParcela, idValorParcelaPagamento" />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:inputText dir="RTL" id="idDescontoVencimento" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.descontoAteVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" title="Desconto até o vencimento" >
+                                        <a4j:ajax event="blur" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:inputText readonly="true" dir="RTL" id="idValorLiquido" size="5" maxlength="10" value="#{matriculaEscolaBean.valorLiquido}" title="Valor Liquído"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:selectOneMenu id="cbNumeros" value="#{matriculaEscolaBean.matriculaEscola.numeroParcelas}" title="Parcelas"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                        <f:selectItems value="#{matriculaEscolaBean.listaNumeros}" />
+                                    </h:selectOneMenu>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:inputText readonly="true" dir="RTL" id="idValorParcela" size="13" maxlength="10" value="#{matriculaEscolaBean.valorParcela}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:inputText readonly="true" dir="RTL" id="idValorParcelaPagamento" size="13" maxlength="10" value="#{matriculaEscolaBean.valorParcelaVencimentoString}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <a4j:ajax event="blur" render="idTabela" />
+                                    </h:inputText>
+                                </h:column>                                    
+                                <h:column>                                    
+                                    <h:selectBooleanCheckbox id="idCheckTaxa" value="#{matriculaEscolaBean.taxa}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <a4j:ajax event="click" listener="#{matriculaEscolaBean.cobrarTaxa}" render="idTextoTaxa" />
+                                    </h:selectBooleanCheckbox> Cobrar Taxa
+                                    <h:outputText id="idTextoTaxa" value=" -  R$ #{matriculaEscolaBean.valorTaxaString}"  />
+                                </h:column>
+                            </h:panelGrid>
+                        </div>
+                        <h:panelGrid>
+                            <h:panelGrid columns="7">
+                                <a4j:commandLink styleClass="idSalvar iLink" onclick="modalOpcao('divSalvarMovimento');"  value="Gerar Parcelas" style="width: 150px;" title="Gerar Parcelas" rendered="#{desabilitaCamposMovimento}" />
+                                <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" onclick="modalOpcao('divSalvar');" />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}"/>
+                                <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
+                                <h:commandLink styleClass="idPesquisar iLink" value="Gerar Contrato" title="Gerar Contrato" action="#{matriculaEscolaBean.gerarContrato}" style="width: 150px;" target="_blank" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}"  />
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <div class="divFundo" style="background: white; margin-top: 15px;">
+                            <rich:dataTable value="#{matriculaEscolaBean.listaMovimentos}" id="tblMovimentos" var="linha" iterationStatusVar="it" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                <rich:column styleClass="centralizar">
+                                    <f:facet name="header">
+                                        <h:outputText value="Vencimento"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.vencimento}"  />
+                                </rich:column>
+                                <rich:column  styleClass="centralizar">
+                                    <f:facet name="header">
+                                        <h:outputText value="Parcela" />
+                                    </f:facet>
+                                    <h:outputText value="#{linha.quantidade}">
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column styleClass="centralizar">
+                                    <f:facet name="header">
+                                        <h:outputText value="Valor"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.valor}" />
+                                </rich:column>
+                                <rich:column  styleClass="centralizar">
+                                    <f:facet name="header">
+                                        <h:outputText value="Tipo Serviço" />
+                                    </f:facet>
+                                    <h:outputText value="#{linha.tipoServico.descricao}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </div>
+                    </div>
+                </div>                
+
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar este Matrícula?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma, idAluno, idResp"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divSalvarMovimento" class="divSalvar window" style="background: white;">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja gerar esse movimento?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.gerarParcelas}" oncomplete="modalMensagem()" render="outConfirma, idAluno, idResp" rendered="#{matriculaEscolaBean.matriculaEscola.lote.id != -1}"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir esta Matrícula?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma, idAluno, idResp"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{matriculaEscolaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="@form"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

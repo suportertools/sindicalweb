@@ -1,0 +1,164 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>web - Liberação de REPIS</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formWebContribuinte">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Impressão de Guias" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 900px;">
+                        <div class="divMae divFundo bg-white margin-bottom-max margin-top-maior">
+                            <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+                            <h:panelGrid rendered="#{!webREPISBean.showPessoa}" id="idShowPessoa">
+                                <rich:panel id="idShowPessoaPanel">
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Status: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:selectOneMenu id="id_sel" value="#{webREPISBean.idRepisStatus}">
+                                            <f:selectItems value="#{webREPISBean.listaComboRepisStatus}" />
+                                        </h:selectOneMenu>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Ano: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.ano}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Emissão: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.dataEmissaoString}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="CNPJ: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.pessoa.documento}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Razão Social " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.pessoa.nome}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Telefone: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.pessoa.telefone1}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Endereço: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.enderecoString}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" rendered="#{webREPISBean.repisMovimento.pessoa.email1 != ''}">
+                                        <h:outputText value="E-mail: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.pessoa.email1}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:outputText value="Solicitante: " styleClass="fontePadrao fontePadraoNegrito"/>
+                                        <h:outputText value="#{webREPISBean.repisMovimento.contato}" styleClass="fontePadrao" />
+                                    </h:panelGrid>
+                                </rich:panel>
+
+                                <h:panelGrid columns="4">
+                                    <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="modalMensagem()" value="Atualizar" action="#{webREPISBean.btnSalvarStatus}" render="outConfirma"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </div>
+                        <rich:dataTable styleClass="margin-top-maior" value="#{webREPISBean.listaRepisMovimentoPatronal}" var="linha" id="tbl" style="width: 100%" iterationStatusVar="it">
+                            <rich:column styleClass="coluna">
+                                <f:facet name="header">
+                                    <h:outputText value="#"/>
+                                </f:facet>
+                                <h:outputText value="#{it.index}"/>
+                            </rich:column>
+                            
+                            <rich:column styleClass="colunaPesquisa">
+                                <f:facet name="header">
+                                    <h:outputText value="ID"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{webREPISBean.editar(it.index)}" value="#{linha.id}" render="id_sel idShowPessoa idShowPessoaPanel formWebContribuinte" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="CNPJ/Nome"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{webREPISBean.editar(it.index)}" value="#{linha.pessoa.documento} - #{linha.pessoa.nome}" render="id_sel idShowPessoa idShowPessoaPanel formWebContribuinte" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Protocolo"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.id}"/>
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="STATUS"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.repisStatus.descricao}"/>
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Emissão"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.dataEmissaoString}"/>
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Solicitante"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.contato}"/>
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Resposta"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.dataRespostaString}"/>
+                            </rich:column>
+                            
+                        </rich:dataTable>
+                    </div>
+                </center>
+                
+                <div id="boxes">
+                    <div id="divProcesso" class="window">
+                        <br />
+                        <center>
+                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{webREPISBean.msg}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="#{webREPISBean.limparRepisLiberacao}" title="OK" render="idShowPessoa idShowPessoaPanel formWebContribuinte tbl" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

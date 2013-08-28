@@ -1,0 +1,43 @@
+package br.com.rtools.homologacao.db;
+
+import br.com.rtools.arrecadacao.Oposicao;
+import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.Horarios;
+import br.com.rtools.homologacao.Senha;
+import br.com.rtools.pessoa.PessoaEmpresa;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.EntityManager;
+
+public interface AgendamentoDB {
+    public EntityManager getEntityManager();
+    public boolean insert(Agendamento agendamento);
+    public boolean update(Agendamento agendamento);
+    public boolean delete(Agendamento agendamento);
+    public List pesquisaTodos();
+    public Agendamento pesquisaCodigo(int id);
+    public Agendamento pesquisaProtocolo(int id);
+    public List<Agendamento> pesquisaAgendamento(int idStatus, int idFilial, Date dataInicial, Date dataFinal, int idUsuario, int idPessoaFisica, int idPessoaJuridica);
+    public List pesquisaTodos(int idFilial);
+    public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data);
+    public int pesquisaQuantidadeAgendado(int idFilial, Horarios horarios, Date data);
+    public List pesquisaAgendadoPorEmpresa(Date data, int idEmpresa);
+    public List pesquisaTodosHorariosDisponiveis(int idFilial, int idDiaSemana);
+    public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc);
+    public List pesquisaPessoaEmpresaPertencente(String doc);
+    public List pesquisaEmpresaEmDebito(int id_pessoa, String vencimento);
+    public List pesquisaAgendadoDataMaior(Date data);
+    public List pesquisaAgendadoPorEmpresaDataMaior(int idEmpresa);
+    public List pesquisaAgendamentoPorPessoaEmpresa(int idPessoaEmpresa);
+    public List pesquisaAgendadoPorEmpresaSemHorario(int id_filial, Date data, int idEmpresa);
+    public Oposicao pesquisaFisicaOposicao(String cpf, int id_juridica);
+    public List<Oposicao> pesquisaFisicaOposicaoSemEmpresa(String cpf);
+    public Oposicao pesquisaFisicaOposicaoAgendamento(String cpf, int id_juridica, String referencia);
+    public Agendamento pesquisaFisicaAgendada(int id_fisica);
+    public int pesquisaUltimaSenha(int id_filial);
+    public Senha pesquisaSenhaAgendamento(int id_agendamento);
+    public Senha pesquisaSenhaAtendimento(int id_filial);
+    public Senha pesquisaAtendimentoIniciado(int id_usuario, int nr_mesa, int id_filial);
+    public boolean verificaNaoAtendidosSegRegistroAgendamento();
+    public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo);
+}
