@@ -85,14 +85,14 @@
                                 <f:facet name="header">
                                     <h:outputText value="ID"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{webREPISBean.editar(it.index)}" value="#{linha.id}" render="id_sel idShowPessoa idShowPessoaPanel formWebContribuinte" />
+                                <h:commandLink action="#{webREPISBean.editar(it.index)}" value="#{linha.id}" />
                             </rich:column>
 
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="CNPJ/Nome"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{webREPISBean.editar(it.index)}" value="#{linha.pessoa.documento} - #{linha.pessoa.nome}" render="id_sel idShowPessoa idShowPessoaPanel formWebContribuinte" />
+                                <h:commandLink action="#{webREPISBean.editar(it.index)}" value="#{linha.pessoa.documento} - #{linha.pessoa.nome}" />
                             </rich:column>
 
                             <rich:column>
@@ -153,7 +153,7 @@
                         <center>
                             <h:outputText id="outConfirma" value="#{webREPISBean.msg}" styleClass="fontePadrao"/>
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="#{webREPISBean.limparRepisLiberacao}" title="OK" render="idShowPessoa idShowPessoaPanel formWebContribuinte tbl" />
+                            <h:commandLink styleClass="idNovo iLink closeModal" value="OK" action="#{webREPISBean.limparRepisLiberacao}" title="OK" />
                         </center>
                     </div>
                     <div id="mask"></div>

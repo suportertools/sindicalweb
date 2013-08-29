@@ -41,7 +41,10 @@
                         <div class="headerPanel">
                             <h:outputText value="Acesso Sindical 3.0" styleClass="fontePanel"/>
                         </div>                
-                        <h:inputHidden value="#{controleUsuarioBean.validaIndex}" />
+                        <h:form id="formLoginValida">
+                            <h:inputHidden value="#{controleUsuarioBean.validaIndex}" />
+                        </h:form>
+                            
                         <h:form id="formLogin">
                             <h:panelGrid columns="2">
                                 <h:column>
@@ -72,16 +75,16 @@
                                     <h:graphicImage value="/Imagens/carregando.gif" alt="Entrando"/>
                                 </f:facet>
                             </a4j:status>
+                            <h:panelGrid columns="1">
+                                <h:outputLabel value="#{controleUsuarioBean.filialDep}" rendered="#{controleUsuarioBean.filialDep != null}" styleClass="fontePadraoNegrito"/>
+                                <h:panelGrid columns="2" rendered="#{controleUsuarioBean.filialDep == null}">
+                                    <h:graphicImage value="/Imagens/vRegistro.png" alt="vRegistro" style="margin-right: 15px;"/>
+                                    <a4j:commandLink styleClass="iLink fontePadrao" style="text-decoration: underline;" value="Verificar registro do Computador"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
                         </h:form>
                     </rich:panel>   
                     <br /><br />
-                    <h:panelGrid columns="1">
-                        <h:outputLabel value="#{controleUsuarioBean.filialDep}" rendered="#{controleUsuarioBean.filialDep != null}" styleClass="fontePadraoNegrito"/>
-                        <h:panelGrid columns="2" rendered="#{controleUsuarioBean.filialDep == null}">
-                            <h:graphicImage value="/Imagens/vRegistro.png" alt="vRegistro" style="margin-right: 15px;"/>
-                            <a4j:commandLink styleClass="iLink fontePadrao" style="text-decoration: underline;" value="Verificar registro do Computador"/>
-                        </h:panelGrid>
-                    </h:panelGrid>
                     <p style="color: red; font-weight: bold;" class="fontePadrao">
                         Importante
                     </p>                    

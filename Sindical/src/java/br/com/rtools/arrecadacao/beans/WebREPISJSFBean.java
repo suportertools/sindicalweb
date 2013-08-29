@@ -99,11 +99,11 @@ public class WebREPISJSFBean {
         listaRepisMovimento.clear();
     }
     
-    public void limparRepisLiberacao(){
+    public String limparRepisLiberacao(){
         repisMovimento = new RepisMovimento();
         setShowPessoa(true);
         listaRepisMovimentoPatronal.clear();
-        
+        return "webLiberacaoREPIS";
     }
 
     public RepisMovimento getRepisMovimento() {
@@ -219,7 +219,7 @@ public class WebREPISJSFBean {
                 }
             }
         }
-        return null;
+        return "webLiberacaoREPIS";
     }
     
     public String imprimirCertificado(int id){
@@ -568,11 +568,11 @@ public class WebREPISJSFBean {
 
     public List getListaArquivosEnviados() {
             
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/repis/"+pessoa.getId()+"/");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/repis/"+pessoa.getId()+"/");
             File file = new File(caminho);
             file.mkdir();
             
-            File file2 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/repis/"));
+            File file2 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/repis/"));
             File listFile[] = file2.listFiles();
             for (int i = 0; i < listFile.length; i++){
                 if (listFile[i].isFile()){
