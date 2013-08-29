@@ -1,0 +1,92 @@
+
+package br.com.rtools.principal;
+
+import br.com.rtools.utilitarios.DataObject;
+import java.util.HashMap;
+import java.util.Map;
+import javax.faces.context.FacesContext;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import oracle.toplink.essentials.config.CacheType;
+import oracle.toplink.essentials.config.TopLinkProperties;
+
+public class DB {
+    private EntityManager entidade;    
+
+//  public EntityManager getEntityManager(){
+//      if (entidade==null){
+//          EntityManagerFactory emf = Persistence.createEntityManagerFactory("ComercioIta");
+//          entidade = emf.createEntityManager();
+//        }
+//        return entidade;
+//    }    
+    
+    public EntityManager getEntityManager(){
+        if (entidade==null){
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("conexao") == null){
+                String cliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
+                DataObject config = servidor(cliente);
+                try{
+                    Map properties = new HashMap();
+                    //EntityManagerFactory emf = null;
+                    properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.Full);
+                    properties.put(TopLinkProperties.JDBC_USER, "postgres");
+                    properties.put(TopLinkProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
+                    properties.put(TopLinkProperties.JDBC_DRIVER, "org.postgresql.Driver");
+                    properties.put(TopLinkProperties.JDBC_PASSWORD, config.getArgumento2().toString());
+                    properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://"+config.getArgumento0()+":5432/"+config.getArgumento1().toString());
+                    EntityManagerFactory emf = Persistence.createEntityManagerFactory(config.getArgumento1().toString(), properties);
+                    //emf = Persistence.createEntityManagerFactory(persist, properties);
+                    entidade = emf.createEntityManager();
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("conexao", emf);
+                }catch(Exception e){
+                    return null;
+                }
+            }else{
+                EntityManagerFactory emf = null;
+                emf = (EntityManagerFactory) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("conexao");
+                entidade = emf.createEntityManager();
+            }
+        }
+        return entidade;
+    }
+
+    // dataObject.setArgumento0(ip do servidor);
+    // dataObject.setArgumento1(base do cliente);
+    // dataObject.setArgumento2(senha);
+    public DataObject servidor(String cliente){
+        DataObject dataObject = new DataObject();
+        if(
+            cliente.equals("ComercioAraras")        ||
+            cliente.equals("ComercioSertaozinho")   ||
+            cliente.equals("FederacaoBH")           ||
+            cliente.equals("SinpaaeRP")             || 
+            cliente.equals("VestuarioLimeira")      || 
+            cliente.equals("ComercioLimeira")       || 
+            cliente.equals("ComercioItapetininga")  ||
+            cliente.equals("SeaacRP")
+        ){
+            dataObject.setArgumento0("192.168.1.105");
+            dataObject.setArgumento1(cliente);
+            dataObject.setArgumento2("r#@tools");
+        }else if(
+            cliente.equals("SeaacRP2___")
+        ){
+            dataObject.setArgumento0("192.168.1.102");
+            dataObject.setArgumento1(cliente);
+            dataObject.setArgumento2("r#@tools");
+        }else{
+            if(cliente.equals("Sindical")){
+                //cliente = "n_itapetininga";
+                //cliente = "n_comercio_araras";
+                cliente = "c_limeira_base";
+            }            
+            dataObject.setArgumento0("localhost");
+            dataObject.setArgumento1(cliente);
+            dataObject.setArgumento2("989899");
+        }
+        return dataObject;
+    }
+}
+
