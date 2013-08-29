@@ -1026,6 +1026,8 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         //temFoto = false;
         if (fExiste.exists() && fisica.getDataFoto().isEmpty()) {
             fotoTemp = true;
+        }else if (fExiste.exists()){
+            fotoTemp = true;            
         }
         if (fotoTemp) {
             nome = "fotoTemp";
