@@ -20,14 +20,14 @@
         <f:view>
             <hr />
             <h:form id="formLogin">
-                <h:outputText value="#{controleUsuarioBean.validaIndex}" style="visibility: hidden;" rendered="true"/>                    
-                <center>
-                    <a href="${controleAcessoWeb.linkSite}" style="color:white"><h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png"/></a>
+                <input type="hidden" value="#{controleUsuarioBean.validaIndex}" />
+                <center>                    
+                    <a href="#{controleAcessoWeb.linkSite}" style="color:white"><h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png"/></a>
                     <br /><br />
                     <h:panelGrid>
                         <rich:panel style=" -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
                             <div class="headerPanel" style="text-align: center">
-                                <h:outputText value="Acesso Sindical web" styleClass="fontePanel"/>
+                                <h:outputText value="Acesso Sindical Web" styleClass="fontePanel"/>
                             </div> 
                             <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
                                 <rich:column><h:outputLabel value="Login: " styleClass="fontePadrao"/></rich:column>
@@ -35,7 +35,6 @@
                                         <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
                                 </rich:column>
-                                
                                 <rich:column><h:outputLabel value="Senha: " styleClass="fontePadrao"/></rich:column>
                                 <rich:column>
                                     <h:inputSecret size="20" value="#{controleAcessoWeb.pessoa.senha}" autocomplete="off" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formLogin:entrar')}.onclick();}"/>
@@ -80,7 +79,7 @@
                     </h:panelGrid>
                     <h:panelGrid>
                         <br />
-                        <h:outputLink value="#{controleAcessoWeb.linkSite}" styleClass="iLink fontePadrao" style="text-decoration: underline">
+                        <h:outputLink value="#" styleClass="iLink fontePadrao" style="text-decoration: underline">
                             <f:verbatim>Voltar para Site</f:verbatim>
                         </h:outputLink>
                         <br />
