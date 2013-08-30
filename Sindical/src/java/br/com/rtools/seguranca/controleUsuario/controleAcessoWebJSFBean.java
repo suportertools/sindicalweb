@@ -8,7 +8,6 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
-import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
@@ -18,13 +17,11 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 
-public class controleAcessoWebJSFBean {
+public class controleAcessoWebJSFBean implements java.io.Serializable {
 
     private Registro registro = new Registro();
     private Pessoa pessoa = new Pessoa();
