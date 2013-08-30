@@ -22,7 +22,7 @@
                     <div class="divMae divFundo" style="width: 1180px" align="left">
                         
                         <h:outputLabel value="Assunto: " styleClass="fontePadrao" for="idAssunto"/>
-                        <h:inputText id="idAssunto" value="#{enviarArquivosBean.assunto}" size="60"/>
+                        <h:inputText id="idAssunto" value="#{enviarArquivosBean.mensagem.assunto}" size="60"/>
                         <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Anexos" title="Ver arquivos anexados" style="width: 100px;" render="idQuantidadeAnexo"/>
                         <h:outputText id="idQuantidadeAnexo" value="#{enviarArquivosBean.quantidadeAnexo} Anexo (s)" />
                         <br /><br />
@@ -30,7 +30,7 @@
                             <h:outputLabel value="Destinatario (s): " styleClass="fontePadrao"/>
                             <br />
                             <rich:panel styleClass="no-border no-margin">
-                                <rich:dataTable value="#{enviarArquivosBean.listaEmpresas}" var="linha" iterationStatusVar="it" id="tblContabilidade">
+                                <rich:dataTable value="#{enviarArquivosBean.listaContribuinte}" var="linha" iterationStatusVar="it" id="tblContabilidade">
                                     <rich:column style="text-align: center;">
                                         <f:facet name="header">
                                             <h:outputText value="#" />
@@ -63,17 +63,9 @@
                                     
                                     <rich:column>
                                         <f:facet name="header">
-                                            <h:outputText value="Qntd. Empresas"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento4}"/>
-                                    </rich:column>
-                        
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
                                             <h:outputText value="E-mail"/> 
                                         </f:facet>
-                                        <h:outputText value="#{linha.argumento5}"/>
+                                        <h:outputText value="#{linha.argumento4}"/>
                                     </rich:column>
                                 </rich:dataTable>
                             </rich:panel> 
@@ -81,7 +73,7 @@
                         <br /><br />
                         <div class="divMae divFundo bg-white" style="overflow:auto; height:300px; margin: auto 0;">
                             <h:outputLabel value="Mensagem: " styleClass="fontePadrao"/><br /><br />
-                            <rich:editor value="#{enviarArquivosBean.conteudoHTML}"></rich:editor>
+                            <rich:editor value="#{enviarArquivosBean.mensagem.mensagem}"></rich:editor>
                         </div>
                         <div class="clear"></div>
                         <br /><br />
@@ -96,19 +88,6 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <!-- <rich:fileUpload id="idUpload" 
-                                             fileUploadListener="# {enviarArquivosBean.adicionarArquivo}"
-                                             maxFilesQuantity="1" 
-                                             noDuplicate="true"
-                                             addLabel="Pesquisar" 
-                                             deleteLabel="Remover"
-                                             clearLabel="Limpar" 
-                                             clearAllLabel="Limpar todos"
-                                             serverErrorLabel="Erro ao enviar esse arquivo"
-                                             doneLabel="Upload realizado" 
-                                             >
-                                <a4j:ajax event="uploadcomplete" execute="@none" render="idQuantidadeAnexo, idArquivos" />
-                            </rich:fileUpload> -->
                             <label for="idUpload" style="cursor: pointer; float: right">
                                 <div class="idNovo iLink" style="width: 200px;">
                                     Enviar arquivo 
@@ -117,7 +96,7 @@
                             <h:panelGrid columns="2">
                                 <h:outputText value="Arquivos Anexados" styleClass="fontePadrao"/>
                                 <br /><br />
-                                <rich:dataTable value="#{enviarArquivosBean.listaArquivos}" var="linha" iterationStatusVar="it" id="idArquivos">
+                                <rich:dataTable value="#{enviarArquivosBean.listaArquivosContribuinte}" var="linha" iterationStatusVar="it" id="idArquivos">
                                      <rich:column style="text-align: center;">
                                          <f:facet name="header">
                                              <h:outputText value="#" />
@@ -130,7 +109,7 @@
                                              <h:outputText value="Excluir"/>
                                          </f:facet>
                                          <a4j:commandButton image="/Imagens/excluirp.png" disabled="#{controleAcessoBean.botaoExcluir}">
-                                             <a4j:ajax event="click" listener="#{enviarArquivosBean.excluirArquivos(it.index)}" render="idArquivos idQuantidadeAnexo" />
+                                             <a4j:ajax event="click" listener="#{enviarArquivosBean.excluirArquivosContribuinte(it.index)}" render="idArquivos idQuantidadeAnexo" />
                                          </a4j:commandButton>
                                      </rich:column>
 
@@ -181,12 +160,13 @@
             <h:form>
                 <center>
                     <div class="headerPanel">
-                        <h:outputText value="Envio de Arquivos" styleClass="fontePanel" style="width: 100%;"/>
+                        <h:outputText value="Envio de Arquivos Contribuinte" styleClass="fontePanel" style="width: 100%;"/>
                     </div>                  
                 </center>
             </h:form>
-            <form action="servletEnvioArquivo" name="formEnvioArquivo" enctype="multipart/form-data" method="post">  
+            <form action="servletEnvioArquivoContribuinte" name="formEnvioArquivo" enctype="multipart/form-data" method="post">  
                 <input id="idUpload" type="file" name="nArquivo" onchange="submit();" style="visibility: hidden" accesskey="u"/>
+                <input type="hidden" name="nTipoEnvio" value="ArquivoContribuinte" />
             </form>            
         </f:view>
     </h:body>
