@@ -20,7 +20,7 @@ public class EnviarArquivosDBToplink  extends DB implements EnviarArquivosDB {
         catch(Exception e){
         }
         return result;
-    }    
+    }
     
     @Override
     public List pesquisaContabilidades(){
@@ -40,6 +40,28 @@ public class EnviarArquivosDBToplink  extends DB implements EnviarArquivosDB {
                         "            p.ds_nome,                                       " +
                         "            p.ds_telefone1,                                  " +
                         "            ds_email1                                        " +
+                        "   ORDER BY p.ds_nome                                        ";
+
+            Query qry = getEntityManager().createNativeQuery(textQuery);
+            return qry.getResultList();
+            
+        }catch(EJBQLException e){
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List pesquisaContabilidadesSimples(){
+        String textQuery = "";
+        try{
+            textQuery = "     SELECT c.id_juridica,                                   " +
+                        "            p.ds_nome as nome,                               " +
+                        "            p.ds_telefone1 as telefone,                      " +
+                        "            p.ds_email1 as email                             " +
+                        "       FROM arr_contribuintes_vw as c                        " +
+                        " INNER JOIN pes_pessoa as p on p.id = c.id_pessoa            " +
+                        "      WHERE c.dt_inativacao is null                          " +
+                        "        AND length(rtrim(p.ds_email1)) > 0                   " +
                         "   ORDER BY p.ds_nome                                        ";
 
             Query qry = getEntityManager().createNativeQuery(textQuery);
