@@ -4,115 +4,105 @@
         <filter-name>UrlRewriteFilter</filter-name>
         <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
     </filter>
-    
     <filter-mapping>
         <filter-name>UrlRewriteFilter</filter-name>
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
-    </filter-mapping> 
-    
+    </filter-mapping>
     <context-param>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-    
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.jsf</url-pattern>
     </servlet-mapping>
-    
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
-    
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
     </welcome-file-list>
-    
     <context-param>
         <param-name>org.richfaces.enableControlSkinning</param-name>
         <param-value>false</param-value>
     </context-param>
-    
     <!-- SERVLET UPLOAD -->
     <servlet>
         <servlet-name>servletUpload</servlet-name>
         <servlet-class>br.com.rtools.utilitarios.servletUpload</servlet-class>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>servletUpload</servlet-name>
         <url-pattern>/servletUpload</url-pattern>
     </servlet-mapping>
     <!-- UPLOAD -->
-    
-    <!-- SERVLET ENVIO ARQUIVOS -->
+    <!-- SERVLET ENVIO ARQUIVOS CONTRIBUINTE -->
     <servlet>
-        <servlet-name>servletEnvioArquivo</servlet-name>
-        <servlet-class>br.com.rtools.utilitarios.servletEnvioArquivo</servlet-class>
+        <servlet-name>servletEnvioArquivoContribuinte</servlet-name>
+        <servlet-class>br.com.rtools.utilitarios.servletEnvioArquivoContribuinte</servlet-class>
     </servlet>
-    
     <servlet-mapping>
-        <servlet-name>servletEnvioArquivo</servlet-name>
-        <url-pattern>/servletEnvioArquivo</url-pattern>
+        <servlet-name>servletEnvioArquivoContribuinte</servlet-name>
+        <url-pattern>/servletEnvioArquivoContribuinte</url-pattern>
     </servlet-mapping>
-    <!-- ENVIO ARQUIVOS -->
-    
+    <!-- ENVIO ARQUIVOS CONTRIBUINTE -->
+    <!-- SERVLET ENVIO ARQUIVOS CONTABILIDADE -->
+    <servlet>
+        <servlet-name>servletEnvioArquivoContabilidade</servlet-name>
+        <servlet-class>br.com.rtools.utilitarios.servletEnvioArquivoContabilidade</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>servletEnvioArquivoContabilidade</servlet-name>
+        <url-pattern>/servletEnvioArquivoContabilidade</url-pattern>
+    </servlet-mapping>
+    <!-- ENVIO ARQUIVOS CONTABILIDADE -->
     <!-- SERVLET RETORNO -->
     <servlet>
         <servlet-name>servletRetorno</servlet-name>
         <servlet-class>br.com.rtools.utilitarios.servletRetorno</servlet-class>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>servletRetorno</servlet-name>
         <url-pattern>/servletRetorno</url-pattern>
     </servlet-mapping>
     <!-- RETORNO -->
-    
     <!-- SERVLET CONVENCAO -->
     <servlet>
         <servlet-name>servletConvencao</servlet-name>
         <servlet-class>br.com.rtools.utilitarios.servletConvencao</servlet-class>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>servletConvencao</servlet-name>
         <url-pattern>/servletConvencao</url-pattern>
-    </servlet-mapping>    
+    </servlet-mapping>
     <!-- CONVENCAO -->
-    
     <!-- SERVLET APPLET -->
     <servlet>
         <servlet-name>servletApplet</servlet-name>
         <servlet-class>br.com.rtools.utilitarios.servletApplet</servlet-class>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>servletApplet</servlet-name>
         <url-pattern>/servletApplet</url-pattern>
     </servlet-mapping>
     <!-- APPLET -->
-    
     <!-- SERVLET REPIS -->
     <servlet>
         <servlet-name>servletREPIS</servlet-name>
         <servlet-class>br.com.rtools.utilitarios.servletREPIS</servlet-class>
     </servlet>
-    
     <servlet-mapping>
         <servlet-name>servletREPIS</servlet-name>
         <url-pattern>/servletREPIS</url-pattern>
-    </servlet-mapping>  
+    </servlet-mapping>
     <!-- REPIS -->
-    
 </web-app>
