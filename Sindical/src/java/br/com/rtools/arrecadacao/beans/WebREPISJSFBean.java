@@ -268,14 +268,28 @@ public class WebREPISJSFBean {
                 for (int i = 0; i < lista.size(); i++){
                     BigDecimal valor = new BigDecimal(lista.get(i).getValor());
                     if (valor.toString().equals("0")) valor = null;
-
+                    String logoPatronal = "";
+                    String logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoPatronal/"+patronal.getId());
+                    if( new File(logoCaminho+".jpg").exists()){ 
+                        logoCaminho = logoCaminho+".jpg";
+                    } else if( new File(logoCaminho+".JPG").exists()){ 
+                        logoCaminho = logoCaminho+".JPG";
+                    } else if( new File(logoCaminho+".png").exists()){ 
+                        logoCaminho = logoCaminho+".png";
+                    } else if( new File(logoCaminho+".PNG").exists()){ 
+                        logoCaminho = logoPatronal+patronal.getId()+".PNG";
+                    } else if( new File(logoCaminho+".gif").exists()){ 
+                        logoCaminho = logoCaminho+".gif";
+                    } else {
+                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png");
+                    }
                     vetor.add(
                             new ParametroCertificado(
                                 patronal.getPessoa().getNome(),
-                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoPatronal.png"),
+                                logoCaminho,
                                 patronal.getBaseTerritorial(),
                                 sindicato.getPessoa().getNome(),
-                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
                                 repisMovimento.getPessoa().getNome(),
                                 repisMovimento.getPessoa().getDocumento(),
                                 jur.getPorte().getDescricao(),
@@ -502,9 +516,9 @@ public class WebREPISJSFBean {
     public List<RepisMovimento> getListaRepisMovimentoPatronal() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         if(listaRepisMovimentoPatronal.isEmpty()){
-            Patronal patro = new Patronal();
+            // Patronal patro = new Patronal();
             //getPessoa();
-            patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
+            Patronal patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
             listaRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronalCnae(patro.getId());
         }
         return listaRepisMovimentoPatronal;
