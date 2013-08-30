@@ -22,6 +22,7 @@ import org.richfaces.model.UploadedFile;
 
 public class EnviarArquivosJSFBean {
     private List<DataObject> listaEmpresas = new ArrayList();
+    private List<DataObject> listaContribuinte = new ArrayList();
     private List itens = new ArrayList();
     private List listaArquivos = new ArrayList();
     private boolean chkMarcaTodos = true;
@@ -41,9 +42,11 @@ public class EnviarArquivosJSFBean {
         conteudoHTML = "";
         chkMarcaTodos = false;
         quantidadeAnexo = 0;
-        getListaArquivos().clear();
+        getListaArquivosContabilidade().clear();
+        getListaArquivosContribuinte().clear();
         listaArquivos = new ArrayList();
         listaEmpresas.clear();
+        listaContribuinte.clear();
         itens.clear();
         itens = new ArrayList();        
         idIndexArquivos = -1;
@@ -53,12 +56,12 @@ public class EnviarArquivosJSFBean {
     }
     
     public String enviarArquivos(){
-        if (assunto.isEmpty()){
+        if (mensagem.getAssunto().isEmpty()){
             msgConfirma = "O assunto não pode ser Nulo!";
             return null;
         }
         
-        if (conteudoHTML.isEmpty()){
+        if (mensagem.getMensagem().isEmpty()){
             msgConfirma = "O conteudo HTML não pode ser Nulo!";
             return null;
         }
@@ -75,7 +78,7 @@ public class EnviarArquivosJSFBean {
         for (int i = 0; i < listaArquivos.size(); i ++)
             aux2.add( (File)((DataObject)listaArquivos.get(i)).getArgumento0() ); 
 
-        String[] retorno = EnviarEmail.EnviarEmailPersonalizado(dbf.pesquisaCodigoRegistro(1), aux, conteudoHTML, aux2, assunto);
+        String[] retorno = EnviarEmail.EnviarEmailPersonalizado(dbf.pesquisaCodigoRegistro(1), aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
         if (retorno[1].isEmpty())
             if(listaArquivos.size() > 0){
                 msgConfirma = "Emails " + retorno[0];
@@ -87,8 +90,16 @@ public class EnviarArquivosJSFBean {
         return null;
     }
     
-    public void excluirArquivos(int index){
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/Anexos/Pendentes/"+(String) ((DataObject)listaArquivos.get(index)).getArgumento1());
+    public void excluirArquivosContabilidade(int index){
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/Anexos/Pendentes/ArquivoContabilidade/"+(String) ((DataObject)listaArquivos.get(index)).getArgumento1());
+        File fl = new File(caminho);
+        fl.delete();
+        listaArquivos.remove(index);
+        listaArquivos.clear();
+    }
+    
+    public void excluirArquivosContribuinte(int index){
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/Anexos/Pendentes/ArquivoContribuinte/"+(String) ((DataObject)listaArquivos.get(index)).getArgumento1());
         File fl = new File(caminho);
         fl.delete();
         listaArquivos.remove(index);
@@ -158,9 +169,34 @@ public class EnviarArquivosJSFBean {
         this.listaEmpresas = listaEmpresas;
     }
 
-    public List getListaArquivos() {
+    public List getListaArquivosContabilidade() {
         if (listaArquivos.isEmpty()){
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/Anexos/Pendentes");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/Anexos/Pendentes/ArquivoContabilidade");
+            try{
+                File files = new File(caminho);
+                File listFile[] = files.listFiles();
+                int numArq = listFile.length;
+                int i = 0;
+                while (i < numArq){
+                    listaArquivos.add(new DataObject(listFile[i], listFile[i].getName()));
+                    i++;
+                }
+                if(listaArquivos.size() > 0){
+                    setQuantidadeAnexo(listaArquivos.size());
+                }else{
+                    setQuantidadeAnexo(0);
+                }
+                itens.clear();
+            }catch(Exception e){
+                return new ArrayList();
+            }       
+        } 
+        return listaArquivos;
+    }
+    
+    public List getListaArquivosContribuinte() {
+        if (listaArquivos.isEmpty()){
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/Anexos/Pendentes/ArquivoContribuinte");
             try{
                 File files = new File(caminho);
                 File listFile[] = files.listFiles();
@@ -275,5 +311,26 @@ public class EnviarArquivosJSFBean {
 
     public void setMensagem(Mensagem mensagem) {
         this.mensagem = mensagem;
+    }
+
+    public List<DataObject> getListaContribuinte() {
+        if (listaEmpresas.isEmpty()){
+            EnviarArquivosDB db = new EnviarArquivosDBToplink();
+            List lista = db.pesquisaContabilidadesSimples();
+            for (int i = 0; i < lista.size(); i++){
+                Juridica juridica = db.pesquisaCodigo( (Integer)((List)lista.get(i)).get(0) );
+                String nomeDocumento = "";
+                if(!juridica.getPessoa().getDocumento().equals("") && !juridica.getPessoa().getDocumento().equals("0")){
+                    nomeDocumento = "CNPJ: " + juridica.getPessoa().getDocumento() +" - ";
+                }
+                nomeDocumento += juridica.getPessoa().getNome();
+                listaEmpresas.add(new DataObject(item, juridica, nomeDocumento,((List)lista.get(i)).get(2), ((List)lista.get(i)).get(3), ""));
+            }
+        }
+        return listaEmpresas;
+    }
+
+    public void setListaContribuinte(List<DataObject> listaContribuinte) {
+        this.listaContribuinte = listaContribuinte;
     }
 }
