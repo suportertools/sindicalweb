@@ -287,7 +287,13 @@ public class controleAcessoWebJSFBean {
 
     public String getLinkSite() {
         PessoaDB db = new PessoaDBToplink();
-        return (db.pesquisaCodigo(1)).getSite();
+        Pessoa p = db.pesquisaCodigo(1);
+        if (p != null){
+            if (p.getSite() != null) {
+                return p.getSite();
+            }
+        }
+        return "";
     }
 
     public void sairSistemaWeb() throws IOException {
