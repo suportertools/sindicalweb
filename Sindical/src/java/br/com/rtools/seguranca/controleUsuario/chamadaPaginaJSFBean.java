@@ -644,9 +644,14 @@ public class chamadaPaginaJSFBean {
         return metodoGenerico(2, "convencao");
     }
 
-    public synchronized String enviarArquivos() {
+    public synchronized String enviarArquivosContabilidade() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
-        return metodoGenerico(2, "enviarArquivos");
+        return metodoGenerico(2, "enviarArquivosContabilidade");
+    }
+    
+    public synchronized String enviarArquivosContribuinte() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
+        return metodoGenerico(2, "enviarArquivosContribuinte");
     }
 
     public synchronized String oposicao() {
@@ -1503,8 +1508,10 @@ public class chamadaPaginaJSFBean {
                 nomePg = "Cadastro Simples";
             } else if (strURLNome.equals("catalogoFilme")) {
                 nomePg = "Catálogo Filme";
-            } else if (strURLNome.equals("enviarArquivos")) {
-                nomePg = "Enviar Arquivos";
+            } else if (strURLNome.equals("enviarArquivosContribuinte")) {
+                nomePg = "Enviar Arquivos Constribuinte";
+            } else if (strURLNome.equals("enviarArquivosContabilidade")) {
+                nomePg = "Enviar Arquivos Contabilidade";
             } else if (strURLNome.equals("oposicao")) {
                 nomePg = "Oposição";
             } else if (strURLNome.equals("webSolicitaREPIS")) {
