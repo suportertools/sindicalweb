@@ -65,9 +65,17 @@ public class DB {
             cliente.equals("VestuarioLimeira")      || 
             cliente.equals("ComercioLimeira")       || 
             cliente.equals("ComercioItapetininga")  ||
-            cliente.equals("SeaacRP")
+            cliente.equals("SeaacRP")               ||
+            cliente.equals("MetalRP")               ||
+            cliente.equals("ExtrativaRP")           ||
+            cliente.equals("AlimentacaoArceburgo")  ||
+            cliente.equals("FederacaoExtrativaSP")  ||
+            cliente.equals("ExtrativaSP")           ||
+            cliente.equals("HoteleiroRP")           ||
+            cliente.equals("GaragistaRP")           ||
+            cliente.equals("MetalBatatais")
         ){
-            dataObject.setArgumento0("192.168.1.105");
+            dataObject.setArgumento0("192.168.1.102");
             dataObject.setArgumento1(cliente);
             dataObject.setArgumento2("r#@tools");
         }else if(
@@ -78,11 +86,10 @@ public class DB {
             dataObject.setArgumento2("r#@tools");
         }else{
             if(cliente.equals("Sindical")){
-                //cliente = "n_itapetininga";
-                //cliente = "n_comercio_araras";
-                cliente = "c_limeira_base";
+                //cliente = "c_limeira_base";
+                cliente = "Rtools";
             }            
-            dataObject.setArgumento0("localhost");
+            dataObject.setArgumento0("192.168.1.60");
             dataObject.setArgumento1(cliente);
             dataObject.setArgumento2("989899");
         }

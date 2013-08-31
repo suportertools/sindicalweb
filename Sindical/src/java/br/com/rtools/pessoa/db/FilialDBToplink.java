@@ -128,6 +128,7 @@ public class FilialDBToplink extends DB implements FilialDB{
             result = (Registro) qry.getSingleResult();
         }
         catch(Exception e){
+            e.printStackTrace();
         }
         return result;
     }

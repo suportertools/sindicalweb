@@ -55,9 +55,58 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
         </properties>
+    </persistence-unit>   
+     
+    <persistence-unit name="MetalRP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>   
+     
+    <persistence-unit name="ExtrativaRP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
     </persistence-unit>    
     
-    <persistence-unit name="c_limeira_base">
+    <persistence-unit name="FederacaoExtrativaSP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit> 
+       
+    <persistence-unit name="ExtrativaSP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>    
+    
+    <persistence-unit name="GaragistaRP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>    
+    
+    <persistence-unit name="HoteleiroRP">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>    
+    
+    <persistence-unit name="MetalBatatais">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>    
+    
+    <persistence-unit name="n_metal_batatais">
         <provider>oracle.toplink.essentials.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>

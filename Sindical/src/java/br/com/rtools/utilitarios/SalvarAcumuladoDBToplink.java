@@ -148,8 +148,8 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     @Override
     public boolean inserirQuery(String textQuery) {
         try {
-
-            if (getEntityManager().createNativeQuery(textQuery).executeUpdate() == 1) {
+            int valor = getEntityManager().createNativeQuery(textQuery).executeUpdate();
+            if (valor > 0) {
                 return true;
             } else {
                 NovoLog log = new NovoLog();
