@@ -322,10 +322,8 @@ public class UsuarioJSFBean {
     }
 
     public List<Usuario> getListaUsuario() {
-        //if (listaUsuario.isEmpty()){
         UsuarioDB db = new UsuarioDBToplink();
         listaUsuario = db.pesquisaTodos();
-        //}
         return listaUsuario;
     }
 
@@ -572,9 +570,6 @@ public class UsuarioJSFBean {
         if(listaModulos.isEmpty()){
             PermissaoDB db = new PermissaoDBToplink();
             List<Modulo> modulos = db.listaModuloPermissaoAgrupado();
-    //        if(modulos.size() != listaModulos.size()) {
-    //            modulos.clear();
-    //        }
             for (int i = 0; i < modulos.size(); i++) {
                 listaModulos.add(new SelectItem(new Integer(i),
                         modulos.get(i).getDescricao(),
@@ -590,7 +585,7 @@ public class UsuarioJSFBean {
     }
 
     public List<SelectItem> getListaRotinas() {
-        if (listaRotinas.isEmpty()){
+        if (listaRotinas.isEmpty() && !listaModulos.isEmpty()){
             int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
             PermissaoDB db = new PermissaoDBToplink();
             List<Rotina> rotinas = db.listaRotinaPermissaoAgrupado(idM);
@@ -612,7 +607,7 @@ public class UsuarioJSFBean {
     }
 
     public List<SelectItem> getListaEventos() {
-        if (listaEventos.isEmpty()){
+        if (listaEventos.isEmpty() && !listaRotinas.isEmpty() && !listaModulos.isEmpty()){
             PermissaoDB db = new PermissaoDBToplink();
             int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
             int idR = Integer.parseInt(listaRotinas.get(idRotina).getDescription());
