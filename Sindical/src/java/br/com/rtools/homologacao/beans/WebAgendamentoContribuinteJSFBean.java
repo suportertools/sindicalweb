@@ -213,8 +213,6 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
             //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
             case 1: {
                 // TIRAR VALOR 1 DA PESQUISA PELO MAC DA FILIAL
-                CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-                cancelarHorario = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(getSindicatoFilial().getFilial().getId(), data, null);
                 int idDiaSemana = DataHoje.diaDaSemana(data);
                 horario = db.pesquisaTodosHorariosDisponiveis(getSindicatoFilial().getFilial().getId(), idDiaSemana);
                 strSalvar = "Agendar";
