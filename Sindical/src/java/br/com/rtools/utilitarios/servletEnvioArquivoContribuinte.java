@@ -56,7 +56,7 @@ public class servletEnvioArquivoContribuinte extends HttpServlet {
     }
 
     public void upload(FileItem item, HttpServletRequest request) {
-        if (item == null) {
+        if (item.getName() == null) {
             return;
         }
         String cliente = "";
@@ -81,8 +81,7 @@ public class servletEnvioArquivoContribuinte extends HttpServlet {
             }
         }
         try {
-            File fl = new File(caminho);
-            fl = new File(caminho + "/Pendentes/"+tipoEnvio+"/"+item.getName());
+            File fl = new File(caminho + "/Pendentes/"+tipoEnvio+"/"+item.getName());
             InputStream in = item.getInputStream();
             FileOutputStream out = new FileOutputStream(fl.getPath());
 
