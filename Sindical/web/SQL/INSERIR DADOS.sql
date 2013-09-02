@@ -267,7 +267,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 173, 'FECHAMENTO COMISSÃO', '"/Sindical/fechamentoComissaoAcordo.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 173);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 174, 'AGENDA TELEFÔNICA', '"/Sindical/agenda.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 174);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 175, 'ENVIO ARQUIVOS CONTRIBUINTE', '"/Sindical/enviarArquivosContribuinte.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 175);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 176, 'ENVIO ARQUIVOS CONTRIBUINTE', '"/Sindical/enviarArquivosContribuinte.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 176);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 176, 'RELATÓRIO DE HOMOLOGAÇÃO', '"/Sindical/relatorioHomologacao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 176);
 SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
