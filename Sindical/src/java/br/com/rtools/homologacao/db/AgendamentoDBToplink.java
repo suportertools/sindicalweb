@@ -596,7 +596,7 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
                 return (qry.getResultList());
             }
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return new ArrayList();
     }
