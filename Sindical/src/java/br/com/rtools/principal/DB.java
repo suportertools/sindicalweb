@@ -79,17 +79,17 @@ public class DB {
             dataObject.setArgumento1(cliente);
             dataObject.setArgumento2("r#@tools");
         }else if(
-            cliente.equals("SeaacRP2___")
+            cliente.equals("Rtools")
         ){
-            dataObject.setArgumento0("192.168.1.102");
+            dataObject.setArgumento0("192.168.1.60");
             dataObject.setArgumento1(cliente);
-            dataObject.setArgumento2("r#@tools");
+            dataObject.setArgumento2("989899");
         }else{
             if(cliente.equals("Sindical")){
                 //cliente = "c_limeira_base";
-                cliente = "Rtools";
+                cliente = "c_limeira_base";
             }            
-            dataObject.setArgumento0("192.168.1.60");
+            dataObject.setArgumento0("localhost");
             dataObject.setArgumento1(cliente);
             dataObject.setArgumento2("989899");
         }
