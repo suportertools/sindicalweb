@@ -269,6 +269,11 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 175, 'ENVIO ARQUIVOS CONTRIBUINTE', '"/Sindical/enviarArquivosContribuinte.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 175);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 176, 'ENVIO ARQUIVOS CONTRIBUINTE', '"/Sindical/enviarArquivosContribuinte.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 176);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 177, 'RELATÓRIO DE HOMOLOGAÇÃO', '"/Sindical/relatorioHomologacao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 177);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 178, 'PESQUISA OPOSIÇÃO', '"/Sindical/pesquisaOposicao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 178);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 179, 'CENTRO COMERCIAL', '"/Sindical/centroComercial.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 179);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 180, 'RETORNO PADRÃO', '"/Sindical/retornoPadrao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 180);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 181, 'NOTIFICAÇÃO', '"/Sindical/notificacao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 181);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 182, 'CANCELAR HORÁRIO', '"/Sindical/cancelarHorario.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 182);
 SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
@@ -824,6 +829,7 @@ INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 16,'Sócios por Empresa Paisagem','/Relatorios/SOCIOS_EMPRESA_PAISAGEM.jasper',171,'p.empresa,p.cnpj','so.inativacao is null' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 16);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 17,'Contribuintes/Email','/Relatorios/CONTRIBUINTES_EMAIL.jasper',5,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 17);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 18,'Escritórios/Email','/Relatorios/ESCRITORIOS_EMAIL.jasper',6,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 18);
+INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 19,'Relatório de Homologação','/Relatorios/HOMOLOGACAO.jasper',177,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 19);
 SELECT setval('sis_relatorios_id_seq', max(id)) FROM sis_relatorios;
 
 -- seg_registro 
