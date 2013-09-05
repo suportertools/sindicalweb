@@ -44,7 +44,9 @@
                                                 <a4j:ajax event="change" listener="#{enviarArquivosBean.marcaTodos}" render="tblContabilidade" />
                                             </h:selectBooleanCheckbox>
                                         </f:facet>
-                                        <h:selectBooleanCheckbox id="idChk" value="#{linha.argumento0}"/>
+                                        <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckContabilidade#{linha.argumento1.id}">
+                                            <a4j:ajax event="change" listener="#{enviarArquivosBean.marcar(it.index)}" render="idCheckContabilidade#{linha.argumento1.id} tblContabilidade"/>
+                                        </h:selectBooleanCheckbox>
                                     </rich:column>
                                     
                                     <rich:column>
