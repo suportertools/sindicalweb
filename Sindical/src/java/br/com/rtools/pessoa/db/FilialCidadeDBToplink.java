@@ -99,8 +99,9 @@ public class FilialCidadeDBToplink extends DB implements FilialCidadeDB {
     public List pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery("select fc from FilialCidade fc");
-            if(!qry.getResultList().isEmpty()){
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if(!list.isEmpty()){
+                return list;
             }
         } catch (Exception e) {
             e.getMessage();
