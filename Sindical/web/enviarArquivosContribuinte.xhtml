@@ -19,18 +19,87 @@
         <div style="z-index: 5000; position: absolute; top: 100px; ">
             <h:form id="formEnviarArquivo">   
                     <br /><br />
-                    <div class="divMae divFundo" style="width: 1180px" align="left">
-                        
+                    <div class="divMae divFundo" style="width: 1180px" align="left">                        
                         <h:outputLabel value="Assunto: " styleClass="fontePadrao" for="idAssunto"/>
                         <h:inputText id="idAssunto" value="#{enviarArquivosBean.mensagem.assunto}" size="60"/>
                         <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Anexos" title="Ver arquivos anexados" style="width: 100px;" render="idQuantidadeAnexo"/>
                         <h:outputText id="idQuantidadeAnexo" value="#{enviarArquivosBean.quantidadeAnexo} Anexo (s)" />
                         <br /><br />
+                        <h:outputLabel value="FILTRAR: " styleClass="fontePadraoNegrito"/>
+                        <h:panelGrid columns="3" id="idPainel" styleClass="margin-top-maior">
+                            <h:column>
+                                <div style="overflow-x:auto; height: 100px; width: 150px; margin-right: 20px;">
+                                    <rich:dataTable value="#{enviarArquivosBean.listaConvencaoObject}"  var="linha" style="width:100%" iterationStatusVar="itConvencao" id="tblConvencao">
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:selectBooleanCheckbox value="#{enviarArquivosBean.marcarTodosConvencao}">
+                                                    <a4j:ajax event="change" listener="#{enviarArquivosBean.ckeckTodasConvencoes()}" render="tblConvencao tblGrupoCidade tblCnaeConvencao tblContribuinte"/>
+                                                </h:selectBooleanCheckbox>
+                                            </f:facet>
+                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckCon#{linha.argumento1.id}">
+                                                <a4j:ajax event="change" listener="#{enviarArquivosBean.marcarConvencao(itConvencao.index) }" render="idCheckCon#{linha.argumento1.id} tblGrupoCidade tblCnaeConvencao tblContribuinte"/>
+                                            </h:selectBooleanCheckbox>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Convenção"/>
+                                            </f:facet>
+                                            <h:outputText value="#{linha.argumento1.descricao}"/>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <div style="overflow-x:auto; height: 100px; width: 150px; margin-right: 20px;">
+                                    <rich:dataTable value="#{enviarArquivosBean.listaGrupoCidadeConvencaoObject}" var="linha" style="width:100%" iterationStatusVar="itGrupoCidade" id="tblGrupoCidade">
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:selectBooleanCheckbox value="#{enviarArquivosBean.marcarTodosGrupoCidade}">
+                                                    <a4j:ajax event="change" listener="#{enviarArquivosBean.ckeckTodasGrupoCidade()}" render="tblGrupoCidade tblContribuinte"/>
+                                                </h:selectBooleanCheckbox>
+                                            </f:facet>
+                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckGC#{linha.argumento1.id}">
+                                                <a4j:ajax event="change" listener="#{enviarArquivosBean.marcarGrupoCidade(itGrupoCidade.index) }" render="idCheckGC#{linha.argumento1.id} tblGrupoCidade tblContribuinte"/>
+                                            </h:selectBooleanCheckbox>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Grupo Cidade"/>
+                                            </f:facet>
+                                            <h:outputText value="#{linha.argumento1.descricao}"/>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </div>
+                            </h:column>
+                            <h:column>
+                                <div style="overflow-x:auto; height: 100px; width: 450px; margin-right: 20px;">
+                                    <rich:dataTable value="#{enviarArquivosBean.listaCnaeObject}" var="linha" style="width:100%" iterationStatusVar="itConvencao" id="tblCnaeConvencao">
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:selectBooleanCheckbox value="#{enviarArquivosBean.marcarTodosCnaeConvencao}">
+                                                    <a4j:ajax event="change" listener="#{enviarArquivosBean.ckeckTodasCnaeConvencao()}" render="tblCnaeConvencao tblContribuinte"/>
+                                                </h:selectBooleanCheckbox>
+                                            </f:facet>
+                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckCna#{linha.argumento1.id}">
+                                                <a4j:ajax event="change" listener="#{enviarArquivosBean.marcarCnaeConvencao(itConvencao.index)}" render="idCheckCna#{linha.argumento1.id} tblContribuinte"/>
+                                            </h:selectBooleanCheckbox>
+                                        </rich:column>
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cnae Convenção"/>
+                                            </f:facet>
+                                            <h:outputText value="#{linha.argumento1.cnae} - #{linha.argumento1.numero}"/>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </div>
+                            </h:column>
+                        </h:panelGrid>                        
+                        <br /><br />
                         <div class="divMae divFundo bg-white" style="overflow:auto; height:300px; margin: auto 0;">
                             <h:outputLabel value="Destinatario (s): " styleClass="fontePadrao"/>
                             <br />
                             <rich:panel styleClass="no-border no-margin">
-                                <rich:dataTable value="#{enviarArquivosBean.listaContribuinte}" var="linha" iterationStatusVar="it" id="tblContabilidade">
+                                <rich:dataTable value="#{enviarArquivosBean.listaContribuinte}" var="linha" iterationStatusVar="it" id="tblContribuinte">
                                     <rich:column style="text-align: center;">
                                         <f:facet name="header">
                                             <h:outputText value="#" />
@@ -41,10 +110,12 @@
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header">
                                             <h:selectBooleanCheckbox value="#{enviarArquivosBean.chkMarcaTodos}">
-                                                <a4j:ajax event="change" listener="#{enviarArquivosBean.marcaTodos}" render="tblContabilidade" />
+                                                <a4j:ajax event="change" listener="#{enviarArquivosBean.marcaTodos}" render="tblContribuinte" />
                                             </h:selectBooleanCheckbox>
                                         </f:facet>
-                                        <h:selectBooleanCheckbox id="idChk" value="#{linha.argumento0}"/>
+                                        <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckContribuinte1#{linha.argumento1.id}">
+                                            <a4j:ajax event="change" listener="#{enviarArquivosBean.marcar(it.index)}" render="idCheckContribuinte1#{linha.argumento1.id} tblContribuinte"/>
+                                        </h:selectBooleanCheckbox>
                                     </rich:column>
                                     
                                     <rich:column>
