@@ -126,5 +126,12 @@
         <properties>
         </properties>
     </persistence-unit>
+    
+    <persistence-unit name="n_base_local">
+        <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <properties>
+        </properties>
+    </persistence-unit>
 
 </persistence>
