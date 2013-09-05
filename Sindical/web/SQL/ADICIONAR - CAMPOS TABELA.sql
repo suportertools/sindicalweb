@@ -132,3 +132,10 @@ ALTER TABLE seg_rotina ADD COLUMN is_ativo boolean;
 
 ALTER TABLE seg_usuario ADD COLUMN is_ativo boolean;
 -- UPDATE seg_usuario SET is_ativo = true WHERE is_ativo is null;
+
+-- age_telefone -- 
+-- update: 2013-09-04
+-- edited by: Bruno Vieira da Silva
+
+ALTER TABLE age_telefone ADD COLUMN  ds_ddi character varying(2);
+ALTER TABLE age_telefone ADD COLUMN  ds_ddd character varying(2);
