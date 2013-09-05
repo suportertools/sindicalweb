@@ -14,55 +14,59 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class AtalhosJSFBean {
+public class AtalhosJSFBean implements java.io.Serializable {
+
     private List<Atalhos> listaAtalhos = new ArrayList();
     private int idRotina = 0;
     private List<SelectItem> listaRotina = new ArrayList();
     private Atalhos atalhos = new Atalhos();
-    
-    public String adicionar(){
+
+    public String adicionar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         AtalhoDB db = new AtalhoDBToplink();
         RotinaDB dbr = new RotinaDBToplink();
-        
-        atalhos.setRotina( dbr.pesquisaCodigo( Integer.parseInt(listaRotina.get(idRotina).getDescription()) ));
-        if (atalhos.getSigla().isEmpty() || db.pesquisaPorSigla(atalhos.getSigla()) != null || db.pesquisaPorRotina(atalhos.getRotina().getId()) != null)
+
+        atalhos.setRotina(dbr.pesquisaCodigo(Integer.parseInt(listaRotina.get(idRotina).getDescription())));
+        if (atalhos.getSigla().isEmpty() || db.pesquisaPorSigla(atalhos.getSigla()) != null || db.pesquisaPorRotina(atalhos.getRotina().getId()) != null) {
             return null;
-        
-        atalhos.setPessoa( ((Usuario)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa() );
-        
+        }
+
+        atalhos.setPessoa(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa());
+
         sv.abrirTransacao();
-        if (sv.inserirObjeto(atalhos)){
+        if (sv.inserirObjeto(atalhos)) {
             sv.comitarTransacao();
             listaAtalhos.clear();
-        }else
+        } else {
             sv.desfazerTransacao();
-        
+        }
+
         atalhos = new Atalhos();
         idRotina = 0;
         return "menuPrincipal";
     }
-    
-    public String excluir(int id){
+
+    public String excluir(int id) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
+
         sv.abrirTransacao();
-        
-        if (sv.deletarObjeto((Atalhos)sv.pesquisaCodigo(id, "Atalhos"))){
+
+        if (sv.deletarObjeto((Atalhos) sv.pesquisaCodigo(id, "Atalhos"))) {
             sv.comitarTransacao();
             listaAtalhos.clear();
-        }else
+        } else {
             sv.desfazerTransacao();
+        }
         return "menuPrincipal";
     }
-        
+
     public List<Atalhos> getListaAtalhos() {
-        if(listaAtalhos.isEmpty() && FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null){
+        if (listaAtalhos.isEmpty() && FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             AtalhoDB db = new AtalhoDBToplink();
-            listaAtalhos = db.listaTodos(((Usuario)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getId());
-            for (int i = 0; i < listaAtalhos.size(); i++){
-                if (listaAtalhos.get(i).getRotina().getRotina().length() > 16){
-                    listaAtalhos.get(i).getRotina().setRotina(listaAtalhos.get(i).getRotina().getRotina().substring(0, 13)+"...");
+            listaAtalhos = db.listaTodos(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getId());
+            for (int i = 0; i < listaAtalhos.size(); i++) {
+                if (listaAtalhos.get(i).getRotina().getRotina().length() > 16) {
+                    listaAtalhos.get(i).getRotina().setRotina(listaAtalhos.get(i).getRotina().getRotina().substring(0, 13) + "...");
                 }
             }
         }
@@ -73,19 +77,19 @@ public class AtalhosJSFBean {
         this.listaAtalhos = listaAtalhos;
     }
 
-    public List<SelectItem> getListaRotina(){
-        if (listaRotina.isEmpty()){
+    public List<SelectItem> getListaRotina() {
+        if (listaRotina.isEmpty()) {
             RotinaDB db = new RotinaDBToplink();
             List select = db.pesquisaTodosOrdenado();
-            for (int i = 0; i < select.size(); i++){
-                listaRotina.add(new SelectItem( new Integer(i),
-                                (String) ((Rotina) select.get(i)).getRotina(),
-                                Integer.toString(((Rotina) select.get(i)).getId()) ));
+            for (int i = 0; i < select.size(); i++) {
+                listaRotina.add(new SelectItem(new Integer(i),
+                        (String) ((Rotina) select.get(i)).getRotina(),
+                        Integer.toString(((Rotina) select.get(i)).getId())));
             }
         }
         return listaRotina;
-    }    
-    
+    }
+
     public int getIdRotina() {
         return idRotina;
     }
