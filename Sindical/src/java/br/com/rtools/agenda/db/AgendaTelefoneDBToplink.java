@@ -65,12 +65,12 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                 } else {
                     query = " SELECT AGET.agenda FROM AgendaTelefone AS AGET WHERE UPPER(AGET.contato) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' "+queryFiltroGrupoAgendaB+"  ORDER BY AGET.contato ASC  ";
                 }
-            } else if (porPesquisa.equals("telefoneSP")) {
+            } else if (porPesquisa.equals("telefoneSimples")) {
                 String dddString = "";
                 if (!ddd.equals("")) {
                     dddString  = " AGET.ddd = '" + ddd + "' AND ";
                 }
-                query = " SELECT AGET.agenda FROM AgendaTelefone AS AGET WHERE "+dddString+" AGET.telefone = '" + descricaoPesquisa.toUpperCase() + "'"+ queryFiltroGrupoAgendaB;
+                query = " SELECT AGET.agenda FROM AgendaTelefone AS AGET WHERE "+dddString+" AGET.telefone = '" + descricaoPesquisa + "'"+ queryFiltroGrupoAgendaB;
             } else if (porPesquisa.equals("endereco")) {
                 String queryEndereco = ""
                         +"     SELECT age.id FROM age_agenda age"
@@ -117,7 +117,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         String query = " SELECT AGET FROM AgendaTelefone AS AGET ORDER BY AGET.agenda.id DESC ";
         if (idGrupoAgenda > 0) {
             query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE AGET.agenda.grupoAgenda.id = "+idGrupoAgenda+" ORDER BY AGET.agenda.id DESC ";
-            queryFiltroGrupoAgendaA = " AND AGET.grupoAgenda.id = "+idGrupoAgenda+" ";
+            queryFiltroGrupoAgendaA = " AND AGET.agenda.grupoAgenda.id = "+idGrupoAgenda+" ";
             queryFiltroGrupoAgendaB = " AND AGET.agenda.grupoAgenda.id = "+idGrupoAgenda+" ";
         }
         try {
@@ -135,11 +135,11 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                 }
             } else if (porPesquisa.equals("contato")) {
                 if (comoPesquisa.equals("Inicial")) {
-                    query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE UPPER(AGET.agenda.contato) LIKE '" + descricaoPesquisa.toUpperCase() + "%' "+queryFiltroGrupoAgendaB+" ORDER BY AGET.agenda.contato ASC ";
+                    query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE UPPER(AGET.contato) LIKE '" + descricaoPesquisa.toUpperCase() + "%' "+queryFiltroGrupoAgendaB+" ORDER BY AGET.contato ASC ";
                 } else {
-                    query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE UPPER(AGET.agenda.contato) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' "+queryFiltroGrupoAgendaB+"  ORDER BY AGET.agenda.contato ASC  ";
+                    query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE UPPER(AGET.contato) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' "+queryFiltroGrupoAgendaB+"  ORDER BY AGET.contato ASC  ";
                 }
-            } else if (porPesquisa.equals("telefoneSP")) {
+            } else if (porPesquisa.equals("telefoneSimples")) {
                 String dddString = "";
                 if (!ddd.equals("")) {
                     dddString  = " AGET.ddd = '" + ddd + "' AND ";
