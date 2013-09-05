@@ -17,6 +17,10 @@ public class AgendaTelefone implements Serializable {
     @JoinColumn(name="ID_TIPO_TELEFONE", referencedColumnName="ID", nullable=false)
     @ManyToOne
     private TipoTelefone tipoTelefone;
+    @Column(name = "DS_DDI", length = 5)
+    private String ddi;
+    @Column(name = "DS_DDD", length = 2)
+    private String ddd;
     @Column(name = "DS_TELEFONE", length = 20)
     private String telefone;
     @Column(name = "DS_CONTATO", length = 50)
@@ -26,14 +30,18 @@ public class AgendaTelefone implements Serializable {
         this.id = -1;
         this.agenda = new Agenda();
         this.tipoTelefone = new TipoTelefone();
+        this.ddi = "55";
+        this.ddd = "";
         this.telefone = "";
         this.contato = "";
     }    
 
-    public AgendaTelefone(int id, Agenda agenda, TipoTelefone tipoTelefone, String telefone, String contato) {
+    public AgendaTelefone(int id, Agenda agenda, TipoTelefone tipoTelefone, String ddi, String ddd, String telefone, String contato) {
         this.id = id;
         this.agenda = agenda;
         this.tipoTelefone = tipoTelefone;
+        this.ddi = ddi;
+        this.ddd = ddd;
         this.telefone = telefone;
         this.contato = contato;
     }    
@@ -76,5 +84,21 @@ public class AgendaTelefone implements Serializable {
 
     public void setContato(String contato) {
         this.contato = contato;
+    }
+
+    public String getDdi() {
+        return ddi;
+    }
+
+    public void setDdi(String ddi) {
+        this.ddi = ddi;
+    }
+
+    public String getDdd() {
+        return ddd;
+    }
+
+    public void setDdd(String ddd) {
+        this.ddd = ddd;
     }
 }
