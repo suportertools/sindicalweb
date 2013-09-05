@@ -496,6 +496,9 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         if (agendaTelefone.getAgenda().getPessoa() != null) {
             pessoa = agendaTelefone.getAgenda().getPessoa();
         }
+        if (agendaTelefone.getId() != -1) {
+            agenda = agendaTelefone.getAgenda();
+        }
         listaAgendaTelefones.clear();
         getListaAgendaTelefones();
         return null;
