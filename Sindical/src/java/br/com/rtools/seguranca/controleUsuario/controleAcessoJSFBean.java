@@ -20,7 +20,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class controleAcessoJSFBean {
+public class controleAcessoJSFBean implements java.io.Serializable {
 
     private String login = "";
     private Pessoa loginContribuinte = null;
@@ -185,14 +185,14 @@ public class controleAcessoJSFBean {
                     modulo = db.pesquisaCodigoModulo(idModulo);
                 }
             }
-            
+
             //PESQUISA DE ROTINAS-------------------------------------------------------------------------------------------
             rotina = db.pesquisaRotinaPermissao(urlDestino);
 
             if (rotina == null) {
                 rotina = new Rotina();
             }
-            
+
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
                 String[] lista = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples");
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("chamadaPaginaSimples");
@@ -254,14 +254,14 @@ public class controleAcessoJSFBean {
                         }
                     }
                     //if (retorno) {
-                        UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                        if (usuarioAcesso.getId() != -1) {
-                            if (usuarioAcesso.isPermite()) {
-                                retorno = true;
-                            } else {
-                                retorno = false;
-                            }
+                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    if (usuarioAcesso.getId() != -1) {
+                        if (usuarioAcesso.isPermite()) {
+                            retorno = true;
+                        } else {
+                            retorno = false;
                         }
+                    }
                     //}
                 } else {
                     retorno = false;
@@ -334,14 +334,14 @@ public class controleAcessoJSFBean {
                         }
                     }
 //                    if (!retorno) {
-                        UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                        if (usuarioAcesso.getId() != -1) {
-                            if (usuarioAcesso.isPermite()) {
-                                retorno = false;
-                            } else {
-                                retorno = true;
-                            }
+                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    if (usuarioAcesso.getId() != -1) {
+                        if (usuarioAcesso.isPermite()) {
+                            retorno = false;
+                        } else {
+                            retorno = true;
                         }
+                    }
 //                    }
                 } else {
                     retorno = true;
@@ -354,7 +354,7 @@ public class controleAcessoJSFBean {
         }
         return retorno;
     }
-    
+
     public boolean getSalvar(Object object) {
         if (object == null) {
             return true;
@@ -409,14 +409,14 @@ public class controleAcessoJSFBean {
                         }
                     }
 //                    if (!retorno) {
-                        UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                        if (usuarioAcesso.getId() != -1) {
-                            if (usuarioAcesso.isPermite()) {
-                                retorno = false;
-                            } else {
-                                retorno = true;
-                            }
+                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                    if (usuarioAcesso.getId() != -1) {
+                        if (usuarioAcesso.isPermite()) {
+                            retorno = false;
+                        } else {
+                            retorno = true;
                         }
+                    }
 //                    }
                 } else {
                     retorno = true;
@@ -428,7 +428,7 @@ public class controleAcessoJSFBean {
             retorno = false;
         }
         return retorno;
-    }    
+    }
 
     public boolean getBotaoExcluir() {
         //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
@@ -460,14 +460,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (!retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = false;
-                        } else {
-                            retorno = true;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
                     }
+                }
 //                }
             } else {
                 retorno = true;
@@ -508,14 +508,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (!retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = false;
-                        } else {
-                            retorno = true;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
                     }
+                }
 //                }
             } else {
                 retorno = true;
@@ -555,14 +555,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (!retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = false;
-                        } else {
-                            retorno = true;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
                     }
+                }
 //                }
             } else {
                 retorno = true;
@@ -601,14 +601,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = true;
-                        } else {
-                            retorno = false;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = true;
+                    } else {
+                        retorno = false;
                     }
+                }
 //                }
             } else {
                 retorno = false;
@@ -647,14 +647,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = true;
-                        } else {
-                            retorno = false;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = true;
+                    } else {
+                        retorno = false;
                     }
+                }
 //                }
             } else {
                 retorno = false;
@@ -693,14 +693,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (!retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = false;
-                        } else {
-                            retorno = true;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
                     }
+                }
 //                }
             } else {
                 retorno = true;
@@ -739,14 +739,14 @@ public class controleAcessoJSFBean {
                     }
                 }
 //                if (retorno) {
-                    UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
-                    if (usuarioAcesso.getId() != -1) {
-                        if (usuarioAcesso.isPermite()) {
-                            retorno = false;
-                        } else {
-                            retorno = true;
-                        }
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
                     }
+                }
 //                }
             } else {
                 retorno = true;
