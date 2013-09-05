@@ -17,7 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formAgenda">
-                <c:set scope="request" var="object" value="${agendaBean.agenda}"/>            
+                <c:set scope="request" var="object" value="${agendaTelefoneBean.agenda}"/>            
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Agenda" styleClass="fontePanel" style="width: 100%;"/>
@@ -30,16 +30,16 @@
                                     <h:outputLabel value="GRUPO AGENDA: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:selectOneMenu value="#{agendaBean.idGrupoAgenda}" id="idGrupoAge">
+                                    <h:selectOneMenu value="#{agendaTelefoneBean.idGrupoAgenda}" id="idGrupoAge">
                                         <a4j:ajax event="change" render="idGrupoAge" />
-                                        <f:selectItems value="#{agendaBean.listaGrupoAgendas}" />
+                                        <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
                                     </h:selectOneMenu>
                                 </h:column>                            
                                 <h:column>
                                     <h:outputLabel value="NOME: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:inputText id="idNome" value="#{agendaBean.agenda.nome}" styleClass="fontePadrao" maxlength="100" size="35">
+                                    <h:inputText id="idNome" value="#{agendaTelefoneBean.agenda.nome}" styleClass="fontePadrao" maxlength="100" size="35">
                                         <a4j:ajax event="change" render="idNome" /> 
                                     </h:inputText>
                                 </h:column>
@@ -47,8 +47,8 @@
                                     <h:commandButton id="idPesquisaPessoa" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true"/>
                                 </h:column>
                                 <h:column>
-                                    <h:outputText value="#{agendaBean.pessoa.nome}" styleClass="fontePadraoNegrito"/>                            
-                                    <h:outputLabel for="idPesquisaPessoa" value=" IMPORTAR PESSOA (Não Obrigatório)" styleClass="fontePadrao" rendered="#{agendaBean.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
+                                    <h:outputText value="#{agendaTelefoneBean.pessoa.nome}" styleClass="fontePadraoNegrito"/>                            
+                                    <h:outputLabel for="idPesquisaPessoa" value=" IMPORTAR PESSOA (Não Obrigatório)" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
                                 </h:column>                            
                                 <h:column>                            
                                     <a4j:commandButton id="idPesquisaEndereco" image="/Imagens/pesquisar.png" title="Pesquisar Endereço"  action="#{chamadaPaginaBean.pesquisaEndereco}" immediate="true"/>
@@ -60,155 +60,164 @@
                                     <h:outputLabel value="TIPO ENDEREÇO: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:selectOneMenu id="idTpEnd" value="#{agendaBean.idTipoEndereco}"  disabled="#{agendaBean.endereco.id == -1}">
+                                    <h:selectOneMenu id="idTpEnd" value="#{agendaTelefoneBean.idTipoEndereco}"  disabled="#{agendaTelefoneBean.endereco.id == -1}">
                                         <a4j:ajax event="change" render="idTpEnd" />
-                                        <f:selectItems value="#{agendaBean.listaTipoEnderecos}" />
+                                        <f:selectItems value="#{agendaTelefoneBean.listaTipoEnderecos}" />
                                     </h:selectOneMenu>
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="ENDEREÇO: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:outputText value="#{agendaBean.endereco.enderecoSimplesToString} - #{agendaBean.endereco.cidade.cidade} / #{agendaBean.endereco.cidade.uf}  " styleClass="fontePadrao" rendered="#{agendaBean.endereco.id != -1}" />
+                                    <h:outputText value="#{agendaTelefoneBean.endereco.enderecoSimplesToString} - #{agendaTelefoneBean.endereco.cidade.cidade} / #{agendaTelefoneBean.endereco.cidade.uf}  " styleClass="fontePadrao" rendered="#{agendaTelefoneBean.endereco.id != -1}" />
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="NÚMERO: " styleClass="fontePadrao margin-left-max" />
                                 </h:column>
                                 <h:column>
-                                    <h:inputText value="#{agendaBean.agenda.numero}" styleClass="fontePadrao" maxlength="10" size="5" disabled="#{agendaBean.endereco.id == -1}"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agenda.numero}" styleClass="fontePadrao" maxlength="10" size="5" disabled="#{agendaTelefoneBean.endereco.id == -1}"/>
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="COMPLEMENTO: " styleClass="fontePadrao margin-left-max" />
                                 </h:column>
                                 <h:column>
-                                    <h:inputText value="#{agendaBean.agenda.complemento}" styleClass="fontePadrao" maxlength="50" disabled="#{agendaBean.endereco.id == -1}"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agenda.complemento}" styleClass="fontePadrao" maxlength="50" disabled="#{agendaTelefoneBean.endereco.id == -1}"/>
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="EMAIL 1: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:inputText value="#{agendaBean.agenda.email1}" styleClass="fontePadrao" maxlength="500" size="35"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agenda.email1}" styleClass="fontePadrao" maxlength="500" size="35"/>
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="EMAIL 2: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:inputText value="#{agendaBean.agenda.email2}" styleClass="fontePadrao" maxlength="500" size="35"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agenda.email2}" styleClass="fontePadrao" maxlength="500" size="35"/>
                                 </h:column>
                             </h:panelGrid>
                             <div class="clear"></div>
                             <br />
                             <h:outputLabel value="Observação " styleClass="fontePadrao float-left" /><br />
-                            <h:inputTextarea value="#{agendaBean.agenda.observacao}" cols="47" rows="5" styleClass="float-left margin-bottom-max"/>
+                            <h:inputTextarea value="#{agendaTelefoneBean.agenda.observacao}" cols="47" rows="5" styleClass="float-left margin-bottom-max"/>
                             <div class="clear"></div>
                             <div class="float-left">
                                 <h:panelGrid columns="3" styleClass=" margin-bottom-max">
                                     <a4j:commandLink id="idBtnSalvar" styleClass="idSalvar iLink" value="Salvar" title="Salvar" onclick="modalOpcao('divSalvar');" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                    <a4j:commandLink action="#{agendaBean.novo}" styleClass="idNovo iLink" value="Novo" title="Novo" render="idTelaAgenda" />
-                                    <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or agendaBean.agenda.id == -1}" onclick="modalOpcao('divExcluir');" id="idBtnExcluir"/>
+                                    <a4j:commandLink action="#{agendaTelefoneBean.novo}" styleClass="idNovo iLink" value="Novo" title="Novo" render="idTelaAgenda" />
+                                    <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or agendaTelefoneBean.agenda.id == -1}" onclick="modalOpcao('divExcluir');" id="idBtnExcluir"/>
                                 </h:panelGrid>
                             </div>                            
-                            <h:outputText value="CADASTRAR TELEFONES:" styleClass="fontePadraoNegrito float-left margin-bottom" rendered="#{agendaBean.agenda.id != -1}" />
-                            <h:outputText id="idMsgAgendaTelefone" value="#{agendaBean.msgAgendaTelefone}" styleClass="corErro"/>
+                            <h:outputText value="CADASTRAR TELEFONES:" styleClass="fontePadraoNegrito float-left margin-bottom" rendered="#{agendaTelefoneBean.agenda.id != -1}" />
+                            <h:outputText id="idMsgAgendaTelefone" value="#{agendaTelefoneBean.msgAgendaTelefone}" styleClass="corErro"/>
                             <h:panelGrid columns="2" columnClasses="coluna1, coluna2" styleClass="float-left" id="idAgendaTelefone">
                                 <h:column>
-                                    <h:outputLabel value="TELEFONE: " styleClass="fontePadrao" rendered="#{agendaBean.agenda.id != -1}"/>
+                                    <h:outputLabel value="TELEFONE: " styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
                                 </h:column>                            
                                 <h:column>
-                                    <h:selectOneMenu value="#{agendaBean.idTipoTelefone}" rendered="#{agendaBean.agenda.id != -1}">
-                                        <f:selectItems value="#{agendaBean.listaTipoTelefones}" />
+                                    <h:selectOneMenu value="#{agendaTelefoneBean.idTipoTelefone}" rendered="#{agendaTelefoneBean.agenda.id != -1}">
+                                        <f:selectItems value="#{agendaTelefoneBean.listaTipoTelefones}" />
                                     </h:selectOneMenu>
-                                    <h:inputText value="#{agendaBean.agendaTelefone.telefone}" styleClass="fontePadrao telefone" maxlength="500" size="14" rendered="#{agendaBean.agenda.id != -1}"/>
+                                    <h:outputText value="+" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agendaTelefone.ddi}" styleClass="fontePadrao" maxlength="2" size="1" rendered="#{agendaTelefoneBean.agenda.id != -1}" onblur="somenteNumeros(this);" title="DDI" style="text-align: center;"/>
+                                    <h:outputText value="(" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agendaTelefone.ddd}" styleClass="fontePadrao" maxlength="2" size="1" rendered="#{agendaTelefoneBean.agenda.id != -1}" onblur="somenteNumeros(this);" title="DDD" style="text-align: center;"/>
+                                    <h:outputText value=")" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
+                                    <h:inputText value="#{agendaTelefoneBean.agendaTelefone.telefone}" styleClass="fontePadrao telefoneSP" maxlength="10" size="10" rendered="#{agendaTelefoneBean.agenda.id != -1}" title="Telefone" />
                                 </h:column>
                                 <h:column>
-                                    <h:outputLabel value="CONTATO: " styleClass="fontePadrao" rendered="#{agendaBean.agenda.id != -1}"/>
+                                    <h:outputLabel value="CONTATO: " styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
                                 </h:column>
                                 <h:column>
-                                    <h:inputText value="#{agendaBean.agendaTelefone.contato}" styleClass="fontePadrao" maxlength="500" size="28" rendered="#{agendaBean.agenda.id != -1}"/>
-                                    <a4j:commandButton image="/Imagens/novo.png" action="#{agendaBean.adicionarAgendaTelefone()}" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar/atualizar telefone" rendered="#{agendaBean.agenda.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"  render="idMsgAgendaTelefone idAgendaTelefone idBtnExcluir tblAgendaTelefone" />
+                                    <h:inputText value="#{agendaTelefoneBean.agendaTelefone.contato}" styleClass="fontePadrao" maxlength="500" size="28" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
+                                    <a4j:commandButton image="/Imagens/novo.png" action="#{agendaTelefoneBean.adicionarAgendaTelefone()}" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar/atualizar telefone" rendered="#{agendaTelefoneBean.agenda.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"  render="idMsgAgendaTelefone idAgendaTelefone idBtnExcluir tblAgendaTelefone" />
                                 </h:column>
                             </h:panelGrid>
-                            <rich:dataTable var="linha" value="#{agendaBean.listaAgendaTelefones}" iterationStatusVar="itAT" id="tblAgendaTelefone" style="margin-top: 10px;" styleClass="float-left">
+                            <rich:dataTable var="linha" value="#{agendaTelefoneBean.listaAgendaTelefones}" iterationStatusVar="itAT" id="tblAgendaTelefone" style="margin-top: 10px;" styleClass="float-left">
                                 <f:facet name="header">Telefone</f:facet>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value=""/>
                                     </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{agendaBean.excluirAgendaTelefone(itAT.index)}" render="idMsgAgendaTelefone idAgendaTelefone tblAgendaTelefone" />
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{agendaTelefoneBean.excluirAgendaTelefone(itAT.index)}" render="idMsgAgendaTelefone idAgendaTelefone tblAgendaTelefone" />
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Tipo"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editarAgendaTelefone(itAT.index)}" value="#{linha.tipoTelefone.descricao}" styleClass="underline-hover" render="idAgendaTelefone tblAgendaTelefone" />
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editarAgendaTelefone(itAT.index)}" value="#{linha.tipoTelefone.descricao}" styleClass="underline-hover" render="idAgendaTelefone tblAgendaTelefone" />
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Número"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editarAgendaTelefone(itAT.index)}" value="#{linha.telefone}" styleClass="underline-hover" render="idAgendaTelefone tblAgendaTelefone" />
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editarAgendaTelefone(itAT.index)}" value="+#{linha.ddi} (#{linha.ddd}) #{linha.telefone}" styleClass="underline-hover" render="idAgendaTelefone tblAgendaTelefone" />
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Contato"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editarAgendaTelefone(itAT.index)}" value="#{linha.contato}" styleClass="underline-hover" render="idAgendaTelefone tblAgendaTelefone" />
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editarAgendaTelefone(itAT.index)}" value="#{linha.contato}" styleClass="underline-hover" render="idAgendaTelefone tblAgendaTelefone" />
                                 </rich:column>
                             </rich:dataTable>                        
                         </h:panelGrid>
                     </div>
                     <div class="divMae divFundo" style="width: 500px; margin-left: 15px; margin-right: 5px;">
-                        <h:panelGrid columns="6">
+                        <h:panelGrid columns="10">
                             <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
-                            <h:inputText id="palavraChave" value="#{agendaBean.descricaoPesquisa}" />
+                            <h:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSP'}">
+                                <a4j:ajax event="change" render="idDDD" />
+                                <f:selectItems value="#{agendaTelefoneBean.listaDDD}" />
+                            </h:selectOneMenu>                            
+                            <h:inputText id="palavraChave" value="#{agendaTelefoneBean.descricaoPesquisa}" size="16"/>
                             <h:outputLabel value="Por: "/>
-                            <h:selectOneMenu id="idTipoClasse" value="#{agendaBean.porPesquisa}" onchange="submit();">
+                            <h:selectOneMenu id="idTipoClasse" value="#{agendaTelefoneBean.porPesquisa}" onchange="submit();">
                                 <f:selectItem itemValue="nome"      itemLabel="Nome" />
                                 <f:selectItem itemValue="pessoa"    itemLabel="Pessoa" />
                                 <f:selectItem itemValue="contato"   itemLabel="Contato" />
-                                <f:selectItem itemValue="telefone"  itemLabel="Telefone" />
+                                <f:selectItem itemValue="telefoneSP"  itemLabel="Telefone" />
                                 <f:selectItem itemValue="endereco"  itemLabel="Endereço" />
-                                <rich:jQuery selector="#palavraChave" query="attr('class', '#{agendaBean.porPesquisa}')" timing="immediate" />
+                                <rich:jQuery selector="#palavraChave" query="attr('class', '#{agendaTelefoneBean.porPesquisa}')" timing="immediate" />
                             </h:selectOneMenu>
-                            <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{agendaBean.acaoPesquisaInicial}" />
-                            <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{agendaBean.acaoPesquisaParcial}" />
+                            <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{agendaTelefoneBean.acaoPesquisaInicial}" />
+                            <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{agendaTelefoneBean.acaoPesquisaParcial}" />
                         </h:panelGrid>
                         <h:column>
                             <h:outputLabel value="GRUPO: " styleClass="fontePadrao" />
-                            <h:selectOneMenu value="#{agendaBean.idFiltroGrupoAgenda}">
+                            <h:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
                                 <a4j:ajax event="change" render="tbl" />
-                                <f:selectItems value="#{agendaBean.listaGrupoAgendas}" />
+                                <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
                             </h:selectOneMenu>
                             <h:outputLabel value="Filtrar" styleClass="fontePadrao" />
-                            <h:selectBooleanCheckbox id="idFiltroGrupo" value="#{agendaBean.filtraPorGrupo}" title="Filtrar por grupos">
+                            <h:selectBooleanCheckbox id="idFiltroGrupo" value="#{agendaTelefoneBean.filtraPorGrupo}" title="Filtrar por grupos">
                                 <a4j:ajax event="change" render="idFiltroGrupo tbl" />
                             </h:selectBooleanCheckbox>
                         </h:column>
                         <div style="overflow:auto; height: 530px;">
-                            <rich:dataTable value="#{agendaBean.listaAgendas}" var="linha" iterationStatusVar="it" style="width:100%; margin-top: 10px;" id="tbl" styleClass="stable">
+                            <rich:dataTable value="#{agendaTelefoneBean.listaAgendas}" var="linha" iterationStatusVar="it" style="width:100%; margin-top: 10px;" id="tbl" styleClass="stable">
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="ID"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editar(it.index)}" value="#{linha.argumento1}" styleClass="underline-hover" render="idColunaAgenda idAgendaTelefone tblAgendaTelefone" style="text-transform: uppercase;"/>
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editar(it.index)}" value="#{linha.argumento1}" styleClass="underline-hover" render="idColunaAgenda idAgendaTelefone tblAgendaTelefone" style="text-transform: uppercase;"/>
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Grupo Agenda"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editar(it.index)}" value="#{linha.argumento2}" styleClass="underline-hover" render="idColunaAgenda idAgendaTelefone tblAgendaTelefone" style="text-transform: uppercase;"/>
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editar(it.index)}" value="#{linha.argumento2}" styleClass="underline-hover" render="idColunaAgenda idAgendaTelefone tblAgendaTelefone" style="text-transform: uppercase;"/>
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Nome"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editar(it.index)}" value="#{linha.argumento3} #{linha.argumento5}" styleClass="underline-hover" render="idColunaAgenda idAgendaTelefone tblAgendaTelefone"  style="text-transform: uppercase;"/>
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editar(it.index)}" value="#{linha.argumento3} #{linha.argumento5}" styleClass="underline-hover" render="idColunaAgenda idAgendaTelefone tblAgendaTelefone"  style="text-transform: uppercase;"/>
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Cidade / UF"/>
                                     </f:facet>
-                                    <a4j:commandLink action="#{agendaBean.editar(it.index)}" value="#{linha.argumento4}" styleClass="underline-hover"  render="idColunaAgenda idAgendaTelefone tblAgendaTelefone" style="text-transform: uppercase;"/>
+                                    <a4j:commandLink action="#{agendaTelefoneBean.editar(it.index)}" value="#{linha.argumento4}" styleClass="underline-hover"  render="idColunaAgenda idAgendaTelefone tblAgendaTelefone" style="text-transform: uppercase;"/>
                                 </rich:column>
                             </rich:dataTable>
                         </div>
@@ -226,7 +235,7 @@
                                 </h:panelGrid>
 
                                 <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{agendaBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma idAgendaTelefone tblAgendaTelefone tbl" />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{agendaTelefoneBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma idAgendaTelefone tblAgendaTelefone tbl" />
                                 <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                             </center>
                         </div>
@@ -244,7 +253,7 @@
                                     <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
                                 </h:panelGrid>
                                 <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{agendaBean.excluir()}" oncomplete="modalMensagem()" render="outConfirma idAgendaTelefone tblAgendaTelefone tbl"/>
+                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{agendaTelefoneBean.excluir()}" oncomplete="modalMensagem()" render="outConfirma idAgendaTelefone tblAgendaTelefone tbl"/>
                                 <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                             </center>
                         </div>
@@ -258,9 +267,9 @@
                             </a4j:commandLink>
                             <br />
                             <center>
-                                <h:outputText id="outConfirma" value="#{agendaBean.msgConfirma}" styleClass="fontePadrao"/>
+                                <h:outputText id="outConfirma" value="#{agendaTelefoneBean.msgConfirma}" styleClass="fontePadrao"/>
                                 <br /><br />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="tbl" action="#{agendaBean.novo()}" />
+                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="tbl" action="#{agendaTelefoneBean.novo()}" />
                             </center>
                         </div>
                         <div id="mask"></div>
