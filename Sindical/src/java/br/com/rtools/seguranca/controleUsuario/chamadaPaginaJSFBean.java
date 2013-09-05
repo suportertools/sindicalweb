@@ -16,7 +16,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class chamadaPaginaJSFBean {
+public class chamadaPaginaJSFBean implements java.io.Serializable {
 
     private HttpServletRequest paginaRequerida = null;
     private boolean carregaPg = true;
@@ -60,13 +60,13 @@ public class chamadaPaginaJSFBean {
         Rotina rotina = db.pesquisaAcesso(url);
         Usuario usuario = new Usuario();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
         }
         if (rotina.getId() != -1) {
             sv.abrirTransacao();
             ContadorAcessos cont = dba.pesquisaContadorAcessos(usuario.getId(), rotina.getId());
-            if (cont == null){
+            if (cont == null) {
                 cont = new ContadorAcessos();
                 cont.setRotina(rotina);
                 cont.setUsuario(usuario);
@@ -76,7 +76,7 @@ public class chamadaPaginaJSFBean {
                 } else {
                     sv.desfazerTransacao();
                 }
-            }else{
+            } else {
                 cont.setAcessos(cont.getAcessos() + 1);
                 if (sv.alterarObjeto(cont)) {
                     sv.comitarTransacao();
@@ -84,7 +84,7 @@ public class chamadaPaginaJSFBean {
                     sv.desfazerTransacao();
                 }
             }
-            
+
         }
     }
 
@@ -590,13 +590,14 @@ public class chamadaPaginaJSFBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
         return metodoGenerico(2, "matriculaEscola");
     }
-    
-    public synchronized String agenda() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agendaBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agendaPesquisa");
+
+    public synchronized String agendaTelefone() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tipoAgendaTelefone", "agendaTelefone");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agendaTelefoneBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agendaTelefonePesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
-        return metodoGenerico(2, "agenda");
+        return metodoGenerico(2, "agendaTelefone");
     }
 
     public synchronized String cancelarHorario() {
@@ -648,7 +649,7 @@ public class chamadaPaginaJSFBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
         return metodoGenerico(2, "enviarArquivosContabilidade");
     }
-    
+
     public synchronized String enviarArquivosContribuinte() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
         return metodoGenerico(2, "enviarArquivosContribuinte");
@@ -717,7 +718,7 @@ public class chamadaPaginaJSFBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("bloqueioServicosBean");
         return metodoGenerico(2, "bloqueioServicos");
     }
-    
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1067,6 +1068,11 @@ public class chamadaPaginaJSFBean {
         return metodoGenerico(1, "pesquisaMatriculaContrato");
     }
 
+    public synchronized String pesquisaAgendaTelefone() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tipoAgendaTelefone", "pesquisaAgendaTelefone");
+        return metodoGenerico(1, "pesquisaAgendaTelefone");
+    }
+
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
@@ -1172,6 +1178,7 @@ public class chamadaPaginaJSFBean {
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
+
     public String converteURLNome(String strURLNome) {
         String nomePg = "";
         /*if (strURLNome.substring(0, 4).equals("menu")){
@@ -1315,8 +1322,8 @@ public class chamadaPaginaJSFBean {
                 nomePg = "Pesquisa Piso Salarial";
             } else if (strURLNome.equals("pesquisaMatriculaContrato")) {
                 nomePg = "Pesquisa Contrato";
-            } else if (strURLNome.equals("pesquisaAgenda")) {
-                nomePg = "Pesquisa Agenda";
+            } else if (strURLNome.equals("pesquisaAgendaTelefone")) {
+                nomePg = "Pesquisa Agenda Telefone";
             }
             return nomePg;
         }
@@ -1509,7 +1516,7 @@ public class chamadaPaginaJSFBean {
             } else if (strURLNome.equals("catalogoFilme")) {
                 nomePg = "Catálogo Filme";
             } else if (strURLNome.equals("enviarArquivosContribuinte")) {
-                nomePg = "Enviar Arquivos Constribuinte";
+                nomePg = "Enviar Arquivos Contribuinte";
             } else if (strURLNome.equals("enviarArquivosContabilidade")) {
                 nomePg = "Enviar Arquivos Contabilidade";
             } else if (strURLNome.equals("oposicao")) {
@@ -1542,8 +1549,8 @@ public class chamadaPaginaJSFBean {
                 nomePg = "Recepção";
             } else if (strURLNome.equals("bloqueioServicos")) {
                 nomePg = "Bloqueio de Serviços";
-            } else if (strURLNome.equals("agenda")) {
-                nomePg = "Agenda";
+            } else if (strURLNome.equals("agendaTelefone")) {
+                nomePg = "Agenda Telefone";
             } else if (strURLNome.equals("grupoAgenda")) {
                 nomePg = "Grupo Agenda";
             }
@@ -1811,7 +1818,7 @@ public class chamadaPaginaJSFBean {
             return null;
         } catch (Exception e) {
             NovoLog novoLog = new NovoLog();
-            novoLog.novo("controleLinks", e.getMessage());            
+            novoLog.novo("controleLinks", e.getMessage());
             return null;
         }
 
