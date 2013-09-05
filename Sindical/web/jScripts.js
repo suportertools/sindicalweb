@@ -88,11 +88,15 @@ function setOpacity(id, valor) {
     document.getElementById(id).style.filter = 'alpha(opacity=' + valor * 10 + ')';
 }
 
+// $(".telefone").mask("(99) 9999-9999?9");
 jQuery(function($) {
     $(".data").mask("99/99/9999");
     $(".dataAno").mask("9999");
     $(".hora").mask("99:99");
-    $(".telefone").mask("(99) 9999-9999");
+    $(".telefone").focus(function () { $(this).mask("(99) 9999-9999?9"); }); 
+    $(".telefone").focusout(function () { var phone, element; element = $(this); element.unmask(); phone = element.val().replace(/\D/g, ''); if (phone.length > 10) { element.mask("(99) 99999-999?9"); } else { element.mask("(99) 9999-9999?9"); } });
+    $(".telefoneSimples").focus(function () { $(this).mask("9999-9999?9"); }); 
+    $(".telefoneSimples").focusout(function () { var phone, element; element = $(this); element.unmask(); phone = element.val().replace(/\D/g, ''); if (phone.length > 8) { element.mask("99999-999?9"); } else { element.mask("9999-9999?9"); } });
     $(".cpf").mask("999.999.999-99");
     $(".cnpj").mask("99.999.999/9999-99");
     $(".cei").mask("99.999.99999/99");
@@ -113,6 +117,11 @@ jQuery(function($) {
 });
 
 function somenteNumeros(setThis) {
+    setThis.value = setThis.value.replace(/\D/g, '');
+    return setThis;
+}
+
+function somenteNumerosTelefone(setThis) {
     setThis.value = setThis.value.replace(/\D/g, '');
     return setThis;
 }
