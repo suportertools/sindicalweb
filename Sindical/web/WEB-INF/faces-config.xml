@@ -112,10 +112,10 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>agendaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.agenda.beans.AgendaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-name>agendaTelefoneBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.agenda.beans.AgendaTelefoneJSFBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean>
 
     <managed-bean>
         <managed-bean-name>grupoAgendaBean</managed-bean-name>
@@ -985,8 +985,14 @@
         </navigation-case>
 
         <navigation-case>
-            <from-outcome>agenda</from-outcome>
-            <to-view-id>/agenda.jsp</to-view-id>
+            <from-outcome>agendaTelefone</from-outcome>
+            <to-view-id>/agendaTelefone.jsp</to-view-id>
+            <redirect/>
+        </navigation-case>
+
+        <navigation-case>
+            <from-outcome>pesquisaAgendaTelefone</from-outcome>
+            <to-view-id>/pesquisaAgendaTelefone.jsp</to-view-id>
             <redirect/>
         </navigation-case>
 
@@ -1789,8 +1795,14 @@
         </navigation-case>
     
         <navigation-case>
-            <from-outcome>enviarArquivos</from-outcome>
-            <to-view-id>/enviarArquivos.jsf</to-view-id>
+            <from-outcome>enviarArquivosContabilidade</from-outcome>
+            <to-view-id>/enviarArquivosContabilidade.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>enviarArquivosContribuinte</from-outcome>
+            <to-view-id>/enviarArquivosContribuinte.jsf</to-view-id>
             <redirect/>
         </navigation-case>
     
