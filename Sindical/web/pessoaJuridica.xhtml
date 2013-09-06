@@ -28,12 +28,13 @@
                         <rich:tabPanel switchType="client" activeItem="#{juridicaBean.indicaTab}">
                             <a4j:ajax event="itemchange" render="this" listener="#{juridicaBean.refreshForm}"/>
                             <rich:tab name="pessoal" header="Dados Gerais" style="text-align: left;">
-                                <h:panelGrid columns="5" id="i_panel_cnae">
+                                <h:panelGrid columns="6" id="i_panel_cnae">
                                     <h:commandButton image="/Imagens/pesquisar.png" alt="Pesquisar Cnae"  action="#{chamadaPaginaBean.pesquisaCnae}"/>
                                     <h:outputLabel value="Cnae: " styleClass="fontePadrao"/>
                                     <h:outputText  value="#{juridicaBean.juridica.cnae.numero} - " styleClass="fontePadraoNegrito"/>
                                     <h:outputLabel value="#{juridicaBean.juridica.cnae.cnae}" styleClass="fontePadraoNegrito"/>
                                     <h:outputText value="#{juridicaBean.cnaeContribuinte}" styleClass="fonteCnaeContribuinte" style="color: #{juridicaBean.colorContri}; margin-left: 20px;"/>
+                                    <a4j:commandButton id="idExcluirCnae" image="/Imagens/excluirp.png" action="#{juridicaBean.limparCnae()}" render="i_panel_cnae idExcluirCnae" title="Limpar CNAE" rendered="#{juridicaBean.juridica.cnae != null}" />
                                 </h:panelGrid>
 
                                 <h:panelGrid columns="2" columnClasses="coluna1, coluna2" id="i_panel_dados">
