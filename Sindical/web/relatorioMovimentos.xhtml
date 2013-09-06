@@ -24,7 +24,7 @@
                     </div>
                     <br /><br />
                     <div class="divMae divFundo" align="left" style="width: auto; height: auto">
-                     
+                    <h:panelGrid id="arrobaForm">                     
                         <h:panelGrid columns="5">
                             <h:column>
                                 <h:outputLabel value="Tipo de Relatório: " styleClass="fontePadrao"/>
@@ -97,7 +97,7 @@
                                 <h:panelGrid columns="5">
                                     <h:outputText value="Filtrar por escritório: " styleClass="fontePadrao"/>
                                     <h:selectOneRadio value="#{relatorioMovimentosBean.porContabilidade}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="@form" />
+                                        <a4j:ajax event="change" render="arrobaForm" />
                                         <f:selectItem itemValue="todos" itemLabel="Todos"/>
                                         <f:selectItem itemValue="com"   itemLabel="Com"/>
                                         <f:selectItem itemValue="sem"   itemLabel="Sem"/>
@@ -108,11 +108,11 @@
                                             <rich:column>
                                                 <f:facet name="header">
                                                     <h:selectBooleanCheckbox value="#{relatorioMovimentosBean.chkContabilidades}">
-                                                        <a4j:ajax event="change" listener="#{relatorioMovimentosBean.marcarContabilidades}" render="@form"/>
+                                                        <a4j:ajax event="change" listener="#{relatorioMovimentosBean.marcarContabilidades}" render="arrobaForm"/>
                                                     </h:selectBooleanCheckbox>
                                                 </f:facet>
                                                 <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                    <a4j:ajax event="change" render="@form"/>
+                                                    <a4j:ajax event="change" render="arrobaForm"/>
                                                 </h:selectBooleanCheckbox>
                                             </rich:column>
 
@@ -288,6 +288,7 @@
                             <a4j:ajax event="change" render="this"/>
                         </h:selectBooleanCheckbox>
                         <h:outputLabel value="Totaliza" style="cursor: pointer" for="iTotaliza" styleClass="fontePadrao"/>
+                    </h:panelGrid>
                     </div>
                 </center>
             </h:form>
