@@ -64,19 +64,20 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                            "       mov.nr_multa         as multa," +
                            "       mov.nr_juros         as juros," +
                            "       mov.nr_correcao      as correcao," +
-                           "       mov.nr_valor_baixa   as valor_baixa" +
+                           "       mov.nr_valor_baixa   as valor_baixa, " +
+                           "       cc.nr_repasse        as vl_repasse " +
                            "  from fin_movimento               as mov " +
                            " inner join pes_pessoa         as pes   on pes.id  = mov.id_pessoa " +
                            " inner join pes_tipo_documento as pdoc  on pdoc.id = pes.id_tipo_documento " +
-                           " inner join fin_servicos       as se    on se.id =mov.id_servicos " +
+                           " inner join fin_servicos       as se    on se.id = mov.id_servicos " +
                            " inner join fin_servico_rotina as ser on ser.id_servicos=se.id and ser.id_rotina=4 " +
-                           " inner join fin_tipo_servico   as ts   on ts.id=mov.id_tipo_servico " +   
+                           " inner join fin_tipo_servico   as ts   on ts.id = mov.id_tipo_servico " +   
                            "  left join fin_baixa           as lot   on lot.id  = mov.id_baixa " +
-                           "  left join pes_juridica       as jur     on jur.id_pessoa=pes.id " +
-                           "  left join pes_juridica       as esc     on esc.id=jur.id_contabilidade " +
-                           "  left join pes_pessoa         as pesc    on pesc.id=esc.id_pessoa " +
+                           "  left join pes_juridica       as jur     on jur.id_pessoa = pes.id " +
+                           "  left join pes_juridica       as esc     on esc.id = jur.id_contabilidade " +
+                           "  left join pes_pessoa         as pesc    on pesc.id = esc.id_pessoa " +
                            "  left join pes_tipo_documento as escdoc  on escdoc.id = pes.id_tipo_documento " +
-                           "  left join pes_cnae as cnae  on cnae.id=jur.id_cnae " +
+                           "  left join pes_cnae as cnae  on cnae.id = jur.id_cnae " +
                            "  left join pes_pessoa_endereco    as pes_pend       on pes_pend.id_pessoa = pes.id " +
                            "  left join end_endereco           as pes_end        on pes_end.id         = pes_pend.id_endereco " +
                            "  left join end_logradouro         as pes_logradouro on pes_logradouro.id  = pes_end.id_logradouro " +
@@ -88,9 +89,11 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                            "  left join end_logradouro         as esc_logradouro on esc_logradouro.id  = esc_end.id_logradouro " +
                            "  left join end_descricao_endereco as esc_endereco   on esc_endereco.id    = esc_end.id_descricao_endereco " +
                            "  left join end_bairro             as esc_bairro     on esc_bairro.id      = esc_end.id_bairro " +
-                           "  left join end_cidade             as esc_cidade     on esc_cidade.id      = esc_end.id_cidade" +
+                           "  left join end_cidade             as esc_cidade     on esc_cidade.id      = esc_end.id_cidade " +
                            "  left join seg_usuario    as us   on us.id=lot.id_usuario " +
-                           "  left join pes_pessoa     as upes on upes.id=us.id_pessoa ";
+                           "  left join pes_pessoa     as upes on upes.id=us.id_pessoa " +
+                           " inner join fin_boleto as bol on bol.nr_ctr_boleto = mov.nr_ctr_boleto "+
+                           " inner join fin_conta_cobranca as cc on cc.id = bol.id_conta_cobranca ";
 
         
         // CONDICAO -----------------------------------------------------

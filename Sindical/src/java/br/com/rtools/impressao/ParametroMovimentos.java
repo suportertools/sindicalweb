@@ -61,6 +61,8 @@ public class ParametroMovimentos {
     private BigDecimal movMulta;
     private BigDecimal movCorrecao;
     private BigDecimal movValorTotal;
+    private BigDecimal movRepasse;
+    private BigDecimal movLiquido;
     private boolean totaliza;    
 
     public ParametroMovimentos(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero,
@@ -71,7 +73,7 @@ public class ParametroMovimentos {
             String jurCnae,int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
             String escBairro, String escCep, String escCidade, String escUF, String escTelefone, String escEmail, String movNumeroBoleto,
             String movServico, String movTipoServico, String movReferencia, String movVencimento, String movQuitacao, BigDecimal movValorRecebido,
-            BigDecimal movTaxa, String movImportacao, String movUsuario, BigDecimal movJuros,BigDecimal movMulta,BigDecimal movCorrecao, BigDecimal movValorTotal, boolean totaliza) {
+            BigDecimal movTaxa, String movImportacao, String movUsuario, BigDecimal movJuros,BigDecimal movMulta,BigDecimal movCorrecao, BigDecimal movValorTotal, BigDecimal movRepasse, BigDecimal movLiquido, boolean totaliza) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -130,6 +132,8 @@ public class ParametroMovimentos {
         this.movMulta = movMulta;
         this.movCorrecao = movCorrecao;
         this.movValorTotal = movValorTotal;
+        this.movRepasse = movRepasse;
+        this.movLiquido = movLiquido;
         this.totaliza = totaliza;
     }
 
@@ -192,6 +196,8 @@ public class ParametroMovimentos {
         this.movMulta = new BigDecimal(0);
         this.movCorrecao = new BigDecimal(0);
         this.movValorTotal = new BigDecimal(0);
+        this.movRepasse = new BigDecimal(0);
+        this.movLiquido = new BigDecimal(0);
         this.totaliza = true;
     }
 
@@ -665,5 +671,21 @@ public class ParametroMovimentos {
 
     public void setTotaliza(boolean totaliza) {
         this.totaliza = totaliza;
+    }
+
+    public BigDecimal getMovRepasse() {
+        return movRepasse;
+    }
+
+    public void setMovRepasse(BigDecimal movRepasse) {
+        this.movRepasse = movRepasse;
+    }
+
+    public BigDecimal getMovLiquido() {
+        return movLiquido;
+    }
+
+    public void setMovLiquido(BigDecimal movLiquido) {
+        this.movLiquido = movLiquido;
     }
 }

@@ -733,9 +733,9 @@
     
     <managed-bean>
         <managed-bean-name>relatorioHomologacaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.homologacao.beans.RelatorioHomologacaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioHomologacaoJSFBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean>
     
     <navigation-rule>
         <navigation-case>

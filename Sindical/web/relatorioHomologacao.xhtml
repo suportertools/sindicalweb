@@ -93,7 +93,30 @@
                                 </h:column>
                             </h:panelGrid>
                             
+                            <h:panelGrid columns="2" rendered="#{relatorioHomologacaoBean.booHomologador}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Usuário Homologador" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Homologador" action="#{chamadaPaginaBean.pesquisaUsuario()}"/>
+                                    <h:outputText value="#{relatorioHomologacaoBean.usuario.nome}" />
+                                </h:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid  style="float: left">
+                                <rich:panel>
+                                    <h:outputLabel value="Ordenar por " styleClass="fonteFranklinNegrito"/>
+                                    <h:selectOneRadio id="idOrdem" value="#{relatorioHomologacaoBean.tipoOrdem}" styleClass="fontePadrao">
+                                        <f:selectItem itemValue="data"        itemLabel="Data"/>
+                                        <f:selectItem itemValue="empresa"     itemLabel="Empresa"/>
+                                        <f:selectItem itemValue="funcionario" itemLabel="Funcionário"/>
+                                        <f:selectItem itemValue="homologador" itemLabel="Homologador"/>
+                                    </h:selectOneRadio>
+                                </rich:panel>
+                            </h:panelGrid>
                         </rich:panel> 
+                        <h:commandLink styleClass="idPesquisar iLink" action="#{relatorioHomologacaoBean.visualizarRelatorio()}" value="Visualizar" target="_blank" title="Visualizar Relatório" style="margin-left: 20px"/>
                     </rich:panel>
                 
                 </rich:panel>
