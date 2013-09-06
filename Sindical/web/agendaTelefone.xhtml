@@ -123,7 +123,7 @@
                                     <h:outputText value="(" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
                                     <h:inputText value="#{agendaTelefoneBean.agendaTelefone.ddd}" styleClass="fontePadrao" maxlength="2" size="1" rendered="#{agendaTelefoneBean.agenda.id != -1}" onblur="somenteNumeros(this);" title="DDD" style="text-align: center;"/>
                                     <h:outputText value=")" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
-                                    <h:inputText value="#{agendaTelefoneBean.agendaTelefone.telefone}" styleClass="fontePadrao telefoneSP" maxlength="10" size="10" rendered="#{agendaTelefoneBean.agenda.id != -1}" title="Telefone" />
+                                    <h:inputText value="#{agendaTelefoneBean.agendaTelefone.telefone}" styleClass="fontePadrao telefoneSimples" maxlength="10" size="10" rendered="#{agendaTelefoneBean.agenda.id != -1}" title="Telefone" />
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="CONTATO: " styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agenda.id != -1}"/>
@@ -165,7 +165,7 @@
                     <div class="divMae divFundo" style="width: 500px; margin-left: 15px; margin-right: 5px;">
                         <h:panelGrid columns="10">
                             <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
-                            <h:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSP'}">
+                            <h:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSimples'}">
                                 <a4j:ajax event="change" render="idDDD" />
                                 <f:selectItems value="#{agendaTelefoneBean.listaDDD}" />
                             </h:selectOneMenu>                            
@@ -175,7 +175,7 @@
                                 <f:selectItem itemValue="nome"      itemLabel="Nome" />
                                 <f:selectItem itemValue="pessoa"    itemLabel="Pessoa" />
                                 <f:selectItem itemValue="contato"   itemLabel="Contato" />
-                                <f:selectItem itemValue="telefoneSP"  itemLabel="Telefone" />
+                                <f:selectItem itemValue="telefoneSimples"  itemLabel="Telefone" />
                                 <f:selectItem itemValue="endereco"  itemLabel="Endereço" />
                                 <rich:jQuery selector="#palavraChave" query="attr('class', '#{agendaTelefoneBean.porPesquisa}')" timing="immediate" />
                             </h:selectOneMenu>
