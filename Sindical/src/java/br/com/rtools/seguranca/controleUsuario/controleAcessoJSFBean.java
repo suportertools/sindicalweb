@@ -304,6 +304,7 @@ public class controleAcessoJSFBean implements java.io.Serializable {
             if (user.getId() != 1) {
                 PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
                 Permissao permissao;
+                idModulo = modulo.getId();
                 if (id == -1) {
                     if (modulo.getId() != -1) {
                         idEvento = 1;
@@ -320,7 +321,7 @@ public class controleAcessoJSFBean implements java.io.Serializable {
                         idEvento = 3;
                     }
                 }
-                permissao = db.pesquisaPermissao(modulo.getId(), rotina.getId(), idEvento);
+                permissao = db.pesquisaPermissao(idModulo, rotina.getId(), idEvento);
                 if (permissao.getId() != -1) {
                     List<PermissaoUsuario> permissaoUsuarios = db.listaPermissaoUsuario(user.getId());
 
@@ -379,7 +380,8 @@ public class controleAcessoJSFBean implements java.io.Serializable {
             if (user.getId() != 1) {
                 PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
                 Permissao permissao;
-                if (id == -1) {
+                idModulo = modulo.getId();
+                if (id == -1) {                    
                     if (modulo.getId() != -1) {
                         idEvento = 1;
                     } else {
@@ -395,7 +397,7 @@ public class controleAcessoJSFBean implements java.io.Serializable {
                         idEvento = 3;
                     }
                 }
-                permissao = db.pesquisaPermissao(modulo.getId(), rotina.getId(), idEvento);
+                permissao = db.pesquisaPermissao(idModulo, rotina.getId(), idEvento);
                 if (permissao.getId() != -1) {
                     List<PermissaoUsuario> permissaoUsuarios = db.listaPermissaoUsuario(user.getId());
 
