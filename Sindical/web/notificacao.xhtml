@@ -23,7 +23,7 @@
                         <h:outputText value="Notificação" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br />
-                    <div class="divMae divFundo" style="width: 600px">
+                    <div class="divMae divFundo" style="width: 1024px">
                         <h:panelGrid columns="1" style="float: left">
                             <h:column>
                                 <h:outputLabel value="Lotes: " styleClass="fontePadrao" />
@@ -38,7 +38,64 @@
                             <h:outputLabel value="Mensagem" styleClass="fontePadrao" />
                             <h:inputTextarea id="i_mensagem" cols="50" rows="5" value="#{notificacaoBean.lote.mensagem}"/>
                         </h:panelGrid>
+                        
+                        
+                        <rich:panel style="float: right; background: white">
+                            <h:commandLink value="Gerar para todas Empresas" styleClass="fontePadrao" style="float: left"/>
+                            <br /><br />
+                            <h:commandLink value="Gerar para empresa específica" styleClass="fontePadrao" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" style="float: left">
+                                
+                            </h:commandLink>
+                            <c:forEach items="#{notificacaoBean.listaEmpresaAdd}" var="linhae">
+                                <br /><h:outputText value="#{linhae.argumento1.pessoa.nome}" styleClass="fontePadrao" style="float: left"/>
+                            </c:forEach>
+                            
+                            <br /><br />
+                            <h:commandLink value="Gerar para contabilidade específica" styleClass="fontePadrao" style="float: left">
+                                
+                            </h:commandLink>
+                            <c:forEach items="#{notificacaoBean.listaContabilAdd}" var="linhac">
+                                <br /><h:outputText value="#{linhac.argumento1.pessoa.nome}" styleClass="fontePadrao"/>
+                            </c:forEach>
+                            <br /><br />
+                        </rich:panel>
+                        
+                        
                         <div style="clear: both"></div>
+                        <h:outputLabel value="Serão geradas #{notificacaoBean.quantidade} notificações" style="font-size: 10pt; color: red; float: right" />
+                        
+                        <h:panelGrid id="i_panel_grid" style="float: left">
+                            <rich:dataTable value="#{notificacaoBean.listaNotificacao}" var="linha" style="width:100%" id="tbl">
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header">
+                                        <h:selectBooleanCheckbox value="#{notificacaoBean.chkTodos}">
+                                            <a4j:ajax event="change" render="i_panel_grid" listener="#{notificacaoBean.marcarTodos()}"/>
+                                        </h:selectBooleanCheckbox>
+                                    </f:facet>
+                                    <h:selectBooleanCheckbox value="#{linha.argumento0}"/>
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
+                                    <h:outputText value="#{linha.argumento1[0]}" />
+                                </rich:column>
+                                
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Empresa"/></f:facet>
+                                    <h:outputText value="#{linha.argumento1[1]}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Gerada"/></f:facet>
+                                    <h:outputText value="Não" />
+                                </rich:column>
+                            </rich:dataTable>
+                            
+                            <!-- <c:forEach items="# {notificacaoBean.listaNotificacao}" var="linha">
+                                <br /><h:outputText value="# {linha.argumento0[0]}" styleClass="fontePadrao"/>
+                            </c:forEach> -->
+                        </h:panelGrid>
+                        
                         <br /><br />
                         <h:panelGrid id="i_panel" columns="3" style="float: left">
                             <a4j:commandLink id="id_atualizar" onclick="modalOpcao('divCriar');" style="width: 100px" styleClass="idSalvar iLink" value="Atualizar" title="Atualizar mensagem editada" rendered="#{notificacaoBean.lote.id != -1}"/>

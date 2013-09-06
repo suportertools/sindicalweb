@@ -819,8 +819,8 @@ INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 5,'Escritórios','/Relatorios/ESCRITORIOS.jasper',6,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 5);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 6,'Etiquetas','/Relatorios/ETESCRITORIO6181.jasper',6,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 6);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 7,'Extrato de Arrecadação','/Relatorios/EXTRATO_ARRECADACAO.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 7);
-INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 8,'Demonstrativo de Débito','/Relatorios/DEMONSTRATIVO_DEBITO.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 8);
-INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 9,'Demonstrativo de Débito Por Empresa','/Relatorios/DEMONSTRATIVO_DEBITO_EMPRESA.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 9);
+INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 8,'Extrato de Arrecadação por Escritório','/Relatorios/EXTRATO_ARRECADACAO_ESCRITORIO.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 8);
+INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 9,'Extrato de Arrecadação por Empresa','/Relatorios/EXTRATO_ARRECADACAO_EMPRESA.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 9);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 10,'Relação de Sócios','/Relatorios/SOCIOS.jasper',171,'','so.inativacao is null' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 10);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 11,'Registro de Associados','"/Relatorios/REGISTRO_DE_ASSOCIADOS.jasper',171,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 11);  
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 12,'Sócios por Empresa','"/Relatorios/SOCIOS_EMPRESA.jasper"',171,'p.empresa, p.cnpj','so.inativacao is null' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 12);
@@ -831,6 +831,7 @@ INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 17,'Contribuintes/Email','/Relatorios/CONTRIBUINTES_EMAIL.jasper',5,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 17);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 18,'Escritórios/Email','/Relatorios/ESCRITORIOS_EMAIL.jasper',6,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 18);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 19,'Relatório de Homologação','/Relatorios/HOMOLOGACAO.jasper',177,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 19);
+INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 20,'Extrato com Valor Líquido','/Relatorios/EXTRATO_ARRECADACAO_LIQUIDO.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 20);
 SELECT setval('sis_relatorios_id_seq', max(id)) FROM sis_relatorios;
 
 -- seg_registro 

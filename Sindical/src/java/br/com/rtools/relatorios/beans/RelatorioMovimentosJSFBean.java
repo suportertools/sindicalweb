@@ -175,10 +175,13 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
             jasper = (JasperReport) JRLoader.loadObject(
                  ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             String quitacao, importacao, usuario;
-            float valor = 0;
+            float valor = 0, repasse = 0, valorLiquido = 0;
+            
+            
+            
             try{
                 for(int i = 0; i < result.size();i++){
-                    valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6)));
+                    valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))); // VALOR ORIGINAL     
                     if (((Vector) result.get(i)).get(38) == null){
                         quitacao = ""; importacao = ""; usuario = "";
                     }else{
@@ -192,7 +195,13 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
                         usuario = getConverteNullString(((Vector) result.get(i)).get(42));
                     }
                     
-                     listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
+                    repasse = Moeda.multiplicarValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Moeda.divisaoValores(
+                                                                            Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(48))), 100 // 48 % NR_REPASSE DA CONTA COBRANCA
+                                                                          )
+                                              );
+                    valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Float.valueOf(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) ))),repasse);
+                    
+                    listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
                                                                 sindicato.getPessoa().getNome(),
                                                                 endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
                                                                 endSindicato.getEndereco().getLogradouro().getDescricao(),
@@ -250,6 +259,8 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
                                                                 new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(45)) )),// JUROS,
                                                                 new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(46)) )),// CORRECAO,
                                                                 new BigDecimal(valor), // VALOR TOTAL
+                                                                new BigDecimal(repasse), // REPASSE
+                                                                new BigDecimal(valorLiquido), // VALOR LIQUIDO
                                                                 totaliza
 
                                         ));
@@ -457,7 +468,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
             jasper = (JasperReport) JRLoader.loadObject(
                  ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             String quitacao, importacao, usuario;
-            float valor = 0;
+            float valor = 0, repasse = 0, valorLiquido = 0;
             try{
                 for(int i = 0; i < result.size();i++){
                     if (((Vector) result.get(i)).get(38) == null){
@@ -473,11 +484,21 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
                                 valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))); // VALOR ORIGINAL
                                 
                         }
+                        
+                        
+                        
                         quitacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(39));
                         importacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(40));
                         usuario = getConverteNullString(((Vector) result.get(i)).get(42));
                     }
-                     listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
+                    
+                    repasse = Moeda.multiplicarValores(valor, Moeda.divisaoValores(
+                                                                            Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(48))), 100 // 48 % NR_REPASSE DA CONTA COBRANCA
+                                                                          )
+                                              );                    
+                    valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.valueOf(valor), Float.valueOf(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) ))),repasse);
+                    
+                    listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
                                                                 sindicato.getPessoa().getNome(),
                                                                 endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
                                                                 endSindicato.getEndereco().getLogradouro().getDescricao(),
@@ -535,6 +556,8 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
                                                                 new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(45)) )),// JUROS,
                                                                 new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(46)) )),// CORRECAO,
                                                                 new BigDecimal(valor),// VALOR TOTAL
+                                                                new BigDecimal(repasse),// REPASSE
+                                                                new BigDecimal(valorLiquido),// VALOR LIQUIDO
                                                                 totaliza
                                         ));
                 }

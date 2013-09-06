@@ -318,7 +318,8 @@ public class UsuarioJSFBean {
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", usuario.getPessoa());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        return "usuario";
+        
+        return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
 
     public List<Usuario> getListaUsuario() {
