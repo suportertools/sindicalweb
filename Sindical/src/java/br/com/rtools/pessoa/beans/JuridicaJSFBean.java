@@ -2153,4 +2153,10 @@ public class JuridicaJSFBean {
         setDescPesquisa("");
         return null;
     }
+    
+   public void limparCnae() {
+       if (juridica.getId() != -1) {
+           juridica.setCnae(null);
+       }
+   }
 }
