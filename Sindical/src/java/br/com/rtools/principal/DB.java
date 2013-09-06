@@ -84,10 +84,16 @@ public class DB {
             dataObject.setArgumento0("192.168.1.60");
             dataObject.setArgumento1(cliente);
             dataObject.setArgumento2("989899");
+        }else if(
+            cliente.equals("ComercioRP")
+        ){
+            dataObject.setArgumento0("200.152.187.241");
+            dataObject.setArgumento1("Sindical");
+            dataObject.setArgumento2("989899");
         }else{
             if(cliente.equals("Sindical")){
                 //cliente = "c_limeira_base";
-                cliente = "c_limeira_base";
+                cliente = "n_base_local";
             }            
             dataObject.setArgumento0("localhost");
             dataObject.setArgumento1(cliente);
