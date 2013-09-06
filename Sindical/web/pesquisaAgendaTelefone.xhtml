@@ -93,7 +93,7 @@
                     <div class="divMae divFundo" style="width: 1024px;">
                         <h:panelGrid columns="10">
                             <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
-                            <h:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSP'}">
+                            <h:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSimples'}">
                                 <a4j:ajax event="change" render="idDDD" />
                                 <f:selectItems value="#{agendaTelefoneBean.listaDDD}" />
                             </h:selectOneMenu>                            
