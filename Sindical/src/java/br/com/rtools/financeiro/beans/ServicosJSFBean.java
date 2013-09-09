@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 
-public class ServicosJSFBean {
+public class ServicosJSFBean implements java.io.Serializable {
 
     private Servicos servicos = new Servicos();
     private Plano5 plano5 = new Plano5();

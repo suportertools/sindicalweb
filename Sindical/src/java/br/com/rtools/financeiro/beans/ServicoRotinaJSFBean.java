@@ -6,81 +6,122 @@ import br.com.rtools.financeiro.db.ServicoRotinaDB;
 import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.model.SelectItem;
 
-public class ServicoRotinaJSFBean {
+public class ServicoRotinaJSFBean implements java.io.Serializable {
+
     private int idServicos = 0;
     private int idRotinas = 0;
     private int idIndex = -1;
     private ServicoRotina servicoRotina = new ServicoRotina();
     private List<ServicoRotina> listaServicoRotina = new ArrayList();
     private String msgConfirma = "";
-    
-    public List<SelectItem> getListaServicos(){
-        List<SelectItem> listaSe = new Vector<SelectItem>();
-        int i = 0;
-        ServicosDB db = new ServicosDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()){
-           listaSe.add(new SelectItem( new Integer(i),
-                                 (String) ((Servicos) select.get(i)).getDescricao(),
-                                 Integer.toString(((Servicos) select.get(i)).getId()) ));
-           i++;
+    private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaRotinas = new ArrayList<SelectItem>();
+
+    public List<SelectItem> getListaServicos() {
+        if (listaServicos.isEmpty()) {
+            ServicosDB db = new ServicosDBToplink();
+            List<Servicos> ls = db.pesquisaTodosServicos();
+            for (int i = 0; i < ls.size(); i++) {
+                listaServicos.add(new SelectItem(new Integer(i),
+                        (String) ((Servicos) ls.get(i)).getDescricao(),
+                        Integer.toString(((Servicos) ls.get(i)).getId())));
+            }
         }
-        return listaSe;
+        return listaServicos;
     }
 
-    public List<SelectItem> getListaRotinas(){
-        List<SelectItem> listaRo = new Vector<SelectItem>();
-        int i = 0;
-        ServicoRotinaDB db = new ServicoRotinaDBToplink();
-        List select = db.pesquisaTodasRotinasSemServicoOrdenado(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
-        while (i < select.size()){
-           listaRo.add(new SelectItem( new Integer(i),
-                                 (String) ((Rotina) select.get(i)).getRotina(),
-                                 Integer.toString(((Rotina) select.get(i)).getId()) ));
-           i++;
+    public List<SelectItem> getListaRotinas() {
+        if (listaRotinas.isEmpty()) {
+            if (listaServicos.isEmpty()) {
+                return listaRotinas;
+            }
+            ServicoRotinaDB db = new ServicoRotinaDBToplink();
+            List list = db.pesquisaTodasRotinasSemServicoOrdenado(Integer.parseInt(listaServicos.get(idServicos).getDescription()));
+            for (int i = 0; i < list.size(); i++) {
+                listaRotinas.add(new SelectItem(new Integer(i),
+                        (String) ((Rotina) list.get(i)).getRotina(),
+                        Integer.toString(((Rotina) list.get(i)).getId())));
+            }
         }
-        return listaRo;
+        return listaRotinas;
     }
 
-    public String adicionarServicoRotina(){
-        ServicoRotinaDB db = new ServicoRotinaDBToplink();
-        ServicosDB dbs = new ServicosDBToplink();
-        RotinaDB dbr = new RotinaDBToplink();
-        Rotina rotina = dbr.pesquisaCodigo( Integer.parseInt(getListaRotinas().get(idRotinas).getDescription()) );
-        Servicos servico = dbs.pesquisaCodigo( Integer.parseInt(getListaServicos().get(idServicos).getDescription()) );
-        servicoRotina.setRotina(rotina);
-        servicoRotina.setServicos(servico);
-        if (db.insert(servicoRotina)){
+    public void limparRotina() {
+        listaRotinas.clear();
+        idRotinas = 0;
+        limparServicoRotina();
+    }
+
+    public void limparServicoRotina() {
+        listaServicoRotina.clear();
+        msgConfirma = "";
+    }
+
+    public String adicionar() {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        ServicoRotinaDB servicoRotinaDB = new ServicoRotinaDBToplink();
+        if (listaServicos.isEmpty()) {
+            msgConfirma = "Serviços não existe!";
+            return null;
+        }
+        if (listaRotinas.isEmpty()) {
+            msgConfirma = "Rotina não existe!";
+            return null;
+        }
+        servicoRotina.setServicos((Servicos) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
+        servicoRotina.setRotina((Rotina) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaRotinas.get(idRotinas).getDescription()), "Rotina"));
+        if (servicoRotinaDB.existeServicoRotina(servicoRotina.getServicos().getId(), servicoRotina.getRotina().getId())) {
+            msgConfirma = "Serviço Rotina já existe!";
+            return null;
+        }
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.inserirObjeto(servicoRotina)) {
+            NovoLog log = new NovoLog();
+            log.novo("Novo registro", "Serviço Rotina inserido " + servicoRotina.getId() + " - Serviços: " + servicoRotina.getServicos().getId() + " - " + servicoRotina.getServicos().getDescricao() + " - Rotina: " + servicoRotina.getRotina().getId() + " - " + servicoRotina.getRotina().getRotina());
+            salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Registro adicionado!";
             listaServicoRotina.clear();
-            servicoRotina = new ServicoRotina();
-        }else
+            listaRotinas.clear();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
             msgConfirma = "Erro ao Salvar!";
+        }
+        servicoRotina = new ServicoRotina();
         return null;
     }
 
-    public String deletarServicoRotina(){
-        ServicoRotinaDB db = new ServicoRotinaDBToplink();
-        servicoRotina = db.pesquisaCodigo( ( (ServicoRotina)listaServicoRotina.get(idIndex) ).getId() );
-        if (db.delete(servicoRotina)){
+    public String excluir(ServicoRotina sr) {
+        if (sr.getId() != -1) {
+            servicoRotina = sr;
+        }
+        if (sr.getId() == -1) {
+            msgConfirma = "";
+            return null;            
+        }
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        servicoRotina = (ServicoRotina) salvarAcumuladoDB.pesquisaCodigo(servicoRotina.getId(), "ServicoRotina");
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.deletarObjeto(servicoRotina)) {
+            salvarAcumuladoDB.comitarTransacao();
+            NovoLog log = new NovoLog();
+            log.novo("Excluido", "Serviço Rotina excluído " + servicoRotina.getId() + " - Serviços: " + servicoRotina.getServicos().getId() + " - " + servicoRotina.getServicos().getDescricao() + " - Rotina: " + servicoRotina.getRotina().getId() + " - " + servicoRotina.getRotina().getRotina());
             msgConfirma = "Registro excluído!";
             listaServicoRotina.clear();
-            servicoRotina = new ServicoRotina();
-        }else
+            listaRotinas.clear();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
             msgConfirma = "Erro ao Excluir!";
+        }
+        servicoRotina = new ServicoRotina();
         return null;
-    }
-
-    public void refreshForm(){
-        
     }
 
     public int getIdServicos() {
@@ -100,10 +141,10 @@ public class ServicoRotinaJSFBean {
     }
 
     public List<ServicoRotina> getListaServicoRotina() {
-        //if (listaServicoRotina.isEmpty()){
+        if (listaServicoRotina.isEmpty()) {
             ServicoRotinaDB db = new ServicoRotinaDBToplink();
-            listaServicoRotina = db.pesquisaServicoRotinaPorServico( Integer.parseInt(getListaServicos().get(idServicos).getDescription()) );
-        //}
+            listaServicoRotina = db.pesquisaServicoRotinaPorServico(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
+        }
         return listaServicoRotina;
     }
 
@@ -125,5 +166,13 @@ public class ServicoRotinaJSFBean {
 
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
+    }
+
+    public ServicoRotina getServicoRotina() {
+        return servicoRotina;
+    }
+
+    public void setServicoRotina(ServicoRotina servicoRotina) {
+        this.servicoRotina = servicoRotina;
     }
 }
