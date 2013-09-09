@@ -139,3 +139,10 @@ ALTER TABLE seg_usuario ADD COLUMN is_ativo boolean;
 
 ALTER TABLE age_telefone ADD COLUMN  ds_ddi character varying(2);
 ALTER TABLE age_telefone ADD COLUMN  ds_ddd character varying(2);
+
+-- fin_lote -- 
+-- update: 2013-09-09
+-- edited by: Bruno Vieira da Silva
+
+ALTER TABLE fin_servico_valor ADD COLUMN nr_taxa double precision;
+ALTER TABLE fin_servico_valor ALTER COLUMN nr_taxa SET NOT NULL;
