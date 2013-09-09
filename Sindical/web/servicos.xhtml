@@ -28,7 +28,7 @@
                             <h:outputLabel value="Serviço: " styleClass="fontePadrao" for="idDSServicos" style="height: 20px;"/>
                             <h:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" onkeyup="upperCase(this);" style="height: 30px; width: 300px; margin-bottom: 10px; font-size: 18px; text-transform: uppercase;"/>
                         </h:column>
-                        <rich:tabPanel switchType="client">
+                        <rich:tabPanel switchType="client" id="idPainelServicos">
                             <rich:tab id="servico" header="Serviços">
                                 <h:panelGrid columns="6">
                                     <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPlano}" id="idPesquisaPlano"/>
@@ -101,9 +101,9 @@
                             </rich:tab>
                             <rich:tab id="valor" disabled="#{servicosBean.desabilitaValor}" header="Serviço Valor">
                                 <div style="border-bottom: 1px dashed #efefef; width: 530px;">
-                                    <a4j:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.salvarValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; width: 80px; margin-bottom: 5px;" title="Adicionar valor" render="@form tblValor"/>
-                                    <a4j:commandButton value="Novo" action="#{servicosBean.novoValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; margin-left: 5px; margin-bottom: 5px;" title="Novo valor"  render="@form" />
-                                    <a4j:commandButton value="Remover"  action="#{servicosBean.excluirValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; width: 80px; margin-left: 5px; margin-bottom: 5px;" title="Excluir valor" render="@form tblValor" />
+                                    <a4j:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.salvarValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; width: 80px; margin-bottom: 5px;" title="Adicionar valor" render="idPainelServicos tblValor"/>
+                                    <a4j:commandButton value="Novo" action="#{servicosBean.novoValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; margin-left: 5px; margin-bottom: 5px;" title="Novo valor"  render="idPainelServicos" />
+                                    <a4j:commandButton value="Remover"  action="#{servicosBean.excluirValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; width: 80px; margin-left: 5px; margin-bottom: 5px;" title="Excluir valor" render="idPainelServicos tblValor" />
                                     <h:outputText id="idServicoValor" value=" - Em edição: ID #{servicosBean.servicoValor.id}" rendered="#{servicosBean.servicoValor.id != -1}" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; font-weight: bold; margin-left: 5px; margin-bottom: 5px;" />
                                 </div>
                                 <div style="clear: both"></div>
@@ -136,13 +136,13 @@
                                                 <f:facet name="header">
                                                     <h:outputText value="..."/>
                                                 </f:facet>
-                                                <a4j:commandButton image="/Imagens/excluirp.png" action="#{servicosBean.excluirValor(it.index)}" disabled="#{controleAcessoBean.botaoExcluir}" render="@form" title="Remover este registro"/>
+                                                <a4j:commandButton image="/Imagens/excluirp.png" action="#{servicosBean.excluirValor(it.index)}" disabled="#{controleAcessoBean.botaoExcluir}" render="idPainelServicos" title="Remover este registro"/>
                                             </rich:column>
                                             <rich:column styleClass="colunaPesquisa">
                                                 <f:facet name="header">
                                                     <h:outputText value="ID"/>
                                                 </f:facet>
-                                                <a4j:commandLink action="#{servicosBean.editarValor(it.index)}" value="#{linha.id}" render="@form" title="Alterar este registro"/>
+                                                <a4j:commandLink action="#{servicosBean.editarValor(it.index)}" value="#{linha.id}" render="idPainelServicos" title="Alterar este registro"/>
                                             </rich:column>
                                             <rich:column styleClass="colunaPesquisa">
                                                 <f:facet name="header">
