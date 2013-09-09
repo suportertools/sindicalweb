@@ -163,39 +163,23 @@
                   </h:panelGrid>
                   
                 <h:panelGrid>
-                    <rich:panel style="width: 980px; height: 500px; text-align: right; border: 0px; background: #f6f6f6;">
+                    <rich:panel style="width: 980px; height: 500px; text-align: right; border: 0px; ">
                         <rich:panel styleClass="corpoAcessos" style="float: left;">
                             <h:panelGrid>
-                                <h:outputText styleClass="fonteFranklinNormal" value="Meus Atalhos" />
+                                <center>
+                                    <a4j:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica">
+                                            <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" height="150" />                                        
+                                    </a4j:commandLink>   
+                                    <h:outputText  value="AGENDA TELEFÔNICA" styleClass="fontePadraoNegrito"/>
+                                </center>
                             </h:panelGrid>
                             <br />
-                            <div style="overflow: auto; width: 190px; height: 150px;">
-                                <h:panelGrid columns="3" columnClasses="coluna1,coluna1,coluna2">
-                                    <c:forEach items="#{atalhosBean.listaAtalhos}" var="linha">
-                                        <h:column><h:commandButton image="/Imagens/excluirp.png" title="Excluir atalho" action="#{atalhosBean.excluir(linha.id)}" /></h:column>
-                                        <h:column><h:outputLabel styleClass="fontePadrao" value="#{linha.rotina.rotina} - " /></h:column>
-                                        <h:column><h:commandLink styleClass="iLink fontePadraoNegrito" value="#{linha.sigla}" accesskey="#{linha.sigla}" action="#{chamadaPaginaBean.chamadaGenerica(linha.rotina.pagina)}" /></h:column>
-                                    </c:forEach>
-                                </h:panelGrid>
-                            </div>
-                            <br />
-                            <a4j:commandLink value="Adicionar novo" styleClass="fontePadrao" onclick="modalOpcao('divAtalhos');"/>
-                            <br />
-                            <div style="margin-top: 10px;">FireFox: Shift+Alt</div>
-                            <div>Chrome: Alt</div>
-                            <div>Safari: Shift+Alt</div>
                         </rich:panel>
-
                         <center>
                             <div style="border: 0px; width: 500px; height: 320px; float: left; margin-left: 25px; border: 1px solid gray">
-                                <a4j:commandLink styleClass="iLink" value="Não mostrar mais"/>
-                                <br /><br />
-                                <a4j:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica" style="float: left;">
-                                    <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" height="150" />
-                                </a4j:commandLink>                                
+                             
                             </div>
-                        </center>
-                            
+                        </center>                            
                         <rich:panel styleClass="corpoAcessos" style="float: right; text-align: center">
                             <h:panelGrid>
                                 <h:outputText styleClass="fonteFranklinNormal" value="Principais Acessos" />
