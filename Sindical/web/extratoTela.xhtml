@@ -348,7 +348,7 @@
                         <hr />
                         <h:panelGrid>
                             <h:column>
-                                <a4j:commandLink styleClass="idNovo iLink" action="#{extratoTelaBean.enviarEmail}" value="Enviar Email" style="width: 150px; margin-left: 7px" title="Enviar Email" onclick="modalOpcao('divProcesso');" oncomplete="modalMensagem(), fecharModalOpcao('divProcesso', true)" render="outConfirma"/>
+                                <a4j:commandLink styleClass="idNovo iLink" action="#{extratoTelaBean.enviarEmail}" value="Enviar Boleto" style="width: 150px; margin-left: 7px" title="Enviar Email" onclick="modalOpcao('divProcesso');" oncomplete="modalMensagem(), fecharModalOpcao('divProcesso', true)" render="outConfirma"/>
                                 <h:outputLabel value=" Para " styleClass="fontePadrao" />
                                 <h:selectOneMenu value="#{extratoTelaBean.tipoEnvio}">
                                     <a4j:ajax event="change" render="@this" />
