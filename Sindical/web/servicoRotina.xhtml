@@ -15,48 +15,41 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formServicoRotina" enctype="multipart/form-data">
-            
+            <h:form id="formServicoRotina">
+                <c:set scope="request" var="object" value="${servicoRotinaBean.servicoRotina}"/>            
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Serviço Rotina" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <div class="divMae" style="text-align: left">
-                        <h:panelGrid columns="6">
-                            <h:outputLabel value="Serviços: " styleClass="fontePadrao"/>
+                    <div class="divMae divFundo" style="text-align: left; width: 600px;">
+                        <h:panelGrid columns="3">
+                            <h:outputLabel value="SERVIÇOS: " styleClass="fontePadrao"/>
+                            <h:outputLabel value="ROTINAS: " styleClass="fontePadrao"/>
+                            <h:column></h:column>
                             <h:selectOneMenu id="idServicos" value="#{servicoRotinaBean.idServicos}" >
-                                <a4j:ajax event="change" render="tbl, idRotinas"/>
+                                <a4j:ajax event="change" listener="#{servicoRotinaBean.limparRotina}" render="idPainelMensagem idRotinas tbl"/>
                                 <f:selectItems value="#{servicoRotinaBean.listaServicos}"/>
                             </h:selectOneMenu>
-
-                            <h:outputLabel value="Rotinas: " styleClass="fontePadrao"/>
                             <h:selectOneMenu id="idRotinas" value="#{servicoRotinaBean.idRotinas}" >
-                                <a4j:ajax event="change" render="tbl"/>
+                                <a4j:ajax event="change" listener="#{servicoRotinaBean.limparServicoRotina}" render="idPainelMensagem idRotinas tbl"/>
                                 <f:selectItems value="#{servicoRotinaBean.listaRotinas}"/>
                             </h:selectOneMenu>
-                            <a4j:commandButton image="/Imagens/novo.png" action="#{servicoRotinaBean.adicionarServicoRotina}" oncomplete="modalMensagem()" render="outConfirma,tbl,idRotinas"/>
+                            <a4j:commandButton image="/Imagens/novo.png" action="#{servicoRotinaBean.adicionar}" render="idPainelMensagem idRotinas tbl"/>
                         </h:panelGrid>
-                        <h:panelGrid columns="1">
-                            <rich:dataTable value="#{servicoRotinaBean.listaServicoRotina}" var="linha" id="tbl" style="width: 100%" iterationStatusVar="it">
-                                <rich:column style="text-align: center;">
+                        <h:panelGrid id="idPainelMensagem">
+                            <h:outputLabel value="#{servicoRotinaBean.msgConfirma}" styleClass="fontePadraoVermelho"/>
+                        </h:panelGrid>
+                        <div style="overflow-y: scroll; height: 300px; width: 300px;">
+                            <rich:dataTable value="#{servicoRotinaBean.listaServicoRotina}" var="linha" id="tbl" style="width: 100%; margin-top: 15px;" iterationStatusVar="it">
+                                <f:facet name="header">Lista de Serviços / Rotinas</f:facet>
+                                <rich:column>
                                     <f:facet name="header">
-                                        <h:outputText value="#"/>
+                                        <h:outputText value=""/>
                                     </f:facet>
-                                    <h:outputText value="#{it.index}"/>
-                                </rich:column>                                
-                                
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header">
-                                        <h:outputText value="..."/>
-                                    </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{servicoRotinaBean.deletarServicoRotina}" oncomplete="modalMensagem()" 
-                                                       disabled="#{controleAcessoBean.botaoExcluir}" render="outConfirma,tbl,idRotinas">
-                                        <a4j:param value="#{it.index}" assignTo="#{servicoRotinaBean.idIndex}"/>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{servicoRotinaBean.excluir(linha)}" render="idPainelMensagem idRotinas tbl">
                                     </a4j:commandButton>
-                                    
                                 </rich:column>
-                                
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Rotinas"/>
@@ -64,23 +57,9 @@
                                     <h:outputText value="#{linha.rotina.rotina}"/>
                                 </rich:column>
                             </rich:dataTable>
-                        </h:panelGrid>                        
+                        </div>
                     </div>
                 </center>
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{servicoRotinaBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>  
             </h:form>
         </f:view>
     </h:body>
