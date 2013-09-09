@@ -22,6 +22,7 @@ public interface ServicosDB {
     public Correcao pesquisaCorrecao(int idServico);
     public IndiceMensal pesquisaIndiceMensal(int mes, int ano, int idIndice);
     public List pesquisaTodosPeloContaCobranca(int idRotina);
+    public List<Servicos> pesquisaTodosServicos();
     
 }
 

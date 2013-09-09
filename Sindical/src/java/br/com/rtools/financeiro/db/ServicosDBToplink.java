@@ -89,11 +89,11 @@ public class ServicosDBToplink extends DB implements ServicosDB {
         IndiceMensal result = null;
         try{
             Query qry = getEntityManager().createQuery(
-                    "select i " +
-                    "  from IndiceMensal i" +
-                    " where i.mes = :mes" +
-                    "   and i.ano = :ano"+
-                    "   and i.indice.id = :i");
+                    "SELECT I                   "+
+                    "  FROM IndiceMensal AS I   "+
+                    " WHERE I.mes = :mes        "+
+                    "   AND I.ano = :ano        "+
+                    "   AND I.indice.id = :i"   );
             qry.setParameter("mes", mes);
             qry.setParameter("ano", ano);
             qry.setParameter("i", idIndice);
@@ -107,7 +107,18 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     @Override
     public List pesquisaTodos() {
         try{
-            Query qry = getEntityManager().createQuery("select p from Servicos p ");
+            Query qry = getEntityManager().createQuery("SELECT S FROM Servicos AS S ");
+            return (qry.getResultList());
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
+    
+    @Override
+    public List<Servicos> pesquisaTodosServicos() {
+        try{
+            Query qry = getEntityManager().createQuery("SELECT S FROM Servicos S ORDER BY S.descricao ");
             return (qry.getResultList());
         }
         catch(Exception e){
@@ -119,9 +130,9 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     public List pesquisaTodos(int idRotina) {
         try{
             Query qry = getEntityManager().createQuery(
-                    "select s.servicos " +
-                    "  from ServicoRotina s" +
-                    " where s.rotina.id = :r");
+                    "SELECT S.servicos " +
+                    "  FROM ServicoRotina AS S" +
+                    " WHERE S.rotina.id = :r");
             qry.setParameter("r", idRotina);
             return (qry.getResultList());
         }
@@ -135,10 +146,10 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     public List pesquisaTodosPeloContaCobranca(int idRotina) {
         try{
             Query qry = getEntityManager().createQuery(
-                    "select sr.servicos " +
-                    "  from ServicoRotina sr" +
-                    " where sr.rotina.id = :r" +
-                    "   and sr.servicos.id in (select s.servicos.id from ServicoContaCobranca s)");
+                    "SELECT SR.servicos " +
+                    "  FROM ServicoRotina AS SR" +
+                    " WHERE SR.rotina.id = :r" +
+                    "   AND SR.servicos.id IN(SELECT S.servicos.id FROM ServicoContaCobranca AS S)");
             qry.setParameter("r", idRotina);
             return (qry.getResultList());
         }
@@ -150,7 +161,7 @@ public class ServicosDBToplink extends DB implements ServicosDB {
 
     public List pesquisaPlano5(){
         try{
-            Query qry = getEntityManager().createQuery("select p5 from Plano5 p5 ");
+            Query qry = getEntityManager().createQuery(" SELECT P5 FROM Plano5 AS P5 ");
             return (qry.getResultList());
         }
         catch(Exception e){
