@@ -17,7 +17,7 @@ import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class MatriculaContratoJSFBean {
+public class MatriculaContratoJSFBean implements java.io.Serializable {
 
     private MatriculaContrato matriculaContrato = new MatriculaContrato();
     private MatriculaContratoServico matriculaContratoServico = new MatriculaContratoServico();

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 
-public class ProfessorJSFBean {
+public class ProfessorJSFBean implements java.io.Serializable {
     private Professor professor = new Professor();
     private Pessoa pessoa = new Pessoa();
     private String msgConfirma = "";

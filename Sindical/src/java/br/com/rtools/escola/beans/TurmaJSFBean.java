@@ -19,7 +19,7 @@ import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class TurmaJSFBean {
+public class TurmaJSFBean implements java.io.Serializable {
     private Turma turma = new Turma();
     private String msgConfirma = "";
     private int idServicos = 0;

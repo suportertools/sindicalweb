@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.model.SelectItem;
 
-public class EFinanceiroJSFBean {
+public class EFinanceiroJSFBean implements java.io.Serializable {
     private EFinanceiro eFinanceiro = new EFinanceiro();
     private String msgConfirma = "";
     private int idServicos = 0;

@@ -53,7 +53,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
-public class MatriculaEscolaJSFBean {
+public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     private MatriculaEscola matriculaEscola = new MatriculaEscola();
     private ServicoValor servicoValor = new ServicoValor();
