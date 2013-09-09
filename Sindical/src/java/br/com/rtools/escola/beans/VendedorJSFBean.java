@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 
-public class VendedorJSFBean {
+public class VendedorJSFBean implements java.io.Serializable {
     private Vendedor vendedor = new Vendedor();
     private String msgConfirma = "";
     private List<Vendedor> listaVendedores = new ArrayList();

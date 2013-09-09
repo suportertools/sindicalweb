@@ -9,7 +9,7 @@ import br.com.rtools.escola.db.ComponenteCurricularDBToplink;
 import java.util.List;
 import javax.faces.context.FacesContext;
 
-public class ComponenteCurricularJSFBean {
+public class ComponenteCurricularJSFBean implements java.io.Serializable {
     private ComponenteCurricular componenteCurricular;
     private String comoPesquisa;
     private String descPesquisa;
