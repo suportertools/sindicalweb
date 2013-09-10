@@ -215,7 +215,6 @@ public class UsuarioJSFBean {
     public void novoGenerico() {
         usuario = new Usuario();
         disNovaSenha = false;
-        setListaPermissaoUsuario((List<PermissaoUsuario>) new ArrayList());
         msgPermissao = "";
         idDepartamento = 0;
         idNivel = 0;        
@@ -223,6 +222,9 @@ public class UsuarioJSFBean {
         idIndexPermissao = -1;
         adicionado = false;
         confirmaSenha = "";
+        listaUsuarioAcesso.clear();
+        listaPermissaoUsuario.clear();
+        listaUsuario.clear();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
     }
 
