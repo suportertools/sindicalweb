@@ -333,4 +333,19 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
         }
         return list;
     }
+    
+    @Override
+    public boolean existePermissaoUsuario(PermissaoUsuario permissaoUsuario) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT PU FROM PermissaoUsuario AS PU WHERE PU.usuario.id = :idUsuario AND PU.departamento.id = :idDepartamento AND PU.nivel.id = :idNivel");
+            qry.setParameter("idUsuario", permissaoUsuario.getUsuario().getId());
+            qry.setParameter("idDepartamento", permissaoUsuario.getDepartamento().getId());
+            qry.setParameter("idNivel", permissaoUsuario.getNivel().getId());
+            if (!qry.getResultList().isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
 }
