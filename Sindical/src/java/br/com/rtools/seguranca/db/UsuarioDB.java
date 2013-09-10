@@ -20,5 +20,6 @@ public interface UsuarioDB {
     public Pessoa ValidaUsuarioContabilidadeWeb(int idPessoa);
     public Pessoa ValidaUsuarioPatronalWeb(int idPessoa);
     public void updateAcordoMovimento();
+    public List<Usuario> pesquisaTodosPorDescricao(String descricaoPesquisa);
 }
 
