@@ -24,11 +24,24 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
     @Override
     public List pesquisaTodos() {
         try {
-            Query qry = getEntityManager().createQuery("select usu from Usuario usu ");
+            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU ORDER BY USU.pessoa.nome ASC ");
             return (qry.getResultList());
         } catch (Exception e) {
             return null;
         }
+    }
+    
+    @Override
+    public List<Usuario> pesquisaTodosPorDescricao(String descricaoPesquisa) {
+        try {
+            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU WHERE UPPER(USU.pessoa.nome) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' OR UPPER(USU.login) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' BY USU.pessoa.nome ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
     }
 
     @Override
