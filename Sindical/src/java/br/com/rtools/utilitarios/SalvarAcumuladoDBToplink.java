@@ -91,7 +91,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     public Object pesquisaObjeto(int id, String tabela) {
         Object result = null;
         try {
-            Query qry = getEntityManager().createQuery("select ob from " + tabela + " ob where ob.id = " + id);
+            Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB.id = " + id);
             if(!qry.getResultList().isEmpty()){
                 result = qry.getSingleResult();
             }
@@ -105,7 +105,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     public List listaObjeto(String tabela) {
         List result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select ob from " + tabela + " ob");
+            Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " AS OB");
             if(!qry.getResultList().isEmpty()){
                 result = qry.getResultList();
             }
