@@ -323,8 +323,10 @@ public class UsuarioJSFBean {
     }
 
     public List<Usuario> getListaUsuario() {
+        //if (listaUsuario.isEmpty()){
         UsuarioDB db = new UsuarioDBToplink();
         listaUsuario = db.pesquisaTodos();
+        //}
         return listaUsuario;
     }
 
@@ -728,7 +730,10 @@ public class UsuarioJSFBean {
         return null;
     }
 
-    public String btnExcluirUsuarioAcesso() {
+    public String btnExcluirUsuarioAcesso(UsuarioAcesso ua) {
+        if (ua.getId() == -1) {
+            return null;
+        }
         msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         UsuarioAcesso usuarioAcesso = (UsuarioAcesso) salvarAcumuladoDB.pesquisaCodigo(listaUsuarioAcesso.get(idIndexUsuarioAcesso).getId(), "UsuarioAcesso");

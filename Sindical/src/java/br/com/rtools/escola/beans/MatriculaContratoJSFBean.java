@@ -8,12 +8,12 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.seguranca.Modulo;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
@@ -29,12 +29,29 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
     private int idServicos = 0;
     private Servicos servicos = new Servicos();
     private String msg = "";
+    private String msgServico = "";
+    List<SelectItem> listaServicos = new ArrayList<SelectItem>();
+    private boolean desabilitaObservacao = false;
+    
+    public boolean isDesabilitaObservacao() {
+        if (((Usuario) (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")) ).getId() == 1) {
+            desabilitaObservacao = true;
+        } else {
+            desabilitaObservacao = false;            
+        }
+        return desabilitaObservacao;
+    }
+    
+    public void setDesabilitaObservacao(boolean desabilitaObservacao) {
+        this.desabilitaObservacao = desabilitaObservacao;
+    }
 
     public String novo() {
         idServicos = 0;
         matriculaContrato = new MatriculaContrato();
         idIndex = -1;
         msg = "";
+        setMsgServico("");
         matriculaContratos.clear();
         servicos = new Servicos();
         idIndexServicos = -1;
@@ -134,25 +151,25 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
     }
 
     public List<SelectItem> getListaServicos() {
-        List<SelectItem> listaServicos = new Vector<SelectItem>();
-        int i = 0;
-        ServicosDB db = new ServicosDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()) {
-            listaServicos.add(new SelectItem(new Integer(i),
-                    (String) ((Servicos) select.get(i)).getDescricao(),
-                    Integer.toString(((Servicos) select.get(i)).getId())));
-            i++;
+        if (listaServicos.isEmpty()) {
+            ServicosDB db = new ServicosDBToplink();
+            List select = db.pesquisaTodos();
+            for (int i = 0; i < select.size(); i++) {
+                listaServicos.add(new SelectItem(new Integer(i),
+                        (String) ((Servicos) select.get(i)).getDescricao(),
+                        Integer.toString(((Servicos) select.get(i)).getId())));
+            }
         }
         return listaServicos;
     }
 
     public String adicionarServicos() {
+        msgServico = "";
         if (matriculaContrato.getId() != -1) {
             int idServico = Integer.parseInt(getListaServicos().get(idServicos).getDescription());
             MatriculaContratoDB contratoDB = new MatriculaContratoDBToplink();
             if (contratoDB.validaMatriculaContratoServico(matriculaContrato.getId(), idServico)) {
-                msg = "Contrato já possui esse serviço.";
+                msgServico = "Contrato já possui esse serviço.";
                 return null;
             }
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
@@ -161,31 +178,36 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
             matriculaContratoServico.setContrato(matriculaContrato); 
             if (dB.inserirObjeto(matriculaContratoServico)) {
                 dB.comitarTransacao();
-                msg = "Serviço adicionado com sucesso.";
+                msgServico = "Serviço adicionado com sucesso.";
                 matriculaContratoServico = new MatriculaContratoServico();
                 listaMatriculaContratoServico.clear();
             } else {
-                msg = "Erro ao adicionar este serviço!";
+                msgServico = "Erro ao adicionar este serviço!";
                 dB.desfazerTransacao();
             }
         }
         return null;
     }
     
-    public String removerServicos() {
-        if(idIndexServicos != -1){
+    public String removerServicos(MatriculaContratoServico mcs) {
+        msgServico = "";        
+        if (mcs.getId() != -1) {
+            matriculaContratoServico = mcs;
+        }
+        if (matriculaContratoServico.getId() != -1) {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            matriculaContratoServico = (MatriculaContratoServico) dB.pesquisaCodigo(listaMatriculaContratoServico.get(idIndexServicos).getId(), "MatriculaContratoServico");
+            matriculaContratoServico = (MatriculaContratoServico) dB.pesquisaCodigo(matriculaContratoServico.getId(), "MatriculaContratoServico");
             dB.abrirTransacao();
             if (dB.deletarObjeto(matriculaContratoServico)) {
                 dB.comitarTransacao();
-                msg = "Serviço removido com sucesso.";
+                msgServico = "Serviço removido com sucesso.";
                 listaMatriculaContratoServico.clear();
+                matriculaContratoServico = new MatriculaContratoServico();
             } else {
-                msg = "Erro ao remover este serviço!";
+                msgServico = "Erro ao remover este serviço!";
                 dB.desfazerTransacao();
             }
-        }        
+        }
         return null;
     }
 
@@ -282,5 +304,13 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
 
     public void setModulo(Modulo modulo) {
         this.modulo = modulo;
+    }
+
+    public String getMsgServico() {
+        return msgServico;
+    }
+
+    public void setMsgServico(String msgServico) {
+        this.msgServico = msgServico;
     }
 }
