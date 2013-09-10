@@ -209,7 +209,7 @@ public class UsuarioJSFBean {
         listaPermissaoUsuario.clear();
         listaUsuarioAcesso.clear();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        return "usuario";
+        return null;
     }
 
     public void novoGenerico() {
