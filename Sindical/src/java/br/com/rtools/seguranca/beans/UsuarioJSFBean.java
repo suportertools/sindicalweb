@@ -254,14 +254,12 @@ public class UsuarioJSFBean {
     }
 
     public List<Usuario> getListaUsuario() {
-        //if (listaUsuario.isEmpty()){
         UsuarioDB db = new UsuarioDBToplink();
         if (descricaoPesquisa.isEmpty()) {
             listaUsuario = db.pesquisaTodos();
         } else {
-            
+            listaUsuario = db.pesquisaTodosPorDescricao(descricaoPesquisa);
         }
-        //}
         return listaUsuario;
     }
 
