@@ -33,9 +33,7 @@
                             <f:facet name="header">
                                 <h:outputText value="ID"/>
                             </f:facet>
-                            <h:commandLink action="#{usuarioBean.editar}" value="#{linha.id}">
-                                <a4j:param value="#{it.index}" assignTo="#{usuarioBean.idIndex}"/>
-                            </h:commandLink>
+                            <h:commandLink action="#{usuarioBean.editar(linha)}" value="#{linha.id}"/>
                         </rich:column>
 
                         <rich:column>
