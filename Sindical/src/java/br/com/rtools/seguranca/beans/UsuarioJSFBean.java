@@ -719,7 +719,12 @@ public class UsuarioJSFBean {
     public String permiteUsuarioAcesso(UsuarioAcesso usuarioAcesso) {
         if (usuarioAcesso.getId() == -1) {
             return null;
-        }        
+        }
+        if (usuarioAcesso.isPermite()) {
+            usuarioAcesso.setPermite(false);
+        } else {
+            usuarioAcesso.setPermite(true);            
+        }
         msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
