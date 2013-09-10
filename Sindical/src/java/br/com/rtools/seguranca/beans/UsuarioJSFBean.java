@@ -736,7 +736,7 @@ public class UsuarioJSFBean {
         }
         msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        UsuarioAcesso usuarioAcesso = (UsuarioAcesso) salvarAcumuladoDB.pesquisaCodigo(listaUsuarioAcesso.get(idIndexUsuarioAcesso).getId(), "UsuarioAcesso");
+        UsuarioAcesso usuarioAcesso = (UsuarioAcesso) salvarAcumuladoDB.pesquisaCodigo(ua.getId(), "UsuarioAcesso");
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.deletarObjeto(usuarioAcesso)) {
             listaUsuarioAcesso.clear();
