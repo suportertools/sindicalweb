@@ -198,7 +198,6 @@ public class UsuarioJSFBean {
     public String novo() {
         usuario = new Usuario();
         disNovaSenha = false;
-        setListaPermissaoUsuario((List<PermissaoUsuario>) new ArrayList());
         msgPermissao = "";
         idDepartamento = 0;
         idNivel = 0;
@@ -206,6 +205,9 @@ public class UsuarioJSFBean {
         idIndexPermissao = -1;
         adicionado = false;
         confirmaSenha = "";
+        listaUsuario.clear();
+        listaPermissaoUsuario.clear();
+        listaUsuarioAcesso.clear();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return "usuario";
     }
@@ -216,7 +218,7 @@ public class UsuarioJSFBean {
         setListaPermissaoUsuario((List<PermissaoUsuario>) new ArrayList());
         msgPermissao = "";
         idDepartamento = 0;
-        idNivel = 0;
+        idNivel = 0;        
         idIndex = -1;
         idIndexPermissao = -1;
         adicionado = false;
@@ -254,13 +256,19 @@ public class UsuarioJSFBean {
     }
 
     public List<Usuario> getListaUsuario() {
-        UsuarioDB db = new UsuarioDBToplink();
-        if (descricaoPesquisa.isEmpty()) {
-            listaUsuario = db.pesquisaTodos();
-        } else {
-            listaUsuario = db.pesquisaTodosPorDescricao(descricaoPesquisa);
+        if (listaUsuario.isEmpty()) {
+            UsuarioDB db = new UsuarioDBToplink();
+            if (descricaoPesquisa.isEmpty()) {
+                listaUsuario = db.pesquisaTodos();
+            } else {
+                listaUsuario = db.pesquisaTodosPorDescricao(descricaoPesquisa);
+            }
         }
         return listaUsuario;
+    }
+    
+    public void limparListaUsuario(){
+        listaUsuario.clear();
     }
 
     public List<SelectItem> getListaNiveis() {
