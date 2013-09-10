@@ -34,7 +34,7 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
     @Override
     public List<Usuario> pesquisaTodosPorDescricao(String descricaoPesquisa) {
         try {
-            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU WHERE UPPER(USU.pessoa.nome) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' OR UPPER(USU.login) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' BY USU.pessoa.nome ASC ");
+            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU WHERE UPPER(USU.pessoa.nome) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' OR UPPER(USU.login) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' ORDER BY USU.pessoa.nome ASC ");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
