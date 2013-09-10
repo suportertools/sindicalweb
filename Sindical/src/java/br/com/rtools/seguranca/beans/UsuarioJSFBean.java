@@ -716,9 +716,11 @@ public class UsuarioJSFBean {
         this.idIndexUsuarioAcesso = idIndexUsuarioAcesso;
     }
 
-    public String permiteUsuarioAcesso(int indexI) {
+    public String permiteUsuarioAcesso(UsuarioAcesso usuarioAcesso) {
+        if (usuarioAcesso.getId() == -1) {
+            return null;
+        }        
         msgUsuarioAcesso = "";
-        UsuarioAcesso usuarioAcesso = listaUsuarioAcesso.get(indexI);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.alterarObjeto(usuarioAcesso)) {
