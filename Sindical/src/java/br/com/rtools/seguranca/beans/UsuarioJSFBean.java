@@ -249,8 +249,9 @@ public class UsuarioJSFBean {
         return null;
     }
 
-    public String editar() {
-        usuario = (Usuario) listaUsuario.get(idIndex);
+    public String editar(Usuario usu) {
+        //usuario = (Usuario) listaUsuario.get(idIndex);
+        usuario = usu;
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", usuario.getPessoa());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
