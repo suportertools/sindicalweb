@@ -16,7 +16,6 @@ import javax.servlet.http.HttpSession;
 public class UsuarioJSFBean {
 
     private Usuario usuario = new Usuario();
-    private PermissaoUsuario permissaoUsuario = new PermissaoUsuario();
     private List<PermissaoUsuario> listaPermissaoUsuario = new ArrayList();
     private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
     private List<SelectItem> listaRotinas = new ArrayList<SelectItem>();
@@ -43,12 +42,10 @@ public class UsuarioJSFBean {
     private int idModulo = 0;
     private int idRotina = 0;
     private int idEvento = 0;
-    private int idModuloAux = 0;
-    private int idRotinaAux = 0;
-    private int idEventoAux = 0;
     private boolean filtrarPorModulo = false;
     private boolean filtrarPorRotina = false;
     private boolean filtrarPorEvento = false;
+    private String descricaoPesquisa = "";
 
     public UsuarioJSFBean() {
         listaUsuario = new ArrayList<Usuario>();
@@ -250,19 +247,20 @@ public class UsuarioJSFBean {
     }
 
     public String editar(Usuario usu) {
-        //usuario = (Usuario) listaUsuario.get(idIndex);
         usuario = usu;
-
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", usuario.getPessoa());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);        
         return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
 
     public List<Usuario> getListaUsuario() {
         //if (listaUsuario.isEmpty()){
         UsuarioDB db = new UsuarioDBToplink();
-        listaUsuario = db.pesquisaTodos();
+        if (descricaoPesquisa.isEmpty()) {
+            listaUsuario = db.pesquisaTodos();
+        } else {
+            
+        }
         //}
         return listaUsuario;
     }
@@ -721,5 +719,13 @@ public class UsuarioJSFBean {
 
     public void setMsgUsuarioAcesso(String msgUsuarioAcesso) {
         this.msgUsuarioAcesso = msgUsuarioAcesso;
+    }
+
+    public String getDescricaoPesquisa() {
+        return descricaoPesquisa;
+    }
+
+    public void setDescricaoPesquisa(String descricaoPesquisa) {
+        this.descricaoPesquisa = descricaoPesquisa;
     }
 }
