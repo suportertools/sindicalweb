@@ -108,9 +108,7 @@
                                                 <f:facet name="header">
                                                     <h:outputText value="..."/>
                                                 </f:facet>
-                                                <h:commandButton image="/Imagens/excluirp.png" id="btnExcluir" action="#{usuarioBean.btnExcluirPermissao}">
-                                                    <a4j:param value="#{it.index}" assignTo="#{usuarioBean.idIndexPermissao}"/>
-                                                </h:commandButton>
+                                                <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir" action="#{usuarioBean.removerPermissaoUsuario(linha)}" render="tbl,idMsgPermissao"/>
                                             </rich:column>
 
                                             <rich:column>
@@ -199,9 +197,7 @@
                                                 <f:facet name="header">
                                                     <h:outputText value="..."/>
                                                 </f:facet>
-                                                <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir#{its.index}" action="#{usuarioBean.btnExcluirUsuarioAcesso}" render="tblUsuarioAcesso msgUsuarioAcesso">
-                                                    <a4j:param value="#{its.index}" assignTo="#{usuarioBean.idIndexUsuarioAcesso}" />
-                                                </a4j:commandButton>
+                                                <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir#{its.index}" action="#{usuarioBean.btnExcluirUsuarioAcesso(linha)}" render="tblUsuarioAcesso msgUsuarioAcesso" />
                                             </rich:column>
 
                                             <rich:column>
@@ -230,7 +226,7 @@
                                                     <h:outputText value="Permite"/>
                                                 </f:facet>
                                                 <h:selectBooleanCheckbox id="idPerN#{its.index}" value="#{linha.permite}" title="Permite / Não Permite">
-                                                    <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(its.index)}" render="msgUsuarioAcesso idPerN#{its.index} tblUsuarioAcesso" />
+                                                    <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(linha)}" render="msgUsuarioAcesso idPerN#{its.index} tblUsuarioAcesso" />
                                                 </h:selectBooleanCheckbox>
                                             </rich:column>
                                         </rich:dataTable>
