@@ -113,8 +113,12 @@ public class FechamentoComissaoAcordoJSFBean {
                 fileB.mkdir();
             } 
             try{
+                String patchRelatorio = "/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Relatorios/ACORDO_ANALITICO.jasper";
                 byte[] arquivo = new byte[0];
-                jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Relatorios/ACORDO_ANALITICO.jasper"));
+                if (!new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Relatorios/ACORDO_ANALITICO.jasper")).exists()) {
+                    patchRelatorio = "/Relatorios/ACORDO_ANALITICO.jasper";
+                }
+                jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(patchRelatorio));
                            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
                 JasperPrint print = JasperFillManager.fillReport(
                          jasper,
