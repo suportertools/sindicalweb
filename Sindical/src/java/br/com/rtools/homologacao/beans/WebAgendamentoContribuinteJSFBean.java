@@ -85,10 +85,9 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
         if (proto == -1) {
             proto = id_protocolo;
         }
-        JasperReport jasper = null;
         Collection lista = new ArrayList<ParametroProtocolo>();
         try {
-            jasper = (JasperReport) JRLoader.loadObject(
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(
                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
 
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -96,7 +95,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
             Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
             Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
 
-            Juridica contabilidade = null;
+            Juridica contabilidade;
             if (juridica.getContabilidade() != null) {
                 contabilidade = juridica.getContabilidade();
             } else {
@@ -137,7 +136,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                     age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
                     registro.getDocumentoHomologacao(),
                     registro.getFormaPagamentoHomologacao(),
-                    DataHoje.data()));
+                    age.getEmissao()));
 
 
             byte[] arquivo = new byte[0];
@@ -449,6 +448,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
             if (agendamento.getId() == -1) {
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
+                agendamento.setDtEmissao(DataHoje.dataHoje());
                 agendamento.setDemissao(dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
