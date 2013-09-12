@@ -98,14 +98,14 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
         
         // CONDICAO -----------------------------------------------------
         if (condicao.equals("todos")){
-           textQuery = textQuery + " WHERE  mov.is_ativo = true AND (pes_pend.id_tipo_endereco=2 OR pes_pend.id_tipo_endereco is null) AND (esc_pend.id_tipo_endereco=2 or esc_pend.id_tipo_endereco is null) ";
+           textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) ";
         }else if (condicao.equals("ativos")){
-           textQuery = textQuery + " WHERE  mov.is_ativo = true AND (pes_pend.id_tipo_endereco=2 OR pes_pend.id_tipo_endereco is null) AND (esc_pend.id_tipo_endereco=2 or esc_pend.id_tipo_endereco is null) " +
-                                   "    AND jur.id in (SELECT c.id_juridica from arr_contribuintes_vw c) ";
+           textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) " +
+                                   "   AND jur.id IN (select c.id_juridica FROM arr_contribuintes_vw c WHERE c.id_motivo IS NULL) ";
         }else if (condicao.equals("inativos")){
-           textQuery = textQuery + " WHERE  mov.is_ativo = true AND (pes_pend.id_tipo_endereco=2 or pes_pend.id_tipo_endereco is null) AND (esc_pend.id_tipo_endereco=2 or esc_pend.id_tipo_endereco is null) " +
-                                   "    AND jur.id not in (SELECT c.id_juridica from arr_contribuintes_vw c) " +
-                                   "    AND jur.id in (SELECT ci.id_juridica from arr_contribuintes_inativos ci group by ci.id_juridica) ";
+           textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) " +
+                                   "   AND jur.id NOT IN (SELECT c.id_juridica FROM arr_contribuintes_vw c) " +
+                                   "   AND jur.id IN (SELECT ci.id_juridica FROM arr_contribuintes_inativos ci GROUP BY ci.id_juridica) ";
         }
 
         // CONTRIBUICAO DE RELATORIO---------------------------------------------
@@ -130,20 +130,20 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
         // FILTRAR POR ESCRITÓRIOS ------------------------------------------------        
         if (!idsEsc.isEmpty()){
             if (!idsEsc.equals("sem"))
-                textQuery = textQuery + " AND esc.id in ( " + idsEsc +" )";
+                textQuery = textQuery + " AND esc.id IN ( " + idsEsc +" )";
             else
-                textQuery = textQuery + " AND jur.id_contabilidade is null";
+                textQuery = textQuery + " AND jur.id_contabilidade IS NULL";
         }        
 
         // FILTRO MOVIMENTO ---------------------------------------------------------
         if (porPesquisa.equals("todas")){
             //textQuery = textQuery + " AND mov.is_ativo = true";
         }else if (porPesquisa.equals("recebidas")){
-            textQuery = textQuery + " AND mov.id_baixa is not null";
+            textQuery = textQuery + " AND mov.id_baixa IS NOT NULL";
         }else if (porPesquisa.equals("naorecebidas")){
-            textQuery = textQuery + " AND mov.id_baixa is null";
+            textQuery = textQuery + " AND mov.id_baixa IS NULL";
         }else if (porPesquisa.equals("atrasadas")){
-            textQuery = textQuery + " AND mov.id_baixa is null" +
+            textQuery = textQuery + " AND mov.id_baixa IS NULL" +
                                     " AND mov.dt_vencimento < '" + DataHoje.data()+"'";
         }
 
