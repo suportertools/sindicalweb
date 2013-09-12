@@ -36,8 +36,8 @@
                     </rich:column>
                     <br /><br />
                     <rich:column>
-                        <rich:editor id="idContrato2" value="#{matriculaContratoBean.matriculaContrato.observacao}" rendered="#{controleAcessoBean.botaoSalvar == false}" skin="office2003"></rich:editor>
-                        <rich:panel rendered="#{controleAcessoBean.botaoSalvar == true}">
+                        <rich:editor id="idContrato2" value="#{matriculaContratoBean.matriculaContrato.observacao}" rendered="#{matriculaContratoBean.desabilitaObservacao == true}" skin="office2003" ></rich:editor>
+                        <rich:panel rendered="#{matriculaContratoBean.desabilitaObservacao == false}">
                             <h:outputText escape="false" value="#{matriculaContratoBean.matriculaContrato.observacao}" />                             
                         </rich:panel>
                         
@@ -58,14 +58,15 @@
                         </rich:column>
                     </h:panelGrid>                    
                     <br /><br />
-                    <rich:panel rendered="#{matriculaContratoBean.matriculaContrato.id != -1}">
-                        <h:outputLabel value="Vincular serviços a esse contrato" style="text-decoration: underline;" styleClass="fontePadraoNegrito"/>
+                    <rich:panel rendered="#{matriculaContratoBean.matriculaContrato.id != -1}" id="idMCS">
+                        <h:outputLabel value="Vincular serviços a esse contrato: " style="text-decoration: underline;" styleClass="fontePadraoNegrito"/>
+                        <h:outputText value="#{matriculaContratoBean.msgServico}" styleClass="fontePadraoVermelho" />
                         <br /><br />
                         <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
                             <h:selectOneMenu id="idServicos" value="#{matriculaContratoBean.idServicos}">
                                 <f:selectItems value="#{matriculaContratoBean.listaServicos}" />
                             </h:selectOneMenu>
-                            <a4j:commandButton image="/Imagens/novo.png" action="#{matriculaContratoBean.adicionarServicos}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="tblServicos,outConfirma"/>
+                            <a4j:commandButton image="/Imagens/novo.png" action="#{matriculaContratoBean.adicionarServicos}" disabled="#{controleAcessoBean.botaoSalvar}" render="idMCS tblServicos"/>
                         </h:panelGrid>
                         <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
                             <rich:dataTable value="#{matriculaContratoBean.listaMatriculaContratoServico}" var="linha" iterationStatusVar="it" id="tblServicos">
@@ -73,10 +74,7 @@
                                     <f:facet name="header">
                                         <h:outputText value="..."/>
                                     </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{matriculaContratoBean.removerServicos}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoExcluir}" 
-                                                       render="tblServicos,outConfirma">
-                                        <a4j:param value="#{it.index}" assignTo="#{matriculaContratoBean.idIndexServicos}"/>
-                                    </a4j:commandButton>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{matriculaContratoBean.removerServicos(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="idMCS tblServicos" />
                                 </rich:column>                                
                                 <rich:column>
                                     <f:facet name="header">
