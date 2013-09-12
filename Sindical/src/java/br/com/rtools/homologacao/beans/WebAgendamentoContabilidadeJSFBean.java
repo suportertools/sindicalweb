@@ -157,7 +157,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
                     age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
                     registro.getDocumentoHomologacao(),
                     registro.getFormaPagamentoHomologacao(),
-                    DataHoje.data()));
+                    age.getEmissao()));
 
             byte[] arquivo = new byte[0];
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
@@ -624,6 +624,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
                 agendamento.setRecepcao(null);
                 agendamento.setDemissao(dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
                 agendamento.setHomologador(null);
+                agendamento.setDtEmissao(DataHoje.dataHoje());
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
                 agendamento.setStatus(dbSta.pesquisaCodigo(2));
                 if (sv.inserirObjeto(agendamento)) {
