@@ -97,6 +97,22 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                                "   and UPPER(pes." + por + ") like :desc";
                 }
             }
+            if (por.equals("email1") || por.equals("email2")){
+                if (como.equals("P")){
+                    desc = "%" + desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select fis from Fisica fis, " +
+                               "                 Pessoa pes     " +
+                               "  where fis.pessoa.id = pes.id  " +
+                               "   and UPPER(pes." + por + ") like :desc";
+                }else if (como.equals("I")){
+                    por = "nome";
+                    desc = desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select fis from Fisica fis, " +
+                               "                 Pessoa pes     " +
+                               "  where fis.pessoa.id = pes.id  " +
+                               "   and UPPER(pes." + por + ") like :desc";
+                }
+            }            
             if (por.equals("rg")){
                         por = "rg";
                         desc = desc.toLowerCase().toUpperCase() + "%";
@@ -113,10 +129,50 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                                        "  where fis.pessoa.id = pes.id  " +
                                        "   and UPPER(pes." + por + ") like :desc";
             }
+            if (por.equals("endereco")){
+                desc = desc.toLowerCase().toUpperCase();
+                if (desc.isEmpty()) {
+                    return new Vector<Object>();
+                }                
+                String queryEndereco = ""
+                +"       SELECT fis.id "
+                +"        FROM pes_pessoa_endereco pesend                                                                                                                               "
+                +"  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
+                +"  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
+                +"  INNER JOIN end_cidade cid ON (cid.id = ende.id_cidade)                                                                                                              "
+                +"  INNER JOIN end_descricao_endereco enddes ON (enddes.id = ende.id_descricao_endereco)                                                                                "
+                +"  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
+                +"  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
+                +"  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
+                +"  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%"+desc+"%')  "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%"+desc+"%')                                " 
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%"+desc+"%')                                                    "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                               "
+                +"     OR UPPER(enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                                                           "
+                +"     OR UPPER(cid.ds_cidade) LIKE UPPER('%"+desc+"%')                                                                                                                 "
+                +"     OR UPPER(ende.ds_cep) = '"+desc+"' ";
+                
+                Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
+                List listEndereco = qryEndereco.getResultList();
+                String listaId = "";
+                if (!listEndereco.isEmpty()) {
+                    for (int i = 0; i < listEndereco.size(); i++) {
+                        if (i == 0) {
+                            listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        } else {
+                            listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        }
+                    }
+                    textQuery = " SELECT FIS FROM Fisica AS FIS WHERE FIS.id IN("+listaId+")";
+                }
+            }
             try{
                 Query qry = getEntityManager().createQuery(textQuery);
-                        if (!desc.equals("%%")&& !desc.equals("%"))
-                            qry.setParameter("desc", desc);
+                        if (!desc.equals("%%")&& !desc.equals("%")) {
+                            if (!por.equals("endereco")){
+                                qry.setParameter("desc", desc);
+                            }
+                        }
                         lista = qry.getResultList();
             }
             catch(Exception e){
@@ -150,6 +206,28 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                                                      " where soc.matriculaSocios.motivoInativacao is null )";
                 }
             }
+            
+            if (por.equals("email1") || por.equals("email2")){
+                if (como.equals("P")){
+                    desc = "%" + desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select fis from Fisica fis, " +
+                               "                 Pessoa pes     " +
+                               "  where fis.pessoa.id = pes.id  " +
+                               "   and UPPER(pes." + por + ") like :desc "+
+                               "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc " +
+                                                       " where soc.matriculaSocios.motivoInativacao is null )";
+                }else if (como.equals("I")){
+                    por = "nome";
+                    desc = desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select fis from Fisica fis, " +
+                               "                 Pessoa pes     " +
+                               "  where fis.pessoa.id = pes.id  " +
+                               "   and UPPER(pes." + por + ") like :desc "+
+                               "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc " +
+                                                     " where soc.matriculaSocios.motivoInativacao is null )";
+                }
+            }            
+            
             if (por.equals("rg")){
                         por = "rg";
                         desc = desc.toLowerCase().toUpperCase() + "%";
@@ -170,10 +248,50 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                                        "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc " +
                                                              " where soc.matriculaSocios.motivoInativacao is null )";
             }
+            if (por.equals("endereco")){
+                desc = desc.toLowerCase().toUpperCase();
+                if (desc.isEmpty()) {
+                    return new Vector<Object>();
+                }
+                String queryEndereco = ""
+                +"       SELECT fis.id "
+                +"        FROM pes_pessoa_endereco pesend                                                                                                                               "
+                +"  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
+                +"  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
+                +"  INNER JOIN end_cidade cid ON (cid.id = ende.id_cidade)                                                                                                              "
+                +"  INNER JOIN end_descricao_endereco enddes ON (enddes.id = ende.id_descricao_endereco)                                                                                "
+                +"  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
+                +"  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
+                +"  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
+                +"  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%"+desc+"%')  "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%"+desc+"%')                                " 
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%"+desc+"%')                                                    "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                               "
+                +"     OR UPPER(enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                                                           "
+                +"     OR UPPER(cid.ds_cidade) LIKE UPPER('%"+desc+"%')                                                                                                                 "
+                +"     OR UPPER(ende.ds_cep) = '"+desc+"' ";
+                
+                Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
+                List listEndereco = qryEndereco.getResultList();
+                String listaId = "";
+                if (!listEndereco.isEmpty()) {
+                    for (int i = 0; i < listEndereco.size(); i++) {
+                        if (i == 0) {
+                            listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        } else {
+                            listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        }
+                    }
+                    textQuery = " SELECT FIS FROM Fisica AS FIS, Pessoa AS PES WHERE FIS.id IN("+listaId+") AND PES.id IN( SELECT SOC.servicoPessoa.pessoa.id from Socios AS SOC WHERE SOC.matriculaSocios.motivoInativacao IS NULL )";
+                }
+            }
             try{
                 Query qry = getEntityManager().createQuery(textQuery);
-                        if (!desc.equals("%%")&& !desc.equals("%"))
-                            qry.setParameter("desc", desc);
+                        if (!desc.equals("%%")&& !desc.equals("%")) {
+                            if (!por.equals("endereco")){
+                                qry.setParameter("desc", desc);
+                            }
+                        }
                         lista = qry.getResultList();
             }
             catch(Exception e){
@@ -207,6 +325,26 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                                "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
                 }
             }
+            if (por.equals("email1") || por.equals("email2")){
+                if (como.equals("P")){
+                    desc = "%" + desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select fis from Fisica fis " +
+                               //"                 Pessoa pes     " +
+                               //"  where fis.pessoa.id = pes.id  " +
+                               "  where UPPER(fis.pessoa." + por + ") like :desc "+
+                               "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) " +
+                               "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
+                }else if (como.equals("I")){
+                    por = "nome";
+                    desc = desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select fis from Fisica fis " +
+                               //"                 Pessoa pes     " +
+                               //"  where fis.pessoa.id = pes.id  " +
+                               "  where UPPER(fis.pessoa." + por + ") like :desc "+
+                               "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) " +
+                               "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
+                }
+            }            
             if (por.equals("rg")){
                         por = "rg";
                         desc = desc.toLowerCase().toUpperCase() + "%";
@@ -227,10 +365,55 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                                        "   and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) " +
                                        "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             }
+            if (por.equals("endereco")){
+                desc = desc.toLowerCase().toUpperCase();
+                if (desc.isEmpty()) {
+                    return new Vector<Object>();
+                }                
+                String queryEndereco = ""
+                +"       SELECT fis.id "
+                +"        FROM pes_pessoa_endereco pesend                                                                                                                               "
+                +"  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
+                +"  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
+                +"  INNER JOIN end_cidade cid ON (cid.id = ende.id_cidade)                                                                                                              "
+                +"  INNER JOIN end_descricao_endereco enddes ON (enddes.id = ende.id_descricao_endereco)                                                                                "
+                +"  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
+                +"  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
+                +"  INNER JOIN pes_fisica fis ON (fis.id_pessoa = pes.id)                                                                                                               "
+                +"  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%"+desc+"%')  "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%"+desc+"%')                                " 
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%"+desc+"%')                                                    "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                               "
+                +"     OR UPPER(enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                                                           "
+                +"     OR UPPER(cid.ds_cidade) LIKE UPPER('%"+desc+"%')                                                                                                                 "
+                +"     OR UPPER(ende.ds_cep) = '"+desc+"' ";
+                
+                Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
+                List listEndereco = qryEndereco.getResultList();
+                String listaId = "";
+                if (!listEndereco.isEmpty()) {
+                    for (int i = 0; i < listEndereco.size(); i++) {
+                        if (i == 0) {
+                            listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        } else {
+                            listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        }
+                    }
+                    textQuery = " SELECT FIS                    "
+                             +"     FROM Fisica AS FIS,         "
+                             +"          Pessoa AS PES          "
+                             +"    WHERE FIS.id IN("+listaId+") "
+                             +"      AND FIS.pessoa.id IN( SELECT SOC.servicoPessoa.pessoa.id FROM Socios SOC WHERE SOC.matriculaSocios.motivoInativacao IS NOT NULL )  "
+                             +"      AND FIS.pessoa.id NOT IN( SELECT SOC2.servicoPessoa.pessoa.id FROM Socios SOC2 WHERE SOC2.servicoPessoa.ativo = true )             ";
+                }
+            }
             try{
                 Query qry = getEntityManager().createQuery(textQuery);
-                        if (!desc.equals("%%")&& !desc.equals("%"))
-                            qry.setParameter("desc", desc);
+                        if (!desc.equals("%%")&& !desc.equals("%")) {
+                            if (!por.equals("endereco")){
+                                qry.setParameter("desc", desc);
+                            }
+                        }
                         lista = qry.getResultList();
             }
             catch(Exception e){
