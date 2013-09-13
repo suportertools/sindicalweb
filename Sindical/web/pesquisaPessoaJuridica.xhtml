@@ -31,6 +31,9 @@
                             <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
                             <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
                             <f:selectItem itemValue="cei"      itemLabel="CEI"/>
+                            <f:selectItem itemValue="email1"    itemLabel="E-mail 1"/>
+                            <f:selectItem itemValue="email2"    itemLabel="E-mail 2"/>
+                            <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
                             <rich:jQuery selector="#palavraChave" query="attr('class', '#{juridicaBean.porPesquisa}')" timing="immediate"/>
                         </h:selectOneMenu>
                         <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{juridicaBean.acaoPesquisaInicial}" />
