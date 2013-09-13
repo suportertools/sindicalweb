@@ -10,14 +10,13 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.model.SelectItem;
 
 public class FeriadosJSFBean {
 
     private Feriados feriados = new Feriados();
     private String msgConfirma = "";
-    private List<SelectItem> listaCidade = new Vector<SelectItem>();
+    private List<SelectItem> listaCidade = new ArrayList<SelectItem>();
     private int idCidade = 0;
     private int idIndex = -1;
     private boolean chkCidades = false;
@@ -60,7 +59,7 @@ public class FeriadosJSFBean {
 
     public String excluir(Feriados fer) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        fer = (Feriados) salvarAcumuladoDB.pesquisaCodigo(fer.getId(), "FeriaFeriadoso");
+        fer = (Feriados) salvarAcumuladoDB.pesquisaCodigo(fer.getId(), "Feriados");
         if (fer.getId() != -1) {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(fer)) {
@@ -90,6 +89,11 @@ public class FeriadosJSFBean {
             listaCidade.clear();
         }
         return listaCidade;
+    }
+    
+    public void setListaCidade(List<SelectItem> listaCidade) {
+        this.listaCidade = listaCidade;
+        
     }
 
     public void refreshForm() {
