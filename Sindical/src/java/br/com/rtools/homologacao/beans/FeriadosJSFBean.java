@@ -1,11 +1,8 @@
 package br.com.rtools.homologacao.beans;
 
-import br.com.rtools.arrecadacao.GrupoCidades;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
 import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.db.FeriadosDB;
 import br.com.rtools.homologacao.db.FeriadosDBToplink;
@@ -28,7 +25,7 @@ public class FeriadosJSFBean {
 
     public String salvar() {
         FeriadosDB db = new FeriadosDBToplink();
-        CidadeDB dbc = new CidadeDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (feriados.getId() == -1) {
             if (feriados.getNome().equals("")) {
                 msgConfirma = "Digite o nome do Feriado.";
@@ -39,7 +36,7 @@ public class FeriadosJSFBean {
                 return null;
             }
             if (chkCidades) {
-                feriados.setCidade(dbc.pesquisaCodigo(Integer.parseInt(listaCidade.get(idCidade).getDescription())));
+                feriados.setCidade( (Cidade) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaCidade.get(idCidade).getDescription()), "Cidade"));
             } else {
                 feriados.setCidade(null);
             }
@@ -47,25 +44,31 @@ public class FeriadosJSFBean {
                 msgConfirma = "Feriado ja Cadastrado!";
                 return null;
             }
-            if (db.insert(feriados)) {
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.inserirObjeto(feriados)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msgConfirma = "Feriado adicionado com sucesso!";
                 feriados = new Feriados();
                 listaFeriados.clear();
             } else {
+                salvarAcumuladoDB.desfazerTransacao();
                 msgConfirma = "Erro ao Salvar Feriado!";
             }
         }
         return null;
     }
 
-    public String excluir() {
-        FeriadosDB db = new FeriadosDBToplink();
-        Feriados fer = db.pesquisaCodigo(((Feriados) listaFeriados.get(idIndex)).getId());
+    public String excluir(Feriados fer) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        fer = (Feriados) salvarAcumuladoDB.pesquisaCodigo(fer.getId(), "FeriaFeriadoso");
         if (fer.getId() != -1) {
-            if (db.delete(fer)) {
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(fer)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msgConfirma = "Feriado Excluído com sucesso!";
                 listaFeriados.clear();
             } else {
+                salvarAcumuladoDB.desfazerTransacao();
                 msgConfirma = "Erro ao Excluído Feriado!";
             }
         }
