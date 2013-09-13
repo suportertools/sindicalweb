@@ -11,58 +11,17 @@ import javax.persistence.Query;
 public class FeriadosDBToplink extends DB implements FeriadosDB {
 
     @Override
-    public boolean insert(Feriados feriados) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(feriados);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Feriados feriados) {
-        try{
-        getEntityManager().getTransaction().begin();
-        getEntityManager().merge(feriados);
-        getEntityManager().flush();
-        getEntityManager().getTransaction().commit();
-        return true;
-        }
-        catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Feriados feriados) {
-        try{
-        getEntityManager().getTransaction().begin();
-        getEntityManager().remove(feriados);
-        getEntityManager().flush();
-        getEntityManager().getTransaction().commit();
-        return true;
-        }
-        catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
     public List pesquisaTodos() {
         try{
-            Query qry = getEntityManager().createQuery("select f from Feriados f");
-            return (qry.getResultList());
+            Query qry = getEntityManager().createQuery(" SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC, F.cidade.cidade ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         }
         catch(Exception e){
-            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
@@ -81,8 +40,7 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
     @Override
     public List pesquisarPorData(String data){
         try{
-            Query qry = getEntityManager().createQuery("select f from Feriados f" +
-                                                       " where f.dtData = :data");
+            Query qry = getEntityManager().createQuery("SELECT F from Feriados AS F WHERE F.dtData = :data");
             qry.setParameter("data", DataHoje.converte(data));
             return (qry.getResultList());
         }catch(Exception e){
@@ -115,9 +73,9 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
     @Override
     public List pesquisarPorDataFilial(String data, Filial filial){
         try{
-            Query qry = getEntityManager().createQuery("select f from Feriados f" +
-                                                       " where f.dtData = :data" +
-                                                       "   and f.filial.id = :idFilial");
+            Query qry = getEntityManager().createQuery("SELECT F FROM Feriados AS F" +
+                                                       " WHERE F.dtData = :data" +
+                                                       "   AND F.filial.id = :idFilial");
             qry.setParameter("data", DataHoje.converte(data));
             qry.setParameter("idFilial", filial.getId());
             return (qry.getResultList());
