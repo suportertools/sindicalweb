@@ -7,9 +7,6 @@ import javax.persistence.EntityManager;
 
 public interface FeriadosDB {
     public EntityManager getEntityManager();
-    public boolean insert(Feriados feriados);
-    public boolean update(Feriados feriados);
-    public boolean delete(Feriados feriados);
     public List pesquisaTodos();
     public Feriados pesquisaCodigo(int id);
     public List pesquisarPorData(String data);
