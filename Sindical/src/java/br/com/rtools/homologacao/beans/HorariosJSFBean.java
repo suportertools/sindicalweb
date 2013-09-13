@@ -31,6 +31,8 @@ public class HorariosJSFBean {
     private int idSemana = 1;
     private int idIndex = -1;
     private List<DataObject> listaH = new ArrayList();
+    List<SelectItem> listaSemana = new ArrayList();
+    List<SelectItem> listaFiliais = new ArrayList();
     private String cor1 = "";
     private String cor2 = "color:white; background: dodgerblue!important;";
     private String cor3 = "";
@@ -179,52 +181,56 @@ public class HorariosJSFBean {
         return null;
     }
 
-    public String editar() {
-        HorariosDB db = new HorariosDBToplink();
-        Horarios h = new Horarios();
-        h = (Horarios) listaH.get(idIndex).getArgumento0();
-        h.setAtivo(true); 
-        db.update(h);
+    public String editar(Horarios h) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        h.setAtivo(true);
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.alterarObjeto(h)) {
+            salvarAcumuladoDB.comitarTransacao();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+        }
         listaH.clear();
         msgConfirma = "Horário reativado!";
         return null;
     }
     
-    public String editarQuantidade(int index) {
-        controleAcessoJSFBean acessoJSFBean = new controleAcessoJSFBean();
-        Horarios h = (Horarios) listaH.get(index).getArgumento0();
-        if(acessoJSFBean.getSalvar( h )) {
-            HorariosDB db = new HorariosDBToplink();
-            if(h.getQuantidade() <= 0) {
-                h.setQuantidade(0);
-                h.setAtivo(false);            
-            }
-            db.update(h);
-            listaH.clear();
-        } else {
-            msgConfirma = "Você não possuí permissões para alterar esse horário!";
+    public String editarQuantidade(Horarios h) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
+        if(h.getQuantidade() <= 0) {
+            h.setQuantidade(0);
+            h.setAtivo(false);            
         }
-        // msgConfirma = "Horário reativado!";
+        if (salvarAcumuladoDB.alterarObjeto(h)) {
+            salvarAcumuladoDB.comitarTransacao();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+        }
+        listaH.clear();
         return null;
     }
 
-    public String excluir() {
-        HorariosDB db = new HorariosDBToplink();
-        Horarios hor = db.pesquisaCodigo(((Horarios) listaH.get(idIndex).getArgumento0()).getId());
-        controleAcessoJSFBean acessoJSFBean = new controleAcessoJSFBean();
-        if(!acessoJSFBean.getBotaoExcluir()) {
-            if (hor.getId() != -1) {
-                if (db.delete(hor)) {
-                    msgConfirma = "Horário Excluído com sucesso!";
-                } else {
-                    hor.setAtivo(false);
-                    db.update(hor);
+    public String excluir(Horarios h) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        h = (Horarios) salvarAcumuladoDB.pesquisaCodigo(h.getId(), "Horarios");
+        if (h.getId() != -1) {
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(h)) {
+                salvarAcumuladoDB.comitarTransacao();
+                msgConfirma = "Horário Excluído com sucesso!";
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
+                h.setAtivo(false);
+                salvarAcumuladoDB.abrirTransacao();
+                if (salvarAcumuladoDB.alterarObjeto(h)) {
+                    salvarAcumuladoDB.comitarTransacao();
                     msgConfirma = "Horário Inativado!";
+                } else {
+                    salvarAcumuladoDB.desfazerTransacao();
                 }
-                listaH.clear();
             }
-        } else {
-            msgConfirma = "Você não possuí permissões para excluir esse horário!";
+            listaH.clear();
         }
         return null;
     }
@@ -246,28 +252,30 @@ public class HorariosJSFBean {
     }
 
     public List<SelectItem> getListaSemana() {
-        List<SelectItem> list = new ArrayList<SelectItem>();
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        List<Semana> result = (List<Semana>) dB.listaObjeto("Semana");
-        for (int i = 0; i < result.size(); i++) {
-            list.add(
-                    new SelectItem(new Integer(i),
-                    result.get(i).getDescricao(),
-                    Integer.toString(result.get(i).getId())));
+        if (listaSemana.isEmpty()) {
+            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+            List<Semana> result = (List<Semana>) dB.listaObjeto("Semana");
+            for (int i = 0; i < result.size(); i++) {
+                listaSemana.add(
+                        new SelectItem(new Integer(i),
+                        result.get(i).getDescricao(),
+                        Integer.toString(result.get(i).getId())));
+            }
         }
-        return list;
+        return listaSemana;
     }
 
     public List<SelectItem> getListaFiliais() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        FilialDB db = new FilialDBToplink();
-        List<Filial> select = db.pesquisaTodos();
-        for (int i = 0; i < select.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),
-                    Integer.toString(select.get(i).getId())));
+        if (listaFiliais.isEmpty()) {
+            FilialDB db = new FilialDBToplink();
+            List<Filial> select = db.pesquisaTodos();
+            for (int i = 0; i < select.size(); i++) {
+                listaFiliais.add(new SelectItem(new Integer(i),
+                        select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),
+                        Integer.toString(select.get(i).getId())));
+            }
         }
-        return result;
+        return listaFiliais;
     }
 
     public void limpaLista() {
@@ -348,6 +356,7 @@ public class HorariosJSFBean {
                 break;
             }
         }
+        limpaLista();
     }
 
     public void refreshForm() {
