@@ -6,7 +6,6 @@ import br.com.rtools.homologacao.db.HorariosDBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleAcessoJSFBean;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
