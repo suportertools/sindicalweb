@@ -137,6 +137,59 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
                                " order by jur.pessoa.nome";
                 }
             }
+            
+            if (por.equals("email1") || por.equals("email2")){
+                if (como.equals("P")){
+
+                    desc = "%" + desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select jur from Juridica jur, " +
+                               "                Pessoa pes     " +
+                               " where jur.pessoa.id = pes.id  " +
+                               "   and UPPER(pes." + por + ") like :desc" +
+                               " order by jur.pessoa.nome";
+                }else if (como.equals("I")){
+                    desc = desc.toLowerCase().toUpperCase() + "%";
+                    textQuery = "select jur from Juridica jur, " +
+                               "                Pessoa pes     " +
+                               " where jur.pessoa.id = pes.id  " +
+                               "   and UPPER(pes." + por + ") like :desc" +
+                               " order by jur.pessoa.nome";
+                }
+            }
+            if (por.equals("endereco")){
+                desc = desc.toLowerCase().toUpperCase();
+                String queryEndereco = ""
+                +"       SELECT jur.id "
+                +"        FROM pes_pessoa_endereco pesend                                                                                                                               "
+                +"  INNER JOIN pes_pessoa pes ON (pes.id = pesend.id_pessoa)                                                                                                            "
+                +"  INNER JOIN end_endereco ende ON (ende.id = pesend.id_endereco)                                                                                                      "
+                +"  INNER JOIN end_cidade cid ON (cid.id = ende.id_cidade)                                                                                                              "
+                +"  INNER JOIN end_descricao_endereco enddes ON (enddes.id = ende.id_descricao_endereco)                                                                                "
+                +"  INNER JOIN end_bairro bai ON (bai.id = ende.id_bairro)                                                                                                              "
+                +"  INNER JOIN end_logradouro logr ON (logr.id = ende.id_logradouro)                                                                                                    "
+                +"  INNER JOIN pes_juridica jur ON (jur.id_pessoa = pes.id)                                                                                                               "
+                +"  WHERE UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || bai.ds_descricao || ', ' || cid.ds_cidade || ', ' || cid.ds_uf)    LIKE UPPER('%"+desc+"%')  "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  || ', ' || cid.ds_uf) LIKE UPPER('%"+desc+"%')                                " 
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao || ', ' || cid.ds_cidade  ) LIKE UPPER('%"+desc+"%')                                                    "
+                +"     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                               "
+                +"     OR UPPER(enddes.ds_descricao) LIKE UPPER('%"+desc+"%')                                                                                                           "
+                +"     OR UPPER(cid.ds_cidade) LIKE UPPER('%"+desc+"%')                                                                                                                 "
+                +"     OR UPPER(ende.ds_cep) = '"+desc+"' LIMIT 5000 ";
+                
+                Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
+                List listEndereco = qryEndereco.getResultList();
+                String listaId = "";
+                if (!listEndereco.isEmpty()) {
+                    for (int i = 0; i < listEndereco.size(); i++) {
+                        if (i == 0) {
+                            listaId = ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        } else {
+                            listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
+                        }
+                    }
+                    textQuery = " SELECT JUR FROM Juridica AS JUR WHERE JUR.id IN("+listaId+") ORDER BY JUR.pessoa.nome ASC";
+                }
+            }            
 
             if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")){
                 por = "documento";
@@ -160,8 +213,11 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             }
                 try{
                     Query qry = getEntityManager().createQuery(textQuery);
-                            if (!desc.equals("%%")&& !desc.equals("%"))
-                                qry.setParameter("desc", desc);
+                            if (!desc.equals("%%")&& !desc.equals("%")) {
+                                 if (!por.equals("endereco")){
+                                    qry.setParameter("desc", desc);
+                                 }
+                            }
                             lista = qry.getResultList();
                 }
                 catch(Exception e){
