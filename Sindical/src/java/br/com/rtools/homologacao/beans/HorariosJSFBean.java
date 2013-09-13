@@ -236,13 +236,12 @@ public class HorariosJSFBean {
     public List getListaHorarios() {
         if (listaH.isEmpty()) {
             HorariosDB db = new HorariosDBToplink();
-
-            List<Horarios> result = db.pesquisaTodosPorFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), Integer.parseInt(getListaSemana().get(idSemana).getDescription()));
-            for (int i = 0; i < result.size(); i++) {
-                if (result.get(i).isAtivo()) {
-                    listaH.add(new DataObject(result.get(i), "** ATIVO **"));
+            List<Horarios> list = db.pesquisaTodosPorFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), Integer.parseInt(getListaSemana().get(idSemana).getDescription()));
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).isAtivo()) {
+                    listaH.add(new DataObject(list.get(i), "** ATIVO **"));
                 } else {
-                    listaH.add(new DataObject(result.get(i), "** INATIVO **"));
+                    listaH.add(new DataObject(list.get(i), "** INATIVO **"));
                 }
             }
         }
