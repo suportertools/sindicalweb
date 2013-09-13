@@ -45,7 +45,7 @@
                                             </h:selectBooleanCheckbox>
                                         </f:facet>
                                         <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckContabilidade#{linha.argumento1.id}">
-                                            <a4j:ajax event="change" listener="#{enviarArquivosBean.marcar(it.index)}" render="idCheckContabilidade#{linha.argumento1.id} tblContabilidade"/>
+                                            <a4j:ajax event="change" listener="#{enviarArquivosBean.marcar(it.index)}" render="idCheckContabilidade#{linha.argumento1.id}"/>
                                         </h:selectBooleanCheckbox>
                                     </rich:column>
                                     
@@ -174,9 +174,8 @@
                     </div>                  
                 </center>
             </h:form>
-            <form action="servletEnvioArquivoContabilidade" name="formEnvioArquivo" enctype="multipart/form-data" method="post">  
+            <form action="servletEnvioArquivoContabilidade" name="formEnvioArquivo" enctype="multipart/form-data" accept-charset="ISO-8859-1" method="post">
                 <input id="idUpload" type="file" name="nArquivo" onchange="submit();" style="visibility: hidden" accesskey="u"/>
-                <input type="hidden" name="nTipoEnvio" value="ArquivoContabilidade" />
             </form>            
         </f:view>
     </h:body>
