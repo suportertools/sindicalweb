@@ -105,9 +105,7 @@
 
                             <rich:column>
                                 <f:facet name="header"><h:outputText value="..."/></f:facet>
-                                <a4j:commandButton image="/Imagens/excluirp.png" action="#{horariosBean.excluir}" oncomplete="modalMensagem()" render="outConfirma, tbl">
-                                    <a4j:param value="#{it.index}" assignTo="#{horariosBean.idIndex}"/>
-                                </a4j:commandButton>
+                                <a4j:commandButton image="/Imagens/excluirp.png" action="#{horariosBean.excluir(linha.argumento0)}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}" />
                             </rich:column>
 
                             <rich:column styleClass="coluna">
@@ -118,13 +116,13 @@
                                 <h:outputLabel rendered="#{linha.argumento0.ativo}" value="#{linha.argumento0.hora}" styleClass="fontePadrao" />
                                 <a4j:commandLink rendered="#{!linha.argumento0.ativo}" value="#{linha.argumento0.hora}" title="** Clique para Reativar Horário" onclick="modalOpcao('divSalvar');" styleClass="fontePadrao" >
                                     <a4j:param value="#{it.index}" assignTo="#{horariosBean.idIndex}"/>
-                                </a4j:commandLink>                                    
+                                </a4j:commandLink>
                             </rich:column>
 
                             <rich:column>
                                 <f:facet name="header"><h:outputText value="Quantidade"/></f:facet>
                                 <h:inputText value="#{linha.argumento0.quantidade}" size="2" styleClass="text-center" disabled="#{!linha.argumento0.ativo}">
-                                    <a4j:ajax event="blur" listener="#{horariosBean.editarQuantidade(it.index)}" render="tbl" />
+                                    <a4j:ajax event="blur" listener="#{horariosBean.editarQuantidade(linha.argumento0)}" render="tbl" />
                                 </h:inputText>
                             </rich:column>
 
@@ -152,7 +150,7 @@
                             </h:panelGrid>
 
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{horariosBean.editar}" oncomplete="modalMensagem()" render="outConfirma, tbl"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{horariosBean.editar(horariosBean.horarios)}" oncomplete="modalMensagem()" render="outConfirma, tbl"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
