@@ -42,7 +42,6 @@ public class HorariosJSFBean {
 
     public String salvar() {
         HorariosDB db = new HorariosDBToplink();
-        FilialDB dbf = new FilialDBToplink();
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
         if (chkReplicarTodos) {
             if ((intervalo < 10) || (intervalo > 30)) {
