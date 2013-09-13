@@ -49,9 +49,7 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Excluir"/>
                                             </f:facet>
-                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{feriadosBean.excluir}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}">
-                                                <a4j:param value="#{it.index}" assignTo="#{feriadosBean.idIndex}"/>
-                                            </a4j:commandButton>
+                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{feriadosBean.excluir(linha)}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}" />
                                         </rich:column>
                                         
                                         <rich:column>
