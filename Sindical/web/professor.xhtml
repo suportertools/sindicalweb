@@ -42,33 +42,21 @@
                                         <rich:dataTable value="#{professorBean.listaProfessores}" var="linha" style="width:100%" id="tbl" iterationStatusVar="it">                                        
                                             <rich:column styleClass="coluna">
                                                 <f:facet name="header">
-                                                    <h:outputText value="#"/>
+                                                    <h:outputText value="Cód."/>
                                                 </f:facet>
-                                                <h:outputText value="#{it.index}"/>
-                                            </rich:column>                                            
-                                            
-                                            <rich:column styleClass="coluna">
-                                                <f:facet name="header">
-                                                    <h:outputText value="..."/>
-                                                </f:facet>
-                                                <a4j:commandLink value="#{linha.id}" action="#{professorBean.editar}" styleClass="iLink">
-                                                    <a4j:param value="#{it.index}" assignTo="#{professorBean.idIndex}"/>
-                                                </a4j:commandLink>
-                                                
+                                                <a4j:commandLink value="#{linha.id}" action="#{professorBean.editar(linha)}" styleClass="iLink" />                                                
                                             </rich:column>
-
                                             <rich:column>
                                                 <f:facet name="header">
                                                     <h:outputText value="Nome"/>
                                                 </f:facet>
-                                                    <h:outputLabel value="#{linha.professor.nome}" styleClass="fontePadrao"/>
+                                                <a4j:commandLink value="#{linha.professor.nome}" action="#{professorBean.editar(linha)}" styleClass="iLink" title="Código: #{linha.id}"/>
                                             </rich:column>
-                                            
                                             <rich:column>
                                                 <f:facet name="header">
                                                     <h:outputText value="Valor comissão"/>
                                                 </f:facet>
-                                                <h:outputLabel value="#{linha.nrComissao}" styleClass="fontePadrao"/>
+                                                <a4j:commandLink value="#{linha.nrComissao}" action="#{professorBean.editar(linha)}" styleClass="iLink" />
                                             </rich:column>
                                         </rich:dataTable>
                                     </h:panelGroup>
