@@ -108,7 +108,7 @@
 
                         <br />
 
-                        <h:panelGrid columns="6">
+                        <h:panelGrid columns="6" rendered="#{turmaBean.turma.id != -1}">
                             <h:outputLabel value="Professor: " styleClass="fontePadrao"/>
                             <h:selectOneMenu id="idProfessor" value="#{turmaBean.idProfessor}">
                                 <a4j:ajax event="change"  render="this"/>
@@ -118,39 +118,28 @@
                             <h:outputLabel value="Componente Curricular: " styleClass="fontePadrao" style="margin-left: 15px"/>
                             <h:selectOneMenu id="idComponente" value="#{turmaBean.idComponenteCurricular}">
                                 <a4j:ajax event="change"  render="this"/>
-                                <f:selectItems value="#{turmaBean.listaComponente}"/>
+                                <f:selectItems value="#{turmaBean.listaComponenteCurricular}"/>
                             </h:selectOneMenu>
 
-                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{turmaBean.adicionarProfessor}" render="tbl"/>
+                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{turmaBean.adicionarTurmaProfessor}" render="outConfirma, tbl" oncomplete="modalMensagem()" />
                         </h:panelGrid>
 
                         <br />
 
                         <h:panelGroup style="overflow:auto; height:100px; width: 600px;"  layout="block">
-                            <rich:dataTable value="#{turmaBean.listaProfs}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header">
-                                        <h:outputText value="#" />
-                                    </f:facet>
-                                    <h:outputText value="#{it.index}"/>
-                                </rich:column> 
-
+                            <rich:dataTable value="#{turmaBean.listaTurmaProfessor}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl" rendered="#{turmaBean.turma.id != -1}">
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="..."/>
                                     </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{turmaBean.excluirProfessor}" disabled="#{controleAcessoBean.botaoExcluir}" render="tbl">
-                                        <a4j:param value="#{it.index}" assignTo="#{turmaBean.idIndex}" />
-                                    </a4j:commandButton>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{turmaBean.removerTurmaProfessor(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="outConfirma, tbl" oncomplete="modalMensagem()"  />
                                 </rich:column>
-
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Professor"/>
                                     </f:facet>
                                     <h:outputLabel value="#{linha.professor.professor.nome}" styleClass="fontePadrao"/>
                                 </rich:column>
-
                                 <rich:column> 
                                     <f:facet name="header">
                                         <h:outputText value="Componente Curricular"/>
@@ -160,7 +149,7 @@
                             </rich:dataTable>
                         </h:panelGroup>
 
-                        <h:panelGrid>
+                        <h:panelGrid style="margin-top: 10px;">
                             <h:column>
                                 <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar"/>
                                 <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{turmaBean.novo}"/>
