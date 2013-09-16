@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,7 +25,6 @@ public class servletEnvioArquivoContribuinte extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FileUploadException {
         response.setContentType("text/html;charset=UTF-8");
-
         try {
             DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
             // fileItemFactory.setSizeThreshold(1 * 3072 * 3072); //1 MB  
