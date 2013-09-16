@@ -7,80 +7,68 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class TurmaDBToplink extends  DB implements TurmaDB{
-    public boolean insert(Turma turma) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(turma);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
+public class TurmaDBToplink extends DB implements TurmaDB {
 
-    public boolean update(Turma turma) {
-        try{
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(turma);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        }catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(Turma turma) {
-        try{
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(turma);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        }catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public Turma pesquisaCodigo(int id) {
-        Turma result = null;
-        try{
-            Query qry = getEntityManager().createNamedQuery("Turma.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Turma) qry.getSingleResult();
-        }catch(Exception e){
-            e.getMessage();
-        }
-        return result;
-    }
-
+    @Override
     public List pesquisaTodos() {
-        try{
-            Query qry = getEntityManager().createQuery("select t from Turma t order by t.cursos.descricao");
-            return (qry.getResultList());
-        }catch(Exception e){
+        try {
+            Query qry = getEntityManager().createQuery("SELECT T FROM Turma T ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List<TurmaProfessor> listaTurmaProfessor(int idTurma) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor TP WHERE TP.turma.id = " + idTurma + " ORDER BY TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC " );
+            return qry.getResultList();
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
-
-    public List<TurmaProfessor> listaTurmaProfessor(int idTurma){
-        try{
-            Query qry = getEntityManager().createQuery(
-                     " select tp " +
-                     "   from TurmaProfessor tp" +
-                     "  where tp.turma.id = " + idTurma);
-            return qry.getResultList();
-        }catch(Exception e){
-            e.getMessage();
-            return new ArrayList();
+    
+    
+    @Override
+    public boolean existeTurma(Turma turma) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT T FROM Turma AS T WHERE T.dtInicio = :dataInicio AND T.dtTermino = :dataTermino AND T.horaInicio = :hInicio AND T.horaTermino = :hTermino  AND T.cursos.id = :idCurso AND T.filial.id = :idFilial " );
+            qry.setParameter("dataInicio", turma.getDtInicio());
+            qry.setParameter("dataTermino", turma.getDtTermino());
+            qry.setParameter("hInicio", turma.getHoraInicio());
+            qry.setParameter("hTermino", turma.getHoraTermino());
+            qry.setParameter("idCurso", turma.getCursos().getId());
+            qry.setParameter("idFilial", turma.getFilial().getId());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
         }
+        return false;
+        
+    }
+
+    @Override
+    public boolean existeTurmaProfessor(TurmaProfessor turmaProfessor) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor AS TP WHERE TP.turma.id = :idTurma AND TP.componenteCurricular.id = :idComponenteCurricular AND TP.professor.id = :idProfessor " );
+            qry.setParameter("idTurma", turmaProfessor.getTurma().getId());
+            qry.setParameter("idProfessor", turmaProfessor.getProfessor().getId());
+            qry.setParameter("idComponenteCurricular", turmaProfessor.getComponenteCurricular().getId());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 }
-
-

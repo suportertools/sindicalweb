@@ -6,66 +6,47 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
+public class VendedorDBToplink extends DB implements VendedorDB {
 
-public class VendedorDBToplink extends DB implements VendedorDB{
-    public boolean insert(Vendedor vendedor) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(vendedor);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(Vendedor vendedor) {
-        try{
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(vendedor);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        }catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(Vendedor vendedor) {
-        try{
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(vendedor);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        }catch(Exception e){
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
+    @Override
     public Vendedor pesquisaCodigo(int id) {
         Vendedor result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Vendedor.pesquisaID");
             qry.setParameter("pid", id);
-            result = (Vendedor) qry.getSingleResult();
-        }catch(Exception e){
-            e.getMessage();
+            if (!qry.getResultList().isEmpty()) {
+                return (Vendedor) qry.getSingleResult();
+            }
+        } catch (Exception e) {
         }
         return result;
     }
 
+    @Override
     public List pesquisaTodos() {
-        try{
-            Query qry = getEntityManager().createQuery("select v from Vendedor v");
-            return (qry.getResultList());
-        }catch(Exception e){
-            e.getMessage();
-            return new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT V FROM Vendedor AS V ORDER BY V.pessoa.nome ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
         }
+        return new ArrayList();
+    }
+
+    @Override
+    public boolean existeVendedor(Vendedor vendedor) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT V FROM Vendedor V WHERE V.pessoa.id = :idPessoa ");
+            qry.setParameter("idPessoa", vendedor.getPessoa().getId());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
     }
 }
