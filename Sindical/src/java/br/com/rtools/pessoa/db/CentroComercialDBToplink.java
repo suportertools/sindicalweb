@@ -5,26 +5,36 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class CentroComercialDBToplink extends DB implements CentroComercialDB{
+public class CentroComercialDBToplink extends DB implements CentroComercialDB {
+
+    @Override
     public List pesquisaTodosOrdernado() {
-        try{
-            Query qry = getEntityManager().createQuery("select cc from CentroComercial cc order by cc.tipoCentroComercial.id");
-            return (qry.getResultList());
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT cc FROM CentroComercial AS CC ORDER BY CC.tipoCentroComercial.descricao ASC, CC.juridica.pessoa.nome ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
         }
-        catch(Exception e){
-            return null;
-        }
+        return new ArrayList();
     }
 
-    public List listaCentros(int idTipoCentroComercial,int idJuridica){
-        try{
-            Query qry = getEntityManager().createQuery("select cc from CentroComercial cc "+
-                                                       " where cc.tipoCentroComercial.id = "+idTipoCentroComercial +
-                                                       "   and cc.juridica.id = "+idJuridica);
-            return qry.getResultList();
+    @Override
+    public List listaCentroComercial(int idTipoCentroComercial, int idJuridica) {
+        try {
+            Query qry = getEntityManager().createQuery(""
+                    + "   SELECT CC FROM CentroComercial AS CC                          "
+                    + "    WHERE CC.tipoCentroComercial.id = " + idTipoCentroComercial
+                    + "      AND CC.juridica.id = " + idJuridica                         
+                    + " ORDER BY CC.tipoCentroComercial.descricao ASC,                  "
+                    + "          CC.juridica.pessoa.nome ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
         }
-        catch(Exception e){
-            return new ArrayList();
-        }
+        return new ArrayList();
     }
 }
