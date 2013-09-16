@@ -9,42 +9,42 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class CentroComercialJSFBean {
-    private CentroComercial centroComercial= new CentroComercial();
+
+    private CentroComercial centroComercial = new CentroComercial();
     private String msgConfirma = "";
     private int idTipos = 0;
     private int idIndex = -1;
-    private List<SelectItem> tipos = new Vector<SelectItem>();
-    private List<CentroComercial> listaCentros = new ArrayList();
+    private List<SelectItem> listaTiposCentroComercial = new ArrayList<SelectItem>();
+    private List<CentroComercial> listaCentroComercial = new ArrayList();
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         CentroComercialDB db = new CentroComercialDBToplink();
-        if (centroComercial.getJuridica().getId() == -1){
+        if (centroComercial.getJuridica().getId() == -1) {
             msgConfirma = "Pesquise uma empresa antes de salvar!";
             return null;
         }
-                
-        if (!db.listaCentros(Integer.parseInt(tipos.get(idTipos).getDescription()), centroComercial.getJuridica().getId()).isEmpty()){
+
+        if (!db.listaCentroComercial(Integer.parseInt(listaTiposCentroComercial.get(idTipos).getDescription()), centroComercial.getJuridica().getId()).isEmpty()) {
             msgConfirma = "Essa empresa já existe!";
             return null;
         }
 
-        centroComercial.setTipoCentroComercial((TipoCentroComercial) sv.pesquisaCodigo(Integer.parseInt(tipos.get(idTipos).getDescription()), "TipoCentroComercial"));
+        centroComercial.setTipoCentroComercial((TipoCentroComercial) sv.pesquisaCodigo(Integer.parseInt(listaTiposCentroComercial.get(idTipos).getDescription()), "TipoCentroComercial"));
         sv.abrirTransacao();
-        if(centroComercial.getId() == -1){
-            if (!sv.inserirObjeto(centroComercial)){
+        if (centroComercial.getId() == -1) {
+            if (!sv.inserirObjeto(centroComercial)) {
                 msgConfirma = "Erro ao salvar Centro comercial!";
                 sv.desfazerTransacao();
                 return null;
             }
             msgConfirma = "Centro salvo com Sucesso!";
-        }else{
-            if (!sv.alterarObjeto(centroComercial)){
+        } else {
+            if (!sv.alterarObjeto(centroComercial)) {
                 msgConfirma = "Erro ao atualizar Centro comercial!";
                 sv.desfazerTransacao();
                 return null;
@@ -52,59 +52,60 @@ public class CentroComercialJSFBean {
             msgConfirma = "Centro atualizado com Sucesso!";
         }
         centroComercial = new CentroComercial();
-        listaCentros = new ArrayList();
+        listaCentroComercial.clear();
         sv.comitarTransacao();
         return null;
     }
-    
-    public String editar(){
-        centroComercial = (CentroComercial)listaCentros.get(idIndex);
-        for (int i = 0; i < tipos.size(); i++){
-            if (Integer.parseInt(tipos.get(i).getDescription()) == centroComercial.getTipoCentroComercial().getId()){
+
+    public String editar(CentroComercial cc) {
+        centroComercial = cc;
+        for (int i = 0; i < listaTiposCentroComercial.size(); i++) {
+            if (Integer.parseInt(listaTiposCentroComercial.get(i).getDescription()) == centroComercial.getTipoCentroComercial().getId()) {
                 idTipos = i;
             }
         }
         return null;
     }
-    
-    public String excluir(){
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(centroComercial.getId(), "CentroComercial"))){
-            msgConfirma = "Erro ao excluir cadastro!";
-            sv.desfazerTransacao();
-            return null;
-        }else{
+
+    public String excluir() {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        centroComercial = (CentroComercial) salvarAcumuladoDB.pesquisaCodigo(centroComercial.getId(), "CentroComercial");
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.deletarObjeto(centroComercial)) {
+            salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Centro excluido com Sucesso!";
             centroComercial = new CentroComercial();
-            listaCentros = new ArrayList();
-            sv.comitarTransacao();
+            listaCentroComercial.clear();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+            msgConfirma = "Erro ao excluir cadastro!";
+            return null;
         }
 
         return null;
     }
 
-    public List<SelectItem> getListaTipos(){
-        if (tipos.isEmpty()){
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List result = sv.listaObjeto("TipoCentroComercial");
-            for (int i = 0;i <  result.size(); i++){
-                tipos.add(new SelectItem(
-                           new Integer(i),
-                           (String) ((TipoCentroComercial) result.get(i)).getDescricao(),
-                           Integer.toString(((TipoCentroComercial) result.get(i)).getId())  ));
+    public List<SelectItem> getListaTiposCentroComercial() {
+        if (listaTiposCentroComercial.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<TipoCentroComercial> list = (List<TipoCentroComercial>) salvarAcumuladoDB.listaObjeto("TipoCentroComercial");
+            for (int i = 0; i < list.size(); i++) {
+                listaTiposCentroComercial.add(new SelectItem(
+                        new Integer(i),
+                        (String) (list.get(i)).getDescricao(),
+                        Integer.toString((list.get(i)).getId())));
             }
         }
-        return tipos;
+        return listaTiposCentroComercial;
     }
-    
-    public void refreshForm(){
-        
+
+    public void setListaTiposCentroComercial(List<SelectItem> listaTiposCentroComercial) {
+        this.listaTiposCentroComercial = listaTiposCentroComercial;
     }
 
     public CentroComercial getCentroComercial() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null){
-            centroComercial.setJuridica((Juridica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa"));
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
+            centroComercial.setJuridica((Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa"));
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
             msgConfirma = "";
         }
@@ -131,16 +132,16 @@ public class CentroComercialJSFBean {
         this.idTipos = idTipos;
     }
 
-    public List<CentroComercial> getListaCentros() {
-        if (listaCentros.isEmpty()){
+    public List<CentroComercial> getListaCentroComercial() {
+        if (listaCentroComercial.isEmpty()) {
             CentroComercialDB db = new CentroComercialDBToplink();
-            listaCentros = db.pesquisaTodosOrdernado();
+            listaCentroComercial = db.pesquisaTodosOrdernado();
         }
-        return listaCentros;
+        return listaCentroComercial;
     }
 
-    public void setListaCentros(List<CentroComercial> listaCentros) {
-        this.listaCentros = listaCentros;
+    public void setListaCentroComercial(List<CentroComercial> listaCentros) {
+        this.listaCentroComercial = listaCentros;
     }
 
     public int getIdIndex() {
