@@ -193,7 +193,6 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
     public void gerarContrato() throws IOException {
         if (matriculaEscola.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            Fisica contratoFisica = new Fisica();
             Turma turma = new Turma();
             String contratoCurso = "";
             String contratoDiaSemana = "";
@@ -214,7 +213,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             }
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$aluno", matriculaEscola.getAluno().getNome()));
             FisicaDB fisicaDB = new FisicaDBToplink();
-            contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
+            Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
             if (porPesquisa.equals("matriculaIndividual")) {
                 contratoCurso = matriculaIndividual.getCurso().getDescricao();
                 if (matriculaIndividual.isSegunda()) {
@@ -341,7 +340,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             msgConfirma = "Informar o tipo de mídia!";
             return null;
         }
-        String tipoMatricula = "";
+        String tipoMatricula;
         if (abrirIndividual) {
             tipoMatricula = "Individual";
             if (matriculaEscola.getId() == -1) {
@@ -418,7 +417,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             Evt evt = new Evt();
             matriculaEscola.setEvt(null);
             getMacFilial();
-            String tipoMatriculaLog = "";
+            String tipoMatriculaLog;
             if (sv.inserirObjeto(matriculaEscola)) {
                 if (abrirTurma) {
                     setDesabilitaIndividual(true);
@@ -557,21 +556,19 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             valor = Moeda.converteR$Float(servicoValor.getValor());        
             matriculaEscola.setDescontoAteVencimento(servicoValor.getDescontoAteVenc());
         }
-        return;
     }
     
     public String gerarParcelas(){        
         if(matriculaEscola.getId() != -1){
             if(matriculaEscola.getLote() == null){
-                String vencimento = "";
-                String referencia = "";
+                String vencimento;
+                String referencia;
                 String mes = "0";
                 String ano = "0";
                 String diaSwap = "";                
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                Plano5 plano5 = new Plano5();
-                Servicos servicos = new Servicos();
-                CondicaoPagamento condicaoPagamento = new CondicaoPagamento();
+                Plano5 plano5;
+                Servicos servicos;
                 int idCondicaoPagto = 0;
                 if(matriculaEscola.getNumeroParcelas() == 1){
                     idCondicaoPagto = 1;
@@ -649,7 +646,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                     for(int i = 0; i < loop; i++){                        
                         float valorParcela = 0;
                         float valorDescontoAteVencimento = 0;
-                        TipoServico tipoServico = new TipoServico();
+                        TipoServico tipoServico;
                         if(insereTaxa == true){
                             tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(5, "TipoServico");
                             valorParcela = servicoValor.getTaxa();
@@ -995,8 +992,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
     public List<SelectItem> getListaIndividual() {
         if (listaIndividual.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            List select = null;
-            select = db.pesquisaTodos(151);
+            List select = db.pesquisaTodos(151);
             int i = 0;
             while (i < select.size()) {
                 listaIndividual.add(new SelectItem(new Integer(i),
@@ -1136,9 +1132,9 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         listaGridMEscola.clear();
         getListaMatriculaEscolas();
         MatriculaEscolaDB dB = new MatriculaEscolaDBToplink();
-        MatriculaTurma mTurma = new MatriculaTurma();
-        MatriculaIndividual mIndividual = new MatriculaIndividual();
-        DataObject dtObj = null;
+        MatriculaTurma mTurma;
+        MatriculaIndividual mIndividual;
+        DataObject dtObj;
         for (int i = 0; i < listaMatriculaEscolas.size(); i++) {
             if (porPesquisa.equals("matriculaIndividual")) {
                 mIndividual = (MatriculaIndividual) dB.pesquisaCodigoMIndividual(listaMatriculaEscolas.get(i).getId());
@@ -1222,8 +1218,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                     atualizaValor();
                     calculaValorLiquido();
                 }else if(tipoFisica.equals("responsavel")){
-                    Pessoa resp = new Pessoa();
-                    resp = ((Fisica) (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa"))).getPessoa();
+                    Pessoa resp = ((Fisica) (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa"))).getPessoa();
                     if(matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())){
                         matriculaEscola.setResponsavel(resp);
                     }
@@ -1237,8 +1232,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         }
         if(socio == false){
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
-                Juridica pJuridica = new Juridica();
-                pJuridica = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
+                Juridica pJuridica = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
                 if(matriculaEscolaDB.verificaPessoaEnderecoDocumento("juridica", pJuridica.getPessoa().getId())){
                     responsavel = pJuridica.getPessoa();
@@ -1389,8 +1383,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
     
     public void verificaSocio(){
         SociosDB dB = new SociosDBToplink();
-        Socios socios = new Socios();
-        socios = dB.pesquisaSocioPorPessoa(aluno.getId());
+        Socios socios = dB.pesquisaSocioPorPessoa(aluno.getId());
         if(socios.getId() != -1){
             setSocio(true);
         }else{
@@ -1403,7 +1396,6 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
         }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaFisicaTipo", "aluno");
-        return;        
     }
     
     public void pesquisaFisicaResponsavel(){
@@ -1411,7 +1403,6 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
         }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaFisicaTipo", "responsavel");
-        return;        
     }
     
     public void cobrarTaxa(){
