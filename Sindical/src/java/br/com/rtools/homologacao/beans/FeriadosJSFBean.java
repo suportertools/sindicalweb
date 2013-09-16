@@ -150,4 +150,5 @@ public class FeriadosJSFBean {
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
     }
+    
 }
