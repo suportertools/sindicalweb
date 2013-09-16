@@ -146,3 +146,16 @@ ALTER TABLE age_telefone ADD COLUMN  ds_ddd character varying(2);
 
 ALTER TABLE fin_servico_valor ADD COLUMN nr_taxa double precision;
 ALTER TABLE fin_servico_valor ALTER COLUMN nr_taxa SET NOT NULL;
+
+-- *****************************************************************************
+
+-- ESC_TURMA 
+-- update: 2013-09-16
+-- edited by: Bruno Vieira da Silva
+
+ALTER TABLE esc_turma ADD COLUMN id_filial integer;
+ALTER TABLE esc_turma
+  ADD CONSTRAINT fk_esc_turma_id_filial FOREIGN KEY (id_filial)
+     REFERENCES pes_filial (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
