@@ -25,27 +25,40 @@
                     <br /><br />
                     <div class="divMae">
                         <rich:dataTable value="#{turmaBean.listaTurma}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-                            <rich:column style="text-align: center;">
-                                <f:facet name="header">
-                                    <h:outputText value="#" />
-                                </f:facet>
-                                <h:outputText value="#{it.index}"/>
-                            </rich:column>  
                             
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="ID"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{turmaBean.editar}" value="#{linha.id}">
-                                    <a4j:param value="#{it.index}" assignTo="#{turmaBean.idIndexPesquisa}"/>
-                                </a4j:commandLink>
+                                <a4j:commandLink value="#{linha.id}" action="#{turmaBean.editar(linha)}" />
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Data Inicio"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.dataInicio}"/>
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Data Término"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.dataTermino}"/>
+                            </rich:column>
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Hora Inicio / Término"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.horaInicio} - #{linha.horaTermino}"/>
                             </rich:column>
 
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="Curso"/>
                                 </f:facet>
-                                <h:outputText value="#{linha.cursos.descricao}"/>
+                                <a4j:commandLink value="#{linha.cursos.descricao}" action="#{turmaBean.editar(linha)}"/>
                             </rich:column>
                             
                             <rich:column>
