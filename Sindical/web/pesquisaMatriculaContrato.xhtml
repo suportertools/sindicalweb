@@ -26,25 +26,17 @@
                     <div class="divMae">
                         <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 30px;">
                             <rich:dataTable value="#{matriculaContratoBean.matriculaContratos}" var="linha" iterationStatusVar="it" style="width: 95%;" id="tbl">
-                                <rich:column style="text-align: center;">
+                                <rich:column style="width: 80px;">
                                     <f:facet name="header">
-                                        <h:outputText value="#"/>
+                                            <h:outputText value="Data Cadastro"/>
                                     </f:facet>
-                                    <h:outputText value="#{it.index}" />
-                                </rich:column>
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header">
-                                        <h:outputText value="Alterar" title="Alterar"/>
-                                    </f:facet>
-                                    <a4j:commandLink value="#{linha.id}" title="Editar registro nº#{linha.id}" action="#{matriculaContratoBean.editar}">
-                                        <a4j:param value="#{it.index}" assignTo="#{matriculaContratoBean.idIndex}"/>
-                                    </a4j:commandLink>
+                                    <a4j:commandLink value="#{linha.dataCadastro}" action="#{matriculaContratoBean.editar(linha)}" styleClass="underline-hover"/>
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                             <h:outputText value="Titulo"/>
                                     </f:facet>
-                                    <h:outputText value="#{linha.titulo}"/>
+                                    <a4j:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{matriculaContratoBean.editar(linha)}" styleClass="underline-hover"/>
                                 </rich:column>
                             </rich:dataTable>
                         </div>
