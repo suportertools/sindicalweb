@@ -10,94 +10,83 @@ import javax.persistence.Query;
 public class MatriculaContratoDBToplink extends DB implements MatriculaContratoDB {
 
     @Override
-    public MatriculaContrato pesquisaCodigo(int id) {
-        MatriculaContrato result = null;
-        try{
-            Query qry = getEntityManager().createNamedQuery("MatriculaContrato.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (MatriculaContrato) qry.getSingleResult();
-        }catch(Exception e){
-            e.getMessage();
-        }
-        return result;
-    }
-    
-    @Override
     public MatriculaContrato pesquisaCodigoServico(int servico) {
         MatriculaContrato result = null;
-        try{
+        try {
             Query qry = getEntityManager().createQuery(" SELECT mcs.contrato FROM MatriculaContratoServico mcs WHERE mcs.servicos.id = :servico ");
             qry.setParameter("servico", servico);
             result = (MatriculaContrato) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
-    
+
     @Override
-    public boolean pesquisaTitulo(String titulo) {
-        List result = null;
-        try{
-            Query qry = getEntityManager().createQuery(" SELECT mc FROM MatriculaContrato mc WHERE mc.titulo = :titulo ");
-            qry.setParameter("titulo", titulo);
-            if(qry.getResultList().size() > 0){
+    public boolean existeMatriculaContrato(MatriculaContrato matriculaContrato) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT MC FROM MatriculaContrato AS MC WHERE MC.titulo = :titulo AND MC.modulo.id = :idModulo ");
+            qry.setParameter("idModulo", matriculaContrato.getModulo().getId());
+            qry.setParameter("titulo", matriculaContrato.getTitulo());
+            if (qry.getResultList().size() > 0) {
                 return true;
             }
-        }catch(Exception e){
-            e.getMessage();
-            return false;
+        } catch (Exception e) {
         }
         return false;
     }
 
     @Override
     public List pesquisaTodos() {
-        try{
-            Query qry = getEntityManager().createQuery(" SELECT mc FROM MatriculaContrato mc ");
-            return (qry.getResultList());
-        }catch(Exception e){
-            e.getMessage();
-            return new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT MC FROM MatriculaContrato AS MC ORDER BY MC.dataCadastro DESC, MC.dataAtualizado DESC, MC.titulo ASC  ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
         }
+        return new ArrayList();
     }
-    
+
     @Override
     public List pesquisaTodosPorModulo(int idModulo) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(" SELECT mc FROM MatriculaContrato mc WHERE mc.modulo.id = :idModulo ");
             qry.setParameter("idModulo", idModulo);
-            return (qry.getResultList());
-        }catch(Exception e){
-            e.getMessage();
-            return new ArrayList();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
         }
+        return new ArrayList();
     }
-    
+
     @Override
     public List<MatriculaContratoServico> pesquisaMatriculaContratoServico(int idMatriculaContrato) {
         List<MatriculaContratoServico> list;
-        try{
+        try {
             Query qry = getEntityManager().createQuery(" SELECT mcs FROM MatriculaContratoServico mcs WHERE mcs.contrato.id = :idMatriculaContrato ");
             qry.setParameter("idMatriculaContrato", idMatriculaContrato);
             list = qry.getResultList();
             return list;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
-    
+
     @Override
     public boolean validaMatriculaContratoServico(int idMatriculaContrato, int idServico) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(" SELECT mcs FROM MatriculaContratoServico mcs WHERE mcs.contrato.id = :idMatriculaContrato AND mcs.servicos.id = :idServico ");
             qry.setParameter("idMatriculaContrato", idMatriculaContrato);
             qry.setParameter("idServico", idServico);
-            if(qry.getResultList().size() > 0){
+            if (qry.getResultList().size() > 0) {
                 return true;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return false;
         }
