@@ -44,9 +44,7 @@
                                         <f:facet name="header">
                                             <h:outputText value="..."/>
                                         </f:facet>
-                                        <a4j:commandButton image="/Imagens/excluirp.png" oncomplete="modalMensagem()" value="#{linha.id}" action="#{vendedorBean.excluir}" render="outConfirma,tbl">
-                                            <a4j:param value="#{it.index}" assignTo="#{vendedorBean.idIndex}"/>
-                                        </a4j:commandButton>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" oncomplete="modalMensagem()" value="#{linha.id}" action="#{vendedorBean.excluir(linha)}" render="outConfirma,tbl" />
                                     </rich:column>
 
                                     <rich:column>
