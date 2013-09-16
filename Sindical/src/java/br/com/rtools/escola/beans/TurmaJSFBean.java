@@ -15,35 +15,37 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class TurmaJSFBean implements java.io.Serializable {
+
     private Turma turma = new Turma();
     private String msgConfirma = "";
     private int idServicos = 0;
     private int idProfessor = 0;
     private int idComponenteCurricular = 0;
-    private List<TurmaProfessor> listaProfs = new ArrayList();
+    private List<TurmaProfessor> listaTurmaProfessor = new ArrayList();
     private List<Turma> listaTurma = new ArrayList();
     private int idIndex = -1;
     private int idIndexPesquisa = -1;
     private MacFilial macFilial = new MacFilial();
-    private Filial filial = new Filial();    
+    private Filial filial = new Filial();
     private String msgStatusFilial = "";
-    
+    private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaProfessores = new ArrayList<SelectItem>();
+    private List<SelectItem> listaComponenteCurricular = new ArrayList<SelectItem>();
 
-    public String salvar(){
+    public String salvar() {
         if (turma.getFilial().getId() == -1) {
             msgConfirma = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
             return null;
         }
-        if(turma.getDataInicio().equals("__:__") || turma.getDataInicio().equals("") || turma.getDataInicio().isEmpty()){
+        if (turma.getDataInicio().equals("__:__") || turma.getDataInicio().equals("") || turma.getDataInicio().isEmpty()) {
             msgConfirma = "Informar a data inicial da turma!";
             return null;
         }
-        if(turma.getDataTermino().equals("__:__") || turma.getDataTermino().equals("") || turma.getDataTermino().isEmpty()){
+        if (turma.getDataTermino().equals("__:__") || turma.getDataTermino().equals("") || turma.getDataTermino().isEmpty()) {
             msgConfirma = "Informar a data de termino da turma!";
             return null;
         }
@@ -69,67 +71,45 @@ public class TurmaJSFBean implements java.io.Serializable {
         if (DataHoje.validaHora(turma.getHoraTermino()).isEmpty()) {
             msgConfirma = "Hora final invalida!";
             return null;
-        }        
-        if(turma.getHoraInicio().equals("__:__")){
-           turma.setHoraInicio("");
         }
-        if(turma.getHoraTermino().equals("__:__")){
-           turma.setHoraTermino(""); 
+        if (turma.getHoraInicio().equals("__:__")) {
+            turma.setHoraInicio("");
         }
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        ServicosDB db = new ServicosDBToplink();
-        sv.abrirTransacao();
-        turma.setCursos(db.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServicos).getDescription())));        
-        if (turma.getId() == -1){
-            if (!sv.inserirObjeto(turma)){
+        if (turma.getHoraTermino().equals("__:__")) {
+            turma.setHoraTermino("");
+        }
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        turma.setCursos((Servicos) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
+        TurmaDB turmaDB = new TurmaDBToplink();
+        if (turma.getId() == -1) {
+            if (turmaDB.existeTurma(turma)) {
+                msgConfirma = "Turma já existe!";
+                return null;
+            }
+            salvarAcumuladoDB.abrirTransacao();
+            if (!salvarAcumuladoDB.inserirObjeto(turma)) {
+                salvarAcumuladoDB.desfazerTransacao();
                 msgConfirma = "Erro ao salvar turma!";
-                sv.desfazerTransacao();
                 return null;
             }
+            salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Turma salva com sucesso!";
-        }else{
-            if (!sv.alterarObjeto(turma)){
+        } else {
+            salvarAcumuladoDB.abrirTransacao();
+            if (!salvarAcumuladoDB.alterarObjeto(turma)) {
+                salvarAcumuladoDB.desfazerTransacao();
                 msgConfirma = "Erro ao atualizar turma!";
-                sv.desfazerTransacao();
                 return null;
             }
+            salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Turma atualizada com sucesso!";
         }
-
-        for(int i = 0; i < listaProfs.size(); i++){
-            if (listaProfs.get(i).getId() == -1){
-                listaProfs.get(i).setTurma(turma);
-                if (!sv.inserirObjeto(listaProfs.get(i))){
-                    msgConfirma = "Erro ao salvar Lista de Professores!";
-                    sv.desfazerTransacao();
-                    return null;
-                }
-            }
-        }
-        sv.comitarTransacao();
         return null;
     }
 
-//    public String editar(){
-//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-//        turma = (Turma)listaTurma.get(idIndexPesquisa);
-//        for (int i = 0; i < getListaServicos().size(); i ++ ){
-//            if (Integer.parseInt(getListaServicos().get(i).getDescription()) == turma.getCursos().getId())
-//                idServicos = i;
-//        }
-//        if (turma.getFilial().getId() == -1) {
-//            getMacFilial();
-//            turma.setFilial(macFilial.getFilial());
-//        }          
-//        TurmaDB turmaDB = new TurmaDBToplink();
-//        this.listaProfs = turmaDB.listaTurmaProfessor(turma.getId());        
-//        return "turma";
-//    }
-    
-    public String editar() {
-        Turma turmaC = new Turma();
+    public String editar(Turma t) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        turmaC  = (Turma) dB.pesquisaCodigo(listaTurma.get(idIndexPesquisa).getId(), "Turma");
+        Turma turmaC = (Turma) dB.pesquisaCodigo(t.getId(), "Turma");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("turmaPesquisa", turmaC);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
@@ -137,147 +117,158 @@ public class TurmaJSFBean implements java.io.Serializable {
         } else {
             return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
-    }    
+    }
 
-    public String excluir(){
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if (turma.getId() != -1){
-            sv.abrirTransacao();
-            for(int i = 0; i < listaProfs.size(); i++){
-                if (listaProfs.get(i).getId() != -1){
-                    if (!sv.deletarObjeto(sv.pesquisaCodigo(listaProfs.get(i).getId(), "TurmaProfessor"))){
+    public String excluir() {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        if (turma.getId() != -1) {
+            salvarAcumuladoDB.abrirTransacao();
+            for (int i = 0; i < listaTurmaProfessor.size(); i++) {
+                if (listaTurmaProfessor.get(i).getId() != -1) {
+                    if (!salvarAcumuladoDB.deletarObjeto( (TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor.get(i).getId(), "TurmaProfessor"))) {
                         msgConfirma = "Erro ao excluir Professores!";
-                        sv.desfazerTransacao();
+                        salvarAcumuladoDB.desfazerTransacao();
                         return null;
                     }
                 }
             }
 
-            if (!sv.deletarObjeto(sv.pesquisaCodigo(turma.getId(), "Turma"))){
+            if (!salvarAcumuladoDB.deletarObjeto( (Turma) salvarAcumuladoDB.pesquisaCodigo(turma.getId(), "Turma"))) {
                 msgConfirma = "Erro ao excluir Turma!";
-                sv.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
                 return null;
             }
 
             msgConfirma = "Cadastro excluído com sucesso!";
-            sv.comitarTransacao();
+            salvarAcumuladoDB.comitarTransacao();
+            turma = new Turma();
             novoGenerico();
-        }else{
+        } else {
             msgConfirma = "Pesquise uma turma para ser excluída!";
         }
-        return null;
-    }
-
-    public void excluirProfessor(){
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        if ( listaProfs.get(idIndex).getId() != -1){
-            dB.abrirTransacao();
-            if (!dB.deletarObjeto((TurmaProfessor) dB.pesquisaCodigo(listaProfs.get(idIndex).getId(), "TurmaProfessor" ))){
-                msgConfirma = "Erro ao excluir professor";
-                dB.desfazerTransacao();
-            }else{
-//                msgConfirma = "Professor exluído com sucesso!";
-                dB.comitarTransacao();
-                listaProfs.remove(listaProfs.get(idIndex));
-            }
-        }else{
-            listaProfs.remove(listaProfs.get(idIndex));
-        }
-        return;
-    }
-
-    public String novo(){
-        idServicos = 0;
-        idProfessor = 0;
-        turma = new Turma();
-        idComponenteCurricular = 0;
-        listaProfs.clear();
         return "turma";
-        
     }
-    
-    public void novoGenerico(){
+
+    public void removerTurmaProfessor(TurmaProfessor tp) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        tp = (TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(tp.getId(), "TurmaProfessor");
+        if (tp.getId() != -1) {
+            salvarAcumuladoDB.abrirTransacao();
+            if (!salvarAcumuladoDB.deletarObjeto(tp)) {
+                salvarAcumuladoDB.desfazerTransacao();
+                msgConfirma = "Erro ao excluir professor!";
+            } else {
+                salvarAcumuladoDB.comitarTransacao();
+                msgConfirma = "Professor e Componente Curricular removidos com sucesso";
+                listaTurmaProfessor.clear();
+            }
+        }
+    }
+
+    public String novo() {
         idServicos = 0;
         idProfessor = 0;
         turma = new Turma();
         idComponenteCurricular = 0;
-        listaProfs.clear();
+        listaTurmaProfessor.clear();
+        return "turma";
+
     }
 
-    public String adicionarProfessor(){
+    public void novoGenerico() {
+        idServicos = 0;
+        idProfessor = 0;
+        turma = new Turma();
+        idComponenteCurricular = 0;
+        listaTurmaProfessor.clear();
+    }
+
+    public String adicionarTurmaProfessor() {
         msgConfirma = "";
-        for(int i = 0; i < listaProfs.size(); i++){
-            if (listaProfs.get(i).getProfessor().getId() == Integer.parseInt(getListaProfessor().get(idProfessor).getDescription()) &&
-                listaProfs.get(i).getComponenteCurricular().getId() == Integer.parseInt(getListaComponente().get(idComponenteCurricular).getDescription())){
-                msgConfirma = "Professor e Componente já existem!";
-                return null;
-            }
+        TurmaProfessor turmaProfessor = new TurmaProfessor();
+        TurmaDB turmaDB = new TurmaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        turmaProfessor.setProfessor((Professor) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaProfessores.get(idProfessor).getDescription()), "Professor"));
+        turmaProfessor.setComponenteCurricular((ComponenteCurricular) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaComponenteCurricular.get(idComponenteCurricular).getDescription()), "ComponenteCurricular"));
+        turmaProfessor.setTurma(turma);
+        if (turmaDB.existeTurmaProfessor(turmaProfessor)) {
+            msgConfirma = "Professor e Componente curricular já existem!";
+            return null;
         }
-        ProfessorDB dbp = new ProfessorDBToplink();
-        ComponenteCurricularDB dbc = new ComponenteCurricularDBToplink();
-        TurmaProfessor tp = new TurmaProfessor(-1,
-                                               null,
-                                               dbp.pesquisaCodigo(Integer.parseInt(getListaProfessor().get(idProfessor).getDescription())),
-                                               dbc.pesquisaCodigo(Integer.parseInt(getListaComponente().get(idComponenteCurricular).getDescription())));
-        listaProfs.add(tp);
-//        msgConfirma = "Professor adicionado!";
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.inserirObjeto(turmaProfessor)) {
+            msgConfirma = "Professor e Componente curricular adicionados com sucesso";
+            listaTurmaProfessor.clear();
+            salvarAcumuladoDB.comitarTransacao();
+        } else {
+            msgConfirma = "Erro ao adicionar Professor e Componente curricular!";
+            salvarAcumuladoDB.desfazerTransacao();
+        }
         return null;
     }
 
-    public List<SelectItem> getListaServicos(){
-        List<SelectItem> listaSe = new Vector<SelectItem>();
-        int i = 0;
-        ServicosDB db = new ServicosDBToplink();
-        List select = db.pesquisaTodos(150);
-        while (i < select.size()){
-            listaSe.add(new SelectItem( new Integer(i),
-                        (String) ((Servicos) select.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) select.get(i)).getId()) ));
-            i++;
+    public List<SelectItem> getListaServicos() {
+        if (listaServicos.isEmpty()) {
+            ServicosDB db = new ServicosDBToplink();
+            List list = db.pesquisaTodos(150);
+            for (int i = 0; i < list.size(); i++) {
+                listaServicos.add(new SelectItem(new Integer(i),
+                        (String) ((Servicos) list.get(i)).getDescricao(),
+                        Integer.toString(((Servicos) list.get(i)).getId())));
+            }
         }
-        return listaSe;
+        return listaServicos;
     }
 
-    public List<SelectItem> getListaProfessor(){
-        List<SelectItem> listaP = new Vector<SelectItem>();
-        int i = 0;
-        ProfessorDB db = new ProfessorDBToplink();
-        List select = db.pesquisaTodos();
-
-        while (i < select.size()){
-            listaP.add(new SelectItem( new Integer(i),
-                        (String) ((Professor) select.get(i)).getProfessor().getNome(),
-                        Integer.toString(((Professor) select.get(i)).getId()) ));
-            i++;
-        }
-        return listaP;
+    public void setListaServicos(List<SelectItem> listaServicos) {
+        this.listaServicos = listaServicos;
     }
 
-    public List<SelectItem> getListaComponente(){
-        List<SelectItem> listaC = new Vector<SelectItem>();
-        int i = 0;
-        ComponenteCurricularDB db = new ComponenteCurricularDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()){
-            listaC.add(new SelectItem( new Integer(i),
-                        (String) ((ComponenteCurricular) select.get(i)).getDescricao(),
-                        Integer.toString(((ComponenteCurricular) select.get(i)).getId()) ));
-            i++;
+    public List<SelectItem> getListaProfessor() {
+        if (listaProfessores.isEmpty()) {
+            ProfessorDB db = new ProfessorDBToplink();
+            List list = db.pesquisaTodos();
+            for (int i = 0; i < list.size(); i++) {
+                listaProfessores.add(new SelectItem(new Integer(i),
+                        (String) ((Professor) list.get(i)).getProfessor().getNome(),
+                        Integer.toString(((Professor) list.get(i)).getId())));
+
+            }
         }
-        return listaC;
+        return listaProfessores;
+    }
+
+    public void setListaProfessor(List<SelectItem> listaProfessores) {
+        this.listaProfessores = listaProfessores;
+    }
+
+    public List<SelectItem> getListaComponenteCurricular() {
+        if (listaComponenteCurricular.isEmpty()) {
+            ComponenteCurricularDB db = new ComponenteCurricularDBToplink();
+            List list = db.pesquisaTodos();
+            for (int i = 0; i < list.size(); i++) {
+                listaComponenteCurricular.add(new SelectItem(new Integer(i),
+                        (String) ((ComponenteCurricular) list.get(i)).getDescricao(),
+                        Integer.toString(((ComponenteCurricular) list.get(i)).getId())));
+            }
+        }
+        return listaComponenteCurricular;
+    }
+
+    public void setListaComponenteCurricular(List<SelectItem> listaProfessores) {
+        this.listaProfessores = listaProfessores;
     }
 
     public Turma getTurma() {
-        if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa") != null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa") != null) {
             TurmaDB turmaDB = new TurmaDBToplink();
             turma = (Turma) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("turmaPesquisa");
-            this.listaProfs = turmaDB.listaTurmaProfessor(turma.getId());              
         }
         if (turma.getFilial().getId() == -1) {
             getMacFilial();
             turma.setFilial(macFilial.getFilial());
-        }          
+        }
         return turma;
     }
 
@@ -317,17 +308,21 @@ public class TurmaJSFBean implements java.io.Serializable {
         this.idComponenteCurricular = idComponenteCurricular;
     }
 
-    public List<TurmaProfessor> getListaProfs() {
-        return listaProfs;
+    public List<TurmaProfessor> getListaTurmaProfessor() {
+        if (listaTurmaProfessor.isEmpty()) {
+            TurmaDB turmaDB = new TurmaDBToplink();
+            listaTurmaProfessor = turmaDB.listaTurmaProfessor(turma.getId());
+        }
+        return listaTurmaProfessor;
     }
 
-    public void setListaProfs(List<TurmaProfessor> listaProfs) {
-        this.listaProfs = listaProfs;
+    public void setListaTurmaProfessor(List<TurmaProfessor> listaTurmaProfessor) {
+        this.listaTurmaProfessor = listaTurmaProfessor;
     }
 
     public List<Turma> getListaTurma() {
         TurmaDB db = new TurmaDBToplink();
-        listaTurma = db.pesquisaTodos();        
+        listaTurma = db.pesquisaTodos();
         return listaTurma;
     }
 
@@ -383,42 +378,42 @@ public class TurmaJSFBean implements java.io.Serializable {
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
-    
-    public String validaHoraInicio(){
+
+    public String validaHoraInicio() {
         String novaHora = "";
         novaHora = DataHoje.validaHora(turma.getHoraInicio());
-        if(novaHora.equals("")){
+        if (novaHora.equals("")) {
             turma.setHoraInicio("__:__");
-        }else{
-            turma.setHoraInicio(novaHora);            
+        } else {
+            turma.setHoraInicio(novaHora);
         }
         validaHorarios();
         return "turma";
     }
-    
-    public String validaHoraTermino(){
+
+    public String validaHoraTermino() {
         String novaHora = "";
         novaHora = DataHoje.validaHora(turma.getHoraTermino());
-        if(novaHora.equals("")){
+        if (novaHora.equals("")) {
             turma.setHoraTermino("__:__");
-        }else{
-            turma.setHoraTermino(novaHora);            
+        } else {
+            turma.setHoraTermino(novaHora);
         }
         validaHorarios();
         return "turma";
     }
-    
-    public String validaHorarios(){
+
+    public String validaHorarios() {
         int n1a = 0;
         int n1b = 0;
         int n2a = 0;
         int n2b = 0;
-        if(!turma.getHoraInicio().equals("__:__") && !turma.getHoraTermino().equals("__:__")){
+        if (!turma.getHoraInicio().equals("__:__") && !turma.getHoraTermino().equals("__:__")) {
             n1a = Integer.parseInt(turma.getHoraInicio().substring(0, 2));
-            n1b = Integer.parseInt(turma.getHoraInicio().substring(3, 4));        
+            n1b = Integer.parseInt(turma.getHoraInicio().substring(3, 4));
             n2a = Integer.parseInt(turma.getHoraTermino().substring(0, 2));
             n2b = Integer.parseInt(turma.getHoraTermino().substring(3, 4));
-            if(n1a >= n2a){
+            if (n1a >= n2a) {
                 turma.setHoraTermino("__:__");
             }
         }

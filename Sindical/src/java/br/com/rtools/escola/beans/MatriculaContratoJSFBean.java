@@ -32,16 +32,16 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
     private String msgServico = "";
     List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private boolean desabilitaObservacao = false;
-    
+
     public boolean isDesabilitaObservacao() {
-        if (((Usuario) (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")) ).getId() == 1) {
+        if (((Usuario) (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"))).getId() == 1) {
             desabilitaObservacao = true;
         } else {
-            desabilitaObservacao = false;            
+            desabilitaObservacao = false;
         }
         return desabilitaObservacao;
     }
-    
+
     public void setDesabilitaObservacao(boolean desabilitaObservacao) {
         this.desabilitaObservacao = desabilitaObservacao;
     }
@@ -59,80 +59,73 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
         return null;
     }
 
-    public String salvar() {
+    public void salvar() {
         if (matriculaContrato.getTitulo().equals("")) {
             msg = "Informar o titulo!";
-            return null;
+            return;
         }
         if (matriculaContrato.getDescricao().equals("")) {
             msg = "Informar a descrição!";
-            return null;
+            return;
         }
         if (matriculaContrato.getObservacao().equals("")) {
             msg = "Informar as observações!";
-            return null;
-        }        
-        SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
+            return;
+        }
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (matriculaContrato.getId() == -1) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null){
-                int idModulo = (Integer)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
-                if (idModulo != 0){
-                    modulo = (Modulo) db.pesquisaCodigo(idModulo, "Modulo");
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
+                int idModulo = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
+                if (idModulo != 0) {
+                    modulo = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idModulo, "Modulo");
                     matriculaContrato.setModulo(modulo);
                 }
             }
-            MatriculaContratoDB cedb = new MatriculaContratoDBToplink();
-            if (cedb.pesquisaTitulo(matriculaContrato.getTitulo())) {
-                msg = "Titulo já existe!";
-                return null;
+            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
+            if (matriculaContratoDB.existeMatriculaContrato(matriculaContrato)) {
+                msg = "Contrato já existe!";
+                return;
             }
-            db.abrirTransacao();
-            if (db.inserirObjeto(matriculaContrato)) {
-                db.comitarTransacao();
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.inserirObjeto(matriculaContrato)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msg = "Registro inserido com sucesso.";
-                return null;
             } else {
-                db.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
                 msg = "Falha ao inserir o registro!";
-                return null;
             }
         } else {
             matriculaContrato.setDataAtualizado(DataHoje.data());
-            db.abrirTransacao();
-            if (db.alterarObjeto(matriculaContrato)) {
-                db.comitarTransacao();
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.alterarObjeto(matriculaContrato)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msg = "Registro atualizado com sucesso.";
-                return null;
             } else {
-                db.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
                 msg = "Falha ao atualizar o registro!";
-                return null;
             }
         }
     }
 
-    public String excluir() {
+    public void excluir() {
         if (matriculaContrato.getId() != -1) {
-            SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
-            matriculaContrato = (MatriculaContrato) db.pesquisaCodigo(matriculaContrato.getId(), "MatriculaContrato");
-            db.abrirTransacao();
-            if (db.deletarObjeto(matriculaContrato)) {
-                db.comitarTransacao();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            matriculaContrato = (MatriculaContrato) salvarAcumuladoDB.pesquisaCodigo(matriculaContrato.getId(), "MatriculaContrato");
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(matriculaContrato)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msg = "Registro excluído com sucesso";
                 novo();
-                return null;
             } else {
-                db.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
                 msg = "Falha ao excluir esse registro!";
-                return null;
             }
         }
-        return null;
     }
 
-    public String editar() {
+    public String editar(MatriculaContrato mc) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        setMatriculaContrato((MatriculaContrato) dB.pesquisaCodigo(getMatriculaContratos().get(idIndex).getId(), "MatriculaContrato"));
+        setMatriculaContrato((MatriculaContrato) dB.pesquisaCodigo(mc.getId(), "MatriculaContrato"));
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaContratoPesquisa", matriculaContrato);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
@@ -152,63 +145,61 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
-            ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos();
-            for (int i = 0; i < select.size(); i++) {
+            ServicosDB servicosDB = new ServicosDBToplink();
+            List list = servicosDB.pesquisaTodos();
+            for (int i = 0; i < list.size(); i++) {
                 listaServicos.add(new SelectItem(new Integer(i),
-                        (String) ((Servicos) select.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) select.get(i)).getId())));
+                        (String) ((Servicos) list.get(i)).getDescricao(),
+                        Integer.toString(((Servicos) list.get(i)).getId())));
             }
         }
         return listaServicos;
     }
 
-    public String adicionarServicos() {
+    public void adicionarServicos() {
         msgServico = "";
         if (matriculaContrato.getId() != -1) {
             int idServico = Integer.parseInt(getListaServicos().get(idServicos).getDescription());
             MatriculaContratoDB contratoDB = new MatriculaContratoDBToplink();
             if (contratoDB.validaMatriculaContratoServico(matriculaContrato.getId(), idServico)) {
                 msgServico = "Contrato já possui esse serviço.";
-                return null;
+                return;
             }
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            dB.abrirTransacao();
-            matriculaContratoServico.setServico((Servicos) (dB.pesquisaCodigo(idServico, "Servicos")));
-            matriculaContratoServico.setContrato(matriculaContrato); 
-            if (dB.inserirObjeto(matriculaContratoServico)) {
-                dB.comitarTransacao();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            salvarAcumuladoDB.abrirTransacao();
+            matriculaContratoServico.setServico((Servicos) (salvarAcumuladoDB.pesquisaCodigo(idServico, "Servicos")));
+            matriculaContratoServico.setContrato(matriculaContrato);
+            if (salvarAcumuladoDB.inserirObjeto(matriculaContratoServico)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msgServico = "Serviço adicionado com sucesso.";
                 matriculaContratoServico = new MatriculaContratoServico();
                 listaMatriculaContratoServico.clear();
             } else {
                 msgServico = "Erro ao adicionar este serviço!";
-                dB.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
-        return null;
     }
-    
-    public String removerServicos(MatriculaContratoServico mcs) {
-        msgServico = "";        
+
+    public void removerServicos(MatriculaContratoServico mcs) {
+        msgServico = "";
         if (mcs.getId() != -1) {
             matriculaContratoServico = mcs;
         }
         if (matriculaContratoServico.getId() != -1) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            matriculaContratoServico = (MatriculaContratoServico) dB.pesquisaCodigo(matriculaContratoServico.getId(), "MatriculaContratoServico");
-            dB.abrirTransacao();
-            if (dB.deletarObjeto(matriculaContratoServico)) {
-                dB.comitarTransacao();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            matriculaContratoServico = (MatriculaContratoServico) salvarAcumuladoDB.pesquisaCodigo(matriculaContratoServico.getId(), "MatriculaContratoServico");
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(matriculaContratoServico)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msgServico = "Serviço removido com sucesso.";
                 listaMatriculaContratoServico.clear();
                 matriculaContratoServico = new MatriculaContratoServico();
             } else {
                 msgServico = "Erro ao remover este serviço!";
-                dB.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
-        return null;
     }
 
     public void setMatriculaContrato(MatriculaContrato matriculaContrato) {
@@ -232,9 +223,9 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
     }
 
     public List<MatriculaContrato> getMatriculaContratos() {
-        if(matriculaContratos.isEmpty()){
+        if (matriculaContratos.isEmpty()) {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
-            if(getModulo().getId() != -1){
+            if (getModulo().getId() != -1) {
                 matriculaContratos = matriculaContratoDB.pesquisaTodosPorModulo(modulo.getId());
             }
         }
@@ -292,10 +283,10 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
     }
 
     public Modulo getModulo() {
-        SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null){
-            int idModulo = (Integer)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
-            if (idModulo != 0){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
+            int idModulo = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
+            if (idModulo != 0) {
+                SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
                 modulo = (Modulo) acumuladoDB.pesquisaCodigo(idModulo, "Modulo");
             }
         }
