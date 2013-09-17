@@ -114,7 +114,7 @@
                                             </h:selectBooleanCheckbox>
                                         </f:facet>
                                         <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckContribuinte1#{linha.argumento1.id}">
-                                            <a4j:ajax event="change" listener="#{enviarArquivosBean.marcar(it.index)}" render="idCheckContribuinte1#{linha.argumento1.id}" />
+                                            <a4j:ajax event="change" render="idCheckContribuinte1#{linha.argumento1.id}" />
                                         </h:selectBooleanCheckbox>
                                     </rich:column>
                                     
