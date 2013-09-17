@@ -4,13 +4,14 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ESC_VENDEDOR")
-@NamedQuery(name="Vendedor.pesquisaID", query="select v from Vendedor v where v.id=:pid")
+@Table(name = "ESC_VENDEDOR")
+@NamedQuery(name = "Vendedor.pesquisaID", query = "SELECT V FROM Vendedor V WHERE V.id = :pid")
 public class Vendedor implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
     @ManyToOne
     private Pessoa pessoa;
 
