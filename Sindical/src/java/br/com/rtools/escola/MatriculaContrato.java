@@ -6,34 +6,28 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="MATR_CONTRATO")
-@NamedQuery(name="MatriculaContrato.pesquisaID", query="select mc from MatriculaContrato mc where mc.id=:pid")
+@Table(name = "MATR_CONTRATO")
+@NamedQuery(name = "MatriculaContrato.pesquisaID", query = "select mc from MatriculaContrato mc where mc.id=:pid")
 public class MatriculaContrato implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
-    @Column(name="DS_TITULO", length=100)
+    @Column(name = "DS_TITULO", length = 100)
     private String titulo;
-    
-    @Column(name="DS_DESCRICAO", length=15000)
+    @Column(name = "DS_DESCRICAO", length = 15000)
     private String descricao;
-    
-    @Column(name="DS_OBSERVACAO", length=5000)
+    @Column(name = "DS_OBSERVACAO", length = 5000)
     private String observacao;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_CADASTRO")
+    @Column(name = "DT_CADASTRO")
     private Date dataCadastro;
-    
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_ATUALIZADO")
+    @Column(name = "DT_ATUALIZADO")
     private Date dataAtualizado;
-    
-    @JoinColumn(name="ID_MODULO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID")
     @ManyToOne
-    private Modulo modulo;    
+    private Modulo modulo;
 
     public MatriculaContrato() {
         this.id = -1;
@@ -54,7 +48,7 @@ public class MatriculaContrato implements java.io.Serializable {
         setDataAtualizado(dataAtualizado);
         this.modulo = modulo;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -62,14 +56,14 @@ public class MatriculaContrato implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-    
+
     public String getTitulo() {
         return titulo;
     }
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
-    }    
+    }
 
     public String getDescricao() {
         return descricao;
