@@ -159,3 +159,24 @@ ALTER TABLE esc_turma
      REFERENCES pes_filial (id) MATCH SIMPLE      
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
+
+-- MATR_ESCOLA
+-- update: 2013-09-17
+-- edited by: Bruno Vieira da Silva
+
+ALTER TABLE matr_escola ADD COLUMN id_lote integer;
+ALTER TABLE esc_turma
+  ADD CONSTRAINT fk_matr_escola_id_lote FOREIGN KEY (id_lote)
+     REFERENCES fin_lote (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
+-- ESC_TURMA 
+-- update: 2013-09-16
+-- edited by: Bruno Vieira da Silva
+
+ALTER TABLE esc_turma ADD COLUMN id_filial integer;
+ALTER TABLE esc_turma
+  ADD CONSTRAINT fk_esc_turma_id_filial FOREIGN KEY (id_filial)
+     REFERENCES pes_filial (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
