@@ -38,7 +38,7 @@ public class GerarMovimento extends DB{
                     + "       (select id_pessoa from fin_movimento where ds_referencia='"+referencia+"' and id_servicos = "+id_servico+" and id_tipo_servico = "+id_tipo_servico+") "
                     + ");";
             qry = getEntityManager().createNativeQuery(textQry);
-            if (qry.executeUpdate() == 0){
+            if (qry.executeUpdate() <= 0){
                 getEntityManager().getTransaction().rollback();
                 return "Erro ao gravar lote!";
             }
@@ -53,7 +53,7 @@ public class GerarMovimento extends DB{
                     + "c.id_pessoa as id_titular, "+id_servico+" as id_servicos, c.id_pessoa as id_beneficiario, l.id as id_lote, true as is_ativo, true as is_obrigacao, 0 as nr_multa, 0 as nr_desconto, 0 as nr_taxa, 1 as nr_quantidade,"
                     + "0 as nr_valor_baixa, 0 as nr_repasse_automatico, 0 as nr_correcao, 0 as nr_desconto_ate_vencimento, 0 as nr_juros, se.id_plano5 as id_plano5 "
                     + "from arr_contribuintes_vw as c "
-                    + "left join fin_lote as l on l.id_pessoa = c.id_pessoa "
+                    + "inner join fin_lote as l on l.id_pessoa = c.id_pessoa "
                     + "left join fin_movimento as m on m.id_lote = l.id "
                     + "left join fin_bloqueia_servico_pessoa as sp on sp.id_pessoa = c.id_pessoa and sp.id_servicos = "+id_servico+" and '"+vencimento+"' >= sp.dt_inicio and  '"+vencimento+"' <= sp.dt_fim  "
                     + "inner join fin_servicos as se on se.id = "+id_servico
@@ -61,7 +61,7 @@ public class GerarMovimento extends DB{
                     + "  and (sp.is_geracao is true or sp.is_geracao is null)"
                     + "  and c.dt_inativacao is null);";
             qry = getEntityManager().createNativeQuery(textQry);
-            if (qry.executeUpdate() == 0){
+            if (qry.executeUpdate() <= 0){
                 getEntityManager().getTransaction().rollback();
                 return "Erro ao gravar movimento!";
             }
@@ -76,7 +76,7 @@ public class GerarMovimento extends DB{
                     + "  where l.id_rotina = 4 and nr_ctr_boleto is null and m.id_servicos > 0 and m.id_servicos is not null"
                     + ");";
             qry = getEntityManager().createNativeQuery(textQry);
-            if (qry.executeUpdate() == 0){
+            if (qry.executeUpdate() <= 0){
                 getEntityManager().getTransaction().rollback();
                 return "Erro ao gravar boleto!";
             }
@@ -88,7 +88,7 @@ public class GerarMovimento extends DB{
             textQry = "update fin_movimento set nr_ctr_boleto = text(fin_movimento.id), ds_documento = ds_boleto from fin_boleto "
                     + "where text(fin_movimento.id) = fin_boleto.nr_ctr_boleto and (fin_movimento.nr_ctr_boleto is null or length(fin_movimento.nr_ctr_boleto) = 0);";
             qry = getEntityManager().createNativeQuery(textQry);
-            if (qry.executeUpdate() == 0){
+            if (qry.executeUpdate() <= 0){
                 getEntityManager().getTransaction().rollback();
                 return "Erro ao atualizar movimentos!";
             }
@@ -108,7 +108,7 @@ public class GerarMovimento extends DB{
                     + "where mco.id_movimento is null and m.is_ativo = true and m.id_baixa is null "
                     + ");";
             qry = getEntityManager().createNativeQuery(textQry);
-            if (qry.executeUpdate() == 0){
+            if (qry.executeUpdate() <= 0){
                 getEntityManager().getTransaction().rollback();
                 return "Erro ao gravar mensagem cobrança!";
             }
