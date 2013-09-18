@@ -1,6 +1,7 @@
 package br.com.rtools.escola.db;
 
 import br.com.rtools.escola.MatriculaContrato;
+import br.com.rtools.escola.MatriculaContratoCampos;
 import br.com.rtools.escola.MatriculaContratoServico;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
@@ -72,7 +73,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
             list = qry.getResultList();
             return list;
         } catch (Exception e) {
-            e.getMessage();
             return new ArrayList();
         }
     }
@@ -87,9 +87,72 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
                 return true;
             }
         } catch (Exception e) {
-            e.getMessage();
             return false;
         }
         return false;
+    }
+
+    @Override
+    public boolean existeMatriculaContratoCampo(MatriculaContratoCampos mcc, String tipoVerificacao) {
+        String queryCampo;
+        if (tipoVerificacao.equals("campo")) {
+            queryCampo = "UPPER(MCC.campo) = '" + mcc.getCampo().toUpperCase() + "'";
+        } else if (tipoVerificacao.equals("variavel")) {
+            queryCampo = "UPPER(MCC.variavel) = '" + mcc.getCampo().toUpperCase() + "'";
+        } else if (tipoVerificacao.equals("todos")) {
+            queryCampo = "UPPER(MCC.variavel) = '" + mcc.getCampo().toUpperCase() + "' AND UPPER(MCC.campo) = '" + mcc.getCampo().toUpperCase() + "'";
+        } else {
+            return false;
+        }
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT MCC FROM MatriculaContratoCampos AS MCC WHERE " + queryCampo + " AND MCC.modulo.id = " + mcc.getModulo().getId());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        } finally {
+            return false;
+        }
+    }
+
+    @Override
+    public List listaMatriculaContratoCampo(int idModulo) {
+        List list = new ArrayList();
+        String tipoPesquisaModulo = "";
+        if (idModulo > 0) {
+            tipoPesquisaModulo = " WHERE MCC.modulo.id = :idModulo ";
+        }
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MCC FROM MatriculaContratoCampos AS MCC "+tipoPesquisaModulo+" ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ");
+            if (idModulo > 0) {
+                query.setParameter("idModulo", idModulo);
+            }
+            list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return list;
+        } finally {
+            return list;
+        }
+    }
+    
+    @Override
+    public List listaModulosMatriculaContratoCampos() {
+        List list = new ArrayList();
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MCC.modulo FROM MatriculaContratoCampos AS MCC GROUP BY MCC.modulo ORDER BY MCC.modulo.descricao ASC ");
+            list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return list;
+        } finally {
+            return list;
+        }
     }
 }
