@@ -34,6 +34,7 @@ public class controleAcessoJSFBean implements java.io.Serializable {
     private Rotina rotina = new Rotina();
     private Evento evento = new Evento();
     private int idIndexPermissao = -1;
+    private boolean bloqueiaMenu = false;
 
     public String getShowRendered() {
         return showRendered;
