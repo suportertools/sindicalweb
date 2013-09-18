@@ -160,6 +160,14 @@ public class SimplesJSFBean {
         mensagem = "";
         return "simples";
     }
+    
+    public String limpar(){
+        rotina = new Rotina();
+        mensagem = "";
+        objeto = null;
+        descricao = "";
+        return "simples";
+    }
 
     public void setListaRotinaCombo(List<SelectItem> listaRotinaCombo) {
         this.listaRotinaCombo = listaRotinaCombo;
