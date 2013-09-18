@@ -1,6 +1,7 @@
 package br.com.rtools.seguranca.controleUsuario;
 
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.*;
@@ -8,6 +9,8 @@ import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
@@ -24,6 +27,7 @@ public class controleUsuarioJSFBean implements java.io.Serializable {
     private String paginaDestino;
     private String alerta;
     private static String cliente;
+    private static String bloqueiaMenu;
     private String filial;
     private String filialDep = "";
     private String msgErro = "";
@@ -31,6 +35,42 @@ public class controleUsuarioJSFBean implements java.io.Serializable {
     private List<ContadorAcessos> listaContador = new ArrayList();
 
     public String validacao() throws Exception {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) { 
+            String nomeCliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");        
+            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
+                DB db = new DB();
+                try {
+                    String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '"+nomeCliente+"'";
+                    ResultSet resultSet = db.getStatment().executeQuery(string);
+                    String id = "";
+                    String ativo = "";
+                    while(resultSet.next())  {
+                        id = resultSet.getString("id");
+                        ativo = resultSet.getString("is_ativo");
+                        if (ativo.equals("f")) {
+                            resultSet.close();
+                            db.getStatment().close();
+                            msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
+                            return "pagina";
+                        } 
+                    }
+                    if (!id.equals("")) {
+                        string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = "+id;
+                        int result = db.getStatment().executeUpdate(string);
+                        if (result != 1) {
+                            db.getStatment().close();
+                            msgErro = "@ Erro ao atualizar contador!";
+                        }
+                    }
+                } catch (SQLException exception) {
+                    db.closeStatment();
+                    msgErro = "@ Erro!";
+                    return "pagina";
+                } finally {
+                    db.getStatment().close();
+                }
+            }
+        }
         NovoLog log = new NovoLog();
         if (macFilial != null) {
             Object objs[] = new Object[2];
@@ -237,6 +277,18 @@ public class controleUsuarioJSFBean implements java.io.Serializable {
         }
         return novoCliente;
     }
+    
+    public boolean isBoqueiaMenu() {
+        String nomeCliente = getClienteString();
+        if (nomeCliente.equals("Rtools") || nomeCliente.equals("Sindical")) {
+            return true;
+        }
+        return false;
+    }
+
+    public static void setBloqueiaMenu(String aBloqueiaMenu) {
+        bloqueiaMenu = aBloqueiaMenu;
+    }    
 
     public void removeSessaoModuloMenuPrincipal() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
