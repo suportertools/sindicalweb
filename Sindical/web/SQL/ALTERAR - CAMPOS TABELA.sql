@@ -16,5 +16,11 @@ ALTER TABLE hom_cancelar_horario DROP COLUMN ds_hora;
 
 ALTER TABLE seg_rotina DROP COLUMN nr_acesso;
 
+-- matr_contrato
+-- Criate: 2013-09-18
+-- Last edition: 2013-09-18 - by: Rogério M. Sarmento
+
+ALTER TABLE matr_contrato DROP COLUMN ds_observacao;
+
 
 
