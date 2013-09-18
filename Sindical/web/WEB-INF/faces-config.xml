@@ -1921,6 +1921,12 @@
         </navigation-case>
     
         <navigation-case>
+            <from-outcome>matriculaContratoCampos</from-outcome>
+            <to-view-id>/matriculaContratoCampos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
             <from-outcome>pesquisaMatriculaContrato</from-outcome>
             <to-view-id>/pesquisaMatriculaContrato.jsf</to-view-id>
             <redirect/>
