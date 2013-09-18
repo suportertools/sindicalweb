@@ -92,8 +92,8 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                            "  LEFT JOIN end_cidade              AS esc_cidade       ON esc_cidade.id        = esc_end.id_cidade " +
                            "  LEFT JOIN seg_usuario             AS us               ON us.id                = lot.id_usuario " +
                            "  LEFT JOIN pes_pessoa              AS upes             ON upes.id              = us.id_pessoa " +
-                           " INNER JOIN fin_boleto              AS bol              ON bol.nr_ctr_boleto    = mov.nr_ctr_boleto "+
-                           " INNER JOIN fin_conta_cobranca      AS cc               ON cc.id                = bol.id_conta_cobranca ";
+                           "  LEFT JOIN fin_boleto              AS bol              ON bol.nr_ctr_boleto    = mov.nr_ctr_boleto "+
+                           "  LEFT JOIN fin_conta_cobranca      AS cc               ON cc.id                = bol.id_conta_cobranca ";
 
         
         // CONDICAO -----------------------------------------------------
