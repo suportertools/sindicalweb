@@ -194,11 +194,12 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
                         importacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(40));
                         usuario = getConverteNullString(((Vector) result.get(i)).get(42));
                     }
-                    
-                    repasse = Moeda.multiplicarValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Moeda.divisaoValores(
-                                                                            Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(48))), 100 // 48 % NR_REPASSE DA CONTA COBRANCA
-                                                                          )
-                                              );
+                    String srepasse = getConverteNullString(((Vector) result.get(i)).get(48));
+                    if (srepasse.isEmpty())
+                        repasse = Moeda.multiplicarValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Moeda.divisaoValores(0, 100));
+                    else
+                        repasse = Moeda.multiplicarValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Moeda.divisaoValores(Float.parseFloat(srepasse), 100));
+                        
                     valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Float.valueOf(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) ))),repasse);
                     
                     listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
