@@ -50,8 +50,11 @@
                             <rich:menuItem label="Níveis"                       action="#{chamadaPaginaBean.nivel}" styleClass="divBotao"/>
                         </rich:menuGroup>
                         <rich:menuGroup label="Sistema" styleClass="divBotao">
-                            <rich:menuItem label="Pesquisar Logs" title="Registro de atividades"  action="#{chamadaPaginaBean.pesquisaLog}" styleClass="divBotao"/>
+                            <rich:menuItem label="Pesquisar Logs" title="Registro de atividades"    action="#{chamadaPaginaBean.pesquisaLog}" styleClass="divBotao"/>
                         </rich:menuGroup>
+                        <rich:menuGroup label="Administrativo sistema" styleClass="divBotao" rendered="#{controleUsuarioBean.boqueiaMenu}">
+                            <rich:menuItem label="Configuração" title="Configuração"                action="#{chamadaPaginaBean.configuracao}" styleClass="divBotao" />
+                        </rich:menuGroup>                            
                       </rich:dropDownMenu>
 
                       <rich:dropDownMenu styleClass="divBotaoPrincipal">
