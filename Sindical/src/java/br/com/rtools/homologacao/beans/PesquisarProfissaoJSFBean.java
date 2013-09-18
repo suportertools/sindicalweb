@@ -17,7 +17,7 @@ public class PesquisarProfissaoJSFBean {
     public PesquisarProfissaoJSFBean() {
         profissao = new Profissao();
         por = "";
-        combo = "cbo";
+        combo = "profissao";
         listaProfissao = new ArrayList();
     }
 
@@ -35,7 +35,7 @@ public class PesquisarProfissaoJSFBean {
 
     public void inicial(){
         listaProfissao.clear();
-//        combo = "cbo";
+//        combo = "profissao";
         por = "I";
     }
 
