@@ -1,22 +1,36 @@
 package br.com.rtools.sistema;
 
+import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.utilitarios.DataHoje;
+import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SIS_CONFIGURACAO")
-@NamedQuery(name="Configuracao.pesquisaID", query="select c from Configuracao c where c.id = :pid")
+@Table(name = "SIS_CONFIGURACAO")
+@NamedQuery(name = "Configuracao.pesquisaID", query = "SELECT C FROM Configuracao c WHERE C.id = :pid")
 public class Configuracao implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_NOME_CLIENTE", length=300, nullable=false)
+    @Column(name = "DS_NOME_CLIENTE", length = 300)
     private String nomeCliente;
-    @Column(name="DS_PERSISTENCE", length=200, nullable=false)
+    @Column(name = "DS_PERSISTENCE", length = 200)
     private String persistence;
-    @Column(name="DS_CAMINHO_SISTEMA", length=200, nullable=false)
+    @Column(name = "DS_CAMINHO_SISTEMA", length = 200)
     private String caminhoSistema;
-    @Column(name="DS_IDENTIFICA", length=100, nullable=false)
+    @Column(name = "DS_IDENTIFICA", length = 100, unique = true)
     private String identifica;
+    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID", nullable = false)
+    @ManyToOne
+    private Juridica juridica;
+    @Column(name = "NR_ACESSO")
+    private int acessos;
+    @Column(name = "DT_CADASTRO")
+    @Temporal(TemporalType.DATE)
+    private Date dtCadastro;
+    @Column(name = "IS_ATIVO")
+    private boolean ativo;
 
     public Configuracao() {
         this.id = -1;
@@ -24,14 +38,22 @@ public class Configuracao implements java.io.Serializable {
         this.persistence = "";
         this.caminhoSistema = "";
         this.identifica = "";
+        this.juridica = new Juridica();
+        this.acessos = 0;
+        this.dtCadastro = new DataHoje().dataHoje();
+        this.ativo = true;
     }
-    
-    public Configuracao(int id, String nomeCliente, String persistence, String caminhoSistema, String identifica) {
+
+    public Configuracao(int id, String nomeCliente, String persistence, String caminhoSistema, String identifica, Juridica juridica, int acessos, String cadastro, boolean ativo) {
         this.id = id;
         this.nomeCliente = nomeCliente;
         this.persistence = persistence;
         this.caminhoSistema = caminhoSistema;
         this.identifica = identifica;
+        this.juridica = juridica;
+        this.acessos = acessos;
+        this.dtCadastro = DataHoje.converte(cadastro);
+        this.ativo = ativo;
     }
 
     public int getId() {
@@ -40,7 +62,7 @@ public class Configuracao implements java.io.Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }    
+    }
 
     public String getNomeCliente() {
         return nomeCliente;
@@ -73,5 +95,44 @@ public class Configuracao implements java.io.Serializable {
     public void setIdentifica(String identifica) {
         this.identifica = identifica;
     }
-    
+
+    public Juridica getJuridica() {
+        return juridica;
+    }
+
+    public void setJuridica(Juridica juridica) {
+        this.juridica = juridica;
+    }
+
+    public int getAcessos() {
+        return acessos;
+    }
+
+    public void setAcessos(int acessos) {
+        this.acessos = acessos;
+    }
+
+    public Date getDtCadastro() {
+        return dtCadastro;
+    }
+
+    public void setDtCadastro(Date cadastro) {
+        this.dtCadastro = cadastro;
+    }
+
+    public String getCadastro() {
+        return DataHoje.converteData(dtCadastro);
+    }
+
+    public void setCadastro(String cadastro) {
+        this.dtCadastro = DataHoje.converte(cadastro);
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 }

@@ -718,6 +718,11 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("bloqueioServicosBean");
         return metodoGenerico(2, "bloqueioServicos");
     }
+    
+    public synchronized String configuracao() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("configuracaoBean");
+        return metodoGenerico(2, "configuracao");
+    }
 
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -887,6 +892,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
         return metodoGenerico(2, "simples");
     }
+    
 
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
@@ -928,6 +934,10 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
 
     public synchronized String pesquisaRotina() {
         return metodoGenerico(1, "pesquisaRotina");
+    }
+    
+    public synchronized String pesquisaConfiguracao() {
+        return metodoGenerico(1, "pesquisaConfiguracao");
     }
 
     public synchronized String pesquisaEndereco() {
@@ -1324,6 +1334,8 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
                 nomePg = "Pesquisa Contrato";
             } else if (strURLNome.equals("pesquisaAgendaTelefone")) {
                 nomePg = "Pesquisa Agenda Telefone";
+            } else if (strURLNome.equals("pesquisaConfiguracao")) {
+                nomePg = "Pesquisa Configuração";
             }
             return nomePg;
         }
@@ -1553,6 +1565,8 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
                 nomePg = "Agenda Telefone";
             } else if (strURLNome.equals("grupoAgenda")) {
                 nomePg = "Grupo Agenda";
+            } else if (strURLNome.equals("configuracao")) {
+                nomePg = "Configuração";
             }
             return nomePg;
         }

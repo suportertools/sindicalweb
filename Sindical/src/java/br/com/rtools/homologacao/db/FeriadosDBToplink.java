@@ -13,7 +13,7 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
     @Override
     public List pesquisaTodos() {
         try{
-            Query qry = getEntityManager().createQuery(" SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC, F.cidade.cidade ASC ");
+            Query qry = getEntityManager().createQuery(" SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC ");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
