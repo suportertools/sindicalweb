@@ -666,6 +666,12 @@
     </managed-bean>
 
     <managed-bean>
+        <managed-bean-name>configuracaoBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.sistema.beans.ConfiguracaoJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+
+    <managed-bean>
         <managed-bean-name>oposicaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.OposicaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -1929,6 +1935,18 @@
         <navigation-case>
             <from-outcome>relatorioHomologacao</from-outcome>
             <to-view-id>/relatorioHomologacao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>configuracao</from-outcome>
+            <to-view-id>/configuracao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>pesquisaConfiguracao</from-outcome>
+            <to-view-id>/pesquisaConfiguracao.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
