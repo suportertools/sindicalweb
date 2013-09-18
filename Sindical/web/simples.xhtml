@@ -36,8 +36,9 @@
                                         <h:inputText id="iDescricao" size="20" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" />
                                         <a4j:commandButton image="/Imagens/novo.png" action="#{simplesBean.salvar}" oncomplete="modalMensagem()" render="outConfirma,tbl,iDescricao" />
                                     </h:panelGrid>
-                                </h:column>
+                                </h:column>                                
                             </h:panelGrid>
+                            <a4j:commandLink action="#{simplesBean.limpar}" value="Novo" styleClass="idSalvar iLink" />
                         </rich:panel>
                     </div>
 
