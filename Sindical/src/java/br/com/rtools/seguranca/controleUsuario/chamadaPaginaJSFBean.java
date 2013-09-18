@@ -723,6 +723,11 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("configuracaoBean");
         return metodoGenerico(2, "configuracao");
     }
+    
+    public synchronized String matriculaContratoCampos() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("matriculaContratoBean");
+        return metodoGenerico(2, "matriculaContratoCampos");
+    }
 
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1567,6 +1572,8 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
                 nomePg = "Grupo Agenda";
             } else if (strURLNome.equals("configuracao")) {
                 nomePg = "Configuração";
+            } else if (strURLNome.equals("matriculaContratoCampos")) {
+                nomePg = "Matricula Contrato Campos";
             }
             return nomePg;
         }
