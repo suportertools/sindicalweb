@@ -171,7 +171,7 @@ ALTER TABLE matr_escola
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
 
-ALTER TABLE matr_escola ADD COLUMN is_habilitado boolean;
+ALTER TABLE matr_escola ADD COLUMN is_ativo boolean;
 
 -- ESC_TURMA 
 -- update: 2013-09-16
