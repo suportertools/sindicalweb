@@ -16,7 +16,7 @@ INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_m
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 12, 'Valor da parcela',      '$valorParcela','', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 12);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 13, 'Número de Parcelas',    '$parcelas',    '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 13);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 14, 'Dia Vencimento',        '$diaVencimento',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 14);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 15, 'Valor até o vencimento','$diaVencimento',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 15);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 15, 'Valor até o vencimento',' $valorAteVencimento',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 15);
 SELECT setval('matr_contrato_campos_id_seq', max(id)) FROM matr_contrato_campos;
 
 -- age_tipo_telefone;
