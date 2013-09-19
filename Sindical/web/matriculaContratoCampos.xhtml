@@ -1,0 +1,97 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Matricula Contrato Campos</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMatriculaContratoCampos">
+                <c:set scope="request" var="object" value="${matriculaContratoBean.matriculaContratoCampos}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Matricula Contrato Campos" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" style="text-align: left; width: 600px;">
+                        <h:panelGrid columns="3" id="id_panel_matricula_contrato_campos">
+                            <h:outputLabel value="Módulos: " styleClass="fontePadrao"/>
+                            <h:column>
+                                <h:selectOneMenu id="idModulo2" value="#{matriculaContratoBean.idModulo2}">
+                                    <a4j:ajax event="change" render="id_panel_matricula_contrato_campos"/>
+                                    <f:selectItems value="#{matriculaContratoBean.listaModulos2}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel id="idMensagem" value="#{matriculaContratoBean.msg}" styleClass="fontePadraoVermelho"/>
+                            </h:column>                         
+                            <h:column>
+                            </h:column>                            
+                            <h:outputLabel value="Campos: " styleClass="fontePadrao"/>
+                            <h:inputText size="40" id="idCampo" value="#{matriculaContratoBean.matriculaContratoCampos.campo}" requiredMessage="Informar o campo" >
+                                 <f:validateLength minimum="1" />
+                            </h:inputText>
+                             <rich:message for="idCampo"  />
+                            <h:outputLabel value="Variável: " styleClass="fontePadrao"/>
+                            <h:inputText size="40" id="idVariavel" value="#{matriculaContratoBean.matriculaContratoCampos.variavel}" requiredMessage="Informar a variável" >
+                                 <f:validateLength minimum="1" />
+                            </h:inputText>
+                             <rich:message for="idVariavel" ajaxRendered="true" />
+                            <h:outputLabel value="Observação: " styleClass="fontePadrao"/>
+                            <h:inputTextarea value="#{matriculaContratoBean.matriculaContratoCampos.observacao}" rows="5" cols="32"/>
+                            <h:column>
+                            </h:column>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" style="clear: both; float: left; margin-top: 15px; margin-bottom: 15px;">
+                            <h:column>
+                                <a4j:commandLink value="Adicionar"  styleClass="idPesquisar iLink" title="Adicionar registro" action="#{matriculaContratoBean.adicionarCamposModuloContrato}" disabled="#{controleAcessoBean.botaoSalvar}" render="idModulo, id_panel_matricula_contrato_campos, tbl, idMensagem" />
+                                <a4j:commandLink value="Novo" styleClass="idNovo iLink" action="#{matriculaContratoBean.novoMatriculaContratoCampos}" render="idModulo, id_panel_matricula_contrato_campos, tbl, idMensagem" />
+                            </h:column>
+                        </h:panelGrid>                        
+                        <h:panelGrid columns="2" style="clear: both; float: left; margin-top: 15px; margin-bottom: 15px;">
+                            <h:outputText value="Filtro módulo: "/>
+                            <h:selectOneMenu id="idModulo" value="#{matriculaContratoBean.idModulo}">
+                                <a4j:ajax event="change" render="tbl" listener="#{matriculaContratoBean.limparListaMCCampos}"/>
+                                <f:selectItems value="#{matriculaContratoBean.listaModulos}"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGroup style="overflow:auto; height:200px; width:500px;" layout="block">
+                            <rich:dataTable value="#{matriculaContratoBean.getListaMatriculaContratoCampos('')}" var="linha" style="width:100%; margin-top: 15px;" iterationStatusVar="it" id="tbl">
+                                <f:facet name="header">
+                                    <h:outputText value="Lista Campos Contrato"/>
+                                </f:facet>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="..."/>
+                                    </f:facet>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{matriculaContratoBean.removerCamposModuloContrato(linha)}" disabled="#{controleAcessoBean.botaoExcluir}">                                        
+                                    </a4j:commandButton>
+                                </rich:column>                                
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Módulo"/></f:facet>
+                                    <h:outputText value="#{linha.modulo.descricao}"/>
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Campo"/></f:facet>
+                                    <h:outputText value="#{linha.campo}"/>
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Variável"/></f:facet>
+                                    <h:outputText value="#{linha.variavel}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </h:panelGroup>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>
