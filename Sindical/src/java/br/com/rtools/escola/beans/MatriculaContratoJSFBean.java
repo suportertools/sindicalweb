@@ -78,10 +78,6 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
             msg = "Informar a descrição!";
             return;
         }
-        if (matriculaContrato.getObservacao().equals("")) {
-            msg = "Informar as observações!";
-            return;
-        }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (matriculaContrato.getId() == -1) {
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
