@@ -84,7 +84,7 @@ public class MatriculaEscola implements java.io.Serializable {
     @Column(name="IS_DESCONTO_FOLHA")
     private boolean descontoFolha;
     
-    @Column(name="IS_ATIBO")
+    @Column(name="IS_ATIVO")
     private boolean habilitado;
     
     public MatriculaEscola() {
