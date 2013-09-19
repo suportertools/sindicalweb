@@ -17,6 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formMatriculaEscola">            
+                <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}"/>
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Cadastro de Matrícula" styleClass="fontePanel" style="width: 100%;"/>
@@ -71,11 +72,11 @@
                                 <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
                             </h:column>
                             <h:outputLabel value="Vendedor:" styleClass="fontePadrao"/>
-                            <h:selectOneMenu id="cbVendedor" value="#{matriculaEscolaBean.idVendedor}" style="width: 150px">
+                            <h:selectOneMenu id="cbVendedor" value="#{matriculaEscolaBean.idVendedor}" style="max-width: 350px">
                                 <f:selectItems value="#{matriculaEscolaBean.listaVendedor}" />
                             </h:selectOneMenu>
                             <h:outputLabel value="Mídia:" styleClass="fontePadrao"/>
-                            <h:selectOneMenu id="cbMidia" value="#{matriculaEscolaBean.idMidia}" style="width: 150px">
+                            <h:selectOneMenu id="cbMidia" value="#{matriculaEscolaBean.idMidia}" >
                                 <f:selectItems value="#{matriculaEscolaBean.listaMidia}" />
                             </h:selectOneMenu>                                
                         </h:panelGrid>
@@ -97,7 +98,7 @@
                                     <a4j:ajax event="enter" listener="#{matriculaEscolaBean.clickIndividual}"/>
                                     <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
                                         <h:outputLabel value="Curso:" styleClass="fontePadrao"/>
-                                        <h:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" style="width: 100px;" disabled="#{matriculaEscolaBean.desabilitaCampo}">
+                                        <h:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" style="max-width: 300px;" disabled="#{matriculaEscolaBean.desabilitaCampo}">
                                             <f:selectItems value="#{matriculaEscolaBean.listaIndividual}" />
                                             <a4j:ajax event="change" listener="#{matriculaEscolaBean.atualizaValor}" render="idTabela" />
                                             <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
@@ -307,7 +308,7 @@
                             </h:panelGrid>
 
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.gerarParcelas}" oncomplete="modalMensagem()" render="outConfirma, idAluno, idResp" rendered="#{matriculaEscolaBean.matriculaEscola.lote.id != -1}"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.gerarParcelas}" oncomplete="modalMensagem()" render="outConfirma, idAluno, idResp" rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
@@ -340,9 +341,9 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <h:outputText id="outConfirma" value="#{matriculaEscolaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <h:outputText id="outConfirma" value="#{matriculaEscolaBean.msgConfirma}" styleClass="fontePadrao" />
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="@form"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="matriculaEscola"/>
                         </center>
                     </div>
                     <div id="mask"></div>
