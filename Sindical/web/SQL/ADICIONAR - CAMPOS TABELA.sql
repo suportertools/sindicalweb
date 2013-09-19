@@ -164,12 +164,15 @@ ALTER TABLE esc_turma
 -- update: 2013-09-17
 -- edited by: Bruno Vieira da Silva
 
-ALTER TABLE matr_escola ADD COLUMN id_lote integer;
-ALTER TABLE esc_turma
-  ADD CONSTRAINT fk_matr_escola_id_lote FOREIGN KEY (id_lote)
-     REFERENCES fin_lote (id) MATCH SIMPLE      
+ALTER TABLE matr_escola ADD COLUMN id_tipo_documento integer;
+ALTER TABLE matr_escola
+  ADD CONSTRAINT fk_matr_escola_id_tipo_documento FOREIGN KEY (id_tipo_documento)
+     REFERENCES fin_tipo_documento (id) MATCH SIMPLE      
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
+
+ALTER TABLE matr_escola ADD COLUMN is_habilitado boolean;
+
 -- ESC_TURMA 
 -- update: 2013-09-16
 -- edited by: Bruno Vieira da Silva
@@ -178,5 +181,16 @@ ALTER TABLE esc_turma ADD COLUMN id_filial integer;
 ALTER TABLE esc_turma
   ADD CONSTRAINT fk_esc_turma_id_filial FOREIGN KEY (id_filial)
      REFERENCES pes_filial (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
+
+-- FIN_MOVIMENTO
+-- update: 2013-09-19
+-- edited by: Rogério M. Sarmento
+
+ALTER TABLE fin_movimento ADD COLUMN id_evt integer;
+ALTER TABLE fin_movimento
+  ADD CONSTRAINT fk_fin_movimento_id_evt FOREIGN KEY (id_evt)
+     REFERENCES fin_evt (id) MATCH SIMPLE      
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
