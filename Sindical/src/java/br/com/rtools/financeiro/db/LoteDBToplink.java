@@ -1,142 +1,149 @@
-
 package br.com.rtools.financeiro.db;
 
+import br.com.rtools.financeiro.Evt;
 import br.com.rtools.principal.DB;
 import br.com.rtools.financeiro.Lote;
 import java.util.List;
 import javax.persistence.Query;
 
-
-
 public class LoteDBToplink extends DB implements LoteDB {
 
     public Lote pesquisaCodigo(int id) {
         Lote result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Lote.pesquisaID");
             qry.setParameter("pid", id);
             result = (Lote) qry.getSingleResult();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return result;
     }
 
     public boolean insert(Lote lote) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(lote);
-          getEntityManager().flush();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(lote);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
 
-    public void commit(){
+    public void commit() {
         getEntityManager().getTransaction().commit();
     }
 
-    public void roolback(){
+    public void roolback() {
         getEntityManager().getTransaction().rollback();
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select p from Lote p ");
             return (qry.getResultList());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     public int ultimoCodigo() {
         int result = 0;
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select max(p.id) from Lote p ");
             result = (Integer) qry.getSingleResult();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return result;
     }
 
     public List dependentesTransferencia(int idLote) {
         List lista = null;
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select m from Movimento m where m.lote.id =" + idLote);
             lista = qry.getResultList();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return lista;
     }
 
-    public List pesquisarLoteEsp (String desc, String por, String como){
+    public List pesquisarLoteEsp(String desc, String por, String como) {
         List lista = null;
         String textQuery = null;
-        if ((como.equals("T")) || (desc.equals(""))){
-           textQuery = "select lote from Lote lote where lote.rotina.id in (1,2)";
-        }else if (como.equals("D")){
-           if (por.equals("q"))
-               textQuery = "select lote from Lote lote where lote.qtde = " + desc + " and lote.rotina.id in (1,2)";
-           else if (por.equals("t"))
-               textQuery = "select lote from Lote lote where lote.total = " + desc + " and lote.rotina.id in (1,2)";
-           else if (por.equals("d"))
-               textQuery = "select lote from Lote lote where lote.data = :desc and lote.rotina.id in (1,2)";
+        if ((como.equals("T")) || (desc.equals(""))) {
+            textQuery = "select lote from Lote lote where lote.rotina.id in (1,2)";
+        } else if (como.equals("D")) {
+            if (por.equals("q")) {
+                textQuery = "select lote from Lote lote where lote.qtde = " + desc + " and lote.rotina.id in (1,2)";
+            } else if (por.equals("t")) {
+                textQuery = "select lote from Lote lote where lote.total = " + desc + " and lote.rotina.id in (1,2)";
+            } else if (por.equals("d")) {
+                textQuery = "select lote from Lote lote where lote.data = :desc and lote.rotina.id in (1,2)";
+            }
         }
-        try{
+        try {
             Query qry = getEntityManager().createQuery(textQuery);
-            if ((por.equals("d")) && (!(como.equals("T"))))
+            if ((por.equals("d")) && (!(como.equals("T")))) {
                 qry.setParameter("desc", desc);
+            }
             lista = qry.getResultList();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             lista = null;
         }
         return lista;
     }
 
-
-
-    public List pesquisarLoteTransferência (String desc, String por, String como){
+    public List pesquisarLoteTransferência(String desc, String por, String como) {
         List lista = null;
         String textQuery = null;
-        if ((como.equals("T")) || (desc.equals(""))){
-           textQuery = "select lote from Lote lote where lote.rotina.id = 3";
-        }else if (como.equals("D")){
-           if (por.equals("q"))
-               textQuery = "select lote from Lote lote where lote.qtde = " + desc + " and lote.rotina.id = 3";
-           else if (por.equals("t"))
-               textQuery = "select lote from Lote lote where lote.total = " + desc + " and lote.rotina.id = 3";
-           else if (por.equals("d"))
-               textQuery = "select lote from Lote lote where lote.data = :desc and lote.rotina.id = 3";
+        if ((como.equals("T")) || (desc.equals(""))) {
+            textQuery = "select lote from Lote lote where lote.rotina.id = 3";
+        } else if (como.equals("D")) {
+            if (por.equals("q")) {
+                textQuery = "select lote from Lote lote where lote.qtde = " + desc + " and lote.rotina.id = 3";
+            } else if (por.equals("t")) {
+                textQuery = "select lote from Lote lote where lote.total = " + desc + " and lote.rotina.id = 3";
+            } else if (por.equals("d")) {
+                textQuery = "select lote from Lote lote where lote.data = :desc and lote.rotina.id = 3";
+            }
         }
-        try{
+        try {
             Query qry = getEntityManager().createQuery(textQuery);
-            if ((por.equals("d")) && (!(como.equals("T"))))
+            if ((por.equals("d")) && (!(como.equals("T")))) {
                 qry.setParameter("desc", desc);
+            }
             lista = qry.getResultList();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             lista = null;
         }
         return lista;
     }
 
     public boolean delete(Lote lote) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(lote);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
+    @Override
+    public Lote pesquisaLotePorEvt(Evt evt) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MOV.lote FROM Movimento AS MOV WHERE MOV.evt.id = :idEvt");
+            query.setParameter("idEvt", evt.getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Lote) query.getSingleResult();
+            }
+        } catch (Exception e) {
+        }
+        return new Lote();
 
+    }
 }

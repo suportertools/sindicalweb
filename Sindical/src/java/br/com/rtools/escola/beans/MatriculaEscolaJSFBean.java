@@ -19,6 +19,8 @@ import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.ServicoValor;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.db.LoteDB;
+import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicoValorDB;
@@ -49,6 +51,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
@@ -209,6 +212,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             if (matriculaContrato == null) {
                 openModal = " onclick='modalOpcao('divMensagem');' ";
                 msgConfirma = "Não é possível gerar um contrato para este serviço. Para gerar um contrato acesse: Menu Escola > Modelo Contrato.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                 return;
             }
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$aluno", matriculaEscola.getAluno().getNome()));
@@ -322,22 +326,27 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         int idPessoa = matriculaEscola.getResponsavel().getId();
         if (matriculaEscola.getAluno().getId() == -1) {
             msgConfirma = "Informar nome do aluno e do responsável!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
         if (matriculaEscola.getFilial().getId() == -1) {
             msgConfirma = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
         if (listaStatus.isEmpty()) {
             msgConfirma = "Informar a situação/status do aluno!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
         if (listaVendedor.isEmpty()) {
             msgConfirma = "Informar o nome do vendedor!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }            
         if (listaMidia.isEmpty()) {
             msgConfirma = "Informar o tipo de mídia!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
         String tipoMatricula;
@@ -349,37 +358,45 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                 int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
                 if (dataInicioInteger < dataHojeInteger) {
                     msgConfirma = "A data inicial do curso deve ser maior ou igual a data de hoje!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                     return null;
                 }
                 if (dataFinalInteger < dataHojeInteger) {
                     msgConfirma = "A data final do curso deve ser maior ou igual a data de hoje!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                     return null;
                 }
                 if (dataFinalInteger < dataInicioInteger) {
                     msgConfirma = "A data final deve ser maior ou igual a data inicial!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                     return null;
                 }
                 if (DataHoje.validaHora(matriculaIndividual.getInicio()).isEmpty()) {
                     msgConfirma = "Hora inicial invalida!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                     return null;
                 }
                 if (DataHoje.validaHora(matriculaIndividual.getTermino()).isEmpty()) {
                     msgConfirma = "Hora final invalida!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                     return null;
                 }
             }
             if (listaIndividual.isEmpty()) {
                 msgConfirma = "Informar curso!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                 return null;
             }            
             if (listaProfessor.isEmpty()) {
                 msgConfirma = "Informar o nome do professor! Caso não exista cadastre um professor.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                 return null;
             }            
         }else{
             tipoMatricula = "Turma";
             if (listaTurma.isEmpty()) {
                 msgConfirma = "Informar a turma!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                 return null;
             }
         }
@@ -388,9 +405,12 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         matriculaEscola.setEscStatus((EscStatus) sv.pesquisaCodigo(Integer.parseInt(listaStatus.get(idStatus).getDescription()), "EscStatus"));
         matriculaEscola.setVendedor((Vendedor) sv.pesquisaCodigo(Integer.parseInt(listaVendedor.get(idVendedor).getDescription()), "Vendedor"));
         matriculaEscola.setMidia((Midia) sv.pesquisaCodigo(Integer.parseInt(listaMidia.get(idMidia).getDescription()), "Midia"));
-        matriculaTurma.setTurma((Turma) sv.pesquisaCodigo(Integer.parseInt(listaTurma.get(idTurma).getDescription()), "Turma"));
-        matriculaIndividual.setCurso((Servicos) sv.pesquisaCodigo(Integer.parseInt(listaIndividual.get(idIndividual).getDescription()), "Servicos"));
-        matriculaIndividual.setProfessor((Professor) sv.pesquisaCodigo(Integer.parseInt(listaProfessor.get(idProfessor).getDescription()), "Professor"));
+        if (tipoMatricula.equals("Individual")) {
+            matriculaIndividual.setCurso((Servicos) sv.pesquisaCodigo(Integer.parseInt(listaIndividual.get(idIndividual).getDescription()), "Servicos"));
+            matriculaIndividual.setProfessor((Professor) sv.pesquisaCodigo(Integer.parseInt(listaProfessor.get(idProfessor).getDescription()), "Professor"));            
+        } else if (tipoMatricula.equals("Turma")) {
+            matriculaTurma.setTurma((Turma) sv.pesquisaCodigo(Integer.parseInt(listaTurma.get(idTurma).getDescription()), "Turma"));            
+        }
         matriculaEscola.setEsEFinanceiro(null);
         matriculaEscola.setValorTotalString(valor);
         matriculaEscola.setTipoDocumento((FTipoDocumento) sv.pesquisaCodigo(2, "FTipoDocumento"));
@@ -405,6 +425,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                 pessoaComplemento.setPessoa((Pessoa) sv.pesquisaCodigo(idPessoa, "Pessoa"));
                 if (!sv.inserirObjeto(pessoaComplemento)) {
                     msgConfirma = "Falha ao inserir pessoa complemento!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                     sv.desfazerTransacao();
                     return null;
                 }
@@ -424,6 +445,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
                     if (!sv.inserirObjeto(matriculaTurma)) {
                         msgConfirma = "Falha ao adicionar a matricula turma!";
+                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                         return null;
                     }
                     tipoMatriculaLog = ""
@@ -433,6 +455,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                     matriculaIndividual.setMatriculaEscola(matriculaEscola);
                     if (!sv.inserirObjeto(matriculaIndividual)) {
                         msgConfirma = "Falha ao adicionar esta matricula individual!";
+                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                         return null;
                     }
                     tipoMatriculaLog = " - Curso: " + matriculaIndividual.getCurso().getId()+" - "+ matriculaIndividual.getCurso().getDescricao() +
@@ -459,6 +482,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         } else {
             if(filial.getId() != matriculaEscola.getFilial().getId()){
                 msgConfirma = "Registro não pode ser atualizado por esta filial!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                 return null;
             }
             sv.abrirTransacao();
@@ -468,6 +492,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
                     if (!sv.alterarObjeto(matriculaTurma)) {
                         msgConfirma = "Falha ao atualizar a matricula turma!";
+                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                         return null;
                     }
                 } else {
@@ -475,10 +500,12 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                     matriculaIndividual.setMatriculaEscola(matriculaEscola);
                     if (!sv.alterarObjeto(matriculaIndividual)) {
                         msgConfirma = "Falha ao atualizar a matricula individual!";
+                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                         return null;
                     }
                 }
                 sv.comitarTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                 msgConfirma = "Matrícula atualizada com sucesso.";
                 return null;
             }
@@ -547,7 +574,9 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                 getListaIndividual();
             }
             if(!listaTurma.isEmpty()){
-                id = Integer.parseInt(listaIndividual.get(idIndividual).getDescription());
+                if (!listaIndividual.isEmpty()) {
+                    id = Integer.parseInt(listaIndividual.get(idIndividual).getDescription());                    
+                }
             }
         }
         if(id != 0){
@@ -560,7 +589,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
     
     public String gerarParcelas(){        
         if(matriculaEscola.getId() != -1){
-            if(matriculaEscola.getLote() == null){
+            if(matriculaEscola.getEvt() == null){
                 String vencimento;
                 String referencia;
                 String mes = "0";
@@ -635,6 +664,13 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                 if(getTaxa() == true){
                     insereTaxa = true;
                 }
+                Evt evt = new Evt();
+                if (!salvarAcumuladoDB.inserirObjeto(evt)) {
+                    salvarAcumuladoDB.desfazerTransacao();
+                    msgConfirma = "Não foi possível gerar esse movimento!";
+                    return null;                    
+                }
+                
                 if(salvarAcumuladoDB.inserirObjeto(lote)){
                     int loop = 0;
                     if(insereTaxa == true){
@@ -697,7 +733,8 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                             0,
                             0,
                             fTipoDocumento,
-                            0
+                            0,
+                            evt
                         ));
                         if(!salvarAcumuladoDB.inserirObjeto(movimento)){
                             salvarAcumuladoDB.desfazerTransacao();
@@ -705,13 +742,15 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                             return null;
                         }
                     }
-                    matriculaEscola.setLote(lote);
+                    matriculaEscola.setEvt(evt);
                     if(!salvarAcumuladoDB.alterarObjeto(matriculaEscola)){
                         salvarAcumuladoDB.desfazerTransacao();
                         msgConfirma = "Não foi possível gerar esse movimento!";
                         return null;
                     }
                     salvarAcumuladoDB.comitarTransacao();
+                    msgConfirma = "Movimentos gerados com sucesso!";
+                    novo();
                 }else{
                     salvarAcumuladoDB.desfazerTransacao();
                     msgConfirma = "Não foi possível gerar esse movimento!";
@@ -723,11 +762,14 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         return "matriculaEscola";
     }
     
-    public String desfazerMovimento(){                        
+    public String desfazerMovimento() {
+        if (matriculaEscola.getEvt() != null) {
+            
+        }
         if(matriculaEscola.getId() != -1){
-            if(matriculaEscola.getLote() != null){
+            if(matriculaEscola.getEvt() != null){
                 MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
-                if(matriculaEscolaDB.desfazerMovimento(matriculaEscola.getLote().getId(), matriculaEscola.getId())){
+                if(matriculaEscolaDB.desfazerMovimento(matriculaEscola.getEvt().getId(), matriculaEscola.getId())){
                     listaMovimentos.clear();
                     desabilitaCamposMovimento = false;
                     msgConfirma = "Transação desfeita com sucesso";
@@ -795,14 +837,12 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaStatus() {
         if (listaStatus.isEmpty()) {
-            int i = 0;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List select = sv.listaObjeto("EscStatus");
-            while (i < select.size()) {
+            List list = sv.listaObjeto("EscStatus");
+            for (int i = 0; i < list.size(); i++) {
                 listaStatus.add(new SelectItem(new Integer(i),
-                        (String) ((EscStatus) select.get(i)).getDescricao(),
-                        Integer.toString(((EscStatus) select.get(i)).getId())));
-                i++;
+                        (String) ((EscStatus) list.get(i)).getDescricao(),
+                        Integer.toString(((EscStatus) list.get(i)).getId())));
             }
         }
         return listaStatus;
@@ -814,14 +854,12 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaVendedor() {
         if (listaVendedor.isEmpty()) {
-            int i = 0;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List select = sv.listaObjeto("Vendedor");
-            while (i < select.size()) {
+            List list = sv.listaObjeto("Vendedor");
+            for (int i = 0; i < list.size(); i++) {
                 listaVendedor.add(new SelectItem(new Integer(i),
-                        (String) ((Vendedor) select.get(i)).getPessoa().getNome(),
-                        Integer.toString(((Vendedor) select.get(i)).getId())));
-                i++;
+                        (String) ((Vendedor) list.get(i)).getPessoa().getNome(),
+                        Integer.toString(((Vendedor) list.get(i)).getId())));
             }
         }
         return listaVendedor;
@@ -833,14 +871,12 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaProfessor() {
         if (listaProfessor.isEmpty()) {
-            int i = 0;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List select = sv.listaObjeto("Professor");
-            while (i < select.size()) {
+            List list = sv.listaObjeto("Professor");
+            for (int i = 0; i < list.size(); i++) {
                 listaProfessor.add(new SelectItem(new Integer(i),
-                        (String) ((Professor) select.get(i)).getProfessor().getNome(),
-                        Integer.toString(((Professor) select.get(i)).getId())));
-                i++;
+                        (String) ((Professor) list.get(i)).getProfessor().getNome(),
+                        Integer.toString(((Professor) list.get(i)).getId())));
             }
         }
         return listaProfessor;
@@ -852,14 +888,12 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaMidia() {
         if (listaMidia.isEmpty()) {
-            int i = 0;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List select = sv.listaObjeto("Midia");
-            while (i < select.size()) {
+            List list = sv.listaObjeto("Midia");
+            for (int i = 0; i < list.size(); i++) {
                 listaMidia.add(new SelectItem(new Integer(i),
-                        (String) ((Midia) select.get(i)).getDescricao(),
-                        Integer.toString(((Midia) select.get(i)).getId())));
-                i++;
+                        (String) ((Midia) list.get(i)).getDescricao(),
+                        Integer.toString(((Midia) list.get(i)).getId())));
             }
         }
         return listaMidia;
@@ -970,16 +1004,14 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaTurma() {
         if (listaTurma.isEmpty()) {
-            int i = 0;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List select = sv.listaObjeto("Turma");
-            while (i < select.size()) {
+            List list = sv.listaObjeto("Turma");
+            for (int i = 0; i < list.size(); i++) {
                 listaTurma.add(new SelectItem(new Integer(i),
-                        (String) ((Turma) select.get(i)).getCursos().getDescricao() + " - "
-                        + ((Turma) select.get(i)).getDataInicio() + " - "
-                        + ((Turma) select.get(i)).getHoraInicio() + " h ",
-                        Integer.toString(((Turma) select.get(i)).getId())));
-                i++;
+                        (String) ((Turma) list.get(i)).getCursos().getDescricao() + " - "
+                        + ((Turma) list.get(i)).getDataInicio() + " - "
+                        + ((Turma) list.get(i)).getHoraInicio() + " h ",
+                        Integer.toString(((Turma) list.get(i)).getId())));
             }
         }
         return listaTurma;
@@ -992,13 +1024,11 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
     public List<SelectItem> getListaIndividual() {
         if (listaIndividual.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos(151);
-            int i = 0;
-            while (i < select.size()) {
+            List list = db.pesquisaTodos(151);
+            for (int i = 0; i < list.size(); i++) {
                 listaIndividual.add(new SelectItem(new Integer(i),
-                        (String) ((Servicos) select.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) select.get(i)).getId())));
-                i++;
+                        (String) ((Servicos) list.get(i)).getDescricao(),
+                        Integer.toString(((Servicos) list.get(i)).getId())));
             }
         }
         return listaIndividual;
@@ -1254,7 +1284,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             desabilitaCampo = true;
             idDiaVencimentoPessoa = 0;
             matriculaEscola = (MatriculaEscola) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaEscolaPesquisa");
-            if(matriculaEscola.getLote() != null){
+            if(matriculaEscola.getEvt() != null){
                 desabilitaCamposMovimento = true;
             }
             setValorString(matriculaEscola.getValorTotalString());
@@ -1461,9 +1491,11 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
         if(listaMovimentos.isEmpty()){
             if(matriculaEscola.getId() != -1){
                 int count = 0;
-                if(matriculaEscola.getLote() != null){
+                if(matriculaEscola.getEvt() != null){
                     MovimentoDB movimentoDB = new MovimentoDBToplink();
-                    listaMovimentos = movimentoDB.listaMovimentosDoLote(matriculaEscola.getLote().getId());
+                    LoteDB loteDB = new LoteDBToplink();
+                    lote = (Lote) loteDB.pesquisaLotePorEvt(matriculaEscola.getEvt());
+                    listaMovimentos = movimentoDB.listaMovimentosDoLote(lote.getId());
                     for(int i = 0; i < listaMovimentos.size(); i++){
                         if(listaMovimentos.get(i).getTipoServico().getId() == 5){
                             setTaxa(true);
@@ -1474,6 +1506,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
                             listaMovimentos.get(i).setQuantidade(count);                      
                         }
                     }
+                    lote = new Lote();
                 }
             }
         }

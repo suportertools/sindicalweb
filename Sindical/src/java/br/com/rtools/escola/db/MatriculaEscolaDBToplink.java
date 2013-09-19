@@ -13,48 +13,6 @@ import javax.persistence.Query;
 public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
 
     @Override
-    public boolean insert(MatriculaEscola matriculaEscola) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(matriculaEscola);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(MatriculaEscola matriculaEscola) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(matriculaEscola);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(MatriculaEscola matriculaEscola) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(matriculaEscola);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
     public MatriculaEscola pesquisaCodigo(int id) {
         MatriculaEscola result = null;
         try {
