@@ -17,8 +17,6 @@ public class MatriculaContrato implements java.io.Serializable {
     private String titulo;
     @Column(name = "DS_DESCRICAO", length = 15000)
     private String descricao;
-    @Column(name = "DS_OBSERVACAO", length = 5000)
-    private String observacao;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_CADASTRO")
     private Date dataCadastro;
@@ -33,17 +31,15 @@ public class MatriculaContrato implements java.io.Serializable {
         this.id = -1;
         this.titulo = "";
         this.descricao = "";
-        this.observacao = "";
         this.dataCadastro = new Date();
         this.dataAtualizado = new Date();
         this.modulo = new Modulo();
     }
 
-    public MatriculaContrato(int id, String titulo, String descricao, String observacao, String dataCadastro, String dataAtualizado, Modulo modulo) {
+    public MatriculaContrato(int id, String titulo, String descricao, String dataCadastro, String dataAtualizado, Modulo modulo) {
         this.id = id;
         this.titulo = titulo;
         this.descricao = descricao;
-        this.observacao = observacao;
         setDataCadastro(dataCadastro);
         setDataAtualizado(dataAtualizado);
         this.modulo = modulo;
@@ -71,14 +67,6 @@ public class MatriculaContrato implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
-    }
-
-    public String getObservacao() {
-        return observacao;
-    }
-
-    public void setObservacao(String observacao) {
-        this.observacao = observacao;
     }
 
     public String getDataCadastro() {
