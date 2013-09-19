@@ -880,27 +880,6 @@ INSERT INTO seg_registro (
             false, '1900-01-01', null, 
             1 WHERE NOT EXISTS ( SELECT id FROM seg_registro WHERE id = 1);
 
--- Inserir contrato matricula escola
-
-INSERT INTO matr_contrato (ds_observacao) values ('
-    Nome do Aluno: $aluno;
-    CPF do ALuno: $cpfAluno;
-    RG do ALuno: $rgAluno;
-    Nome do Responsável: $responsavel;
-    CPF do responsável: $cpfResponsavel;
-    RG do Responsável: $rgResponsavel;
-    Curso: $curso;
-    Dia da Semana: $diaSemana;
-    Data Inicial: $dataInicial;
-    Data Final: $dataFinal
-    Data por extenso: $dataExtenso;
-    Valor da Parcela: $valorParcela;
-    Número de Parcelas: $parcelas;
-    Dia Vencimento: $diaVencimento;
-    Valor até o vencimento: $valorAteVencimento;'
-);
-
-
 INSERT INTO fin_conbranca_tipo (id, ds_descricao) SELECT 1,'ESCRITÓRIO' WHERE NOT EXISTS ( SELECT id FROM fin_conbranca_tipo WHERE id = 1);
 INSERT INTO fin_conbranca_tipo (id, ds_descricao) SELECT 2,'EMPRESA COM ESCRITÓRIO' WHERE NOT EXISTS ( SELECT id FROM fin_conbranca_tipo WHERE id = 2);
 INSERT INTO fin_conbranca_tipo (id, ds_descricao) SELECT 3,'EMPRESA SEM ESCRITÓRIO' WHERE NOT EXISTS ( SELECT id FROM fin_conbranca_tipo WHERE id = 3);
