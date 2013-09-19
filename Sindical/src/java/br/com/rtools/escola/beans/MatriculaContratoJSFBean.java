@@ -15,6 +15,7 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
@@ -159,51 +160,51 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
         matriculaContratoCampos = new MatriculaContratoCampos();
     }
 
-    public void adicionarCamposModuloContrato() {
+    public synchronized void adicionarCamposModuloContrato() {
         if (matriculaContratoCampos.getCampo().equals("")) {
-            msg = "Informar o campo!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Informar o campo!"));
             return;
         }
         if (matriculaContratoCampos.getVariavel().equals("")) {
-            msg = "Informar a variável!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Informar a variável!"));
             return;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
         if (matriculaContratoCampos.getId() == -1) {
             if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "campo")) {
-                msg = "Variável já existe!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Variável já existe!"));
                 return;
             }
             if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "variavel")) {
-                msg = "Campo já cadastrado!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Campo já cadastrado!"));                
                 return;
             }
             if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "tudo")) {
-                msg = "Campo já cadastrado!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Campo já cadastrado!"));
                 return;
             }
             matriculaContratoCampos.setModulo( (Modulo) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaModulos2.get(idModulo2).getDescription()), "Modulo"));
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.inserirObjeto(matriculaContratoCampos)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msg = "Registro inserido com sucesso.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro inserido com sucesso."));                
                 listaMatriculaContratoCampos.clear();
                 listaModulos.clear();
                 idModulo = 0;
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao inserir o registro!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Erro", "Falha ao inserir o registro!"));
             }
         } else {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(matriculaContratoCampos)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msg = "Registro atualizado com sucesso.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro atualizado com sucesso."));                
                 listaMatriculaContratoCampos.clear();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao atualizar o registro!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Erro", "Falha ao atualizar o registro!"));
             }
         }
         matriculaContratoCampos.setModulo(modulo);
@@ -216,14 +217,14 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(mcc)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msg = "Registro excluído com sucesso.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro excluído com sucesso"));
                 listaMatriculaContratoCampos.clear();
                 listaModulos.clear();
                 idModulo = 0;
                 matriculaContratoCampos = new MatriculaContratoCampos();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao excluir o registro!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Falha ao excluir o registro!"));
             }
         }
         return "matriculaContratoCampos";
