@@ -32,15 +32,32 @@
                     </rich:column>
                     <br /><br />
                     <rich:column>
-                        <h:outputText value="Observações / Variáveis " styleClass="fontePadraoNegrito" />
+                        <h:outputText value="Variáveis " styleClass="fontePadraoNegrito" />
                     </rich:column>
                     <br /><br />
                     <rich:column>
-                        <rich:editor id="idContrato2" value="#{matriculaContratoBean.matriculaContrato.observacao}" rendered="#{matriculaContratoBean.desabilitaObservacao == true}" skin="office2003" ></rich:editor>
-                        <rich:panel rendered="#{matriculaContratoBean.desabilitaObservacao == false}">
-                            <h:outputText escape="false" value="#{matriculaContratoBean.matriculaContrato.observacao}" />                             
-                        </rich:panel>
-                        
+                        <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
+                            <rich:dataTable value="#{matriculaContratoBean.getListaMatriculaContratoCampos('this')}" var="linha" iterationStatusVar="it" >
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Campo"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.campo}"/>
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Variável"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.variavel}" />
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="..."/>
+                                    </f:facet>
+                                    <a4j:commandLink value="Obs" title="#{linha.observacao}" styleClass="underline-hover" rendered="#{linha.observacao != ''}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </div>
                     </rich:column>
                     <br /><br />
                     <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
