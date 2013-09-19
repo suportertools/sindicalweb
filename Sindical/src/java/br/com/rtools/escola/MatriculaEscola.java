@@ -3,7 +3,6 @@ package br.com.rtools.escola;
 import br.com.rtools.associativo.Midia;
 import br.com.rtools.financeiro.Evt;
 import br.com.rtools.financeiro.FTipoDocumento;
-import br.com.rtools.financeiro.Lote;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
@@ -13,7 +12,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name="MATR_ESCOLA")
-@NamedQuery(name="MatriculaEscola.pesquisaID", query="select m from MatriculaEscola m where m.id=:pid")
+@NamedQuery(name="MatriculaEscola.pesquisaID", query="SELECT MAE FROM MatriculaEscola MAE WHERE MAE.id = :pid")
 public class MatriculaEscola implements java.io.Serializable {
 
     @Id
@@ -64,10 +63,6 @@ public class MatriculaEscola implements java.io.Serializable {
     @JoinColumn(name="ID_FINANCEIRO", referencedColumnName="ID" )
     @ManyToOne
     private EFinanceiro esEFinanceiro;
-    
-    @JoinColumn(name="ID_LOTE", referencedColumnName="ID" )
-    @ManyToOne
-    private Lote lote;
 
     @Column(name="NR_VALOR_TOTAL")
     private float valorTotal;
@@ -105,7 +100,6 @@ public class MatriculaEscola implements java.io.Serializable {
         desconto = 0;
         obs = "";
         status = new Date();
-        lote = new Lote();
         esEFinanceiro = new EFinanceiro();
         valorTotal = 0;
         diaVencimento = 0;
@@ -116,7 +110,7 @@ public class MatriculaEscola implements java.io.Serializable {
         habilitado = true;
     }
 
-    public MatriculaEscola(int id, Date dataMatricula, EscStatus escStatus, Pessoa responsavel, Pessoa aluno, Vendedor vendedor, Midia midia, Evt evt, int numeroParcelas, float desconto, String obs, Date status, Lote lote, EFinanceiro esEFinanceiro, float valorTotal, int diaVencimento, float descontoAteVencimento, FTipoDocumento tipoDocumento, Filial filial, boolean descontoFolha, boolean habilitado) {
+    public MatriculaEscola(int id, Date dataMatricula, EscStatus escStatus, Pessoa responsavel, Pessoa aluno, Vendedor vendedor, Midia midia, Evt evt, int numeroParcelas, float desconto, String obs, Date status, EFinanceiro esEFinanceiro, float valorTotal, int diaVencimento, float descontoAteVencimento, FTipoDocumento tipoDocumento, Filial filial, boolean descontoFolha, boolean habilitado) {
         this.id = id;
         this.dataMatricula = dataMatricula;
         this.escStatus = escStatus;
@@ -129,7 +123,6 @@ public class MatriculaEscola implements java.io.Serializable {
         this.desconto = desconto;
         this.obs = obs;
         this.status = status;
-        this.lote = lote;
         this.esEFinanceiro = esEFinanceiro;
         this.valorTotal = valorTotal;
         this.diaVencimento = diaVencimento;
@@ -338,13 +331,5 @@ public class MatriculaEscola implements java.io.Serializable {
 
     public void setHabilitado(boolean habilitado) {
         this.habilitado = habilitado;
-    }
-
-    public Lote getLote() {
-        return lote;
-    }
-
-    public void setLote(Lote Lote) {
-        this.lote = Lote;
     }
 }

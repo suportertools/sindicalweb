@@ -8,9 +8,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 public interface MatriculaEscolaDB {
-    public boolean insert(MatriculaEscola matriculaEscola);
-    public boolean update(MatriculaEscola matriculaEscola);
-    public boolean delete(MatriculaEscola matriculaEscola);
     public MatriculaEscola pesquisaCodigo(int id);
     public List pesquisaTodos();
     public List pesquisaTodosEscStatus();

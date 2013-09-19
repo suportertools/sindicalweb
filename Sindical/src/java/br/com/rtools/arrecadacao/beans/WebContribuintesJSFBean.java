@@ -463,7 +463,7 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
                             "",
                             strVencimento,
                             0,
-                            0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0);
+                            0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0,null);
 
                     if (GerarMovimento.salvarUmMovimento(new Lote(), movi)) {
                         listMovimentos.clear();

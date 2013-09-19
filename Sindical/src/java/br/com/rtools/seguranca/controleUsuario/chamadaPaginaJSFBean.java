@@ -718,12 +718,12 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("bloqueioServicosBean");
         return metodoGenerico(2, "bloqueioServicos");
     }
-    
+
     public synchronized String configuracao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("configuracaoBean");
         return metodoGenerico(2, "configuracao");
     }
-    
+
     public synchronized String matriculaContratoCampos() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("matriculaContratoBean");
         return metodoGenerico(2, "matriculaContratoCampos");
@@ -897,7 +897,6 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
         return metodoGenerico(2, "simples");
     }
-    
 
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
@@ -940,7 +939,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
     public synchronized String pesquisaRotina() {
         return metodoGenerico(1, "pesquisaRotina");
     }
-    
+
     public synchronized String pesquisaConfiguracao() {
         return metodoGenerico(1, "pesquisaConfiguracao");
     }
