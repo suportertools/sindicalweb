@@ -100,6 +100,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
     private boolean desabilitaTurma = false;
     private boolean desabilitaIndividual = false;
     private boolean desabilitaCamposMovimento = false;
+    private boolean desabilitaGeracaoContrato = false;
     private String porPesquisa = "";
     private String comoPesquisa = "";
     private String descricaoAluno = "";
@@ -197,7 +198,7 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public void gerarContrato() throws IOException {
         if (matriculaEscola.getEvt() == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Necessário gerar movimento para criar esse contrato!"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Necessário gerar movimento para imprimir esse contrato!"));
             return;
         }
         if (matriculaEscola.getId() != -1) {
@@ -1321,7 +1322,10 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
             matriculaEscola.setFilial(macFilial.getFilial());
         }
         if (matriculaEscola.getEvt() != null) {
+            desabilitaGeracaoContrato = true;
             target = "_blank";
+        } else {
+            desabilitaGeracaoContrato = false;
         }
         return matriculaEscola;
     }
@@ -1552,5 +1556,13 @@ public class MatriculaEscolaJSFBean implements java.io.Serializable {
 
     public void setTarget(String target) {
         this.target = target;
+    }
+
+    public boolean isDesabilitaGeracaoContrato() {
+        return desabilitaGeracaoContrato;
+    }
+
+    public void setDesabilitaGeracaoContrato(boolean desabilitaGeracaoContrato) {
+        this.desabilitaGeracaoContrato = desabilitaGeracaoContrato;
     }
 }
