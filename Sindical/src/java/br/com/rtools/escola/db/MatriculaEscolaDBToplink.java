@@ -3,9 +3,17 @@ package br.com.rtools.escola.db;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
+import br.com.rtools.financeiro.Evt;
+import br.com.rtools.financeiro.Lote;
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoValor;
+import br.com.rtools.financeiro.db.LoteDB;
+import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -121,7 +129,7 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             return null;
         }
     }
-    
+
     @Override
     public PessoaComplemento pesquisaDataRefPessoaComplemto(int idPessoa) {
         try {
@@ -133,20 +141,20 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             return null;
         }
     }
-    
+
     @Override
     public boolean verificaPessoaEnderecoDocumento(String tipoPessoa, int idPessoa) {
         try {
             Query query = getEntityManager().createQuery(" SELECT pes FROM PessoaEndereco pes WHERE pes.pessoa.id = :idPessoa and pes.pessoa.documento not like '0'");
             query.setParameter("idPessoa", idPessoa);
-            if(query.getResultList().size() > 0){
-                if(tipoPessoa.equals("fisica")){
+            if (query.getResultList().size() > 0) {
+                if (tipoPessoa.equals("fisica")) {
                     Query queryFisica = getEntityManager().createNativeQuery("  "
-                    + " SELECT *                                                "
-                    + "   FROM pes_fisica                                       " 
-                    + "  WHERE func_idade(dt_nascimento, current_date) >= 18    "
-                    + "    AND id_pessoa = "+idPessoa);
-                    if(queryFisica.getResultList().size() <= 0){
+                            + " SELECT *                                                "
+                            + "   FROM pes_fisica                                       "
+                            + "  WHERE func_idade(dt_nascimento, current_date) >= 18    "
+                            + "    AND id_pessoa = " + idPessoa);
+                    if (queryFisica.getResultList().size() <= 0) {
                         return false;
                     }
                 }
@@ -158,7 +166,7 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         return false;
     }
-    
+
     public ServicoValor pesquisaValorTaxa(int idCurso) {
         ServicoValor servicoValor = new ServicoValor();
         try {
@@ -171,28 +179,52 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             return null;
         }
     }
-    
+
     @Override
-    public boolean desfazerMovimento(int idLote, int idMatriculaEscola) {
+    public boolean desfazerMovimento(MatriculaEscola me) {
+        LoteDB loteDB = new LoteDBToplink();
+        Lote lote = (Lote) loteDB.pesquisaLotePorEvt(me.getEvt());
+        if (lote == null) {
+            return false;
+        }
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         try {
-            getEntityManager().getTransaction().begin();
-            List list = new ArrayList();
-            list.add(" DELETE FROM Movimento m WHERE m.lote.id = "+idLote );
-            list.add(" UPDATE MatriculaEscola me SET me.lote = null WHERE me.id = "+ idMatriculaEscola );
-            list.add(" DELETE FROM Lote l WHERE l.id = "+idLote );
-            for(int i = 0; i < list.size(); i++){
-                Query query = getEntityManager().createQuery(list.get(i).toString());
-                query.executeUpdate();
+            Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.evt.id = " + me.getEvt().getId());
+            List<Movimento> listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
+            salvarAcumuladoDB.abrirTransacao();
+            // list.add(new DataObject("DELETE", " DELETE FROM Movimento m WHERE m.lote.id = " + lote.getId()));
+            for (int i = 0; i < listMovimentos.size(); i++) {
+                if (!salvarAcumuladoDB.deletarObjeto((Movimento) salvarAcumuladoDB.pesquisaCodigo(listMovimentos.get(i).getId(), "Movimento")) ) {
+                    salvarAcumuladoDB.desfazerTransacao();
+                    return false;
+                }
             }
-            getEntityManager().getTransaction().commit();
+            // list.add(new DataObject("UPDATE", " UPDATE MatriculaEscola me SET me.evt = null WHERE me.id = " + matriculaEscola.getId()));
+            int idEvt = me.getEvt().getId();
+            me.setEvt(null);
+            if (!salvarAcumuladoDB.alterarObjeto(me)) {
+                salvarAcumuladoDB.desfazerTransacao();
+                return false;
+            }
+            // list.add(new DataObject("DELETE", " DELETE FROM Evt evt WHERE evt.id = " + matriculaEscola.getEvt().getId()));
+            if (!salvarAcumuladoDB.deletarObjeto((Evt) salvarAcumuladoDB.pesquisaCodigo(idEvt, "Evt")) ) {
+                salvarAcumuladoDB.desfazerTransacao();
+                return false;
+            }
+            // list.add(new DataObject("DELETE", " DELETE FROM Lote l WHERE l.id = " + lote.getId()));
+            if (lote.getId() != -1) {
+                if (!salvarAcumuladoDB.deletarObjeto((Lote) salvarAcumuladoDB.pesquisaCodigo(lote.getId(), "Lote")) ) {
+                    salvarAcumuladoDB.desfazerTransacao();
+                    return false;
+                }
+            }
+            salvarAcumuladoDB.comitarTransacao();
             return true;
         } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            e.getMessage();
+            salvarAcumuladoDB.desfazerTransacao();
             return false;
         }
     }
-    
 //    public ServicoValor pesquisaServicoPorPessoa(int idPessoa){
 //        ServicoValor servicoValor = new ServicoValor();
 //        try{
@@ -209,5 +241,4 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
 //    
 //        return
 //    }
-
 }
