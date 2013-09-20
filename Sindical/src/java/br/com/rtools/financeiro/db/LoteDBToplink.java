@@ -137,11 +137,13 @@ public class LoteDBToplink extends DB implements LoteDB {
         try {
             Query query = getEntityManager().createQuery(" SELECT MOV.lote FROM Movimento AS MOV WHERE MOV.evt.id = :idEvt");
             query.setParameter("idEvt", evt.getId());
+            query.setMaxResults(1);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return (Lote) query.getSingleResult();
             }
         } catch (Exception e) {
+            return new Lote();
         }
         return new Lote();
 
