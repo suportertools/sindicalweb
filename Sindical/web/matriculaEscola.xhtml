@@ -235,13 +235,20 @@
                         </div>
                         <h:panelGrid>
                             <h:panelGrid columns="7" id="idPainelMenus">
-                                <a4j:commandLink styleClass="idSalvar iLink" onclick="modalOpcao('divSalvarMovimento');"  value="Gerar Parcelas" style="width: 150px;" title="Gerar Parcelas" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                                <a4j:commandLink styleClass="idSalvar iLink" onclick="modalOpcao('divDesfazerMovimento');"  value="Desfazer Movimento" style="width: 200px;" title="Desfazer Movimento" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                    <a4j:commandLink styleClass="idSalvar iLink" onclick="modalOpcao('divSalvarMovimento');"  value="Gerar Parcelas" style="width: 150px;" title="Gerar Parcelas" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                </h:column>
+                                <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                    <a4j:commandLink styleClass="idSalvar iLink" onclick="modalOpcao('divDesfazerMovimento');"  value="Desfazer Movimento" style="width: 200px;" title="Desfazer Movimento" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                </h:column>
                                 <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" onclick="modalOpcao('divSalvar');" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                 <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}"/>
                                 <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
-                                <h:commandLink styleClass="idPesquisar iLink" value="Gerar Contrato" title="Gerar Contrato" action="#{matriculaEscolaBean.gerarContrato}" style="width: 150px;" target="#{matriculaEscolaBean.target}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <h:panelGrid columns="2" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                                    <h:commandLink styleClass="idPesquisar iLink" value="Gerar Contrato" title="Gerar Contrato" action="#{matriculaEscolaBean.gerarContrato}" style="width: 150px;" target="#{matriculaEscolaBean.target}" rendered="#{matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                    <a4j:commandLink styleClass="idPesquisar iLink" value="Gerar Contrato" title="Gerar Contrato" action="#{matriculaEscolaBean.gerarContrato}" style="width: 150px;" rendered="#{!matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                </h:panelGrid>
                             </h:panelGrid>
                         </h:panelGrid>
                         <div class="divFundo" style="background: white; margin-top: 15px;">
