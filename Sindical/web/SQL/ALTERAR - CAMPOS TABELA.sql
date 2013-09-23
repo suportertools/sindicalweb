@@ -22,5 +22,11 @@ ALTER TABLE seg_rotina DROP COLUMN nr_acesso;
 
 ALTER TABLE matr_contrato DROP COLUMN ds_observacao;
 
+-- fin_mocimentp 
+-- Criate: 2013-09-23
+-- Last edition: 2013-09-23 - by: Rogério M. Sarmento
+
+ALTER TABLE fin_movimento DROP COLUMN id_evt;
+
 
 
