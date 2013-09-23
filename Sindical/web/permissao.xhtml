@@ -23,10 +23,11 @@
                     </div>
                     <br /><br />
                     <div class="divMae" style="text-align: left">
-                        <h:panelGrid columns="4">
+                        <h:panelGrid columns="4" id="id_painel_permissao">
                             <h:column>
                                 <h:outputLabel value="Módulo: " styleClass="fontePadrao"/>
                                 <h:selectOneMenu value="#{permissaoBean.idModulo}">
+                                    <a4j:ajax event="change" render="id_painel_permissao tbl"/>
                                     <f:selectItems value="#{permissaoBean.listaModulos}"/>
                                 </h:selectOneMenu>
                             </h:column>
@@ -38,7 +39,7 @@
                                 </h:selectOneMenu>
                             </h:column>
                             <h:column>
-                                <a4j:commandButton image="/Imagens/novo.png" action="#{permissaoBean.adicionarPermissao}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="tbl,outConfirma"/>
+                                <a4j:commandButton image="/Imagens/novo.png" action="#{permissaoBean.adicionarPermissao}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="id_painel_permissao, tbl, outConfirma"/>
                             </h:column>
                         </h:panelGrid>
 
@@ -46,15 +47,11 @@
                             <rich:panel>
                                 <div style="overflow:auto; height:300px;">
                                     <rich:dataTable var="linha" style="width:100%" value="#{permissaoBean.listaPermissoes}" id="tbl" iterationStatusVar="it">
-                                        
                                         <rich:column styleClass="colunaPesquisa">
                                             <f:facet name="header">
                                                 <h:outputText value="..."/>
                                             </f:facet>
-                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{permissaoBean.btnExcluir}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoExcluir}" 
-                                                               render="tbl,outConfirma">
-                                                <a4j:param value="#{it.index}" assignTo="#{permissaoBean.idIndex}"/>
-                                            </a4j:commandButton>
+                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="id_painel_permissao tbl"/>
                                         </rich:column>
 
                                         <rich:column>
@@ -82,21 +79,7 @@
                             </rich:panel>
                         </h:panelGrid>                        
                     </div>
-                </center>
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{permissaoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                 
+                </center>                
             </h:form>
         </f:view>
     </h:body>
