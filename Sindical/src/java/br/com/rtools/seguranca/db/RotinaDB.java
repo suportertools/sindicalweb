@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca.db;
 
+import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -19,5 +20,6 @@ public interface RotinaDB {
     public List<Rotina> pesquisaRotina(String rotina);
     public Rotina pesquisaAcesso(String pagina);
     public List<Rotina> pesquisaAcessosOrdem();
+    public List pesquisaRotinasDisponiveisModulo(int idModulo);
 }
 

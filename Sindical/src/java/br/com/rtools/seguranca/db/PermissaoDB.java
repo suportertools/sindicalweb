@@ -7,13 +7,11 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 public interface PermissaoDB {
-    public boolean insert(Permissao permissao);
-    public boolean update(Permissao permissao);
-    public boolean delete(Permissao permissao);
     public EntityManager getEntityManager();
     public Permissao pesquisaCodigo(int id);
     public List pesquisaTodos();
     public List pesquisaTodosAgrupados();
+    public List pesquisaTodosAgrupadosPorModulo(int idModulo);
     public List pesquisaPermissaoModRot(int idModulo, int idRotina);
     public List pesquisaPermissaoModRotEve(int idModulo, int idRotina,int idEvento);
     public Permissao pesquisaPermissaoModuloRotinaEvento(int idModulo, int idRotina,int idEvento);

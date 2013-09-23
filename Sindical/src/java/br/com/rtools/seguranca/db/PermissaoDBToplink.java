@@ -10,43 +10,6 @@ import javax.persistence.Query;
 public class PermissaoDBToplink extends DB implements PermissaoDB {
 
     @Override
-    public boolean insert(Permissao permissao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(permissao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Permissao permissao) {
-        try {
-            getEntityManager().merge(permissao);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Permissao permissao) {
-        try {
-            getEntityManager().remove(permissao);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
     public Permissao pesquisaCodigo(int id) {
         Permissao result = null;
         try {
@@ -87,6 +50,26 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
                 return list;
             }
         } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List pesquisaTodosAgrupadosPorModulo(int idModulo) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                      "   SELECT per                        "
+                    + "     FROM Permissao per              "
+                    + "    WHERE per.evento.id = 1          "
+                    + "      AND per.modulo.id = "+idModulo
+                    + " ORDER BY per.modulo.descricao ASC,  "
+                    + " per.rotina.rotina ASC               ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
         }
         return new ArrayList();
     }

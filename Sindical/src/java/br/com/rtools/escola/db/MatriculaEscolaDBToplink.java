@@ -11,7 +11,6 @@ import br.com.rtools.financeiro.db.LoteDB;
 import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.principal.DB;
-import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -189,34 +188,30 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         try {
-            Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.evt.id = " + me.getEvt().getId());
+            Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getEvt().getId());
             List<Movimento> listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
             salvarAcumuladoDB.abrirTransacao();
-            // list.add(new DataObject("DELETE", " DELETE FROM Movimento m WHERE m.lote.id = " + lote.getId()));
             for (int i = 0; i < listMovimentos.size(); i++) {
-                if (!salvarAcumuladoDB.deletarObjeto((Movimento) salvarAcumuladoDB.pesquisaCodigo(listMovimentos.get(i).getId(), "Movimento")) ) {
+                if (!salvarAcumuladoDB.deletarObjeto((Movimento) salvarAcumuladoDB.pesquisaCodigo(listMovimentos.get(i).getId(), "Movimento"))) {
                     salvarAcumuladoDB.desfazerTransacao();
                     return false;
                 }
             }
-            // list.add(new DataObject("UPDATE", " UPDATE MatriculaEscola me SET me.evt = null WHERE me.id = " + matriculaEscola.getId()));
+            if (lote.getId() != -1) {
+                if (!salvarAcumuladoDB.deletarObjeto((Lote) salvarAcumuladoDB.pesquisaCodigo(lote.getId(), "Lote"))) {
+                    salvarAcumuladoDB.desfazerTransacao();
+                    return false;
+                }
+            }
             int idEvt = me.getEvt().getId();
             me.setEvt(null);
             if (!salvarAcumuladoDB.alterarObjeto(me)) {
                 salvarAcumuladoDB.desfazerTransacao();
                 return false;
             }
-            // list.add(new DataObject("DELETE", " DELETE FROM Evt evt WHERE evt.id = " + matriculaEscola.getEvt().getId()));
-            if (!salvarAcumuladoDB.deletarObjeto((Evt) salvarAcumuladoDB.pesquisaCodigo(idEvt, "Evt")) ) {
+            if (!salvarAcumuladoDB.deletarObjeto((Evt) salvarAcumuladoDB.pesquisaCodigo(idEvt, "Evt"))) {
                 salvarAcumuladoDB.desfazerTransacao();
                 return false;
-            }
-            // list.add(new DataObject("DELETE", " DELETE FROM Lote l WHERE l.id = " + lote.getId()));
-            if (lote.getId() != -1) {
-                if (!salvarAcumuladoDB.deletarObjeto((Lote) salvarAcumuladoDB.pesquisaCodigo(lote.getId(), "Lote")) ) {
-                    salvarAcumuladoDB.desfazerTransacao();
-                    return false;
-                }
             }
             salvarAcumuladoDB.comitarTransacao();
             return true;
@@ -224,6 +219,38 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             salvarAcumuladoDB.desfazerTransacao();
             return false;
         }
+    }
+
+    @Override
+    public boolean existeMatriculaTurma(MatriculaTurma mt) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma AND MT.matriculaEscola.aluno.id = :idAluno");
+            query.setParameter("idTurma", mt.getTurma().getId());
+            query.setParameter("idAluno", mt.getMatriculaEscola().getAluno().getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;            
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean existeMatriculaIndividual(MatriculaIndividual mi) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.aluno = :idAluno ");
+            query.setParameter("idCurso", mi.getCurso().getId());
+            query.setParameter("idAluno", mi.getMatriculaEscola().getAluno().getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;            
+        }
+        return false;
     }
 //    public ServicoValor pesquisaServicoPorPessoa(int idPessoa){
 //        ServicoValor servicoValor = new ServicoValor();

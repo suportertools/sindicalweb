@@ -1456,21 +1456,17 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
 
     @Override
     public List<Movimento> listaMovimentosDoLote(int idLote){
-        List<Movimento> listMov = new ArrayList();
         try{
-            Query qry = getEntityManager().createQuery(
-                    " select mov " +
-                    "   from Movimento mov " +
-                    "  where mov.lote.id = :pLote");
+            Query qry = getEntityManager().createQuery(" SELECT MOV FROM Movimento AS MOV WHERE MOV.lote.id = :pLote ORDER BY MOV.dtVencimento ASC ");
             qry.setParameter("pLote", idLote);
-            listMov = qry.getResultList();
-            if (listMov == null){
-                listMov = new ArrayList();
+            List<Movimento> listMovimentos = qry.getResultList();
+            if (!listMovimentos.isEmpty()){
+                return listMovimentos;
             }
-            return listMov;
         }catch(Exception e){
-        return listMov;
+            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override

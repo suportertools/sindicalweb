@@ -95,6 +95,7 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.inserirObjeto(matriculaContrato)) {
                 salvarAcumuladoDB.comitarTransacao();
+                matriculaContratos.clear();
                 msg = "Registro inserido com sucesso.";
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
@@ -105,6 +106,7 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(matriculaContrato)) {
                 salvarAcumuladoDB.comitarTransacao();
+                matriculaContratos.clear();
                 msg = "Registro atualizado com sucesso.";
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
@@ -120,6 +122,7 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(matriculaContrato)) {
                 salvarAcumuladoDB.comitarTransacao();
+                matriculaContratos.clear();
                 msg = "Registro excluído com sucesso";
                 novo();
             } else {
@@ -315,10 +318,10 @@ public class MatriculaContratoJSFBean implements java.io.Serializable {
 
     public List<MatriculaContrato> getMatriculaContratos() {
         if (matriculaContratos.isEmpty()) {
-            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
-            if (getModulo().getId() != -1) {
-                matriculaContratos = matriculaContratoDB.pesquisaTodosPorModulo(modulo.getId());
-            }
+        MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
+        if (getModulo().getId() != -1) {
+            matriculaContratos = matriculaContratoDB.pesquisaTodosPorModulo(modulo.getId());
+        }
         }
         return matriculaContratos;
     }

@@ -110,11 +110,7 @@ public class Movimento implements Serializable{
 
     @JoinColumn(name="ID_TIPO_DOCUMENTO", referencedColumnName="ID")
     @ManyToOne
-    private FTipoDocumento tipoDocumento;    
-    
-    @JoinColumn(name="ID_EVT", referencedColumnName="ID")
-    @ManyToOne
-    private Evt evt;
+    private FTipoDocumento tipoDocumento;
     
     public Movimento() {
         this.id = -1;
@@ -146,7 +142,6 @@ public class Movimento implements Serializable{
         this.valorBaixa = 0;
         this.repasseAutomatico = 0;
         this.tipoDocumento = new FTipoDocumento();
-        this.evt = new Evt();
     }
 
     public Movimento(int id, 
@@ -177,8 +172,7 @@ public class Movimento implements Serializable{
                      float taxa,
                      float valorBaixa,
                      FTipoDocumento tipoDocumento,
-                     float repasseAutomatico,
-                     Evt evt1) {
+                     float repasseAutomatico) {
         this.id = id;
         this.lote = lote;
         this.plano5 = plano5;
@@ -208,7 +202,6 @@ public class Movimento implements Serializable{
         this.valorBaixa = valorBaixa;
         this.repasseAutomatico = repasseAutomatico;
         this.tipoDocumento = tipoDocumento;
-        this.evt = evt1;
     }
 
     public int getId() {
@@ -457,13 +450,5 @@ public class Movimento implements Serializable{
 
     public void setFTipoDocumento(FTipoDocumento fTipoDocumento) {
         this.tipoDocumento = fTipoDocumento;
-    }
-
-    public Evt getEvt() {
-        return evt;
-    }
-
-    public void setEvt(Evt evt) {
-        this.evt = evt;
     }
 }

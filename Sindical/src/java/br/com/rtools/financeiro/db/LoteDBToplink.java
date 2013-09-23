@@ -93,6 +93,7 @@ public class LoteDBToplink extends DB implements LoteDB {
         return lista;
     }
 
+    @Override
     public List pesquisarLoteTransferência(String desc, String por, String como) {
         List lista = null;
         String textQuery = null;
@@ -135,7 +136,7 @@ public class LoteDBToplink extends DB implements LoteDB {
     @Override
     public Lote pesquisaLotePorEvt(Evt evt) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT MOV.lote FROM Movimento AS MOV WHERE MOV.evt.id = :idEvt");
+            Query query = getEntityManager().createQuery(" SELECT L FROM Lote AS L WHERE L.evt.id = :idEvt");
             query.setParameter("idEvt", evt.getId());
             query.setMaxResults(1);
             List list = query.getResultList();

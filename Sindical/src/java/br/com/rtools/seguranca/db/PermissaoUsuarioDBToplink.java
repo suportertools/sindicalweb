@@ -254,11 +254,13 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
     public Permissao pesquisaPermissao(int id_modulo, int id_rotina, int id_evento) {
         Permissao permissao = new Permissao();
         try {
-            Query qry = getEntityManager().createQuery("select p "
-                    + " from Permissao p "
-                    + "where p.modulo.id = " + id_modulo
-                    + "  and p.rotina.id = " + id_rotina
-                    + "  and p.evento.id = " + id_evento);
+            Query qry = getEntityManager().createQuery("    "
+                    + " SELECT p                            "
+                    + "   FROM Permissao p                  "
+                    + "  WHERE p.modulo.id = " + id_modulo  
+                    + "    AND p.rotina.id = " + id_rotina  
+                    + "    AND p.rotina.ativo = true        "
+                    + "    AND p.evento.id = " + id_evento);
             if (!qry.getResultList().isEmpty()) {
                 return (Permissao) qry.getSingleResult();
             }

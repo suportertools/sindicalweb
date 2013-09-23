@@ -28,4 +28,8 @@ public interface MatriculaEscolaDB {
     public boolean verificaPessoaEnderecoDocumento(String tipoPessoa, int idPessoa);
 
     public boolean desfazerMovimento(MatriculaEscola me);
+    
+     public boolean existeMatriculaTurma(MatriculaTurma mt);
+     
+      public boolean existeMatriculaIndividual(MatriculaIndividual mi);
 }

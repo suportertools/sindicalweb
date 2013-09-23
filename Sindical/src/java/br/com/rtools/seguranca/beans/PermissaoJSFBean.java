@@ -7,6 +7,8 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 // import java.util.Vector;
 import javax.faces.model.SelectItem;
 
@@ -16,15 +18,19 @@ public class PermissaoJSFBean {
     private Modulo modulo;
     private Rotina rotina;
     private Evento evento;
+    private List<Permissao> listaPermissoes = new ArrayList();
     private PermissaoDepartamento permissaoDepartamento = new PermissaoDepartamento();
     private String msgConfirma;
     private String indicaTab = "permissao";
+    private String descricaoPesquisa = "";
     private String tabDisabled = "true";
-    private List<Permissao> listaPermissoes = new ArrayList();
-    private List listPerDisponivel = new ArrayList();
-    private List listPerAdicionada = new ArrayList();
-    private boolean carregaPerDisponivel = true;
-    private boolean carregaPerAdicionada = true;
+    private List listaPermissoesDisponiveis = new ArrayList();
+    private List listaPermissoesAdicionadas = new ArrayList();
+    private List<SelectItem> listaRotinas = new ArrayList();
+    private List<SelectItem> listaModulos = new ArrayList();
+    private List<SelectItem> listaEventos = new ArrayList();
+    private List<SelectItem> listaDepartamentos = new ArrayList();
+    private List<SelectItem> listaNiveis = new ArrayList();
     private int idModulo;
     private int idRotina;
     private int idEvento;
@@ -32,168 +38,94 @@ public class PermissaoJSFBean {
     private int idNivel;
     private int idIndex = -1;
 
-    public void refreshForm() {
-    }
-
-    public String adicionarPermissao() {
-        PermissaoDB db = new PermissaoDBToplink();
-        RotinaDB rotinaDB = new RotinaDBToplink();
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        modulo = (Modulo) sv.pesquisaCodigo(Integer.valueOf(getListaModulos().get(idModulo).getDescription()), "Modulo");
-        rotina = rotinaDB.pesquisaCodigo(Integer.valueOf(getListaRotinas().get(idRotina).getDescription()));
-        if (db.pesquisaPermissaoModRot(modulo.getId(), rotina.getId()).isEmpty()) {
-            for (int i = 0; i < getListaEventos().size(); i++) {
-                evento = (Evento) sv.pesquisaCodigo(Integer.valueOf(getListaEventos().get(i).getDescription()), "Evento");
-                permissao.setModulo(modulo);
-                permissao.setRotina(rotina);
-                permissao.setEvento(evento);
-                if (db.insert(permissao)) {
-                    msgConfirma = "Registro Adicionado!";
-                    listaPermissoes.clear();
-                }
-                permissao = new Permissao();
-            }
-        } else {
-            msgConfirma = "Permissão já Existente!";
-        }
-        permissao = new Permissao();
-        return null;
-    }
-
     public String novo() {
         permissao = new Permissao();
         setIdModulo(0);
         setIdRotina(0);
         setIdEvento(0);
+        setDescricaoPesquisa("");
         setTabDisabled("true");
         return "permissao";
     }
 
-    public String btnExcluir() {
+    // MÓDULO / ROTINA
+    public String adicionarPermissao() {
+        if (listaRotinas.isEmpty()) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Não há rotinas disponíveis para serem adicionadas a esse módulo"));
+            return null;
+        }
         PermissaoDB db = new PermissaoDBToplink();
-        permissao = (Permissao) listaPermissoes.get(idIndex);
-        int idMod = permissao.getModulo().getId();
-        int idRot = permissao.getRotina().getId();
-        List listaPer = db.pesquisaPermissaoModRot(idMod, idRot);
-        for (int i = 0; i < listaPer.size(); i++) {
-            permissao = (Permissao) listaPer.get(i);
-            db.getEntityManager().getTransaction().begin();
-            permissao = db.pesquisaCodigo(permissao.getId());
-            if (db.delete(permissao)) {
-                db.getEntityManager().getTransaction().commit();
-                msgConfirma = "Registro excluído!";
-                listaPermissoes.clear();
+        RotinaDB rotinaDB = new RotinaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        modulo = (Modulo) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaModulos.get(idModulo).getDescription()), "Modulo");
+        rotina = rotinaDB.pesquisaCodigo(Integer.valueOf(listaRotinas.get(idRotina).getDescription()));
+        boolean sucesso = false;
+        if (db.pesquisaPermissaoModRot(modulo.getId(), rotina.getId()).isEmpty()) {
+            salvarAcumuladoDB.abrirTransacao();
+            for (int i = 0; i < getListaEventos().size(); i++) {
+                evento = (Evento) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(getListaEventos().get(i).getDescription()), "Evento");
+                permissao.setModulo(modulo);
+                permissao.setRotina(rotina);
+                permissao.setEvento(evento);
+                if (!salvarAcumuladoDB.inserirObjeto(permissao)) {
+                    sucesso = false;
+                    break;
+                }
+                permissao = new Permissao();
+                sucesso = true;
+            }
+            if (sucesso) {
+                salvarAcumuladoDB.comitarTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro adicionado com sucesso"));
+                listaRotinas.clear();
             } else {
-                db.getEntityManager().getTransaction().rollback();
-                msgConfirma = "Erro ao Excluir Permissão!";
+                salvarAcumuladoDB.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro adicionar permissão(s)!"));
+            }
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existente!"));
+        }
+        permissao = new Permissao();
+        return null;
+    }
+
+    public String removerPermissao(Permissao p) {
+        PermissaoDB db = new PermissaoDBToplink();
+        List<Permissao> listaPermissao = (List<Permissao>) db.pesquisaPermissaoModRot(p.getModulo().getId(), p.getRotina().getId());
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
+        boolean sucesso = false;
+        for (int i = 0; i < listaPermissao.size(); i++) {
+            permissao = (Permissao) salvarAcumuladoDB.pesquisaCodigo(listaPermissao.get(i).getId(), "Permissao");
+            if (!salvarAcumuladoDB.deletarObjeto(permissao)) {
+                sucesso = false;
                 break;
             }
+            sucesso = true;
             permissao = new Permissao();
+        }
+        if (sucesso) {
+            salvarAcumuladoDB.comitarTransacao();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));
+            listaRotinas.clear();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
         }
         return null;
     }
 
-    public List getPermissaoDisponivel() {
-        String ids = "";
-        if (carregaPerDisponivel) {
-            listPerDisponivel = new ArrayList();
-            PermissaoDepartamentoDB db = new PermissaoDepartamentoDBToplink();
-            int idDepto = Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription());
-            int idNiv = Integer.parseInt(getListaNiveis().get(idNivel).getDescription());
-            List listIds = db.pesquisaPermissaoAdc(idDepto, idNiv);
-            if (!listIds.isEmpty()) {
-                for (int o = 0; o < listIds.size(); o++) {
-                    if (ids.length() > 0 && o != listIds.size()) {
-                        ids = ids + ",";
-                    }
-                    ids = ids + Integer.toString(((PermissaoDepartamento) listIds.get(o)).getId());
-                }
-            }
-            DataObject dtObject;
-            List result = db.pesquisaPermissaDisponivel(ids);
-            for (int i = 0; i < result.size(); i++) {
-                dtObject = new DataObject(new Boolean(false),
-                        (Permissao) result.get(i));
-                listPerDisponivel.add(dtObject);
-            }
-            carregaPerDisponivel = false;
-        }
-        return listPerDisponivel;
-    }
-
-    public List<SelectItem> getListaModulos() {
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        List modulos = db.pesquisaTodosModuloOrdenado();
-        for (int i = 0; i  < modulos.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    ((Modulo) modulos.get(i)).getDescricao(),
-                    Integer.toString(((Modulo) modulos.get(i)).getId())));
-        }
-        return result;
-    }
-
-    public List<SelectItem> getListaRotinas() {
-        RotinaDB rotinaDB = new RotinaDBToplink();
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        List rotinas = rotinaDB.pesquisaTodosOrdenadoAtivo();
-        for (int i = 0; i  < rotinas.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    ((Rotina) rotinas.get(i)).getRotina(),
-                    Integer.toString(((Rotina) rotinas.get(i)).getId())));
-        }
-        return result;
-    }
-
-    public List<SelectItem> getListaEventos() {
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        List eventos = db.pesquisaTodosEventoOrdenado();
-        for (int i = 0; i  < eventos.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    ((Evento) eventos.get(i)).getDescricao(),
-                    Integer.toString(((Evento) eventos.get(i)).getId())));
-        }
-        return result;
-    }
-
-    public List<SelectItem> getListaNiveis() {
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        List niveis = db.pesquisaTodosNiveis();
-        for (int i = 0; i  < niveis.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    ((Nivel) niveis.get(i)).getDescricao(),
-                    Integer.toString(((Nivel) niveis.get(i)).getId())));
-        }
-        carregaPerAdicionada = true;
-        carregaPerDisponivel = true;
-        return result;
-    }
-
-    public List<SelectItem> getListaDepartamentos() {
-        PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        List departamentos = db.pesquisaTodosDepOrdenado();
-        for (int i = 0; i  < departamentos.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
-                    ((Departamento) departamentos.get(i)).getDescricao(),
-                    Integer.toString(((Departamento) departamentos.get(i)).getId())));
-        }
-        carregaPerAdicionada = true;
-        carregaPerDisponivel = true;
-        return result;
-    }
-
+    // PERMISSÃO DEPARTAMENTO   
+    
     public String adicionarPermissaoDpto() {
-        if (!listPerDisponivel.isEmpty()) {
+        if (!listaPermissoesDisponiveis.isEmpty()) {
+            boolean erro = false;
+            boolean temRegistros = false;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//            PermissaoUsuarioDB dbpu = new PermissaoUsuarioDBToplink();
-//            UsuarioAcesso user = new UsuarioAcesso();
             sv.abrirTransacao();
-            for (int i = 0; i < listPerDisponivel.size(); i++) {
-                if ((Boolean) ((DataObject) listPerDisponivel.get(i)).getArgumento0() == true) {
-                    Permissao perm = (Permissao) ((DataObject) listPerDisponivel.get(i)).getArgumento1();
+            for (int i = 0; i < listaPermissoesDisponiveis.size(); i++) {
+                if ((Boolean) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento0() == true) {
+                    Permissao perm = (Permissao) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento1();
                     Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()), "Departamento");
                     Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(getListaNiveis().get(idNivel).getDescription()), "Nivel");
                     permissaoDepartamento.setPermissao(perm);
@@ -201,152 +133,221 @@ public class PermissaoJSFBean {
                     permissaoDepartamento.setNivel(niv);
 
                     if (!sv.inserirObjeto(permissaoDepartamento)) {
-                        sv.desfazerTransacao();
-                        return "permissaoDepartamento";
+                        temRegistros = false;
+                        erro = true;
+                        break;
                     }
-
-//                    List<PermissaoUsuario> lista = dbpu.pesquisaPermissaoUser(depto.getId(), niv.getId());
-//
-//                    for (int w = 0; w < lista.size(); w++) {
-//                        user.setPermissao(permissaoDepartamento.getPermissao());
-//                        user.setUsuario(lista.get(w).getUsuario());
-//
-//                        if (!sv.inserirObjeto(user)) {
-//                            sv.desfazerTransacao();
-//                            return "permissaoDepartamento";
-//                        }
-//
-//                        user = new UsuarioAcesso();
-//                    }
+                    temRegistros = true;
                     permissaoDepartamento = new PermissaoDepartamento();
                 }
             }
-            sv.comitarTransacao();
+            if (erro) {
+                sv.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão(s)!"));
+            } else {
+                sv.comitarTransacao();
+                if (temRegistros) {
+                    listaPermissoesAdicionadas.clear();
+                    listaPermissoesDisponiveis.clear();
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));                    
+                } else {
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));                    
+                }
+            }
         }
-        carregaPerAdicionada = true;
-        carregaPerDisponivel = true;
-        return "permissaoDepartamento";
+        return null;
+    }
+    
+    public String adicionarPermissaoDptoDBClick(Permissao p) {
+        if (!listaPermissoesDisponiveis.isEmpty()) {
+            boolean erro = false;
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
+            Permissao perm = p;
+            Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()), "Departamento");
+            Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(getListaNiveis().get(idNivel).getDescription()), "Nivel");
+            permissaoDepartamento.setPermissao(perm);
+            permissaoDepartamento.setDepartamento(depto);
+            permissaoDepartamento.setNivel(niv);
+            if (!sv.inserirObjeto(permissaoDepartamento)) {
+                erro = true;
+            }
+            permissaoDepartamento = new PermissaoDepartamento();
+            if (erro) {
+                sv.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão(s)!"));
+            } else {
+                sv.comitarTransacao();
+                listaPermissoesAdicionadas.clear();
+                listaPermissoesDisponiveis.clear();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));                    
+            }
+        }
+        return null;
     }
 
     public String adicionarTodasPermissaoDpto() {
-        if (!listPerDisponivel.isEmpty()) {
+        if (!listaPermissoesDisponiveis.isEmpty()) {
+            boolean erro = false;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//            PermissaoUsuarioDB dbpu = new PermissaoUsuarioDBToplink();
-//            UsuarioAcesso user = new UsuarioAcesso();
             sv.abrirTransacao();
-            for (int i = 0; i < listPerDisponivel.size(); i++) {
-                Permissao perm = (Permissao) ((DataObject) listPerDisponivel.get(i)).getArgumento1();
-                Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()), "Departamento");
-                Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(getListaNiveis().get(idNivel).getDescription()), "Nivel");
+            for (int i = 0; i < listaPermissoesDisponiveis.size(); i++) {
+                Permissao perm = (Permissao) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento1();
+                Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription()), "Departamento");
+                Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(listaNiveis.get(idNivel).getDescription()), "Nivel");
                 permissaoDepartamento.setPermissao(perm);
                 permissaoDepartamento.setDepartamento(depto);
                 permissaoDepartamento.setNivel(niv);
-
                 if (!sv.inserirObjeto(permissaoDepartamento)) {
-                    sv.desfazerTransacao();
-                    return "permissaoDepartamento";
+                    erro = true;
+                    break;
                 }
-
-//                List<PermissaoUsuario> lista = dbpu.pesquisaPermissaoUser(depto.getId(), niv.getId());
-//
-//                for (int w = 0; w < lista.size(); w++) {
-//                    user.setPermissao(permissaoDepartamento.getPermissao());
-//                    user.setUsuario(lista.get(w).getUsuario());
-//
-//                    if (!sv.inserirObjeto(user)) {
-//                        sv.desfazerTransacao();
-//                        return "permissaoDepartamento";
-//                    }
-//
-//                    user = new UsuarioAcesso();
-//                }
                 permissaoDepartamento = new PermissaoDepartamento();
             }
-            sv.comitarTransacao();
+            if (erro) {
+                sv.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão(s)!"));
+            } else {
+                sv.comitarTransacao();
+                listaPermissoesAdicionadas.clear();
+                listaPermissoesDisponiveis.clear();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));
+            }
         }
-        carregaPerAdicionada = true;
-        carregaPerDisponivel = true;
-        return "permissaoDepartamento";
+        return null;
     }
 
     public String excluirPermissaoDepto() {
-        if (!listPerAdicionada.isEmpty()) {
+        if (!listaPermissoesAdicionadas.isEmpty()) {
+            boolean erro = false;
+            boolean temRegistros = false;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//            PermissaoUsuarioDB dbpu = new PermissaoUsuarioDBToplink();
             sv.abrirTransacao();
-            for (int i = 0; i < listPerAdicionada.size(); i++) {
-                if ((Boolean) ((DataObject) listPerAdicionada.get(i)).getArgumento0() == true) {
-
-                    permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listPerAdicionada.get(i)).getArgumento2();
+            for (int i = 0; i < listaPermissoesAdicionadas.size(); i++) {
+                if ((Boolean) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento0() == true) {
+                    permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento2();
                     if (!sv.deletarObjeto((PermissaoDepartamento) sv.pesquisaCodigo(permissaoDepartamento.getId(), "PermissaoDepartamento"))) {
-                        sv.desfazerTransacao();
-                        return "permissaoDepartamento";
+                        erro = true;
+                        temRegistros = false;
+                        break;
                     }
-
-//                    List<UsuarioAcesso> lista = dbpu.pesquisaAcesso(permissaoDepartamento.getPermissao().getId());
-//                    for (int w = 0; w < lista.size(); w++) {
-//                        if (!sv.deletarObjeto(sv.pesquisaCodigo(lista.get(w).getId(), "UsuarioAcesso"))) {
-//                            sv.desfazerTransacao();
-//                            return "permissaoDepartamento";
-//                        }
-//                    }
+                    temRegistros = true;
                 }
                 permissaoDepartamento = new PermissaoDepartamento();
             }
-            sv.comitarTransacao();
+            if (erro) {
+                sv.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+            } else {
+                sv.comitarTransacao();
+                if (temRegistros) {
+                    listaPermissoesAdicionadas.clear();
+                    listaPermissoesDisponiveis.clear();
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));                    
+                } else {
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));
+                }
+            }
         }
-        carregaPerAdicionada = true;
-        carregaPerDisponivel = true;
-        return "permissaoDepartamento";
+        return null;
+    }
+    
+    public String excluirPermissaoDeptoDBClick(PermissaoDepartamento pd) {
+        if (!listaPermissoesAdicionadas.isEmpty()) {
+            boolean erro = false;
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
+            permissaoDepartamento = pd;
+            if (!sv.deletarObjeto((PermissaoDepartamento) sv.pesquisaCodigo(permissaoDepartamento.getId(), "PermissaoDepartamento"))) {
+                erro = true;
+            }
+            permissaoDepartamento = new PermissaoDepartamento();
+            if (erro) {
+                sv.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+            } else {
+                sv.comitarTransacao();
+                listaPermissoesAdicionadas.clear();
+                listaPermissoesDisponiveis.clear();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));                
+            }
+        }
+        return null;
     }
 
     public String excluirTodasPermissaoDepto() {
-        if (!listPerAdicionada.isEmpty()) {
-//            PermissaoUsuarioDB dbpu = new PermissaoUsuarioDBToplink();
+        if (!listaPermissoesAdicionadas.isEmpty()) {
+            boolean erro = false;
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             sv.abrirTransacao();
-            for (int i = 0; i < listPerAdicionada.size(); i++) {
-                permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listPerAdicionada.get(i)).getArgumento2();
+            for (int i = 0; i < listaPermissoesAdicionadas.size(); i++) {
+                permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento2();
                 if (!sv.deletarObjeto((PermissaoDepartamento) sv.pesquisaCodigo(permissaoDepartamento.getId(), "PermissaoDepartamento"))) {
-                    sv.desfazerTransacao();
-                    return "permissaoDepartamento";
+                    erro = true;
+                    break;
                 }
-//                List<UsuarioAcesso> lista = dbpu.pesquisaAcesso(permissaoDepartamento.getPermissao().getId());
-//                for (int w = 0; w < lista.size(); w++) {
-//                    if (!sv.deletarObjeto(sv.pesquisaCodigo(lista.get(w).getId(), "UsuarioAcesso"))) {
-//                        sv.desfazerTransacao();
-//                        return "permissaoDepartamento";
-//                    }
-//                }
             }
-            sv.comitarTransacao();
+            if (erro) {
+                sv.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+            } else {
+                sv.comitarTransacao();
+                listaPermissoesAdicionadas.clear();
+                listaPermissoesDisponiveis.clear();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removidas com sucesso"));                    
+            }
         }
         permissaoDepartamento = new PermissaoDepartamento();
-        carregaPerAdicionada = true;
-        carregaPerDisponivel = true;
-        return "permissaoDepartamento";
+        return null;
+    }
+
+    public void pesquisaPermissoesDepartamento() {
+        listaPermissoesDisponiveis.clear();
+        listaPermissoesAdicionadas.clear();
+    }
+
+    public void limparPesquisaPermissoesDepartamento() {
+        descricaoPesquisa = "";
+        listaPermissoesDisponiveis.clear();
+        listaPermissoesAdicionadas.clear();        
+    }
+
+    public List getPermissaoDisponivel() {
+        if (listaPermissoesDisponiveis.isEmpty()) {
+            listaPermissoesDisponiveis.clear();
+            PermissaoDepartamentoDB permissaoDepartamentoDB = new PermissaoDepartamentoDBToplink();
+            int idDepto = Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription());
+            int idNiv = Integer.parseInt(listaNiveis.get(idNivel).getDescription());
+            List<Permissao> list = permissaoDepartamentoDB.listaPermissaoDepartamentoDisponivel(idDepto, idNiv, descricaoPesquisa);
+            DataObject dtObject;
+            for (int i = 0; i < list.size(); i++) {
+                dtObject = new DataObject(
+                        false,
+                        (Permissao) list.get(i));
+                listaPermissoesDisponiveis.add(dtObject);
+            }
+        }
+        return listaPermissoesDisponiveis;
     }
 
     public List getPermissaoAdicionada() {
-        if (carregaPerAdicionada) {
-            listPerAdicionada = new ArrayList();
-            PermissaoDepartamentoDB db = new PermissaoDepartamentoDBToplink();
-            int idDepto = Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription());
-            int idNiv = Integer.parseInt(getListaNiveis().get(idNivel).getDescription());
-            List result = db.pesquisaPermissaoAdc(idDepto, idNiv);
+        if (listaPermissoesAdicionadas.isEmpty()) {
+            PermissaoDepartamentoDB permissaoDepartamentoDB = new PermissaoDepartamentoDBToplink();
+            int idDepto = Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription());
+            int idNiv = Integer.parseInt(listaNiveis.get(idNivel).getDescription());
+            List<PermissaoDepartamento> list = permissaoDepartamentoDB.listaPermissaoDepartamentoAdicionada(idDepto, idNiv, descricaoPesquisa);
             DataObject dtObject;
-            for (int i = 0; i < result.size(); i++) {
-                dtObject = new DataObject(new Boolean(false),
-                        ((PermissaoDepartamento) result.get(i)).getPermissao(),
-                        ((PermissaoDepartamento) result.get(i)),
+            for (int i = 0; i < list.size(); i++) {
+                dtObject = new DataObject(false,
+                        ((PermissaoDepartamento) list.get(i)).getPermissao(),
+                        ((PermissaoDepartamento) list.get(i)),
                         null,
                         null,
                         null);
-                listPerAdicionada.add(dtObject);
+                listaPermissoesAdicionadas.add(dtObject);
             }
-            carregaPerAdicionada = false;
         }
-        return listPerAdicionada;
+        return listaPermissoesAdicionadas;
     }
 
     public List getListaPermissaoDpto() {
@@ -443,15 +444,109 @@ public class PermissaoJSFBean {
         this.idIndex = idIndex;
     }
 
-    public List<Permissao> getListaPermissoes() {
-        if (listaPermissoes.isEmpty()) {
-            PermissaoDB db = new PermissaoDBToplink();
-            listaPermissoes = db.pesquisaTodosAgrupados();
+    public List<SelectItem> getListaModulos() {
+        if (listaModulos.isEmpty()) {
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            List modulos = db.pesquisaTodosModuloOrdenado();
+            for (int i = 0; i < modulos.size(); i++) {
+                listaModulos.add(new SelectItem(new Integer(i),
+                        ((Modulo) modulos.get(i)).getDescricao(),
+                        Integer.toString(((Modulo) modulos.get(i)).getId())));
+            }
         }
+        return listaModulos;
+    }
+
+    public void setListaModulos(List<SelectItem> listaModulos) {
+        this.listaModulos = listaModulos;
+    }
+
+    public List<SelectItem> getListaRotinas() {
+        listaRotinas.clear();
+        if (listaRotinas.isEmpty()) {
+            RotinaDB rotinaDB = new RotinaDBToplink();
+            List list = rotinaDB.pesquisaRotinasDisponiveisModulo(Integer.parseInt(listaModulos.get(idModulo).getDescription()));
+            for (int i = 0; i < list.size(); i++) {
+                listaRotinas.add(new SelectItem(new Integer(i),
+                        ((Rotina) list.get(i)).getRotina(),
+                        Integer.toString(((Rotina) list.get(i)).getId())));
+            }
+        }
+        return listaRotinas;
+    }
+
+    public void setListaRotinas(List<SelectItem> listaRotinas) {
+        this.listaRotinas = listaRotinas;
+    }
+
+    public List<SelectItem> getListaEventos() {
+        if (listaEventos.isEmpty()) {
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            List eventos = db.pesquisaTodosEventoOrdenado();
+            for (int i = 0; i < eventos.size(); i++) {
+                listaEventos.add(new SelectItem(new Integer(i),
+                        ((Evento) eventos.get(i)).getDescricao(),
+                        Integer.toString(((Evento) eventos.get(i)).getId())));
+            }
+        }
+        return listaEventos;
+    }
+
+    public void setListaEventos(List<SelectItem> listaEventos) {
+        this.listaEventos = listaEventos;
+    }
+
+    public List<SelectItem> getListaNiveis() {
+        if (listaNiveis.isEmpty()) {
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            List niveis = db.pesquisaTodosNiveis();
+            for (int i = 0; i < niveis.size(); i++) {
+                listaNiveis.add(new SelectItem(new Integer(i),
+                        ((Nivel) niveis.get(i)).getDescricao(),
+                        Integer.toString(((Nivel) niveis.get(i)).getId())));
+            }
+
+        }
+        return listaNiveis;
+    }
+
+    public void setListaNiveis(List<SelectItem> listaNiveis) {
+        this.listaNiveis = listaNiveis;
+    }
+
+    public List<SelectItem> getListaDepartamentos() {
+        if (listaDepartamentos.isEmpty()) {
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            List departamentos = db.pesquisaTodosDepOrdenado();
+            for (int i = 0; i < departamentos.size(); i++) {
+                listaDepartamentos.add(new SelectItem(new Integer(i),
+                        ((Departamento) departamentos.get(i)).getDescricao(),
+                        Integer.toString(((Departamento) departamentos.get(i)).getId())));
+            }
+        }
+        return listaDepartamentos;
+    }
+
+    public void setListaDepartamentos(List<SelectItem> listaDepartamentos) {
+        this.listaDepartamentos = listaDepartamentos;
+    }
+
+    public String getDescricaoPesquisa() {
+        return descricaoPesquisa;
+    }
+
+    public void setDescricaoPesquisa(String descricaoPesquisa) {
+        this.descricaoPesquisa = descricaoPesquisa;
+    }
+    
+    public List<Permissao> getListaPermissoes() {
+        listaPermissoes.clear();
+        PermissaoDB db = new PermissaoDBToplink();
+        listaPermissoes = db.pesquisaTodosAgrupadosPorModulo(Integer.parseInt(listaModulos.get(idModulo).getDescription()));
         return listaPermissoes;
     }
 
     public void setListaPermissoes(List<Permissao> listaPermissoes) {
         this.listaPermissoes = listaPermissoes;
-    }
+    }    
 }
