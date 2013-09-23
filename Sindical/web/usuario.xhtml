@@ -55,7 +55,7 @@
                             <h:commandLink action="#{usuarioBean.habilitaNovaSenha}" value="ALTERAR SENHA" styleClass="fontePadraoNegrito" rendered="#{usuarioBean.disStrSenha}"/>
                         </h:column>
                         <h:column>
-                            <h:outputLabel value="ANGINA: " styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>
+                            <h:outputLabel value="ANTIGA: " styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>
                         </h:column>
                         <h:column>
                             <h:inputSecret value="#{usuarioBean.senhaAntiga}" autocomplete="off" styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>

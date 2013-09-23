@@ -34,6 +34,7 @@
     <![endif]-->
     <h:body onload="#{rich:element('formLogin:login')}.focus();">
         <f:view>
+            <rich:notifyMessages stayTime="3500" showDetail="true" showCloseButton="true" showShadow="false" globalOnly="false"/>
             <center>
                 <rich:panel style="border: 0; border-bottom: 1px dashed #888; width: 600px; background: #f6f6f6;">
                     <h:graphicImage url="/Imagens/loginSindical.png" style="width: 400px; height: 150px; margin-bottom: 15px; margin-top: 15px;" alt="sindical" title="Sistema Sindical"/>

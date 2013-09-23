@@ -17,7 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formMatriculaEscola">            
-                <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}"/>
+                <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Cadastro de Matrícula" styleClass="fontePanel" style="width: 100%;"/>
@@ -355,7 +355,7 @@
                                 <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
                             </h:panelGrid>
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma, idAluno, idResp"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaEscolaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma, idFormMatriculaEscola"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
@@ -371,7 +371,7 @@
                         <center>
                             <h:outputText id="outConfirma" value="#{matriculaEscolaBean.msgConfirma}" styleClass="fontePadrao" />
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="matriculaEscola"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="idObject, idFormMatriculaEscola"/>
                         </center>
                     </div>
                     <div id="mask"></div>

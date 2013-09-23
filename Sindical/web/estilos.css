@@ -449,13 +449,16 @@ span.loading-status {background: url(Imagens/espere.gif) no-repeat; background-s
 
 a.iLink {color:black; text-decoration:none; }
 a.iLink:hover {text-shadow: 0 0 0.2em dodgerblue, 0 0 0.2em #87F,0 0 0.2em dodgerblue; text-decoration:none}
-.idAdicionar, .idSalvar, .idExcluir, .idNovo, .idPesquisar {border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; font-size: 12pt; font-family: Verdana; border: 1px  solid #cccccc; text-align: center; background-color: white; margin-right: 5px; height: 25px; display: inline-block; padding-top: 5px; cursor: pointer;}
+a.iLinkSimples {color:black; text-decoration:none; }
+a.iLinkSimples:hover {color: #888; text-decoration:none; }
+.idBotao, .idAdicionar, .idSalvar, .idExcluir, .idNovo, .idPesquisar {border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; font-size: 12pt; font-family: Verdana; border: 1px  solid #cccccc; text-align: center; background-color: white; margin-right: 5px; height: 25px; display: inline-block; padding-top: 5px; cursor: pointer;}
 .idSalvar{width: 60px;}
 .idAdicionar:hover, .idSalvar:hover, .idNovo:hover, .idExcluir:hover, .idPesquisar:hover {color:white; background: dodgerblue; -moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888; border-color: dodgerblue; z-index: 5;}
-.idNovo{width: 60px;}
+.idNovo{padding-left: 5px; padding-right: 5px;}
 .idExcluir{width: 65px;}
 .idPesquisar{width: 90px;}
 .idAdicionar {width: 15px; height: 15px; margin-top: 0; padding: 0}
+.idBotao {padding-left: 5px; padding-right: 5px;}
 
 .iButton {color:black; border-radius: 5px; -moz-border-radius: 5px; -webkit-border-radius: 5px; font-size: 11pt; font-family: Verdana; border: 1px  solid #cccccc; text-align: center; background-color: white; margin-right: 5px; height: 20px; display: inline-block; width: 60px; height: 35px;}
 .iButton:hover {color:white; background: dodgerblue; -moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888; border-color: dodgerblue; z-index: 5; cursor: pointer}
