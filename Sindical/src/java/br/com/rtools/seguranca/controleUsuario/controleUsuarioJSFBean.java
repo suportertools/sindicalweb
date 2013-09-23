@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -88,10 +89,12 @@ public class controleUsuarioJSFBean implements java.io.Serializable {
         String user = usuario.getLogin(), senh = usuario.getSenha();
         if (usuario.getLogin().equals("") || usuario.getLogin().equals("Usuario")) {
             msgErro = "@ Informar nome do usuário!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgErro));
             return pagina;
         }
         if (usuario.getSenha().equals("") || usuario.getSenha().equals("Senha")) {
             msgErro = "@ Informar senha!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgErro));
             return pagina;
         }
         usuario = db.ValidaUsuario(usuario.getLogin(), usuario.getSenha());
@@ -111,6 +114,7 @@ public class controleUsuarioJSFBean implements java.io.Serializable {
             log.novo("login de acesso", "tentativa de acesso usr:" + user + "/sen: " + senh);
             usuario = new Usuario();
             msgErro = "@ Usuário e/ou Senha inválidas! Tente novamente.";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgErro));
         }
         return pagina;
     }

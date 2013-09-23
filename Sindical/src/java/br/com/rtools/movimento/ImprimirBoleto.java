@@ -119,7 +119,7 @@ public class ImprimirBoleto {
                                     "", 
                                     lista.get(i).getVencimento(), 
                                     0,
-                                    0, 0, 0, 0, 0, 0, lista.get(i).getTipoDocumento(),0,null);
+                                    0, 0, 0, 0, 0, 0, lista.get(i).getTipoDocumento(),0);
                 
                 GerarMovimento.inativarUmMovimento(lista.get(i), "REIMPRESSÃO COM NOVO CEDENTE.");
                 
@@ -164,7 +164,7 @@ public class ImprimirBoleto {
                                     "", 
                                     lista.get(i).getVencimento(), 
                                     0,
-                                    0, 0, 0, 0, 0, 0, lista.get(i).getTipoDocumento(),0, null);
+                                    0, 0, 0, 0, 0, 0, lista.get(i).getTipoDocumento(),0);
                 
                 GerarMovimento.inativarUmMovimento(lista.get(i), "REIMPRESSÃO COM NOVO CEDENTE.");
                 

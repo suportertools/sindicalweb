@@ -178,8 +178,7 @@ public abstract class ArquivoRetorno {
                             0,0,0,0,0,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-                            dbft.pesquisaCodigo(2),0,
-                            null);
+                            dbft.pesquisaCodigo(2),0);
 
                         if (GerarMovimento.salvarUmMovimentoBaixa(new Lote(), movi)){
                             float valor_liquido = Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorCredito())) / 100;
@@ -285,8 +284,7 @@ public abstract class ArquivoRetorno {
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
                             dbft.pesquisaCodigo(2),
-                            0,
-                            null);
+                            0);
 
                     if (GerarMovimento.salvarUmMovimentoBaixa(new Lote(), movi)){
                         float valor_liquido = Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorCredito())) / 100;
@@ -327,8 +325,7 @@ public abstract class ArquivoRetorno {
                             0,0,0,0,0,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-                            dbft.pesquisaCodigo(2),0,
-                            null);
+                            dbft.pesquisaCodigo(2),0);
                     
                     if (GerarMovimento.salvarUmMovimentoBaixa(new Lote(), movi)){
                         float valor_liquido = Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorCredito())) / 100;
