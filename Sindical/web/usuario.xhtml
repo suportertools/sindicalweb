@@ -225,8 +225,8 @@
                                                 <f:facet name="header">
                                                     <h:outputText value="Permite"/>
                                                 </f:facet>
-                                                <h:selectBooleanCheckbox id="idPerN#{its.index}" value="#{linha.permite}" title="Permite / Não Permite">
-                                                    <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(linha)}" render="msgUsuarioAcesso idPerN#{its.index} tblUsuarioAcesso" />
+                                                <h:selectBooleanCheckbox value="#{linha.permite}" title="Permite / Não Permite">
+                                                    <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(linha)}" render="@this, tblUsuarioAcesso, msgUsuarioAcesso" />
                                                 </h:selectBooleanCheckbox>
                                             </rich:column>
                                         </rich:dataTable>
