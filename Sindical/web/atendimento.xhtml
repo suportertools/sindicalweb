@@ -17,6 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formAtendimento">
+                <h:outputScript library="js" name="jScripts.js" />
                 <c:set scope="request" var="object" value="${atendimentoBean.ateMovimento}"/>
                 <center>
                     <rich:panel id="idFormAtendimento" style="border: 0;">
@@ -253,7 +254,7 @@
                                 <center>
                                     <h:outputText id="outConfirma" value="#{atendimentoBean.msgConfirma} #{atendimentoBean.msg}" styleClass="fontePadrao"/>
                                     <br /><br />
-                                    <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="atendimento" title="OK" render="tbl"/>
+                                    <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="@form"/>
                                 </center>
                             </div>
                             <div id="mask"></div>
