@@ -9,6 +9,7 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
@@ -131,16 +132,19 @@ public class UsuarioJSFBean {
         pu.setUsuario(usuario);
         PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();        
         if (permissaoUsuarioDB.existePermissaoUsuario(pu)) {
-            msgPermissao = "Permissão já Existente!";
+            // msgPermissao = "Permissão já Existente!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe"));
             return null;
         }
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.inserirObjeto(pu)) {
             salvarAcumuladoDB.comitarTransacao();
-            msgPermissao = "Permissão adicionada com sucesso.";
+            // msgPermissao = "Permissão adicionada com sucesso.";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão adicionada"));
         } else {
             salvarAcumuladoDB.desfazerTransacao();
-            msgPermissao = "Erro ao adicionar essa permissão!";
+            // msgPermissao = "Erro ao adicionar essa permissão!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar essa permissão!"));
         }
         idDepartamento = 0;
         idNivel = 0;
@@ -155,11 +159,12 @@ public class UsuarioJSFBean {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(pu)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msgPermissao = "Permissão removida com sucesso.";
-                return null;
+                // msgPermissao = "Permissão removida com sucesso.";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão removida"));
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgPermissao = "Erro ao Excluír permissão!";
+                // msgPermissao = "Erro ao Excluír permissão!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao Excluír permissão!"));
                 return null;
             }
         }
@@ -305,13 +310,12 @@ public class UsuarioJSFBean {
     }
 
     public void sairSistema() throws IOException {
-        MacFilial macFilial = new MacFilial();
         String retorno = "";
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
             retorno = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") + "/";
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
                 SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-                macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+                MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
                 retorno += "?filial=" + macFilial.getMac();
             }
 
@@ -588,23 +592,25 @@ public class UsuarioJSFBean {
                 salvarAcumuladoDB.abrirTransacao();
                 usuarioAcesso.setPermite(true);
                 if (salvarAcumuladoDB.inserirObjeto(usuarioAcesso)) {
-                    NovoLog log = new NovoLog();
-                    log.novo(userLogado, userLogado);
-                    msgUsuarioAcesso = "Permissão adicionada com sucesso.";
                     salvarAcumuladoDB.comitarTransacao();
+//                    NovoLog log = new NovoLog();
+//                    log.novo(userLogado, userLogado);
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão adicionada"));
                 } else {
                     salvarAcumuladoDB.desfazerTransacao();
-                    msgUsuarioAcesso = "Erro ao adicionar Permissão!";
+                    // msgUsuarioAcesso = "Erro ao adicionar Permissão!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão!"));
                 }
             } else {
-                msgUsuarioAcesso = "Permissão já existe!";
+                // msgUsuarioAcesso = "Permissão já existe!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe!"));
             }
         }
         listaUsuarioAcesso.clear();
     }
 
     public List<UsuarioAcesso> getListaUsuarioAcesso() {
-
+        listaUsuarioAcesso.clear();
         if (usuario.getId() != -1) {
             PermissaoDB db = new PermissaoDBToplink();
             int idM = 0;
@@ -657,24 +663,32 @@ public class UsuarioJSFBean {
         this.idIndexUsuarioAcesso = idIndexUsuarioAcesso;
     }
 
-    public String permiteUsuarioAcesso(UsuarioAcesso usuarioAcesso) {
-        if (usuarioAcesso.getId() == -1) {
+    public String permiteUsuarioAcesso(UsuarioAcesso ua) {
+        if (ua.getId() == -1) {
             return null;
         }
-        if (usuarioAcesso.isPermite()) {
-            usuarioAcesso.setPermite(false);
-        } else {
-            usuarioAcesso.setPermite(true);            
-        }
+//        if (ua.isPermite()) {
+//            ua.setPermite(false);
+//        } else {
+//            ua.setPermite(true);            
+//        }
         msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.alterarObjeto(usuarioAcesso)) {
-            listaUsuarioAcesso.clear();
+        if (salvarAcumuladoDB.alterarObjeto(ua)) {
             salvarAcumuladoDB.comitarTransacao();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão de acesso atualizada"));
+            listaUsuarioAcesso.clear();
         } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Falha ao atualizar essa permisão!"));
             salvarAcumuladoDB.desfazerTransacao();
         }
+//        for (int i = 0; i < listaUsuarioAcesso.size(); i++) {
+//            if (listaUsuarioAcesso.get(i).getId() == ua.getId()) {
+//                listaUsuarioAcesso.get(i).setPermite(ua.isPermite());
+//                break;
+//            }
+//        }
         return null;
     }
 
@@ -687,11 +701,13 @@ public class UsuarioJSFBean {
         UsuarioAcesso usuarioAcesso = (UsuarioAcesso) salvarAcumuladoDB.pesquisaCodigo(ua.getId(), "UsuarioAcesso");
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.deletarObjeto(usuarioAcesso)) {
-            listaUsuarioAcesso.clear();
             salvarAcumuladoDB.comitarTransacao();
+            listaUsuarioAcesso.clear();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão removida"));
         } else {
-            msgUsuarioAcesso = "Erro ao remover permissão!";
             salvarAcumuladoDB.desfazerTransacao();
+            // msgUsuarioAcesso = "Erro ao remover permissão!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão!"));
         }
         return null;
 
