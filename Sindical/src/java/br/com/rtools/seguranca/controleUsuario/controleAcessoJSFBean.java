@@ -299,7 +299,7 @@ public class controleAcessoJSFBean implements java.io.Serializable {
             //System.out.println(erro);
         }
         Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
-        boolean retorno = false;
+        boolean retorno = true;
         if (user != null) {
             int idEvento;
             if (user.getId() != 1) {
@@ -438,7 +438,7 @@ public class controleAcessoJSFBean implements java.io.Serializable {
 
     public boolean getBotaoExcluir() {
         //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
-        boolean retorno = false;
+        boolean retorno = true;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;
             PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
