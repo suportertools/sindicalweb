@@ -18,17 +18,22 @@ public class PessoaComplemento implements java.io.Serializable {
     
     @Column(name="NR_DIA_VENCIMENTO", nullable=true)
     private int nrDiaVencimento;
+    
+    @Column(name="IS_COBRANCA_BANCARIA")
+    private boolean cobrancaBancaria;
 
      public PessoaComplemento() {
         this.id = -1;
         this.pessoa = new Pessoa();
         this.nrDiaVencimento = 0;
+        this.cobrancaBancaria = false;
     }
     
-    public PessoaComplemento(int id, Pessoa pessoa, int nrDiaVencimento) {
+    public PessoaComplemento(int id, Pessoa pessoa, int nrDiaVencimento, boolean cobrancaBancaria) {
         this.id = id;
         this.pessoa = pessoa;
         this.nrDiaVencimento = nrDiaVencimento;
+        this.cobrancaBancaria = cobrancaBancaria;
     }
     
     public int getId() {
@@ -53,5 +58,13 @@ public class PessoaComplemento implements java.io.Serializable {
 
     public void setNrDiaVencimento(int nrDiaVencimento) {
         this.nrDiaVencimento = nrDiaVencimento;
+    }
+
+    public boolean isCobrancaBancaria() {
+        return cobrancaBancaria;
+    }
+
+    public void setCobrancaBancaria(boolean cobrancaBancaria) {
+        this.cobrancaBancaria = cobrancaBancaria;
     }
 }
