@@ -498,7 +498,7 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         DataHoje data = new DataHoje();
         if (data.integridadeReferencia(strReferencia)) {
             String dataS = "01/" + strReferencia;
-            if (!(data.faixaCincoAnosApós(dataS))) {
+            if (!(data.faixaCincoAnosApos(dataS))) {
                 strReferencia = "";
             }
         }
