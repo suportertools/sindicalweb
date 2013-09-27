@@ -124,10 +124,8 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
 
     public void adicionarArquivo(FileUploadEvent event) {
         this.itens.add(event.getUploadedFile());
-        UploadedFile item = event.getUploadedFile();
-        FacesContext facesContext = FacesContext.getCurrentInstance();
+        UploadedFile uploadedFile = event.getUploadedFile();
         String nomeArq = event.getUploadedFile().getName();
-
         String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Anexos/");
         try {
             File fl = new File(caminho);
@@ -137,10 +135,10 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
                 fl2.mkdir();
             }
             fl = new File(caminho + "/Pendentes/" + nomeArq);
-            InputStream in = item.getInputStream();
+            InputStream in = uploadedFile.getInputStream();
             FileOutputStream out = new FileOutputStream(fl.getPath());
 
-            byte[] buf = new byte[(int) item.getSize()];
+            byte[] buf = new byte[(int) uploadedFile.getSize()];
             int count;
             while ((count = in.read(buf)) >= 0) {
                 out.write(buf, 0, count);
@@ -154,16 +152,16 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
         }
     }
 
-    public String marcar(int index) {
-        if (!listaEmpresas.isEmpty()) {
-            if ((Boolean) (listaEmpresas.get(index).getArgumento0()) == false) {
-                listaEmpresas.get(index).setArgumento0(false);
-            } else {
-                listaEmpresas.get(index).setArgumento0(true);
-            }
-        }
-        return null;
-    }
+//    public String marcar(int index) {
+//        if (!listaEmpresas.isEmpty()) {
+//            if ((Boolean) (listaEmpresas.get(index).getArgumento0()) == false) {
+//                listaEmpresas.get(index).setArgumento0(false);
+//            } else {
+//                listaEmpresas.get(index).setArgumento0(true);
+//            }
+//        }
+//        return null;
+//    }
 
     public String marcaTodos() {
         if (!listaEmpresas.isEmpty()) {
@@ -388,7 +386,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
             EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
             List<Convencao> list = enviarArquivosDB.listaConvencao();
             for (int i = 0; i < list.size(); i++) {
-                listaConvencaoObject.add(new DataObject(new Boolean(false), list.get(i)));
+                listaConvencaoObject.add(new DataObject(false, list.get(i)));
             }
         }
         return listaConvencaoObject;
@@ -476,7 +474,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
     public List<DataObject> getListaGrupoCidadeConvencaoObject() {
         if (listaGrupoCidadeConvencaoObject.isEmpty()) {
             for (int i = 0; i < listaGrupoCidadeConvencao.size(); i++) {
-                listaGrupoCidadeConvencaoObject.add(new DataObject(new Boolean(false), listaGrupoCidadeConvencao.get(i)));
+                listaGrupoCidadeConvencaoObject.add(new DataObject(false, listaGrupoCidadeConvencao.get(i)));
             }
         }
         return listaGrupoCidadeConvencaoObject;
@@ -548,7 +546,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
     public List<DataObject> getListaCnaeObject() {
         getListaCnae();
         for (int i = 0; i < listaCnae.size(); i++) {
-            listaCnaeObject.add(new DataObject(new Boolean(false), listaCnae.get(i)));
+            listaCnaeObject.add(new DataObject(false, listaCnae.get(i)));
         }
         return listaCnaeObject;
     }
