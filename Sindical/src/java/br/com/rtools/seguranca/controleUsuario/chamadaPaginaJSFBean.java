@@ -122,6 +122,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cnaePesquisado");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
         //}
         return metodoGenerico(2, "pessoaJuridica");
     }
@@ -138,6 +139,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
         //}
         return metodoGenerico(2, "pessoaFisica");
     }
@@ -587,7 +589,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");        
         return metodoGenerico(2, "matriculaEscola");
     }
 
