@@ -27,6 +27,7 @@
                     <div class="divMae">
                         <rich:tabPanel switchType="client" activeItem="#{juridicaBean.indicaTab}">
                             <a4j:ajax event="itemchange" render="this" listener="#{juridicaBean.refreshForm}"/>
+                            <a4j:ajax event="itemchange" listener="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(juridicaBean.juridica.pessoa.id)}" />
                             <rich:tab name="pessoal" header="Dados Gerais" style="text-align: left;">
                                 <h:panelGrid columns="6" id="i_panel_cnae">
                                     <h:commandButton image="/Imagens/pesquisar.png" alt="Pesquisar Cnae"  action="#{chamadaPaginaBean.pesquisaCnae}"/>
@@ -216,6 +217,13 @@
                                     </rich:dataTable>
                                 </div>
                             </rich:tab>
+                            
+                            <rich:tab name="financeiro" header="Financeiro" style="text-align: left">
+                                 <ui:include src="pessoaComplemento.xhtml">  
+                                    <ui:param name="idPessoa" value="#{juridicaBean.juridica.pessoa.id}" />
+                                </ui:include>                                 
+                            </rich:tab>
+                            
                         </rich:tabPanel>
                         
                         <h:panelGrid style="width: 100%; text-align: left">
