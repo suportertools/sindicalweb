@@ -1,0 +1,113 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Movimentos a Receber Social</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formMovimentosReceberSocial">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Movimentos Social" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo">
+                        <h:panelGrid style="float: left">
+                            <h:selectOneMenu value="" style="padding: 5px">
+                                <a4j:ajax event="change" render="this" />
+                                <f:selectItem itemValue="todos"    itemLabel="Todos"/>
+                                <f:selectItem itemValue="abertos"  itemLabel="Abertos"/>
+                                <f:selectItem itemValue="quitados" itemLabel="Quitados"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid style="clear: both" >
+                            <rich:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma pendência foi encontrada" rows="13">
+                                <rich:column style="text-align: center;">
+                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
+                                        <a4j:ajax event="change" render="@this"/>
+                                    </h:selectBooleanCheckbox>
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
+                                    <h:outputText value="#{linha.argumento1}" />
+                                </rich:column>
+                                
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Serviço"/></f:facet>
+                                    <h:outputText value="#{linha.argumento2}" />
+                                </rich:column>
+                                
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
+                                    <h:outputText value="#{linha.argumento3}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Referência"/></f:facet>
+                                    <h:outputText value="#{linha.argumento4}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
+                                    <h:outputText value="#{linha.argumento5}" />
+                                </rich:column>
+                                
+                                <rich:column>
+                                    <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                                    <h:outputText value="#{linha.argumento6}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Acréscimo"/></f:facet>
+                                    <h:outputText value="#{linha.argumento7}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Desconto"/></f:facet>
+                                    <h:outputText value="#{linha.argumento8}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Vl. Calculado"/></f:facet>
+                                    <h:outputText value="#{linha.argumento9}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Data Baixa"/></f:facet>
+                                    <h:outputText value="#{linha.argumento10}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Valor Pago"/></f:facet>
+                                    <h:outputText value="#{linha.argumento11}" />
+                                </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="E/S"/></f:facet>
+                                    <h:outputText value="#{linha.argumento12}" />
+                                </rich:column>
+                                <f:facet name="footer">
+                                    <rich:dataScroller id="datascroller2" maxPages="17" render="tbl"/>
+                                </f:facet>
+                            </rich:dataTable>
+                        </h:panelGrid>
+                    </div>
+                </center>
+                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

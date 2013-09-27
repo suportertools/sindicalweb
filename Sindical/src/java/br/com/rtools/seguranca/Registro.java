@@ -67,6 +67,10 @@ public class Registro implements java.io.Serializable {
     private boolean repisWeb;
     @Column(name="IS_AGENDAMENTO_WEB")
     private boolean agendamentoWeb;
+    @Column(name="NR_LIMITE_ENVIOS_NOTIFICACAO")
+    private int limiteEnvios;
+    @Column(name="NR_INTERVALO_ENVIOS_NOTIFICACAO")
+    private int intervaloEnvios;
     
     public Registro(){
          this.id = -1;
@@ -96,6 +100,8 @@ public class Registro implements java.io.Serializable {
          this.boletoWeb = false;
          this.repisWeb = false;
          this.agendamentoWeb = false;
+         this.limiteEnvios = 0;
+         this.intervaloEnvios = 0;
     }
 
     public Registro(int id, 
@@ -124,7 +130,10 @@ public class Registro implements java.io.Serializable {
                     String dataAtualizaHomologacao,
                     boolean boletoWeb,
                     boolean repisWeb,
-                    boolean agendamentoWeb){
+                    boolean agendamentoWeb, 
+                    int limiteEnvios,
+                    int intervaloEnvios){
+        
          this.id = id;
          this.filial = filial;
          this.tipoEmpresa = tipoEmpresa;
@@ -152,6 +161,8 @@ public class Registro implements java.io.Serializable {
          this.boletoWeb = boletoWeb;
          this.repisWeb = repisWeb;
          this.agendamentoWeb = agendamentoWeb;
+         this.limiteEnvios = limiteEnvios;
+         this.intervaloEnvios = intervaloEnvios;
     }
 
     public int getId() {
@@ -382,5 +393,21 @@ public class Registro implements java.io.Serializable {
 
     public void setAgendamentoWeb(boolean agendamentoWeb) {
         this.agendamentoWeb = agendamentoWeb;
+    }
+
+    public int getLimiteEnvios() {
+        return limiteEnvios;
+    }
+
+    public void setLimiteEnvios(int limiteEnvios) {
+        this.limiteEnvios = limiteEnvios;
+    }
+
+    public int getIntervaloEnvios() {
+        return intervaloEnvios;
+    }
+
+    public void setIntervaloEnvios(int intervaloEnvios) {
+        this.intervaloEnvios = intervaloEnvios;
     }
 }

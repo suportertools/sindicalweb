@@ -184,17 +184,6 @@ ALTER TABLE esc_turma
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
 
--- FIN_MOVIMENTO
--- update: 2013-09-19
--- edited by: Rogério M. Sarmento
-
-ALTER TABLE fin_movimento ADD COLUMN id_evt integer;
-ALTER TABLE fin_movimento
-  ADD CONSTRAINT fk_fin_movimento_id_evt FOREIGN KEY (id_evt)
-     REFERENCES fin_evt (id) MATCH SIMPLE      
-	ON UPDATE NO ACTION 
-	ON DELETE NO ACTION;
-
 -- PES_PESSOA_COMPLEMENTO
 -- update: 2013-09-25
 -- edited by: Bruno V. da Silva

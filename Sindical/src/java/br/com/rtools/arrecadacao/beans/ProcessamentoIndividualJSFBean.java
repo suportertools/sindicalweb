@@ -794,13 +794,14 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                 if (data1 < data2) {
                     return "Arquivo expirado!";
                 } else {
-                    String pathFile = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(link.getCaminho() + "/" + link.getNomeArquivo());
-                    if (new File(pathFile).exists()) {
+                    //String pathFile = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(link.getCaminho() + "/" + link.getNomeArquivo());
+                    String pathFile = link.getCaminho() + "/" + link.getNomeArquivo();
+                    //if (new File(pathFile).exists()) {
                         response.sendRedirect(link.getCaminho() + "/" + link.getNomeArquivo());
-                    } else {
-                        NovoLog log = new NovoLog();
-                        log.novo("Arquivo não encontrado", "Arquivo não existe no caminho específicado: " + link.getCaminho() + "/" + link.getNomeArquivo());
-                    }
+                    //} else {
+                    //    NovoLog log = new NovoLog();
+                    //    log.novo("Arquivo não encontrado", "Arquivo não existe no caminho específicado: " + link.getCaminho() + "/" + link.getNomeArquivo());
+                   // }
                 }
             }
         }

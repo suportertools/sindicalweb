@@ -2,9 +2,6 @@ package br.com.rtools.financeiro.db;
 
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.BloqueiaServicoPessoa;
-import br.com.rtools.financeiro.Cobranca;
-import br.com.rtools.financeiro.CobrancaLote;
-import br.com.rtools.financeiro.CobrancaTipo;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
@@ -33,11 +30,6 @@ public interface FinanceiroDB {
     public Usuario pesquisaUsuario(int idUsuario);
     public Historico pesquisaHistorico(int idHistorico);
     public boolean executarQuery(String textoQuery);
-    public List<CobrancaLote> listaCobrancaLote();
-    public List<CobrancaTipo> listaCobrancaTipoEnvio();
-    public List<Cobranca> listaCobranca(int id_lote_cobranca);
-    public CobrancaLote pesquisaCobrancaLote(int id_usuario, Date dataEmissao);
-    public List listaNotificacao(int tipo_envio, int id_lote);
     public List<BloqueiaServicoPessoa> listaBloqueiaServicoPessoas(int id_pessoa);
     public BloqueiaServicoPessoa  pesquisaBloqueiaServicoPessoa(int id_pessoa, int id_servico, Date dt_inicial, Date dt_final);
 }

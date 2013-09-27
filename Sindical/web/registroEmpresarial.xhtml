@@ -101,7 +101,21 @@
                                                 <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma dias_atraso"/>
                                             </h:selectBooleanCheckbox>
                                             <h:outputLabel for="chkbloAtras" value=" Bloqueia boletos atrasados" styleClass="fontePadrao"/>
-                                        </h:column>                                        
+                                        </h:column> 
+                                        <h:column>
+                                            <h:outputText value="Limite para envio de Notificações" styleClass="fontePadrao"/>
+                                        </h:column>
+                                        <h:column>
+                                            <div class="clear"></div>
+                                            <h:inputText value="#{registroEmpresarialBean.registro.limiteEnvios}" size="5"/>
+                                        </h:column>
+                                        <h:column>
+                                            <h:outputText value="Intervalo para envio de Notificações" styleClass="fontePadrao"/>
+                                        </h:column>
+                                        <h:column>
+                                            <div class="clear"></div>
+                                            <h:inputText value="#{registroEmpresarialBean.registro.intervaloEnvios}" size="5"/><h:outputText value=" min." styleClass="fontePadrao"/>
+                                        </h:column>
                                         <h:column>
                                             <h4 class="border-radius padding margin-top-maior" style="background: #e0dfdf">WEB Contribuinte/Contabilidade</h4>
                                         </h:column>                                        

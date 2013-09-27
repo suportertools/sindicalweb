@@ -30,19 +30,23 @@ public class CobrancaLote implements java.io.Serializable {
     private Usuario usuario;
     @Column(name="DS_MENSAGEM", length = 8000)
     private String mensagem;
+    @Column(name="DS_HORA", length = 5)
+    private String hora;
 
     public CobrancaLote() {
         this.id = -1;
         this.setEmissao(null);
         this.usuario = new Usuario();
         this.mensagem = "";
+        this.hora = "";
     }
     
-    public CobrancaLote(int id, String emissao, Usuario usuario, String mensagem) {
+    public CobrancaLote(int id, String emissao, Usuario usuario, String mensagem, String hora) {
         this.id = id;
         this.setEmissao(emissao);
         this.usuario = usuario;
         this.mensagem = mensagem;
+        this.hora = hora;
     }
 
     public int getId() {
@@ -84,4 +88,12 @@ public class CobrancaLote implements java.io.Serializable {
     public void setEmissao(String emissao) {
         this.dtEmissao = DataHoje.converte(emissao);
     }    
+
+    public String getHora() {
+        return hora;
+    }
+
+    public void setHora(String hora) {
+        this.hora = hora;
+    }
 }
