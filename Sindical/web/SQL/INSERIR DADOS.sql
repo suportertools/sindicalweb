@@ -684,29 +684,11 @@ SELECT setval('eve_status_id_seq', max(id)) FROM eve_status;
 -- Criate: 2013-08-02
 -- Last edition: 2013-08-02 - by: Bruno Vieira
 
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 1, 'Nota Fiscal' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 1);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 2, 'Boleto' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 2);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 3, 'Dinheiro' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 3);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 4, 'Cheque' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 4);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 5, 'Cheque-Pré' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 5);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 6, 'Cartão de Crédito' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 6);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 7, 'Cartão de Débito' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 7);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 8, 'Depósito Bancário' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 8);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 9, 'Doc Bancário' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 9);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 10, 'Transferência Bancária' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 10);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 11, 'Ticket' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 11);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 12, 'Recibo' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 12);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 13, 'Extrato Geral' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 13);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 14, 'Extrato 01' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 14);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 15, 'Extrato 02' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 15);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 16, 'Extrato 03' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 16);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 17, 'Extrato 04' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 17);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 18, 'Extrato 05' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 18);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 19, 'Extrato 06' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 19);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 20, 'Extrato 07' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 20);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 21, 'Extrato 08' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 21);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 22, 'Extrato 09' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 22);
-INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 23, 'Extrato 10' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 23);
+INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 1,  'Nota Fiscal'              WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 1);
+INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 2,  'Boleto'                   WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 2);
+INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 10, 'Transferência Bancária'   WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 10);
+INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 12, 'Recibo'                   WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 12);
+INSERT INTO fin_tipo_documento (id, ds_descricao) SELECT 13, 'Extrato Geral'            WHERE NOT EXISTS ( SELECT id FROM fin_tipo_documento WHERE id = 13);
 SELECT setval('fin_tipo_documento_id_seq', max(id)) FROM fin_tipo_documento;
 
 -- fin_tipo_pagamento 
