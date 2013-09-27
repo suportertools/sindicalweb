@@ -3,9 +3,9 @@ package br.com.rtools.pessoa.db;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.principal.DB;
-import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -63,11 +63,14 @@ public class PessoaEnderecoDBToplink extends DB implements PessoaEnderecoDB {
     @Override
     public List pesquisaTodos() {
         try {
-            Query qry = getEntityManager().createQuery("select pe from PessoaEndereco pe ");
-            return (qry.getResultList());
+            Query qry = getEntityManager().createQuery("SELECT PE FROM PessoaEndereco AS PE");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
-            return null;
         }
+        return new ArrayList();
     }
 
     @Override
