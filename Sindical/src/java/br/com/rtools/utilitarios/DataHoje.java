@@ -2,6 +2,7 @@ package br.com.rtools.utilitarios;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -495,53 +496,96 @@ public class DataHoje {
     }
 
     public static String hora(){        
-        StringBuilder sb = new StringBuilder();
-        GregorianCalendar d = new GregorianCalendar();
-        String hora = Integer.toString(d.get( GregorianCalendar.HOUR_OF_DAY )),  minuto = Integer.toString(d.get( GregorianCalendar.MINUTE )), segundo = Integer.toString(d.get( GregorianCalendar.SECOND ));
-        if (hora.length() == 1)
-        sb.append("0").append(hora); else
-        sb.append(hora ); 
+        //StringBuilder sb = new StringBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");  
+        GregorianCalendar gc = new GregorianCalendar();
+        
+        gc.setTime(new Date());
+//        String hora = Integer.toString(d.get( GregorianCalendar.HOUR_OF_DAY )),  minuto = Integer.toString(d.get( GregorianCalendar.MINUTE )), segundo = Integer.toString(d.get( GregorianCalendar.SECOND ));
+//        if (hora.length() == 1)
+//        sb.append("0").append(hora); else
+//        sb.append(hora ); 
+//            
+//        sb.append( ":" );
+//        
+//        if (minuto.length() == 1)
+//        sb.append("0").append(minuto); else
+//        sb.append( minuto ); 
+//        
+//        sb.append( ":" );
+//        
+//        if (segundo.length() == 1)
+//        sb.append("0").append(segundo); else
+//        sb.append( segundo ); 
+        
+        return sdf.format(gc.getTime());       
+    }
+    
+    public static String incrementarHoraAtual(int minutos){        
+        String result = "";
+        GregorianCalendar gc = new GregorianCalendar();  
+        gc.setTime(new Date());  
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");  
+
+        
+        if (minutos > 0){
+            gc.add(Calendar.MINUTE, minutos);
+            result = sdf.format(gc.getTime());
+        }else{
+            result = sdf.format(gc.getTime());
+        }
+        return result;
+    }
+    
+    public static String incrementarHora(String hora, int minutos){        
+        String result = "";
+        if (!hora.isEmpty() && hora.length() == 5){
+            GregorianCalendar gc = new GregorianCalendar();  
             
-        sb.append( ":" );
-        
-        if (minuto.length() == 1)
-        sb.append("0").append(minuto); else
-        sb.append( minuto ); 
-        
-        sb.append( ":" );
-        
-        if (segundo.length() == 1)
-        sb.append("0").append(segundo); else
-        sb.append( segundo ); 
-        
-        return sb.toString();       
+            gc.set(0, 0, 0, Integer.valueOf(hora.substring(0, 2)), Integer.valueOf(hora.substring(3, 5)));
+            
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");  
+            if (minutos > 0){
+                gc.add(Calendar.MINUTE, minutos);
+                result = sdf.format(gc.getTime());
+            }else{
+                result = sdf.format(gc.getTime());
+            }
+        }
+        return result;
     }
     
     public static String horaSemPonto(){        
-        StringBuilder sb = new StringBuilder();
-        GregorianCalendar d = new GregorianCalendar();
-        sb.append( d.get( GregorianCalendar.HOUR_OF_DAY ) );
-        sb.append( d.get( GregorianCalendar.MINUTE ) );
-        sb.append( d.get( GregorianCalendar.SECOND ) );
+        //StringBuilder sb = new StringBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");  
+        GregorianCalendar gc = new GregorianCalendar();
+        gc.setTime(new Date());
+//        sb.append( d.get( GregorianCalendar.HOUR_OF_DAY ) );
+//        sb.append( d.get( GregorianCalendar.MINUTE ) );
+//        sb.append( d.get( GregorianCalendar.SECOND ) );
 
-        return sb.toString();       
+        return sdf.format(gc.getTime());       
     }
 
     public static String horaMinuto(){
-        StringBuilder sb = new StringBuilder();
-        GregorianCalendar d = new GregorianCalendar();
-        if(d.get( GregorianCalendar.HOUR_OF_DAY ) < 9 ){
-            sb.append("0").append (d.get(GregorianCalendar.HOUR_OF_DAY));
-        }else{
-            sb.append( d.get( GregorianCalendar.HOUR_OF_DAY ) );
-        }
-        sb.append( ":" );
-        if(d.get( GregorianCalendar.MINUTE ) < 9 ){
-            sb.append("0").append (d.get(GregorianCalendar.MINUTE));
-        }else{
-            sb.append( d.get( GregorianCalendar.MINUTE ) );
-        }        
-        return sb.toString();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");  
+        GregorianCalendar gc = new GregorianCalendar();
+        
+        gc.setTime(new Date());
+        
+//        if(d.get( Calendar.HOUR_OF_DAY ) < 9 ){
+//            sb.append("0").append (d.get(Calendar.HOUR_OF_DAY));
+//        }else{
+//            sb.append( d.get( Calendar.HOUR_OF_DAY ) );
+//        }
+//        sb.append( ":" );
+//        if(d.get( Calendar.MINUTE ) < 9 ){
+//            sb.append("0").append (d.get(Calendar.MINUTE));
+//        }else{
+//            sb.append( d.get( Calendar.MINUTE ) );
+//        }        
+        return  sdf.format(gc.getTime());
     }
 
     public static String colocarBarras(String data){

@@ -65,12 +65,15 @@
                                         <h:inputText id="iddoc" size="15" value="#{juridicaBean.juridica.pessoa.documento}" class="#{juridicaBean.colocarMascara}">
                                             <a4j:ajax event="change" render="iddoc idMsgDocumento" listener="#{juridicaBean.pesquisaDocumento}"/>
                                         </h:inputText>
-                                        <!-- <h:outputLink value="http://www.receita.fazenda.gov.br/PessoaJuridica/CNPJ/cnpjreva/Cnpjreva_Solicitacao.asp" target="_blank">
-                                            <f:verbatim> Pesquisa na Receita Federal</f:verbatim>
-                                        </h:outputLink> -->
-                                        <a4j:commandLink render="idrazao idnomefan i_panel_cnae i_panel_dados i_panel_endereco idMsgDocumento" value="Pesquisa na Receita Federal" action="#{juridicaBean.pesquisaCnpj}"
+                                        
+                                        <a4j:commandLink render="idrazao idnomefan i_panel_cnae i_panel_dados i_panel_endereco idMsgDocumento" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpj}"
                                                          onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)" styleClass="fontePadrao" style="text-decoration: underline; margin-left: 10px"/>
                                             
+                                        <h:outputLabel value=" ou " styleClass="fontePadrao"/>
+                                        
+                                        <h:outputLink value="http://www.receita.fazenda.gov.br/PessoaJuridica/CNPJ/cnpjreva/Cnpjreva_Solicitacao.asp" target="_blank">
+                                            <f:verbatim> Ir para Site </f:verbatim>
+                                        </h:outputLink>
                                     </h:column>
                                     <h:column></h:column>
                                     <h:column><h:outputLabel id="idMsgDocumento" value="#{juridicaBean.msgDocumento}" styleClass="corErro"/></h:column>

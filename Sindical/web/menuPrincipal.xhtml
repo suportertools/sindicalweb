@@ -164,6 +164,11 @@
                           <h:outputText  value="#{controleUsuarioBean.filial}" styleClass="fontePadraoPequeno"/>
                       </h:column>
                   </h:panelGrid>
+                  <rich:popupPanel id="popup" modal="true" resizeable="false" height="50" width="210">
+                        <center>
+                            <h:outputLabel value="Aguarde enviando emails ...    " styleClass="fontePadrao" />
+                        </center> 
+                    </rich:popupPanel>
                   
                 <h:panelGrid>
                     <rich:panel style="width: 980px; height: 500px; text-align: right; border: 0px; ">
@@ -178,11 +183,19 @@
                             </h:panelGrid>
                             <br />
                         </rich:panel>
+                        
                         <center>
-                            <div style="border: 0px; width: 500px; height: 320px; float: left; margin-left: 25px; border: 1px solid gray">
-                             
+                            <div style="border: 0px; width: 500px; height: 320px; float: left; margin-left: 25px;">
+                                <a4j:poll render="i_panel_poll" interval="5000"/>
+                                <h:panelGrid id="i_panel_poll" style="float: left">
+                                    <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
+                                    <!-- <h:outputLabel value="Existem notificações de cobrança para serem enviadas" rendered="# {notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/> -->
+                                    <br />
+                                    <a4j:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" onbegin="#{rich:component('popup')}.show();" oncomplete="#{rich:component('popup')}.hide();" styleClass="fontePadrao"/>
+                                </h:panelGrid>
                             </div>
                         </center>                            
+                        
                         <rich:panel styleClass="corpoAcessos" style="float: right; text-align: center">
                             <h:panelGrid>
                                 <h:outputText styleClass="fonteFranklinNormal" value="Principais Acessos" />

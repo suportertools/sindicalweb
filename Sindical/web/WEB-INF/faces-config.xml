@@ -738,10 +738,16 @@
     </managed-bean>
     
     <managed-bean>
+        <managed-bean-name>movimentosSocialBean</managed-bean-name>
+        <managed-bean-class>br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean</managed-bean-class>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
+    
+    <managed-bean>
         <managed-bean-name>relatorioHomologacaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioHomologacaoJSFBean</managed-bean-class>
-    
-        <managed-bean-scope>session</managed-bean-scope></managed-bean>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
     
     <navigation-rule>
         <navigation-case>
@@ -1961,6 +1967,11 @@
             <to-view-id>/pessoaComplemento.jsf</to-view-id>
             <redirect/>
         </navigation-case>
-
+        
+        <navigation-case>
+            <from-outcome>movimentosReceberSocial</from-outcome>
+            <to-view-id>/movimentosReceberSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
     </navigation-rule>
 </faces-config>
