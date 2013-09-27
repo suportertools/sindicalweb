@@ -605,7 +605,7 @@ public class DataHoje {
                DataHoje.DataToArrayString(data)[1]);
     }
 
-    public boolean faixaCincoAnosApós(String data){
+    public boolean faixaCincoAnosApos(String data){
         int dataHoje = DataHoje.converteDataParaRefInteger(DataHoje.data());
         int dataAntes = DataHoje.converteDataParaRefInteger(decrementarMeses(60, DataHoje.data()));
         int dataM = DataHoje.converteDataParaRefInteger(data);
