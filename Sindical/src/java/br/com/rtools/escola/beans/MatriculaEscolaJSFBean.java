@@ -37,6 +37,8 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaEmpresaDB;
+import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
@@ -110,6 +112,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
     private boolean desabilitaCampo = false;
     private boolean habilitaGerarParcelas = false;
     private boolean limpar = false;
+    private boolean ocultaDescontoFolha = true;
     private boolean taxa = false;
     private boolean socio = false;
     private String msgConfirma = "";
@@ -818,6 +821,17 @@ public class MatriculaEscolaJSFBean implements Serializable {
                             loop = matriculaEscola.getNumeroParcelas();
                         }
                         String vecimentoString = "";
+                        Pessoa pessoaResponsavel;
+                        if (matriculaEscola.isDescontoFolha()) {
+                            PessoaEmpresaDB pessoaEmpresaDB = new PessoaEmpresaDBToplink();
+                            pessoaEmpresaDB.pesquisaPessoaEmpresaPorFisica(loop);
+                            pessoaResponsavel = matriculaEscola.getResponsavel();
+                        } else {
+                            pessoaResponsavel = matriculaEscola.getResponsavel();
+                            
+                        }
+                        Pessoa pessoaTitularResponsavel = matriculaEscola.getResponsavel();
+                        Pessoa pessoaBeneficiario = matriculaEscola.getAluno();                        
                         for (int i = 0; i < loop; i++) {
                             float valorParcela = 0;
                             float valorDescontoAteVencimento = 0;
@@ -849,7 +863,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                                         -1,
                                         lote,
                                         plano5,
-                                        matriculaEscola.getResponsavel(),
+                                        pessoaResponsavel,                      // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA)
                                         servicos,
                                         null,
                                         tipoServico,
@@ -861,8 +875,8 @@ public class MatriculaEscolaJSFBean implements Serializable {
                                         true,
                                         "E",
                                         false,
-                                        matriculaEscola.getResponsavel(),
-                                        matriculaEscola.getAluno(),
+                                        pessoaTitularResponsavel,               // TITULAR / RESPONSÁVEL
+                                        pessoaBeneficiario,                     // BENEFICIÁRIO
                                         "",
                                         nrCtrBoleto,
                                         vencimento,
@@ -982,25 +996,25 @@ public class MatriculaEscolaJSFBean implements Serializable {
         } else {
             responsavel = new Pessoa();
         }
-        JuridicaDB juridicaDB = new JuridicaDBToplink();
-        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(responsavel.getId());
-        if (juridicas != null) {
-            if (juridicas.getId() != -1) {
-                desabilitaDescontoFolha = false;
-            }
-
-        } else {
-            desabilitaDescontoFolha = true;
-        }
-        Juridica juridicasB = juridicaDB.pesquisaJuridicaPorPessoa(matriculaEscola.getResponsavel().getId());
-        if (juridicasB != null) {
-            if (juridicasB.getId() != -1) {
-                desabilitaDescontoFolha = false;
-            }
-
-        } else {
-            desabilitaDescontoFolha = true;
-        }
+//        JuridicaDB juridicaDB = new JuridicaDBToplink();
+//        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(responsavel.getId());
+//        if (juridicas != null) {
+//            if (juridicas.getId() != -1) {
+//                desabilitaDescontoFolha = false;
+//            }
+//
+//        } else {
+//            desabilitaDescontoFolha = true;
+//        }
+//        Juridica juridicasB = juridicaDB.pesquisaJuridicaPorPessoa(matriculaEscola.getResponsavel().getId());
+//        if (juridicasB != null) {
+//            if (juridicasB.getId() != -1) {
+//                desabilitaDescontoFolha = false;
+//            }
+//
+//        } else {
+//            desabilitaDescontoFolha = true;
+//        }
         return responsavel;
     }
 
@@ -1426,7 +1440,6 @@ public class MatriculaEscolaJSFBean implements Serializable {
                         matriculaEscola.setResponsavel(resp);
                     }
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
-
                 }
             }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
@@ -1446,6 +1459,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                         }
                         matriculaEscola.setResponsavel(pJuridica.getPessoa());
                     }
+                    setOcultaDescontoFolha(false);
                     desabilitaDescontoFolha = false;
                     atualizaValor();
                     calculaValorLiquido();
@@ -1496,6 +1510,20 @@ public class MatriculaEscolaJSFBean implements Serializable {
         } else {
             desabilitaGeracaoContrato = false;
         }
+        JuridicaDB juridicaDB = new JuridicaDBToplink();
+        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaEscola.getResponsavel().getId());
+        if (juridicas != null) {
+            if (juridicas.getId() != -1) {
+                desabilitaDescontoFolha = false;
+                setOcultaDescontoFolha(false);
+            } else {
+                desabilitaDescontoFolha = true;
+                setOcultaDescontoFolha(true);
+            }
+        } else {
+            setOcultaDescontoFolha(true);
+            desabilitaDescontoFolha = true;
+        }        
         return matriculaEscola;
     }
 
@@ -1809,5 +1837,13 @@ public class MatriculaEscolaJSFBean implements Serializable {
         } else if (idFTipoDocumento == 13) {
             desabilitaDiaVencimento = false;
         }
+    }
+
+    public boolean isOcultaDescontoFolha() {
+        return ocultaDescontoFolha;
+    }
+
+    public void setOcultaDescontoFolha(boolean ocultaDescontoFolha) {
+        this.ocultaDescontoFolha = ocultaDescontoFolha;
     }
 }
