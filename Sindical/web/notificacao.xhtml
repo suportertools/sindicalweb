@@ -178,7 +178,7 @@
                         <h:panelGrid id="i_panel2" style="float: left; clear: both">
                             <h:panelGrid columns="4" rendered="#{notificacaoBean.lote.id != -1}">
                                 <a4j:commandLink id="id_enviar" onclick="modalOpcao('divEmail');" styleClass="idSalvar iLink" value="Enviar" title="Enviar por Email esta notificação" rendered="#{notificacaoBean.idTipoEnvio >= 3}" style="margin-left: 5px"/>
-                                <a4j:commandLink id="id_imprimir" onclick="modalOpcao('divExcluir');" styleClass="idPesquisar iLink" value="Imprimir" title="Imprimir Notificação" rendered="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}" style="margin-left: 5px"/>
+                                <a4j:commandLink id="id_imprimir" onclick="modalOpcao('divExcluir');" styleClass="idPesquisar iLink" value="Criar Arquivos" title="Criar arquivos de Notificação" rendered="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}" style="margin-left: 5px; width: 150px"/>
                                 <h:selectOneMenu value="#{notificacaoBean.idTipoEnvio}" style="padding: 5px" title="Tipos de Envio">
                                     <a4j:ajax event="change" render="i_panel2" oncomplete="#{rich:component('popup')}.hide()"/>
                                     <f:selectItems value="#{notificacaoBean.listaTipoEnvio}"/>
@@ -261,7 +261,7 @@
                             </h:panelGrid>
 
                             <br />
-                            <h:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{notificacaoBean.enviarNotificacao()}" onclick="fecharModal();"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{notificacaoBean.enviarNotificacao()}" onclick="fecharModal();"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
