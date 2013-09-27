@@ -1,7 +1,6 @@
 package br.com.rtools.seguranca.db;
 
 import br.com.rtools.principal.DB;
-import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import java.util.ArrayList;
 import java.util.List;
@@ -169,5 +168,19 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         } catch (Exception e) {
         }
         return lista;
+    }
+    
+    @Override
+    public Rotina pesquisaRotinaPorPagina(String pagina) {
+        Rotina rotina = new Rotina();
+        try {
+            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE ROT.pagina LIKE 'Sindical/"+pagina+".jsf' OR ROT.pagina LIKE '\"/Sindical/"+pagina+".jsf\"'");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Rotina) query.getSingleResult();
+            }
+        } catch (Exception e) {
+        }
+        return rotina;
     }
 }
