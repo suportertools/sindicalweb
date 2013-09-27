@@ -57,11 +57,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>fisicaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.FisicaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>pessoaProfissaoBean</managed-bean-name>
@@ -581,11 +581,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>matriculaEscolaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.escola.beans.MatriculaEscolaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>relatorioSociosBean</managed-bean-name>
@@ -1953,6 +1953,12 @@
         <navigation-case>
             <from-outcome>pesquisaConfiguracao</from-outcome>
             <to-view-id>/pesquisaConfiguracao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>pessoaComplemento</from-outcome>
+            <to-view-id>/pessoaComplemento.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
