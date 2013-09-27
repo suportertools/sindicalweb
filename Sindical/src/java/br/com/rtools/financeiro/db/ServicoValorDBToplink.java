@@ -108,23 +108,27 @@ public class ServicoValorDBToplink extends DB implements ServicoValorDB {
     public ServicoValor pesquisaServicoValorPorPessoaFaixaEtaria(int idServico, int idPessoa){
         ServicoValor servicoValor = new ServicoValor();
         try{
-            Query qry = getEntityManager().createNativeQuery(""+
+            String queryString = ""+
             "        SELECT sv.id                                                                                "+
             "          FROM fin_servicos s                                                                       "+
             "   INNER JOIN fin_servico_valor sv ON (sv.id_servico = s.id)                                        "+
             "   INNER JOIN pes_fisica fis ON (fis.id_pessoa = "+idPessoa+")                                      "+
             "          AND extract(YEAR FROM AGE(fis.dt_nascimento)) BETWEEN sv.nr_idade_ini AND sv.nr_idade_fim "+
-            "        WHERE s.id = " + idServico);
-            Vector vector = (Vector) qry.getSingleResult();
-            int id = Integer.parseInt(vector.get(0).toString());            
-            SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-            servicoValor = (ServicoValor) acumuladoDB.pesquisaCodigo(id, "ServicoValor");
-            return servicoValor;
+            "        WHERE s.id = " + idServico;
+            Query qry = getEntityManager().createNativeQuery(queryString);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                List sungle = (List) qry.getSingleResult();
+                int id = Integer.parseInt(sungle.get(0).toString());            
+                SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+                servicoValor = (ServicoValor) acumuladoDB.pesquisaCodigo(id, "ServicoValor");
+                return servicoValor;                
+            }
             //return new Float[] {(new BigDecimal((Double) vector.get(0))).floatValue(),(new BigDecimal((Double) vector.get(1))).floatValue()};
         }catch(Exception e){
             e.getMessage();
-            return new ServicoValor();
         }
+        return new ServicoValor();
     }
 
     @Override
