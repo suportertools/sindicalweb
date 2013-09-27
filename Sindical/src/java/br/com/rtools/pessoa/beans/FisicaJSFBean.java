@@ -22,11 +22,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import javax.faces.bean.ManagedBean; 
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 
+@ManagedBean(name = "fisicaBean")
+@SessionScoped
 public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
 
     private Fisica fisica;
@@ -34,6 +37,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     private PessoaProfissao pessoaProfissao;
     private PessoaEmpresa pessoaEmpresa;
     private Endereco endereco;
+    private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private Socios socios;
     private String renEndereco;
     private String indicaTab;
@@ -78,6 +82,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         pessoaProfissao = new PessoaProfissao();
         pessoaEmpresa = new PessoaEmpresa();
         endereco = new Endereco();
+        pessoaComplemento = new PessoaComplemento();
         socios = new Socios();
         renEndereco = "false";
         indicaTab = "pessoal";
@@ -122,11 +127,12 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("FisicaJSFBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
     }
 
     public String getEnderecoCobranca() {
         PessoaEndereco ende = null;
-        String strCompl = "";
+        String strCompl;
         if (!listaEnd.isEmpty()) {
             ende = (PessoaEndereco) listaEnd.get(0);
         }
@@ -155,7 +161,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         FisicaDB db = new FisicaDBToplink();
         TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
         Pessoa pessoa = fisica.getPessoa();
-        List listDocumento = new ArrayList();
+        List listDocumento;
         if (listaEnd.isEmpty() || pessoa.getId() == -1) {
             adicionarEnderecos();
         }
@@ -164,8 +170,8 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         } else {
             fisica.setDtFoto(null);
         }
-        SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        dbSalvar.abrirTransacao();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
         if ((fisica.getPessoa().getId() == -1) && (fisica.getId() == -1)) {
             fisica.getPessoa().setTipoDocumento(dbDoc.pesquisaCodigo(1));
 
@@ -199,10 +205,12 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                 msgConfirma = "O campo nome não pode ser nulo! ";
                 return null;
             }
-            if (dbSalvar.inserirObjeto(pessoa)) {
+            if (salvarAcumuladoDB.inserirObjeto(pessoa)) {
                 fisica.setNacionalidade(getListaPaises().get(idPais).getLabel());
                 fisica.setPessoa(pessoa);
-                if (dbSalvar.inserirObjeto(fisica)) {
+                if (salvarAcumuladoDB.inserirObjeto(fisica)) {
+
+
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
                     msgConfirma = "Cadastro salvo com Sucesso!";
                     logs.novo("Novo registro", "Pessoa fisica inserida: ID " + fisica.getId()
@@ -211,18 +219,17 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                             + " - Nascimento: " + fisica.getNascimento()
                             + " - CPF: " + fisica.getPessoa().getDocumento()
                             + " - RG: " + fisica.getRg());
-                    dbSalvar.comitarTransacao();
+                    salvarAcumuladoDB.comitarTransacao();
                 } else {
                     msgConfirma = "Erro ao Salvar Pessoa Fisica!";
-                    dbSalvar.desfazerTransacao();
+                    salvarAcumuladoDB.desfazerTransacao();
                 }
             } else {
                 msgConfirma = "Erro ao Salvar Pessoa!";
-                dbSalvar.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         } else {
-            Fisica f = new Fisica();
-            f = db.pesquisaCodigo(fisica.getId());
+            Fisica f = db.pesquisaCodigo(fisica.getId());
             String antes = " De: ID - " + fisica.getId()
                     + " Nome: " + f.getPessoa().getNome() + " - "
                     + " Nascimento: " + f.getNascimento() + " - "
@@ -260,24 +267,24 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             }
 
             fisica.setNacionalidade(getListaPaises().get(idPais).getLabel());
-            if (dbSalvar.alterarObjeto(fisica.getPessoa())) {
+            if (salvarAcumuladoDB.alterarObjeto(fisica.getPessoa())) {
                 logs.novo("Atualizado", antes
                         + " para: Nome: " + fisica.getPessoa().getNome() + " - "
                         + " Nascimento: " + f.getNascimento() + " - "
                         + " CPF: " + fisica.getPessoa().getDocumento() + " - "
                         + " RG: " + fisica.getRg());
             } else {
-                dbSalvar.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
                 return null;
             }
 
-            if (dbSalvar.alterarObjeto(fisica)) {
+            if (salvarAcumuladoDB.alterarObjeto(fisica)) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
                 msgConfirma = "Cadastro atualizado com Sucesso!";
-                dbSalvar.comitarTransacao();
+                salvarAcumuladoDB.comitarTransacao();
             } else {
                 msgConfirma = "Erro ao Atualizar!";
-                dbSalvar.desfazerTransacao();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         salvarEndereco();
@@ -488,6 +495,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
 
         fisica = (Fisica) listaPessoa.get(idIndexFisica).getArgumento0();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         descPesquisa = "";
@@ -506,10 +514,11 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");            
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
+        
         pessoaProfissao = dbp.pesquisaProfPorFisica(fisica.getId());
         if (pessoaProfissao.getId() != -1) {
             for (int i = 0; i < listaProfissoes.size(); i++) {
@@ -571,17 +580,15 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         socios = db.pesquisaSocioPorPessoa(fisica.getPessoa().getId());
     }
 
-
     public List getListaFisica() {
-        List result = null;
         FisicaDB db = new FisicaDBToplink();
-        result = db.pesquisaTodos();
+        List result = db.pesquisaTodos();
         return result;
     }
 
     public List<PessoaEndereco> getListaEnderecos() {
-        PessoaEndereco pesEn = new PessoaEndereco();
-        String strCompl = "";
+        PessoaEndereco pesEn;
+        String strCompl;
         if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
             listaEnd = getPesquisaEndPorPessoa();
             pesEn = (PessoaEndereco) (listaEnd.get(0));
@@ -598,7 +605,6 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String adicionarEnderecos() {
-        List tiposE = new ArrayList();
         TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
         PessoaEnderecoDB db_pesEnd = new PessoaEnderecoDBToplink();
         endereco = new Endereco();
@@ -607,15 +613,15 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         int i = 0;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoNum", pessoaEndereco.getNumero());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoComp", pessoaEndereco.getComplemento());
-        tiposE = db_tipoEndereco.listaTipoEnderecoParaFisica();
+        List tiposEndereco = db_tipoEndereco.listaTipoEnderecoParaFisica();
         endereco = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
         if (endereco != null) {
             if (!alterarEnd) {
                 num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
-                while (i < tiposE.size()) {
+                while (i < tiposEndereco.size()) {
                     pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(i));
+                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposEndereco.get(i));
                     pessoaEndereco.setPessoa(fisica.getPessoa());
                     pessoaEndereco.setNumero(num);
                     pessoaEndereco.setComplemento(comp);
@@ -627,9 +633,9 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                 num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
                 if (listaEnd.isEmpty()) {
-                    for (int u = 0; u < tiposE.size(); u++) {
+                    for (int u = 0; u < tiposEndereco.size(); u++) {
                         pessoaEndereco.setEndereco(endereco);
-                        pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(u));
+                        pessoaEndereco.setTipoEndereco((TipoEndereco) tiposEndereco.get(u));
                         pessoaEndereco.setPessoa(fisica.getPessoa());
                         pessoaEndereco.setNumero(num);
                         pessoaEndereco.setComplemento(comp);
@@ -638,15 +644,14 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                     }
                 } else if (!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 1) {
                     if (pessoaEndereco.getId() != -1) {
-                        PessoaEndereco pessoaEndeAnt = new PessoaEndereco();
-                        pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 1);
-                        ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tiposE.get(0));
+                        PessoaEndereco pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 1);
+                        ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tiposEndereco.get(0));
                         ((PessoaEndereco) listaEnd.get(0)).setEndereco(endereco);
                         ((PessoaEndereco) listaEnd.get(0)).setComplemento(pessoaEndereco.getComplemento());
                         ((PessoaEndereco) listaEnd.get(0)).setNumero(pessoaEndereco.getNumero());
                         for (int u = 1; u < listaEnd.size(); u++) {
                             if (comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))) {
-                                ((PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco) tiposE.get(u));
+                                ((PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco) tiposEndereco.get(u));
                                 ((PessoaEndereco) listaEnd.get(u)).setEndereco(endereco);
                                 ((PessoaEndereco) listaEnd.get(u)).setComplemento(pessoaEndereco.getComplemento());
                                 ((PessoaEndereco) listaEnd.get(u)).setNumero(pessoaEndereco.getNumero());
@@ -655,9 +660,9 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                         endResidencial = true;
                     } else {
                         listaEnd = new ArrayList();
-                        for (int u = 0; u < tiposE.size(); u++) {
+                        for (int u = 0; u < tiposEndereco.size(); u++) {
                             pessoaEndereco.setEndereco(endereco);
-                            pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(u));
+                            pessoaEndereco.setTipoEndereco((TipoEndereco) tiposEndereco.get(u));
                             pessoaEndereco.setPessoa(fisica.getPessoa());
                             pessoaEndereco.setNumero(num);
                             pessoaEndereco.setComplemento(comp);
@@ -703,10 +708,12 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public List getListaPessoaEndereco() {
-        List result = null;
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        result = db.pesquisaTodos();
-        return result;
+        List list = db.pesquisaTodos();
+        if (list == null) {
+            return new ArrayList();
+        }   
+        return list;
     }
 
     public String CarregarEndereco() {
@@ -717,32 +724,28 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         return "pessoaFisica";
     }
 
-    public List<String> BuscaTipoEndereco(Object event) {
-        List<String> result = new Vector<String>();
-        String txtDigitado = event.toString().toLowerCase().toUpperCase();
+    public List<String> BuscaTipoEndereco(Object object) {
+        String txtDigitado = object.toString().toLowerCase().toUpperCase();
         TipoEnderecoDB db = new TipoEnderecoDBToplink();
-        result = db.pesquisaTipoEnderecoParaFisica('%' + txtDigitado + '%');
-        return (result);
+        List<String> list = db.pesquisaTipoEnderecoParaFisica('%' + txtDigitado + '%');
+        return list;
     }
 
-    public List<String> BuscaTipoDocumento(Object event) {
-        List<String> result = new Vector<String>();
-        String txtDigitado = event.toString().toLowerCase().toUpperCase();
+    public List<String> BuscaTipoDocumento(Object object) {
+        String txtDigitado = object.toString().toLowerCase().toUpperCase();
         TipoDocumentoDB db = new TipoDocumentoDBToplink();
-        result = db.pesquisaTipoDocumento('%' + txtDigitado + '%');
-        return (result);
+        List<String> list = db.pesquisaTipoDocumento('%' + txtDigitado + '%');
+        return list;
     }
 
     public String getRetornaEndereco() {
-//       fisica = (Fisica) getHtmlTable().getRowData();
         return "pessoaFisica";
     }
 
     public List getPesquisaEndPorPessoa() {
-        List result = null;
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        result = db.pesquisaEndPorPessoa(fisica.getPessoa().getId());
-        return result;
+        List list = db.pesquisaEndPorPessoa(fisica.getPessoa().getId());
+        return list;
     }
 
     public String voltarEndereco() {
@@ -878,7 +881,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public boolean comparaEndereco(PessoaEndereco pessoaEnde1, PessoaEndereco pessoaEnde2) {
-        boolean compara = false;
+        boolean compara;
         if (pessoaEnde1 != null && pessoaEnde2 != null) {
             if ((pessoaEnde1.getEndereco().getId() == pessoaEnde2.getEndereco().getId()
                     && pessoaEnde1.getNumero().equals(pessoaEnde2.getNumero())
@@ -894,10 +897,9 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public List<SelectItem> getListaPaises() {
-        List<SelectItem> selectPais = new Vector<SelectItem>();
-        int i = 0;
-        String[] lista = new String[]{};
-        lista = new String[]{"Africana(o)",
+        // String[] lista = new String[]{};
+        String[] lista = new String[]{
+            "Africana(o)",
             "Afegã(o)",
             "Alemã(o)",
             "Americana(o)",
@@ -954,11 +956,13 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             "Turca(o)",
             "Uraguaia(o)",
             "Venezuelana(o)"};
+        List<SelectItem> selectPais = new ArrayList<SelectItem>();
+        int i = 0;        
         while (i < lista.length) {
             selectPais.add(new SelectItem(new Integer(i), lista[i], String.valueOf(i)));
             i++;
         }
-        if (selectPais != null) {
+//        if (selectPais != null) {
             if (fisica.getId() != -1) {
                 for (i = 0; i < selectPais.size(); i++) {
                     if (selectPais.get(i).getLabel().equals(fisica.getNacionalidade())) {
@@ -966,7 +970,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                     }
                 }
             }
-        }
+//        }
         return selectPais;
     }
 
@@ -984,8 +988,8 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String getCidadeNaturalidade() {
-        String nat = "";
-        Cidade cidade = null;
+        String nat;
+        Cidade cidade;
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
             cidade = (Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa");
             nat = cidade.getCidade();
@@ -1022,12 +1026,12 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
         File listFile[] = files.listFiles();
         String nome = "";
-        String caminho = "";
+        String caminho;
         //temFoto = false;
         if (fExiste.exists() && fisica.getDataFoto().isEmpty()) {
             fotoTemp = true;
-        }else if (fExiste.exists()){
-            fotoTemp = true;            
+        } else if (fExiste.exists()) {
+            fotoTemp = true;
         }
         if (fotoTemp) {
             nome = "fotoTemp";
@@ -1119,8 +1123,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
 //    }
     public void excluirImagemSozinha() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = "";
-        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
         try {
             File fl = new File(caminho);
             if (fl.exists()) {
@@ -1155,12 +1158,9 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String excluirEmpresaAnterior() {
-        //PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         AgendamentoDB dbAge = new AgendamentoDBToplink();
-        List<Agendamento> agendas = new ArrayList();
-        PessoaEmpresa pe = new PessoaEmpresa();
-        pe = listaPessoaEmpresa.get(idIndexPessoaEmp);
-        agendas = dbAge.pesquisaAgendamentoPorPessoaEmpresa(pe.getId());
+        PessoaEmpresa pe = listaPessoaEmpresa.get(idIndexPessoaEmp);
+        List<Agendamento> agendas = dbAge.pesquisaAgendamentoPorPessoaEmpresa(pe.getId());
         for (int i = 0; i < agendas.size(); i++) {
             dbAge.delete(dbAge.pesquisaCodigo(agendas.get(i).getId()));
         }
@@ -1171,7 +1171,6 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         } else {
             salvarAcumuladoDB.desfazerTransacao();
         }
-        // pe = new PessoaEmpresa();
         listaPessoaEmpresa.clear();
         return null;
     }
@@ -1479,5 +1478,13 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                 }
             }
         }
+    }
+
+    public PessoaComplemento getPessoaComplemento() {
+        return pessoaComplemento;
+    }
+
+    public void setPessoaComplemento(PessoaComplemento pessoaComplemento) {
+        this.pessoaComplemento = pessoaComplemento;
     }
 }

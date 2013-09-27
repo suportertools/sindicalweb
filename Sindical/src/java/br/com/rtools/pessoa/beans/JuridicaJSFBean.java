@@ -654,6 +654,7 @@ public class JuridicaJSFBean {
        idPorte = 0;
        listaContribuintesInativos.clear();
        setEnderecoCompleto("");
+       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
