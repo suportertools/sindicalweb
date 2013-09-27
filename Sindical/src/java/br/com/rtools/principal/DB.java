@@ -28,9 +28,16 @@ public class DB {
 //    } 
  
     public Statement getStatment() throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:postgresql://192.168.1.60:5432/Rtools","postgres","989899");
-        statement = connection.createStatement();
-        return statement;
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://192.168.1.60:5432/Rtools","postgres","989899");
+            if (connection != null) {
+                statement = connection.createStatement();
+                return statement;
+            }
+        } catch (Exception e) {
+            return null; 
+        }
+        return null; 
     }
     
     public void closeStatment() throws SQLException {
