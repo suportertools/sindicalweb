@@ -134,11 +134,17 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         try {
             Query query = getEntityManager().createQuery(" SELECT pes FROM PessoaComplemento pes WHERE pes.pessoa.id = :idPessoa ");
             query.setParameter("idPessoa", idPessoa);
-            return (PessoaComplemento) query.getSingleResult();
+            query.setMaxResults(1);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                if (list.size() == 1) {
+                    return (PessoaComplemento) query.getSingleResult();                
+                }
+            }
         } catch (Exception e) {
             e.getMessage();
-            return null;
         }
+        return new PessoaComplemento();
     }
 
     @Override
@@ -184,6 +190,9 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         LoteDB loteDB = new LoteDBToplink();
         Lote lote = (Lote) loteDB.pesquisaLotePorEvt(me.getEvt());
         if (lote == null) {
+            return false;
+        }
+        if (lote.getId() == -1) {
             return false;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -240,9 +249,11 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
     @Override
     public boolean existeMatriculaIndividual(MatriculaIndividual mi) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.aluno = :idAluno ");
+            Query query = getEntityManager().createQuery(" SELECT MI FROM MatriculaIndividual AS MI WHERE MI.curso.id = :idCurso AND MI.matriculaEscola.aluno.id = :idAluno AND MI.dataInicio = :dataInicio AND MI.dataTermino = :dataTermino");
             query.setParameter("idCurso", mi.getCurso().getId());
             query.setParameter("idAluno", mi.getMatriculaEscola().getAluno().getId());
+            query.setParameter("dataInicio", mi.getDataInicio());
+            query.setParameter("dataTermino", mi.getDataTermino());
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return true;
