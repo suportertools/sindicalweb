@@ -50,13 +50,11 @@
                                 <h:selectOneMenu  id="cbStatus" style="width: 100px;" title="Status atual" value="#{matriculaEscolaBean.idStatus}" >
                                     <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
                                 </h:selectOneMenu>
-                                <h:outputLabel value=" Vencimento: " styleClass="fontePadrao"/>
+                                <h:outputLabel value=" Vencimento: " styleClass="fontePadrao  margin-left-max"/>
                                 <h:selectOneMenu id="cbDataVencimento" style="width: 40px;"  title="Dia do vencimento" value="#{matriculaEscolaBean.idDiaVencimento}"  disabled="#{matriculaEscolaBean.desabilitaDiaVencimento}">
                                     <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
                                 </h:selectOneMenu>
-                                <h:outputLabel value=" Desconto em folha: " styleClass="fontePadrao"/>
-                                <h:selectBooleanCheckbox id="idDescontoFolha" title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}"/>
-                                <h:outputLabel value="Tipo Cobrança: " styleClass="fontePadrao"/>
+                                <h:outputLabel value="Tipo Cobrança: " styleClass="fontePadrao margin-left-max"/>
                                 <h:selectOneMenu id="cbTipoCobranca"  title="Desconto em folha" value="#{matriculaEscolaBean.idFTipoDocumento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
                                     <f:ajax event="change" listener="#{matriculaEscolaBean.bloqueiaComboDiaVencimento}" render="cbDataVencimento" />
                                     <f:selectItems value="#{matriculaEscolaBean.listaFTipoDocumento}" var="fTipoDocumento" itemLabel="#{fTipoDocumento.descricao}" itemValue="#{fTipoDocumento.id}"/>
@@ -69,6 +67,14 @@
                                 <h:outputLabel value=" Pesquisar Aluno " styleClass="fontePadrao" style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id == -1}" for="idPesquisarAluno"/>
                                 <h:outputText id="idAluno" value=" Aluno: #{matriculaEscolaBean.matriculaEscola.aluno.nome}" styleClass="fontePadrao" style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" />
                                 <h:outputText value=" - SÓCIO" styleClass="fontePadrao" rendered="#{matriculaEscolaBean.socio}"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:column rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
+                                    <h:selectBooleanCheckbox id="idDescontoFolha" title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                                    <h:outputLabel value=" Desconto em folha?" styleClass="fontePadrao" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                                </h:column>
                             </h:column>
                             <h:outputLabel value="Responsável: " styleClass="fontePadrao" style="margin-left: 8px" for="idPesquisarAluno" />
                             <h:column>
