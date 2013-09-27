@@ -26,25 +26,30 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
+@ManagedBean(name = "simplesBean")
+@SessionScoped
 public class SimplesJSFBean {
+
     private Rotina rotina;
-    private String nomeRotina;
-    private String pesquisaLista;
+    private Object objeto;
     private List<SelectItem> listaRotinaCombo;
     private List<Rotina> listaRotina;
-    private int idRotina;
+    private List lista;
+    private String nomeRotina;
+    private String pesquisaLista;
     private String mensagem;
     private String descricao;
     private String[] sessoes;
-    private List lista;
-    private Object objeto;
     private int idIndex;
     private int id;
+    private int idRotina;
 
-    public SimplesJSFBean(){
+    public SimplesJSFBean() {
         rotina = new Rotina();
         idRotina = 0;
         listaRotinaCombo = new ArrayList<SelectItem>();
@@ -60,61 +65,60 @@ public class SimplesJSFBean {
         id = -1;
     }
 
-    public List<SelectItem> getListaRotinaCombo(){
+    public List<SelectItem> getListaRotinaCombo() {
         int i = 0;
         RotinaDB db = new RotinaDBToplink();
-        if (listaRotinaCombo.isEmpty()){
-           listaRotina = db.pesquisaTodosSimples();
-            while (i < getListaRotina().size()){
+        if (listaRotinaCombo.isEmpty()) {
+            listaRotina = db.pesquisaTodosSimples();
+            while (i < getListaRotina().size()) {
                 listaRotinaCombo.add(new SelectItem(
-                    new Integer(i),
-                    getListaRotina().get(i).getRotina()
-                ));
+                        new Integer(i),
+                        getListaRotina().get(i).getRotina()));
                 i++;
             }
         }
         return listaRotinaCombo;
     }
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         NovoLog log = new NovoLog();
-        if(sessoes != null){
-            if (descricao.equals("")){
+        if (sessoes != null) {
+            if (descricao.equals("")) {
                 mensagem = "Campo não pode ser vázio!";
                 return null;
             }
-            if (id == -1){
+            if (id == -1) {
                 converteObjeto(sessoes[0]);
-                if(sv.descricaoExiste(descricao, "descricao", objeto.getClass().getSimpleName())){
-                    mensagem = "Essa descrição já existe "+nomeRotina+" !";
+                if (sv.descricaoExiste(descricao, "descricao", objeto.getClass().getSimpleName())) {
+                    mensagem = "Essa descrição já existe " + nomeRotina + " !";
                     return null;
-                    
+
                 }
                 sv.abrirTransacao();
-                if(sv.inserirObjeto(objeto)){
+                if (sv.inserirObjeto(objeto)) {
                     sv.comitarTransacao();
-                    log.novo("Registro de "+objeto.getClass().getSimpleName()+" inserido", "ID: "+id+" DESCRICAO: "+descricao);
+                    log.novo("Registro de " + objeto.getClass().getSimpleName() + " inserido", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro salvo com sucesso";
                     descricao = "";
                     lista.clear();
                     id = -1;
-                }else{
-                    mensagem = "Erro ao salvar "+nomeRotina+" ";
+                } else {
+                    mensagem = "Erro ao salvar " + nomeRotina + " ";
                     sv.desfazerTransacao();
                 }
-            }else{
+            } else {
                 atualizaObjeto(sessoes[0]);
                 sv.abrirTransacao();
-                if(sv.alterarObjeto(objeto)){
+                if (sv.alterarObjeto(objeto)) {
                     sv.comitarTransacao();
-                    log.novo("Registro de "+objeto.getClass().getSimpleName()+" alterado", "ID: "+id+" DESCRICAO: "+descricao);
+                    log.novo("Registro de " + objeto.getClass().getSimpleName() + " alterado", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro atualizado com sucesso";
                     descricao = "";
                     lista.clear();
                     id = -1;
-                }else{
-                    mensagem = "Erro ao atualizar "+nomeRotina+" ";
+                } else {
+                    mensagem = "Erro ao atualizar " + nomeRotina + " ";
                     sv.desfazerTransacao();
                 }
             }
@@ -122,30 +126,31 @@ public class SimplesJSFBean {
         return null;
     }
 
-    public String editar(){
+    public String editar() {
         objeto = getLista().get(idIndex);
         editaObjeto(objeto);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("simplesPesquisa", objeto);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null &&
-            !((String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu"))
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null
+                && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
         return "simples";
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         NovoLog log = new NovoLog();
         sv.abrirTransacao();
         objeto = getLista().get(idIndex);
         editaObjeto(objeto);
         objeto = sv.pesquisaObjeto(id, objeto.getClass().getSimpleName());
-        if (!sv.deletarObjeto(objeto)){
+        if (!sv.deletarObjeto(objeto)) {
             mensagem = "Erro ao excluir registro";
             sv.desfazerTransacao();
-        }else{
+        } else {
             sv.comitarTransacao();
-            log.novo("Registro de "+objeto.getClass().getSimpleName()+" excluido", "ID: "+id+" DESCRICAO: "+descricao);
+            log.novo("Registro de " + objeto.getClass().getSimpleName() + " excluido", "ID: " + id + " DESCRICAO: " + descricao);
             mensagem = "Registro excluído com sucesso!";
             lista.clear();
             objeto = null;
@@ -155,13 +160,13 @@ public class SimplesJSFBean {
         return null;
     }
 
-    public String novo(){
+    public String novo() {
         rotina = new Rotina();
         mensagem = "";
         return "simples";
     }
-    
-    public String limpar(){
+
+    public String limpar() {
         rotina = new Rotina();
         mensagem = "";
         objeto = null;
@@ -206,7 +211,7 @@ public class SimplesJSFBean {
     }
 
     public String getNomeRotina() {
-        if(sessoes != null){
+        if (sessoes != null) {
             nomeRotina = sessoes[1];
         }
         return nomeRotina;
@@ -225,10 +230,10 @@ public class SimplesJSFBean {
     }
 
     public String[] getSessoes() {
-        if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cadastroSimples") != null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cadastroSimples") != null) {
             sessoes = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cadastroSimples");
-            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null){
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("chamadaPaginaSimples");                
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("chamadaPaginaSimples");
             }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("chamadaPaginaSimples", sessoes);
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cadastroSimples");
@@ -240,163 +245,287 @@ public class SimplesJSFBean {
         this.sessoes = sessoes;
     }
 
-    public void converteObjeto(String tipo){
-        if (tipo.equals("Bairro")) objeto = (Bairro) new Bairro(id, descricao);else
-        if (tipo.equals("Logradouro")) objeto = (Logradouro) new Logradouro(id, descricao);else
-        if (tipo.equals("GrupoCidade")) objeto = (GrupoCidade) new GrupoCidade(id, descricao);else
-        if (tipo.equals("DescricaoEndereco")) objeto = (DescricaoEndereco) new DescricaoEndereco(id, descricao);else
-        if (tipo.equals("TipoEndereco")) objeto = (TipoEndereco) new TipoEndereco(id, descricao);else
-        if (tipo.equals("TipoDocumento")) objeto = (TipoDocumento) new TipoDocumento(id, descricao);else
-        if (tipo.equals("GrupoAgenda")) objeto = (GrupoAgenda) new GrupoAgenda(id, descricao);else
-        if (tipo.equals("Evento")) objeto = (Evento) new Evento(id, descricao);else
-        if (tipo.equals("Modulo")) objeto = (Modulo) new Modulo(id, descricao);else
-        if (tipo.equals("Departamento")) objeto = (Departamento) new Departamento(id, descricao);else
-        if (tipo.equals("Genero")) objeto = (Genero) new Genero(id, descricao);else
-        if (tipo.equals("Indice")) objeto = (Indice) new Indice(id, descricao);else
-        if (tipo.equals("TipoCentroComercial")) objeto = (TipoCentroComercial) new TipoCentroComercial(id, descricao);else
-        if (tipo.equals("GrupoConvenio")) objeto = (GrupoConvenio) new GrupoConvenio(id, descricao);else
-        if (tipo.equals("ComponenteCurricular")) objeto = (ComponenteCurricular) new ComponenteCurricular(id, descricao);else
-        if (tipo.equals("GrupoEvento")) objeto = (GrupoEvento) new GrupoEvento(id, descricao);else
-        if (tipo.equals("Banda")) objeto = (Banda) new Banda(id, descricao);else
-        if (tipo.equals("Midia")) objeto = (Midia) new Midia(id, descricao);
-        if (tipo.equals("Nivel")) objeto = (Nivel) new Nivel(id, descricao);
-        if (tipo.equals("MotivoInativacao")) objeto = (MotivoInativacao) new MotivoInativacao(id, descricao);
-        if (tipo.equals("TipoServico")) objeto = (TipoServico) new TipoServico(id, descricao);
-        if (tipo.equals("AteOperacao")) {objeto = (AteOperacao) new AteOperacao(id, descricao);}
+    public void converteObjeto(String tipo) {
+        if (tipo.equals("Bairro")) {
+            objeto = (Bairro) new Bairro(id, descricao);
+        } else if (tipo.equals("Logradouro")) {
+            objeto = (Logradouro) new Logradouro(id, descricao);
+        } else if (tipo.equals("GrupoCidade")) {
+            objeto = (GrupoCidade) new GrupoCidade(id, descricao);
+        } else if (tipo.equals("DescricaoEndereco")) {
+            objeto = (DescricaoEndereco) new DescricaoEndereco(id, descricao);
+        } else if (tipo.equals("TipoEndereco")) {
+            objeto = (TipoEndereco) new TipoEndereco(id, descricao);
+        } else if (tipo.equals("TipoDocumento")) {
+            objeto = (TipoDocumento) new TipoDocumento(id, descricao);
+        } else if (tipo.equals("GrupoAgenda")) {
+            objeto = (GrupoAgenda) new GrupoAgenda(id, descricao);
+        } else if (tipo.equals("Evento")) {
+            objeto = (Evento) new Evento(id, descricao);
+        } else if (tipo.equals("Modulo")) {
+            objeto = (Modulo) new Modulo(id, descricao);
+        } else if (tipo.equals("Departamento")) {
+            objeto = (Departamento) new Departamento(id, descricao);
+        } else if (tipo.equals("Genero")) {
+            objeto = (Genero) new Genero(id, descricao);
+        } else if (tipo.equals("Indice")) {
+            objeto = (Indice) new Indice(id, descricao);
+        } else if (tipo.equals("TipoCentroComercial")) {
+            objeto = (TipoCentroComercial) new TipoCentroComercial(id, descricao);
+        } else if (tipo.equals("GrupoConvenio")) {
+            objeto = (GrupoConvenio) new GrupoConvenio(id, descricao);
+        } else if (tipo.equals("ComponenteCurricular")) {
+            objeto = (ComponenteCurricular) new ComponenteCurricular(id, descricao);
+        } else if (tipo.equals("GrupoEvento")) {
+            objeto = (GrupoEvento) new GrupoEvento(id, descricao);
+        } else if (tipo.equals("Banda")) {
+            objeto = (Banda) new Banda(id, descricao);
+        } else if (tipo.equals("Midia")) {
+            objeto = (Midia) new Midia(id, descricao);
+        }
+        if (tipo.equals("Nivel")) {
+            objeto = (Nivel) new Nivel(id, descricao);
+        }
+        if (tipo.equals("MotivoInativacao")) {
+            objeto = (MotivoInativacao) new MotivoInativacao(id, descricao);
+        }
+        if (tipo.equals("TipoServico")) {
+            objeto = (TipoServico) new TipoServico(id, descricao);
+        }
+        if (tipo.equals("AteOperacao")) {
+            objeto = (AteOperacao) new AteOperacao(id, descricao);
+        }
     }
 
-    public void atualizaObjeto(String tipo){
-        if (tipo.equals("Bairro")) ((Bairro)objeto).setDescricao(descricao);else
-        if (tipo.equals("Logradouro")) ((Logradouro)objeto).setDescricao(descricao);else
-        if (tipo.equals("GrupoCidade")) ((GrupoCidade)objeto).setDescricao(descricao);else
-        if (tipo.equals("DescricaoEndereco")) ((DescricaoEndereco)objeto).setDescricao(descricao);else
-        if (tipo.equals("TipoEndereco")) ((TipoEndereco)objeto).setDescricao(descricao);else
-        if (tipo.equals("TipoDocumento")) ((TipoDocumento)objeto).setDescricao(descricao);else
-        if (tipo.equals("GrupoAgenda")) ((GrupoAgenda)objeto).setDescricao(descricao);else
-        if (tipo.equals("Evento")) ((Evento)objeto).setDescricao(descricao);else
-        if (tipo.equals("Modulo")) ((Modulo)objeto).setDescricao(descricao);else
-        if (tipo.equals("Departamento")) ((Departamento)objeto).setDescricao(descricao);else
-        if (tipo.equals("Genero")) ((Genero)objeto).setDescricao(descricao);else
-        if (tipo.equals("Indice")) ((Indice)objeto).setDescricao(descricao);else
-        if (tipo.equals("TipoCentroComercial")) ((TipoCentroComercial)objeto).setDescricao(descricao);else
-        if (tipo.equals("GrupoConvenio")) ((GrupoConvenio)objeto).setDescricao(descricao);else
-        if (tipo.equals("ComponenteCurricular")) ((ComponenteCurricular)objeto).setDescricao(descricao);else
-        if (tipo.equals("GrupoEvento")) ((GrupoEvento)objeto).setDescricao(descricao);else
-        if (tipo.equals("Banda")) ((Banda)objeto).setDescricao(descricao);else
-        if (tipo.equals("Midia")) ((Midia)objeto).setDescricao(descricao);
-        if (tipo.equals("Nivel")) ((Nivel)objeto).setDescricao(descricao);
-        if (tipo.equals("MotivoInativacao")) ((MotivoInativacao)objeto).setDescricao(descricao);
-        if (tipo.equals("TipoServico")) ((TipoServico)objeto).setDescricao(descricao);
-        if (tipo.equals("AteOperacao")){((AteOperacao)objeto).setDescricao(descricao);}
+    public void atualizaObjeto(String tipo) {
+        if (tipo.equals("Bairro")) {
+            ((Bairro) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Logradouro")) {
+            ((Logradouro) objeto).setDescricao(descricao);
+        } else if (tipo.equals("GrupoCidade")) {
+            ((GrupoCidade) objeto).setDescricao(descricao);
+        } else if (tipo.equals("DescricaoEndereco")) {
+            ((DescricaoEndereco) objeto).setDescricao(descricao);
+        } else if (tipo.equals("TipoEndereco")) {
+            ((TipoEndereco) objeto).setDescricao(descricao);
+        } else if (tipo.equals("TipoDocumento")) {
+            ((TipoDocumento) objeto).setDescricao(descricao);
+        } else if (tipo.equals("GrupoAgenda")) {
+            ((GrupoAgenda) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Evento")) {
+            ((Evento) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Modulo")) {
+            ((Modulo) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Departamento")) {
+            ((Departamento) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Genero")) {
+            ((Genero) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Indice")) {
+            ((Indice) objeto).setDescricao(descricao);
+        } else if (tipo.equals("TipoCentroComercial")) {
+            ((TipoCentroComercial) objeto).setDescricao(descricao);
+        } else if (tipo.equals("GrupoConvenio")) {
+            ((GrupoConvenio) objeto).setDescricao(descricao);
+        } else if (tipo.equals("ComponenteCurricular")) {
+            ((ComponenteCurricular) objeto).setDescricao(descricao);
+        } else if (tipo.equals("GrupoEvento")) {
+            ((GrupoEvento) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Banda")) {
+            ((Banda) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Midia")) {
+            ((Midia) objeto).setDescricao(descricao);
+        }
+        if (tipo.equals("Nivel")) {
+            ((Nivel) objeto).setDescricao(descricao);
+        }
+        if (tipo.equals("MotivoInativacao")) {
+            ((MotivoInativacao) objeto).setDescricao(descricao);
+        }
+        if (tipo.equals("TipoServico")) {
+            ((TipoServico) objeto).setDescricao(descricao);
+        }
+        if (tipo.equals("AteOperacao")) {
+            ((AteOperacao) objeto).setDescricao(descricao);
+        }
     }
 
-    public void editaObjeto(Object obj){
-        if (obj.getClass().getSimpleName().equals("Bairro")){ descricao = ((Bairro)obj).getDescricao(); id = ((Bairro)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Logradouro")){ descricao = ((Logradouro)obj).getDescricao(); id = ((Logradouro)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("GrupoCidade")){ descricao = ((GrupoCidade)obj).getDescricao(); id = ((GrupoCidade)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("DescricaoEndereco")){ descricao = ((DescricaoEndereco)obj).getDescricao(); id = ((DescricaoEndereco)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("TipoEndereco")){ descricao = ((TipoEndereco)obj).getDescricao(); id = ((TipoEndereco)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("TipoDocumento")){ descricao = ((TipoDocumento)obj).getDescricao(); id = ((TipoDocumento)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("GrupoAgenda")){ descricao = ((GrupoAgenda)obj).getDescricao(); id = ((GrupoAgenda)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Evento")){ descricao = ((Evento)obj).getDescricao(); id = ((Evento)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Modulo")){ descricao = ((Modulo)obj).getDescricao(); id = ((Modulo)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Departamento")){ descricao = ((Departamento)obj).getDescricao(); id = ((Departamento)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Genero")){ descricao = ((Genero)obj).getDescricao(); id = ((Genero)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Indice")){ descricao = ((Indice)obj).getDescricao(); id = ((Indice)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("TipoCentroComercial")){ descricao = ((TipoCentroComercial)obj).getDescricao(); id = ((TipoCentroComercial)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("GrupoConvenio")){ descricao = ((GrupoConvenio)obj).getDescricao(); id = ((GrupoConvenio)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("ComponenteCurricular")){ descricao = ((ComponenteCurricular)obj).getDescricao(); id = ((ComponenteCurricular)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("GrupoEvento")){ descricao = ((GrupoEvento)obj).getDescricao(); id = ((GrupoEvento)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Banda")){ descricao = ((Banda)obj).getDescricao(); id = ((Banda)objeto).getId();}else
-        if (obj.getClass().getSimpleName().equals("Midia")){ descricao = ((Midia)obj).getDescricao(); id = ((Midia)objeto).getId();}
-        if (obj.getClass().getSimpleName().equals("Nivel")){ descricao = ((Nivel)obj).getDescricao(); id = ((Nivel)objeto).getId();}
-        if (obj.getClass().getSimpleName().equals("MotivoInativacao")){ descricao = ((MotivoInativacao)obj).getDescricao(); id = ((MotivoInativacao)objeto).getId();}
-        if (obj.getClass().getSimpleName().equals("TipoServico")){ descricao = ((TipoServico)obj).getDescricao(); id = ((TipoServico)objeto).getId();}
-        if (obj.getClass().getSimpleName().equals("AteOperacao")){ descricao = ((AteOperacao)obj).getDescricao(); id = ((AteOperacao)objeto).getId();}
+    public void editaObjeto(Object obj) {
+        if (obj.getClass().getSimpleName().equals("Bairro")) {
+            descricao = ((Bairro) obj).getDescricao();
+            id = ((Bairro) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Logradouro")) {
+            descricao = ((Logradouro) obj).getDescricao();
+            id = ((Logradouro) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("GrupoCidade")) {
+            descricao = ((GrupoCidade) obj).getDescricao();
+            id = ((GrupoCidade) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("DescricaoEndereco")) {
+            descricao = ((DescricaoEndereco) obj).getDescricao();
+            id = ((DescricaoEndereco) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("TipoEndereco")) {
+            descricao = ((TipoEndereco) obj).getDescricao();
+            id = ((TipoEndereco) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("TipoDocumento")) {
+            descricao = ((TipoDocumento) obj).getDescricao();
+            id = ((TipoDocumento) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("GrupoAgenda")) {
+            descricao = ((GrupoAgenda) obj).getDescricao();
+            id = ((GrupoAgenda) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Evento")) {
+            descricao = ((Evento) obj).getDescricao();
+            id = ((Evento) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Modulo")) {
+            descricao = ((Modulo) obj).getDescricao();
+            id = ((Modulo) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Departamento")) {
+            descricao = ((Departamento) obj).getDescricao();
+            id = ((Departamento) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Genero")) {
+            descricao = ((Genero) obj).getDescricao();
+            id = ((Genero) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Indice")) {
+            descricao = ((Indice) obj).getDescricao();
+            id = ((Indice) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("TipoCentroComercial")) {
+            descricao = ((TipoCentroComercial) obj).getDescricao();
+            id = ((TipoCentroComercial) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("GrupoConvenio")) {
+            descricao = ((GrupoConvenio) obj).getDescricao();
+            id = ((GrupoConvenio) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("ComponenteCurricular")) {
+            descricao = ((ComponenteCurricular) obj).getDescricao();
+            id = ((ComponenteCurricular) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("GrupoEvento")) {
+            descricao = ((GrupoEvento) obj).getDescricao();
+            id = ((GrupoEvento) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Banda")) {
+            descricao = ((Banda) obj).getDescricao();
+            id = ((Banda) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Midia")) {
+            descricao = ((Midia) obj).getDescricao();
+            id = ((Midia) objeto).getId();
+        }
+        if (obj.getClass().getSimpleName().equals("Nivel")) {
+            descricao = ((Nivel) obj).getDescricao();
+            id = ((Nivel) objeto).getId();
+        }
+        if (obj.getClass().getSimpleName().equals("MotivoInativacao")) {
+            descricao = ((MotivoInativacao) obj).getDescricao();
+            id = ((MotivoInativacao) objeto).getId();
+        }
+        if (obj.getClass().getSimpleName().equals("TipoServico")) {
+            descricao = ((TipoServico) obj).getDescricao();
+            id = ((TipoServico) objeto).getId();
+        }
+        if (obj.getClass().getSimpleName().equals("AteOperacao")) {
+            descricao = ((AteOperacao) obj).getDescricao();
+            id = ((AteOperacao) objeto).getId();
+        }
     }
 
-    public boolean comparaObjeto(Object obj){
-        if (obj.getClass().getSimpleName().equals("Bairro")){
-            if (((Bairro) obj).getDescricao().contains(pesquisaLista))
+    public boolean comparaObjeto(Object obj) {
+        if (obj.getClass().getSimpleName().equals("Bairro")) {
+            if (((Bairro) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Logradouro")){
-            if ( ((Logradouro) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Logradouro")) {
+            if (((Logradouro) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("GrupoCidade")){
-            if ( ((GrupoCidade) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("GrupoCidade")) {
+            if (((GrupoCidade) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("DescricaoEndereco")){
-            if ( ((DescricaoEndereco) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("DescricaoEndereco")) {
+            if (((DescricaoEndereco) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("TipoEndereco")){
-            if ( ((TipoEndereco) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("TipoEndereco")) {
+            if (((TipoEndereco) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("TipoDocumento")){
-            if ( ((TipoDocumento) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("TipoDocumento")) {
+            if (((TipoDocumento) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("GrupoAgenda")){
-            if ( ((GrupoAgenda) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("GrupoAgenda")) {
+            if (((GrupoAgenda) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Evento")){
-            if ( ((Evento) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Evento")) {
+            if (((Evento) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Modulo")){
-            if ( ((Modulo) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Modulo")) {
+            if (((Modulo) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Departamento")){
-            if ( ((Departamento) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Departamento")) {
+            if (((Departamento) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Genero")){
-            if ( ((Genero) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Genero")) {
+            if (((Genero) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Indice")){
-            if ( ((Indice) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Indice")) {
+            if (((Indice) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("TipoCentroComercial")){
-            if ( ((TipoCentroComercial) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("TipoCentroComercial")) {
+            if (((TipoCentroComercial) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("GrupoConvenio")){
-            if ( ((GrupoConvenio) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("GrupoConvenio")) {
+            if (((GrupoConvenio) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("ComponenteCurricular")){
-            if ( ((ComponenteCurricular) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("ComponenteCurricular")) {
+            if (((ComponenteCurricular) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("GrupoEvento")){
-            if ( ((GrupoEvento) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("GrupoEvento")) {
+            if (((GrupoEvento) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Banda")){
-            if ( ((Banda) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Banda")) {
+            if (((Banda) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Midia")){
-            if ( ((Midia) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Midia")) {
+            if (((Midia) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("Nivel")){
-            if ( ((Nivel) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("Nivel")) {
+            if (((Nivel) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("MotivoInativacao")){
-            if ( ((MotivoInativacao) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("MotivoInativacao")) {
+            if (((MotivoInativacao) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("TipoServico")){
-            if ( ((TipoServico) obj).getDescricao().contains(pesquisaLista))
+            }
+        } else if (obj.getClass().getSimpleName().equals("TipoServico")) {
+            if (((TipoServico) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
-        }else if (obj.getClass().getSimpleName().equals("AteOperacao")){
-            if ( ((AteOperacao) obj).getDescricao().contains(pesquisaLista)){
+            }
+        } else if (obj.getClass().getSimpleName().equals("AteOperacao")) {
+            if (((AteOperacao) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
         }
         return false;
     }
 
-    public void limpaLista(){
+    public void limpaLista() {
         lista.clear();
     }
-    
+
     public synchronized List getLista() {
-        if(sessoes != null){
+        if (sessoes != null) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            if(pesquisaLista.isEmpty()){
+            if (pesquisaLista.isEmpty()) {
                 lista = sv.listaObjetoGenericoOrdem(sessoes[0]);
-            }else{
+            } else {
                 lista = sv.listaObjetoGenericoOrdemDesc(sessoes[0], pesquisaLista);
             }
 //            if(lista.isEmpty()){
@@ -441,8 +570,6 @@ public class SimplesJSFBean {
         this.pesquisaLista = pesquisaLista;
     }
 }
-
-
 //                Class cls = Class.forName(sessoes[0]);
 //
 //                Class partypes[] = new Class[2];
