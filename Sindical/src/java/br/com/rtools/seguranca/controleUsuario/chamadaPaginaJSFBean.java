@@ -114,7 +114,6 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
     }
 
     public synchronized String pessoaJuridica() {
-        //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("juridicaBean")){
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
@@ -123,7 +122,6 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cnaePesquisado");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
-        //}
         return metodoGenerico(2, "pessoaJuridica");
     }
 
@@ -589,7 +587,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");        
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
         return metodoGenerico(2, "matriculaEscola");
     }
 
@@ -1202,410 +1200,24 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
 
+    // Lista Breadcrumbs e Menu url de retornos de páginas
     public String converteURLNome(String strURLNome) {
-        String nomePg = "";
-        /*if (strURLNome.substring(0, 4).equals("menu")){
-         tipoPagina = 0;
-         }else if (strURLNome.substring(0, 4).equals("pesq")){
-         tipoPagina = 1;
-         }else if (strURLNome.substring(0, 4).equals("rela")){
-         tipoPagina = 3;
-         }else{
-         tipoPagina = 2;
-         }*/
-        // CASOS DE MENUS ----------------------------------------
-        //--------------------------------------------------------
-        if (tipoPagina == 0) {
-            if (strURLNome.equals("menuPrincipal")) {
-                nomePg = "Menu Principal";
-            } else if (strURLNome.equals("menuSocial")) {
-                nomePg = "Menu Social";
-            } else if (strURLNome.equals("menuArrecadacao")) {
-                nomePg = "Menu Arrecadação";
-            } else if (strURLNome.equals("menuFinanceiro")) {
-                nomePg = "Menu Financeiro";
-            } else if (strURLNome.equals("menuHomologacao")) {
-                nomePg = "Menu Homologação";
-            } else if (strURLNome.equals("menuAcademia")) {
-                nomePg = "Menu Academia";
-            } else if (strURLNome.equals("menuEscola")) {
-                nomePg = "Menu Escola";
-            } else if (strURLNome.equals("menuClube")) {
-                nomePg = "Menu Clube";
-            } else if (strURLNome.equals("menuLocadora")) {
-                nomePg = "Menu Locadora";
-            } else if (strURLNome.equals("menuAtendimento")) {
-                nomePg = "Menu Atendimento";
+        if (strURLNome.equals("simples")) {
+            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
+                String[] simplesString = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples");
+                return simplesString[1];
             }
-            return nomePg;
         }
-
-        // CASOS DE PESQUISAS -------------------------------------
-        //---------------------------------------------------------
-        if (tipoPagina == 1) {
-            if (strURLNome.equals("pesquisaUsuario")) {
-                nomePg = "Pesquisa de Usuário";
-            } else if (strURLNome.equals("pesquisaPessoaFisica")) {
-                nomePg = "Pesquisa de Pessoas Físicas";
-            } else if (strURLNome.equals("pesquisaPessoaJuridica")) {
-                nomePg = "Pesquisa de Pessoas Jurídica";
-            } else if (strURLNome.equals("pesquisaRelatorios")) {
-                nomePg = "Pesquisa de Relatórios";
-            } else if (strURLNome.equals("pesquisaPessoa")) {
-                nomePg = "Pesquisa de Pessoas";
-            } else if (strURLNome.equals("pesquisaCnae")) {
-                nomePg = "Pesquisa Cnae";
-            } else if (strURLNome.equals("pesquisaContabilidade")) {
-                nomePg = "Pesquisa Contabilidade";
-            } else if (strURLNome.equals("pesquisaPermissao")) {
-                nomePg = "Pesquisa Permissões";
-            } else if (strURLNome.equals("pesquisaDepartamento")) {
-                nomePg = "Pesquisa Departamentos";
-            } else if (strURLNome.equals("pesquisaRotina")) {
-                nomePg = "Pesquisa Rotinas";
-            } else if (strURLNome.equals("pesquisaEvento")) {
-                nomePg = "Pesquisa Eventos";
-            } else if (strURLNome.equals("pesquisaModulo")) {
-                nomePg = "Pesquisa Módulos";
-            } else if (strURLNome.equals("pesquisaEndereco")) {
-                nomePg = "Pesquisa Endereços";
-            } else if (strURLNome.equals("pesquisaCidade")) {
-                nomePg = "Pesquisa Cidades";
-            } else if (strURLNome.equals("pesquisaBairro")) {
-                nomePg = "Pesquisa Bairros";
-            } else if (strURLNome.equals("pesquisaLogradouro")) {
-                nomePg = "Pesquisa Logradouros";
-            } else if (strURLNome.equals("pesquisaDescricaoEndereco")) {
-                nomePg = "Pesquisa Descrição Endereço";
-            } else if (strURLNome.equals("pesquisaTipoEndereco")) {
-                nomePg = "Pesquisa Tipo Endereço";
-            } else if (strURLNome.equals("pesquisaTipoDocumento")) {
-                nomePg = "Pesquisa Tipo Documento";
-            } else if (strURLNome.equals("pesquisaProfissao")) {
-                nomePg = "Pesquisa Profissões";
-            } else if (strURLNome.equals("pesquisaConvencao")) {
-                nomePg = "Pesquisa Convenções";
-            } else if (strURLNome.equals("pesquisaMotivoInativacao")) {
-                nomePg = "Pesquisa Motivo de Inativações";
-            } else if (strURLNome.equals("pesquisaPlano")) {
-                nomePg = "Pesquisa Plano";
-            } else if (strURLNome.equals("pesquisaServicos")) {
-                nomePg = "Pesquisa Contribuições";
-            } else if (strURLNome.equals("pesquisaContaBanco")) {
-                nomePg = "Pesquisa Conta Banco";
-            } else if (strURLNome.equals("pesquisaContaCobranca")) {
-                nomePg = "Pesquisa Conta Cobrança";
-            } else if (strURLNome.equals("pesquisaIndice")) {
-                nomePg = "Pesquisa Índices";
-            } else if (strURLNome.equals("pesquisaGrupoConvenio")) {
-                nomePg = "Pesquisa Grupo de Convênio";
-            } else if (strURLNome.equals("pesquisaSubGrupoConvenio")) {
-                nomePg = "Pesquisa SubGrupo de Convênio";
-            } else if (strURLNome.equals("pesquisaParentesco")) {
-                nomePg = "Pesquisa Parentesco";
-            } else if (strURLNome.equals("pesquisaSuspencao")) {
-                nomePg = "Pesquisa Suspensão";
-            } else if (strURLNome.equals("pesquisaCategoria")) {
-                nomePg = "Pesquisa Categoria";
-            } else if (strURLNome.equals("pesquisaSocios")) {
-                nomePg = "Pesquisa Sócios";
-            } else if (strURLNome.equals("pesquisaAcademia")) {
-                nomePg = "Pesquisa Matricula Academia";
-            } else if (strURLNome.equals("pesquisaConvenioMedico")) {
-                nomePg = "Pesquisa Convênio Médico";
-            } else if (strURLNome.equals("pesquisaJuridicaConvenio")) {
-                nomePg = "Pesquisa Empresas Conveniadas";
-            } else if (strURLNome.equals("pesquisaGuiasEmitidas")) {
-                nomePg = "Pesquisa Guias Emitidas";
-            } else if (strURLNome.equals("pesquisaBanda")) {
-                nomePg = "Pesquisa Banda";
-            } else if (strURLNome.equals("pesquisaCaravana")) {
-                nomePg = "Pesquisa Caravana";
-            } else if (strURLNome.equals("pesquisaBaile")) {
-                nomePg = "Pesquisa Baile";
-            } else if (strURLNome.equals("pesquisaVendasCaravana")) {
-                nomePg = "Pesquisa Vendas Caravana";
-            } else if (strURLNome.equals("pesquisaVendedor")) {
-                nomePg = "Pesquisa Vendedores";
-            } else if (strURLNome.equals("pesquisaTurma")) {
-                nomePg = "Pesquisa Turmas";
-            } else if (strURLNome.equals("pesquisaMatriculaEscola")) {
-                nomePg = "Pesquisa Matriculas";
-            } else if (strURLNome.equals("pesquisaGenero")) {
-                nomePg = "Pesquisa Gênero";
-            } else if (strURLNome.equals("pesquisaTitulo")) {
-                nomePg = "Pesquisa Titulo";
-            } else if (strURLNome.equals("pesquisaOposicao")) {
-                nomePg = "Pesquisa Oposição";
-            } else if (strURLNome.equals("pesquisaLog")) {
-                nomePg = "Pesquisa Logs / Registro de atividades";
-            } else if (strURLNome.equals("pesquisaPatronal")) {
-                nomePg = "Pesquisa Registro Patronal";
-            } else if (strURLNome.equals("pesquisaPisoSalarial")) {
-                nomePg = "Pesquisa Piso Salarial";
-            } else if (strURLNome.equals("pesquisaMatriculaContrato")) {
-                nomePg = "Pesquisa Contrato";
-            } else if (strURLNome.equals("pesquisaAgendaTelefone")) {
-                nomePg = "Pesquisa Agenda Telefone";
-            } else if (strURLNome.equals("pesquisaConfiguracao")) {
-                nomePg = "Pesquisa Configuração";
+        RotinaDB rotinaDB = new RotinaDBToplink();
+        Rotina r = rotinaDB.pesquisaRotinaPorPagina(strURLNome);
+        String nomePagina = " Menu ";
+        if (r.getId() != -1) {
+            if (!r.getRotina().equals("")) {
+                nomePagina = converterRotinaCaptalize(r.getRotina());
+                return nomePagina;
             }
-            return nomePg;
         }
-
-        // CASOS DE CADASTRO -------------------------------------
-        //--------------------------------------------------------
-        if (tipoPagina == 2) {
-            if (strURLNome.equals("usuario")) {
-                nomePg = "Usuário";
-            } else if (strURLNome.equals("pessoaFisica")) {
-                nomePg = "Pessoa Física";
-            } else if (strURLNome.equals("permissao")) {
-                nomePg = "Permissão";
-            } else if (strURLNome.equals("pessoaJuridica")) {
-                nomePg = "Pessoa Jurídica";
-            } else if (strURLNome.equals("departamento")) {
-                nomePg = "Departamento";
-            } else if (strURLNome.equals("nivel")) {
-                nomePg = "Nível";
-            } else if (strURLNome.equals("rotina")) {
-                nomePg = "Rotina";
-            } else if (strURLNome.equals("evento")) {
-                nomePg = "Evento";
-            } else if (strURLNome.equals("modulo")) {
-                nomePg = "Módulo";
-            } else if (strURLNome.equals("endereco")) {
-                nomePg = "Endereço";
-            } else if (strURLNome.equals("bairro")) {
-                nomePg = "Bairro";
-            } else if (strURLNome.equals("cidade")) {
-                nomePg = "Cidade";
-            } else if (strURLNome.equals("logradouro")) {
-                nomePg = "Logradouro";
-            } else if (strURLNome.equals("descricaoEndereco")) {
-                nomePg = "Descrição Endereço";
-            } else if (strURLNome.equals("tipoEndereco")) {
-                nomePg = "Tipo Endereço";
-            } else if (strURLNome.equals("tipoDocumento")) {
-                nomePg = "Tipo Documento";
-            } else if (strURLNome.equals("cnae")) {
-                nomePg = "Cnae";
-            } else if (strURLNome.equals("profissao")) {
-                nomePg = "Profissão";
-            } else if (strURLNome.equals("convencao")) {
-                nomePg = "Convenção";
-            } else if (strURLNome.equals("cnaeConvencao")) {
-                nomePg = "Definir Cnaes Convenção";
-            } else if (strURLNome.equals("grupoCidades")) {
-                nomePg = "Cidades do Grupo";
-            } else if (strURLNome.equals("mensagem")) {
-                nomePg = "Mensagens";
-            } else if (strURLNome.equals("motivoInativacao")) {
-                nomePg = "Motivo Inativação";
-            } else if (strURLNome.equals("descontoEmpregado")) {
-                nomePg = "Desconto Empregado";
-            } else if (strURLNome.equals("extratoTela")) {
-                nomePg = "Extrato na Tela";
-            } else if (strURLNome.equals("plano")) {
-                nomePg = "Plano de Contas";
-            } else if (strURLNome.equals("servicos")) {
-                nomePg = "Contribuições";
-            } else if (strURLNome.equals("contaBanco")) {
-                nomePg = "Conta Banco";
-            } else if (strURLNome.equals("contaCobranca")) {
-                nomePg = "Conta Cobrança";
-            } else if (strURLNome.equals("servicoContaCobranca")) {
-                nomePg = "Serviço Conta Cobrança";
-            } else if (strURLNome.equals("webContribuinte")) {
-                nomePg = "Acesso Contribuintes";
-            } else if (strURLNome.equals("webContabilidade")) {
-                nomePg = "Acesso Contabilidade";
-            } else if (strURLNome.equals("webConfiguracoes")) {
-                nomePg = "Configurações de Usuário";
-            } else if (strURLNome.equals("movimentosReceber")) {
-                nomePg = "Movimentos à Receber";
-            } else if (strURLNome.equals("acordo")) {
-                nomePg = "Acordo";
-            } else if (strURLNome.equals("baixaGeral")) {
-                nomePg = "Baixa Geral";
-            } else if (strURLNome.equals("processamentoIndividual")) {
-                nomePg = "Impressão Individual de Boletos";
-            } else if (strURLNome.equals("contribuicao")) {
-                nomePg = "Contribuição";
-            } else if (strURLNome.equals("impressaoBoletos")) {
-                nomePg = "Impressão de Boletos";
-            } else if (strURLNome.equals("arquivoBanco")) {
-                nomePg = "Remessa e Retorno";
-            } else if (strURLNome.equals("indiceMensal")) {
-                nomePg = "Índice Mensal";
-            } else if (strURLNome.equals("correcao")) {
-                nomePg = "Correção";
-            } else if (strURLNome.equals("indice")) {
-                nomePg = "Indice";
-            } else if (strURLNome.equals("permissaoDepartamento")) {
-                nomePg = "Permissão por Departamento";
-            } else if (strURLNome.equals("retornoBanco")) {
-                nomePg = "Retorno do Banco";
-            } else if (strURLNome.equals("registroEmpresarial")) {
-                nomePg = "Registro Empresarial";
-            } else if (strURLNome.equals("enviarEmail")) {
-                nomePg = "Enviar E-mails";
-            } else if (strURLNome.equals("agendamento")) {
-                nomePg = "Agendamento de Homologação";
-            } else if (strURLNome.equals("homologacao")) {
-                nomePg = "Homologação";
-            } else if (strURLNome.equals("webAgendamentoContribuinte")) {
-                nomePg = "Agendamento Web Contribuinte";
-            } else if (strURLNome.equals("webAgendamentoContabilidade")) {
-                nomePg = "Agendamento Web Contabilidade";
-            } else if (strURLNome.equals("feriados")) {
-                nomePg = "Cadastro de Feriados";
-            } else if (strURLNome.equals("horarios")) {
-                nomePg = "Cadastro de Horários";
-            } else if (strURLNome.equals("subGrupoConvenio")) {
-                nomePg = "Sub-Grupo Convênio";
-            } else if (strURLNome.equals("convenio")) {
-                nomePg = "Convênio";
-            } else if (strURLNome.equals("parentesco")) {
-                nomePg = "Cadastro de Parentesco";
-            } else if (strURLNome.equals("suspencao")) {
-                nomePg = "Cadastro de Suspensão";
-            } else if (strURLNome.equals("grupoCategoria")) {
-                nomePg = "Categoria do Grupo";
-            } else if (strURLNome.equals("categoria")) {
-                nomePg = "Categoria";
-            } else if (strURLNome.equals("socios")) {
-                nomePg = "Sócios";
-            } else if (strURLNome.equals("contribuicaoSocio")) {
-                nomePg = "Contribuição dos Sócios";
-            } else if (strURLNome.equals("contribuicaoPorSocio")) {
-                nomePg = "Contribuição individual de Sócios";
-            } else if (strURLNome.equals("convenioMedico")) {
-                nomePg = "Convênio Médico";
-            } else if (strURLNome.equals("academia")) {
-                nomePg = "Academia";
-            } else if (strURLNome.equals("servicoRotina")) {
-                nomePg = "Serviço Rotina";
-            } else if (strURLNome.equals("lancamentoIndividual")) {
-                nomePg = "Lançamento Individual";
-            } else if (strURLNome.equals("emissaoGuias")) {
-                nomePg = "Emissão de Guias";
-            } else if (strURLNome.equals("filial")) {
-                nomePg = "Filiais";
-            } else if (strURLNome.equals("emissaoCarteirinha")) {
-                nomePg = "Emissão de Carteirinha";
-            } else if (strURLNome.equals("baixaBoleto")) {
-                nomePg = "Baixar Boleto";
-            } else if (strURLNome.equals("caravana")) {
-                nomePg = "Cadastro de Caravanas";
-            } else if (strURLNome.equals("vendasCaravana")) {
-                nomePg = "Vendas de Caravanas";
-            } else if (strURLNome.equals("descricaoEvento")) {
-                nomePg = "Descrição Eventos";
-            } else if (strURLNome.equals("baile")) {
-                nomePg = "Baile";
-            } else if (strURLNome.equals("bandas")) {
-                nomePg = "Banda";
-            } else if (strURLNome.equals("vendasBaile")) {
-                nomePg = "Venda baile";
-            } else if (strURLNome.equals("contrato")) {
-                nomePg = "Contrato";
-            } else if (strURLNome.equals("vendedor")) {
-                nomePg = "Vendedores";
-            } else if (strURLNome.equals("eFinanceiro")) {
-                nomePg = "Financeiro";
-            } else if (strURLNome.equals("professor")) {
-                nomePg = "Professores";
-            } else if (strURLNome.equals("turma")) {
-                nomePg = "Turma";
-            } else if (strURLNome.equals("matriculaEscola")) {
-                nomePg = "Matricula Escola";
-            } else if (strURLNome.equals("cancelarHorario")) {
-                nomePg = "Cancelamento de horários";
-            } else if (strURLNome.equals("genero")) {
-                nomePg = "Gênero";
-            } else if (strURLNome.equals("titulo")) {
-                nomePg = "Titulo";
-            } else if (strURLNome.equals("macFilial")) {
-                nomePg = "Registro Filial";
-            } else if (strURLNome.equals("agendaTarefa")) {
-                nomePg = "Agenda de tarefas";
-            } else if (strURLNome.equals("agendaInterrupcao")) {
-                nomePg = "Interrupções";
-            } else if (strURLNome.equals("tipoCentroComercial")) {
-                nomePg = "Tipo Centro Comercial";
-            } else if (strURLNome.equals("centroComercial")) {
-                nomePg = "Centro Comercial";
-            } else if (strURLNome.equals("simples")) {
-                nomePg = "Cadastro Simples";
-            } else if (strURLNome.equals("catalogoFilme")) {
-                nomePg = "Catálogo Filme";
-            } else if (strURLNome.equals("enviarArquivosContribuinte")) {
-                nomePg = "Enviar Arquivos Contribuinte";
-            } else if (strURLNome.equals("enviarArquivosContabilidade")) {
-                nomePg = "Enviar Arquivos Contabilidade";
-            } else if (strURLNome.equals("oposicao")) {
-                nomePg = "Oposição";
-            } else if (strURLNome.equals("webSolicitaREPIS")) {
-                nomePg = "Solicitação do REPIS";
-            } else if (strURLNome.equals("webLiberacaoREPIS")) {
-                nomePg = "Liberação de REPIS";
-            } else if (strURLNome.equals("registroPatronal")) {
-                nomePg = "Registro Patronal";
-            } else if (strURLNome.equals("pisoSalarial")) {
-                nomePg = "Piso Salarial";
-            } else if (strURLNome.equals("retornoPadrao")) {
-                nomePg = "Retorno Padrao";
-            } else if (strURLNome.equals("atendimentOperacao")) {
-                nomePg = "Atendimento > Operação";
-            } else if (strURLNome.equals("atendimento")) {
-                nomePg = "Atendimento";
-            } else if (strURLNome.equals("convencaoPeriodo")) {
-                nomePg = "Convenção Período";
-            } else if (strURLNome.equals("relatorio")) {
-                nomePg = "Relatório";
-            } else if (strURLNome.equals("cartaoSocial")) {
-                nomePg = "Cartão Social";
-            } else if (strURLNome.equals("notificacao")) {
-                nomePg = "Gerar notificação";
-            } else if (strURLNome.equals("matriculaContrato")) {
-                nomePg = "Contrato";
-            } else if (strURLNome.equals("recepcao")) {
-                nomePg = "Recepção";
-            } else if (strURLNome.equals("bloqueioServicos")) {
-                nomePg = "Bloqueio de Serviços";
-            } else if (strURLNome.equals("agendaTelefone")) {
-                nomePg = "Agenda Telefone";
-            } else if (strURLNome.equals("grupoAgenda")) {
-                nomePg = "Grupo Agenda";
-            } else if (strURLNome.equals("configuracao")) {
-                nomePg = "Configuração";
-            } else if (strURLNome.equals("matriculaContratoCampos")) {
-                nomePg = "Matricula Contrato Campos";
-            } else if (strURLNome.equals("movimentosReceberSocial")) {
-                nomePg = "Movimentos Social";
-            }
-            return nomePg;
-        }
-        // CASOS DE RELATORIOS ----------------------------------------
-        //--------------------------------------------------------
-        if (tipoPagina == 3) {
-            if (strURLNome.equals("relatorioContribuintes")) {
-                nomePg = "Relatório de Contribuintes";
-            } else if (strURLNome.equals("relatorioContabilidades")) {
-                nomePg = "Relatório de Empresas Contábeis";
-            } else if (strURLNome.equals("relatorioMovimentos")) {
-                nomePg = "Relatório de Movimentos";
-            } else if (strURLNome.equals("fechamentoComissaoAcordo")) {
-                nomePg = "Fechamento de comissão Acordo";
-            } else if (strURLNome.equals("relatorioSocios")) {
-                nomePg = "Relatório sócios";
-            } else if (strURLNome.equals("relatorioHomologacao")) {
-                nomePg = "Relatório de Homologações";
-            }
-            return nomePg;
-        }
-        return "";
+        return nomePagina;
     }
 
     public String converteURL(String urlDest) {
@@ -1627,6 +1239,12 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         try {
             paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String urlDestino = paginaRequerida.getRequestURI();
+            if (urlDestino.equals("")) {
+                if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlChamada") != null) {
+                    urlDestino = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlChamada");
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("urlChamada");
+                }
+            }
             String linkAtual = converteURL(urlDestino);
             String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (linkTeste == null) {
@@ -2266,5 +1884,18 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
 
     public void setRenderPesquisa(boolean renderPesquisa) {
         this.renderPesquisa = renderPesquisa;
+    }
+    
+    public String converterRotinaCaptalize(String descricaoRotina) {
+        String[] strings = descricaoRotina.split(" ");
+        String novaDescricaoRotina = "";
+        for (int i = 0; i < strings.length; i++) {
+            if (strings[i].toUpperCase().equals("POR") || strings[i].toUpperCase().equals("DOS") || strings[i].toUpperCase().equals("DAS") || strings[i].toUpperCase().equals("DE")) {
+                novaDescricaoRotina += strings[i].toLowerCase()+" ";
+            } else {
+                // novaDescricaoRotina += StringUtils.capitalize(strings[i].toLowerCase())+" ";
+            }
+        }
+        return novaDescricaoRotina;
     }
 }
