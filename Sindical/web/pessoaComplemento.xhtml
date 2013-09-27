@@ -1,0 +1,19 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j">
+        <f:view>
+            <h:outputLabel value="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(idPessoa)}" />
+            <h:outputLabel for="idDataVencimento" value="Data vencimento: " />
+            <h:selectOneMenu id="idDataVencimento" value="#{pessoaComplementoBean.diaVencimento}" styleClass="margin-left-max">
+                <a4j:ajax event="change" listener="#{pessoaComplementoBean.atualizar(idPessoa)}" render="idDataVencimento"/>
+                <f:selectItems value="#{pessoaComplementoBean.listaDataVencimento}" />
+            </h:selectOneMenu>
+            <h:outputLabel for="idDescontoFolha" value="Desconto em folha? " styleClass="margin-left-max"/>
+            <h:selectBooleanCheckbox id="idDescontoFolha" value="#{pessoaComplementoBean.pessoaComplemento.cobrancaBancaria}" title="Desconto em folha?">
+                <a4j:ajax event="change" render="idDescontoFolha"  listener="#{pessoaComplementoBean.atualizar(idPessoa)}" />
+            </h:selectBooleanCheckbox>
+            <a4j:commandButton action="#{pessoaComplementoBean.atualizar(idPessoa)}" value="Atualizar" styleClass="margin-left-max"/>
+        </f:view>
+</ui:composition>

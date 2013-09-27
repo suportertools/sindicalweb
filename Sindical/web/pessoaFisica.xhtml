@@ -26,7 +26,7 @@
                     <br /><br />
                     <div class="divMae">
                         <rich:tabPanel id="tabP" switchType="client" activeItem="#{fisicaBean.indicaTab}">
-                            <a4j:ajax event="itemchange" render="this" listener="#{fisicaBean.refreshForm}"/>
+                            <a4j:ajax event="itemchange" listener="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(fisicaBean.fisica.pessoa.id)}" render="idPessoaComplemento, idPessoaComplementoX"/>
                             <rich:tab name="pessoal" header="Cadastro Pessoal" style="text-align: left"> 
                                 <div style="width: 900px; height: 400px;">
                                     <h:panelGrid columns="2" columnClasses="coluna1,coluna2" style="float: left">
@@ -348,7 +348,12 @@
                             </rich:tab>                            
                             
                             <rich:tab name="historico" header="Histórico" style="text-align: left">
+                            </rich:tab>
                             
+                            <rich:tab id="idPessoaComplemento" name="financeiro" header="Financeiro" style="text-align: left">                                
+                                <ui:include src="pessoaComplemento.xhtml" id="idPessoaComplementoX">  
+                                   <ui:param name="idPessoa" value="#{fisicaBean.fisica.pessoa.id}" />  
+                               </ui:include>
                             </rich:tab>
                     </rich:tabPanel>
                     <rich:panel>
