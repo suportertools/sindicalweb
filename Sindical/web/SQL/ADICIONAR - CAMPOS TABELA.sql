@@ -140,7 +140,7 @@ ALTER TABLE seg_usuario ADD COLUMN is_ativo boolean;
 ALTER TABLE age_telefone ADD COLUMN  ds_ddi character varying(2);
 ALTER TABLE age_telefone ADD COLUMN  ds_ddd character varying(2);
 
--- fin_lote -- 
+-- fin_servico_valor -- 
 -- update: 2013-09-09
 -- edited by: Bruno Vieira da Silva
 
@@ -194,3 +194,15 @@ ALTER TABLE fin_movimento
      REFERENCES fin_evt (id) MATCH SIMPLE      
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
+
+-- PES_PESSOA_COMPLEMENTO
+-- update: 2013-09-25
+-- edited by: Bruno V. da Silva
+
+ALTER TABLE pes_pessoa_complemento ADD COLUMN is_cobranca_bancaria boolean;
+
+-- FIN_LOTE
+-- update: 2013-09-25
+-- edited by: Bruno V. da Silva
+
+ALTER TABLE fin_lote ADD COLUMN is_desconto_folha boolean;
