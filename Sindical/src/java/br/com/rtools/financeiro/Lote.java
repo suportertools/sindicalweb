@@ -79,6 +79,9 @@ public class Lote implements java.io.Serializable {
     @OneToOne
     private PessoaSemCadastro pessoaSemCadastro;
     
+    @Column(name = "IS_DESCONTO_FOLHA")
+    private boolean descontoFolha;    
+    
     public Lote() {
         this.id = -1;
         this.rotina = new Rotina();
@@ -98,9 +101,10 @@ public class Lote implements java.io.Serializable {
         this.condicaoPagamento = new CondicaoPagamento();
         this.status = new FStatus();
         this.pessoaSemCadastro = new PessoaSemCadastro();
+        this.descontoFolha = false;
     }
     
-    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro) {
+    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha) {
         this.id = id;
         this.rotina = rotina;
         this.pagRec = pagRec;
@@ -119,6 +123,7 @@ public class Lote implements java.io.Serializable {
         this.condicaoPagamento = condicaoPagamento;
         this.status = status;
         this.pessoaSemCadastro = pessoaSemCadastro;
+        this.descontoFolha = descontoFolha;
     }    
 
     public int getId() {
@@ -280,5 +285,13 @@ public class Lote implements java.io.Serializable {
 
     public void setPessoaSemCadastro(PessoaSemCadastro pessoaSemCadastro) {
         this.pessoaSemCadastro = pessoaSemCadastro;
+    }
+
+    public boolean isDescontoFolha() {
+        return descontoFolha;
+    }
+
+    public void setDescontoFolha(boolean descontoFolha) {
+        this.descontoFolha = descontoFolha;
     }
 }
