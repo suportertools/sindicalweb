@@ -16,6 +16,8 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
 import br.com.rtools.sistema.Links;
+import br.com.rtools.sistema.db.LinksDB;
+import br.com.rtools.sistema.db.LinksDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -199,6 +201,30 @@ public class NotificacaoJSFBean {
             return null;
         }
 
+        LinksDB db = new LinksDBToplink();
+        try{
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+            File files = new File(caminho);
+            File listFile[] = files.listFiles();
+
+            for (int i = 0; i < listFile.length; i++){
+                Links link = db.pesquisaNomeArquivo(listFile[i].getName());
+                if (link == null) {
+                    continue;
+                }
+
+                if (sv.deletarObjeto(sv.pesquisaCodigo(link.getId(), "Links"))){
+                    File f_delete = new File(caminho+"/"+listFile[i].getName());
+                    if (f_delete.exists())
+                        f_delete.delete();
+                }
+                listaArquivo.clear();
+            }
+        }catch(Exception e){
+            sv.desfazerTransacao();
+            return null;
+        }   
+        
         sv.comitarTransacao();
         msgConfirma = "Atualizado com sucesso!";
         return null;
@@ -489,6 +515,7 @@ public class NotificacaoJSFBean {
                             link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
                             link.setNomeArquivo(nomeDownload);
                             link.setPessoa(pes);
+                            link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
 
                             if (!sv.inserirObjeto(link)) {
                                 msgConfirma = "Erro ao salvar Link de envio!";
@@ -524,7 +551,7 @@ public class NotificacaoJSFBean {
         } else {
             int id_compara = 0;
             boolean imprimir = false;
-            int atual = 0, limite = 1000;
+            int atual = 0, limite = 5000;
             JasperReport jasper = null;
             
             for (int i = 0; i < result.size(); i++) {
@@ -613,6 +640,18 @@ public class NotificacaoJSFBean {
                         
                         sa.salvaNaPasta(pathPasta);
 
+                        Links link = new Links();
+                        link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+                        link.setNomeArquivo(nomeDownload);
+                        link.setPessoa(null);
+                        link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
+
+                        if (!sv.inserirObjeto(link)) {
+                            msgConfirma = "Erro ao salvar Link de envio!";
+                            sv.desfazerTransacao();
+                            return null;
+                        }                        
+                        
 //                        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
 //                        download.baixar();
                         
@@ -738,6 +777,7 @@ public class NotificacaoJSFBean {
             link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
             link.setNomeArquivo(nomeDownload);
             link.setPessoa(pessoa);
+            link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
 
             if (!sv.inserirObjeto(link)) {
                 msgConfirma = "Erro ao salvar Link de envio!";
@@ -1031,13 +1071,19 @@ public class NotificacaoJSFBean {
             listaArquivo.clear();
         }
         if (listaArquivo.isEmpty()){
+            LinksDB db = new LinksDBToplink();
             try{
                 String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
                 File files = new File(caminho);
                 File listFile[] = files.listFiles();
 
                 for (int i = 0; i < listFile.length; i++){
-                    listaArquivo.add(new DataObject(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId()+"/"+listFile[i].getName(), listFile[i].getName()));
+                    Links link = db.pesquisaNomeArquivo(listFile[i].getName());
+                    if (link == null) {
+                        continue;
+                    }
+
+                    listaArquivo.add(new DataObject(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId()+"/"+listFile[i].getName(), i+1+" - " + link.getDescricao()));
                 }
             }catch(Exception e){
                 return new ArrayList();

@@ -12,7 +12,7 @@ public class Links implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=true)
     @ManyToOne
     private Pessoa pessoa;
     @Column(name="DS_NOME_ARQUIVO")
@@ -22,21 +22,25 @@ public class Links implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name="DT_EMISSAO")
     private Date dtEmissao;
-
+    @Column(name="DS_DESCRICAO")
+    private String descricao;  
+    
     public Links() {
         this.id = -1;
         this.pessoa = new Pessoa();
         this.nomeArquivo = "";
         this.caminho = "";
         this.setEmissao(DataHoje.data());
+        this.descricao = "";
     }
     
-    public Links(int id, Pessoa pessoa, String nomeArquivo, String caminho, String emissao) {
+    public Links(int id, Pessoa pessoa, String nomeArquivo, String caminho, String emissao, String descricao) {
         this.id = id;
         this.pessoa = pessoa;
         this.nomeArquivo = nomeArquivo;
         this.caminho = nomeArquivo;
         this.setEmissao(emissao);
+        this.descricao = descricao;
     }
 
     public int getId() {
@@ -89,6 +93,14 @@ public class Links implements java.io.Serializable {
 
     public void setCaminho(String caminho) {
         this.caminho = caminho;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
     
     

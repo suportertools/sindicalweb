@@ -164,6 +164,11 @@ update seg_registro set nr_intervalo_envios_notificacao = 60;
 ALTER TABLE fin_cobranca_lote
    ADD COLUMN ds_hora character varying(5);
 
+ALTER TABLE sis_links
+   ADD COLUMN ds_descricao character varying(200);
+
+ALTER TABLE sis_links
+   ALTER COLUMN id_pessoa DROP NOT NULL;
 
 -- Function: func_multa_ass(integer)
 
