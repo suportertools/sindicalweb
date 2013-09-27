@@ -37,7 +37,7 @@
                                                 </h:selectBooleanCheckbox>
                                             </f:facet>
                                             <h:selectBooleanCheckbox value="#{linha.argumento0}" id="idCheckCon#{linha.argumento1.id}">
-                                                <a4j:ajax event="change" listener="#{enviarArquivosBean.marcarConvencao(itConvencao.index) }" render="idCheckCon#{linha.argumento1.id} tblGrupoCidade tblCnaeConvencao tblContribuinte"/>
+                                                <a4j:ajax event="change" render="idCheckCon#{linha.argumento1.id}"/>
                                             </h:selectBooleanCheckbox>
                                         </rich:column>
                                         <rich:column>
@@ -206,7 +206,7 @@
                         <center>
                             <h:outputText id="outConfirma" value="#{enviarArquivosBean.msgConfirma}" styleClass="fontePadrao"/>
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="enviarArquivos" title="OK" render="@form"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="enviarArquivosContribuinte" title="OK" render="@form"/>
                         </center>
                     </div>
                     <div id="mask"></div>
