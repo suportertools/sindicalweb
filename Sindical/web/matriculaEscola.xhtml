@@ -51,8 +51,15 @@
                                     <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
                                 </h:selectOneMenu>
                                 <h:outputLabel value=" Vencimento: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu id="cbDataVencimento" style="width: 40px;"  title="Dia do vencimento" value="#{matriculaEscolaBean.idDiaVencimento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                <h:selectOneMenu id="cbDataVencimento" style="width: 40px;"  title="Dia do vencimento" value="#{matriculaEscolaBean.idDiaVencimento}"  disabled="#{matriculaEscolaBean.desabilitaDiaVencimento}">
                                     <f:selectItems value="#{matriculaEscolaBean.listaDataVencimento}" />
+                                </h:selectOneMenu>
+                                <h:outputLabel value=" Desconto em folha: " styleClass="fontePadrao"/>
+                                <h:selectBooleanCheckbox id="idDescontoFolha" title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                                <h:outputLabel value="Tipo Cobrança: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu id="cbTipoCobranca"  title="Desconto em folha" value="#{matriculaEscolaBean.idFTipoDocumento}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                    <f:ajax event="change" listener="#{matriculaEscolaBean.bloqueiaComboDiaVencimento}" render="cbDataVencimento" />
+                                    <f:selectItems value="#{matriculaEscolaBean.listaFTipoDocumento}" var="fTipoDocumento" itemLabel="#{fTipoDocumento.descricao}" itemValue="#{fTipoDocumento.id}"/>
                                 </h:selectOneMenu>
                             </h:column>
                             <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
@@ -85,8 +92,8 @@
                         <div class="clear"></div>
                         <div style="margin-top: 15px; margin-bottom: 15px;">
                             <rich:accordion switchType="client" style="width: 600px;">
-                                <rich:accordionItem header="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" >
-                                    <a4j:ajax event="enter" listener="#{matriculaEscolaBean.clickTurma}" />
+                                <rich:accordionItem name="Turma" header="Turma" id="idTurma" disabled="#{matriculaEscolaBean.desabilitaTurma}" rendered="#{!matriculaEscolaBean.desabilitaTurma}" >
+                                    <a4j:ajax event="enter" listener="#{matriculaEscolaBean.tipoMatriculaPor}" render="idTabela"/>
                                     <h:panelGrid columns="2" styleClass="coluna1, coluna2">
                                         <h:outputLabel value="Turma: " styleClass="fontePadrao" style="width: 100px;" title="Turma"/>
                                         <h:selectOneMenu  id="cbTurma" value="#{matriculaEscolaBean.idTurma}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" >
@@ -96,8 +103,8 @@
                                     </h:panelGrid>
                                 </rich:accordionItem>
                                 
-                                <rich:accordionItem header="Individual" id="idIndividual" disabled="#{matriculaEscolaBean.desabilitaIndividual}" rendered="#{!matriculaEscolaBean.desabilitaIndividual}">
-                                    <a4j:ajax event="enter" listener="#{matriculaEscolaBean.clickIndividual}"/>
+                                <rich:accordionItem name="Individual" header="Individual" id="idIndividual" disabled="#{matriculaEscolaBean.desabilitaIndividual}" rendered="#{!matriculaEscolaBean.desabilitaIndividual}">
+                                    <a4j:ajax event="enter" listener="#{matriculaEscolaBean.tipoMatriculaPor}" render="idTabela"/>
                                     <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
                                         <h:outputLabel value="Curso:" styleClass="fontePadrao"/>
                                         <h:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" style="max-width: 300px;" disabled="#{matriculaEscolaBean.desabilitaCampo}">
