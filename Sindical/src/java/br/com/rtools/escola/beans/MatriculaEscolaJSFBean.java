@@ -75,6 +75,8 @@ public class MatriculaEscolaJSFBean implements Serializable {
     private MatriculaContrato matriculaContrato = new MatriculaContrato();
     private MatriculaIndividual matriculaIndividual = new MatriculaIndividual();
     private MatriculaTurma matriculaTurma = new MatriculaTurma();
+    private Pessoa pessoaAlunoMemoria = new Pessoa();
+    private Pessoa pessoaResponsavelMemoria = new Pessoa();
     private MacFilial macFilial = new MacFilial();
     private Movimento movimento = new Movimento();
     private Pessoa responsavel = new Pessoa();
@@ -151,6 +153,8 @@ public class MatriculaEscolaJSFBean implements Serializable {
 //    }
 
     public String novo() {
+        pessoaAlunoMemoria = new Pessoa();
+        pessoaResponsavelMemoria = new Pessoa();
         responsavel = new Pessoa();
         matriculaTurma = new MatriculaTurma();
         matriculaIndividual = new MatriculaIndividual();
@@ -373,9 +377,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
-        String tipoMatriculas = "";
-        if (abrirIndividual) {
-            tipoMatricula = "Individual";
+        if (tipoMatricula.equals("Individual")) {
             if (matriculaEscola.getId() == -1) {
                 if (matriculaIndividual.getDataInicio() == null) {
                     msgConfirma = "Informar a data inicial!";
@@ -427,7 +429,6 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 return null;
             }
         } else {
-            tipoMatriculas = "Turma";
             if (listaTurma.isEmpty()) {
                 msgConfirma = "Informar a turma!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
@@ -445,10 +446,10 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 break;
             }
         }
-        if (tipoMatriculas.equals("Individual")) {
+        if (tipoMatricula.equals("Individual")) {
             matriculaIndividual.setCurso((Servicos) sv.pesquisaCodigo(Integer.parseInt(listaIndividual.get(idIndividual).getDescription()), "Servicos"));
             matriculaIndividual.setProfessor((Professor) sv.pesquisaCodigo(Integer.parseInt(listaProfessor.get(idProfessor).getDescription()), "Professor"));
-        } else if (tipoMatriculas.equals("Turma")) {
+        } else if (tipoMatricula.equals("Turma")) {
             matriculaTurma.setTurma((Turma) sv.pesquisaCodigo(Integer.parseInt(listaTurma.get(idTurma).getDescription()), "Turma"));
         }
         matriculaEscola.setEsEFinanceiro(null);
@@ -535,7 +536,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 desabilitaCampo = true;
                 msgConfirma = "Matrícula efetuada com sucesso.";
                 novoLog.novo("Novo registro", "Matricula Escola "
-                        + tipoMatriculas + ": ID " + matriculaEscola.getId()
+                        + tipoMatricula + ": ID " + matriculaEscola.getId()
                         + " - Aluno: " + matriculaEscola.getAluno().getId() + " - " + matriculaEscola.getAluno().getNome()
                         + " - Responsável: " + matriculaEscola.getResponsavel().getId() + " - " + matriculaEscola.getResponsavel().getNome()
                         + " - Desconto: " + matriculaEscola.getDescontoAteVencimentoString()
@@ -582,6 +583,8 @@ public class MatriculaEscolaJSFBean implements Serializable {
                     }
                 }
                 sv.comitarTransacao();
+                pessoaResponsavelMemoria = matriculaEscola.getResponsavel();
+                pessoaAlunoMemoria = matriculaEscola.getAluno();                
                 msgConfirma = "Matrícula atualizada com sucesso.";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                 target = "_blank";
@@ -732,15 +735,31 @@ public class MatriculaEscolaJSFBean implements Serializable {
     public String gerarParcelas() {
         if (matriculaEscola.getId() != -1) {
             if (matriculaEscola.getEvt() == null) {
+                if (matriculaEscola.getAluno().getId() != pessoaAlunoMemoria.getId()) {
+                    msgConfirma = "Salvar o novo aluno / responsável para gerar movimentos!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
+                    return null;
+                }
+                if (matriculaEscola.getResponsavel().getId() != pessoaResponsavelMemoria.getId()) {
+                    msgConfirma = "Salvar o novo aluno / responsável para gerar movimentos!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));                
+                    return null;
+                }
+                Filial fil = getMacFilial().getFilial();
+                if (fil.getId() != matriculaEscola.getFilial().getId()) {
+                    msgConfirma = "Registro não pode ser atualizado por esta filial!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
+                    return null;
+                }
                 String vencimento;
                 String referencia;
-                String mes = "0";
-                String ano = "0";
-                String diaSwap = "";
+//                String mes = "0";
+//                String ano = "0";
+//                String diaSwap = "";
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 Plano5 plano5;
                 Servicos servicos;
-                int idCondicaoPagto = 0;
+                int idCondicaoPagto;
                 if (matriculaEscola.getNumeroParcelas() == 1) {
                     idCondicaoPagto = 1;
                 } else {
@@ -785,8 +804,8 @@ public class MatriculaEscolaJSFBean implements Serializable {
 
                     nrCtrBoletoResp += matriculaEscola.getResponsavel().getId();
 
-                    mes = matriculaEscola.getDataMatriculaString().substring(3, 5);
-                    ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
+                    String mes = matriculaEscola.getDataMatriculaString().substring(3, 5);
+                    String ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
                     referencia = mes + "/" + ano;
 
                     if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaEscola.getDiaVencimento()) {
@@ -796,7 +815,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                             vencimento = matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
                         }
                     } else {
-                        diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+                        String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
                         if (diaSwap.length() < 2) {
                             diaSwap = "0" + diaSwap;
                         }
@@ -814,40 +833,78 @@ public class MatriculaEscolaJSFBean implements Serializable {
                     }
                     lote.setEvt(evt);
                     if (salvarAcumuladoDB.inserirObjeto(lote)) {
-                        int loop = 0;
+                        int loop;
                         if (insereTaxa == true) {
                             loop = matriculaEscola.getNumeroParcelas() + 1;
                         } else {
                             loop = matriculaEscola.getNumeroParcelas();
                         }
                         String vecimentoString = "";
+                        Pessoa pessoaTitularResponsavel = matriculaEscola.getResponsavel();
                         Pessoa pessoaResponsavel;
+                        ServicoValorDB servico = new ServicoValorDBToplink();
+                        SociosDB socioDB = new SociosDBToplink();
+                        boolean isSocioMenor = false;
+                        boolean isResponsavelOutraEmpresa = false;
+                        if (aluno.getId() != -1) {
+                            if (servico.pesquisaMaiorResponsavel(aluno.getPessoa().getId()) == 0) {
+                                Socios socios = socioDB.pesquisaSocioDoDependente(aluno.getPessoa());
+                                if (socios != null) {
+                                    if (servico.pesquisaMaiorResponsavel(socios.getServicoPessoa().getPessoa().getId()) == 0) {
+                                        pessoaTitularResponsavel = aluno.getPessoa();
+                                    } else {
+                                        isSocioMenor = true;
+                                        pessoaTitularResponsavel = socios.getServicoPessoa().getPessoa();
+                                    }
+                                } else {
+                                    if (pessoaTitularResponsavel.getId() == -1) {
+                                        pessoaTitularResponsavel = aluno.getPessoa();
+                                    }
+                                }
+                            } else {
+                                pessoaTitularResponsavel = aluno.getPessoa();
+                            }
+                        }
+                        PessoaEmpresaDB pessoaEmpresaDB = new PessoaEmpresaDBToplink();
+                        Pessoa pe = (pessoaEmpresaDB.pesquisaPessoaEmpresaPorPessoa(matriculaEscola.getResponsavel().getId())).getJuridica().getPessoa();
+                        if (pe.getId() == -1) {
+                            isResponsavelOutraEmpresa = true;
+                            pessoaTitularResponsavel = matriculaEscola.getResponsavel();
+                        }                                 
                         if (matriculaEscola.isDescontoFolha()) {
-                            PessoaEmpresaDB pessoaEmpresaDB = new PessoaEmpresaDBToplink();
-                            pessoaEmpresaDB.pesquisaPessoaEmpresaPorFisica(loop);
                             pessoaResponsavel = matriculaEscola.getResponsavel();
                         } else {
-                            pessoaResponsavel = matriculaEscola.getResponsavel();
-                            
+                            if (!isResponsavelOutraEmpresa) {
+                                if (isSocioMenor) {
+                                    pessoaResponsavel = (pessoaEmpresaDB.pesquisaPessoaEmpresaPorPessoa(pessoaTitularResponsavel.getId())).getJuridica().getPessoa();
+                                    if (pessoaResponsavel.getId() == -1) {
+                                        pessoaResponsavel = matriculaEscola.getResponsavel();
+                                    }
+                                } else {                                
+                                    pessoaResponsavel = pessoaTitularResponsavel;
+                                }
+                            } else {                                
+                                pessoaResponsavel = pessoaTitularResponsavel;
+//                                pessoaResponsavel = matriculaEscola.getAluno();
+                                pessoaTitularResponsavel = matriculaEscola.getAluno();
+                            }
                         }
-                        Pessoa pessoaTitularResponsavel = matriculaEscola.getResponsavel();
-                        Pessoa pessoaBeneficiario = matriculaEscola.getAluno();                        
+                        Pessoa pessoaBeneficiario = matriculaEscola.getAluno();
                         for (int i = 0; i < loop; i++) {
-                            float valorParcela = 0;
-                            float valorDescontoAteVencimento = 0;
+                            float valorParcelaF;
+                            float valorDescontoAteVencimento;
                             TipoServico tipoServico;
                             if (insereTaxa == true) {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(5, "TipoServico");
-                                valorParcela = servicoValor.getTaxa();
+                                valorParcelaF = servicoValor.getTaxa();
                                 valorDescontoAteVencimento = 0;
                                 vecimentoString = vencimento;
                                 vencimento = DataHoje.data();
                                 insereTaxa = false;
                             } else {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(1, "TipoServico");
-                                valorParcela = Moeda.substituiVirgulaFloat(getValorParcela());
+                                valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
                                 valorDescontoAteVencimento = (matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas();
-                                // valorDescontoAteVencimento = matriculaEscola.getDescontoAteVencimento() / matriculaEscola.getNumeroParcelas();
                                 if (!vecimentoString.equals("")) {
                                     vencimento = vecimentoString;
                                     vecimentoString = "";
@@ -858,7 +915,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                                 vencimento = (new DataHoje()).incrementarMeses(1, vencimento);
                             }
                             String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
-                            if (valorParcela > 0) {
+                            if (valorParcelaF > 0) {
                                 setMovimento(new Movimento(
                                         -1,
                                         lote,
@@ -868,7 +925,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                                         null,
                                         tipoServico,
                                         null,
-                                        valorParcela,
+                                        valorParcelaF,
                                         referencia,
                                         vencimento,
                                         1,
@@ -922,7 +979,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 }
             } else {
             }
-        }
+        }        
         return null;
     }
 
@@ -996,25 +1053,6 @@ public class MatriculaEscolaJSFBean implements Serializable {
         } else {
             responsavel = new Pessoa();
         }
-//        JuridicaDB juridicaDB = new JuridicaDBToplink();
-//        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(responsavel.getId());
-//        if (juridicas != null) {
-//            if (juridicas.getId() != -1) {
-//                desabilitaDescontoFolha = false;
-//            }
-//
-//        } else {
-//            desabilitaDescontoFolha = true;
-//        }
-//        Juridica juridicasB = juridicaDB.pesquisaJuridicaPorPessoa(matriculaEscola.getResponsavel().getId());
-//        if (juridicasB != null) {
-//            if (juridicasB.getId() != -1) {
-//                desabilitaDescontoFolha = false;
-//            }
-//
-//        } else {
-//            desabilitaDescontoFolha = true;
-//        }
         return responsavel;
     }
 
@@ -1418,6 +1456,13 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 String tipoFisica = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pesquisaFisicaTipo");
                 if (tipoFisica.equals("aluno")) {
                     aluno = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+                    if (matriculaEscola.getAluno().getId() == -1) {
+                        pessoaAlunoMemoria = aluno.getPessoa();                        
+                    } else {
+                        if (aluno.getPessoa().getId() != matriculaEscola.getAluno().getId()) {
+                            pessoaAlunoMemoria = aluno.getPessoa();
+                        }
+                    }
                     if (aluno.getId() != -1) {
                         getResponsavel();
                         verificaSocio();
@@ -1444,6 +1489,13 @@ public class MatriculaEscolaJSFBean implements Serializable {
             }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
+            if (matriculaEscola.getResponsavel().getId() == -1) {
+                pessoaResponsavelMemoria = responsavel;
+            } else {
+                if (responsavel.getId() != matriculaEscola.getResponsavel().getId()) {
+                    pessoaResponsavelMemoria = responsavel;
+                }
+            }
         }
         if (socio == false) {
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
@@ -1464,7 +1516,13 @@ public class MatriculaEscolaJSFBean implements Serializable {
                     atualizaValor();
                     calculaValorLiquido();
                 }
-
+                if (matriculaEscola.getResponsavel().getId() == -1) {
+                    pessoaResponsavelMemoria = responsavel;
+                } else {
+                    if (responsavel.getId() != matriculaEscola.getResponsavel().getId()) {
+                        pessoaResponsavelMemoria = responsavel;
+                    }
+                }                
             }
         }
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaEscolaPesquisa") != null) {
@@ -1499,6 +1557,8 @@ public class MatriculaEscolaJSFBean implements Serializable {
             }
             atualizaValor();
             calculaValorLiquido();
+            pessoaResponsavelMemoria = matriculaEscola.getResponsavel();
+            pessoaAlunoMemoria = matriculaEscola.getAluno();
         }
         if (matriculaEscola.getFilial().getId() == -1) {
             getMacFilial();
@@ -1523,7 +1583,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
         } else {
             setOcultaDescontoFolha(true);
             desabilitaDescontoFolha = true;
-        }        
+        }
         return matriculaEscola;
     }
 
