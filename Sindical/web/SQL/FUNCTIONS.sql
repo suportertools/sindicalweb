@@ -570,3 +570,218 @@ $BODY$
   COST 100;
 ALTER FUNCTION func_nullInteger(int)
   OWNER TO postgres;
+
+
+
+--------------------------------------------------------------------------------
+
+-- Function: func_multa_ass(integer)
+
+CREATE OR REPLACE FUNCTION func_multa_ass(id_movimento integer)
+  RETURNS double precision AS
+$BODY$
+
+declare idMov         int   :=id_movimento;
+declare qMeses        int   :=0;
+declare qDias         int   :=0;
+declare mPrimeiroMes  float :=0;
+declare mSegundoMes   float :=0;
+declare multa         float :=0;
+   
+declare idBaixa       int        := (select id_baixa      from fin_movimento where id=idMov);
+declare idservico     int        := (select id_servicos   from fin_movimento where id=idMov);
+declare vencto        date       := (select dt_vencimento from fin_movimento where id=idMov);
+declare valor         float      := (select nr_valor      from fin_movimento where id=idMov);
+declare es            varchar(1) := (select ds_es    from fin_movimento where id=idMov);
+BEGIN
+
+    if (CURRENT_DATE>vencto and idBaixa is null and es='E') then
+       qDias         := (CURRENT_DATE-vencto);
+       qMeses        := (func_intervalo_meses(CURRENT_DATE,vencto));
+ 
+       mPrimeiroMes := (select cr.nr_multa_primeiro_mes from fin_movimento as m 
+       left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
+       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+       where m.id=idMov);
+
+       mSegundoMes := (select cr.nr_multa_apartir_2mes from fin_movimento as m 
+       left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
+       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+        where m.id=idMov);
+
+       if (mPrimeiroMes is null) then mPrimeiroMes :=0; end if;
+       if (mSegundoMes  is null) then mSegundoMes  :=0; end if;
+
+       multa := multa + ((mPrimeiroMes * valor)/100);
+       multa := multa + (qMeses*((mSegundoMes  * valor)/100));
+    end if;
+   
+    RETURN round(cast( multa as decimal) , 2);
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION func_multa_ass(integer)
+  OWNER TO postgres;
+
+
+
+--------------------------------------------------------------------------------
+
+-- Function: func_juros_ass(integer)
+
+CREATE OR REPLACE FUNCTION func_juros_ass(id_movimento integer)
+  RETURNS double precision AS
+$BODY$
+
+declare qDias         int  :=0;
+declare idMov         int  :=id_movimento;
+declare qMeses        int  :=0;
+declare jPrimeiroMes  float:=0;
+declare jSegundoMes   float:=0;
+declare juros         float:=0;
+declare jJurosDiario  float:=0;
+ 
+
+declare idBaixa       int   := (select id_baixa      from fin_movimento where id=idMov);
+declare idservico     int   := (select id_servicos   from fin_movimento where id=idMov);
+declare vencto        date  := (select dt_vencimento from fin_movimento where id=idMov);
+declare valor         float := (select nr_valor      from fin_movimento where id=idMov);
+declare ref           varchar(7) :=(select ds_referencia from fin_movimento where id=idMov );
+declare es            varchar(1) := (select ds_es    from fin_movimento where id=idMov);
+
+ 
+BEGIN
+  
+   if (CURRENT_DATE>vencto and idBaixa is null and es='E') then
+   
+        qMeses        := (select func_intervalo_meses(CURRENT_DATE,vencto));
+        qDias         := (select CURRENT_DATE-vencto);
+
+	jPrimeiroMes := (select cr.nr_juros_pri_mes from fin_correcao  as cr 
+	                 where cr.id_servicos=idServico and 
+			 (substring(ref,4,4)||substring(ref,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+			 (substring(ref,4,4)||substring(ref,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+			);
+			
+	jSegundoMes := (select cr.nr_juros_apartir_2mes from  fin_correcao as cr 
+	                 where cr.id_servicos=idServico and 
+			 (substring(ref,4,4)||substring(ref,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+			 (substring(ref,4,4)||substring(ref,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+		       );
+
+	jJurosDiario:=  (select cr.nr_juros_diarios from fin_correcao  as cr 
+			 where cr.id_servicos=idServico and 
+			 (substring(ref,4,4)||substring(ref,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+			 (substring(ref,4,4)||substring(ref,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+			);
+
+
+        if (jPrimeiroMes is null) then jPrimeiroMes :=0; end if;
+        if (jSegundoMes  is null) then jSegundoMes  :=0; end if;
+
+
+	juros := juros + (jJurosDiario*qDias);
+	juros := juros + ((jPrimeiroMes * valor)/100);
+	juros := juros + (qMeses*((jSegundoMes  * valor)/100));
+    end if;
+    RETURN round(cast(juros as decimal), 2);
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION func_juros_ass(integer)
+  OWNER TO postgres;
+
+--------------------------------------------------------------------------------
+
+-- Function: func_correcao_ass(integer)
+
+CREATE OR REPLACE FUNCTION func_correcao_ass(idmov integer)
+  RETURNS double precision AS
+$BODY$
+
+declare indice      int:=
+                 (
+                 select cr.id_indice from fin_movimento as m 
+   left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
+   (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+     (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+       where m.id=idMov
+       );
+
+declare vlIndice      float := 0;
+  
+declare idBaixa       int   := (select id_baixa      from fin_movimento where id=idMov);
+declare idservico     int   := (select id_servicos   from fin_movimento where id=idMov);
+declare vencto        date  := (select dt_vencimento from fin_movimento where id=idMov);
+declare valor         float := (select nr_valor      from fin_movimento where id=idMov);
+declare valorBase     float := valor;
+declare ref           varchar(7) :=(select ds_referencia from fin_movimento where id=idMov );
+declare es            varchar(1) := (select ds_es    from fin_movimento where id=idMov);
+
+
+DECLARE lista CURSOR FOR 
+(
+SELECT nr_valor FROM fin_indice_mensal 
+where 
+id_indice=indice and 
+(
+text(nr_ano)||right('0'||text(nr_mes),2)
+>=
+----'201201'
+(text(extract('year' from  vencto))||right('0'||text(extract('month' from  vencto)),2))
+)
+order by nr_ano,nr_mes
+);
+begin  
+
+
+open lista;
+   if (CURRENT_DATE>vencto and idBaixa is null and es='E') then
+          -- Para ir para o primeiro registo:
+          FETCH FIRST FROM lista into vlIndice;
+          loop
+             if (vlIndice is null) then vlIndice:=0; end if;
+             valor := valor + ((valor * vlIndice)/100);
+             FETCH NEXT FROM lista into vlIndice;
+             EXIT WHEN NOT FOUND;
+          end loop;
+   end if;------ se data vencida
+   close lista;
+   RETURN round(cast( (valor-valorBase)*100 as decimal) / 100, 2);
+end;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION func_correcao_ass(integer)
+  OWNER TO postgres;
+
+--------------------------------------------------------------------------------
+
+-- Function: func_intervalo_dias(date, date)
+
+CREATE OR REPLACE FUNCTION func_intervalo_dias(vencimentoi date, vencimentof date)
+  RETURNS integer AS
+$BODY$
+DECLARE dias int := 0;
+DECLARE DI   varchar(20);
+DECLARE DF   varchar(20);
+BEGIN
+    DI   := to_char(vencimentoI,'DD/MM/YYYY HH:MI:SS');
+    DF   := to_char(vencimentoF,'DD/MM/YYYY HH:MI:SS');
+    dias :=
+----    (select DATE_PART('day',(to_timestamp('01/03/2013', 'DD/MM/YYYY HH:MI:SS') - to_timestamp('01/02/2012', 'DD/MM/YYYY HH:MI:SS'))));
+        (select DATE_PART('day',(to_timestamp(DF, 'DD/MM/YYYY HH:MI:SS') - to_timestamp(DI, 'DD/MM/YYYY HH:MI:SS'))));
+    if (dias < 0) then dias:=0; end if;
+    RETURN dias;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION func_intervalo_dias(date, date)
+  OWNER TO postgres;
+
+--------------------------------------------------------------------------------
