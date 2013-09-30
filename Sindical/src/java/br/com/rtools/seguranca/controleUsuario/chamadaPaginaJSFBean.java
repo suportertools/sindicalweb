@@ -11,12 +11,15 @@ import br.com.rtools.sistema.db.AtalhoDBToplink;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class chamadaPaginaJSFBean implements java.io.Serializable {
+public class chamadaPaginaJSFBean implements Serializable {
+    
+    // static final long serialVersionUID = 7220145288109489651L;
 
     private HttpServletRequest paginaRequerida = null;
     private boolean carregaPg = true;
@@ -898,12 +901,12 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
         return metodoGenerico(2, "simples");
     }
+
     public synchronized String movimentosReceberSocial() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosReceberSocialBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
-    
 
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
@@ -1203,7 +1206,7 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
     // Lista Breadcrumbs e Menu url de retornos de páginas
     public String converteURLNome(String strURLNome) {
         if (strURLNome.equals("simples")) {
-            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
                 String[] simplesString = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples");
                 return simplesString[1];
             }
@@ -1213,7 +1216,8 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
         String nomePagina = " Menu ";
         if (r.getId() != -1) {
             if (!r.getRotina().equals("")) {
-                nomePagina = converterRotinaCaptalize(r.getRotina());
+                // nomePagina = converterRotinaCaptalize(r.getRotina());
+                nomePagina = r.getRotina();
                 return nomePagina;
             }
         }
@@ -1885,15 +1889,15 @@ public class chamadaPaginaJSFBean implements java.io.Serializable {
     public void setRenderPesquisa(boolean renderPesquisa) {
         this.renderPesquisa = renderPesquisa;
     }
-    
+
     public String converterRotinaCaptalize(String descricaoRotina) {
         String[] strings = descricaoRotina.split(" ");
         String novaDescricaoRotina = "";
         for (int i = 0; i < strings.length; i++) {
             if (strings[i].toUpperCase().equals("POR") || strings[i].toUpperCase().equals("DOS") || strings[i].toUpperCase().equals("DAS") || strings[i].toUpperCase().equals("DE")) {
-                novaDescricaoRotina += strings[i].toLowerCase()+" ";
+                novaDescricaoRotina += strings[i].toLowerCase() + " ";
             } else {
-                // novaDescricaoRotina += StringUtils.capitalize(strings[i].toLowerCase())+" ";
+                novaDescricaoRotina += descricaoRotina;
             }
         }
         return novaDescricaoRotina;

@@ -116,7 +116,6 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
                     + " WHERE PE.fisica.pessoa.id = " + idPessoa      
                     + "   AND PE.dtDemissao IS NULL                 ");
             List list = query.getResultList();
-            query.setParameter(idPessoa, "PessoaEmpresa");
             if (!list.isEmpty()) {
                 return (PessoaEmpresa) query.getSingleResult();
             }

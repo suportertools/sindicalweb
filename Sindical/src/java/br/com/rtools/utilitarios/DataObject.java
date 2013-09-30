@@ -1,8 +1,6 @@
 
 package br.com.rtools.utilitarios;
 
-import java.util.List;
-
 
 public class DataObject {
 

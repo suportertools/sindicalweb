@@ -9,6 +9,7 @@ import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
 import java.io.IOException;
+import java.io.Serializable;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,8 +19,10 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-public class controleUsuarioJSFBean implements java.io.Serializable {
-
+public class controleUsuarioJSFBean implements Serializable {
+    
+    // static final long serialVersionUID = 7220145288109489651L;
+    
     private Usuario usuario = new Usuario();
     private String login = "";
     private String linkVoltar;

@@ -14,13 +14,16 @@ import br.com.rtools.sistema.db.AtalhoDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class controleAcessoJSFBean implements java.io.Serializable {
+public class controleAcessoJSFBean implements Serializable {
+    
+    // static final long serialVersionUID = 7220145288109489651L;
 
     private String login = "";
     private Pessoa loginContribuinte = null;
