@@ -31,7 +31,7 @@
                                     <h:outputLabel value="GRUPO AGENDA: " styleClass="fontePadrao" />
                                 </h:column>                            
                                 <h:column>
-                                    <h:selectOneMenu value="#{agendaTelefoneBean.idGrupoAgenda}" id="grupoAgendaList" >
+                                    <h:selectOneMenu  value="#{agendaTelefoneBean.idGrupoAgenda}" id="grupoAgendaList" >
                                         <a4j:ajax event="change" render="grupoAgendaList" />
                                         <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" var="grupoAgenda" itemLabel="#{grupoAgenda.descricao}" itemValue="#{grupoAgenda.id}" />
                                     </h:selectOneMenu>
@@ -185,10 +185,10 @@
                         </h:panelGrid>
                         <h:column>
                             <h:outputLabel value="GRUPO: " styleClass="fontePadrao" />
-                            <!-- <h:selectOneMenu value="# {agendaTelefoneBean.idFiltroGrupoAgenda}">
+                            <h:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
                                 <a4j:ajax event="change" render="tbl" />
-                                <f:selectItems value="# {agendaTelefoneBean.listaGrupoAgendas}" var="grupoAgenda" itemLabel="# {grupoAgenda.descricao}" itemValue="# {grupoAgenda.id}" />
-                            </h:selectOneMenu> -->
+                                <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" var="grupoAgenda" itemLabel="#{grupoAgenda.descricao}" itemValue="#{grupoAgenda.id}" />
+                            </h:selectOneMenu>
                             <h:outputLabel value="Filtrar" styleClass="fontePadrao" />
                             <h:selectBooleanCheckbox id="idFiltroGrupo" value="#{agendaTelefoneBean.filtraPorGrupo}" title="Filtrar por grupos">
                                 <a4j:ajax event="change" render="idFiltroGrupo tbl" />
