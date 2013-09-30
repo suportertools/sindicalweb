@@ -12,11 +12,15 @@ UPDATE seg_registro SET dt_atualiza_homologacao = '1900-01-01' WHERE id = 1 AND 
 -- edited by: Bruno Vieira da Silva
 
 ALTER TABLE seg_registro ADD COLUMN is_boleto_web boolean;
-UPDATE seg_registro SET is_boleto_web = false WHERE id = 1 AND is_boleto_web is null;
+-- UPDATE seg_registro SET is_boleto_web = false WHERE id = 1 AND is_boleto_web is null;
 ALTER TABLE seg_registro ADD COLUMN is_repis_web boolean;
-UPDATE seg_registro SET is_repis_web = false WHERE id = 1 AND is_repis_web is null;
+-- UPDATE seg_registro SET is_repis_web = false WHERE id = 1 AND is_repis_web is null;
 ALTER TABLE seg_registro ADD COLUMN is_agendamento_web boolean;
-UPDATE seg_registro SET is_agendamento_web = false WHERE id = 1 AND is_agendamento_web is null;
+-- UPDATE seg_registro SET is_agendamento_web = false WHERE id = 1 AND is_agendamento_web is null;
+ALTER TABLE seg_registro ADD COLUMN nr_limite_envios_notificacao integer;
+-- UPDATE seg_registro SET nr_limite_envios_notificacao = 150;
+ALTER TABLE seg_registro ADD COLUMN nr_intervalo_envios_notificacao integer;
+-- UPDATE seg_registro SET nr_intervalo_envios_notificacao = 60;
 
 -- *****************************************************************************
 
@@ -195,3 +199,19 @@ ALTER TABLE pes_pessoa_complemento ADD COLUMN is_cobranca_bancaria boolean;
 -- edited by: Bruno V. da Silva
 
 ALTER TABLE fin_lote ADD COLUMN is_desconto_folha boolean;
+
+
+
+-- FIN_COBRANCA_LOTE
+-- update: 2013-09-27
+-- edited by: Claudemir S. Custódio
+
+ALTER TABLE fin_cobranca_lote ADD COLUMN ds_hora character varying(5);
+
+-- SIS_LINKS
+-- update: 2013-09-27
+-- edited by: Claudemir S. Custódio
+
+ALTER TABLE sis_links ADD COLUMN ds_descricao character varying(200);
+
+ALTER TABLE sis_links ALTER COLUMN id_pessoa DROP NOT NULL;

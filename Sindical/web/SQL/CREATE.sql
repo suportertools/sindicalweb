@@ -46,3 +46,32 @@ WITH (
 );
 ALTER TABLE pes_juridica_receita
   OWNER TO postgres;
+
+--------------------------------------------------------------------------------
+
+-- Table: fin_polling_email
+
+-- DROP TABLE fin_polling_email;
+
+CREATE TABLE fin_polling_email
+(
+  id serial NOT NULL,
+  is_ativo boolean,
+  dt_envio date,
+  ds_hora character varying(5),
+  dt_emissao date,
+  id_cobranca_envio integer,
+  id_link integer,
+  CONSTRAINT fin_polling_email_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_fin_polling_email_id_cobranca_envio FOREIGN KEY (id_cobranca_envio)
+      REFERENCES fin_cobranca_envio (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_fin_polling_email_id_link FOREIGN KEY (id_link)
+      REFERENCES sis_links (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE fin_polling_email
+  OWNER TO postgres;
