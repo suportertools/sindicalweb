@@ -587,7 +587,8 @@ public class ImpressaoBoletosJSFBean {
         }
         ImprimirBoleto imp = new ImprimirBoleto();
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, imprimeVerso);
-        imp.visualizar(null);
+        //imp.visualizar(null);
+        imp.baixarArquivo();
         return null;
    }
 
