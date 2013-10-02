@@ -299,6 +299,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 183, 'PESQUISA AGENDA TELEFÔNICA', '"/Sindical/pesquisaAgendaTelefone.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 183);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 184, 'CONFIGURAÇÃO', '"/Sindical/configuracao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 184);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 185, 'PESQUISA CONFIGURAÇÃO', '"/Sindical/pesquisaConfiguracao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 185);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 186, 'DESCONTO SERVIÇO EMPRESA', '"/Sindical/descontoServicoEmpresa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 186);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
