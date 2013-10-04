@@ -63,6 +63,9 @@ public class controleAcessoJSFBean implements Serializable {
             return null;
         }
         if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
+            if (urlDestino.endsWith("usuarioPerfil.jsf")) {
+                return null;
+            }
             if ((!verificarUsuario()) || !verificarPermissaoUsuario()) {
                 redirectAcessoNegado();
                 return null;

@@ -8,7 +8,9 @@ import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
+import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.MenuLinks;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -18,9 +20,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 public class chamadaPaginaJSFBean implements Serializable {
-    
-    // static final long serialVersionUID = 7220145288109489651L;
 
+    // static final long serialVersionUID = 7220145288109489651L;
     private HttpServletRequest paginaRequerida = null;
     private boolean carregaPg = true;
     private boolean linkClicado = false;
@@ -29,6 +30,7 @@ public class chamadaPaginaJSFBean implements Serializable {
     private String oqFazer;
     private DataObject dtObject = new DataObject(null, null, null, null, null, null);
     private DataObject dtObjectLabel = new DataObject(null, null, null, null, null, null);
+    private List<MenuLinks> menuLinks = new ArrayList<MenuLinks>();
     private int nivelLink = 0;
     private int fimURL;
     private int iniURL;
@@ -733,6 +735,16 @@ public class chamadaPaginaJSFBean implements Serializable {
         return metodoGenerico(2, "matriculaContratoCampos");
     }
 
+    public synchronized String descontoServicoEmpresa() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("descontoServicoEmpresaBean");
+        return metodoGenerico(2, "descontoServicoEmpresa");
+    }
+    
+    public synchronized String usuarioPerfil() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioBean");
+        return metodoGenerico(2, "usuarioPerfil");
+    }
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1064,7 +1076,6 @@ public class chamadaPaginaJSFBean implements Serializable {
 
     public synchronized String pesquisaTitulo() {
         return metodoGenerico(1, "pesquisaTitulo");
-
     }
 
     public synchronized String pesquisaConvencao() {
@@ -1095,6 +1106,10 @@ public class chamadaPaginaJSFBean implements Serializable {
     public synchronized String pesquisaAgendaTelefone() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tipoAgendaTelefone", "pesquisaAgendaTelefone");
         return metodoGenerico(1, "pesquisaAgendaTelefone");
+    }
+
+    public synchronized String pesquisaDescontoServicoEmpresa() {
+        return metodoGenerico(1, "pesquisaDescontoServicoEmpresa");
     }
 
     //------------------------------------------------------------------------------------------------------------
@@ -1216,8 +1231,7 @@ public class chamadaPaginaJSFBean implements Serializable {
         String nomePagina = " Menu ";
         if (r.getId() != -1) {
             if (!r.getRotina().equals("")) {
-                // nomePagina = converterRotinaCaptalize(r.getRotina());
-                nomePagina = r.getRotina();
+                nomePagina = AnaliseString.converterCapitalize(r.getRotina());
                 return nomePagina;
             }
         }
@@ -1239,16 +1253,177 @@ public class chamadaPaginaJSFBean implements Serializable {
     public void refreshForm() {
     }
 
+    public String getControleLinksX() {
+        try {
+            String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
+            String linkAtual = converteURL(urlDestino);
+            String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            if (linkTeste == null) {
+                linkTeste = "";
+            }
+            if (linkAtual.equals("acessoNegado") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+                carregaPg = false;
+                return null;
+            }
+            if (linkAtual.equals("sessaoExpirou") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+                carregaPg = false;
+                return null;
+            }
+            if (linkAtual.equals("menuPrincipal") || linkAtual.equals("menuPrincipalAcessoWeb") || linkAtual.equals("menuPrincipalSuporteWeb")) {
+                carregaPg = true;
+                nivelLink = 0;
+            }
+            if (carregaPg) {
+                linkClicado = false;
+                boolean isNivel = false;
+                boolean acessoCadastro = (Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro");
+                if (nivelLink >= 0 && nivelLink <= 9) {
+                    isNivel = true;
+                    carregaPg = false;
+                }
+                if (nivelLink >= 3 && nivelLink <= 9) {
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                }
+                int nivel = 0;
+                switch (nivelLink) {
+                    case 0:
+                        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
+                            limparMenuLinks(-1);
+                            menuLinks.add(new MenuLinks("menuPrincipal", "Menu Principal", true));
+                            isNivel = false;
+                        } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("web")) {
+                            limparMenuLinks(-1);
+                            menuLinks.add(new MenuLinks("menuPrincipalAcessoWeb", "Menu Principal", true));
+                            limparMenuLinks(-1);
+                            isNivel = false;
+                        } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("suporteWeb")) {
+                            menuLinks.add(new MenuLinks("menuPrincipalSuporteWeb", "Menu Principal Suporte Web", true));
+                            isNivel = false;
+                            dtObject.setArgumento0("menuPrincipalSuporteWeb");
+                            dtObjectLabel.setArgumento0("Menu Principal Suporte Web");
+                        }
+                        nivel = nivelLink;
+                        nivelLink = 1;
+                        break;
+                    case 1:
+                        nivel = nivelLink;
+                        nivelLink = 2;
+                        break;
+                    case 2:
+                        nivel = nivelLink;
+                        nivelLink = 3;
+                        break;
+                    case 3:
+                        if (acessoCadastro) {
+                            nivel = 2;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 4;
+                        }
+                        break;
+                    case 4:
+                        if (acessoCadastro) {
+                            nivel = 3;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 5;
+                        }
+                        break;
+                    case 5:
+                        if (acessoCadastro) {
+                            nivel = 4;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 6;
+                        }
+                        break;
+                    case 6:
+                        if (acessoCadastro) {
+                            nivel = 5;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 7;
+                        }
+                        break;
+                    case 7:
+                        if (acessoCadastro) {
+                            nivel = 6;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 8;
+                        }
+                        break;
+                    case 8:
+                        if (acessoCadastro) {
+                            nivel = 7;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 9;
+                        }
+                        break;
+                    case 9:
+                        if (acessoCadastro) {
+                            nivel = 8;
+                        } else {
+                            nivel = nivelLink;
+                            nivelLink = 10;
+                        }
+                        break;
+                }
+                if (isNivel) {
+                    menuLinks.add(nivel, new MenuLinks(linkAtual, converteURLNome(linkAtual), true));
+                }
+                if (acessoCadastro) {
+//                    int count = 0;
+//                    List<MenuLinks> listRemove = new ArrayList<MenuLinks>();
+//                    for (int i = 0; i < menuLinks.size(); i++) {
+//                        if (menuLinks.get(i).getLink().equals(linkAtual)) {
+//                            listRemove.add(menuLinks.get(i));
+//                            count++;
+//                        }
+//                    }
+//                    if (count > 0) {
+//                        for (int i = 0; i < menuLinks.size(); i++) {
+//                            for (int x = 0; x < listRemove.size(); x++) {
+//                                count = 0;
+//                                if (menuLinks.get(i).getLink().equals(listRemove.get(x).getLink())) {
+//                                    if (count == 0) {
+//                                        count = 1;
+//                                    }
+//                                    if (count == 1) {
+//                                        menuLinks.remove(i);
+//                                    }
+//                                }
+//                            }
+//                        }
+//                    }
+                }
+            } else if (linkTeste.equals(linkAtual)) {
+                for (int x = 0; x < menuLinks.size(); x++) {
+                    if (menuLinks.get(x).getLink().equals(linkTeste)) {
+                        limparMenuLinks(x);
+                        break;
+                    }
+                }
+            } else {
+                for (int x = 0; x < menuLinks.size(); x++) {
+                    if (menuLinks.get(x).getLink().equals(linkAtual)) {
+                        limparMenuLinks(x);
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            NovoLog novoLog = new NovoLog();
+            novoLog.novo("controleLinks", e.getMessage());
+        }
+        return null;
+    }
+
     public String getControleLinks() {
         try {
             paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String urlDestino = paginaRequerida.getRequestURI();
-            if (urlDestino.equals("")) {
-                if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlChamada") != null) {
-                    urlDestino = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlChamada");
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("urlChamada");
-                }
-            }
             String linkAtual = converteURL(urlDestino);
             String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (linkTeste == null) {
@@ -1890,16 +2065,33 @@ public class chamadaPaginaJSFBean implements Serializable {
         this.renderPesquisa = renderPesquisa;
     }
 
-    public String converterRotinaCaptalize(String descricaoRotina) {
-        String[] strings = descricaoRotina.split(" ");
-        String novaDescricaoRotina = "";
-        for (int i = 0; i < strings.length; i++) {
-            if (strings[i].toUpperCase().equals("POR") || strings[i].toUpperCase().equals("DOS") || strings[i].toUpperCase().equals("DAS") || strings[i].toUpperCase().equals("DE")) {
-                novaDescricaoRotina += strings[i].toLowerCase() + " ";
-            } else {
-                novaDescricaoRotina += descricaoRotina;
+    public List<MenuLinks> getMenuLinks() {
+        return menuLinks;
+    }
+
+    public void setMenuLinks(List<MenuLinks> menuLinks) {
+        this.menuLinks = menuLinks;
+    }
+
+    public void limparMenuLinks(int indice) {
+        for (int i = 0; i < menuLinks.size(); i++) {
+            if (indice < i) {
+                menuLinks.remove(i);
+            }
+            if (indice == -1) {
+                menuLinks.clear();
+                break;
             }
         }
-        return novaDescricaoRotina;
+    }
+
+    public String cliqueMenuLinks(int i) {
+        linkClicado = true;
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        if (menuLinks.get(i).getLink().equals("")) {
+            return menuLinks.get(i - 1).getLink();
+        }
+        nivelLink = i + 1;
+        return menuLinks.get(i).getLink();
     }
 }

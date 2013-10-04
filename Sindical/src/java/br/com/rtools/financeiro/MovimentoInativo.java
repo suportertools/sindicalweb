@@ -16,23 +16,24 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="FIN_MOVIMENTO_INATIVO")
-@NamedQuery(name="MovimentoInativo.pesquisaID", query="select mi from MovimentoInativo mi where mi.id=:pid")
+@Table(name = "FIN_MOVIMENTO_INATIVO")
+@NamedQuery(name = "MovimentoInativo.pesquisaID", query = "select mi from MovimentoInativo mi where mi.id=:pid")
 public class MovimentoInativo implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
-    private Date dtData;    
-    @Column(name="DS_HISTORICO", length=8000)
-    private String historico;    
+    @Column(name = "DT_DATA")
+    private Date dtData;
+    @Column(name = "DS_HISTORICO", length = 8000)
+    private String historico;
 
     public int getId() {
         return id;
@@ -72,8 +73,8 @@ public class MovimentoInativo implements java.io.Serializable {
 
     public void setData(String data) {
         this.dtData = DataHoje.converte(data);
-    }    
-    
+    }
+
     public String getHistorico() {
         return historico;
     }
@@ -81,6 +82,4 @@ public class MovimentoInativo implements java.io.Serializable {
     public void setHistorico(String historico) {
         this.historico = historico;
     }
-    
-    
 }

@@ -3,25 +3,26 @@ package br.com.rtools.escola;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ESC_TURMA_PROFESSOR")
-@NamedQuery(name="TurmaProfessor.pesquisaID", query="select tp from TurmaProfessor tp where tp.id=:pid")
+@Table(name = "ESC_TURMA_PROFESSOR")
+@NamedQuery(name = "TurmaProfessor.pesquisaID", query = "select tp from TurmaProfessor tp where tp.id=:pid")
 public class TurmaProfessor implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_TURMA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TURMA", referencedColumnName = "ID")
     @OneToOne
     private Turma turma;
-    @JoinColumn(name="ID_PROFESSOR", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID")
     @OneToOne
     private Professor professor;
-    @JoinColumn(name="ID_COMPONENTE", referencedColumnName="ID")
+    @JoinColumn(name = "ID_COMPONENTE", referencedColumnName = "ID")
     @OneToOne
     private ComponenteCurricular componenteCurricular;
 
     public TurmaProfessor() {
         this.id = -1;
-        this.turma = new  Turma();
+        this.turma = new Turma();
         this.professor = new Professor();
         this.componenteCurricular = new ComponenteCurricular();
     }

@@ -3,45 +3,40 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_PLANO5")
-@NamedQuery(name="Plano5.pesquisaID", query="select p from Plano5 p where p.id=:pid")
+@Table(name = "FIN_PLANO5")
+@NamedQuery(name = "Plano5.pesquisaID", query = "select p from Plano5 p where p.id=:pid")
 public class Plano5 implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
-    @JoinColumn(name="ID_PLANO4", referencedColumnName="ID", nullable=false)
-    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_PLANO4", referencedColumnName = "ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Plano4 plano4;
-
-    @Column(name="DS_NUMERO", length=100,nullable=false)
+    @Column(name = "DS_NUMERO", length = 100, nullable = false)
     private String numero;
-
-    @Column(name="DS_CONTA", length=200,nullable=false)
+    @Column(name = "DS_CONTA", length = 200, nullable = false)
     private String conta;
-
-    @JoinColumn(name="ID_CONTA_BANCO", referencedColumnName="ID", nullable=true)
-    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_CONTA_BANCO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ContaBanco contaBanco;
-
-    @JoinColumn(name="ID_PLANO5_CONTRA_PARTIDA", referencedColumnName="ID")
-    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_PLANO5_CONTRA_PARTIDA", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Plano5 plano5ContraPartida;
-
-    @Column(name="DS_ACESSO", length=5)
+    @Column(name = "DS_ACESSO", length = 5)
     private String acesso;
-    
-    public Plano5(){
-         this.id = -1;
-         this.plano4 = new Plano4();
-         this.numero = "";
-         this.conta = "";
-         this.contaBanco = new ContaBanco();
-         this.plano5ContraPartida = null;
-         this.acesso = "";
+
+    public Plano5() {
+        this.id = -1;
+        this.plano4 = new Plano4();
+        this.numero = "";
+        this.conta = "";
+        this.contaBanco = new ContaBanco();
+        this.plano5ContraPartida = null;
+        this.acesso = "";
     }
 
-    public Plano5(int id,String numero, String conta, Plano4 plano4, ContaBanco contaBanco, Plano5 plano5ContraPartida, String acesso){
+    public Plano5(int id, String numero, String conta, Plano4 plano4, ContaBanco contaBanco, Plano5 plano5ContraPartida, String acesso) {
         this.id = id;
         this.plano4 = new Plano4();
         this.numero = numero;
@@ -98,12 +93,12 @@ public class Plano5 implements java.io.Serializable {
     public void setPlano5ContraPartida(Plano5 plano5ContraPartida) {
         this.plano5ContraPartida = plano5ContraPartida;
     }
-    
+
     public String getAcesso() {
         return acesso;
     }
 
     public void setAcesso(String acesso) {
         this.acesso = acesso;
-    }    
+    }
 }

@@ -14,8 +14,11 @@ public class CartaoSocial {
     private String logo;
     private String imagem;
     private String filiacao;
+    private String profissao;
+    private String cpf;
+    private String rg;
 
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao) {
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg) {
         this.matricula = matricula;
         this.barras = barras;
         this.nome = nome;
@@ -28,6 +31,9 @@ public class CartaoSocial {
         this.logo = logo;
         this.imagem = imagem;
         this.filiacao = filiacao;
+        this.profissao = profissao;
+        this.cpf = cpf;
+        this.rg = rg;
     }
 
     public String getNome() {
@@ -140,5 +146,29 @@ public class CartaoSocial {
 
     public void setFiliacao(String filiacao) {
         this.filiacao = filiacao;
+    }
+    
+    public String getProfissao() {
+        return profissao;
+    }
+
+    public void setProfissao(String profissao) {
+        this.profissao = profissao;
+    }
+    
+    public String getCPF() {
+        return cpf;
+    }
+
+    public void setCPF(String cpf) {
+        this.cpf = cpf;
+    }
+    
+    public String getRG() {
+        return rg;
+    }
+
+    public void setRG(String rg) {
+        this.rg = rg;
     }
 }

@@ -7,111 +7,83 @@ import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
-
 @Entity
-@Table(name="FIN_MOVIMENTO")
-@NamedQuery(name="Movimento.pesquisaID", query="select m from Movimento m where m.id=:pid")
-public class Movimento implements Serializable{
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
+@Table(name = "FIN_MOVIMENTO")
+@NamedQuery(name = "Movimento.pesquisaID", query = "select m from Movimento m where m.id=:pid")
+public class Movimento implements Serializable {
 
-    @JoinColumn(name="ID_LOTE", referencedColumnName="ID", nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Lote lote;
-
-    @JoinColumn(name="ID_PLANO5", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @ManyToOne
     private Plano5 plano5;
-
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
     @ManyToOne
     private Servicos servicos;
-
-    @JoinColumn(name="ID_BAIXA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_BAIXA", referencedColumnName = "ID")
     @ManyToOne
     private Baixa baixa;
-
-    @JoinColumn(name="ID_TIPO_SERVICO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID")
     @ManyToOne
     private TipoServico tipoServico;
-
-    @JoinColumn(name="ID_ACORDO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_ACORDO", referencedColumnName = "ID")
     @ManyToOne
     private Acordo acordo;
-
-    @Column(name="NR_VALOR", length=10, nullable=false)
+    @Column(name = "NR_VALOR", length = 10, nullable = false)
     private float valor;
-
-    @Column(name="DS_REFERENCIA", length=7)
+    @Column(name = "DS_REFERENCIA", length = 7)
     private String referencia;
-    
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_VENCIMENTO")
+    @Column(name = "DT_VENCIMENTO")
     private Date dtVencimento;
-
-    @Column(name="NR_QUANTIDADE")
+    @Column(name = "NR_QUANTIDADE")
     private int quantidade;
-
-    @Column(name = "IS_ATIVO")
+    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
-
-    @Column(name="DS_ES", length=1)
+    @Column(name = "DS_ES", length = 1)
     private String es;
-
-    @Column(name="IS_OBRIGACAO")
+    @Column(name = "IS_OBRIGACAO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean obrigacao;
-
-    @JoinColumn(name="ID_TITULAR", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TITULAR", referencedColumnName = "ID")
     @OneToOne
     private Pessoa titular;
-
-    @JoinColumn(name="ID_BENEFICIARIO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_BENEFICIARIO", referencedColumnName = "ID")
     @OneToOne
     private Pessoa beneficiario;
-
-    @Column(name="DS_DOCUMENTO", length=100)
+    @Column(name = "DS_DOCUMENTO", length = 100)
     private String documento;
-
-    @Column(name="NR_CTR_BOLETO", length=20)
+    @Column(name = "NR_CTR_BOLETO", length = 20)
     private String nrCtrBoleto;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_VENCIMENTO_ORIGINAL")
+    @Column(name = "DT_VENCIMENTO_ORIGINAL")
     private Date dtVencimentoOriginal;
-
-    @Column(name="NR_DESCONTO_ATE_VENCIMENTO", length=10)
+    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO", length = 10)
     private float descontoAteVencimento;
-
-    @Column(name="NR_CORRECAO", length=10)
+    @Column(name = "NR_CORRECAO", length = 10)
     private float correcao;
-
-    @Column(name="NR_JUROS", length=10)
+    @Column(name = "NR_JUROS", length = 10)
     private float juros;
-
-    @Column(name="NR_MULTA", length=10)
+    @Column(name = "NR_MULTA", length = 10)
     private float multa;
-
-    @Column(name="NR_DESCONTO", length=10)
+    @Column(name = "NR_DESCONTO", length = 10)
     private float desconto;
-
-    @Column(name="NR_TAXA", length=10)
+    @Column(name = "NR_TAXA", length = 10)
     private float taxa;
-
-    @Column(name="NR_VALOR_BAIXA", length=10)
+    @Column(name = "NR_VALOR_BAIXA", length = 10)
     private float valorBaixa;
-
-    @Column(name="NR_REPASSE_AUTOMATICO", length=10)
+    @Column(name = "NR_REPASSE_AUTOMATICO", length = 10)
     private float repasseAutomatico;
-
-    @JoinColumn(name="ID_TIPO_DOCUMENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
     @ManyToOne
     private FTipoDocumento tipoDocumento;
-    
+
     public Movimento() {
         this.id = -1;
         this.lote = new Lote();
@@ -144,35 +116,35 @@ public class Movimento implements Serializable{
         this.tipoDocumento = new FTipoDocumento();
     }
 
-    public Movimento(int id, 
-                     Lote lote,
-                     Plano5 plano5,
-                     Pessoa pessoa,
-                     Servicos servicos,
-                     Baixa baixa,
-                     TipoServico tipoServico,
-                     Acordo acordo,
-                     float valor,
-                     String referencia,
-                     String vencimento,
-                     int quantidade,
-                     boolean ativo,
-                     String es,
-                     boolean obrigacao,
-                     Pessoa titular,
-                     Pessoa beneficiario,
-                     String documento,
-                     String nrCtrBoleto,
-                     String vencimentoOriginal,
-                     float descontoAteVencimento,
-                     float correcao,
-                     float juros,
-                     float multa,
-                     float desconto,
-                     float taxa,
-                     float valorBaixa,
-                     FTipoDocumento tipoDocumento,
-                     float repasseAutomatico) {
+    public Movimento(int id,
+            Lote lote,
+            Plano5 plano5,
+            Pessoa pessoa,
+            Servicos servicos,
+            Baixa baixa,
+            TipoServico tipoServico,
+            Acordo acordo,
+            float valor,
+            String referencia,
+            String vencimento,
+            int quantidade,
+            boolean ativo,
+            String es,
+            boolean obrigacao,
+            Pessoa titular,
+            Pessoa beneficiario,
+            String documento,
+            String nrCtrBoleto,
+            String vencimentoOriginal,
+            float descontoAteVencimento,
+            float correcao,
+            float juros,
+            float multa,
+            float desconto,
+            float taxa,
+            float valorBaixa,
+            FTipoDocumento tipoDocumento,
+            float repasseAutomatico) {
         this.id = id;
         this.lote = lote;
         this.plano5 = plano5;
@@ -282,7 +254,7 @@ public class Movimento implements Serializable{
 
     public void setDtVencimento(Date dtVencimento) {
         this.dtVencimento = dtVencimento;
-    }    
+    }
 
     public String getVencimento() {
         return DataHoje.converteData(dtVencimento);

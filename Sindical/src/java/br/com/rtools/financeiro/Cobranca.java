@@ -10,16 +10,17 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="FIN_COBRANCA")
-@NamedQuery(name="Cobranca.pesquisaID", query="select c from Cobranca c where c.id = :pid")
+@Table(name = "FIN_COBRANCA")
+@NamedQuery(name = "Cobranca.pesquisaID", query = "select c from Cobranca c where c.id = :pid")
 public class Cobranca implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_LOTE", referencedColumnName="ID")
+    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
     @ManyToOne
-    private CobrancaLote lote;        
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID")
+    private CobrancaLote lote;
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID")
     @ManyToOne
     private Movimento movimento;
 
@@ -34,7 +35,7 @@ public class Cobranca implements java.io.Serializable {
         this.lote = lote;
         this.movimento = movimento;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -58,5 +59,4 @@ public class Cobranca implements java.io.Serializable {
     public void setLote(CobrancaLote lote) {
         this.lote = lote;
     }
-    
 }

@@ -23,7 +23,7 @@ public class Boleto implements java.io.Serializable {
     @Column(name="NR_CTR_BOLETO", length=20)
     private String nrCtrBoleto;
     
-    @Column(name="IS_ATIVO")
+    @Column(name="IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
 
     public Boleto() {

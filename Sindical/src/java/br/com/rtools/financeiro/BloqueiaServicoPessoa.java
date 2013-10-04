@@ -6,33 +6,28 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_BLOQUEIA_SERVICO_PESSOA")
-@NamedQuery(name="BloqueiaServicoPessoa.pesquisaID", query="select b from BloqueiaServicoPessoa b where b.id=:pid")
+@Table(name = "FIN_BLOQUEIA_SERVICO_PESSOA")
+@NamedQuery(name = "BloqueiaServicoPessoa.pesquisaID", query = "select b from BloqueiaServicoPessoa b where b.id=:pid")
 public class BloqueiaServicoPessoa implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INICIO")
+    @Column(name = "DT_INICIO")
     private Date dtInicio;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_FIM")
+    @Column(name = "DT_FIM")
     private Date dtFim;
-    
-    @Column(name="IS_IMPRESSAO")
+    @Column(name = "IS_IMPRESSAO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean impressao;
-    
-    @Column(name="IS_GERACAO")
+    @Column(name = "IS_GERACAO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean geracao;
 
     public BloqueiaServicoPessoa() {
@@ -44,7 +39,7 @@ public class BloqueiaServicoPessoa implements java.io.Serializable {
         this.impressao = true;
         this.geracao = true;
     }
-    
+
     public BloqueiaServicoPessoa(int id, Pessoa pessoa, Servicos servicos, String inicio, String fim, boolean impressao, boolean geracao) {
         this.id = id;
         this.pessoa = pessoa;
@@ -117,8 +112,8 @@ public class BloqueiaServicoPessoa implements java.io.Serializable {
 
     public void setInicio(String inicio) {
         this.dtInicio = DataHoje.converte(inicio);
-    }    
-    
+    }
+
     public String getFim() {
         return DataHoje.converteData(dtFim);
     }

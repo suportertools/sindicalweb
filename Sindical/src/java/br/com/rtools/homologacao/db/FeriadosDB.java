@@ -18,4 +18,6 @@ public interface FeriadosDB {
     public boolean exiteFeriadoCidade(Feriados feriados);
 
     public List pesquisarPorDataFilial(String data, Filial filial);
+    
+    public List pesquisarPorDataFilialEData(String data, Filial filial);
 }

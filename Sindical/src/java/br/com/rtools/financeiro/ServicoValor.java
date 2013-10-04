@@ -91,7 +91,7 @@ public class ServicoValor implements java.io.Serializable {
     public void setDescontoAteVenc(float descontoAteVenc) {
         this.descontoAteVenc = descontoAteVenc;
     }
-    
+
     public float getTaxa() {
         return taxa;
     }

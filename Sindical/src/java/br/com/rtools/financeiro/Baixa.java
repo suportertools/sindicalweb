@@ -6,33 +6,28 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_BAIXA")
-@NamedQuery(name="Baixa.pesquisaID", query="select l from Baixa l where l.id=:pid")
+@Table(name = "FIN_BAIXA")
+@NamedQuery(name = "Baixa.pesquisaID", query = "select l from Baixa l where l.id=:pid")
 public class Baixa implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID", nullable=true)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private Usuario usuario;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_BAIXA")
+    @Column(name = "DT_BAIXA")
     private Date dtBaixa;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_IMPORTACAO")
+    @Column(name = "DT_IMPORTACAO")
     private Date dtImportacao;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_FECHAMENTO_CAIXA")
+    @Column(name = "DT_FECHAMENTO_CAIXA")
     private Date dtFechamentoCaixa;
-    
-    @Column(name="NR_SEQUENCIA_BAIXA")
+    @Column(name = "NR_SEQUENCIA_BAIXA")
     private int sequenciaBaixa;
-
-    @Column(name="DS_DOCUMENTO_BAIXA")
+    @Column(name = "DS_DOCUMENTO_BAIXA")
     private String documentoBaixa;
 
     public Baixa() {
@@ -46,12 +41,12 @@ public class Baixa implements java.io.Serializable {
     }
 
     public Baixa(int id,
-                     Usuario usuario,
-                     String baixa,
-                     String importacao,
-                     String fechamentoCaixa,
-                     int sequenciaBaixa, 
-                     String documentoBaixa) {
+            Usuario usuario,
+            String baixa,
+            String importacao,
+            String fechamentoCaixa,
+            int sequenciaBaixa,
+            String documentoBaixa) {
         this.id = id;
         this.usuario = usuario;
         this.setBaixa(baixa);
@@ -84,7 +79,6 @@ public class Baixa implements java.io.Serializable {
     public void setDtImportacao(Date dtImportacao) {
         this.dtImportacao = dtImportacao;
     }
-
 
     public String getImportacao() {
         return DataHoje.converteData(dtImportacao);
@@ -141,5 +135,4 @@ public class Baixa implements java.io.Serializable {
     public void setDocumentoBaixa(String documentoBaixa) {
         this.documentoBaixa = documentoBaixa;
     }
-
 }

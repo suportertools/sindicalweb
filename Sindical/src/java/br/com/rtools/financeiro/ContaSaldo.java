@@ -7,37 +7,31 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CONTA_SALDO")
-@NamedQuery(name="ContaSaldo.pesquisaID", query="select cs from ContaSaldo cs where cs.id=:pid")
+@Table(name = "FIN_CONTA_SALDO")
+@NamedQuery(name = "ContaSaldo.pesquisaID", query = "select cs from ContaSaldo cs where cs.id=:pid")
 public class ContaSaldo implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-
-    @Column(name="NR_SALDO", length=10)
+    @Column(name = "NR_SALDO", length = 10)
     private float saldo;
-
-    @JoinColumn(name="ID_PLANO5", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @OneToOne
     private Plano5 plano5;
-
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
     @ManyToOne
     private Servicos servicos;
-
-    @JoinColumn(name="ID_TIPO_SERVICO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID")
     @ManyToOne
     private TipoServico tipoServico;
-
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
     @OneToOne
     private Usuario usuario;
-
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Filial filial;
 
@@ -62,8 +56,6 @@ public class ContaSaldo implements java.io.Serializable {
         this.usuario = usuario;
         this.filial = filial;
     }
-
-
 
     public int getId() {
         return id;

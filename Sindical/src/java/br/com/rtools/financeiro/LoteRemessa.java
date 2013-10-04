@@ -1,4 +1,3 @@
-
 package br.com.rtools.financeiro;
 
 import br.com.rtools.utilitarios.DataHoje;
@@ -6,33 +5,32 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_LOTE_REMESSA")
-@NamedQuery(name="LoteRemessa.pesquisaID", query="select l from LoteRemessa l where l.id=:pid")
+@Table(name = "FIN_LOTE_REMESSA")
+@NamedQuery(name = "LoteRemessa.pesquisaID", query = "select l from LoteRemessa l where l.id=:pid")
 public class LoteRemessa implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="NR_TIPO_MOVIMENTO",nullable=false)
+    @Column(name = "NR_TIPO_MOVIMENTO", nullable = false)
     private int tipoMovimento;
-    @Column(name="DS_MOEDA", length=2,nullable=false)
+    @Column(name = "DS_MOEDA", length = 2, nullable = false)
     private String moeda;
-    @Column(name="NR_CONTRIBUICAO",nullable=false)
+    @Column(name = "NR_CONTRIBUICAO", nullable = false)
     private int tipoContribuicao;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_REMESSA", nullable=false)
+    @Column(name = "DT_REMESSA", nullable = false)
     private Date dtRemessa;
-    
+
     public LoteRemessa(int id, int tipoMovimento, String moeda, int tipoContribuicao, Date dtRemessa) {
         this.id = id;
         this.tipoMovimento = tipoMovimento;
         this.moeda = moeda;
         this.tipoContribuicao = tipoContribuicao;
         this.dtRemessa = dtRemessa;
-    }    
+    }
 
-
-    public LoteRemessa(){
+    public LoteRemessa() {
         setId(-1);
         setTipoMovimento(0);
         setMoeda("");
@@ -40,14 +38,13 @@ public class LoteRemessa implements java.io.Serializable {
         setRemessa(DataHoje.data());
     }
 
-    public LoteRemessa(int id, int tipoMovimento, String moeda, int tipoContribuicao, String remessa){
+    public LoteRemessa(int id, int tipoMovimento, String moeda, int tipoContribuicao, String remessa) {
         setId(id);
         setTipoMovimento(tipoMovimento);
         setMoeda(moeda);
         setTipoContribuicao(tipoContribuicao);
         setRemessa(remessa);
     }
-
 
     public int getId() {
         return id;
@@ -70,8 +67,9 @@ public class LoteRemessa implements java.io.Serializable {
     }
 
     public void setMoeda(String moeda) {
-        if (moeda.length() <= 2)
+        if (moeda.length() <= 2) {
             this.moeda = moeda;
+        }
     }
 
     public int getTipoContribuicao() {
@@ -97,7 +95,4 @@ public class LoteRemessa implements java.io.Serializable {
     public void setRemessa(String remessa) {
         this.dtRemessa = DataHoje.converte(remessa);
     }
-
-
 }
-

@@ -6,53 +6,45 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ESC_MATR_INDIVIDUAL")
-@NamedQuery(name="MatriculaIndividual.pesquisaID", query="select m from MatriculaIndividual m where m.id=:pid")
+@Table(name = "ESC_MATR_INDIVIDUAL")
+@NamedQuery(name = "MatriculaIndividual.pesquisaID", query = "select m from MatriculaIndividual m where m.id=:pid")
 public class MatriculaIndividual implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @JoinColumn(name="ID_MATR_ESCOLA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_MATR_ESCOLA", referencedColumnName = "ID")
     @ManyToOne
     private MatriculaEscola matriculaEscola;
-
-    @JoinColumn(name="ID_CURSO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CURSO", referencedColumnName = "ID")
     @ManyToOne
     private Servicos curso;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INICIO")
+    @Column(name = "DT_INICIO")
     private Date dataInicio;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_TERMINO")
+    @Column(name = "DT_TERMINO")
     private Date dataTermino;
-
-    @Column(name="TM_INICIO", length=5)
+    @Column(name = "TM_INICIO", length = 5)
     private String inicio;
-
-    @Column(name="TM_TERMINO", length=5)
+    @Column(name = "TM_TERMINO", length = 5)
     private String termino;
-
-    @JoinColumn(name="ID_PROFESSOR", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID")
     @ManyToOne
     private Professor professor;
-
-    @Column(name="IS_SEG")
+    @Column(name = "IS_SEG", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean segunda;
-    @Column(name = "IS_TER")
+    @Column(name = "IS_TER", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean terca;
-    @Column(name = "IS_QUA")
+    @Column(name = "IS_QUA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean quarta;
-    @Column(name = "IS_QUI")
+    @Column(name = "IS_QUI", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean quinta;
-    @Column(name = "IS_SEX")
+    @Column(name = "IS_SEX", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean sexta;
-    @Column(name = "IS_SAB")
+    @Column(name = "IS_SAB", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean sabado;
-    @Column(name = "IS_DOM")
+    @Column(name = "IS_DOM", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean domingo;
 
     public MatriculaIndividual() {
@@ -211,23 +203,19 @@ public class MatriculaIndividual implements java.io.Serializable {
         this.domingo = domingo;
     }
 
-    public void setDataInicioString (String dataInicio){
+    public void setDataInicioString(String dataInicio) {
         this.dataInicio = DataHoje.converte(dataInicio);
     }
 
-    public String getDataInicioString (){
+    public String getDataInicioString() {
         return DataHoje.converteData(dataInicio);
     }
 
-    public void setDataTerminoString (String dataTermino){
+    public void setDataTerminoString(String dataTermino) {
         this.dataTermino = DataHoje.converte(dataTermino);
     }
 
-    public String getDataTerminoString(){
+    public String getDataTerminoString() {
         return DataHoje.converteData(dataTermino);
     }
-
-
-  
-
 }

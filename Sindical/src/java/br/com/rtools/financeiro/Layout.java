@@ -3,16 +3,16 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_LAYOUT")
-@NamedQuery(name="Layout.pesquisaID", query="select l from Layout l where l.id=:pid")
+@Table(name = "FIN_LAYOUT")
+@NamedQuery(name = "Layout.pesquisaID", query = "select l from Layout l where l.id=:pid")
 public class Layout implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", length=50,nullable=true)
+    @Column(name = "DS_DESCRICAO", length = 50, nullable = true)
     private String descricao;
-    @Column(name="URL", length=50,nullable=true)
+    @Column(name = "URL", length = 50, nullable = true)
     private String url;
 
     public Layout() {
@@ -20,7 +20,7 @@ public class Layout implements java.io.Serializable {
         this.descricao = "";
         this.url = "";
     }
-    
+
     public Layout(int id, String descricao, String url) {
         this.id = id;
         this.descricao = descricao;

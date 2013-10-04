@@ -15,20 +15,21 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class AgendaTelefoneJSFBean implements java.io.Serializable {
+public class AgendaTelefoneJSFBean implements Serializable {
 
     private Agenda agenda = new Agenda();
     private AgendaTelefone agendaTelefone = new AgendaTelefone();
     private Pessoa pessoa = new Pessoa();
     private Endereco endereco = new Endereco();
-    private List<TipoEndereco> listaTipoEnderecos = new ArrayList<TipoEndereco>();
-    private List<TipoTelefone> listaTipoTelefones = new ArrayList<TipoTelefone>();
-    private List<GrupoAgenda> listaGrupoAgendas = new ArrayList<GrupoAgenda>();
+    private List<SelectItem> listaTipoEnderecos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaTipoTelefones = new ArrayList<SelectItem>();
+    private List<SelectItem> listaGrupoAgendas = new ArrayList<SelectItem>();
     private List<SelectItem> listaDDD = new ArrayList<SelectItem>();
     private List<AgendaTelefone> listaAgendaTelefones = new ArrayList<AgendaTelefone>();
     private List listaAgendas = new ArrayList();
@@ -55,9 +56,9 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         pessoa = new Pessoa();
         endereco = new Endereco();
         listaAgendaTelefones = new ArrayList<AgendaTelefone>();
-        idTipoEndereco = 0;
         idTipoTelefone = 0;
         idGrupoAgenda = 0;
+        idTipoEndereco = 0;
         idFiltroGrupoAgenda = 0;
         idDDD = 0;
         idIndexAgendaTelefone = 0;
@@ -72,7 +73,7 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
 
     public String novo() {
         limpar();
-        return "agendaTelefone";
+        return null;
     }
 
     public String salvar() {
@@ -89,8 +90,8 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
             return null;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agenda.setGrupoAgenda((GrupoAgenda) salvarAcumuladoDB.pesquisaCodigo(idGrupoAgenda, "GrupoAgenda"));
-        agenda.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(idTipoEndereco, "TipoEndereco"));
+        agenda.setGrupoAgenda((GrupoAgenda) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaGrupoAgendas.get(idGrupoAgenda).getDescription()), "GrupoAgenda"));
+        agenda.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoEnderecos.get(idTipoEndereco).getDescription()), "TipoEndereco"));
         if (agenda.getId() == -1) {
             AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
             if (pessoa != null) {
@@ -109,7 +110,7 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
             if (agenda.getEndereco().getId() == -1) {
                 agenda.setEndereco(null);
             }
-            if (((Agenda) agendaDB.agendaExiste(agenda)).getId() != -1) {
+            if ((agendaDB.agendaExiste(agenda)).getId() != -1) {
                 msgConfirma = "Cadastro já existe!";
                 return null;
             }
@@ -238,60 +239,48 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         this.agenda = agenda;
     }
 
-    public List<TipoEndereco> getListaTipoEnderecos() {
+    public List<SelectItem> getListaTipoEnderecos() {
         if (listaTipoEnderecos.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaTipoEnderecos = salvarAcumuladoDB.listaObjetoGenericoOrdem("TipoEndereco");
-//            for (int i = 0; i < tipoEnderecos.size(); i++) {
-//                listaTipoEnderecos.add(
-//                        new SelectItem(
-//                        new Integer(i),
-//                        tipoEnderecos.get(i).getDescricao(),
-//                        Integer.toString(tipoEnderecos.get(i).getId())));
-//            }
+            List<TipoEndereco> list = (List<TipoEndereco>) salvarAcumuladoDB.listaObjetoGenericoOrdem("TipoEndereco");
+            for (int i = 0; i < list.size(); i++) {
+                listaTipoEnderecos.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+            }
         }
         return listaTipoEnderecos;
     }
 
-    public void setListaTipoEnderecos(List<TipoEndereco> listaTipoEnderecos) {
+    public void setListaTipoEnderecos(List<SelectItem> listaTipoEnderecos) {
         this.listaTipoEnderecos = listaTipoEnderecos;
     }
 
-    public List<TipoTelefone> getListaTipoTelefones() {
+    public List<SelectItem> getListaTipoTelefones() {
         if (listaTipoTelefones.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaTipoTelefones = salvarAcumuladoDB.listaObjetoGenericoOrdem("TipoTelefone");
-//            for (int i = 0; i < tipoTelefones.size(); i++) {
-//                listaTipoTelefones.add(
-//                        new SelectItem(
-//                        new Integer(i),
-//                        tipoTelefones.get(i).getDescricao(),
-//                        Integer.toString(tipoTelefones.get(i).getId())));
-//            }
+            List<TipoTelefone> list = (List<TipoTelefone>) salvarAcumuladoDB.listaObjetoGenericoOrdem("TipoTelefone");
+            for (int i = 0; i < list.size(); i++) {
+                listaTipoTelefones.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+            }
         }
         return listaTipoTelefones;
     }
 
-    public void setListaTipoTelefones(List<TipoTelefone> listaTipoTelefones) {
+    public void setListaTipoTelefones(List<SelectItem> listaTipoTelefones) {
         this.listaTipoTelefones = listaTipoTelefones;
     }
 
-    public List<GrupoAgenda> getListaGrupoAgendas() {
+    public List<SelectItem> getListaGrupoAgendas() {
         if (listaGrupoAgendas.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaGrupoAgendas = salvarAcumuladoDB.listaObjetoGenericoOrdem("GrupoAgenda");
-//            for (int i = 0; i < grupoAgendas.size(); i++) {
-//                listaGrupoAgendas.add(
-//                        new SelectItem(
-//                        new Integer(i),
-//                        grupoAgendas.get(i).getDescricao(),
-//                        Integer.toString(grupoAgendas.get(i).getId())));
-//            }
+            List<GrupoAgenda> list = (List<GrupoAgenda>) salvarAcumuladoDB.listaObjetoGenericoOrdem("GrupoAgenda");
+            for (int i = 0; i < list.size(); i++) {
+                listaGrupoAgendas.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+            }
         }
         return listaGrupoAgendas;
     }
 
-    public void setListaGrupoAgendas(List<GrupoAgenda> listaGrupoAgendas) {
+    public void setListaGrupoAgendas(List<SelectItem> listaGrupoAgendas) {
         this.listaGrupoAgendas = listaGrupoAgendas;
     }
 
@@ -330,8 +319,8 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         if (listaAgendas.isEmpty()) {
             int nrGrupoAgenda = 0;
             if (filtraPorGrupo) {
-                // nrGrupoAgenda = Integer.parseInt(getListaGrupoAgendas().get(idFiltroGrupoAgenda).getDescription());
-                nrGrupoAgenda = idFiltroGrupoAgenda;
+                nrGrupoAgenda = Integer.parseInt(getListaGrupoAgendas().get(idFiltroGrupoAgenda).getDescription());
+                //nrGrupoAgenda = idFiltroGrupoAgenda;
             }
             descricaoDDD = "";
             if (!listaDDD.isEmpty()) {
@@ -352,10 +341,10 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
                 }
 
                 dtObj = new DataObject(
-                        i, // ARGUMENTO 0 - Indice
-                        listAgenda.get(i).getId(), // ARGUMENTO 1 - Id
-                        listAgenda.get(i).getGrupoAgenda().getDescricao(), // ARGUMENTO 2 - Grupo Agenda
-                        listAgenda.get(i).getNome(), // ARGUMENTO 3 - Nome
+                        listAgenda.get(i), // ARGUMENTO 0 - Agenda
+                        null, // ARGUMENTO 1 - Id
+                        null, // ARGUMENTO 2 - Grupo Agenda
+                        null, // ARGUMENTO 3 - Nome
                         enderecoString, // ARGUMENTO 4 - Cidade / Estado
                         pessoaString // ARGUMENTO 5 - Pessoa
                         );
@@ -373,8 +362,7 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         if (listaAgendaTelefone.isEmpty()) {
             int nrGrupoAgenda = 0;
             if (filtraPorGrupo) {
-                //nrGrupoAgenda = Integer.parseInt(getListaGrupoAgendas().get(idFiltroGrupoAgenda).getDescription());
-                nrGrupoAgenda = idFiltroGrupoAgenda;
+                nrGrupoAgenda = Integer.parseInt(listaGrupoAgendas.get(idFiltroGrupoAgenda).getDescription());
             }
             descricaoDDD = "";
             if (!listaDDD.isEmpty()) {
@@ -469,14 +457,29 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         listaAgendas.clear();
     }
 
-    public String editar(int index) {
-        agenda = new Agenda();
+    public String editar(Agenda a) {
+        //agenda = new Agenda();
+        agenda = a;
         pessoa = new Pessoa();
         endereco = new Endereco();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agenda = (Agenda) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((DataObject) listaAgendas.get(index)).getArgumento1().toString()), "Agenda");
-        idGrupoAgenda = agenda.getGrupoAgenda().getId();
-        idTipoEndereco = agenda.getTipoEndereco().getId();
+        agenda = (Agenda) salvarAcumuladoDB.pesquisaCodigo(agenda.getId(), "Agenda");
+        if (agenda.getGrupoAgenda() != null) {
+            for (int i = 0; i < listaGrupoAgendas.size(); i++) {
+                if (Integer.valueOf(listaGrupoAgendas.get(i).getDescription()) == agenda.getGrupoAgenda().getId()) {
+                    idGrupoAgenda = i;
+                    break;
+                }
+            }
+        }
+        if (agenda.getTipoEndereco() != null) {
+            for (int i = 0; i < listaTipoEnderecos.size(); i++) {
+                if (Integer.valueOf(listaTipoEnderecos.get(i).getDescription()) == agenda.getTipoEndereco().getId()) {
+                    idTipoEndereco = i;
+                    break;
+                }
+            }
+        }
         if (agenda.getEndereco() != null) {
             endereco = agenda.getEndereco();
         }
@@ -485,7 +488,9 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         }
         listaAgendaTelefones.clear();
         getListaAgendaTelefones();
-        return "agendaTelefone";
+        agendaTelefone = new AgendaTelefone();
+        return null;
+        //return "agendaTelefone";
     }
 
     public String visualizar(int index) {
@@ -520,22 +525,21 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
         msgAgendaTelefone = "";
         if (agendaTelefone.getTelefone().equals("")) {
             msgConfirma = "Informar o número de telefone!";
-            return "agenda";
+            return "agendaTelefone";
         }
         if (listaTipoTelefones.isEmpty()) {
             msgConfirma = "Informar o tipo de telefone!";
-            return "agenda";
+            return "agendaTelefone";
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        // agendaTelefone.setTipoTelefone((TipoTelefone) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoTelefones.get(idTipoTelefone).getDescription()), "TipoTelefone"));
-        agendaTelefone.setTipoTelefone((TipoTelefone) salvarAcumuladoDB.pesquisaCodigo(idTipoTelefone, "TipoTelefone"));
+        agendaTelefone.setTipoTelefone((TipoTelefone) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoTelefones.get(idTipoTelefone).getDescription()), "TipoTelefone"));
         if (agenda.getId() != -1) {
             if (agendaTelefone.getId() == -1) {
                 AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
                 agendaTelefone.setAgenda(agenda);
                 if (((AgendaTelefone) agendaDB.agendaTelefoneExiste(agendaTelefone)).getId() != -1) {
                     msgConfirma = "Telefone já existe!";
-                    return "agenda";
+                    return "agendaTelefone";
                 }
                 salvarAcumuladoDB.abrirTransacao();
                 if (salvarAcumuladoDB.inserirObjeto(agendaTelefone)) {
@@ -559,13 +563,14 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
             }
         }
         agendaTelefone = new AgendaTelefone();
-        return "agendaTelefone";
+        return null;
+        //return "agendaTelefone";
     }
 
-    public String excluirAgendaTelefone(int index) {
+    public String excluirAgendaTelefone(AgendaTelefone at) {
         msgAgendaTelefone = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        AgendaTelefone at = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(listaAgendaTelefones.get(index).getId(), "AgendaTelefone");
+        at = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(at.getId(), "AgendaTelefone");
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.deletarObjeto(at)) {
             salvarAcumuladoDB.comitarTransacao();
@@ -575,12 +580,20 @@ public class AgendaTelefoneJSFBean implements java.io.Serializable {
             salvarAcumuladoDB.comitarTransacao();
             msgAgendaTelefone = "Falha ao excluír esse telefone!";
         }
-        return "agenda";
+        return null;
+        //return "agendaTelefone";
     }
 
-    public String editarAgendaTelefone(int index) {
-        agendaTelefone = listaAgendaTelefones.get(index);
-        return "agendaTelefone";
+    public String editarAgendaTelefone(AgendaTelefone at) {
+        agendaTelefone = at;
+        for (int i = 0; i < listaTipoTelefones.size(); i++) {
+            if (Integer.valueOf(listaTipoTelefones.get(i).getDescription()) == agendaTelefone.getTipoTelefone().getId()) {
+                idTipoTelefone = i;
+                break;
+            }
+        }       
+        return null;
+        //return "agendaTelefone";
     }
 
     public int getIdGrupoAgenda() {

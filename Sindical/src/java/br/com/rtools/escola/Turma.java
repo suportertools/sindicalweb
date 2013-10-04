@@ -7,40 +7,41 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ESC_TURMA")
-@NamedQuery(name="Turma.pesquisaID", query="select t from Turma t where t.id=:pid")
+@Table(name = "ESC_TURMA")
+@NamedQuery(name = "Turma.pesquisaID", query = "select t from Turma t where t.id=:pid")
 public class Turma implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_CURSO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CURSO", referencedColumnName = "ID")
     @ManyToOne
     private Servicos cursos;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INICIO")
+    @Column(name = "DT_INICIO")
     private Date dtInicio;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_TERMINO")
+    @Column(name = "DT_TERMINO")
     private Date dtTermino;
-    @Column(name="TM_INICIO")
+    @Column(name = "TM_INICIO")
     private String horaInicio;
-    @Column(name="TM_TERMINO")
+    @Column(name = "TM_TERMINO")
     private String horaTermino;
-    @Column(name = "IS_SEGUNDA")
+    @Column(name = "IS_SEGUNDA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean segunda;
-    @Column(name = "IS_TERCA")
+    @Column(name = "IS_TERCA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean terca;
-    @Column(name = "IS_QUARTA")
+    @Column(name = "IS_QUARTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean quarta;
-    @Column(name = "IS_QUINTA")
+    @Column(name = "IS_QUINTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean quinta;
-    @Column(name = "IS_SEXTA")
+    @Column(name = "IS_SEXTA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean sexta;
-    @Column(name = "IS_SABADO")
+    @Column(name = "IS_SABADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean sabado;
-    @Column(name = "IS_DOMINGO")
+    @Column(name = "IS_DOMINGO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean domingo;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID")
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @ManyToOne
     private Filial filial;
 
@@ -184,27 +185,31 @@ public class Turma implements java.io.Serializable {
     }
 
     public String getDataInicio() {
-        if (getDtInicio() != null)
+        if (getDtInicio() != null) {
             return DataHoje.converteData(getDtInicio());
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataInicio(String dataInicio) {
-        if (!(dataInicio.isEmpty()))
+        if (!(dataInicio.isEmpty())) {
             this.setDtInicio(DataHoje.converte(dataInicio));
+        }
     }
 
     public String getDataTermino() {
-        if (getDtTermino() != null)
+        if (getDtTermino() != null) {
             return DataHoje.converteData(getDtTermino());
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataTermino(String dataTermino) {
-        if (!(dataTermino.isEmpty()))
+        if (!(dataTermino.isEmpty())) {
             this.setDtTermino(DataHoje.converte(dataTermino));
+        }
     }
 
     public Filial getFilial() {

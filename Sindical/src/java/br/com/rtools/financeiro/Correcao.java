@@ -1,37 +1,36 @@
-
 package br.com.rtools.financeiro;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CORRECAO")
-@NamedQuery(name="Correcao.pesquisaID", query="select i from Correcao i where i.id=:pid")
+@Table(name = "FIN_CORRECAO")
+@NamedQuery(name = "Correcao.pesquisaID", query = "select i from Correcao i where i.id=:pid")
 public class Correcao implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="NR_MULTA_PRIMEIRO_MES", nullable=false)
+    @Column(name = "NR_MULTA_PRIMEIRO_MES", nullable = false)
     private float multaPriMes;
-    @Column(name="NR_MULTA_APARTIR_2MES", nullable=false)
+    @Column(name = "NR_MULTA_APARTIR_2MES", nullable = false)
     private float multaApartir2Mes;
-    @Column(name="NR_JUROS_PRI_MES", nullable=false)
+    @Column(name = "NR_JUROS_PRI_MES", nullable = false)
     private float jurosPriMes;
-    @Column(name="NR_JUROS_APARTIR_2MES", nullable=false)
+    @Column(name = "NR_JUROS_APARTIR_2MES", nullable = false)
     private float jurosApartir2Mes;
-    @Column(name="NR_MULTA_POR_FUNCIONARIO", nullable=false)
+    @Column(name = "NR_MULTA_POR_FUNCIONARIO", nullable = false)
     private float multaPorFuncionario;
-    @Column(name="NR_JUROS_DIARIOS", nullable=false)
-    private float jurosDiarios; 
-    @JoinColumn(name="ID_INDICE", referencedColumnName="ID", nullable=false)
+    @Column(name = "NR_JUROS_DIARIOS", nullable = false)
+    private float jurosDiarios;
+    @JoinColumn(name = "ID_INDICE", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Indice indice;
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Servicos servicos;
-    @Column(name="DS_REF_INICIAL", nullable=false)
+    @Column(name = "DS_REF_INICIAL", nullable = false)
     private String referenciaInicial;
-    @Column(name="DS_REF_FINAL", nullable=false)
+    @Column(name = "DS_REF_FINAL", nullable = false)
     private String referenciaFinal;
 
     public Correcao() {
@@ -47,7 +46,7 @@ public class Correcao implements java.io.Serializable {
         this.referenciaInicial = "";
         this.referenciaFinal = "";
     }
-    
+
     public Correcao(int id, float multaPriMes, float multaApartir2Mes, float jurosPriMes, float jurosApartir2Mes, float multaPorFuncionario, float jurosDiarios, Indice indice, Servicos servicos, String referenciaInicial, String referenciaFinal) {
         this.id = id;
         this.multaPriMes = multaPriMes;
@@ -60,7 +59,7 @@ public class Correcao implements java.io.Serializable {
         this.servicos = servicos;
         this.referenciaInicial = referenciaInicial;
         this.referenciaFinal = referenciaFinal;
-    }    
+    }
 
     public int getId() {
         return id;

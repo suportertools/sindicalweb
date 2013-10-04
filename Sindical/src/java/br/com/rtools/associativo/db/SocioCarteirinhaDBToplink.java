@@ -83,21 +83,24 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB{
     @Override
     public List listaFiltro (String indexFiltro, String descEmpresa, String indexOrdem, boolean fantasia) {
         List lista = new ArrayList();
-        String textqry = "     SELECT p.codigo as codigo,                                        " + // 0 CÓDIGO
-                         "            p.nome as nome,                                            " + // 1 NOME
-                         "            p.cnpj as cnpj,                                            " + // 2 CNPJ
+        String textqry = "     SELECT p.codigo AS codigo,                                        " + // 0 CÓDIGO
+                         "            p.nome AS nome,                                            " + // 1 NOME
+                         "            p.cnpj AS cnpj,                                            " + // 2 CNPJ
                          "            p.empresa as empresa,                                      " + // 3 EMPRESA
-                         "            to_char(c.dt_emissao, 'DD/MM/YYYY') as data,               " + // 4 DATA EMISSÃO
-                         "            p.e_cidade as cidade,                                      " + // 5 CIDADE
-                         "            to_char(s.validade_carteirinha, 'DD/MM/YYYY') as validade, " + // 6 VALIDADE
-                         "            p.e_uf as uf,                                              " + // 7 ESTADO
-                         "            to_char(p.admissao, 'DD/MM/YYYY') as admissao,             " + // 8 ADMISSÃO
-                         "            p.fantasia as fantasia,                                    " + // 9 FANTASIA
-                         "            s.matricula as matricula,                                  " + // 10 MATRICULA
-                         "            s.nr_via as via,                                           " + // 11 VIA
-                         "            s.id_socio as codsocio,                                    " + // 12 CÓDIGO SÓCIO
-                         "            to_char(s.filiacao, 'DD/MM/YYYY') as filiacao              " + // 13 FILIAÇÃO
-                         "       FROM pes_pessoa_vw as p                                         " +
+                         "            to_char(c.dt_emissao, 'DD/MM/YYYY') AS data,               " + // 4 DATA EMISSÃO
+                         "            p.e_cidade AS cidade,                                      " + // 5 CIDADE
+                         "            to_char(s.validade_carteirinha, 'DD/MM/YYYY') AS validade, " + // 6 VALIDADE
+                         "            p.e_uf AS uf,                                              " + // 7 ESTADO
+                         "            to_char(p.admissao, 'DD/MM/YYYY') AS admissao,             " + // 8 ADMISSÃO
+                         "            p.fantasia AS fantasia,                                    " + // 9 FANTASIA
+                         "            s.matricula AS matricula,                                  " + // 10 MATRICULA
+                         "            s.nr_via AS via,                                           " + // 11 VIA
+                         "            s.id_socio AS codsocio,                                    " + // 12 CÓDIGO SÓCIO
+                         "            to_char(s.filiacao, 'DD/MM/YYYY') as filiacao,             " + // 13 FILIAÇÃO
+                         "            p.profissao AS cargo,                                      " + // 14 PROFISSÃO
+                         "            p.cpf,                                                     " + // 15 CPF
+                         "            p.ds_rg AS rg                                              " + // 16 RG                
+                         "       FROM pes_pessoa_vw AS p                                         " +
                          " INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo and s.parentesco = 'TITULAR' " +
                          "  LEFT JOIN soc_carteirinha AS c on c.id_socio = s.id_socio";
         String por = "empresa";
@@ -166,7 +169,10 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB{
                    " s.matricula, " +
                    " s.nr_via, " +
                    " s.id_socio, " +
-                   " s.filiacao ";
+                   " s.filiacao, " +
+                   " p.profissao, " +
+                   " p.cpf, " +
+                   " p.ds_rg ";
         
         if (indexOrdem.equals("0")){
             textqry += " order by p.nome ";

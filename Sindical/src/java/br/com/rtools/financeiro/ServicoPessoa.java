@@ -6,43 +6,44 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_SERVICO_PESSOA")
-@NamedQuery(name="ServicoPessoa.pesquisaID", query="select sp from ServicoPessoa sp where sp.id=:pid")
+@Table(name = "FIN_SERVICO_PESSOA")
+@NamedQuery(name = "ServicoPessoa.pesquisaID", query = "select sp from ServicoPessoa sp where sp.id=:pid")
 public class ServicoPessoa implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
     @Column(name = "DESCONTO_FOLHA", nullable = true)
     private boolean descontoFolha;
-    @JoinColumn(name="ID_SERVICO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Servicos servicos;
     @Column(name = "NR_DESCONTO", nullable = true)
     private float nrDesconto;
-    @Column(name="DS_REF_VIGORACAO", length=7, nullable=true)
+    @Column(name = "DS_REF_VIGORACAO", length = 7, nullable = true)
     private String referenciaVigoracao;
-    @Column(name="DS_REF_VALIDADE", length=7, nullable=true)
+    @Column(name = "DS_REF_VALIDADE", length = 7, nullable = true)
     private String referenciaValidade;
-    @Column(name="NR_DIA_VENCIMENTO", length=10,nullable=true)
+    @Column(name = "NR_DIA_VENCIMENTO", length = 10, nullable = true)
     private int nrDiaVencimento;
-    @JoinColumn(name="ID_TIPO_DOCUMENTO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private FTipoDocumento tipoDocumento;
-    @JoinColumn(name="ID_COBRANCA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_COBRANCA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa cobranca;
-    @Column(name = "IS_ATIVO", nullable = true)
+    @Column(name = "IS_ATIVO", nullable = true, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
-    @Column(name = "IS_BANCO", nullable = true)
+    @Column(name = "IS_BANCO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean banco;
 
-    public ServicoPessoa(){
+    public ServicoPessoa() {
         this.id = -1;
         this.setEmissao(DataHoje.data());
         this.pessoa = new Pessoa();
@@ -57,9 +58,9 @@ public class ServicoPessoa implements java.io.Serializable {
         this.ativo = true;
         this.banco = false;
     }
-    
-    public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao, 
-                         String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco) {
+
+    public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao,
+            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -74,11 +75,11 @@ public class ServicoPessoa implements java.io.Serializable {
         this.ativo = ativo;
         this.banco = banco;
     }
-    
+
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }
@@ -156,15 +157,17 @@ public class ServicoPessoa implements java.io.Serializable {
     }
 
     public String getEmissao() {
-        if (dtEmissao != null)
+        if (dtEmissao != null) {
             return DataHoje.converteData(dtEmissao);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setEmissao(String emissao) {
-        if (!(emissao.isEmpty()))
+        if (!(emissao.isEmpty())) {
             this.dtEmissao = DataHoje.converte(emissao);
+        }
     }
 
     public Pessoa getCobranca() {

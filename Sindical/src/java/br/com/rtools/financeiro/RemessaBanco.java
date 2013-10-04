@@ -5,20 +5,21 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_REMESSA_BANCO")
-@NamedQuery(name="RemessaBanco.pesquisaID", query="select r from RemessaBanco r where r.id=:pid")
+@Table(name = "FIN_REMESSA_BANCO")
+@NamedQuery(name = "RemessaBanco.pesquisaID", query = "select r from RemessaBanco r where r.id=:pid")
 public class RemessaBanco implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-    @Column(name="DS_HORA", length=5)
+    @Column(name = "DS_HORA", length = 5)
     private String hora;
-    @Column(name="NR_LOTE")
+    @Column(name = "NR_LOTE")
     private int lote;
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Movimento movimento;
 
@@ -29,7 +30,7 @@ public class RemessaBanco implements java.io.Serializable {
         this.lote = 0;
         this.movimento = new Movimento();
     }
-    
+
     public RemessaBanco(int id, Date dtEmissao, String hora, int lote, Movimento movimento) {
         this.id = id;
         this.dtEmissao = dtEmissao;
@@ -61,7 +62,7 @@ public class RemessaBanco implements java.io.Serializable {
     public void setEmissao(String emissao) {
         this.dtEmissao = DataHoje.converte(emissao);
     }
-    
+
     public String getHora() {
         return hora;
     }
@@ -85,7 +86,4 @@ public class RemessaBanco implements java.io.Serializable {
     public void setLote(int lote) {
         this.lote = lote;
     }
-
-    
-    
 }
