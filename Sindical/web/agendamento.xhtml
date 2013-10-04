@@ -236,7 +236,7 @@
                                 <h:column>
                                     <a4j:outputPanel id="calendar" layout="block">
                                         <rich:calendar value="#{agendamentoBean.data}" datePattern="dd/MM/yyyy" style="width:400px">
-                                            <a4j:ajax event="change" render="tbl"/>
+                                            <a4j:ajax event="change" render="tbl, idMensagemAgendamento" listener="#{agendamentoBean.mensagemAgendamento}"/>
                                         </rich:calendar>
                                     </a4j:outputPanel>
                                 </h:column>
@@ -245,7 +245,7 @@
                                             <a4j:ajax event="change" render="tbl"/>
                                     <f:selectItems value="#{agendamentoBean.listaStatus}"/>
                                 </h:selectOneMenu>
-                                <h:outputLabel value="#{agendamentoBean.msgAgendamento}" styleClass="corErro"/>
+                                <h:outputLabel id="idMensagemAgendamento" value="#{agendamentoBean.msgAgendamento}" styleClass="corErro"/>
                             </h:panelGrid>
                         </h:panelGrid> 
                         <div style="overflow:auto; height:600px;">

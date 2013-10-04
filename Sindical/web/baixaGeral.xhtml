@@ -40,7 +40,9 @@
                                     <h:outputLabel value="Quitação: " styleClass="fontePadrao" for="idQuitacao"/>
                                 </td>
                                 <td>
-                                    <h:inputText id="idQuitacao" value="#{baixaGeralBean.quitacao}" styleClass="data"  maxlength="10" size="8" disabled="#{baixaGeralBean.desHabilitaQuitacao}"/>
+                                    <h:inputText id="idQuitacao" value="#{baixaGeralBean.quitacao}" styleClass="data"  maxlength="10" size="8" disabled="#{baixaGeralBean.desHabilitaQuitacao}">
+                                        <a4j:ajax event="blur" render="idQuitacao, idVencimento" listener="#{baixaGeralBean.alteraVencimento}" />
+                                    </h:inputText>
                                 </td>
                             </tr>
                             <tr>
