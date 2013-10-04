@@ -61,10 +61,6 @@ CREATE INDEX xid_cobranca
 CREATE INDEX xid_cobranca_movimento
    ON fin_cobranca (id ASC NULLS LAST, id_movimento ASC NULLS LAST);
 
-CREATE INDEX xid_cobranca
-   ON fin_cobranca (id ASC NULLS LAST);
-
-
 -- View: pes_pessoa_vw
 
 -- DROP VIEW pes_pessoa_vw;
@@ -160,6 +156,13 @@ ALTER TABLE seg_registro ADD COLUMN nr_intervalo_envios_notificacao integer;
 -- UPDATE seg_registro SET nr_intervalo_envios_notificacao = 60;
 
 ALTER TABLE fin_cobranca_lote ADD COLUMN ds_hora character varying(5);
+
+ALTER TABLE fin_cobranca_lote ADD COLUMN id_usuario integer;
+ALTER TABLE fin_cobranca_lote
+  ADD CONSTRAINT fk_fin_cobranca_lote_id_usuario FOREIGN KEY (id_usuario)
+     REFERENCES seg_usuario (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
 
 ALTER TABLE sis_links ADD COLUMN ds_descricao character varying(200);
 
