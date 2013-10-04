@@ -199,6 +199,7 @@ ALTER TABLE pes_pessoa_complemento ADD COLUMN is_cobranca_bancaria boolean;
 -- edited by: Bruno V. da Silva
 
 ALTER TABLE fin_lote ADD COLUMN is_desconto_folha boolean;
+-- UPDATE fin_lote SET is_desconto_folha = false;
 
 
 
