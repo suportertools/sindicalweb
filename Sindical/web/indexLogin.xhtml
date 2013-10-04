@@ -4,7 +4,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:a4j="http://richfaces.org/a4j"
       xmlns:rich="http://richfaces.org/rich">
-    
+
     <h:head>
         <title>Sindical - Login 2.2</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -13,19 +13,19 @@
         <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/jQuery.js" charset="iso-8859-1"/>
         <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/jMarcaDagua.js" charset="iso-8859-1"/>
         <script type="text/javascript">
-            if (navigator.appName.indexOf('Microsoft') !== -1){
+            if (navigator.appName.indexOf('Microsoft') !== -1) {
                 alert('Este navegador não é compátivel com o Sistema Sindical.\n\nPodendo apresentar erros durante o processamento e transações.\n\nUtilize navegadores compátiveis. \n\nDúvidas contate o administrador.');
             }
-            jQuery(function($){
+            jQuery(function($) {
                 $(".idSuarioLogin").Watermark("Usuario");
                 $(".idSenha").Watermark("Senha");
             });
-            function setOpacity(id,valor) {
-                  document.getElementById(id).style.opacity = valor/10;
-                  document.getElementById(id).style.filter = 'alpha(opacity=' + valor*10 + ')';
-            }            
+            function setOpacity(id, valor) {
+                document.getElementById(id).style.opacity = valor / 10;
+                document.getElementById(id).style.filter = 'alpha(opacity=' + valor * 10 + ')';
+            }
         </script>      
-        
+
     </h:head>
     <!--[if Opera]> 
         <style type="text/css">
@@ -45,7 +45,7 @@
                         <h:form id="formLoginValida">
                             <h:inputHidden value="#{controleUsuarioBean.validaIndex}" />
                         </h:form>
-                            
+
                         <h:form id="formLogin">
                             <h:panelGrid columns="2">
                                 <h:column>
@@ -56,7 +56,7 @@
                                         </p>
                                         <p style="text-align: left">
                                             <h:outputLabel value="Senha: " styleClass="fontePadrao" style="text-align: right; float: left; width: 80px; height: 25px; padding-right: 5px;"/>
-                                            <h:inputSecret size="20" value="#{controleUsuarioBean.usuario.senha}" autocomplete="off" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formLogin:idEntrar')}.onclick();}" styleClass="boxArredondado idSenha" maxlength="6"/>
+                                            <h:inputSecret size="20" value="#{controleUsuarioBean.usuario.senha}" autocomplete="off" onkeypress="if (event.keyCode === 13) {#{rich:element('formLogin:idEntrar')}.onclick();}" styleClass="boxArredondado idSenha" maxlength="6"/>
                                         </p>
                                     </div>
                                 </h:column>

@@ -9,6 +9,8 @@
             .divBotao {background: #e0e0e0;}
             .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
             .divBotao:hover {background: #abc4eb;}            
+            .menuLinksClass li {float: left!important;}            
+            .menuLinksClass li a {color: white; text-decoration: none;}            
         </style>
     </h:head>
     <f:view>
@@ -23,6 +25,12 @@
 
                     <!-- CENTRO -->
                     <td align="center" width="40%">
+                        <!-- <h:panelGrid columns="6" rendered="true">
+                            <rich:list styleClass="menuLinksClass" var="menuLinks" value="# {chamadaPaginaBean.menuLinks}" iterationStatusVar="it">
+                                <h:graphicImage url="/Imagens/iconBack.png" styleClass="separadorLinks" title="Voltar um nível" rendered="# {menuLinks.descricao != 'Menu Principal'}"/>
+                                <h:commandLink value="# {menuLinks.descricao}" title="# {menuLinks.descricao}" action="# {chamadaPaginaBean.cliqueMenuLinks(it.index)}" rendered="# {menuLinks.ativo}" immediate="true" styleClass="fonteLinksSuporte" /> 
+                            </rich:list>
+                        </h:panelGrid>                         -->
                         <h:panelGrid columns="6">
                             <h:column>
                                 <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento0} " action="#{chamadaPaginaBean.clickNivelLink0}" styleClass="fonteLinksSuporte" immediate="true"/>
@@ -64,7 +72,7 @@
                             </h:column>
 
                             <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render8}" styleClass="separadorLinks" title="Voltar um nível"/><!-- <h:outputText value=" ¬ " styleClass="fonteImagemSuporte" rendered="# chama daPaginaBean.render8}"/> -->
+                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render8}" styleClass="separadorLinks" title="Voltar um nível"/>
                                 <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" styleClass="fonteLinksSuporte" immediate="true"/>
                             </h:column>
 
@@ -90,6 +98,7 @@
                                     </h:panelGroup>
                                 </f:facet>
                                 <rich:menuItem label="Trocar Usuário" styleClass="divBotao"/>
+                                <rich:menuItem label="Perfil" styleClass="divBotao" action="#{chamadaPaginaBean.usuarioPerfil}" immediate="true"/>
                                 <rich:menuItem label="Sair" action="#{usuarioBean.sairSistema}" styleClass="divBotao" immediate="true"/>
                             </rich:dropDownMenu>
                         </h:panelGrid>
