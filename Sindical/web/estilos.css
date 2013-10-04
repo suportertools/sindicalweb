@@ -3,6 +3,7 @@ body {font-family: Verdana, "Lucida Grande", "Lucida Sans", Sans-Serif; font-siz
 .divMenu {margin: 0;}
 .divMae {width: 90%; margin-left: 5%; margin-right: 5%;}
 .divFundo {float: left; background: #efefef; padding: 15px; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; margin-right: 50px;}
+.divPainelModal {border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px;}
 .quebraLinha {clear: both; margin-bottom: 20px;}
 br {clear: both;}
 .idFazer {color: gray;}
@@ -570,3 +571,4 @@ a.iLinkSimples:hover {color: #888; text-decoration:none; }
     -webkit-transition: opacity .50s ease-in-out;
     -o-transition: opacity .50s ease-in-out;
 }
+

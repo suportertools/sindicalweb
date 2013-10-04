@@ -1,0 +1,122 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Desconto Serviço Empresa</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formDescontoServicoEmpresa">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Desconto Serviço Empresa" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />                    
+                    <rich:panel id="idDescontoServicoEmpresa" style="border: 0; margin: 0; background: transparent; float: left;">
+                        <h:outputScript library="js" name="jScripts.js" />
+                        <rich:panel styleClass="divMae divFundo" style="float: left; width: 400px; border-radius: 0">
+                            <c:set scope="request" var="object" value="${descontoServicoEmpresaBean.descontoServicoEmpresa}"/>
+                            <h:panelGrid columns="2" captionClass="coluna1, coluna2" style="float: left;">
+                                <h:commandButton id="idPesquisaPessoaJuridica" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true"/>
+                                <h:column>
+                                    <h:outputLabel for="idPesquisaPessoaJuridica" value="Pesquisar pessoa jurídica" class="border-dotted" rendered="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.id == -1}" />
+                                    <h:outputLabel for="idPesquisaPessoaJuridica" value="Razão Social: #{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.nome} - CNPJ: #{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.documento}" class="border-dotted" rendered="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.id != -1}" />
+                                </h:column>
+                                <h:outputLabel for="idServicos" value="Serviços" />
+                                <h:selectOneMenu id="idServicos" value="#{descontoServicoEmpresaBean.idServicos}">
+                                    <a4j:ajax event="change" render="idServicos" />
+                                    <f:selectItems value="#{descontoServicoEmpresaBean.listaServicos}" />
+                                </h:selectOneMenu>
+                                <h:outputLabel for="idValorDesconto" value="Valor" />
+                                <h:inputText id="idValorDesconto" value="#{descontoServicoEmpresaBean.desconto}" class="realSemSimbolo" size="5"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="4" style="float: left; margin-top: 15px;">
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Adicionar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('formDescontoServicoEmpresa:divSalvar')}.show(); return false;" />
+                                <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{descontoServicoEmpresaBean.limpar}" render="idDescontoServicoEmpresa, tbl" />
+                                <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('formDescontoServicoEmpresa:divExcluir')}.show(); return false;" />
+                                <a4j:commandLink value="Pesquisar" styleClass="idPesquisar iLink" action="#{chamadaPaginaBean.pesquisaDescontoServicoEmpresa()}" />
+                            </h:panelGrid>                    
+                        </rich:panel>
+                    </rich:panel>
+                    <rich:panel styleClass="divMae" style="float: left; width: 400px; margin-top: 10px;">
+                        <f:facet name="header">Serviços com desconto adicionados</f:facet>
+                        <div style="overflow:auto; height: 530px;">
+                            <rich:dataTable var="linha" value="#{descontoServicoEmpresaBean.listaDSEPorEmpresa}"  style="width:100%; " id="tbl" styleClass="stable" >
+                                <h:column>
+                                    <f:facet name="header">Serviço</f:facet>
+                                    <a4j:commandLink styleClass="underline-hover" title="Editar código: #{linha.id}" value="#{linha.servicos.descricao}" action="#{descontoServicoEmpresaBean.editarDSE(linha)}" render="idDescontoServicoEmpresa" />
+                                </h:column>
+                                <h:column>
+                                    <f:facet name="header">Desconto (%)</f:facet>
+                                    <h:inputText value="#{linha.descontoString}" styleClass="realSemSimbolo" rendered="false" size="5">
+                                        <a4j:ajax event="blur" listener="#{descontoServicoEmpresaBean.atualizarDesconto(linha)}" />
+                                    </h:inputText>
+                                    <center>
+                                        <h:outputText value="#{linha.descontoString}"  />
+                                    </center>
+                                </h:column>
+                            </rich:dataTable>
+                        </div>
+                    </rich:panel>                    
+                </center>
+                <rich:popupPanel id="divSalvar" modal="true" resizeable="true" onmaskclick="#{rich:component('divSalvar')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja adicionar este Serviço?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('divSalvar')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Adicionar" action="#{descontoServicoEmpresaBean.salvar()}" render="idDescontoServicoEmpresa, divMensagem, tbl" oncomplete="#{rich:component('formDescontoServicoEmpresa:divSalvar')}.hide(); #{rich:component('formDescontoServicoEmpresa:divMensagem')}.show();" />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Não" title="Cancelar" oncomplete="#{rich:component('formDescontoServicoEmpresa:divSalvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="divExcluir" modal="true" resizeable="true" onmaskclick="#{rich:component('divExcluir')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja excluir este Registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('divExcluir')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Excluir" action="#{descontoServicoEmpresaBean.excluir()}" render="idDescontoServicoEmpresa, divMensagem, tbl" oncomplete="#{rich:component('formDescontoServicoEmpresa:divExcluir')}.hide(); #{rich:component('formDescontoServicoEmpresa:divMensagem')}.show();" />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Não" title="Cancelar" oncomplete="#{rich:component('formDescontoServicoEmpresa:divExcluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="divMensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('divMensagem')}.hide(); return false;">
+                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{descontoServicoEmpresaBean.mensagem}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Salvar" oncomplete="#{rich:component('formDescontoServicoEmpresa:divMensagem')}.hide();" />
+                    </center>
+                </rich:popupPanel>                
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

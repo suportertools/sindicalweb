@@ -42,8 +42,8 @@
                             </h:column> 
                             <h:column>
                                 <h:outputText value="#{agendaTelefoneBean.agendaTelefone.agenda.endereco.enderecoSimplesToString}, #{agendaTelefoneBean.agendaTelefone.agenda.numero} - #{agendaTelefoneBean.agendaTelefone.agenda.complemento} - #{agendaTelefoneBean.agendaTelefone.agenda.endereco.bairro.descricao}" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agendaTelefone.agenda.endereco != null}"/>
-                                <h:outputText value="#{agendaTelefoneBean.agendaTelefone.agenda.endereco.cidade.cidade} / #{agendaTelefoneBean.agendaTelefone.agenda.endereco.cidade.uf}" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agendaTelefone.agenda.endereco != null}"/>
-                                <h:outputText value="#{agendaTelefoneBean.agendaTelefone.agenda.endereco.cep}" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agendaTelefone.agenda.endereco != null}"/>
+                                <h:outputText value=" - #{agendaTelefoneBean.agendaTelefone.agenda.endereco.cidade.cidade} / #{agendaTelefoneBean.agendaTelefone.agenda.endereco.cidade.uf}" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agendaTelefone.agenda.endereco != null}"/>
+                                <h:outputText value=" - #{agendaTelefoneBean.agendaTelefone.agenda.endereco.cep}" styleClass="fontePadrao" rendered="#{agendaTelefoneBean.agendaTelefone.agenda.endereco != null}"/>
                             </h:column>
                             <h:column>
                                 <h:outputText value="EMAIL 1: " styleClass="fontePadraoNegrito"/>
@@ -112,9 +112,9 @@
                         </h:panelGrid>
                         <h:column>
                             <h:outputLabel value="GRUPO: " styleClass="fontePadrao" />
-                            <h:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
-                                <a4j:ajax event="change" render="tbl" />
-                                <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
+                            <h:selectOneMenu id="idFiltroGrupoAgenda" value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
+                                <a4j:ajax event="change" render="idFiltroGrupoAgenda, tbl" />
+                                <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" var="grupoAgenda" itemLabel="#{grupoAgenda.descricao}" itemValue="#{grupoAgenda.id}"/>
                             </h:selectOneMenu>
                             <h:outputLabel value="Filtrar" styleClass="fontePadrao" />
                             <h:selectBooleanCheckbox id="idFiltroGrupo" value="#{agendaTelefoneBean.filtraPorGrupo}" title="Filtrar por grupos">
@@ -145,7 +145,7 @@
                                 <f:facet name="header">
                                     <h:outputText value="Cidade / UF"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento5}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();" title="#{linha.argumento9}">
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento4}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();" title="#{linha.argumento9}">
                                     <a4j:ajax event="click" render="idNomeContato idDetalhesContato" />
                                 </a4j:commandLink>                                
                             </rich:column>
