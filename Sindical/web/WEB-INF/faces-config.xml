@@ -1,9 +1,9 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <faces-config version="2.2"
-    xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
-<managed-bean>
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <managed-bean>
         <managed-bean-name>contratoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ContratoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -115,7 +115,8 @@
         <managed-bean-name>agendaTelefoneBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.agenda.beans.AgendaTelefoneJSFBean</managed-bean-class>
     
-        <managed-bean-scope>session</managed-bean-scope></managed-bean>
+        <managed-bean-scope>session</managed-bean-scope>
+    </managed-bean>
 
     <managed-bean>
         <managed-bean-name>grupoAgendaBean</managed-bean-name>
@@ -1584,11 +1585,11 @@
             <redirect/>
         </navigation-case>
 
-    <navigation-case>
-        <from-outcome>fechamentoComissaoAcordo</from-outcome>
-        <to-view-id>/fechamentoComissaoAcordo.jsf</to-view-id>
-        <redirect/>
-    </navigation-case>
+        <navigation-case>
+            <from-outcome>fechamentoComissaoAcordo</from-outcome>
+            <to-view-id>/fechamentoComissaoAcordo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
 
         <navigation-case>
             <from-outcome>caravana</from-outcome>
@@ -1973,5 +1974,24 @@
             <to-view-id>/movimentosReceberSocial.jsf</to-view-id>
             <redirect/>
         </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>descontoServicoEmpresa</from-outcome>
+            <to-view-id>/descontoServicoEmpresa.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>pesquisaDescontoServicoEmpresa</from-outcome>
+            <to-view-id>/pesquisaDescontoServicoEmpresa.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>usuarioPerfil</from-outcome>
+            <to-view-id>/usuarioPerfil.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
     </navigation-rule>
 </faces-config>
