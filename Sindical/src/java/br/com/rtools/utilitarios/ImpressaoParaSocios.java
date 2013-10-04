@@ -59,7 +59,9 @@ public class ImpressaoParaSocios {
             String bc = ((List) (listaCartao.get(i))).get(0).toString() + via;
             String barras = "0000000000".substring(0, 10 - bc.length()) + bc;
 
-            listax.add(new CartaoSocial(matr, // CODIGO
+            listax.add(
+                    new CartaoSocial(
+                    matr, // CODIGO
                     barras, // BARRAS 
                     getConverteNullString(((List) (listaCartao.get(i))).get(1)), // NOME
                     getConverteNullString(((List) (listaCartao.get(i))).get(3)), // EMPRESA
@@ -70,8 +72,11 @@ public class ImpressaoParaSocios {
                     getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/cartao.jpg"), // CAMINHO FUNDO
                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
-                    getConverteNullString(((List) (listaCartao.get(i))).get(13).toString()))); // FILIAÇÃO
-
+                    getConverteNullString(((List) (listaCartao.get(i))).get(13).toString()), // FILIAÇÃO
+                    getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
+                    getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
+                    getConverteNullString(((List) (listaCartao.get(i))).get(16)) // RG
+                    ));
         }
 
         if (listax.isEmpty()) {

@@ -3,17 +3,17 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_REMESSA")
-@NamedQuery(name="Remessa.pesquisaID", query="select r from Remessa r where r.id=:pid")
+@Table(name = "FIN_REMESSA")
+@NamedQuery(name = "Remessa.pesquisaID", query = "select r from Remessa r where r.id=:pid")
 public class Remessa implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_LOTE_REMESSA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_LOTE_REMESSA", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private LoteRemessa loteRemessa;
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Movimento movimento;
 
@@ -22,7 +22,7 @@ public class Remessa implements java.io.Serializable {
         this.loteRemessa = new LoteRemessa();
         this.movimento = new Movimento();
     }
-    
+
     public Remessa(int id, LoteRemessa loteRemessa, Movimento movimento) {
         this.id = id;
         this.loteRemessa = loteRemessa;

@@ -3,13 +3,14 @@ package br.com.rtools.escola;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ESC_COMPONENTE_CURRICULAR")
-@NamedQuery(name="ComponenteCurricular.pesquisaID", query="select cc from ComponenteCurricular cc where cc.id = :pid")
+@Table(name = "ESC_COMPONENTE_CURRICULAR")
+@NamedQuery(name = "ComponenteCurricular.pesquisaID", query = "select cc from ComponenteCurricular cc where cc.id = :pid")
 public class ComponenteCurricular implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", length=50, nullable = true, unique = true)
+    @Column(name = "DS_DESCRICAO", length = 50, nullable = true, unique = true)
     private String descricao;
 
     public ComponenteCurricular() {

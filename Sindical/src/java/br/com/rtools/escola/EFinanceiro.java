@@ -1,18 +1,20 @@
 package br.com.rtools.escola;
 
 import br.com.rtools.financeiro.Servicos;
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ESC_FINANCEIRO")
-@NamedQuery(name="EFinanceiro.pesquisaID", query="select ef from EFinanceiro ef where ef.id=:pid")
-public class EFinanceiro implements java.io.Serializable {
+@Table(name = "ESC_FINANCEIRO")
+@NamedQuery(name = "EFinanceiro.pesquisaID", query = "SELECT EF FROM EFinanceiro AS EF WHERE EF.id=:pid")
+public class EFinanceiro implements Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="NR_MULTA_CANCELAMENTO")
+    @Column(name = "NR_MULTA_CANCELAMENTO")
     private float nrMultaCancelamento;
-    @JoinColumn(name="ID_MULTA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_MULTA", referencedColumnName = "ID")
     @ManyToOne
     private Servicos multa;
 

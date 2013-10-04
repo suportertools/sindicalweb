@@ -10,78 +10,62 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_LOTE")
-@NamedQuery(name="Lote.pesquisaID", query="select l from Lote l where l.id=:pid")
+@Table(name = "FIN_LOTE")
+@NamedQuery(name = "Lote.pesquisaID", query = "select l from Lote l where l.id=:pid")
 public class Lote implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_ROTINA", referencedColumnName="ID", nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Rotina rotina;
-
-    @Column(name="DS_PAG_REC", length=1,nullable=true)
+    @Column(name = "DS_PAG_REC", length = 1, nullable = true)
     private String pagRec;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_LANCAMENTO")
+    @Column(name = "DT_LANCAMENTO")
     private Date dtLancamento;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Pessoa pessoa;
-    
-    @JoinColumn(name="ID_PLANO_5", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PLANO_5", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Plano5 plano5;
-
-    @Column(name = "IS_AVENCER_CONTABIL")
+    @Column(name = "IS_AVENCER_CONTABIL", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean avencerContabil;
-
-    @Column(name="DS_DOCUMENTO", length=100)
+    @Column(name = "DS_DOCUMENTO", length = 100)
     private String documento;
-
-    @Column(name="NR_VALOR", length=10, nullable=false)
+    @Column(name = "NR_VALOR", length = 10, nullable = false)
     private float valor;
-
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Filial filial;
-
-    @JoinColumn(name="ID_DEPARTAMENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_DEPARTAMENTO", referencedColumnName = "ID")
     @OneToOne
     private Departamento departamento;
-
-    @JoinColumn(name="ID_EVT", referencedColumnName="ID")
+    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
     @OneToOne
     private Evt evt;
-
-    @Column(name="DS_HISTORICO", length=2000)
+    @Column(name = "DS_HISTORICO", length = 2000)
     private String historico;
-
-    @JoinColumn(name="ID_TIPO_DOCUMENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
     @OneToOne
     private FTipoDocumento ftipoDocumento;
-
-    @JoinColumn(name="ID_CONDICAO_PAGAMENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CONDICAO_PAGAMENTO", referencedColumnName = "ID")
     @OneToOne
     private CondicaoPagamento condicaoPagamento;
-
-    @JoinColumn(name="ID_STATUS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
     @OneToOne
     private FStatus status;
-    @JoinColumn(name="ID_PESSOA_SEM_CADASTRO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PESSOA_SEM_CADASTRO", referencedColumnName = "ID")
     @OneToOne
     private PessoaSemCadastro pessoaSemCadastro;
-    
-    @Column(name = "IS_DESCONTO_FOLHA")
-    private boolean descontoFolha;    
-    
+    @Column(name = "IS_DESCONTO_FOLHA", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean descontoFolha;
+
     public Lote() {
         this.id = -1;
         this.rotina = new Rotina();
@@ -103,7 +87,7 @@ public class Lote implements java.io.Serializable {
         this.pessoaSemCadastro = new PessoaSemCadastro();
         this.descontoFolha = false;
     }
-    
+
     public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha) {
         this.id = id;
         this.rotina = rotina;
@@ -124,7 +108,7 @@ public class Lote implements java.io.Serializable {
         this.status = status;
         this.pessoaSemCadastro = pessoaSemCadastro;
         this.descontoFolha = descontoFolha;
-    }    
+    }
 
     public int getId() {
         return id;
@@ -150,7 +134,6 @@ public class Lote implements java.io.Serializable {
         this.pagRec = pagRec;
     }
 
-    
     public Date getDtLancamento() {
         return dtLancamento;
     }
@@ -158,23 +141,23 @@ public class Lote implements java.io.Serializable {
     public void setDtLancamento(Date dtLancamento) {
         this.dtLancamento = dtLancamento;
     }
-    
+
     public String getLancamento() {
         return DataHoje.converteData(dtLancamento);
     }
 
     public void setLancamento(String dataLancamento) {
         this.dtLancamento = DataHoje.converte(dataLancamento);
-    }    
+    }
 
     public Date getDtEmissao() {
         return dtEmissao;
     }
-    
+
     public void setDtEmissao(Date dtEmissao) {
         this.dtEmissao = dtEmissao;
     }
-    
+
     public String getEmissao() {
         return DataHoje.converteData(dtEmissao);
     }

@@ -104,6 +104,10 @@ public class DB {
             dataObject.setArgumento0("192.168.1.60");
             dataObject.setArgumento1(cliente);
             dataObject.setArgumento2("989899");
+        } else if (cliente.equals("NovaBase")) {
+            dataObject.setArgumento0("192.168.1.69");
+            dataObject.setArgumento1(cliente);
+            dataObject.setArgumento2("989899");
         } else if (cliente.equals("ComercioRP")) {
             dataObject.setArgumento0("200.152.187.241");
             dataObject.setArgumento1("Sindical");

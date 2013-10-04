@@ -3,22 +3,22 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_SERVICO_CONTA_COBRANCA")
-@NamedQuery(name="ServicoContaCobranca.pesquisaID", query="select s from ServicoContaCobranca s where s.id=:pid")
+@Table(name = "FIN_SERVICO_CONTA_COBRANCA")
+@NamedQuery(name = "ServicoContaCobranca.pesquisaID", query = "select s from ServicoContaCobranca s where s.id=:pid")
 public class ServicoContaCobranca implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name="ID_CONTA_COBRANCA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CONTA_COBRANCA", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private ContaCobranca contaCobranca;
-    @JoinColumn(name="ID_TIPO_SERVICO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private TipoServico tipoServico;    
+    private TipoServico tipoServico;
 
     public ServicoContaCobranca() {
         this.id = -1;
@@ -26,7 +26,7 @@ public class ServicoContaCobranca implements java.io.Serializable {
         this.contaCobranca = new ContaCobranca();
         this.tipoServico = new TipoServico();
     }
-    
+
     public ServicoContaCobranca(int id, Servicos servicos, ContaCobranca contaCobranca, TipoServico tipoServico) {
         this.id = id;
         this.servicos = servicos;

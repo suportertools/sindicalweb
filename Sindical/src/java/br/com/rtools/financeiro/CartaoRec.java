@@ -3,11 +3,12 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CARTAO_REC")
-@NamedQuery(name="CartaoRec.pesquisaID", query="select cr from CartaoRec cr where cr.id=:pid")
+@Table(name = "FIN_CARTAO_REC")
+@NamedQuery(name = "CartaoRec.pesquisaID", query = "select cr from CartaoRec cr where cr.id=:pid")
 public class CartaoRec implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     public CartaoRec() {
@@ -25,5 +26,4 @@ public class CartaoRec implements java.io.Serializable {
     public void setId(int id) {
         this.id = id;
     }
-
 }

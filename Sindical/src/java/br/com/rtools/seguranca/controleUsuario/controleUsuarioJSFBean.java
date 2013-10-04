@@ -39,43 +39,43 @@ public class controleUsuarioJSFBean implements Serializable {
     private List<ContadorAcessos> listaContador = new ArrayList();
 
     public String validacao() throws Exception {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) { 
-            String nomeCliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");        
-            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
-                DB db = new DB();
-                if(db.getStatment() != null) {
-                    try {
-                        String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '"+nomeCliente+"'";
-                        ResultSet resultSet = db.getStatment().executeQuery(string);
-                        String id = "";
-                        String ativo = "";
-                        while(resultSet.next())  {
-                            id = resultSet.getString("id");
-                            ativo = resultSet.getString("is_ativo");
-                            if (ativo.equals("f")) {
-                                resultSet.close();
-                                db.getStatment().close();
-                                msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
-                                return "pagina";
-                            } 
-                        }
-                        if (!id.equals("")) {
-                            string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = "+id;
-                            int result = db.getStatment().executeUpdate(string);
-                            if (result != 1) {
-                                db.getStatment().close();
-                                msgErro = "@ Erro ao atualizar contador!";
-                            }
-                        }
-                    } catch (SQLException exception) {
-                        db.closeStatment();
-                        msgErro = "@ Erro!";
-                        return "pagina";
-                    }
-                    db.getStatment().close();
-                }
-            }
-        }
+//        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) { 
+//            String nomeCliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");        
+//            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
+//                DB db = new DB();
+//                if(db.getStatment() != null) {
+//                    try {
+//                        String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '"+nomeCliente+"'";
+//                        ResultSet resultSet = db.getStatment().executeQuery(string);
+//                        String id = "";
+//                        String ativo = "";
+//                        while(resultSet.next())  {
+//                            id = resultSet.getString("id");
+//                            ativo = resultSet.getString("is_ativo");
+//                            if (ativo.equals("f")) {
+//                                resultSet.close();
+//                                db.getStatment().close();
+//                                msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
+//                                return "pagina";
+//                            } 
+//                        }
+//                        if (!id.equals("")) {
+//                            string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = "+id;
+//                            int result = db.getStatment().executeUpdate(string);
+//                            if (result != 1) {
+//                                db.getStatment().close();
+//                                msgErro = "@ Erro ao atualizar contador!";
+//                            }
+//                        }
+//                    } catch (SQLException exception) {
+//                        db.closeStatment();
+//                        msgErro = "@ Erro!";
+//                        return "pagina";
+//                    }
+//                    db.getStatment().close();
+//                }
+//            }
+//        }
         NovoLog log = new NovoLog();
         if (macFilial != null) {
             Object objs[] = new Object[2];

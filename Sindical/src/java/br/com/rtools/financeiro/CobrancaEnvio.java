@@ -16,24 +16,25 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="FIN_COBRANCA_ENVIO")
-@NamedQuery(name="CobrancaEnvio.pesquisaID", query="select c from CobrancaEnvio c where c.id = :pid")
+@Table(name = "FIN_COBRANCA_ENVIO")
+@NamedQuery(name = "CobrancaEnvio.pesquisaID", query = "select c from CobrancaEnvio c where c.id = :pid")
 public class CobrancaEnvio implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_LOTE", referencedColumnName="ID")
+    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
     @ManyToOne
-    private CobrancaLote lote;    
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID")
+    private CobrancaLote lote;
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
     @ManyToOne
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
-    private Date dtEmissao;    
-    @Column(name="DS_HORA", length = 5)
-    private String hora;    
-    @JoinColumn(name="ID_COBRANCA_TIPO", referencedColumnName="ID")
+    @Column(name = "DT_EMISSAO")
+    private Date dtEmissao;
+    @Column(name = "DS_HORA", length = 5)
+    private String hora;
+    @JoinColumn(name = "ID_COBRANCA_TIPO", referencedColumnName = "ID")
     @ManyToOne
     private CobrancaTipo tipoCobranca;
 
@@ -45,7 +46,7 @@ public class CobrancaEnvio implements java.io.Serializable {
         this.hora = "";
         this.tipoCobranca = new CobrancaTipo();
     }
-    
+
     public CobrancaEnvio(int id, CobrancaLote lote, Usuario usuario, String emissao, String hora, CobrancaTipo tipoCobranca) {
         this.id = id;
         this.lote = lote;
@@ -109,6 +110,5 @@ public class CobrancaEnvio implements java.io.Serializable {
 
     public void setEmissao(String emissao) {
         this.dtEmissao = DataHoje.converte(emissao);
-    }      
-    
+    }
 }

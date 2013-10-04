@@ -11,82 +11,63 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="MATR_ESCOLA")
-@NamedQuery(name="MatriculaEscola.pesquisaID", query="SELECT MAE FROM MatriculaEscola MAE WHERE MAE.id = :pid")
+@Table(name = "MATR_ESCOLA")
+@NamedQuery(name = "MatriculaEscola.pesquisaID", query = "SELECT MAE FROM MatriculaEscola MAE WHERE MAE.id = :pid")
 public class MatriculaEscola implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dataMatricula;
-  
-    @JoinColumn(name="ID_STATUS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
     @ManyToOne
     private EscStatus escStatus;
-
-    @JoinColumn(name="ID_RESPONSAVEL", referencedColumnName="ID")
+    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID")
     @ManyToOne
     private Pessoa responsavel;
-
-    @JoinColumn(name="ID_ALUNO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_ALUNO", referencedColumnName = "ID")
     @ManyToOne
     private Pessoa aluno;
-
-    @JoinColumn(name="ID_VENDEDOR", referencedColumnName="ID")
+    @JoinColumn(name = "ID_VENDEDOR", referencedColumnName = "ID")
     @ManyToOne
     private Vendedor vendedor;
-
-    @JoinColumn(name="ID_MIDIA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_MIDIA", referencedColumnName = "ID")
     @ManyToOne
     private Midia midia;
-
-    @JoinColumn(name="ID_EVT", referencedColumnName="ID")
+    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
     @ManyToOne
     private Evt evt;
-
-    @Column(name="NR_PARCELAS")
+    @Column(name = "NR_PARCELAS")
     private int numeroParcelas;
-
-    @Column(name="NR_DESCONTO")
+    @Column(name = "NR_DESCONTO")
     private float desconto;
-
-    @Column(name="DS_OBS", length=200)
+    @Column(name = "DS_OBS", length = 200)
     private String obs;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_STATUS")
+    @Column(name = "DT_STATUS")
     private Date status;
-    
-    @JoinColumn(name="ID_FINANCEIRO", referencedColumnName="ID" )
+    @JoinColumn(name = "ID_FINANCEIRO", referencedColumnName = "ID")
     @ManyToOne
     private EFinanceiro esEFinanceiro;
-
-    @Column(name="NR_VALOR_TOTAL")
+    @Column(name = "NR_VALOR_TOTAL")
     private float valorTotal;
-
-    @Column(name="NR_DIA_VENCIMENTO")
+    @Column(name = "NR_DIA_VENCIMENTO")
     private int diaVencimento;
-
-    @Column(name="NR_DESCONTO_ATE_VENCIMENTO")
+    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO")
     private float descontoAteVencimento;
-    
-    @JoinColumn(name="ID_TIPO_DOCUMENTO", referencedColumnName="ID" )
+    @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
     @ManyToOne
     private FTipoDocumento tipoDocumento;
-    
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID" )
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @ManyToOne
     private Filial filial;
-
-    @Column(name="IS_DESCONTO_FOLHA")
+    @Column(name = "IS_DESCONTO_FOLHA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean descontoFolha;
-    
-    @Column(name="IS_ATIVO")
+    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean habilitado;
-    
+
     public MatriculaEscola() {
         id = -1;
         dataMatricula = new Date();
@@ -127,10 +108,10 @@ public class MatriculaEscola implements java.io.Serializable {
         this.valorTotal = valorTotal;
         this.diaVencimento = diaVencimento;
         this.descontoAteVencimento = descontoAteVencimento;
-        this.tipoDocumento = tipoDocumento; 
-        this.filial = filial; 
-        this.descontoFolha = descontoFolha; 
-        this.habilitado = habilitado; 
+        this.tipoDocumento = tipoDocumento;
+        this.filial = filial;
+        this.descontoFolha = descontoFolha;
+        this.habilitado = habilitado;
     }
 
     public int getId() {
@@ -261,19 +242,19 @@ public class MatriculaEscola implements java.io.Serializable {
         this.descontoAteVencimento = descontoAteVencimento;
     }
 
-    public void setDataMatriculaString (String dataMatricula){
+    public void setDataMatriculaString(String dataMatricula) {
         this.dataMatricula = DataHoje.converte(dataMatricula);
     }
 
-    public String getDataMatriculaString (){
+    public String getDataMatriculaString() {
         return DataHoje.converteData(dataMatricula);
     }
 
-    public void setStatusString (String status){
+    public void setStatusString(String status) {
         this.status = DataHoje.converte(status);
     }
 
-    public String getStatusString(){
+    public String getStatusString() {
         return DataHoje.converteData(status);
     }
 
@@ -284,7 +265,7 @@ public class MatriculaEscola implements java.io.Serializable {
     public void setValorTotalString(String valorTotal) {
         this.valorTotal = Moeda.substituiVirgulaFloat(valorTotal);
     }
-    
+
     public String getDescontoString() {
         return Moeda.converteR$Float(desconto);
     }
@@ -299,7 +280,7 @@ public class MatriculaEscola implements java.io.Serializable {
 
     public void setDescontoAteVencimentoString(String descontoAteVencimento) {
         this.descontoAteVencimento = Moeda.substituiVirgulaFloat(descontoAteVencimento);
-   }
+    }
 
     public FTipoDocumento getTipoDocumento() {
         return tipoDocumento;
@@ -324,7 +305,7 @@ public class MatriculaEscola implements java.io.Serializable {
     public void setDescontoFolha(boolean descontoFolha) {
         this.descontoFolha = descontoFolha;
     }
-    
+
     public boolean isHabilitado() {
         return habilitado;
     }

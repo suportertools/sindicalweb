@@ -5,58 +5,47 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_FORMA_PAGAMENTO")
-@NamedQuery(name="FormaPagamento.pesquisaID", query="select fp from FormaPagamento fp where fp.id=:pid")
+@Table(name = "FIN_FORMA_PAGAMENTO")
+@NamedQuery(name = "FormaPagamento.pesquisaID", query = "select fp from FormaPagamento fp where fp.id=:pid")
 public class FormaPagamento implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_BAIXA", referencedColumnName="ID")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_BAIXA", referencedColumnName = "ID")
     @OneToOne
     private Baixa baixa;
-
-    @JoinColumn(name="ID_CHEQUE_REC", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CHEQUE_REC", referencedColumnName = "ID")
     @OneToOne
     private ChequeRec chequeRec;
-
-    @JoinColumn(name="ID_CHEQUE_PAG", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CHEQUE_PAG", referencedColumnName = "ID")
     @OneToOne
     private ChequePag chequePag;
-
-    @Column(name="NR_VALORP", length=10)
+    @Column(name = "NR_VALORP", length = 10)
     private float valorP;
-
-    @Column(name="NR_VALOR", length=10)
+    @Column(name = "NR_VALOR", length = 10)
     private float valor;
-
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID")
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @OneToOne
     private Filial filial;
-
-    @JoinColumn(name="ID_PLANO5", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @ManyToOne
     private Plano5 plano5;
-
-    @JoinColumn(name="ID_CARTAO_PAG", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CARTAO_PAG", referencedColumnName = "ID")
     @OneToOne
     private CartaoPag cartaoPag;
-
-    @JoinColumn(name="ID_CARTAO_REC", referencedColumnName="ID")
+    @JoinColumn(name = "ID_CARTAO_REC", referencedColumnName = "ID")
     @OneToOne
     private CartaoRec cartaoRec;
-
-    @JoinColumn(name="ID_TIPO_PAGAMENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_TIPO_PAGAMENTO", referencedColumnName = "ID")
     @OneToOne
     private TipoPagamento tipoPagamento;
-
-    @Column(name="NR_VALOR_LIQUIDO", length=10)
+    @Column(name = "NR_VALOR_LIQUIDO", length = 10)
     private float valorLiquido;
-    
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_CREDITO", nullable=false)
+    @Column(name = "DT_CREDITO", nullable = false)
     private Date dtCredito;
-    
+
     public FormaPagamento() {
         this.id = -1;
         this.baixa = new Baixa();
@@ -74,18 +63,18 @@ public class FormaPagamento implements java.io.Serializable {
     }
 
     public FormaPagamento(int id,
-                          Baixa baixa,
-                          ChequeRec chequeRec,
-                          ChequePag chequePag,
-                          float valorP,
-                          float valor,
-                          Filial filial,
-                          Plano5 plano5,
-                          CartaoPag cartaoPag,
-                          CartaoRec cartaoRec,
-                          TipoPagamento tipoPagamento, 
-                          float valorLiquido, 
-                          Date dtCredito) {
+            Baixa baixa,
+            ChequeRec chequeRec,
+            ChequePag chequePag,
+            float valorP,
+            float valor,
+            Filial filial,
+            Plano5 plano5,
+            CartaoPag cartaoPag,
+            CartaoRec cartaoRec,
+            TipoPagamento tipoPagamento,
+            float valorLiquido,
+            Date dtCredito) {
         this.id = id;
         this.baixa = baixa;
         this.chequeRec = chequeRec;

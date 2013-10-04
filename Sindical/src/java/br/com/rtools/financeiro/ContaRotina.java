@@ -1,28 +1,26 @@
-
 package br.com.rtools.financeiro;
 
 import br.com.rtools.seguranca.Rotina;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CONTA_ROTINA")
-@NamedQuery(name="ContaRotina.pesquisaID", query="select o from ContaRotina o where o.id=:pid")
+@Table(name = "FIN_CONTA_ROTINA")
+@NamedQuery(name = "ContaRotina.pesquisaID", query = "select o from ContaRotina o where o.id=:pid")
 public class ContaRotina implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_ROTINA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @JoinColumn(name="ID_PLANO4", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PLANO4", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Plano4 plano4;
-    @Column(name="DS_PAG_REC", length=1,nullable=true)
+    @Column(name = "DS_PAG_REC", length = 1, nullable = true)
     private String pagRec;
-    @Column(name="NR_PARTIDA", length=1,nullable=false)
+    @Column(name = "NR_PARTIDA", length = 1, nullable = false)
     private int partida;   // 1 Partida 0 Contra Partida
-
 
     public ContaRotina() {
         this.id = -1;
@@ -38,7 +36,7 @@ public class ContaRotina implements java.io.Serializable {
         this.plano4 = plano4;
         this.pagRec = pagRec;
         this.partida = partida;
-    }    
+    }
 
     public int getId() {
         return id;

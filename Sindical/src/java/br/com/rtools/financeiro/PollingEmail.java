@@ -16,29 +16,30 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="FIN_POLLING_EMAIL")
-@NamedQuery(name="PollingEmail.pesquisaID", query="select pe from PollingEmail pe where pe.id = :pid")
+@Table(name = "FIN_POLLING_EMAIL")
+@NamedQuery(name = "PollingEmail.pesquisaID", query = "select pe from PollingEmail pe where pe.id = :pid")
 public class PollingEmail implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
-    private Date dtEmissao;    
-    @Column(name="DS_HORA", length = 5)
-    private String hora;  
-    @Column(name = "IS_ATIVO")
+    @Column(name = "DT_EMISSAO")
+    private Date dtEmissao;
+    @Column(name = "DS_HORA", length = 5)
+    private String hora;
+    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
-    @JoinColumn(name="ID_LINK", referencedColumnName="ID")
+    @JoinColumn(name = "ID_LINK", referencedColumnName = "ID")
     @ManyToOne
     private Links links;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_ENVIO")
-    private Date dtEnvio;  
-    @JoinColumn(name="ID_COBRANCA_ENVIO", referencedColumnName="ID")
+    @Column(name = "DT_ENVIO")
+    private Date dtEnvio;
+    @JoinColumn(name = "ID_COBRANCA_ENVIO", referencedColumnName = "ID")
     @ManyToOne
     private CobrancaEnvio cobrancaEnvio;
-    
+
     public PollingEmail() {
         this.id = -1;
         this.setEmissao(null);
@@ -48,7 +49,7 @@ public class PollingEmail implements java.io.Serializable {
         this.setEnvio(null);
         this.cobrancaEnvio = new CobrancaEnvio();
     }
-    
+
     public PollingEmail(int id, String emissao, String hora, boolean ativo, Links links, String envio, CobrancaEnvio cobrancaEnvio) {
         this.id = id;
         this.setEmissao(emissao);
@@ -98,14 +99,14 @@ public class PollingEmail implements java.io.Serializable {
     public void setLinks(Links links) {
         this.links = links;
     }
-    
+
     public String getEmissao() {
         return DataHoje.converteData(dtEmissao);
     }
 
     public void setEmissao(String emissao) {
         this.dtEmissao = DataHoje.converte(emissao);
-    }    
+    }
 
     public Date getDtEnvio() {
         return dtEnvio;
@@ -114,14 +115,14 @@ public class PollingEmail implements java.io.Serializable {
     public void setDtEnvio(Date dtEnvio) {
         this.dtEnvio = dtEnvio;
     }
-    
+
     public String getEnvio() {
         return DataHoje.converteData(dtEnvio);
     }
 
     public void setEnvio(String envio) {
         this.dtEnvio = DataHoje.converte(envio);
-    }   
+    }
 
     public CobrancaEnvio getCobrancaEnvio() {
         return cobrancaEnvio;
@@ -130,5 +131,4 @@ public class PollingEmail implements java.io.Serializable {
     public void setCobrancaEnvio(CobrancaEnvio cobrancaEnvio) {
         this.cobrancaEnvio = cobrancaEnvio;
     }
-
 }

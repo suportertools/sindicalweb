@@ -3,18 +3,17 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CENTRO_CUSTO")
-@NamedQuery(name="CentroCusto.pesquisaID", query="select cc from CentroCusto cc where cc.id=:pid")
+@Table(name = "FIN_CENTRO_CUSTO")
+@NamedQuery(name = "CentroCusto.pesquisaID", query = "select cc from CentroCusto cc where cc.id=:pid")
 public class CentroCusto implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_PLANO5", referencedColumnName="ID")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @OneToOne
     private Plano5 plano5;
-
-    @Column(name="NR_CENTRO_CUSTO", length=10)
+    @Column(name = "NR_CENTRO_CUSTO", length = 10)
     private int centroCusto;
 
     public CentroCusto() {
@@ -23,7 +22,7 @@ public class CentroCusto implements java.io.Serializable {
         this.plano5 = new Plano5();
     }
 
-    public CentroCusto(int id,int centroCusto, Plano5 plano5) {
+    public CentroCusto(int id, int centroCusto, Plano5 plano5) {
         this.id = id;
         this.centroCusto = centroCusto;
         this.plano5 = plano5;

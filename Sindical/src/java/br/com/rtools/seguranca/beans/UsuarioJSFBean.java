@@ -1,6 +1,5 @@
 package br.com.rtools.seguranca.beans;
 
-import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
@@ -29,6 +28,7 @@ public class UsuarioJSFBean {
     private String msgConfirma;
     private String msgPermissao;
     private String msgUsuarioAcesso = "";
+    private String senhaNova = "";
     private String senhaAntiga = "";
     private String confirmaSenha = "";
     private boolean disSenha = false;
@@ -88,7 +88,7 @@ public class UsuarioJSFBean {
                     sv.comitarTransacao();
                     msgConfirma = "Login e senha salvos com Sucesso!";
                     return null;
-                } else {                    
+                } else {
                     msgConfirma = "Erro ao Salvar Login e Senha!";
                     sv.desfazerTransacao();
                     return null;
@@ -101,7 +101,7 @@ public class UsuarioJSFBean {
         } else {
             Usuario user = (Usuario) db.pesquisaCodigo(usuario.getId());
             if (disNovaSenha) {
-                if (user.getSenha().equals(senhaAntiga) && !usuario.getSenha().equals("")) {
+                if (user.getSenha().equals(getSenhaAntiga()) && !usuario.getSenha().equals("")) {
                 } else {
                     usuario.setSenha(user.getSenha());
                     msgConfirma = "Senha Incompativel!";
@@ -127,10 +127,10 @@ public class UsuarioJSFBean {
         }
         PermissaoUsuario pu = new PermissaoUsuario();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        pu.setDepartamento( (Departamento) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaDepartamentos.get(idDepartamento).getDescription()), "Departamento"));
-        pu.setNivel( (Nivel) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaNiveis.get(idNivel).getDescription()), "Nivel"));
+        pu.setDepartamento((Departamento) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaDepartamentos.get(idDepartamento).getDescription()), "Departamento"));
+        pu.setNivel((Nivel) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaNiveis.get(idNivel).getDescription()), "Nivel"));
         pu.setUsuario(usuario);
-        PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();        
+        PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();
         if (permissaoUsuarioDB.existePermissaoUsuario(pu)) {
             // msgPermissao = "Permissão já Existente!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe"));
@@ -154,7 +154,7 @@ public class UsuarioJSFBean {
     public String removerPermissaoUsuario(PermissaoUsuario pu) {
         msgPermissao = "";
         if (pu.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();        
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             pu = (PermissaoUsuario) salvarAcumuladoDB.pesquisaCodigo(pu.getId(), "PermissaoUsuario");
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(pu)) {
@@ -222,7 +222,7 @@ public class UsuarioJSFBean {
         disNovaSenha = false;
         msgPermissao = "";
         idDepartamento = 0;
-        idNivel = 0;        
+        idNivel = 0;
         idIndex = -1;
         idIndexPermissao = -1;
         adicionado = false;
@@ -258,8 +258,8 @@ public class UsuarioJSFBean {
     public String editar(Usuario usu) {
         usuario = usu;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", usuario.getPessoa());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);        
-        return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
 
     public List<Usuario> getListaUsuario() {
@@ -273,8 +273,8 @@ public class UsuarioJSFBean {
         }
         return listaUsuario;
     }
-    
-    public void limparListaUsuario(){
+
+    public void limparListaUsuario() {
         listaUsuario.clear();
     }
 
@@ -515,7 +515,7 @@ public class UsuarioJSFBean {
     }
 
     public List<SelectItem> getListaModulos() {
-        if(listaModulos.isEmpty()){
+        if (listaModulos.isEmpty()) {
             PermissaoDB db = new PermissaoDBToplink();
             List<Modulo> modulos = db.listaModuloPermissaoAgrupado();
             for (int i = 0; i < modulos.size(); i++) {
@@ -533,7 +533,7 @@ public class UsuarioJSFBean {
     }
 
     public List<SelectItem> getListaRotinas() {
-        if (listaRotinas.isEmpty() && !listaModulos.isEmpty()){
+        if (listaRotinas.isEmpty() && !listaModulos.isEmpty()) {
             int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
             PermissaoDB db = new PermissaoDBToplink();
             List<Rotina> rotinas = db.listaRotinaPermissaoAgrupado(idM);
@@ -555,7 +555,7 @@ public class UsuarioJSFBean {
     }
 
     public List<SelectItem> getListaEventos() {
-        if (listaEventos.isEmpty() && !listaRotinas.isEmpty() && !listaModulos.isEmpty()){
+        if (listaEventos.isEmpty() && !listaRotinas.isEmpty() && !listaModulos.isEmpty()) {
             PermissaoDB db = new PermissaoDBToplink();
             int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
             int idR = Integer.parseInt(listaRotinas.get(idRotina).getDescription());
@@ -627,7 +627,7 @@ public class UsuarioJSFBean {
             }
             listaUsuarioAcesso = db.listaUsuarioAcesso(usuario.getId(), idM, idR, idE);
             if (filtrarPorModulo || filtrarPorRotina || filtrarPorEvento) {
-            } 
+            }
         }
         return listaUsuarioAcesso;
     }
@@ -639,7 +639,7 @@ public class UsuarioJSFBean {
         getListaRotinas();
         getListaEventos();
     }
-    
+
     public void limparListaUsuarioAcessox() {
         listaUsuarioAcesso.clear();
     }
@@ -751,5 +751,60 @@ public class UsuarioJSFBean {
 
     public void setDescricaoPesquisa(String descricaoPesquisa) {
         this.descricaoPesquisa = descricaoPesquisa;
+    }
+
+    public String getUsuarioPerfil() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+            usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        }
+        return null;
+    }
+
+    public void salvarSenhaUsuarioPerfil() {
+        if (usuario.getId() != -1) {
+            if (usuario.getPessoa().getId() == 1) {
+                msgConfirma = "Não é possível alterar a senha do administrador!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
+                return;
+            }
+            if (getSenhaNova().equals("")) {
+                msgConfirma = "Campo senha não pode ser nulo!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
+                return;
+            }
+            if (getSenhaNova().length() > 6) {
+                msgConfirma = "A senha deve ter no máximo 6 Caracteres!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
+                return;
+            }
+            UsuarioDB usuarioDB = new UsuarioDBToplink();
+            Usuario user = (Usuario) usuarioDB.pesquisaCodigo(usuario.getId());
+            if (!user.getSenha().equals(senhaAntiga)) {
+                msgConfirma = "Senha antiga incompativel!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                return;
+            }
+            usuario.setSenha(senhaNova);
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.alterarObjeto(usuario)) {
+                salvarAcumuladoDB.comitarTransacao();
+                setSenhaNova("");
+                setSenhaAntiga("");
+                msgConfirma = "Senha alterada";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
+                msgConfirma = "Não foi possível atualizar essa senha!";
+            }
+        }
+    }
+
+    public String getSenhaNova() {
+        return senhaNova;
+    }
+
+    public void setSenhaNova(String senhaNova) {
+        this.senhaNova = senhaNova;
     }
 }

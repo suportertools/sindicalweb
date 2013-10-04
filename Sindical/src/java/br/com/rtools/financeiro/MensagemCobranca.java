@@ -4,20 +4,19 @@ import br.com.rtools.arrecadacao.MensagemConvencao;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_MENSAGEM_COBRANCA")
-@NamedQuery(name="MensagemCobranca.pesquisaID", query="select m from MensagemCobranca m where m.id=:pid")
+@Table(name = "FIN_MENSAGEM_COBRANCA")
+@NamedQuery(name = "MensagemCobranca.pesquisaID", query = "select m from MensagemCobranca m where m.id=:pid")
 public class MensagemCobranca implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name="ID_MENSAGEM_CONVENCAO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MENSAGEM_CONVENCAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private MensagemConvencao mensagemConvencao;
-
 
     public MensagemCobranca() {
         this.id = -1;

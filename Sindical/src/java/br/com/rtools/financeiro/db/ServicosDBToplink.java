@@ -107,7 +107,7 @@ public class ServicosDBToplink extends DB implements ServicosDB {
     @Override
     public List pesquisaTodos() {
         try{
-            Query qry = getEntityManager().createQuery("SELECT S FROM Servicos AS S ");
+            Query qry = getEntityManager().createQuery("SELECT S FROM Servicos AS S ORDER BY S.descricao ASC");
             return (qry.getResultList());
         }
         catch(Exception e){

@@ -10,6 +10,7 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.CancelarHorario;
 import br.com.rtools.homologacao.Demissao;
+import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.homologacao.db.*;
@@ -979,12 +980,12 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     public void pesquisarFuncionarioCPF() throws IOException {
         msgConfirma = "";
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
-            
+
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 msgConfirma = "Documento Inválido!";
                 return;
             }
-            
+
             FisicaDB dbFis = new FisicaDBToplink();
             AgendamentoDB db = new AgendamentoDBToplink();
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
@@ -1904,5 +1905,23 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             return;
         }
         return;
+    }
+
+    public void mensagemAgendamento() {
+        msgAgendamento = "";
+        FeriadosDB feriadosDB = new FeriadosDBToplink();
+        if (macFilial.getFilial().getFilial().getId() != -1) {
+            List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
+            if (!feriados.isEmpty()) {
+                msgAgendamento = "Nesta data existem feriados/agenda: ";
+                for (int i = 0; i < feriados.size(); i++) {
+                    if (i == 0) {
+                        msgAgendamento += feriados.get(i).getNome();
+                    } else {
+                        msgAgendamento +=  ", " + feriados.get(i).getNome();
+                    }
+                }
+            }
+        }
     }
 }

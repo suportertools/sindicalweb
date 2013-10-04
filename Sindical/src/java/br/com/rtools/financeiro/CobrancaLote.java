@@ -16,21 +16,22 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="FIN_COBRANCA_LOTE")
-@NamedQuery(name="CobrancaLote.pesquisaID", query="select c from CobrancaLote c where c.id = :pid")
+@Table(name = "FIN_COBRANCA_LOTE")
+@NamedQuery(name = "CobrancaLote.pesquisaID", query = "select c from CobrancaLote c where c.id = :pid")
 public class CobrancaLote implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
     @ManyToOne
     private Usuario usuario;
-    @Column(name="DS_MENSAGEM", length = 8000)
+    @Column(name = "DS_MENSAGEM", length = 8000)
     private String mensagem;
-    @Column(name="DS_HORA", length = 5)
+    @Column(name = "DS_HORA", length = 5)
     private String hora;
 
     public CobrancaLote() {
@@ -40,7 +41,7 @@ public class CobrancaLote implements java.io.Serializable {
         this.mensagem = "";
         this.hora = "";
     }
-    
+
     public CobrancaLote(int id, String emissao, Usuario usuario, String mensagem, String hora) {
         this.id = id;
         this.setEmissao(emissao);
@@ -80,14 +81,14 @@ public class CobrancaLote implements java.io.Serializable {
     public void setDtEmissao(Date dtEmissao) {
         this.dtEmissao = dtEmissao;
     }
-    
+
     public String getEmissao() {
         return DataHoje.converteData(dtEmissao);
     }
 
     public void setEmissao(String emissao) {
         this.dtEmissao = DataHoje.converte(emissao);
-    }    
+    }
 
     public String getHora() {
         return hora;

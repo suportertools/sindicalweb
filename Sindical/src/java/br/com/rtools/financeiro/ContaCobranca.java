@@ -3,58 +3,58 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CONTA_COBRANCA")
-@NamedQuery(name="ContaCobranca.pesquisaID", query="select c from ContaCobranca c where c.id=:pid")
+@Table(name = "FIN_CONTA_COBRANCA")
+@NamedQuery(name = "ContaCobranca.pesquisaID", query = "select c from ContaCobranca c where c.id=:pid")
 public class ContaCobranca implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_CONTA_BANCO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CONTA_BANCO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private ContaBanco contaBanco;
-    @Column(name="DS_COD_CEDENTE", length=100,nullable=false)
+    @Column(name = "DS_COD_CEDENTE", length = 100, nullable = false)
     private String codCedente;
-    @Column(name="DS_LOCAL_PAGAMENTO", length=100,nullable=false)
+    @Column(name = "DS_LOCAL_PAGAMENTO", length = 100, nullable = false)
     private String localPagamento;
-    @Column(name="NR_REPASSE", length=100,nullable=false)
+    @Column(name = "NR_REPASSE", length = 100, nullable = false)
     private float repasse;
-    @Column(name="DS_BOLETO_INICIAL", length=100,nullable=false)
+    @Column(name = "DS_BOLETO_INICIAL", length = 100, nullable = false)
     private String boletoInicial;
-    @Column(name="DS_CATEGORIA_SINDICAL", length=1)
+    @Column(name = "DS_CATEGORIA_SINDICAL", length = 1)
     private String categoriaSindical;
-    @Column(name="DS_ARRECADACAO_SINDICAL", length=1)
+    @Column(name = "DS_ARRECADACAO_SINDICAL", length = 1)
     private String arrecadacaoSindical;
-    @Column(name="DS_FEBRA_SINDICAL", length=4)
+    @Column(name = "DS_FEBRA_SINDICAL", length = 4)
     private String febranSindical;
-    @Column(name="DS_SEGMENTO_SINDICAL", length=1)
+    @Column(name = "DS_SEGMENTO_SINDICAL", length = 1)
     private String segmentoSindical;
-    @Column(name="DS_SICAS_SINDICAL", length=5)
+    @Column(name = "DS_SICAS_SINDICAL", length = 5)
     private String sicasSindical;
-    @Column(name="DS_CODIGO_SINDICAL", length=50)
+    @Column(name = "DS_CODIGO_SINDICAL", length = 50)
     private String codigoSindical;
-    @Column(name="NR_MOEDA", length=50,nullable=false)
+    @Column(name = "NR_MOEDA", length = 50, nullable = false)
     private String moeda;
-    @Column(name="DS_ESPECIE_MOEDA", length=50,nullable=false)
+    @Column(name = "DS_ESPECIE_MOEDA", length = 50, nullable = false)
     private String especieMoeda;
-    @Column(name="DS_ESPECIE_DOC", length=50,nullable=false)
+    @Column(name = "DS_ESPECIE_DOC", length = 50, nullable = false)
     private String especieDoc;
-    @Column(name="DS_CARTEIRA", length=50,nullable=false)
+    @Column(name = "DS_CARTEIRA", length = 50, nullable = false)
     private String carteira;
-    @Column(name="DS_ACEITE", length=5,nullable=false)
+    @Column(name = "DS_ACEITE", length = 5, nullable = false)
     private String aceite;
-    @Column(name="DS_CEDENTE", length=200,nullable=false)
+    @Column(name = "DS_CEDENTE", length = 200, nullable = false)
     private String cedente;
     @OneToOne
-    @JoinColumn(name="ID_LAYOUT", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_LAYOUT", referencedColumnName = "ID", nullable = false)
     private Layout layout;
-    @Column(name="DS_CAMINHO_RETORNO", length=300)
+    @Column(name = "DS_CAMINHO_RETORNO", length = 300)
     private String caminhoRetorno;
-    @Column(name="IS_ATIVO")
+    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
-    @Column(name="DS_APELIDO", length=50)
+    @Column(name = "DS_APELIDO", length = 50)
     private String apelido;
-	
+
     public ContaCobranca() {
         this.id = -1;
         this.contaBanco = new ContaBanco();
@@ -79,7 +79,7 @@ public class ContaCobranca implements java.io.Serializable {
         this.ativo = true;
         this.apelido = "";
     }
-    
+
     public ContaCobranca(int id, ContaBanco contaBanco, String codCedente, String localPagamento, float repasse, String boletoInicial, String categoriaSindical, String arrecadacaoSindical, String febranSindical, String segmentoSindical, String sicasSindical, String codigoSindical, String moeda, String especieMoeda, String especieDoc, String carteira, String aceite, String cedente, Layout layout, String caminhoRetorno, boolean ativo, String apelido) {
         this.id = id;
         this.contaBanco = contaBanco;

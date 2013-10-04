@@ -5,29 +5,25 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CHEQUE_PAG")
-@NamedQuery(name="ChequePag.pesquisaID", query="select cp from ChequePag cp where cp.id=:pid")
+@Table(name = "FIN_CHEQUE_PAG")
+@NamedQuery(name = "ChequePag.pesquisaID", query = "select cp from ChequePag cp where cp.id=:pid")
 public class ChequePag implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column(name="DS_CHEQUE", length=50)
+    @Column(name = "DS_CHEQUE", length = 50)
     private String cheque;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_VENCIMENTO")
+    @Column(name = "DT_VENCIMENTO")
     private Date dtVencimento;
-
-    @JoinColumn(name="ID_PLANO5", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @OneToOne
     private Plano5 plano5;
-
-    @JoinColumn(name="ID_STATUS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
     @OneToOne
     private FStatus status;
 
@@ -48,8 +44,6 @@ public class ChequePag implements java.io.Serializable {
         this.plano5 = plano5;
         this.status = status;
     }
-
-
 
     public int getId() {
         return id;

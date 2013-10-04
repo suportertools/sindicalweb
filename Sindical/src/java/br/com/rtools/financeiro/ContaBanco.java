@@ -1,4 +1,3 @@
-
 package br.com.rtools.financeiro;
 
 import br.com.rtools.endereco.Cidade;
@@ -6,25 +5,26 @@ import br.com.rtools.pessoa.Filial;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_CONTA_BANCO")
-@NamedQuery(name="ContaBanco.pesquisaID", query="select o from ContaBanco o where o.id=:pid")
+@Table(name = "FIN_CONTA_BANCO")
+@NamedQuery(name = "ContaBanco.pesquisaID", query = "select o from ContaBanco o where o.id=:pid")
 public class ContaBanco implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_BANCO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_BANCO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Banco banco;
-    @Column(name="DS_AGENCIA", length=100,nullable=false)
+    @Column(name = "DS_AGENCIA", length = 100, nullable = false)
     private String agencia;
-    @Column(name="DS_CONTA", length=100,nullable=false)
+    @Column(name = "DS_CONTA", length = 100, nullable = false)
     private String conta;
-    @JoinColumn(name="ID_CIDADE", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Cidade cidade;
-    @Column(name="NR_ULTIMO_CHEQUE", length=38,nullable=false)
-    private int  uCheque;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=true)
+    @Column(name = "NR_ULTIMO_CHEQUE", length = 38, nullable = false)
+    private int uCheque;
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private Filial filial;
 

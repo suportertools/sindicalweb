@@ -3,13 +3,14 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_EVT")
-@NamedQuery(name="Evt.pesquisaID", query="select e from Evt e where e.id=:pid")
+@Table(name = "FIN_EVT")
+@NamedQuery(name = "Evt.pesquisaID", query = "select e from Evt e where e.id=:pid")
 public class Evt implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", nullable=true)
+    @Column(name = "DS_DESCRICAO", nullable = true)
     private String descricao;
 
     public Evt() {
