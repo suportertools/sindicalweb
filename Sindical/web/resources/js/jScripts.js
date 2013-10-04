@@ -116,6 +116,11 @@ jQuery(function($) {
     $(".realPonto").maskMoney({showSymbol: true, decimal: ".", thousands: ","});
 });
 
+jQuery(function($) {
+    $(".realSemSimbolo").maskMoney({showSymbol: false, decimal: ",", thousands: "."});
+});
+    
+
 function somenteNumeros(setThis) {
     setThis.value = setThis.value.replace(/\D/g, '');
     return setThis;
