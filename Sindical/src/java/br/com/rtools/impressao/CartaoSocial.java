@@ -147,7 +147,7 @@ public class CartaoSocial {
     public void setFiliacao(String filiacao) {
         this.filiacao = filiacao;
     }
-    
+
     public String getProfissao() {
         return profissao;
     }
@@ -155,7 +155,7 @@ public class CartaoSocial {
     public void setProfissao(String profissao) {
         this.profissao = profissao;
     }
-    
+
     public String getCPF() {
         return cpf;
     }
@@ -163,7 +163,7 @@ public class CartaoSocial {
     public void setCPF(String cpf) {
         this.cpf = cpf;
     }
-    
+
     public String getRG() {
         return rg;
     }
