@@ -27,6 +27,7 @@ import knu.ReceitaCNPJ;
 import knu.knu;
 
 public class JuridicaJSFBean {
+
     private Juridica juridica = new Juridica();
     private Juridica contabilidade = new Juridica();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
@@ -95,66 +96,68 @@ public class JuridicaJSFBean {
     private List<ContribuintesInativos> listaContribuintesInativos = new ArrayList();
     private String atualiza = "";
     private JuridicaReceita juridicaReceita = new JuridicaReceita();
-    
-    public void pesquisaCnpj(){
-        if (juridica.getId() != -1){
+
+    public void pesquisaCnpj() {
+        if (juridica.getId() != -1) {
             return;
         }
-        
-        if (juridica.getPessoa().getDocumento().isEmpty()){
+
+        if (juridica.getPessoa().getDocumento().isEmpty()) {
             return;
         }
-        
+
         String documento = AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento());
-        
-        if (!validaTipoDocumento(2, documento)){
+
+        if (!validaTipoDocumento(2, documento)) {
             msgDocumento = "Documento inválido!";
             return;
         }
         JuridicaDB dbj = new JuridicaDBToplink();
         List listDocumento = dbj.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
-        for(int i = 0; i < listDocumento.size(); i++){
-            if(!listDocumento.isEmpty()){
+        for (int i = 0; i < listDocumento.size(); i++) {
+            if (!listDocumento.isEmpty()) {
                 msgDocumento = "Empresa já esta cadastrada no Sistema!";
                 return;
             }
         }
-        
+
         PessoaDB db = new PessoaDBToplink();
-        
+
         juridicaReceita = db.pesquisaJuridicaReceita(documento);
-        if (juridicaReceita.getPessoa() != null && juridicaReceita.getPessoa().getId() != -1){
+        if (juridicaReceita.getPessoa() != null && juridicaReceita.getPessoa().getId() != -1) {
             msgDocumento = "Pessoa já cadastrada no Sistema!";
             return;
         }
-        if (juridicaReceita.getId() == -1){
-            try{
+        if (juridicaReceita.getId() == -1) {
+            try {
                 System.loadLibrary("knu"); // PARA WINDOWS 
-            }catch(Exception e){        
-              System.out.println(e.getMessage() + " Erro Windows ");
-                try{
+            } catch (Exception e) {
+                System.out.println(e.getMessage() + " Erro Windows ");
+                try {
                     System.loadLibrary("libknu"); // PARA LINUX
-                }catch(Exception ex){
-                    System.out.println(ex.getMessage() + " Erro Linux ");  
+                } catch (Exception ex) {
+                    System.out.println(ex.getMessage() + " Erro Linux ");
                 }
             }
 
             ReceitaCNPJ resultado = knu.receitaCNPJ(documento);
-            
+
             msgDocumento = resultado.getDesc_erro();
-            if (resultado.getCod_erro() != 0)
+            if (resultado.getCod_erro() != 0) {
                 return;
-            else msgDocumento = "";
-            
-            if (resultado.getNome_empresarial().isEmpty()){
+            } else {
+                msgDocumento = "";
+            }
+
+            if (resultado.getNome_empresarial().isEmpty()) {
                 msgDocumento = "Erro ao pesquisar na Receita!";
                 return;
             }
-                
-            if (resultado.getSituacao_cadastral().equals("BAIXADA")){
+
+            if (resultado.getSituacao_cadastral().equals("BAIXADA")) {
                 msgDocumento = "Esta empresa esta INATIVA na receita!";
             }
-            
+
             juridicaReceita.setNome(resultado.getNome_empresarial());
             juridicaReceita.setFantasia(resultado.getNome_empresarial());
             juridicaReceita.setDocumento(documento);
@@ -166,108 +169,107 @@ public class JuridicaJSFBean {
             juridicaReceita.setCnae(resultado.getAtividade_principal());
             juridicaReceita.setPessoa(null);
             juridicaReceita.setStatus(resultado.getSituacao_cadastral());
-            
+
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            
+
             sv.abrirTransacao();
-            
-            if (!sv.inserirObjeto(juridicaReceita)){
+
+            if (!sv.inserirObjeto(juridicaReceita)) {
                 msgConfirma = "Erro ao Salvar pesquisa!";
                 sv.desfazerTransacao();
                 return;
             }
             sv.comitarTransacao();
-            
+
             juridica.getPessoa().setNome(juridicaReceita.getNome());
             juridica.setFantasia(juridicaReceita.getNome());
 
             String result[] = juridicaReceita.getCnae().split(" ");
             CnaeDB dbc = new CnaeDBToplink();
-            
+
             List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
-            
-            if (listac.isEmpty()){
+
+            if (listac.isEmpty()) {
                 msgDocumento = "Erro ao pesquisar CNAE";
                 return;
             }
             retornaCnaeReceita(listac.get(0));
-            
+
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-            
+
             String cep = juridicaReceita.getCep();
-            cep = cep.replace(".", "").replace("-", "");            
-            
+            cep = cep.replace(".", "").replace("-", "");
+
             String descricao[] = AnaliseString.removerAcentos(resultado.getLogradouro()).split(" ");
             String bairros[] = AnaliseString.removerAcentos(resultado.getBairro()).split(" ");
-            
+
             endereco = dbe.enderecoReceita(cep, descricao, bairros);
-            
-            if (endereco != null){
+
+            if (endereco != null) {
                 TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
                 List tiposE = dbt.listaTipoEnderecoParaJuridica();
-                for (int i = 0; i < tiposE.size(); i++){
+                for (int i = 0; i < tiposE.size(); i++) {
                     pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco)tiposE.get(i));
+                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(i));
                     pessoaEndereco.setPessoa(juridica.getPessoa());
                     pessoaEndereco.setNumero(juridicaReceita.getNumero());
                     pessoaEndereco.setComplemento(juridicaReceita.getComplemento());
                     listaEnd.add(pessoaEndereco);
-                    
+
                     pessoaEndereco = new PessoaEndereco();
                 }
-            }else{
-                msgDocumento = "Endereço não encontrado no Sistema - CEP: "+resultado.getCep()+" DESC: "+resultado.getLogradouro()+" BAIRRO: "+ resultado.getBairro();
+            } else {
+                msgDocumento = "Endereço não encontrado no Sistema - CEP: " + resultado.getCep() + " DESC: " + resultado.getLogradouro() + " BAIRRO: " + resultado.getBairro();
             }
-        }else{
+        } else {
             juridica.getPessoa().setNome(juridicaReceita.getNome());
             juridica.setFantasia(juridicaReceita.getNome());
 
             String result[] = juridicaReceita.getCnae().split(" ");
             CnaeDB dbc = new CnaeDBToplink();
-            
+
             List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
-            
-            if (listac.isEmpty()){
+
+            if (listac.isEmpty()) {
                 msgDocumento = "Erro ao pesquisar CNAE";
                 return;
             }
             retornaCnaeReceita(listac.get(0));
-            
-            if (juridicaReceita.getStatus().equals("BAIXADA")){
+
+            if (juridicaReceita.getStatus().equals("BAIXADA")) {
                 msgDocumento = "Esta empresa esta INATIVA na receita!";
             }
-            
-            
+
+
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-            
+
             String cep = juridicaReceita.getCep();
-            cep = cep.replace(".", "").replace("-", "");            
-            
+            cep = cep.replace(".", "").replace("-", "");
+
             String descricao[] = AnaliseString.removerAcentos(juridicaReceita.getDescricaoEndereco()).split(" ");
             String bairros[] = AnaliseString.removerAcentos(juridicaReceita.getBairro()).split(" ");
-            
+
             endereco = dbe.enderecoReceita(cep, descricao, bairros);
-            
-            if (endereco != null){
+
+            if (endereco != null) {
                 TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
                 List tiposE = dbt.listaTipoEnderecoParaJuridica();
-                for (int i = 0; i < tiposE.size(); i++){
+                for (int i = 0; i < tiposE.size(); i++) {
                     pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco)tiposE.get(i));
+                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(i));
                     pessoaEndereco.setPessoa(juridica.getPessoa());
                     pessoaEndereco.setNumero(juridicaReceita.getNumero());
                     pessoaEndereco.setComplemento(juridicaReceita.getComplemento());
                     listaEnd.add(pessoaEndereco);
-                    
+
                     pessoaEndereco = new PessoaEndereco();
                 }
-            }else{
-                msgDocumento = "Endereço não encontrado no Sistema - CEP: "+juridicaReceita.getCep()+" DESC: "+juridicaReceita.getDescricaoEndereco()+" BAIRRO: "+ juridicaReceita.getBairro();
-            }            
+            } else {
+                msgDocumento = "Endereço não encontrado no Sistema - CEP: " + juridicaReceita.getCep() + " DESC: " + juridicaReceita.getDescricaoEndereco() + " BAIRRO: " + juridicaReceita.getBairro();
+            }
         }
     }
-     
-        
+
 //    public void pesquisaCnpjXML(){
 //        if (juridica.getId() != -1){
 //            return;
@@ -318,47 +320,46 @@ public class JuridicaJSFBean {
 //                ex.printStackTrace();
 //            }
 //        }
-    
-    public void pesquisaDocumento(){
+    public void pesquisaDocumento() {
         JuridicaDB db = new JuridicaDBToplink();
-        if (!juridica.getPessoa().getDocumento().isEmpty()){
+        if (!juridica.getPessoa().getDocumento().isEmpty()) {
             List<Juridica> lista = db.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
-            if (lista.isEmpty()){
+            if (lista.isEmpty()) {
                 msgDocumento = "";
-            }else{
-                msgDocumento = "Esse documento já existe para: "+lista.get(0).getPessoa().getNome();
+            } else {
+                msgDocumento = "Esse documento já existe para: " + lista.get(0).getPessoa().getNome();
             }
-        }else{
+        } else {
             msgDocumento = "";
         }
     }
 
-    public String getInadimplente(){
-        if (juridica.getId() != -1){
+    public String getInadimplente() {
+        if (juridica.getId() != -1) {
             JuridicaDB db = new JuridicaDBToplink();
             int[] in = db.listaInadimplencia(juridica.getPessoa().getId());
-            
-            if (in[0] > 0 && in[1] > 0){
-                return "Esta empresa está inadimplente em "+ in[0] +" mes(es) e com "+ in[1] +" movimento(s) em atraso.";
+
+            if (in[0] > 0 && in[1] > 0) {
+                return "Esta empresa está inadimplente em " + in[0] + " mes(es) e com " + in[1] + " movimento(s) em atraso.";
             }
         }
         return "";
     }
-    
+
     public String getContribuinte() {
         JuridicaDB db = new JuridicaDBToplink();
-        if (juridica.getId() != -1){
+        if (juridica.getId() != -1) {
             List<Vector> listax = db.listaJuridicaContribuinte(juridica.getId());
 
-            for (int i = 0; i < listax.size(); i++){
-                if (listax.get(0).get(11) != null){
+            for (int i = 0; i < listax.size(); i++) {
+                if (listax.get(0).get(11) != null) {
                     // CONTRIBUINTE INATIVO
                     //cnaeContribuinte = " cnae contribuinte porém empresa inativa!";
                     cnaeContribuinte = " ";
                     colorContri = "red";
                     renderAtivoInativo = false;
                     return "CONTRIBUINTE INATIVO";
-                }else{
+                } else {
                     //cnaeContribuinte = "cnae contribuinte!";
                     cnaeContribuinte = " ";
                     colorContri = "blue";
@@ -367,13 +368,13 @@ public class JuridicaJSFBean {
                 }
             }
         }
-        if (juridica.getCnae() != null && juridica.getCnae().getId() != -1){
+        if (juridica.getCnae() != null && juridica.getCnae().getId() != -1) {
             CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();
-            if(dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null){
+            if (dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null) {
                 //cnaeContribuinte = " cnae contribuinte!";
                 cnaeContribuinte = " ";
                 colorContri = "blue";
-            }else{
+            } else {
                 cnaeContribuinte = " este cnae não está na convenção! ";
                 colorContri = "red";
             }
@@ -381,100 +382,103 @@ public class JuridicaJSFBean {
         renderAtivoInativo = false;
         return "NÃO CONTRIBUINTE";
     }
-    
-    public String inativarContribuintes(){
+
+    public String inativarContribuintes() {
         JuridicaDB db = new JuridicaDBToplink();
         ContribuintesInativosDB dbConIni = new ContribuintesInativosDBToplink();
-            if (!getListaMotivoInativacao().isEmpty()){
+        if (!getListaMotivoInativacao().isEmpty()) {
             contribuintesInativos.setJuridica(juridica);
             contribuintesInativos.setDtAtivacao(null);
-            contribuintesInativos.setMotivoInativacao( db.pesquisaCodigoMotivoInativacao(Integer.parseInt(
-                                                        ( (SelectItem) getListaMotivoInativacao().get(idMotivoInativacao)).getDescription()
-                                                        )));
-            if (dbConIni.insert(contribuintesInativos)){
+            contribuintesInativos.setMotivoInativacao(db.pesquisaCodigoMotivoInativacao(Integer.parseInt(
+                    ((SelectItem) getListaMotivoInativacao().get(idMotivoInativacao)).getDescription())));
+            if (dbConIni.insert(contribuintesInativos)) {
                 msgConfirma = "Contribuinte Inativado!";
                 contribuintesInativos = new ContribuintesInativos();
                 listaContribuintesInativos.clear();
                 getListaContribuintesInativos();
                 getContribuinte();
             }
-        }else
+        } else {
             msgConfirma = "Não exsiste Motivo de Inativação";
-    return null;
-    }    
-    
+        }
+        return null;
+    }
+
     public String getEnderecoCobranca() {
         PessoaEndereco ende = null;
         String strCompl = "";
-        if(!listaEnd.isEmpty())
-           ende = (PessoaEndereco) listaEnd.get(0);
-
-        if (ende != null){
-            if( ende.getComplemento() == null || ende.getComplemento().isEmpty() )
-                strCompl = " ";
-            else
-                strCompl = " ( "+ende.getComplemento()+ " ) ";
-            enderecoCobranca = ende.getEndereco().getLogradouro().getDescricao()+ " " +
-                               ende.getEndereco().getDescricaoEndereco().getDescricao()+", " +ende.getNumero()+" " +ende.getEndereco().getBairro().getDescricao() +","+
-                               strCompl+ende.getEndereco().getCidade().getCidade() +" - "+ ende.getEndereco().getCidade().getUf()+ " - "+AnaliseString.mascaraCep(ende.getEndereco().getCep());
-        }else{
-             if(alterarEnd)
-                getListaEnderecos();
-             else
-                enderecoCobranca = "NENHUM";
+        if (!listaEnd.isEmpty()) {
+            ende = (PessoaEndereco) listaEnd.get(0);
         }
-    return enderecoCobranca;
+
+        if (ende != null) {
+            if (ende.getComplemento() == null || ende.getComplemento().isEmpty()) {
+                strCompl = " ";
+            } else {
+                strCompl = " ( " + ende.getComplemento() + " ) ";
+            }
+            enderecoCobranca = ende.getEndereco().getLogradouro().getDescricao() + " "
+                    + ende.getEndereco().getDescricaoEndereco().getDescricao() + ", " + ende.getNumero() + " " + ende.getEndereco().getBairro().getDescricao() + ","
+                    + strCompl + ende.getEndereco().getCidade().getCidade() + " - " + ende.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(ende.getEndereco().getCep());
+        } else {
+            if (alterarEnd) {
+                getListaEnderecos();
+            } else {
+                enderecoCobranca = "NENHUM";
+            }
+        }
+        return enderecoCobranca;
     }
 
-    public List<ContribuintesInativos> getListaContribuintesInativos(){
-        if (listaContribuintesInativos.isEmpty()){
+    public List<ContribuintesInativos> getListaContribuintesInativos() {
+        if (listaContribuintesInativos.isEmpty()) {
             ContribuintesInativosDB db = new ContribuintesInativosDBToplink();
             listaContribuintesInativos = db.listaContribuintesInativos(juridica.getId());
         }
         return listaContribuintesInativos;
-    }    
-    
-    public String btnExcluirMotivoInativacao(){
+    }
+
+    public String btnExcluirMotivoInativacao() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         contribuintesInativos = (ContribuintesInativos) listaContribuintesInativos.get(idIndexInativacao);
-        
+
         sv.abrirTransacao();
-        if (!sv.deletarObjeto((ContribuintesInativos)sv.pesquisaCodigo(contribuintesInativos.getId(),"ContribuintesInativos"))){
+        if (!sv.deletarObjeto((ContribuintesInativos) sv.pesquisaCodigo(contribuintesInativos.getId(), "ContribuintesInativos"))) {
             msgConfirma = "Erro ao excluir motivo de inativação!";
             sv.desfazerTransacao();
             return null;
-        }else{
+        } else {
             sv.comitarTransacao();
         }
         listaContribuintesInativos.clear();
         getListaContribuintesInativos();
         msgConfirma = "Motivo excluído com sucesso!";
-        if (listaContribuintesInativos.isEmpty()){
+        if (listaContribuintesInativos.isEmpty()) {
         }
         getContribuinte();
         return null;
-    }    
-    
-    public String reativarContribuintes(){
+    }
+
+    public String reativarContribuintes() {
         retornarCnaeConvencao();
-        if(cnaeConvencao == null || cnaeConvencao.getCnae().getId() == -1){
+        if (cnaeConvencao == null || cnaeConvencao.getCnae().getId() == -1) {
             msgConfirma = "Cnae atual não pertence a Categoria!";
             return null;
         }
-        
+
         ContribuintesInativosDB db = new ContribuintesInativosDBToplink();
-        ContribuintesInativos cont = db.pesquisaContribuintesInativos(juridica.getId()) ;
-        
-        if (cont.getId() != -1){
+        ContribuintesInativos cont = db.pesquisaContribuintesInativos(juridica.getId());
+
+        if (cont.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            contribuintesInativos = (ContribuintesInativos)sv.pesquisaCodigo(cont.getId(), "ContribuintesInativos");
+            contribuintesInativos = (ContribuintesInativos) sv.pesquisaCodigo(cont.getId(), "ContribuintesInativos");
             contribuintesInativos.setAtivacao(DataHoje.data());
             sv.abrirTransacao();
-            if (!sv.alterarObjeto(contribuintesInativos)){
+            if (!sv.alterarObjeto(contribuintesInativos)) {
                 msgConfirma = "Erro ao reativar empresa!";
                 sv.desfazerTransacao();
                 return null;
-            }else{
+            } else {
                 msgConfirma = "Contribuinte Reativado!";
                 sv.comitarTransacao();
             }
@@ -484,184 +488,182 @@ public class JuridicaJSFBean {
         }
         msgConfirma = "Salve o cadastro para efetuar a ativação";
         return null;
-    }    
-    
+    }
+
     public void setEnderecoCobranca(String enderecoCobranca) {
         this.enderecoCobranca = enderecoCobranca;
     }
 
     public String getDtAtivacao() {
-         String dt = "";
-    return dt;
+        String dt = "";
+        return dt;
     }
 
-    public String getDtAtivacaoInativo(){
-         String dt = "";
-        if (contribuintesInativos != null){
-            if(contribuintesInativos.getId() != -1)
-            dt = contribuintesInativos.getAtivacao();
-        }else
+    public String getDtAtivacaoInativo() {
+        String dt = "";
+        if (contribuintesInativos != null) {
+            if (contribuintesInativos.getId() != -1) {
+                dt = contribuintesInativos.getAtivacao();
+            }
+        } else {
             dt = "";
-    return dt;
+        }
+        return dt;
     }
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         JuridicaDB db = new JuridicaDBToplink();
-        
+
         TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
         Pessoa pessoa = juridica.getPessoa();
         List listDocumento = new ArrayList();
-        if (listaEnd.isEmpty() || pessoa.getId() == -1){
+        if (listaEnd.isEmpty() || pessoa.getId() == -1) {
             adicionarEnderecos();
         }
-        
-        juridica.setPorte((Porte) new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt( getListaPorte().get(idPorte).getDescription()), "Porte"));
-        
-        if (!chkEndContabilidade)
+
+        juridica.setPorte((Porte) new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(getListaPorte().get(idPorte).getDescription()), "Porte"));
+
+        if (!chkEndContabilidade) {
             juridica.setEmailEscritorio(false);
+        }
         //else
         //    juridica.setEmailEscritorio(false);
-        
-        dbSalvar.abrirTransacao();
-        if (juridica.getId() == -1){
-            juridica.getPessoa().setTipoDocumento(
-                dbDoc.pesquisaCodigo(
-                    Integer.parseInt(
-                        ( (SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()
-                    )
-                )
-            );
 
-            if (juridica.getPessoa().getNome().isEmpty()){
+        dbSalvar.abrirTransacao();
+        if (juridica.getId() == -1) {
+            juridica.getPessoa().setTipoDocumento(
+                    dbDoc.pesquisaCodigo(
+                    Integer.parseInt(
+                    ((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription())));
+
+            if (juridica.getPessoa().getNome().isEmpty()) {
                 msgConfirma = "O campo nome não pode ser nulo! ";
                 return null;
             }
 
-            if(Integer.parseInt(( (SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()) == 4)
+            if (Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()) == 4) {
                 pessoa.setDocumento("0");
-            else{
+            } else {
                 listDocumento = db.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
-                for(int i = 0; i < listDocumento.size();i++){
-                    if(!listDocumento.isEmpty()){
+                for (int i = 0; i < listDocumento.size(); i++) {
+                    if (!listDocumento.isEmpty()) {
                         msgConfirma = "Empresa já existente no Sistema!";
                         return null;
                     }
                 }
             }
 
-            if(!validaTipoDocumento( Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), juridica.getPessoa().getDocumento()) ){
+            if (!validaTipoDocumento(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), juridica.getPessoa().getDocumento())) {
                 msgConfirma = "Documento Invalido!";
                 return null;
             }
 
-            if (listaEnd.isEmpty()){
+            if (listaEnd.isEmpty()) {
                 msgConfirma = "Cadastro não pode ser salvo sem Endereço!";
                 return null;
             }
 
-            if ( juridica.getPessoa().getId() == -1 ){
+            if (juridica.getPessoa().getId() == -1) {
                 dbSalvar.inserirObjeto(pessoa);
                 juridica.setPessoa(pessoa);
-                if (juridica.getCnae().getId() == -1)
+                if (juridica.getCnae().getId() == -1) {
                     juridica.setCnae(null);
+                }
 
-                if (juridicaReceita.getId() != -1){
+                if (juridicaReceita.getId() != -1) {
                     juridicaReceita.setPessoa(pessoa);
                     dbSalvar.alterarObjeto(juridicaReceita);
                 }
-                
-                gerarLoginSenhaPessoa(juridica.getPessoa(),dbSalvar);
-                if(dbSalvar.inserirObjeto(juridica)){
+
+                gerarLoginSenhaPessoa(juridica.getPessoa(), dbSalvar);
+                if (dbSalvar.inserirObjeto(juridica)) {
                     msgConfirma = "Cadastro salvo com Sucesso!";
                     dbSalvar.comitarTransacao();
                     NovoLog novoLog = new NovoLog();
-                    novoLog.novo("Salvar Pessoa Jurídica", "ID: "+juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() +" - "+ juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura()+ " - Fechamento" + juridica.getAbertura()+ " - I.E.: " + juridica.getInscricaoEstadual()+ " - Insc. Mun.: " + juridica.getInscricaoMunicipal()+ " - Responsável: " + juridica.getResponsavel());
-                }else{
+                    novoLog.novo("Salvar Pessoa Jurídica", "ID: " + juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() + " - " + juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura() + " - Fechamento" + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
+                } else {
                     msgConfirma = "Erro ao Salvar Dados!";
                     dbSalvar.desfazerTransacao();
                     return null;
                 }
             }
-        }else{
-            if (juridica.getPessoa().getNome().isEmpty()){
+        } else {
+            if (juridica.getPessoa().getNome().isEmpty()) {
                 msgConfirma = "O campo nome não pode ser nulo! ";
                 return null;
             }
 
-            if(Integer.parseInt(( (SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()) == 4)
+            if (Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()) == 4) {
                 juridica.getPessoa().setDocumento("0");
-            else{
+            } else {
                 listDocumento = db.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
-                for(int i = 0; i < listDocumento.size();i++){
-                    if(!listDocumento.isEmpty() && ((Juridica)listDocumento.get(i)).getId() != juridica.getId()){
+                for (int i = 0; i < listDocumento.size(); i++) {
+                    if (!listDocumento.isEmpty() && ((Juridica) listDocumento.get(i)).getId() != juridica.getId()) {
                         msgConfirma = "Empresa já existente no Sistema!";
                         return null;
                     }
                 }
                 juridica.getPessoa().setTipoDocumento(
-                    dbDoc.pesquisaCodigo(
+                        dbDoc.pesquisaCodigo(
                         Integer.parseInt(
-                            ( (SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()
-                        )
-                    )
-                );
+                        ((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription())));
             }
-            if(!validaTipoDocumento( Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), juridica.getPessoa().getDocumento()) ){
+            if (!validaTipoDocumento(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), juridica.getPessoa().getDocumento())) {
                 msgConfirma = "Documento Invalido!";
                 return null;
             }
             adicionarEnderecos();
-            if ( (juridica.getPessoa().getLogin()) == null && (juridica.getPessoa().getSenha()) == null ){
-                gerarLoginSenhaPessoa(juridica.getPessoa(),dbSalvar);
+            if ((juridica.getPessoa().getLogin()) == null && (juridica.getPessoa().getSenha()) == null) {
+                gerarLoginSenhaPessoa(juridica.getPessoa(), dbSalvar);
             }
             dbSalvar.alterarObjeto(juridica.getPessoa());
-            if (dbSalvar.alterarObjeto(juridica)){
+            if (dbSalvar.alterarObjeto(juridica)) {
                 msgConfirma = "Cadastro atualizado com Sucesso!";
                 Juridica jur = (Juridica) dbSalvar.pesquisaCodigo(juridica.getId(), "Juridica");
                 dbSalvar.comitarTransacao();
-                String novoLogString = " de ID: "+jur.getId() + " - Pessoa: " + jur.getPessoa().getId() +" - "+ jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura()+ " - Fechamento: " + jur.getAbertura()+ " - I.E.: " + jur.getInscricaoEstadual()+ " - Insc. Mun.: " + jur.getInscricaoMunicipal()+ " - Responsável: " + jur.getResponsavel() 
-                                      +" para ID: "+juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() +" - "+ juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura()+ " - Fechamento: " + juridica.getAbertura()+ " - I.E.: " + juridica.getInscricaoEstadual()+ " - Insc. Mun.: " + juridica.getInscricaoMunicipal()+ " - Responsável: " + juridica.getResponsavel() ;
+                String novoLogString = " de ID: " + jur.getId() + " - Pessoa: " + jur.getPessoa().getId() + " - " + jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura() + " - Fechamento: " + jur.getAbertura() + " - I.E.: " + jur.getInscricaoEstadual() + " - Insc. Mun.: " + jur.getInscricaoMunicipal() + " - Responsável: " + jur.getResponsavel()
+                        + " para ID: " + juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() + " - " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel();
                 NovoLog novoLog = new NovoLog();
                 novoLog.novo("Atualizar Pessoa Jurídica", novoLogString);
-            }else{
+            } else {
                 dbSalvar.desfazerTransacao();
                 msgConfirma = "Erro ao atualizar Cadastro!";
             }
         }
         getContribuinte();
         salvarEndereco();
-        
-    return null;
+
+        return null;
     }
 
-   public String novo(){
-       juridica = new Juridica();
-       contabilidade = new Juridica();
-       pessoaEndereco = new PessoaEndereco();
-       convencao = new Convencao();
-       marcar = false;
-       alterarEnd = false;
-       renChkEndereco = "false";
-       cnaeContribuinte = " sem cnae! ";
-       colorContri = "red";
-       renEndereco = "false";
-       renNovoEndereco = "false";
-       renAbreEnd = "true";
-       msgDocumento = "";
-       listaEnd = new ArrayList();
-       idTipoDocumento = 1;
-       idPorte = 0;
-       listaContribuintesInativos.clear();
-       setEnderecoCompleto("");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
-   return "pessoaJuridica";
-   }
+    public String novo() {
+        juridica = new Juridica();
+        contabilidade = new Juridica();
+        pessoaEndereco = new PessoaEndereco();
+        convencao = new Convencao();
+        marcar = false;
+        alterarEnd = false;
+        renChkEndereco = "false";
+        cnaeContribuinte = " sem cnae! ";
+        colorContri = "red";
+        renEndereco = "false";
+        renNovoEndereco = "false";
+        renAbreEnd = "true";
+        msgDocumento = "";
+        listaEnd = new ArrayList();
+        idTipoDocumento = 1;
+        idPorte = 0;
+        listaContribuintesInativos.clear();
+        setEnderecoCompleto("");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
+        return "pessoaJuridica";
+    }
 
-    public void novoGenerico(){
+    public void novoGenerico() {
         juridica = new Juridica();
         contabilidade = new Juridica();
         pessoaEndereco = new PessoaEndereco();
@@ -685,21 +687,21 @@ public class JuridicaJSFBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         PessoaEnderecoDB dbPE = new PessoaEnderecoDBToplink();
-        if (juridica.getId() == -1){
+        if (juridica.getId() == -1) {
             msgConfirma = "Pesquise uma empresa para ser excluída!";
             return null;
         }
         List<PessoaEndereco> listaEndereco = dbPE.pesquisaEndPorPessoa(juridica.getPessoa().getId());
 
         sv.abrirTransacao();
-        if (!listaEndereco.isEmpty()){
+        if (!listaEndereco.isEmpty()) {
             PessoaEndereco pe = new PessoaEndereco();
-            for(int i = 0; i < listaEndereco.size(); i++){
-                pe = (PessoaEndereco)sv.pesquisaCodigo(listaEndereco.get(i).getId(), "PessoaEndereco");
-                if (!sv.deletarObjeto(pe)){
+            for (int i = 0; i < listaEndereco.size(); i++) {
+                pe = (PessoaEndereco) sv.pesquisaCodigo(listaEndereco.get(i).getId(), "PessoaEndereco");
+                if (!sv.deletarObjeto(pe)) {
                     msgConfirma = "Erro ao excluir uma pessoa Endereço!";
                     sv.desfazerTransacao();
                     return null;
@@ -710,20 +712,20 @@ public class JuridicaJSFBean {
         ContribuintesInativosDB dbCI = new ContribuintesInativosDBToplink();
         List<ContribuintesInativos> listaCI = dbCI.listaContribuintesInativos(juridica.getId());
 
-        if (!listaCI.isEmpty()){
+        if (!listaCI.isEmpty()) {
             ContribuintesInativos ci = new ContribuintesInativos();
-            for(int i = 0; i < listaCI.size(); i++){
-                ci = (ContribuintesInativos)sv.pesquisaCodigo(listaCI.get(i).getId(), "ContribuintesInativos");
-                if (!sv.deletarObjeto(ci)){
+            for (int i = 0; i < listaCI.size(); i++) {
+                ci = (ContribuintesInativos) sv.pesquisaCodigo(listaCI.get(i).getId(), "ContribuintesInativos");
+                if (!sv.deletarObjeto(ci)) {
                     msgConfirma = "Erro ao excluir Contribuintes Inativos!";
                     sv.desfazerTransacao();
                     return null;
                 }
             }
         }
-        
+
         // ------------------------------------------------------------------------------------------------------
-        if (!sv.deletarObjeto( (Juridica)sv.pesquisaCodigo(juridica.getId(), "Juridica") ) ){
+        if (!sv.deletarObjeto((Juridica) sv.pesquisaCodigo(juridica.getId(), "Juridica"))) {
             msgConfirma = "Erro ao excluir Jurídica!";
             sv.desfazerTransacao();
             return null;
@@ -734,8 +736,8 @@ public class JuridicaJSFBean {
         EnvioEmailsDB db = new EnvioEmailsDBToplink();
         List<EnvioEmails> listE = db.pesquisaTodosPorPessoa(juridica.getPessoa().getId());
 
-        for (int i = 0; i < listE.size(); i++){
-            if (!sv.deletarObjeto( (EnvioEmails)sv.pesquisaCodigo(listE.get(i).getId(), "EnvioEmails") ) ){
+        for (int i = 0; i < listE.size(); i++) {
+            if (!sv.deletarObjeto((EnvioEmails) sv.pesquisaCodigo(listE.get(i).getId(), "EnvioEmails"))) {
                 msgConfirma = "Erro ao emails enviados!";
                 sv.desfazerTransacao();
                 return null;
@@ -743,7 +745,7 @@ public class JuridicaJSFBean {
         }
         // -------------------------------------------------------------------------------------------------
 
-        if (!sv.deletarObjeto( (Pessoa)sv.pesquisaCodigo(juridica.getPessoa().getId(), "Pessoa") ) ){
+        if (!sv.deletarObjeto((Pessoa) sv.pesquisaCodigo(juridica.getPessoa().getId(), "Pessoa"))) {
             msgConfirma = "Erro ao excluir Pessoa!";
             sv.desfazerTransacao();
             return null;
@@ -752,120 +754,123 @@ public class JuridicaJSFBean {
         sv.comitarTransacao();
         novoGenerico();
         return null;
-   }
+    }
 
-   public String editar(){
-       juridica = (Juridica) listaJuridica.get(idIndex).getArgumento0();
-       if (juridica.getContabilidade() == null)
-           contabilidade = new Juridica();
-       else
-           contabilidade = juridica.getContabilidade();
-       String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       descPesquisa = "";
-       porPesquisa = "nome";
-       comoPesquisa = "";
-       if(!getListaTipoDocumento().isEmpty()){
-           for(int o = 0; o < listaTipoDocumento.size(); o++){
-               if(Integer.parseInt( listaTipoDocumento.get(o).getDescription() ) == juridica.getPessoa().getTipoDocumento().getId()){
-                   idTipoDocumento = o;
-               }
-           }
-       }
-       
-       if(!getListaPorte().isEmpty()){
-           for(int o = 0; o < listaPorte.size(); o++){
-               if(Integer.parseInt( listaPorte.get(o).getDescription() ) == juridica.getPorte().getId()){
-                   idPorte = o;
-               }
-           }
-       }
-       
-       if (url != null){
-           FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
-           getContribuinte();
-           if (juridica.getContabilidade() == null){
-               renChkEndereco = "false";
-           }else{
-               renChkEndereco = "true";
-           }
-           renNovoEndereco = "false";
-           renEndereco = "false";
-           alterarEnd = true;
-           listaEnd = new ArrayList();
-           enderecoCobranca = "NENHUM";
-           getListaEnderecos();
-           
-            if(contabilidade != null){
-                if (contabilidade.getId() != -1){
+    public String editar() {
+        juridica = (Juridica) listaJuridica.get(idIndex).getArgumento0();
+        if (juridica.getContabilidade() == null) {
+            contabilidade = new Juridica();
+        } else {
+            contabilidade = juridica.getContabilidade();
+        }
+        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        descPesquisa = "";
+        porPesquisa = "nome";
+        comoPesquisa = "";
+        if (!getListaTipoDocumento().isEmpty()) {
+            for (int o = 0; o < listaTipoDocumento.size(); o++) {
+                if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
+                    idTipoDocumento = o;
+                }
+            }
+        }
+
+        if (!getListaPorte().isEmpty()) {
+            for (int o = 0; o < listaPorte.size(); o++) {
+                if (Integer.parseInt(listaPorte.get(o).getDescription()) == juridica.getPorte().getId()) {
+                    idPorte = o;
+                }
+            }
+        }
+
+        if (url != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+            getContribuinte();
+            if (juridica.getContabilidade() == null) {
+                renChkEndereco = "false";
+            } else {
+                renChkEndereco = "true";
+            }
+            renNovoEndereco = "false";
+            renEndereco = "false";
+            alterarEnd = true;
+            listaEnd = new ArrayList();
+            enderecoCobranca = "NENHUM";
+            getListaEnderecos();
+
+            if (contabilidade != null) {
+                if (contabilidade.getId() != -1) {
                     PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                    PessoaEndereco pesEnd1 = new PessoaEndereco() ,pesEnd2 = new PessoaEndereco();
+                    PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
                     pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
                     pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
-                    if(comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty())
+                    if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
                         chkEndContabilidade = true;
-                    else
+                    } else {
                         chkEndContabilidade = false;
+                    }
                 }
-            }           
-           return url;
-       }
-       return "pessoaJuridica";
-   }
+            }
+            return url;
+        }
+        return "pessoaJuridica";
+    }
 
-   public String editar(Juridica jur){
-       juridica = jur;
-       if (juridica.getContabilidade() == null)
-           contabilidade = new Juridica();
-       else
-           contabilidade = juridica.getContabilidade();
-       String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       descPesquisa = "";
-       porPesquisa = "nome";
-       comoPesquisa = "";
-       if(!getListaTipoDocumento().isEmpty()){
-           for(int o = 0; o < listaTipoDocumento.size(); o++){
-               if(Integer.parseInt( listaTipoDocumento.get(o).getDescription() ) == juridica.getPessoa().getTipoDocumento().getId()){
-                   idTipoDocumento = o;
-               }
-           }
-       }
-       
-       if(!getListaPorte().isEmpty()){
-           for(int o = 0; o < listaPorte.size(); o++){
-               if(Integer.parseInt( listaPorte.get(o).getDescription() ) == juridica.getPorte().getId()){
-                   idPorte = o;
-               }
-           }
-       }       
-       if (url != null){
-           FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
-           
-           if (juridica.getContabilidade() == null){
-               renChkEndereco = "false";
-           }else{
-               renChkEndereco = "true";
-           }
-           renNovoEndereco = "false";
-           renEndereco = "false";
-           alterarEnd = true;
-           listaEnd = new ArrayList();
-           enderecoCobranca = "NENHUM";
-           getListaEnderecos();
-           return url;
-       }
-       return "pessoaJuridica";
-   }
+    public String editar(Juridica jur) {
+        juridica = jur;
+        if (juridica.getContabilidade() == null) {
+            contabilidade = new Juridica();
+        } else {
+            contabilidade = juridica.getContabilidade();
+        }
+        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        descPesquisa = "";
+        porPesquisa = "nome";
+        comoPesquisa = "";
+        if (!getListaTipoDocumento().isEmpty()) {
+            for (int o = 0; o < listaTipoDocumento.size(); o++) {
+                if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
+                    idTipoDocumento = o;
+                }
+            }
+        }
 
-   public String editarContabilidade(){
+        if (!getListaPorte().isEmpty()) {
+            for (int o = 0; o < listaPorte.size(); o++) {
+                if (Integer.parseInt(listaPorte.get(o).getDescription()) == juridica.getPorte().getId()) {
+                    idPorte = o;
+                }
+            }
+        }
+        if (url != null) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+
+            if (juridica.getContabilidade() == null) {
+                renChkEndereco = "false";
+            } else {
+                renChkEndereco = "true";
+            }
+            renNovoEndereco = "false";
+            renEndereco = "false";
+            alterarEnd = true;
+            listaEnd = new ArrayList();
+            enderecoCobranca = "NENHUM";
+            getListaEnderecos();
+            return url;
+        }
+        return "pessoaJuridica";
+    }
+
+    public String editarContabilidade() {
         contabilidade = (Juridica) listaContabilidade.get(idIndexContabilidade);
         juridica.setContabilidade(contabilidade);
         juridica.setEmailEscritorio(true);
         renChkEndereco = "true";
         chkEndContabilidade = true; // ROGÉRINHO PEDIU PRA VOLTAR TRUE NA DATA -- 30/07/2013 -- POR CAUSA DO CARLOS DE LIMEIRA
-       return "pessoaJuridica";
-   }
+        return "pessoaJuridica";
+    }
 
 //   public List getListaJuridica(){
 //       List result = null;
@@ -873,26 +878,25 @@ public class JuridicaJSFBean {
 //       result = db.pesquisaTodos();
 //       return result;
 //   }
-
-   public String adicionarEnderecos(){
+    public String adicionarEnderecos() {
         List tiposE = new ArrayList();
         TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
-        PessoaEnderecoDB db_pesEnd= new PessoaEnderecoDBToplink();
+        PessoaEnderecoDB db_pesEnd = new PessoaEnderecoDBToplink();
         endereco = new Endereco();
         String num;
         String comp;
         int i = 0;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoNum",  pessoaEndereco.getNumero());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoNum", pessoaEndereco.getNumero());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoComp", pessoaEndereco.getComplemento());
         tiposE = db_tipoEndereco.listaTipoEnderecoParaJuridica();
-        endereco  = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
-        if(endereco != null){
-            if (!alterarEnd){
-                num  = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
+        endereco = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
+        if (endereco != null) {
+            if (!alterarEnd) {
+                num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
-                while (i < tiposE.size()){
+                while (i < tiposE.size()) {
                     pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco)tiposE.get(i));
+                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(i));
                     pessoaEndereco.setPessoa(juridica.getPessoa());
                     pessoaEndereco.setNumero(num);
                     pessoaEndereco.setComplemento(comp);
@@ -900,32 +904,32 @@ public class JuridicaJSFBean {
                     i++;
                     pessoaEndereco = new PessoaEndereco();
                 }
-            }else{
-                num  = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
+            } else {
+                num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
                 comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
-                if(!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 2){
+                if (!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 2) {
 
-                    if(pessoaEndereco.getId() != -1){
+                    if (pessoaEndereco.getId() != -1) {
                         PessoaEndereco pessoaEndeAnt = new PessoaEndereco();
                         pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 2);
-                        ( (PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco)tiposE.get(0));
-                        ( (PessoaEndereco) listaEnd.get(0)).setEndereco(endereco);
-                        ( (PessoaEndereco) listaEnd.get(0)).setComplemento(pessoaEndereco.getComplemento());
-                        ( (PessoaEndereco) listaEnd.get(0)).setNumero(pessoaEndereco.getNumero());
-                        for(int u = 1; u < listaEnd.size(); u++ ){
-                            if(comparaEndereco(pessoaEndeAnt, (PessoaEndereco)listaEnd.get(u) ) ){
-                                ( (PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco)tiposE.get(u));
-                                ( (PessoaEndereco) listaEnd.get(u)).setEndereco(endereco);
-                                ( (PessoaEndereco) listaEnd.get(u)).setComplemento(pessoaEndereco.getComplemento());
-                                ( (PessoaEndereco) listaEnd.get(u)).setNumero(pessoaEndereco.getNumero());
+                        ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tiposE.get(0));
+                        ((PessoaEndereco) listaEnd.get(0)).setEndereco(endereco);
+                        ((PessoaEndereco) listaEnd.get(0)).setComplemento(pessoaEndereco.getComplemento());
+                        ((PessoaEndereco) listaEnd.get(0)).setNumero(pessoaEndereco.getNumero());
+                        for (int u = 1; u < listaEnd.size(); u++) {
+                            if (comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))) {
+                                ((PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco) tiposE.get(u));
+                                ((PessoaEndereco) listaEnd.get(u)).setEndereco(endereco);
+                                ((PessoaEndereco) listaEnd.get(u)).setComplemento(pessoaEndereco.getComplemento());
+                                ((PessoaEndereco) listaEnd.get(u)).setNumero(pessoaEndereco.getNumero());
                             }
                         }
                         endComercial = true;
-                    }else{
+                    } else {
                         listaEnd = new ArrayList();
-                        for(int u = 0; u < tiposE.size(); u++ ){
+                        for (int u = 0; u < tiposE.size(); u++) {
                             pessoaEndereco.setEndereco(endereco);
-                            pessoaEndereco.setTipoEndereco((TipoEndereco)tiposE.get(u));
+                            pessoaEndereco.setTipoEndereco((TipoEndereco) tiposE.get(u));
                             pessoaEndereco.setPessoa(juridica.getPessoa());
                             pessoaEndereco.setNumero(num);
                             pessoaEndereco.setComplemento(comp);
@@ -933,15 +937,15 @@ public class JuridicaJSFBean {
                             pessoaEndereco = new PessoaEndereco();
                         }
                     }
-                }else{
+                } else {
                     pessoaEndereco.setEndereco(endereco);
                     pessoaEndereco.setPessoa(juridica.getPessoa());
                     pessoaEndereco.setNumero(num);
                     pessoaEndereco.setComplemento(comp);
-                    
-                    ( (PessoaEndereco) listaEnd.get(idIndexEndereco)).setEndereco(endereco);
-                    ( (PessoaEndereco) listaEnd.get(idIndexEndereco)).setComplemento(pessoaEndereco.getComplemento());
-                    ( (PessoaEndereco) listaEnd.get(idIndexEndereco)).setNumero(pessoaEndereco.getNumero());
+
+                    ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setEndereco(endereco);
+                    ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setComplemento(pessoaEndereco.getComplemento());
+                    ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setNumero(pessoaEndereco.getNumero());
                 }
                 alterarEnd = false;
             }
@@ -952,95 +956,98 @@ public class JuridicaJSFBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
-   return "pessoaJuridica";
-   }
-
-   public boolean comparaEndereco(PessoaEndereco pessoaEnde1,PessoaEndereco pessoaEnde2){
-       boolean compara = false;
-       if( pessoaEnde1 != null && pessoaEnde2 != null){
-           if (pessoaEnde1.getComplemento() == null || pessoaEnde2.getComplemento() == null){
-               pessoaEnde1.setComplemento("");
-               pessoaEnde2.setComplemento("");
-           }
-           if ( (pessoaEnde1.getEndereco().getId() == pessoaEnde2.getEndereco().getId() &&
-                 pessoaEnde1.getNumero().equals(pessoaEnde2.getNumero()) &&
-                 pessoaEnde1.getComplemento().equals(pessoaEnde2.getComplemento())) ){
-               compara = true;
-           }else
-               compara = false;
-       }else
-           compara = false;
-       return compara;
-   }
-
-    public List<PessoaEndereco> getListaEnderecos(){
-        PessoaEndereco pesEn = new PessoaEndereco();
-        String strCompl = "";
-        if(!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()){
-                listaEnd = getPesquisaEndPorPessoa();
-                pesEn = (PessoaEndereco) (listaEnd.get(1));
-                if(pesEn.getComplemento() == null || pesEn.getComplemento().isEmpty())
-                    strCompl = " ";
-                else
-                    strCompl = " ( "+pesEn.getComplemento()+ " ) ";
-                enderecoCobranca = pesEn.getEndereco().getLogradouro().getDescricao()+ " " +
-                                   pesEn.getEndereco().getDescricaoEndereco().getDescricao()+", " +pesEn.getNumero()+" "+ pesEn.getEndereco().getBairro().getDescricao()+","+
-                                   strCompl+pesEn.getEndereco().getCidade().getCidade() +" - "+ pesEn.getEndereco().getCidade().getUf()+" - "+AnaliseString.mascaraCep(pesEn.getEndereco().getCep());
-        }
-    return listaEnd;
+        return "pessoaJuridica";
     }
 
-    public String abreEndereco(){
+    public boolean comparaEndereco(PessoaEndereco pessoaEnde1, PessoaEndereco pessoaEnde2) {
+        boolean compara = false;
+        if (pessoaEnde1 != null && pessoaEnde2 != null) {
+            if (pessoaEnde1.getComplemento() == null || pessoaEnde2.getComplemento() == null) {
+                pessoaEnde1.setComplemento("");
+                pessoaEnde2.setComplemento("");
+            }
+            if ((pessoaEnde1.getEndereco().getId() == pessoaEnde2.getEndereco().getId()
+                    && pessoaEnde1.getNumero().equals(pessoaEnde2.getNumero())
+                    && pessoaEnde1.getComplemento().equals(pessoaEnde2.getComplemento()))) {
+                compara = true;
+            } else {
+                compara = false;
+            }
+        } else {
+            compara = false;
+        }
+        return compara;
+    }
+
+    public List<PessoaEndereco> getListaEnderecos() {
+        PessoaEndereco pesEn = new PessoaEndereco();
+        String strCompl = "";
+        if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
+            listaEnd = getPesquisaEndPorPessoa();
+            pesEn = (PessoaEndereco) (listaEnd.get(1));
+            if (pesEn.getComplemento() == null || pesEn.getComplemento().isEmpty()) {
+                strCompl = " ";
+            } else {
+                strCompl = " ( " + pesEn.getComplemento() + " ) ";
+            }
+            enderecoCobranca = pesEn.getEndereco().getLogradouro().getDescricao() + " "
+                    + pesEn.getEndereco().getDescricaoEndereco().getDescricao() + ", " + pesEn.getNumero() + " " + pesEn.getEndereco().getBairro().getDescricao() + ","
+                    + strCompl + pesEn.getEndereco().getCidade().getCidade() + " - " + pesEn.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(pesEn.getEndereco().getCep());
+        }
+        return listaEnd;
+    }
+
+    public String abreEndereco() {
         listaEnd = getListaEnderecos();
-        if(listaEnd.isEmpty()){
+        if (listaEnd.isEmpty()) {
             renEndereco = "false";
             renNovoEndereco = "true";
             pessoaEndereco = new PessoaEndereco();
             listaEnd = new ArrayList();
-        }else{
+        } else {
             renEndereco = "true";
             renNovoEndereco = "false";
         }
         return "pessoaJuridica";
     }
 
-    public void salvarEndereco(){
+    public void salvarEndereco() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         //VERIFICAR ENDERECO CONTABILIDADE
         verificarEndContabilidade();
-        
+
         int i = 0;
-        if (juridica.getId() != -1){
-            if (getPesquisaEndPorPessoa().isEmpty()){
-                while (i < listaEnd.size()){
-                    pessoaEndereco = (PessoaEndereco)listaEnd.get(i);
-                    if(!db.insert(pessoaEndereco))
+        if (juridica.getId() != -1) {
+            if (getPesquisaEndPorPessoa().isEmpty()) {
+                while (i < listaEnd.size()) {
+                    pessoaEndereco = (PessoaEndereco) listaEnd.get(i);
+                    if (!db.insert(pessoaEndereco)) {
                         msgConfirma = "Erro ao Salvar Endereço!";
+                    }
                     pessoaEndereco = new PessoaEndereco();
                     i++;
                 }
-            }else{
-                if (endComercial){
+            } else {
+                if (endComercial) {
                     atualizarEndJuridicaComContabil();
-                    for (int o = 0; o < listaEnd.size(); o++){
+                    for (int o = 0; o < listaEnd.size(); o++) {
                         db.getEntityManager().getTransaction().begin();
-                        if (db.update((PessoaEndereco)listaEnd.get(o))){
+                        if (db.update((PessoaEndereco) listaEnd.get(o))) {
                             db.getEntityManager().getTransaction().commit();
-                        }
-                        else{
+                        } else {
                             db.getEntityManager().getTransaction().rollback();
                         }
                     }
                     endComercial = false;
-                }else{
-                    if(pessoaEndereco.getTipoEndereco().getId() == 3)
+                } else {
+                    if (pessoaEndereco.getTipoEndereco().getId() == 3) {
                         atualizarEndJuridicaComContabil();
-                    for (int o = 0; o < listaEnd.size(); o++){
+                    }
+                    for (int o = 0; o < listaEnd.size(); o++) {
                         db.getEntityManager().getTransaction().begin();
-                        if (db.update((PessoaEndereco)listaEnd.get(o))){
+                        if (db.update((PessoaEndereco) listaEnd.get(o))) {
                             db.getEntityManager().getTransaction().commit();
-                        }
-                        else{
+                        } else {
                             db.getEntityManager().getTransaction().rollback();
                         }
                     }
@@ -1051,26 +1058,26 @@ public class JuridicaJSFBean {
         }
     }
 
-    public void verificarEndContabilidade(){
+    public void verificarEndContabilidade() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         PessoaEndereco pesEndCon = new PessoaEndereco();
-        if(juridica.getId() != -1){
-            if(chkEndContabilidade && contabilidade.getId() != -1){
+        if (juridica.getId() != -1) {
+            if (chkEndContabilidade && contabilidade.getId() != -1) {
                 pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
-                if( (!listaEnd.isEmpty()) && pesEndCon != null){
-                    pessoaEndereco = (PessoaEndereco)listaEnd.get(1);
+                if ((!listaEnd.isEmpty()) && pesEndCon != null) {
+                    pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
                     pessoaEndereco.setComplemento(pesEndCon.getComplemento());
                     pessoaEndereco.setNumero(pesEndCon.getNumero());
                     endereco = pesEndCon.getEndereco();
                     pessoaEndereco.setEndereco(endereco);
                     listaEnd.set(1, pessoaEndereco);
                 }
-            }else if(juridica != null){
-                if(juridica.getContabilidade() != null){
-                    if ( comparaEndereco((PessoaEndereco)listaEnd.get(1), db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3)) ){
+            } else if (juridica != null) {
+                if (juridica.getContabilidade() != null) {
+                    if (comparaEndereco((PessoaEndereco) listaEnd.get(1), db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3))) {
                         pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
-                        if( (!listaEnd.isEmpty()) && pesEndCon != null && !endComercial){
-                            pessoaEndereco = (PessoaEndereco)listaEnd.get(1);
+                        if ((!listaEnd.isEmpty()) && pesEndCon != null && !endComercial) {
+                            pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
                             pessoaEndereco.setComplemento(pesEndCon.getComplemento());
                             pessoaEndereco.setNumero(pesEndCon.getNumero());
                             endereco = pesEndCon.getEndereco();
@@ -1084,42 +1091,43 @@ public class JuridicaJSFBean {
         }
     }
 
-    public void pesquisaContabilidadeI(){
+    public void pesquisaContabilidadeI() {
         JuridicaDB db = new JuridicaDBToplink();
-        if (!contabilidade.getPessoa().getNome().isEmpty())
-            listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome() , "nome", "I");        
+        if (!contabilidade.getPessoa().getNome().isEmpty()) {
+            listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "I");
+        }
     }
-    
-    public void pesquisaContabilidadeP(){
+
+    public void pesquisaContabilidadeP() {
         JuridicaDB db = new JuridicaDBToplink();
-        if (!contabilidade.getPessoa().getNome().isEmpty())
-            listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome() , "nome", "P");        
+        if (!contabilidade.getPessoa().getNome().isEmpty()) {
+            listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "P");
+        }
     }
-    
-    public String atualizarEndJuridicaComContabil(){
+
+    public String atualizarEndJuridicaComContabil() {
         JuridicaDB db = new JuridicaDBToplink();
         PessoaEnderecoDB pesEndDB = new PessoaEnderecoDBToplink();
         PessoaEndereco endeEmp = new PessoaEndereco();
         PessoaEndereco endeEmp2 = new PessoaEndereco();
         List listaPesEndEmpPertencente = new ArrayList();
-        if (juridica.getId() != -1){
+        if (juridica.getId() != -1) {
             listaPesEndEmpPertencente = db.pesquisaPesEndEmpresaComContabil(juridica.getId());
             endeEmp2 = pesEndDB.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
-            if (!listaPesEndEmpPertencente.isEmpty()){
-                pessoaEndereco = (PessoaEndereco)listaEnd.get(1);
-                for(int i = 0; i < listaPesEndEmpPertencente.size(); i++){
-                    if (comparaEndereco(endeEmp2, (PessoaEndereco)listaPesEndEmpPertencente.get(i))){
-                        endeEmp = (PessoaEndereco)listaPesEndEmpPertencente.get(i);
+            if (!listaPesEndEmpPertencente.isEmpty()) {
+                pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
+                for (int i = 0; i < listaPesEndEmpPertencente.size(); i++) {
+                    if (comparaEndereco(endeEmp2, (PessoaEndereco) listaPesEndEmpPertencente.get(i))) {
+                        endeEmp = (PessoaEndereco) listaPesEndEmpPertencente.get(i);
                         endeEmp.setComplemento(pessoaEndereco.getComplemento());
                         endeEmp.setNumero(pessoaEndereco.getNumero());
                         endeEmp.setEndereco(pessoaEndereco.getEndereco());
 
                         pesEndDB.getEntityManager().getTransaction().begin();
-                        if (pesEndDB.update(endeEmp)){
+                        if (pesEndDB.update(endeEmp)) {
                             pesEndDB.getEntityManager().getTransaction().commit();
                             endeEmp = new PessoaEndereco();
-                        }
-                        else{
+                        } else {
                             pesEndDB.getEntityManager().getTransaction().rollback();
                         }
                     }
@@ -1129,31 +1137,31 @@ public class JuridicaJSFBean {
         return null;
     }
 
-    public String RetornarObjetoDaGrid(){
+    public String RetornarObjetoDaGrid() {
         pessoaEndereco = (PessoaEndereco) listaEnd.get(idIndexEndereco);
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoPesquisa",pessoaEndereco.getEndereco());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoPesquisa", pessoaEndereco.getEndereco());
         log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
         desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
         cid = pessoaEndereco.getEndereco().getCidade().getCidade();
         uf = pessoaEndereco.getEndereco().getCidade().getUf();
-        setEnderecoCompleto(log+" "+ desc +", "+ cid + " - " +uf);
+        setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
         renEndereco = "false";
         renNovoEndereco = "true";
         alterarEnd = true;
-    return "pessoaJuridica";
+        return "pessoaJuridica";
     }
 
-    public List getListaPessoaEndereco(){
+    public List getListaPessoaEndereco() {
         List result = null;
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         result = db.pesquisaTodos();
         return result;
     }
 
-    public String CarregarEndereco(){
+    public String CarregarEndereco() {
         EnderecoDB db_endereco = new EnderecoDBToplink();
-        int idEndereco = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get( "paramEndereco" ));
+        int idEndereco = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paramEndereco"));
         pessoaEndereco.setEndereco(db_endereco.pesquisaCodigo(idEndereco));
         setEnderecoCompleto((pessoaEndereco.getEndereco().getLogradouro().getDescricao()) + " " + pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao());
         return "pessoaJuridica";
@@ -1175,91 +1183,92 @@ public class JuridicaJSFBean {
         return (result);
     }
 
-    public List getPesquisaEndPorPessoa (){
+    public List getPesquisaEndPorPessoa() {
         List result = null;
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         result = db.pesquisaEndPorPessoa(juridica.getPessoa().getId());
-    return result;
+        return result;
     }
 
-    public String voltarEndereco(){
+    public String voltarEndereco() {
         setIndicaTab("juridica");
-    return "pessoaJuridica";
+        return "pessoaJuridica";
     }
 
-    public boolean getHabilitar(){
-        if ( juridica.getPessoa().getId() == -1 )
+    public boolean getHabilitar() {
+        if (juridica.getPessoa().getId() == -1) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
-    public boolean getHabilitarFilial(){
+    public boolean getHabilitarFilial() {
         FilialDB db = new FilialDBToplink();
-        if ((juridica.getPessoa().getId() != -1) && (filialMatriz.equals("m"))){
-            if (filial.getId() == -1){
+        if ((juridica.getPessoa().getId() != -1) && (filialMatriz.equals("m"))) {
+            if (filial.getId() == -1) {
                 filial.setFilial(juridica);
                 filial.setMatriz(juridica);
                 db.insert(filial);
-            }else{
+            } else {
                 db.getEntityManager().getTransaction().begin();
-                if (db.update(filial)){
+                if (db.update(filial)) {
                     db.getEntityManager().getTransaction().commit();
-                }else{
+                } else {
                     db.getEntityManager().getTransaction().rollback();
                 }
             }
             return false;
-        }else{
+        } else {
             return true;
         }
     }
-   
-    public String excluirPessoaEndereco(){
+
+    public String excluirPessoaEndereco() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        if (pessoaEndereco.getId() != -1){
+        if (pessoaEndereco.getId() != -1) {
             db.getEntityManager().getTransaction().begin();
             pessoaEndereco = db.pesquisaCodigo(pessoaEndereco.getId());
-            if (db.delete(pessoaEndereco)){
+            if (db.delete(pessoaEndereco)) {
                 db.getEntityManager().getTransaction().commit();
-            }else{
+            } else {
                 db.getEntityManager().getTransaction().rollback();
             }
         }
         pessoaEndereco = new PessoaEndereco();
         setEnderecoCompleto("");
-    return "pessoaJuridica";
+        return "pessoaJuridica";
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         comoPesquisa = "I";
         listaJuridica.clear();
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         comoPesquisa = "P";
         listaJuridica.clear();
     }
-    public void acaoPesquisaCnaeInicial(){
+
+    public void acaoPesquisaCnaeInicial() {
         comoPesquisaCnae = "I";
         descPesquisaCnae = descPesquisaCnae.replace("-", "").replace("/", "").replace(".", "");
         listaCnae.clear();
     }
 
-    public void acaoPesquisaCnaeParcial(){
+    public void acaoPesquisaCnaeParcial() {
         comoPesquisaCnae = "P";
         descPesquisaCnae = descPesquisaCnae.replace("-", "").replace("/", "").replace(".", "");
         listaCnae.clear();
     }
 
     public List<Cnae> getListaCnae() {
-        if(listaCnae.isEmpty()){
+        if (listaCnae.isEmpty()) {
             CnaeDB db = new CnaeDBToplink();
-            listaCnae = db.pesquisaCnae(descPesquisaCnae , porPesquisaCnae, comoPesquisaCnae);
+            listaCnae = db.pesquisaCnae(descPesquisaCnae, porPesquisaCnae, comoPesquisaCnae);
         }
         return listaCnae;
     }
@@ -1267,43 +1276,44 @@ public class JuridicaJSFBean {
     public void setListaCnae(List<Cnae> listaCnae) {
         this.listaCnae = listaCnae;
     }
-    
-    public void retornaCnaeReceita(Cnae cn){
+
+    public void retornaCnaeReceita(Cnae cn) {
         juridica.setCnae(cn);
         CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();
-        if(dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null){
+        if (dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null) {
             cnaeContribuinte = " cnae contribuinte!";
             colorContri = "blue";
-        }else{
+        } else {
             cnaeContribuinte = " este cnae não está na convenção!";
             colorContri = "red";
         }
     }
 
-    public String retornaCnae(){
+    public String retornaCnae() {
         Cnae tcnae = null;
         tcnae = (Cnae) listaCnae.get(idIndexCnae);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cnaePesquisado", tcnae);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         descPesquisaCnae = "";
-        if( ((String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("pessoaJuridica") ){
+        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("pessoaJuridica")) {
             juridica.setCnae(tcnae);
             CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();
-            if(dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null){
+            if (dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null) {
                 cnaeContribuinte = " cnae contribuinte!";
                 colorContri = "blue";
-            }else{
+            } else {
                 cnaeContribuinte = " este cnae não está na convenção!";
                 colorContri = "red";
             }
-            
+
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cnaePesquisado");
             return "pessoaJuridica";
-        }else
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
     }
 
-    public String JuridicaFilialGrid(){
+    public String JuridicaFilialGrid() {
         FilialDB db = new FilialDBToplink();
         filial = new Filial();
         int i = filial.getFilial().getId();
@@ -1313,273 +1323,278 @@ public class JuridicaJSFBean {
         return "pessoaJuridica";
     }
 
-    public List getPesquisaJuridicaFilial(){
+    public List getPesquisaJuridicaFilial() {
         List result = null;
         FilialDB db = new FilialDBToplink();
         result = db.pesquisaJuridicaFilial(juridica.getId());
         return result;
     }
 
-    public void excluirFilial(){
+    public void excluirFilial() {
         FilialDB db = new FilialDBToplink();
         db.getEntityManager().getTransaction().begin();
         filial = db.pesquisaFilialPertencente(juridica.getId(), filial.getFilial().getId());
-        if (db.delete(filial)){
+        if (db.delete(filial)) {
             db.getEntityManager().getTransaction().commit();
-        }else{
+        } else {
             db.getEntityManager().getTransaction().rollback();
         }
         filial = new Filial();
     }
 
-    public List getPesquisaFilial(){
-       List result = null;
-       FilialDB db = new FilialDBToplink();
-       result = db.pesquisaFilial(descPesquisa , porPesquisa, comoPesquisa, juridica.getId());
-       return result;
+    public List getPesquisaFilial() {
+        List result = null;
+        FilialDB db = new FilialDBToplink();
+        result = db.pesquisaFilial(descPesquisa, porPesquisa, comoPesquisa, juridica.getId());
+        return result;
     }
 
-    public boolean getHabilitarComboBoxFilial(){
-        if (juridica.getPessoa().getId() == -1)
-           return false;
-        else
+    public boolean getHabilitarComboBoxFilial() {
+        if (juridica.getPessoa().getId() == -1) {
+            return false;
+        } else {
             return true;
+        }
     }
 
-    public String getColocarMascara(){
+    public String getColocarMascara() {
         int i = Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription());
         // 1 cpf, 2 cnpj, 3 cei, 4 nenhum
-        if (i == 1){
-                mask = "cpf";
+        if (i == 1) {
+            mask = "cpf";
         }
-        if (i == 2){
-                mask = "cnpj";
+        if (i == 2) {
+            mask = "cnpj";
         }
-        if (i == 3){
-                mask = "cei";
+        if (i == 3) {
+            mask = "cei";
         }
-        if (i == 4){
-                mask = "";
+        if (i == 4) {
+            mask = "";
         }
         return mask;
     }
 
-    public List<SelectItem> getListaTipoDocumento(){
+    public List<SelectItem> getListaTipoDocumento() {
         TipoDocumentoDB db = new TipoDocumentoDBToplink();
-        if (listaTipoDocumento.isEmpty()){
+        if (listaTipoDocumento.isEmpty()) {
             int i = 0;
             List select = db.pesquisaTodos();
-            while (i < select.size()){
-               listaTipoDocumento.add(new SelectItem( new Integer(i), (String) ((TipoDocumento) select.get(i)).getDescricao(), Integer.toString(((TipoDocumento) select.get(i)).getId()) ));
-               i++;
+            while (i < select.size()) {
+                listaTipoDocumento.add(new SelectItem(new Integer(i), (String) ((TipoDocumento) select.get(i)).getDescricao(), Integer.toString(((TipoDocumento) select.get(i)).getId())));
+                i++;
             }
         }
         return listaTipoDocumento;
     }
 
-    public String getRetornarEnderecoAmbos(){
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")!=null){
-          log  = ((Endereco)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getLogradouro().getDescricao();
-          desc = ((Endereco)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getDescricaoEndereco().getDescricao();
-          cid  = ((Endereco)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getCidade().getCidade();
-          uf   = ((Endereco)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getCidade().getUf();
-          setEnderecoCompleto(log +" "+ desc +", "+ cid + " - "+uf );
+    public String getRetornarEnderecoAmbos() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
+            log = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getLogradouro().getDescricao();
+            desc = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getDescricaoEndereco().getDescricao();
+            cid = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getCidade().getCidade();
+            uf = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getCidade().getUf();
+            setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
         }
         return enderecoCompleto;
     }
 
-    public CnaeConvencao retornarCnaeConvencao(){
+    public CnaeConvencao retornarCnaeConvencao() {
         CnaeConvencaoDB dbCnae = new CnaeConvencaoDBToplink();
-        if(juridica.getCnae() != null && juridica.getCnae().getId() != -1)
+        if (juridica.getCnae() != null && juridica.getCnae().getId() != -1) {
             cnaeConvencao = dbCnae.pesquisaCnaeComConvencao(juridica.getCnae().getId());
-        else
+        } else {
             cnaeConvencao = new CnaeConvencao();
+        }
         return cnaeConvencao;
     }
 
-    public String btnExcluirContabilidadePertencente(){
-        if(juridica.getId() != -1){
+    public String btnExcluirContabilidadePertencente() {
+        if (juridica.getId() != -1) {
             chkEndContabilidade = false;
             salvarEndereco();
             juridica.setContabilidade(null);
             juridica.setEmailEscritorio(false);
-        }else{
+        } else {
             juridica.setContabilidade(null);
             juridica.setEmailEscritorio(false);
         }
         return "pessoaJuridica";
     }
 
-    public List<SelectItem> getListaMotivoInativacao(){
+    public List<SelectItem> getListaMotivoInativacao() {
         List<SelectItem> motIna = new Vector<SelectItem>();
         int i = 0;
         JuridicaDB db = new JuridicaDBToplink();
         List select = db.listaMotivoInativacao();
-        while (i < select.size()){
-            motIna.add (new SelectItem( new Integer(i),
-                                        (String) ((MotivoInativacao) select.get(i)).getDescricao(),
-                                        Integer.toString(((MotivoInativacao) select.get(i)).getId()) ));
+        while (i < select.size()) {
+            motIna.add(new SelectItem(new Integer(i),
+                    (String) ((MotivoInativacao) select.get(i)).getDescricao(),
+                    Integer.toString(((MotivoInativacao) select.get(i)).getId())));
             i++;
         }
-    return motIna;
+        return motIna;
     }
 
-    public String pesquisarPessoaJuridicaGeracaoCadastrar(){
+    public String pesquisarPessoaJuridicaGeracaoCadastrar() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "processamentoIndividual");
-    return "pessoaJuridica";
+        return "pessoaJuridica";
     }
 
-    public boolean validaTipoDocumento(int idDoc, String docS){
-                // 1 cpf, 2 cnpj, 3 cei, 4 nenhum
+    public boolean validaTipoDocumento(int idDoc, String docS) {
+        // 1 cpf, 2 cnpj, 3 cei, 4 nenhum
         String documento = "";
         documento = docS.replace(".", "").replace("/", "").replace("-", "");
-                
+
         boolean ye = false;
-        if (idDoc == 1){
+        if (idDoc == 1) {
             ye = ValidaDocumentos.isValidoCPF(documento);
         }
-        if (idDoc == 2){
+        if (idDoc == 2) {
             ye = ValidaDocumentos.isValidoCNPJ(documento);
         }
-        if (idDoc == 3){
+        if (idDoc == 3) {
             //ye = ValidaDocumentos.isValidoCEI(documento);
-            ye = true; 
+            ye = true;
         }
-        if(idDoc == 4){
+        if (idDoc == 4) {
             ye = true;
         }
 
         return ye;
     }
 
-    public String linkDaReceita(){
-        if (juridica != null){
+    public String linkDaReceita() {
+        if (juridica != null) {
             int i = 0;
             String documento = "";
             String docLaco = juridica.getPessoa().getDocumento();
-            if (validaTipoDocumento(2, docLaco)){
-                while (i < docLaco.length()){
-                    String as = docLaco.substring(i, i+1);
-                    if (!as.equals(".") && !as.equals("-") && !as.equals("/")){
+            if (validaTipoDocumento(2, docLaco)) {
+                while (i < docLaco.length()) {
+                    String as = docLaco.substring(i, i + 1);
+                    if (!as.equals(".") && !as.equals("-") && !as.equals("/")) {
                         documento = documento + as;
                     }
                     i++;
                 }
                 Clipboard copia = Toolkit.getDefaultToolkit().getSystemClipboard();
                 StringSelection selection = new StringSelection(documento);
-                copia.setContents(selection,null);
-            }else{
+                copia.setContents(selection, null);
+            } else {
                 Clipboard copia = Toolkit.getDefaultToolkit().getSystemClipboard();
                 StringSelection selection = new StringSelection("Ação Inválida!");
-                copia.setContents(selection,null);
+                copia.setContents(selection, null);
             }
         }
         return null;
     }
 
-    public List getListaEmpresasPertencentes(){
+    public List getListaEmpresasPertencentes() {
         JuridicaDB db = new JuridicaDBToplink();
         PessoaEnderecoDB dbPe = new PessoaEnderecoDBToplink();
         PessoaEndereco pe = new PessoaEndereco();
 
-        if (juridica.getId() != -1){
+        if (juridica.getId() != -1) {
             listaEmpresasPertencentes.clear();
             List listaX = db.listaContabilidadePertencente(juridica.getId());
-            for (int i = 0; i < listaX.size();i++){
-                pe = dbPe.pesquisaEndPorPessoaTipo( ((Juridica)(listaX.get(i))).getPessoa().getId(), 2);
-                listaEmpresasPertencentes.add( new DataObject((Juridica)(listaX.get(i)), pe) );
+            for (int i = 0; i < listaX.size(); i++) {
+                pe = dbPe.pesquisaEndPorPessoaTipo(((Juridica) (listaX.get(i))).getPessoa().getId(), 2);
+                listaEmpresasPertencentes.add(new DataObject((Juridica) (listaX.get(i)), pe));
             }
         }
         return listaEmpresasPertencentes;
     }
 
-   public String editarEmpresaPertencente(){
-       juridica = (Juridica)listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
-       if (juridica.getContabilidade() == null)
-           contabilidade = new Juridica();
-       else
-           contabilidade = juridica.getContabilidade();
-       contabilidade = juridica.getContabilidade();
-       String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       descPesquisa = "";
-       porPesquisa = "nome";
-       comoPesquisa = "";
-       if (url != null){
-           if(!getListaTipoDocumento().isEmpty()){
-               for(int o = 0; o < listaTipoDocumento.size(); o++){
-                   if(Integer.parseInt( listaTipoDocumento.get(o).getDescription() ) == juridica.getPessoa().getTipoDocumento().getId()){
-                       setIdTipoDocumento(o);
-                   }
-               }
-           }
-           if (juridica.getContabilidade() == null){
-               renChkEndereco = "false";
-           }else{
-               renChkEndereco = "true";
-           }
-           renNovoEndereco = "false";
-           renEndereco = "false";
-           alterarEnd = true;
-           listaEnd = new ArrayList();
-           enderecoCobranca = "NENHUM";
-           listaContribuintesInativos.clear();
-           getListaEnderecos();
-           return "pessoaJuridica";
-       }
-       return "pessoaJuridica";
-   }
-
-   public String editarEmpresaContabilidade(){
-       JuridicaDB db = new JuridicaDBToplink();
-       juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
-       if (juridica.getContabilidade() == null)
-           contabilidade = new Juridica();
-       else
-           contabilidade = juridica.getContabilidade();
-       String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       descPesquisa = "";
-       porPesquisa = "nome";
-       comoPesquisa = "";
-       if (url != null){
-           if(!getListaTipoDocumento().isEmpty()){
-               for(int o = 0; o < listaTipoDocumento.size(); o++){
-                   if(Integer.parseInt( listaTipoDocumento.get(o).getDescription() ) == juridica.getPessoa().getTipoDocumento().getId()){
-                       setIdTipoDocumento(o);
-                   }
-               }
-           }
-           if (juridica.getContabilidade() == null){
-               renChkEndereco = "false";
-           }else{
-               renChkEndereco = "true";
-           }
-           renNovoEndereco = "false";
-           renEndereco = "false";
-           alterarEnd = true;
-           listaEnd = new ArrayList();
-           enderecoCobranca = "NENHUM";
-           listaContribuintesInativos.clear();
-           getListaEnderecos();
-           return "pessoaJuridica";
-       }
-       return "pessoaJuridica";
-   }
-
-    public void enviarEmail(){
-        FilialDB db = new FilialDBToplink();
-        EnvioEmailsDB dbE = new EnvioEmailsDBToplink();
-        if (juridica.getId() != -1){
-            msgConfirma = EnviarEmail.EnviarEmail(db.pesquisaCodigoRegistro(1), juridica);
-            if (msgConfirma.equals("Enviado com Sucesso. Confira email cadastrado!")){
-                dbE.insert(envioEmails);
+    public String editarEmpresaPertencente() {
+        juridica = (Juridica) listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
+        if (juridica.getContabilidade() == null) {
+            contabilidade = new Juridica();
+        } else {
+            contabilidade = juridica.getContabilidade();
+        }
+        contabilidade = juridica.getContabilidade();
+        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        descPesquisa = "";
+        porPesquisa = "nome";
+        comoPesquisa = "";
+        if (url != null) {
+            if (!getListaTipoDocumento().isEmpty()) {
+                for (int o = 0; o < listaTipoDocumento.size(); o++) {
+                    if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
+                        setIdTipoDocumento(o);
+                    }
+                }
             }
-        }else
-            msgConfirma = "Pesquisar uma Empresa para envio!";
+            if (juridica.getContabilidade() == null) {
+                renChkEndereco = "false";
+            } else {
+                renChkEndereco = "true";
+            }
+            renNovoEndereco = "false";
+            renEndereco = "false";
+            alterarEnd = true;
+            listaEnd = new ArrayList();
+            enderecoCobranca = "NENHUM";
+            listaContribuintesInativos.clear();
+            getListaEnderecos();
+            return "pessoaJuridica";
+        }
+        return "pessoaJuridica";
     }
 
-    public String enviarEmailParaTodos(){
+    public String editarEmpresaContabilidade() {
+        JuridicaDB db = new JuridicaDBToplink();
+        juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
+        if (juridica.getContabilidade() == null) {
+            contabilidade = new Juridica();
+        } else {
+            contabilidade = juridica.getContabilidade();
+        }
+        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        descPesquisa = "";
+        porPesquisa = "nome";
+        comoPesquisa = "";
+        if (url != null) {
+            if (!getListaTipoDocumento().isEmpty()) {
+                for (int o = 0; o < listaTipoDocumento.size(); o++) {
+                    if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
+                        setIdTipoDocumento(o);
+                    }
+                }
+            }
+            if (juridica.getContabilidade() == null) {
+                renChkEndereco = "false";
+            } else {
+                renChkEndereco = "true";
+            }
+            renNovoEndereco = "false";
+            renEndereco = "false";
+            alterarEnd = true;
+            listaEnd = new ArrayList();
+            enderecoCobranca = "NENHUM";
+            listaContribuintesInativos.clear();
+            getListaEnderecos();
+            return "pessoaJuridica";
+        }
+        return "pessoaJuridica";
+    }
+
+    public void enviarEmail() {
+        FilialDB db = new FilialDBToplink();
+        EnvioEmailsDB dbE = new EnvioEmailsDBToplink();
+        if (juridica.getId() != -1) {
+            msgConfirma = EnviarEmail.EnviarEmail(db.pesquisaCodigoRegistro(1), juridica);
+            if (msgConfirma.equals("Enviado com Sucesso. Confira email cadastrado!")) {
+                dbE.insert(envioEmails);
+            }
+        } else {
+            msgConfirma = "Pesquisar uma Empresa para envio!";
+        }
+    }
+
+    public String enviarEmailParaTodos() {
         FilialDB db = new FilialDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         Registro reg = new Registro();
@@ -1590,38 +1605,39 @@ public class JuridicaJSFBean {
         return null;
     }
 
-    public boolean isRenEnviarEmail(){
-        if (juridica.getId() == 1)
+    public boolean isRenEnviarEmail() {
+        if (juridica.getId() == 1) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
-    public void gerarLoginSenhaPessoa(Pessoa pessoa, SalvarAcumuladoDB dbSalvar){
+    public void gerarLoginSenhaPessoa(Pessoa pessoa, SalvarAcumuladoDB dbSalvar) {
         PessoaDB db = new PessoaDBToplink();
         String login = "", senha = "", nome = "";
         senha = senha + DataHoje.hora().replace(":", "");
-        senha = Integer.toString(Integer.parseInt(senha) + Integer.parseInt(senha+"43"));
-        senha = senha.substring(senha.length()-6, senha.length());
-        nome = AnaliseString.removerAcentos(pessoa.getNome().replace(" ","X").toUpperCase());
-        nome = nome.replace("-","Y");
-        nome = nome.replace(".","W");
-        nome = nome.replace("/","Z");
-        nome = nome.replace("A","Q");
-        nome = nome.replace("E","R");
-        nome = nome.replace("I","H");
-        nome = nome.replace("O","P");
-        nome = nome.replace("U","M");
-        nome = ( "JHSRGDQ"+nome) + pessoa.getId();
-        login = nome.substring(nome.length()-6,nome.length());
+        senha = Integer.toString(Integer.parseInt(senha) + Integer.parseInt(senha + "43"));
+        senha = senha.substring(senha.length() - 6, senha.length());
+        nome = AnaliseString.removerAcentos(pessoa.getNome().replace(" ", "X").toUpperCase());
+        nome = nome.replace("-", "Y");
+        nome = nome.replace(".", "W");
+        nome = nome.replace("/", "Z");
+        nome = nome.replace("A", "Q");
+        nome = nome.replace("E", "R");
+        nome = nome.replace("I", "H");
+        nome = nome.replace("O", "P");
+        nome = nome.replace("U", "M");
+        nome = ("JHSRGDQ" + nome) + pessoa.getId();
+        login = nome.substring(nome.length() - 6, nome.length());
 
         pessoa.setLogin(login);
         pessoa.setSenha(senha);
         dbSalvar.alterarObjeto(pessoa);
-   }
+    }
 
-    public void atualizaEnvioEmails(){
-        if (juridica.getId() != -1){
+    public void atualizaEnvioEmails() {
+        if (juridica.getId() != -1) {
             envioEmails = new EnvioEmails();
             envioEmails.setEmail(juridica.getPessoa().getEmail1());
             envioEmails.setHistorico("Envio de Login e senha para Contribuinte.");
@@ -1633,13 +1649,13 @@ public class JuridicaJSFBean {
         }
     }
 
-    public String extratoTela(){
+    public String extratoTela() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", juridica.getPessoa());
-        return ((chamadaPaginaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
+        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
     }
-    
-    public String retornaDaInativacao(){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+
+    public String retornaDaInativacao() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return "pessoaJuridica";
     }
 
@@ -1752,22 +1768,23 @@ public class JuridicaJSFBean {
     }
 
     public Juridica getJuridica() {
-        if(juridica.getFantasia().isEmpty() || juridica.getFantasia() == null)
+        if (juridica.getFantasia().isEmpty() || juridica.getFantasia() == null) {
             juridica.setFantasia(juridica.getPessoa().getNome());
+        }
         return juridica;
     }
 
     public String getStrGrupoCidade() {
         ConvencaoCidadeDB dbCon = new ConvencaoCidadeDBToplink();
-        if (convencao.getId() != -1 && !listaEnd.isEmpty()){
-            gruCids = dbCon.pesquisaGrupoCidadeJuridica(convencao.getId(), ((PessoaEndereco) listaEnd.get(3)).getEndereco().getCidade().getId() );
+        if (convencao.getId() != -1 && !listaEnd.isEmpty()) {
+            gruCids = dbCon.pesquisaGrupoCidadeJuridica(convencao.getId(), ((PessoaEndereco) listaEnd.get(3)).getEndereco().getCidade().getId());
             if (gruCids != null) {
                 strGrupoCidade = gruCids.getDescricao();
-            }else {
+            } else {
                 strGrupoCidade = "";
                 gruCids = new GrupoCidade();
             }
-        }else{
+        } else {
             strGrupoCidade = "";
             gruCids = new GrupoCidade();
         }
@@ -1809,7 +1826,7 @@ public class JuridicaJSFBean {
     public void setIdMotivoInativacao(int idMotivoInativacao) {
         this.idMotivoInativacao = idMotivoInativacao;
     }
-    
+
     public Convencao getConvencao() {
         return convencao;
     }
@@ -1834,38 +1851,37 @@ public class JuridicaJSFBean {
         this.cnaeContribuinte = cnaeContribuinte;
     }
 
-    public String abrirPDFConvencao(){
+    public String abrirPDFConvencao() {
 //        ImprimirBoleto imp = new ImprimirBoleto();
         ConvencaoCidade conv = new ConvencaoCidade();
         ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-        conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());        
-        try{
-            if (conv != null){
-                if (conv.getCaminho() != null || !conv.getCaminho().isEmpty()){
+        conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());
+        try {
+            if (conv != null) {
+                if (conv.getCaminho() != null || !conv.getCaminho().isEmpty()) {
                     FacesContext context = FacesContext.getCurrentInstance();
-                    String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/convencao/"+conv.getCaminho()+".pdf");
-                    File fl = new File(caminho);    
-                    if (fl.exists()){
+                    String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
+                    File fl = new File(caminho);
+                    if (fl.exists()) {
 
-                        HttpServletResponse response = (HttpServletResponse)  FacesContext.getCurrentInstance().getExternalContext().getResponse();  
-                        response.sendRedirect("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/convencao/"+conv.getCaminho()+".pdf");
+                        HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                        response.sendRedirect("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
                         //imp.visualizar(fl);
                     }
                 }
             }
-        }catch(Exception e){
-            
+        } catch (Exception e) {
         }
         return null;
     }
-    
+
     public String getStrCnaeConvencao() {
         CnaeConvencao cc = new CnaeConvencao();
         cc = retornarCnaeConvencao();
-        if(cc != null){
+        if (cc != null) {
             strCnaeConvencao = cc.getConvencao().getDescricao();
             convencao = cc.getConvencao();
-        } else{
+        } else {
             strCnaeConvencao = "";
             convencao = new Convencao();
         }
@@ -1885,9 +1901,9 @@ public class JuridicaJSFBean {
     }
 
     public String getStrSimpleEndereco() {
-        if(juridica.getId() == -1){
+        if (juridica.getId() == -1) {
             strSimpleEndereco = "Adicionar Endereço";
-        }else{
+        } else {
             strSimpleEndereco = "Mais Endereço";
         }
         return strSimpleEndereco;
@@ -1930,8 +1946,9 @@ public class JuridicaJSFBean {
     }
 
     public String getRenChkEndereco() {
-        if (renChkEndereco.equals("false"))
+        if (renChkEndereco.equals("false")) {
             chkEndContabilidade = false;
+        }
         return renChkEndereco;
     }
 
@@ -1972,9 +1989,11 @@ public class JuridicaJSFBean {
     }
 
     public String getAtualiza() {
-        if (atualiza.isEmpty())
+        if (atualiza.isEmpty()) {
             atualiza = "Agora ";
-        else atualiza += "Funcionou!!";
+        } else {
+            atualiza += "Funcionou!!";
+        }
         return atualiza;
     }
 
@@ -1983,26 +2002,26 @@ public class JuridicaJSFBean {
     }
 
     public List<DataObject> getListaJuridica() {
-        if (listaJuridica.isEmpty()){
+        if (listaJuridica.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
             List<Juridica> lista = new ArrayList();
-            lista = db.pesquisaPessoa(descPesquisa , porPesquisa, comoPesquisa);
-            
-            for(int i = 0; i < lista.size(); i++){
+            lista = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
+
+            for (int i = 0; i < lista.size(); i++) {
                 List<Vector> listax = db.listaJuridicaContribuinte(lista.get(i).getId());
                 String status = "";
-                if (listax.isEmpty()){
+                if (listax.isEmpty()) {
                     status = "NÃO CONTRIBUINTE";
-                }else{
-                    if (listax.get(0).get(11) != null){
+                } else {
+                    if (listax.get(0).get(11) != null) {
                         status = "CONTRIBUINTE INATIVO";
-                    }else{
+                    } else {
                         status = "ATIVO";
                     }
                 }
-                listaJuridica.add( new DataObject(lista.get(i), status) );
+                listaJuridica.add(new DataObject(lista.get(i), status));
             }
-            
+
         }
         return listaJuridica;
     }
@@ -2086,18 +2105,23 @@ public class JuridicaJSFBean {
     public String getStrArquivo() {
         ConvencaoCidade conv = new ConvencaoCidade();
         ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-        conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());     
-        if (!strGrupoCidade.isEmpty()){
-            if (conv != null){
+        conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());
+        if (!strGrupoCidade.isEmpty()) {
+            if (conv != null) {
                 FacesContext context = FacesContext.getCurrentInstance();
-                String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/convencao/"+conv.getCaminho()+".pdf");
-                File fl = new File(caminho);    
-                if (fl.exists())
+                String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
+                File fl = new File(caminho);
+                if (fl.exists()) {
                     strArquivo = "true";
-                else
+                } else {
                     strArquivo = "false";
-            }else {strArquivo = "false";}
-        }else {strArquivo = "false";}
+                }
+            } else {
+                strArquivo = "false";
+            }
+        } else {
+            strArquivo = "false";
+        }
         return strArquivo;
     }
 
@@ -2114,10 +2138,11 @@ public class JuridicaJSFBean {
     }
 
     public String getMaskCnae() {
-        if (porPesquisaCnae.equals("cnae"))
+        if (porPesquisaCnae.equals("cnae")) {
             maskCnae = "cnae";
-        else
+        } else {
             maskCnae = "";
+        }
         return maskCnae;
     }
 
@@ -2134,13 +2159,12 @@ public class JuridicaJSFBean {
     }
 
     public List<SelectItem> getListaPorte() {
-        if (listaPorte.isEmpty()){
+        if (listaPorte.isEmpty()) {
             List<Porte> select = new SalvarAcumuladoDBToplink().listaObjeto("Porte");
-            for (int i = 0; i < select.size(); i++){
-                listaPorte.add(new SelectItem( new Integer(i),
-                               select.get(i).getDescricao(),
-                               Integer.toString( select.get(i).getId()) )
-                );
+            for (int i = 0; i < select.size(); i++) {
+                listaPorte.add(new SelectItem(new Integer(i),
+                        select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())));
             }
         }
         return listaPorte;
@@ -2149,15 +2173,15 @@ public class JuridicaJSFBean {
     public void setListaPorte(List<SelectItem> listaPorte) {
         this.listaPorte = listaPorte;
     }
-    
-    public String limparCampoPesquisa(){
+
+    public String limparCampoPesquisa() {
         setDescPesquisa("");
         return null;
     }
-    
-   public void limparCnae() {
-       if (juridica.getId() != -1) {
-           juridica.setCnae(null);
-       }
-   }
+
+    public void limparCnae() {
+        if (juridica.getId() != -1) {
+            juridica.setCnae(null);
+        }
+    }
 }
