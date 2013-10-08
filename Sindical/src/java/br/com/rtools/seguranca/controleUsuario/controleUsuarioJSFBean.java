@@ -1,7 +1,6 @@
 package br.com.rtools.seguranca.controleUsuario;
 
 import br.com.rtools.logSistema.NovoLog;
-import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.*;
@@ -10,8 +9,6 @@ import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
 import java.io.IOException;
 import java.io.Serializable;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -20,8 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class controleUsuarioJSFBean implements Serializable {
-    
-    // static final long serialVersionUID = 7220145288109489651L;
     
     private Usuario usuario = new Usuario();
     private String login = "";

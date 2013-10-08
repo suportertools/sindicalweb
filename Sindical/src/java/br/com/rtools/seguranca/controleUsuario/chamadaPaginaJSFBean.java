@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public class chamadaPaginaJSFBean implements Serializable {
 
-    // static final long serialVersionUID = 7220145288109489651L;
     private HttpServletRequest paginaRequerida = null;
     private boolean carregaPg = true;
     private boolean linkClicado = false;
@@ -739,7 +738,7 @@ public class chamadaPaginaJSFBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("descontoServicoEmpresaBean");
         return metodoGenerico(2, "descontoServicoEmpresa");
     }
-    
+
     public synchronized String usuarioPerfil() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioBean");
         return metodoGenerico(2, "usuarioPerfil");
