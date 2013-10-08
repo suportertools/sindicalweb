@@ -8,7 +8,6 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
-import br.com.rtools.homologacao.CancelarHorario;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
@@ -30,11 +29,13 @@ import br.com.rtools.sistema.db.LinksDBToplink;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-// import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -45,11 +46,14 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
+@ManagedBean(name = "agendamentoBean", eager = true)
+@SessionScoped
+public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Serializable {
 
     private int idStatus = 0;
     private int idMotivoDemissao = 0;
     private int idHorarioTransferencia = 0;
+    private int idHorarioAlternativo = 0;
     private String tipoAviso = "true";
     private String strEndereco = "";
     private String msgAgendamento = "";
@@ -60,6 +64,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     private String strContribuinte = "";
     private List listaGrid = new ArrayList();
     private List listaMovimento = new ArrayList();
+    private List<SelectItem> listaHorarioTransferencia = new ArrayList<SelectItem>();
     private Juridica juridica = new Juridica();
     private Fisica fisica = new Fisica();
     private Date data = DataHoje.dataHoje();
@@ -67,7 +72,6 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     private Agendamento agendamento = new Agendamento();
     private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
     private PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
-    private Horarios horarios = new Horarios();
     private boolean renderAgendamento = true;
     private boolean renderConcluir = false;
     private boolean renderCancelarHorario = false;
@@ -76,6 +80,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     private boolean disabledProtocolo = false;
     private boolean renderedDisponivel = false;
     private boolean renderTransfere = false;
+    private boolean ocultarHorarioAlternativo = true;
     private MacFilial macFilial = null;
     private int protocolo = 0;
     private int idIndex = -1;
@@ -119,6 +124,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             return null;
         }
         sv.comitarTransacao();
+        listaHorarioTransferencia.clear();
         renderTransfere = false;
         idHorarioTransferencia = 0;
         msgConfirma = "Horário transferido com Sucesso!";
@@ -141,7 +147,6 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (int i = 0; i < listaMovimento.size(); i++) {
-            //lista.add((Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo( (Integer)((Vector)listaMovimento.get(i)).get(0), "Movimento") );
             Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaMovimento.get(i)).get(0), "Movimento");
             lista.add(m);
             listaValores.add(m.getValor());
@@ -161,7 +166,6 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (int i = 0; i < listaMovimento.size(); i++) {
-            // lista.add((Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo( (Integer)((Vector)listaMovimento.get(i)).get(0), "Movimento") );
             Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaMovimento.get(i)).get(0), "Movimento");
             lista.add(m);
             listaValores.add(m.getValor());
@@ -185,14 +189,12 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                     msgConfirma = "Contabilidade sem Email para envio";
                     return null;
                 }
-
                 pessoa = juridica.getContabilidade().getPessoa();
             } else {
                 if (juridica.getPessoa().getEmail1().isEmpty()) {
                     msgConfirma = "Empresa sem Email para envio";
                     return null;
                 }
-
                 pessoa = juridica.getPessoa();
             }
 
@@ -200,7 +202,6 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             List<Pessoa> p = new ArrayList();
 
             p.add(pessoa);
-
             //String[] ret = new String[2];
             String[] ret;
             if (!reg.isEnviarEmailAnexo()) {
@@ -272,37 +273,31 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public List<SelectItem> getListaHorarioTransferencia() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        AgendamentoDB db = new AgendamentoDBToplink();
-        int idDiaSemana = DataHoje.diaDaSemana(dataTransferencia);
-        List<Horarios> select = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), idDiaSemana);
-        int qnt;
-        int j = 0;
-        for (int i = 0; i < select.size(); i++) {
-            qnt = db.pesquisaQntdDisponivel(macFilial.getFilial().getId(), select.get(i), getDataTransferencia());
-            if (qnt == -1) {
-                return new ArrayList();
+        if (listaHorarioTransferencia.isEmpty()) {
+            HomologacaoDB db = new HomologacaoDBToplink();
+            int idDiaSemana = DataHoje.diaDaSemana(dataTransferencia);
+            List<Horarios> select = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), idDiaSemana);
+            int qnt;
+            int j = 0;
+            for (int i = 0; i < select.size(); i++) {
+                qnt = db.pesquisaQntdDisponivel(macFilial.getFilial().getId(), select.get(i), getDataTransferencia());
+                if (qnt == -1) {
+                    return new ArrayList();
+                }
+                if (qnt > 0) {
+                    listaHorarioTransferencia.add(new SelectItem(new Integer(j), select.get(i).getHora() + " (" + qnt + ")", String.valueOf(select.get(i).getId())));
+                    j++;
+                }
             }
-
-            if (qnt > 0) {
-                result.add(new SelectItem(new Integer(j), select.get(i).getHora() + " (" + qnt + ")", String.valueOf(select.get(i).getId())));
-                j++;
-            }
-//            if (qnt < select.get(i).getQuantidade()) {
-//                result.add(new SelectItem(new Integer(j), select.get(i).getHora(), String.valueOf(select.get(i).getId())));
-//                j++;
-//            }
         }
-        return result;
+        return listaHorarioTransferencia;
     }
 
     public synchronized List getListaHorarios() {
         listaGrid = new ArrayList();
         List<Agendamento> ag;
         List<Horarios> horario;
-        List<CancelarHorario> cancelarHorario = new ArrayList<CancelarHorario>();
-
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         String agendador;
         String homologador;
         DataObject dtObj;
@@ -314,35 +309,20 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         switch (idNrStatus) {
             //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
             case 1: {
-                CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-                cancelarHorario = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(macFilial.getFilial().getId(), data, null);
                 renderedDisponivel = true;
                 int diaDaSemana = DataHoje.diaDaSemana(data);
                 horario = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), diaDaSemana);
-                // horario = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId());
                 strSalvar = "Agendar";
                 disabledProtocolo = false;
                 int qnt;
                 for (int i = 0; i < horario.size(); i++) {
                     qnt = db.pesquisaQntdDisponivel(macFilial.getFilial().getId(), horario.get(i), getData());
-                    //qnt = db.pesquisaQuantidadeAgendado(macFilial.getFilial().getId(), horario.get(i), getData());
                     if (qnt == -1) {
                         msgAgendamento = "Erro ao pesquisar horários disponíveis!";
                         listaGrid.clear();
                         break;
                     }
-//                    int qntTotal = horario.get(i).getQuantidade() - qnt;
-//                    for(int y = 0; y < cancelarHorario.size(); y++) {
-//                        if(horario.get(i).getId() == cancelarHorario.get(y).getHorarios().getId()) {
-//                            if(cancelarHorario.get(y).getQuantidade() <= qntTotal){
-//                                qntTotal = qntTotal - cancelarHorario.get(y).getQuantidade();
-//                            }
-//                            // break;
-//                        }
-//                    }
-//                    if(qntTotal > 0){
                     if (qnt > 0) {
-//                        if (qnt < horario.get(i).getQuantidade()) {
                         dtObj = new DataObject(horario.get(i), // ARG 0 HORA
                                 null, // ARG 1 CNPJ
                                 null, //ARG 2 NOME
@@ -354,9 +334,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                                 qnt, // ARG 8 QUANTIDADE DISPONÍVEL
                                 null);
                         listaGrid.add(dtObj);
-//                        }
                     }
-//                    }
                 }
                 break;
             }
@@ -399,6 +377,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                             ag.get(i));// ARG 9 AGENDAMENTO
                     listaGrid.add(dtObj);
                 }
+
                 break;
             }
             // ---------------------------------------------------------------------------------------------------------------
@@ -547,20 +526,20 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
 
     }
 
-    public String agendar() {
+    public String agendar(DataObject dataObject) {
         if (getData().getDay() == 6 || getData().getDay() == 0) {
             msgAgendamento = "Fins de semana não permitido!";
-            return "agendamento";
+            return null;
         }
         if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
             msgAgendamento = "Data anterior ao dia de hoje!";
-            return "agendamento";
+            return null;
         }
         if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data())))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))) {
             msgAgendamento = "Data maior que 3 meses!";
-            return "agendamento";
+            return null;
         }
 
         renderAgendamento = false;
@@ -583,12 +562,12 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                     renderCancelar = true;
                     if (pesquisarFeriado()) {
                         msgAgendamento = "Esta data esta cadastrada como Feriado!";
-                        //gregorianCalendar = new HtmlCalendar();
                         renderAgendamento = true;
                         renderConcluir = false;
                     } else {
                         agendamento.setData(DataHoje.converteData(getData()));
-                        agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
+                        Horarios horarios = (Horarios) (dataObject.getArgumento0());
+                        agendamento.setHorarios(horarios);
                         msgAgendamento = "";
                     }
                 }
@@ -596,15 +575,14 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             }
             case 2: {
                 PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
-                fisica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFisica();
+                agendamento = (Agendamento) dataObject.getArgumento9();
+                fisica = ((PessoaEmpresa) dataObject.getArgumento7()).getFisica();
                 enderecoFisica = db.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
-                juridica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getJuridica();
-                profissao = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFuncao();
+                juridica = ((PessoaEmpresa) dataObject.getArgumento7()).getJuridica();
+                profissao = ((PessoaEmpresa) dataObject.getArgumento7()).getFuncao();
                 pessoaEmpresa = agendamento.getPessoaEmpresa();
                 renderCancelarHorario = true;
                 renderCancelar = false;
-                //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa",juridica);
                 for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
                     if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
                         idMotivoDemissao = (Integer) getListaMotivoDemissao().get(i).getValue();
@@ -643,7 +621,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                         renderConcluir = false;
                     } else {
                         agendamento.setData(DataHoje.converteData(getData()));
-                        agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
+                        agendamento.setHorarios((Horarios) dataObject.getArgumento0());
                         msgAgendamento = "";
                     }
                 }
@@ -658,23 +636,19 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             msgConfirma = "Digite o nome do Funcionário!";
             return null;
         }
-
         if (!strContribuinte.isEmpty()) {
             msgConfirma = "Não é permitido agendar para uma empresa não contribuinte!";
             return null;
         }
-
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
         TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
         DemissaoDB dbDem = new DemissaoDBToplink();
-        // List listDocumento = new ArrayList();
         List listDocumento;
         StatusDB dbSta = new StatusDBToplink();
         TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
         int ids[] = {1, 3, 4};
         imprimirPro = false;
-
         DataHoje dataH = new DataHoje();
         Demissao demissao = dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
@@ -717,8 +691,8 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         sv.abrirTransacao();
         fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-            msgConfirma = "Documento Inválido!";
             sv.desfazerTransacao();
+            msgConfirma = "Documento Inválido!";
             return null;
         }
 
@@ -732,24 +706,24 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             }
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()) {
-                msgConfirma = "Documento já existente!";
                 sv.desfazerTransacao();
+                msgConfirma = "Documento já existente!";
                 return null;
             }
 
             if (sv.inserirObjeto(fisica.getPessoa())) {
                 sv.inserirObjeto(fisica);
             } else {
-                msgConfirma = "Erro ao Inserir pessoa!";
                 sv.desfazerTransacao();
+                msgConfirma = "Erro ao Inserir pessoa!";
                 return null;
             }
         } else {
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             for (int i = 0; i < listDocumento.size(); i++) {
                 if (!listDocumento.isEmpty() && ((Fisica) listDocumento.get(i)).getId() != fisica.getId()) {
-                    msgConfirma = "Documento já existente!";
                     sv.desfazerTransacao();
+                    msgConfirma = "Documento já existente!";
                     return null;
                 }
             }
@@ -759,8 +733,8 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             if (!fisi.isEmpty()) {
                 for (int i = 0; i < fisi.size(); i++) {
                     if (fisi.get(i).getId() != fisica.getId()) {
-                        msgConfirma = "Esta pessoa já esta cadastrada!";
                         sv.desfazerTransacao();
+                        msgConfirma = "Esta pessoa já esta cadastrada!";
                         return null;
                     }
                 }
@@ -768,21 +742,21 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             if (sv.alterarObjeto(fisica.getPessoa())) {
                 if (sv.alterarObjeto(fisica)) {
                 } else {
-                    msgConfirma = "Erro ao alterar Física!";
                     sv.desfazerTransacao();
+                    msgConfirma = "Erro ao alterar Física!";
                     return null;
                 }
             } else {
-                msgConfirma = "Erro ao alterar Pessoa!";
                 sv.desfazerTransacao();
+                msgConfirma = "Erro ao alterar Pessoa!";
                 return null;
             }
         }
-        AgendamentoDB dba = new AgendamentoDBToplink();
+        HomologacaoDB dba = new HomologacaoDBToplink();
 
         if (dba.pesquisaFisicaAgendada(fisica.getId()) != null && agendamento.getId() == -1) {
-            msgConfirma = "Pessoa já foi agendada!";
             sv.desfazerTransacao();
+            msgConfirma = "Pessoa já foi agendada!";
             return null;
         }
 
@@ -801,8 +775,8 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                 for (int i = 0; i < ids.length; i++) {
                     pesEnd.setTipoEndereco(dbt.pesquisaCodigo(ids[i]));
                     if (!sv.inserirObjeto(pesEnd)) {
-                        msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         sv.desfazerTransacao();
+                        msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         return null;
                     }
                     pesEnd = new PessoaEndereco();
@@ -820,8 +794,8 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                 ends.get(i).setNumero(enderecoFisica.getNumero());
                 ends.get(i).setPessoa(enderecoFisica.getPessoa());
                 if (!sv.alterarObjeto(ends.get(i))) {
-                    msgConfirma = "Erro ao atualizar endereço da pessoa!";
                     sv.desfazerTransacao();
+                    msgConfirma = "Erro ao atualizar endereço da pessoa!";
                     return null;
                 }
             }
@@ -864,19 +838,26 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
 
         if (pessoaEmpresa.getId() == -1) {
             if (!sv.inserirObjeto(pessoaEmpresa)) {
-                msgConfirma = "Erro ao inserir Pessoa Empresa!";
                 sv.desfazerTransacao();
+                msgConfirma = "Erro ao inserir Pessoa Empresa!";
                 return null;
             }
         } else {
             if (!sv.alterarObjeto(pessoaEmpresa)) {
-                msgConfirma = "Erro ao alterar Pessoa Empresa!";
                 sv.desfazerTransacao();
+                msgConfirma = "Erro ao alterar Pessoa Empresa!";
                 return null;
             }
         }
 
         if (agendamento.getId() == -1) {
+            if (!dba.existeHorarioDisponivel(data, agendamento.getHorarios())) {
+                sv.desfazerTransacao();
+                listaHorarioTransferencia.clear();
+                msgConfirma = "Não existe mais disponibilidade para o horário agendado!";
+                ocultarHorarioAlternativo = false;
+                return null;
+            }
             agendamento.setFilial(macFilial.getFilial());
             agendamento.setAgendador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")); // USUARIO SESSAO
             agendamento.setRecepcao(null);
@@ -884,17 +865,18 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             if (sv.inserirObjeto(agendamento)) {
                 sv.comitarTransacao();
                 msgConfirma = "Para imprimir Protocolo clique aqui!";
-                id_protocolo = agendamento.getId();
-                //limpar();
             }
         } else {
             if (sv.alterarObjeto(agendamento)) {
                 sv.comitarTransacao();
                 msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui!";
-                id_protocolo = agendamento.getId();
-                //limpar();
             }
         }
+        strSalvar = "Atualizar";
+        renderCancelarHorario = true;
+        listaHorarioTransferencia.clear();
+        id_protocolo = agendamento.getId();
+        ocultarHorarioAlternativo = true;
         imprimirPro = true;
         return null;
     }
@@ -912,21 +894,32 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         msgConfirma = "";
         msgAgendamento = "";
         fisica = new Fisica();
+        cepEndereco = "";
+        listaEnderecos.clear();
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
         juridica = new Juridica();
         listaMovimento.clear();
         enderecoFisica = new PessoaEndereco();
+        imprimirPro = false;
+        renderTransfere = false;
+        listaHorarioTransferencia.clear();
         return "agendamento";
     }
 
     public String cancelarHorario() {
-        AgendamentoDB dbAg = new AgendamentoDBToplink();
+        HomologacaoDB dbAg = new HomologacaoDBToplink();
         PessoaEmpresaDB dbPesEmp = new PessoaEmpresaDBToplink();
         StatusDB dbSta = new StatusDBToplink();
         agendamento.setStatus(dbSta.pesquisaCodigo(3));
-        dbAg.update(agendamento);
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
+            salvarAcumuladoDB.comitarTransacao();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+        }
         pessoaEmpresa.setDtDemissao(null);
         dbPesEmp.update(pessoaEmpresa);
         strEndereco = "";
@@ -987,7 +980,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             }
 
             FisicaDB dbFis = new FisicaDBToplink();
-            AgendamentoDB db = new AgendamentoDBToplink();
+            HomologacaoDB db = new HomologacaoDBToplink();
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
 
             String documento = fisica.getPessoa().getDocumento();
@@ -1010,19 +1003,18 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
 
             // SEM PESSOA FISICA E SEM OPOSICAO
             if (listFisica.isEmpty() && listao.isEmpty()) {
-                FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
+                //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // SEM PESSOA FISICA E COM OPOSICAO    
             } else if (listFisica.isEmpty() && !listao.isEmpty()) {
                 msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
-
                 fisica.getPessoa().setNome(listao.get(0).getOposicaoPessoa().getNome());
                 fisica.setRg(listao.get(0).getOposicaoPessoa().getRg());
                 fisica.setSexo(listao.get(0).getOposicaoPessoa().getSexo());
                 fisica.getPessoa().setDocumento(documento);
-
                 juridica = listao.get(0).getJuridica();
                 // COM FISICA, COM PESSOA EMPRESA E SEM OPOSICAO    
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && listao.isEmpty()) {
+                msgConfirma = "CPF verificado com sucesso";
                 pessoaEmpresa = listape.get(0);
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
@@ -1030,37 +1022,34 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                 disabledEmpresa = true;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 protocolo = 0;
-                FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
+                //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // COM FISICA, SEM PESSOA EMPRESA E SEM OPOSICAO    
             } else if (!listFisica.isEmpty() && listape.isEmpty() && listao.isEmpty()) {
+                msgConfirma = "CPF verificado com sucesso";
                 fisica = listFisica.get(0);
                 pessoaEmpresa = new PessoaEmpresa();
                 juridica = new Juridica();
                 disabledEmpresa = false;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-                FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
+                //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
                 // COM FISICA, COM PESSOA EMPRESA COM OPOSICAO
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && !listao.isEmpty()) {
                 msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
-
                 pessoaEmpresa = listape.get(0);
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
                 disabledEmpresa = true;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
                 protocolo = 0;
-
                 // FUNCIONARIO JA FOI AGENDADO
 //                if (db.pesquisaFisicaAgendada(fisica.getId()) != null){
 //
-//                } 
-
+//                }
                 // EMPRESA É A MESMA DA OPOSICAO
                 if (pessoaEmpresa.getJuridica().getId() == listao.get(0).getJuridica().getId()) {
                     juridica = pessoaEmpresa.getJuridica();
                 } else {
                     juridica = listao.get(0).getJuridica();
-
                     // FUNCIONARIO SEM DATA DE DEMISSAO
 //                    if (pessoaEmpresa.getDemissao().isEmpty()){
 //                        if ((DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao()) < DataHoje.converteDataParaInteger(listao.get(0).getEmissao()) )){
@@ -1078,217 +1067,9 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                 disabledEmpresa = false;
                 enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
             }
-//                if (listao.isEmpty()){
-//                    
-//                        if (!listao.isEmpty()){
-//                            msgConfirma = "CPF cadastrado em oposição em "+ listao.get(0).getEmissao();
-//
-//                        }
-//                }else{
-//                    fisica = new Fisica();
-//
-//                    pessoaEmpresa.setJuridica(listao.get(0).getJuridica());
-//                    profissao = pessoaEmpresa.getFuncao();
-//                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
-//                    
-//
-//                    enderecoFisica = new PessoaEndereco();
-//                    return;
-//                }
-
-//            // NÃO ESTA LIMPANDO O AGENDAMENTO, PENSAR EM COMO RESOLVER 
-//            //agendamento = new Agendamento();
-//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
-//            
-//            TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
-//            PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-//            fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
-//            
-//            PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
-//            
-//            if (pe.getId() != -1){
-//                pessoaEmpresa = pe;
-//                fisica = pessoaEmpresa.getFisica();
-//                profissao = pessoaEmpresa.getFuncao();
-//                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa",pessoaEmpresa.getJuridica());
-//                disabledEmpresa = true;
-//                enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-//                protocolo = 0;
-//                //agendamento = new Agendamento();
-//                FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-//                return;
-//            }else{
-//                
-//                
-//                if (list.isEmpty()){
-//
-//                }else{
-//                    pessoaEmpresa = list.get(0);
-//                    fisica = pessoaEmpresa.getFisica();
-//                    profissao = pessoaEmpresa.getFuncao();
-//                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
-//                    disabledEmpresa = true;
-//                    enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-//                    protocolo = 0;
-//                    //agendamento = new Agendamento();
-//                    FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-//                    return;
-//                }
-//                
-//                
-//                for (int i = 0; i < listFisica.size(); i++){
-//                    if(!listFisica.isEmpty() && listFisica.get(i).getId() != fisica.getId()){
-//                        fisica = listFisica.get(i);
-//                        pessoaEmpresa = new PessoaEmpresa();
-//                        juridica = new Juridica();
-//                        disabledEmpresa = false;
-//                        enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-//                        //agendamento = new Agendamento();
-//                        FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-//                        return;
-//                    }
-//                }
-//                
-//                if (fisica.getId() != -1 && juridica.getId() != -1){
-//                    Oposicao op = db.pesquisaFisicaOposicao(documento, juridica.getId());
-//                    if (op == null)
-//                        msgConfirma = "Erro na pesquisa Oposição!";
-//                    else if (op.getId() != -1){
-//                        msgConfirma = "CPF cadastrado em oposição em "+ op.getEmissao();
-////                        fisica = new Fisica();
-////                        enderecoFisica = new PessoaEndereco();
-//                        return;
-//                    }                        
-//                }else{
-//                    
-//                    if (!listao.isEmpty()) {
-//                        msgConfirma = "CPF cadastrado em oposição em "+ listao.get(0).getEmissao();
-//                        fisica = new Fisica();
-//                       
-//                        
-//                        fisica.getPessoa().setNome(listao.get(0).getOposicaoPessoa().getNome());
-//                        fisica.setRg(listao.get(0).getOposicaoPessoa().getRg());
-//                        fisica.setSexo(listao.get(0).getOposicaoPessoa().getSexo());
-//                        fisica.getPessoa().setDocumento(documento);
-//                        
-//                        enderecoFisica = new PessoaEndereco();
-//                        return;
-//                    }        
-//                }
-//            }
-//        }
-//        if (fisica.getId() != -1){
-//            fisica = new Fisica();
-//            pessoaEmpresa = new PessoaEmpresa();
-//            enderecoFisica = new PessoaEndereco();
-//            juridica = new Juridica();
-//            //agendamento = new Agendamento();
-//            listaMovimento.clear();
-//        }
-//        FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
+        } else {
+            msgConfirma = "Informar CPF!";
         }
-//    public void pesquisarFuncionarioCPF() throws IOException{
-//        if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")){
-//            String documento = fisica.getPessoa().getDocumento();
-//            
-//            fisica = new Fisica();
-//            fisica.getPessoa().setDocumento(documento);
-//            pessoaEmpresa = new PessoaEmpresa();
-//            enderecoFisica = new PessoaEndereco();
-//            juridica = new Juridica();
-//            listaMovimento.clear();
-//            // NÃO ESTA LIMPANDO O AGENDAMENTO, PENSAR EM COMO RESOLVER 
-//            //agendamento = new Agendamento();
-//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
-//            
-//            AgendamentoDB db = new AgendamentoDBToplink();
-//            TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
-//            PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
-//            FisicaDB dbFis = new FisicaDBToplink();
-//            fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
-//            
-//            PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
-//            
-//            if (pe.getId() != -1){
-//                pessoaEmpresa = pe;
-//                fisica = pessoaEmpresa.getFisica();
-//                profissao = pessoaEmpresa.getFuncao();
-//                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa",pessoaEmpresa.getJuridica());
-//                disabledEmpresa = true;
-//                enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-//                protocolo = 0;
-//                //agendamento = new Agendamento();
-//                FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-//                return;
-//            }else{
-//                List<PessoaEmpresa> list = db.pesquisaPessoaEmpresaPertencente(documento);
-//                
-//                if (list.isEmpty()){
-//                    
-//                }else{
-//                    pessoaEmpresa = list.get(0);
-//                    fisica = pessoaEmpresa.getFisica();
-//                    profissao = pessoaEmpresa.getFuncao();
-//                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
-//                    disabledEmpresa = true;
-//                    enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-//                    protocolo = 0;
-//                    //agendamento = new Agendamento();
-//                    FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-//                    return;
-//                }
-//                
-//                List<Fisica> listFisica = dbFis.pesquisaFisicaPorDocSemLike(documento);
-//                for (int i = 0; i < listFisica.size(); i++){
-//                    if(!listFisica.isEmpty() && listFisica.get(i).getId() != fisica.getId()){
-//                        fisica = listFisica.get(i);
-//                        pessoaEmpresa = new PessoaEmpresa();
-//                        juridica = new Juridica();
-//                        disabledEmpresa = false;
-//                        enderecoFisica = dbe.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 3);
-//                        //agendamento = new Agendamento();
-//                        FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
-//                        return;
-//                    }
-//                }
-//                
-//                if (fisica.getId() != -1 && juridica.getId() != -1){
-//                    Oposicao op = db.pesquisaFisicaOposicao(documento, juridica.getId());
-//                    if (op == null)
-//                        msgConfirma = "Erro na pesquisa Oposição!";
-//                    else if (op.getId() != -1){
-//                        msgConfirma = "CPF cadastrado em oposição em "+ op.getEmissao();
-////                        fisica = new Fisica();
-////                        enderecoFisica = new PessoaEndereco();
-//                        return;
-//                    }                        
-//                }else{
-//                    List<Oposicao> listao = db.pesquisaFisicaOposicaoSemEmpresa(documento);
-//                    if (!listao.isEmpty()) {
-//                        msgConfirma = "CPF cadastrado em oposição em "+ listao.get(0).getEmissao();
-//                        fisica = new Fisica();
-//                       
-//                        
-//                        fisica.getPessoa().setNome(listao.get(0).getOposicaoPessoa().getNome());
-//                        fisica.setRg(listao.get(0).getOposicaoPessoa().getRg());
-//                        fisica.setSexo(listao.get(0).getOposicaoPessoa().getSexo());
-//                        fisica.getPessoa().setDocumento(documento);
-//                        
-//                        enderecoFisica = new PessoaEndereco();
-//                        return;
-//                    }        
-//                }
-//            }
-//        }
-//        if (fisica.getId() != -1){
-//            fisica = new Fisica();
-//            pessoaEmpresa = new PessoaEmpresa();
-//            enderecoFisica = new PessoaEndereco();
-//            juridica = new Juridica();
-//            //agendamento = new Agendamento();
-//            listaMovimento.clear();
-//        }
-//        FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
     }
 
     public String imprimirProtocolo(int proto) {
@@ -1375,12 +1156,12 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String pesquisarProtocolo() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         if (protocolo > 0) {
-            Agendamento age = new Agendamento(), age2 = new Agendamento();
+            Agendamento age = new Agendamento();
             age.setData(agendamento.getData());
             age.setHorarios(agendamento.getHorarios());
-            age2 = db.pesquisaProtocolo(protocolo);
+            Agendamento age2 = db.pesquisaProtocolo(protocolo);
             if (age2 != null) {
                 agendamento = age2;
                 agendamento.setData(age.getData());
@@ -1441,7 +1222,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
             Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 
             Collection lista = new ArrayList<ParametroProtocolo>();
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
+            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
                     sindicato.getPessoa().getNome(),
                     sindicato.getPessoa().getSite(),
                     sindicato.getPessoa().getTipoDocumento().getDescricao(),
@@ -1542,19 +1323,20 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         return null;
     }
 
-    public String pesquisaEndereco() {
-        EnderecoDB db = new EnderecoDBToplink();
-        listaEnderecos.clear();
-        if (!cepEndereco.isEmpty()) {
-            listaEnderecos = db.pesquisaEnderecoCep(cepEndereco);
+    public void pesquisaEndereco() {
+        if (!cepEndereco.equals("")) {
+            listaEnderecos.clear();
         }
-        return null;
     }
 
-    public String editarEndereco() {
-        enderecoFisica.setEndereco((Endereco) listaEnderecos.get(idIndexEndereco));
-        //return null;
-        return "agendamento";
+    public void limparPesquisaEndereco() {
+        listaEnderecos.clear();
+    }
+
+    public void editarEndereco(Endereco e) {
+        enderecoFisica.setEndereco(e);
+        // return null;
+        // return "agendamento";
     }
 
     public int getIdStatus() {
@@ -1740,7 +1522,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String getStatusEmpresa() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         if (juridica.getId() != -1 && listaMovimento.isEmpty()) {
             listaMovimento = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
         }
@@ -1781,6 +1563,12 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public List getListaEnderecos() {
+        if (listaEnderecos.isEmpty()) {
+            if (!cepEndereco.equals("")) {
+                EnderecoDB db = new EnderecoDBToplink();
+                listaEnderecos = db.pesquisaEnderecoCep(cepEndereco);
+            }
+        }
         return listaEnderecos;
     }
 
@@ -1899,14 +1687,6 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
         this.renderedDisponivel = renderedDisponivel;
     }
 
-    public void verificaNaoAtendidos() {
-        AgendamentoDB dB = new AgendamentoDBToplink();
-        if (dB.verificaNaoAtendidosSegRegistroAgendamento()) {
-            return;
-        }
-        return;
-    }
-
     public void mensagemAgendamento() {
         msgAgendamento = "";
         FeriadosDB feriadosDB = new FeriadosDBToplink();
@@ -1918,10 +1698,33 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean {
                     if (i == 0) {
                         msgAgendamento += feriados.get(i).getNome();
                     } else {
-                        msgAgendamento +=  ", " + feriados.get(i).getNome();
+                        msgAgendamento += ", " + feriados.get(i).getNome();
                     }
                 }
             }
         }
+    }
+
+    public int getIdHorarioAlternativo() {
+        return idHorarioAlternativo;
+    }
+
+    public void setIdHorarioAlternativo(int idHorarioAlternativo) {
+        this.idHorarioAlternativo = idHorarioAlternativo;
+    }
+
+    public void adicionarHorarioAlternativo() {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        agendamento.setHorarios((Horarios) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaHorarioTransferencia.get(idHorarioAlternativo).getDescription()), "Horarios"));
+        listaHorarioTransferencia.clear();
+        setOcultarHorarioAlternativo(true);
+    }
+
+    public boolean isOcultarHorarioAlternativo() {
+        return ocultarHorarioAlternativo;
+    }
+
+    public void setOcultarHorarioAlternativo(boolean ocultarHorarioAlternativo) {
+        this.ocultarHorarioAlternativo = ocultarHorarioAlternativo;
     }
 }
