@@ -366,11 +366,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>agendamentoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.homologacao.beans.AgendamentoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>homologacaoBean</managed-bean-name>
