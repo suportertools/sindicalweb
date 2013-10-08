@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
@@ -87,15 +88,17 @@ public class UsuarioJSFBean {
                 if (sv.inserirObjeto(usuario)) {
                     sv.comitarTransacao();
                     msgConfirma = "Login e senha salvos com Sucesso!";
+                    NovoLog novoLog = new NovoLog();
+                    novoLog.novo("Salvar Usuário", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
                     return null;
                 } else {
-                    msgConfirma = "Erro ao Salvar Login e Senha!";
                     sv.desfazerTransacao();
+                    msgConfirma = "Erro ao Salvar Login e Senha!";
                     return null;
                 }
             } else {
-                msgConfirma = "Este login já existe no Sistema.";
                 sv.desfazerTransacao();
+                msgConfirma = "Este login já existe no Sistema.";
                 return null;
             }
         } else {
@@ -112,10 +115,15 @@ public class UsuarioJSFBean {
             if (sv.alterarObjeto(usuario)) {
                 sv.comitarTransacao();
                 msgConfirma = "Login e senha salvos com Sucesso!";
+                Usuario usu = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
+                String novoLogString = " de ID: " + usu.getId() + " - Pessoa: " + usu.getPessoa().getId() + " - " + usu.getPessoa().getNome() + " - Login: " + usu.getLogin() + " - Ativo: " + usu.getAtivo()
+                        + " para Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo();
+                NovoLog novoLog = new NovoLog();
+                novoLog.novo("Atualizar Usuário", novoLogString);
                 return null;
             } else {
-                msgConfirma = "Erro ao atualizar Usuario!";
                 sv.desfazerTransacao();
+                msgConfirma = "Erro ao atualizar Usuario!";
                 return null;
             }
         }
@@ -132,18 +140,15 @@ public class UsuarioJSFBean {
         pu.setUsuario(usuario);
         PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();
         if (permissaoUsuarioDB.existePermissaoUsuario(pu)) {
-            // msgPermissao = "Permissão já Existente!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe"));
             return null;
         }
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.inserirObjeto(pu)) {
             salvarAcumuladoDB.comitarTransacao();
-            // msgPermissao = "Permissão adicionada com sucesso.";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão adicionada"));
         } else {
             salvarAcumuladoDB.desfazerTransacao();
-            // msgPermissao = "Erro ao adicionar essa permissão!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar essa permissão!"));
         }
         idDepartamento = 0;
@@ -173,29 +178,24 @@ public class UsuarioJSFBean {
 
     public boolean excluirPermissoes(SalvarAcumuladoDB sv) {
         PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-        List<PermissaoDepartamento> lista = new ArrayList();
-        UsuarioAcesso ua = new UsuarioAcesso();
         for (int i = 0; i < listaPermissaoUsuario.size(); i++) {
             PermissaoUsuario perUsuario = listaPermissaoUsuario.get(i);
             perUsuario = db.pesquisaPermissaoUsuario(perUsuario.getUsuario().getId(), perUsuario.getDepartamento().getId(), perUsuario.getNivel().getId());
 
-            lista = db.pesquisaPDepartamento(perUsuario.getDepartamento().getId(), perUsuario.getNivel().getId());
+            List<PermissaoDepartamento> lista = db.pesquisaPDepartamento(perUsuario.getDepartamento().getId(), perUsuario.getNivel().getId());
             for (int w = 0; w < lista.size(); w++) {
-                ua = db.pesquisaUsuarioAcesso(perUsuario.getUsuario().getId(), lista.get(w).getPermissao().getId());
-
+                UsuarioAcesso ua = db.pesquisaUsuarioAcesso(perUsuario.getUsuario().getId(), lista.get(w).getPermissao().getId());
                 if (!sv.deletarObjeto(sv.pesquisaCodigo(ua.getId(), "UsuarioAcesso"))) {
                     sv.desfazerTransacao();
                     return false;
                 }
             }
-
             if (!sv.deletarObjeto((PermissaoUsuario) sv.pesquisaCodigo(perUsuario.getId(), "PermissaoUsuario"))) {
                 sv.desfazerTransacao();
                 return false;
             } else {
                 return true;
             }
-            //perUsuario = new PermissaoUsuario();
         }
         return true;
     }
@@ -244,11 +244,13 @@ public class UsuarioJSFBean {
 
             usuario = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
             if (!sv.deletarObjeto(usuario)) {
-                msgConfirma = "Login não pode ser  Excluido!";
                 sv.desfazerTransacao();
-            } else {
-                msgConfirma = "Login excluido com Sucesso!";
+                msgConfirma = "Login não pode ser  Excluido!";
+            } else {                
                 sv.comitarTransacao();
+                msgConfirma = "Login excluido com Sucesso!";
+                NovoLog novoLog = new NovoLog();
+                novoLog.novo("Excluir Usuário", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin());
             }
         }
         novoGenerico();
@@ -593,16 +595,12 @@ public class UsuarioJSFBean {
                 usuarioAcesso.setPermite(true);
                 if (salvarAcumuladoDB.inserirObjeto(usuarioAcesso)) {
                     salvarAcumuladoDB.comitarTransacao();
-//                    NovoLog log = new NovoLog();
-//                    log.novo(userLogado, userLogado);
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão adicionada"));
                 } else {
                     salvarAcumuladoDB.desfazerTransacao();
-                    // msgUsuarioAcesso = "Erro ao adicionar Permissão!";
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão!"));
                 }
             } else {
-                // msgUsuarioAcesso = "Permissão já existe!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe!"));
             }
         }
@@ -667,11 +665,6 @@ public class UsuarioJSFBean {
         if (ua.getId() == -1) {
             return null;
         }
-//        if (ua.isPermite()) {
-//            ua.setPermite(false);
-//        } else {
-//            ua.setPermite(true);            
-//        }
         msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
@@ -683,12 +676,6 @@ public class UsuarioJSFBean {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Falha ao atualizar essa permisão!"));
             salvarAcumuladoDB.desfazerTransacao();
         }
-//        for (int i = 0; i < listaUsuarioAcesso.size(); i++) {
-//            if (listaUsuarioAcesso.get(i).getId() == ua.getId()) {
-//                listaUsuarioAcesso.get(i).setPermite(ua.isPermite());
-//                break;
-//            }
-//        }
         return null;
     }
 
@@ -706,7 +693,6 @@ public class UsuarioJSFBean {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão removida"));
         } else {
             salvarAcumuladoDB.desfazerTransacao();
-            // msgUsuarioAcesso = "Erro ao remover permissão!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão!"));
         }
         return null;
