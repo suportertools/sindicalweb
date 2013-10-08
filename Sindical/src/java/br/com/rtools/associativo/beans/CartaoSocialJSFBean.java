@@ -93,7 +93,7 @@ public class CartaoSocialJSFBean {
             String nomeDownload = nomeArq + DataHoje.horaMinuto().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
 
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/etiquetas");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/etiquetas");
             sa.salvaNaPasta(pathPasta);
 
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
@@ -160,7 +160,7 @@ public class CartaoSocialJSFBean {
 
                     CategoriaDB dbCat = new CategoriaDBToplink();
                     GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-                    
+
                     socios.setNrViaCarteirinha(1);
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
@@ -171,7 +171,7 @@ public class CartaoSocialJSFBean {
                 } else {
                     carteirinha.setEmissao(DataHoje.data());
                     carteirinha.setSocios(socios);
-                    if(!db.verificaSocioCarteirinhaExiste(socios.getId())){
+                    if (!db.verificaSocioCarteirinhaExiste(socios.getId())) {
                         if (!sv.inserirObjeto(carteirinha)) {
                             sv.desfazerTransacao();
                             return null;
@@ -180,7 +180,7 @@ public class CartaoSocialJSFBean {
                     ((List) listaaux.get(i)).set(11, socios.getNrViaCarteirinha());
                 }
             }
-            
+
 
             if (ImpressaoParaSocios.imprimirCarteirinha(listaaux)) {
                 sv.comitarTransacao();
@@ -188,7 +188,7 @@ public class CartaoSocialJSFBean {
                 sv.desfazerTransacao();
             }
 
-            if (!tipoEtiquetas.equals("nenhuma")){
+            if (!tipoEtiquetas.equals("nenhuma")) {
                 visualizarEtiqueta();
             }
         }
@@ -223,7 +223,7 @@ public class CartaoSocialJSFBean {
 
                     CategoriaDB dbCat = new CategoriaDBToplink();
                     GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-                    
+
                     socios.setNrViaCarteirinha(1);
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
 
@@ -234,7 +234,7 @@ public class CartaoSocialJSFBean {
                 } else {
                     carteirinha.setEmissao(DataHoje.data());
                     carteirinha.setSocios(socios);
-                    if(!db.verificaSocioCarteirinhaExiste(socios.getId())){
+                    if (!db.verificaSocioCarteirinhaExiste(socios.getId())) {
                         if (!sv.inserirObjeto(carteirinha)) {
                             sv.desfazerTransacao();
                             return null;
@@ -246,7 +246,7 @@ public class CartaoSocialJSFBean {
                     CategoriaDB dbCat = new CategoriaDBToplink();
                     GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
-                    
+
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     ((List) listaaux.get(i)).set(11, socios.getNrViaCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
