@@ -12,62 +12,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-//import java.util.Vector;
 import javax.persistence.Query;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 
-public class AgendamentoDBToplink extends DB implements AgendamentoDB {
+public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 
-    
-    @Override
-    public boolean insert(Agendamento agendamento) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(agendamento);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    
-    @Override
-    public boolean update(Agendamento agendamento) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(agendamento);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    
-    @Override
-    public boolean delete(Agendamento agendamento) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(agendamento);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    
     @Override
     public List pesquisaTodos() {
         try {
-            Query qry = getEntityManager().createQuery("select c from Agendamento c");
+            Query qry = getEntityManager().createQuery("SELECT C FROM Agendamento AS C");
             if (!qry.getResultList().isEmpty()) {
                 return (qry.getResultList());
             }
@@ -391,6 +343,7 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
         return new ArrayList();
     }
     
+    @Override
     public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo) {
         List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         try {
@@ -401,9 +354,8 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
             }
             return agendamentos;
         } catch (Exception e) {
-            //e.printStackTrace();
+            return new ArrayList();
         }
-        return new ArrayList();
     }
     
     public List<Agendamento> pesquisaAtendimento(int idFilial, Date dataInicial, Date dataFinal, int idUsuario) {
@@ -558,8 +510,7 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
                     return 0;
                 }
             }
-        } catch (EJBQLException e) {
-            // e.printStackTrace();
+        } catch (Exception e) {
         }
         return -1;
     }
@@ -573,7 +524,7 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
             if (!list.isEmpty()) {
                 return (Integer.valueOf(String.valueOf((Long) ((List) list.get(0)).get(0))));
             }
-        } catch (EJBQLException e) {
+        } catch (Exception e) {
             // e.printStackTrace();
         }
         return -1;
@@ -596,7 +547,7 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
                 return (qry.getResultList());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return new ArrayList();
         }
         return new ArrayList();
     }
@@ -652,8 +603,8 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
             if (!qry.getResultList().isEmpty()) {
                 return qry.getResultList();
             }
-        } catch (EJBQLException e) {
-            //e.printStackTrace();
+        } catch (Exception e) {
+            return new ArrayList();
         }
         return new ArrayList();
     }
@@ -743,20 +694,6 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
         }
         return result;
     }
-
-//    public Agendamento pesquisaFisicaAgendada(int id_fisica, Date data){
-//        Agendamento result = new Agendamento();
-//        try{
-//            Query qry = getEntityManager().createQuery("select a " +
-//                                                       "  from Agendamento a where a.pessoaEmpresa.fisica.id = " +id_fisica+" and a.dtData >= :data and (a.status.id = 2 or a.status.id = 5)");
-//            qry.setParameter("data", data);
-//            result = (Agendamento)qry.getSingleResult();
-//        }catch(Exception e){
-//            result = null;
-//       ///     e.printStackTrace();
-//        }
-//        return result;
-//    }
     
     @Override
     public int pesquisaUltimaSenha(int id_filial) {
@@ -871,5 +808,46 @@ public class AgendamentoDBToplink extends DB implements AgendamentoDB {
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public boolean existeHorarioDisponivel(Date date, Horarios horarios) {
+        String dateString = DataHoje.converteData(date);
+        try {
+            Query query = getEntityManager().createNativeQuery(" "
+                    + "     SELECT id, nr_quantidade                                                "
+                    + "       FROM hom_horarios                                                     "
+                    + "      WHERE TEXT(id_filial) || TEXT(id_semana) || ds_hora = TEXT(1) || (     "
+                    + "            EXTRACT(                                                         "
+                    + "                     DOW FROM to_date('"+dateString+"', 'DD-MM-YYYY')) + 1   "
+                    + "      ) || '"+horarios.getHora()+"'" );
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                int idHorario = (Integer) ((List) (list.get(0))).get(0);
+                int quantidade = (Integer) ((List) (list.get(0))).get(1);
+                list.clear();
+                query = getEntityManager().createNativeQuery(""
+                        + "     SELECT "+quantidade+" - (count(*) - (           "
+                        + "             SELECT COUNT(*)                         "
+                        + "               FROM hom_cancelar_horario             "
+                        + "              WHERE id_horarios = "+idHorario+"      "
+                        + "                AND dt_data='"+dateString+"')        "
+                        + "     )                                               "   
+                        + "       FROM hom_agendamento                          "
+                        + "      WHERE id_horario = "+idHorario+"               "
+                        + "        AND dt_data = '"+dateString+"'               "
+                        + "        AND id_status <> 3;" );
+                list = query.getResultList();
+                if (!list.isEmpty()) {                    
+                    quantidade = Integer.parseInt(((List) (list.get(0))).get(0).toString());
+                    if (quantidade > 0) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception exception) {
+            return false;            
+        }
+        return false;
     }
 }
