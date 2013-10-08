@@ -262,7 +262,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
             List<Agendamento> ag = new ArrayList<Agendamento>();
             List<CancelarHorario> cancelarHorario = new ArrayList<CancelarHorario>();
             List<Horarios> horario = new ArrayList<Horarios>();
-            AgendamentoDB db = new AgendamentoDBToplink();
+            HomologacaoDB db = new HomologacaoDBToplink();
             JuridicaDB dbJur = new JuridicaDBToplink();
             //HorariosDB dbH = new HorariosDBToplink();
             String agendador = "";
@@ -553,7 +553,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
             }
         }
 
-        AgendamentoDB dba = new AgendamentoDBToplink();
+        HomologacaoDB dba = new HomologacaoDBToplink();
         Agendamento age = dba.pesquisaFisicaAgendada(fisica.getId());
         if (age != null) {
             msgConfirma = "Pessoa já foi agendada para empresa " + age.getPessoaEmpresa().getJuridica().getPessoa().getNome();
@@ -691,7 +691,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
             TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
             FisicaDB dbFis = new FisicaDBToplink();
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
-            AgendamentoDB db = new AgendamentoDBToplink();
+            HomologacaoDB db = new HomologacaoDBToplink();
 
             fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
@@ -851,7 +851,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
     }
 
     public String getStatusEmpresa() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         if (empresa.getId() != -1) {
             listaEmDebito = db.pesquisaEmpresaEmDebito(empresa.getPessoa().getId(), DataHoje.data());
         }
