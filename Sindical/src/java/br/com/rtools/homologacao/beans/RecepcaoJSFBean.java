@@ -6,8 +6,8 @@ import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Recepcao;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.homologacao.Status;
-import br.com.rtools.homologacao.db.AgendamentoDB;
-import br.com.rtools.homologacao.db.AgendamentoDBToplink;
+import br.com.rtools.homologacao.db.HomologacaoDB;
+import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.homologacao.db.DemissaoDB;
 import br.com.rtools.homologacao.db.DemissaoDBToplink;
 import br.com.rtools.homologacao.db.StatusDB;
@@ -150,7 +150,7 @@ public class RecepcaoJSFBean {
             sv.desfazerTransacao();
             return null;
         }
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         Senha senha = db.pesquisaSenhaAgendamento(agendamento.getId());
         if (senha.getId() == -1) {
             senha.setAgendamento(agendamento);
@@ -394,7 +394,7 @@ public class RecepcaoJSFBean {
                 return "recepcao";
             }
         }
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         renderConcluir = true;
         int idCaso = Integer.parseInt((String) ((DataObject) listaGrid.get(idIndex)).getArgumento12().toString());
         switch (idCaso) {
@@ -460,7 +460,7 @@ public class RecepcaoJSFBean {
             fisica = new Fisica();
         }
         listaGrid.clear();
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         List<Agendamento> ag;
         setData(DataHoje.dataHoje());
         String agendador;
@@ -716,7 +716,7 @@ public class RecepcaoJSFBean {
     public String getStatusEmpresa() {
         List lista = new ArrayList();
         if (juridica.getId() != -1) {
-            AgendamentoDB db = new AgendamentoDBToplink();
+            HomologacaoDB db = new HomologacaoDBToplink();
             lista = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
         }
         if (!lista.isEmpty()) {
