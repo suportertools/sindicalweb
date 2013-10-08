@@ -8,8 +8,8 @@ import br.com.rtools.arrecadacao.RepisStatus;
 import br.com.rtools.arrecadacao.db.WebREPISDB;
 import br.com.rtools.arrecadacao.db.WebREPISDBToplink;
 import br.com.rtools.endereco.Endereco;
-import br.com.rtools.homologacao.db.AgendamentoDB;
-import br.com.rtools.homologacao.db.AgendamentoDBToplink;
+import br.com.rtools.homologacao.db.HomologacaoDB;
+import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.impressao.ParametroCertificado;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -150,7 +150,7 @@ public class WebREPISJSFBean {
         }else{
             setPessoaSolicitante(getPessoa());
         }
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         setShowProtocolo(false);
         if (!db.pesquisaEmpresaEmDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()){
             msg = " PROCURAR SÍNDICATO! ";
