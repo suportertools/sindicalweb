@@ -55,7 +55,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     private int id_protocolo = -1;
 
     public String excluirSenha() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         Senha senha = db.pesquisaSenhaAgendamento(agendamento.getId());
         if (senha.getId() == -1) {
             msgConfirma = "Não existe senha para ser excluida!";
@@ -93,7 +93,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String atendimento() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
 
         if (macFilial.getId() == -1) {
             msgHomologacao = "Mac não encontrado!";
@@ -198,7 +198,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
         listaGrid.clear();
         listaGrid = new ArrayList();
         List<Agendamento> ag;
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         String agendador;
         String homologador;
         DataObject dtObj;
@@ -487,7 +487,8 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String agendar() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();        
         agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
         if (nrStatus == 3 || nrStatus == 4 || nrStatus == 5) {
@@ -527,7 +528,12 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
                     renderCancelarHorario = true;
                     agendamento.setStatus(dbSta.pesquisaCodigo(5));
                     agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-                    db.update(agendamento);
+                    salvarAcumuladoDB.abrirTransacao();
+                    if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
+                        salvarAcumuladoDB.comitarTransacao();
+                    } else {
+                        salvarAcumuladoDB.desfazerTransacao();
+                    }
                     break;
                 }
                 case 3: {
@@ -535,7 +541,12 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
                     renderCancelarHorario = false;
                     agendamento.setStatus(dbSta.pesquisaCodigo(3));
                     agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-                    db.update(agendamento);
+                    salvarAcumuladoDB.abrirTransacao();
+                    if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
+                        salvarAcumuladoDB.comitarTransacao();
+                    } else {
+                        salvarAcumuladoDB.desfazerTransacao();
+                    }
                     break;
                 }
                 case 4: {
@@ -574,7 +585,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
 
     public String salvar() {
         FisicaDB dbFis = new FisicaDBToplink();
-        AgendamentoDB dbAg = new AgendamentoDBToplink();
+        HomologacaoDB dbAg = new HomologacaoDBToplink();
         TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
         DemissaoDB dbDem = new DemissaoDBToplink();
         StatusDB dbSta = new StatusDBToplink();
@@ -782,10 +793,16 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String cancelar() {
-        AgendamentoDB dbAg = new AgendamentoDBToplink();
+        HomologacaoDB dbAg = new HomologacaoDBToplink();
         StatusDB dbSta = new StatusDBToplink();
         agendamento.setStatus(dbSta.pesquisaCodigo(5));
-        dbAg.update(agendamento);
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
+            salvarAcumuladoDB.comitarTransacao();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+        }
         strEndereco = "";
         renderHomologacao = true;
         renderConcluir = false;
@@ -800,7 +817,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String pesquisarFuncionarioCPF() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
         fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
@@ -1008,7 +1025,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String getStatusEmpresa() {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         List lista = new ArrayList();
         if (juridica.getId() != -1) {
             lista = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
@@ -1150,7 +1167,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public int senhaHomologacao(int id) {
-        AgendamentoDB db = new AgendamentoDBToplink();
+        HomologacaoDB db = new HomologacaoDBToplink();
         Senha senha = db.pesquisaSenhaAgendamento(id);
         return senha.getSenha();
     }
