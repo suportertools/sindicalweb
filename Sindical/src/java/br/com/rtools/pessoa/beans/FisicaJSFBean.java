@@ -9,8 +9,8 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.beans.PesquisarProfissaoJSFBean;
-import br.com.rtools.homologacao.db.AgendamentoDB;
-import br.com.rtools.homologacao.db.AgendamentoDBToplink;
+import br.com.rtools.homologacao.db.HomologacaoDB;
+import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
@@ -1158,13 +1158,15 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public String excluirEmpresaAnterior() {
-        AgendamentoDB dbAge = new AgendamentoDBToplink();
+        HomologacaoDB dbAge = new HomologacaoDBToplink();
         PessoaEmpresa pe = listaPessoaEmpresa.get(idIndexPessoaEmp);
         List<Agendamento> agendas = dbAge.pesquisaAgendamentoPorPessoaEmpresa(pe.getId());
-        for (int i = 0; i < agendas.size(); i++) {
-            dbAge.delete(dbAge.pesquisaCodigo(agendas.get(i).getId()));
-        }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        for (int i = 0; i < agendas.size(); i++) {
+            salvarAcumuladoDB.abrirTransacao();
+            salvarAcumuladoDB.deletarObjeto(dbAge.pesquisaCodigo(agendas.get(i).getId()));
+            salvarAcumuladoDB.comitarTransacao();
+        }
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.deletarObjeto(salvarAcumuladoDB.pesquisaCodigo(pe.getId(), "PessoaEmpresa"))) {
             salvarAcumuladoDB.comitarTransacao();
