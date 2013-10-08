@@ -1,7 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:rich="http://richfaces.org/rich">
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:a4j="http://richfaces.org/a4j">
 
     <h:head>
         <!-- <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/> -->
@@ -14,6 +15,18 @@
         </style>
     </h:head>
     <f:view>
+        <a4j:status name="i_status" onstart="#{rich:component('i_panel_status')}.show(); return false;" onstop="#{rich:component('i_panel_status')}.hide();" />
+        <rich:popupPanel id="i_panel_status" modal="true" resizeable="false" height="50" width="200">
+            <center>
+                <h:outputLabel value="Aguarde ... " styleClass="fontePadrao" />
+            </center> 
+        </rich:popupPanel>
+        <a4j:status name="i_status_icon" onstart="#{rich:component('i_panel_status_icon')}.show(); return false;" onstop="#{rich:component('i_panel_status_icon')}.hide();" />
+        <rich:popupPanel id="i_panel_status_icon" modal="true" resizeable="false" height="150" width="70">
+            <center>
+                <h:graphicImage value="/Imagens/carregandox.gif" height="150" width="70" />
+            </center> 
+        </rich:popupPanel>
         <rich:notifyMessages stayTime="3500" showDetail="true" showCloseButton="true" showShadow="false" globalOnly="false"/>
         <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}" style="-moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888;">
             <table style="width: 100%; height: 5px; background-color: dodgerblue; border: 2px;">
@@ -97,8 +110,7 @@
                                         </h:panelGrid>
                                     </h:panelGroup>
                                 </f:facet>
-                                <rich:menuItem label="Trocar Usuário" styleClass="divBotao"/>
-                                <rich:menuItem label="Perfil" styleClass="divBotao" action="#{chamadaPaginaBean.usuarioPerfil}" immediate="true"/>
+                                <rich:menuItem label="Perfil / Meu cadastro" styleClass="divBotao" action="#{chamadaPaginaBean.usuarioPerfil}" immediate="true"/>
                                 <rich:menuItem label="Sair" action="#{usuarioBean.sairSistema}" styleClass="divBotao" immediate="true"/>
                             </rich:dropDownMenu>
                         </h:panelGrid>
