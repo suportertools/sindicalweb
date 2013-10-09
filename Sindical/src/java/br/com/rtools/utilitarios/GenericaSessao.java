@@ -2,11 +2,11 @@ package br.com.rtools.utilitarios;
 
 import java.util.List;
 import javax.faces.bean.ManagedBean;
-import javax.faces.bean.RequestScoped;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
 @ManagedBean(name = "genericaSessao")
-@RequestScoped
+@SessionScoped
 public class GenericaSessao {
 
     public static void put(String sessionName, String sessionValue) {
