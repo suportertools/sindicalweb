@@ -152,8 +152,8 @@
                                 
                                 <rich:column>
                                     <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                    <a4j:commandLink id="idProcessarValor" value="#{linha.argumento3}" action="#{processamentoIndividualBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa')" 
-                                                     render="idMensagem,i_cadastro_m, idValorMes, qfun,lbEdit,lbEdit2">
+                                    <a4j:commandLink id="idProcessarValor" value="#{linha.argumento3}" action="#{processamentoIndividualBean.carregarFolha}" oncomplete="modalOpcao('divFolhaEmpresa'); fecharModalOpcao('divProcesso', false)" 
+                                                     render="idMensagem i_cadastro_m idValorMes qfun lbEdit lbEdit2">
                                         <a4j:param value="#{it.index}" assignTo="#{processamentoIndividualBean.idIndex}"/>
                                     </a4j:commandLink>
                                 </rich:column>

@@ -57,7 +57,7 @@ public class RelatorioContribuintesJSFBean {
     private boolean chkGrupo = false;
     private boolean carregaConvencao = true;
     private boolean carregaCnaeConvencao = true;
-    private boolean carregaGrupo = false;
+    private boolean carregaGrupo = true;
     private String idEmails = "t";
     private int idCidades = 0;
     private int idRelatorios = 0;
@@ -66,7 +66,6 @@ public class RelatorioContribuintesJSFBean {
     private List resultConvencao = new ArrayList();
     private List resultCnaeConvencao = new ArrayList();
     private List<DataObject> listaCentroComercial = new ArrayList();
-    private List<DataObject> listaConvencao = new ArrayList();
     private List<DataObject> listaGrupo = new ArrayList();
     private Bairro bairro = new Bairro();
     
@@ -424,6 +423,8 @@ public class RelatorioContribuintesJSFBean {
             for (int i = 0; i < resultConvencao.size();i++)
                 ((DataObject)resultConvencao.get(i)).setArgumento0(false);
         }
+        
+        carregaGrupo = true;
         carregaCnaeConvencao = true;
         return "relatorioContribuintes";
     }
@@ -436,18 +437,6 @@ public class RelatorioContribuintesJSFBean {
             for (int i = 0; i < resultCnaeConvencao.size();i++)
                 ((DataObject)resultCnaeConvencao.get(i)).setArgumento0(false);
         }
-        return "relatorioContribuintes";
-    }
-
-    public String marcaTodosConv(){
-        if (chkConvencaoPesquisa){
-            for (int i = 0; i < listaConvencao.size();i++)
-                ((DataObject)listaConvencao.get(i)).setArgumento0(true);
-        }else{
-            for (int i = 0; i < listaConvencao.size();i++)
-                ((DataObject)listaConvencao.get(i)).setArgumento0(false);
-        }
-        carregaGrupo = true;
         return "relatorioContribuintes";
     }
 
@@ -487,10 +476,6 @@ public class RelatorioContribuintesJSFBean {
 
     public String atualizaGridCnaeConv(){
         carregaCnaeConvencao = true;
-        return "relatorioContribuintes";
-    }
-
-    public String atualizaGridGrupo(){
         carregaGrupo = true;
         return "relatorioContribuintes";
     }
@@ -624,21 +609,6 @@ public class RelatorioContribuintesJSFBean {
         this.htmlDataTpCentro = htmlDataTpCentro;
     }
 
-    public List<DataObject> getListaConvencao() {
-        if (listaConvencao.isEmpty()){
-            ConvencaoDB db = new ConvencaoDBToplink();
-            List lista = db.pesquisaTodos();
-            for (int i = 0; i < lista.size(); i++){
-                listaConvencao.add(new DataObject(false, lista.get(i)));
-            }
-        }
-        return listaConvencao;
-    }
-
-    public void setListaConvencao(List<DataObject> listaConvencao) {
-        this.listaConvencao = listaConvencao;
-    }
-
     public boolean isChkConvencaoPesquisa() {
         return chkConvencaoPesquisa;
     }
@@ -652,11 +622,11 @@ public class RelatorioContribuintesJSFBean {
             RelatorioContribuintesDB db = new RelatorioContribuintesDBToplink();
             listaGrupo = new ArrayList();
             String ids = "";
-            for (int i = 0; i < listaConvencao.size(); i++){
-                if ((Boolean)((DataObject)listaConvencao.get(i)).getArgumento0() == true){
-                    if (ids.length() > 0 && i != listaConvencao.size())
+            for (int i = 0; i < resultConvencao.size(); i++){
+                if ((Boolean)((DataObject)resultConvencao.get(i)).getArgumento0() == true){
+                    if (ids.length() > 0 && i != resultConvencao.size())
                         ids += ",";
-                    ids += String.valueOf(((Convencao) ((DataObject)listaConvencao.get(i)).getArgumento1()).getId());
+                    ids += String.valueOf(((Convencao) ((DataObject)resultConvencao.get(i)).getArgumento1()).getId());
                 }
             }
             List<GrupoCidade> listGrupo = db.pesquisarGrupoPorConvencao( ids );

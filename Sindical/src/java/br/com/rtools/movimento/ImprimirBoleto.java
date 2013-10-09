@@ -181,6 +181,7 @@ public class ImprimirBoleto {
     
     public byte[] imprimirBoleto(List<Movimento> lista, List<Float> listaValores, List<String> listaVencimentos, boolean imprimeVerso){
         int i = 0;
+        String mensagemErroMovimento = "Movimento(s) sem mensagem: ";
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             Collection vetor = new ArrayList();
@@ -196,12 +197,12 @@ public class ImprimirBoleto {
             String mensagem = "";
             MensagemCobranca mensagemCobranca = null;
             Historico historico = null;
-            String mensagemErroMovimento = "Movimento(s) sem mensagem: ";
+            
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/BOLETO.jasper"));
 
             while (i < lista.size()) {
-                if (lista.get(i).getBaixa() != null) {
+                if (lista.get(i).getBaixa() != null && lista.get(i).getBaixa().getId()  != -1) {
                     break;
                 }
                 
@@ -393,6 +394,10 @@ public class ImprimirBoleto {
                     swap[25] = mensagemCobranca.getMensagemConvencao().getMensagemCompensacao();
                 } else {
                     historico = movDB.pesquisaHistorico(lista.get(i).getId());
+                    
+                    if (historico == null){
+                        mensagemErroMovimento += "Sem histórico para Acordo id_movimento "+lista.get(i).getId();
+                    }
                     mensagem = historico.getHistorico();
                     ConvencaoCidadeDB dbCon = new ConvencaoCidadeDBToplink();
                     
@@ -492,7 +497,7 @@ public class ImprimirBoleto {
        
         } catch (Exception erro) {
             int x = i;
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage()+" "+mensagemErroMovimento);
         }
         return arquivo;
     }    

@@ -311,6 +311,11 @@
                                     <h:outputLabel value="Total Recebido: " styleClass="fonteExtratoTela" for="idSomarVlRecebido"/> <br />
                                     <h:inputText id="idSomarVlRecebido" size="15" value="#{extratoTelaBean.somarVlRecebido}" readonly="true" style="font-weight:bold;"/>
                                 </h:column>
+                                
+                                <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
+                                    <h:outputLabel value="Total NÃO Recebido: " styleClass="fonteExtratoTela" for="idSomarVlNaoRecebido"/> <br />
+                                    <h:inputText id="idSomarVlNaoRecebido" size="15" value="#{extratoTelaBean.somarVlNaoRecebido}" readonly="true" style="font-weight:bold;"/>
+                                </h:column>
 
                                 <h:column rendered="#{controleAcessoBean.totalValorExtratoTela}">
                                     <h:outputLabel value="Total Valor: " styleClass="fonteExtratoTela" for=""/> <br />

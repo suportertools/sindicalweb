@@ -408,8 +408,9 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
             FTipoDocumentoDB dbFTipoDocumento = new FTipoDocumentoDBToplink();
             ContaCobrancaDB ctaCobraDB = new ContaCobrancaDBToplink();
             ContaCobranca contaCob = new ContaCobranca();
-
-
+            String dataValida = "";
+            DataHoje dh= new DataHoje();
+            
             if (getListaServicos().isEmpty()) {
                 msgConfirma = "Lista de Serviços está vazia!";
                 return null;
@@ -429,18 +430,38 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
             }
 
             MovimentoDB dbm = new MovimentoDBToplink();
+            
+            if (dbm.pesquisaMovimentos(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
+                msgConfirma = " Este boleto já existe!";
+                return null;
+            }
+            
+            if (dbm.pesquisaMovimentosAcordado(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
+                msgConfirma = " Já foi gerado um Acordo para esta referência, serviço e tipo de serviço!";
+                return null;
+            }
+            
             if ((new DataHoje()).integridadeReferencia(strReferencia)) {
                 mc = dbCon.retornaDiaString(juridica.getId(), strReferencia, tipoServico.getId(), servico.getId());
                 if (mc != null) {
-                    strVencimento = mc.getVencimento();
-                    if (strVencimento.equals("")) {
-                        strVencimento = DataHoje.data();
+                    
+                    if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
+                        strVencimento = mc.getVencimento();
+                        dataValida = strVencimento;
+                    } else {
+                        strVencimento = mc.getVencimento();
+                        dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), strVencimento);
                     }
-
-                    if (dbm.pesquisaMovimentos(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
-                        msgConfirma = " Este boleto já existe!";
+                    
+                    if (validaBloqueio(dataValida)) {
+                        msgConfirma = " Não é permitido gerar boleto vencido! " + registro.getMensagemBloqueioBoletoWeb();
                         return null;
                     }
+
+//                    strVencimento = mc.getVencimento();
+//                    if (strVencimento.equals("")) {
+//                        strVencimento = DataHoje.data();
+//                    }
 
                     Movimento movi = new Movimento(-1,
                             null,

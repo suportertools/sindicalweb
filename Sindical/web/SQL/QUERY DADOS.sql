@@ -418,5 +418,12 @@ ALTER TABLE fin_polling_email
   OWNER TO postgres;
 
 
+INSERT INTO fin_cobranca_envio (id, descricao) VALUES (1,'ESCRITÓRIO');
+INSERT INTO fin_cobranca_envio (id, descricao) VALUES (2, 'EMPRESA COM ESCRITÓRIO');
+INSERT INTO fin_cobranca_envio (id, descricao) VALUES (3, 'EMPRESA SEM ESCRITÓRIO');
+INSERT INTO fin_cobranca_envio (id, descricao) VALUES (4, 'EMAIL PARA OS ESCRITÓRIO');
+INSERT INTO fin_cobranca_envio (id, descricao) VALUES (5, 'EMAIL PARA AS EMPRESAS');
+
+
 ------------------------------------------------------------------------
 

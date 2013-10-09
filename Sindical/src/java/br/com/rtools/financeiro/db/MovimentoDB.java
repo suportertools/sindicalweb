@@ -144,4 +144,6 @@ public interface MovimentoDB {
     public Double funcaoCorrecao(int id_pessoa, int id_servico, int id_tipo_servico, String referencia);
     
     public List movimentosBaixadosPorEvt(int idEvt);
+    
+    public Movimento pesquisaMovimentosAcordado(int idPessoa, String idRef, int idTipoServ, int idServicos);
 }
