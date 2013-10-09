@@ -16,7 +16,15 @@ public class GenericaSessao {
         String string = "";
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName) != null) {
             string = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);                
+        }
+        return string;
+    }
+    
+    public static String getString(String sessionName, boolean remove) {
+        String string = GenericaSessao.getString(sessionName);
+        if (remove) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);                
         }
         return string;
     }
@@ -25,10 +33,17 @@ public class GenericaSessao {
         Object object = new Object();
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName) != null) {
             object = (Object) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
         }
         return object;
     }
+    
+    public static Object getObject(String sessionName, boolean remove) {
+        Object object = GenericaSessao.getObject(sessionName);
+        if (remove) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);                
+        }
+        return object;
+    }    
     
     public static void remove(String sessionName) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
