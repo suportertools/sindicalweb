@@ -15,8 +15,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formVendedor">
-            
+            <h:form id="form_vendedor">
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Cadastro Vendedores" styleClass="fontePanel" style="width: 100%;"/>
@@ -27,52 +26,47 @@
                             <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true"/>
                             <h:outputLabel value="Vendedor: " styleClass="fontePadrao"/>
                             <h:outputText id="idNome" value="#{vendedorBean.pessoa.nome}" styleClass="fontePadrao"/>
-                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{vendedorBean.adicionar}" oncomplete="modalMensagem()" render="outConfirma,tbl"/>
+                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{vendedorBean.adicionar}" oncomplete="#{rich:component('form_vendedor:id_panel_mensagem')}.show(); return false;" render="id_panel_mensagem, tbl"/>
                         </h:panelGrid>
                         <h:panelGrid columns="3">
                             <h:panelGroup style="overflow:auto; height:400px; width: 500px;"  layout="block">
                                 <rich:dataTable value="#{vendedorBean.listaVendedores}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-                                    
                                     <rich:column style="text-align: center;">
                                         <f:facet name="header">
                                             <h:outputText value="#"/>
                                         </f:facet>
                                         <h:outputText value="#{it.index}"/>
                                     </rich:column>
-                                    
                                     <rich:column styleClass="colunaPesquisa">
                                         <f:facet name="header">
                                             <h:outputText value="..."/>
                                         </f:facet>
-                                        <a4j:commandButton image="/Imagens/excluirp.png" oncomplete="modalMensagem()" value="#{linha.id}" action="#{vendedorBean.excluir(linha)}" render="outConfirma,tbl" />
+                                        <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{vendedorBean.excluir(linha)}" oncomplete="#{rich:component('form_vendedor:id_panel_mensagem')}.show(); return false;" render="id_panel_mensagem, tbl" />
                                     </rich:column>
-
                                     <rich:column>
                                         <f:facet name="header">
                                             <h:outputText value="Nome"/>
                                         </f:facet>
                                         <h:outputLabel value="#{linha.pessoa.nome}" styleClass="fontePadrao"/>
                                     </rich:column>
-
                                 </rich:dataTable>
                             </h:panelGroup>
                         </h:panelGrid>
                     </div>
                 </center>
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{vendedorBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="vendedor" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                   
+                <rich:popupPanel id="id_panel_mensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('id_panel_mensagem')}.hide(); return false;"></h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{vendedorBean.msgConfirma}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" action="vendedor" oncomplete="#{rich:component('form_vendedor:id_panel_mensagem')}.hide();" />
+                    </center>
+                </rich:popupPanel>                
             </h:form>
         </f:view>
     </h:body>
