@@ -22,7 +22,7 @@
                         <h:outputText value="Permissões" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <div class="divMae" style="text-align: left">
+                    <rich:panel styleClass="divMae" style="text-align: left; border: 0;">
                         <h:panelGrid columns="4" id="id_painel_permissao">
                             <h:column>
                                 <h:outputLabel value="Módulo: " styleClass="fontePadrao"/>
@@ -31,7 +31,6 @@
                                     <f:selectItems value="#{permissaoBean.listaModulos}"/>
                                 </h:selectOneMenu>
                             </h:column>
-
                             <h:column>
                                 <h:outputLabel value="Rotina: " styleClass="fontePadrao"/>
                                 <h:selectOneMenu value="#{permissaoBean.idRotina}">
@@ -39,46 +38,43 @@
                                 </h:selectOneMenu>
                             </h:column>
                             <h:column>
-                                <a4j:commandButton image="/Imagens/novo.png" action="#{permissaoBean.adicionarPermissao}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="id_painel_permissao, tbl, outConfirma"/>
+                                <a4j:commandButton image="/Imagens/novo.png" action="#{permissaoBean.adicionarPermissao}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="id_painel_permissao, tbl, outConfirma" status="i_status"/>
                             </h:column>
                         </h:panelGrid>
-
                         <h:panelGrid>
-                            <rich:panel>
-                                <div style="overflow:auto; height:300px;">
-                                    <rich:dataTable var="linha" style="width:100%" value="#{permissaoBean.listaPermissoes}" id="tbl" iterationStatusVar="it">
-                                        <rich:column styleClass="colunaPesquisa">
-                                            <f:facet name="header">
-                                                <h:outputText value="..."/>
-                                            </f:facet>
-                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="id_painel_permissao tbl"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Módulo"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.modulo.descricao}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Rotina"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.rotina.rotina}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Evento"/>
-                                            </f:facet>
-                                            <h:outputText value="Inclusão, Alteração, Exclusão, Consulta"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </div>
+                            <rich:panel style="overflow:auto; height:300px;">
+                                <rich:dataTable var="linha" style="width:100%" value="#{permissaoBean.listaPermissoes}" id="tbl" iterationStatusVar="it">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Permissões adicionadas" />
+                                    </f:facet>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="..."/>
+                                        </f:facet>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="id_painel_permissao tbl" status="i_status"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Módulo"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.modulo.descricao}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Rotina"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.rotina.rotina}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Evento"/>
+                                        </f:facet>
+                                        <h:outputText value="Inclusão, Alteração, Exclusão, Consulta"/>
+                                    </rich:column>
+                                </rich:dataTable>
                             </rich:panel>
                         </h:panelGrid>                        
-                    </div>
+                    </rich:panel>
                 </center>                
             </h:form>
         </f:view>
