@@ -15,7 +15,8 @@ import java.util.List;
 import javax.faces.model.SelectItem;
 
 public class CatalogoJSFBean {
-    private Catalogo catalogo; 
+
+    private Catalogo catalogo;
     private String comoPesquisa;
     private String descPesquisa;
     private String msgConfirma;
@@ -31,7 +32,7 @@ public class CatalogoJSFBean {
     private int quantidade;
     private Date data;
 
-    public CatalogoJSFBean(){
+    public CatalogoJSFBean() {
         catalogo = new Catalogo();
         idFilial = 0;
         idTitulo = 0;
@@ -43,10 +44,10 @@ public class CatalogoJSFBean {
         comoPesquisa = "";
         descPesquisa = "";
         msgConfirma = "";
-        idIndex = -1; 
+        idIndex = -1;
     }
 
-    public String novo(){
+    public String novo() {
         catalogo = new Catalogo();
         idFilial = 0;
         idTitulo = 0;
@@ -61,51 +62,51 @@ public class CatalogoJSFBean {
         return "catalogoFilme";
     }
 
-    public synchronized String salvar(){
+    public synchronized String salvar() {
         CatalogoDB catalogoDB = new CatalogoDBToplink();
-        if(catalogo.getQuantidade() <= 0){
+        if (catalogo.getQuantidade() <= 0) {
             msgConfirma = "Quantidade deve ser maior que 01.";
             return null;
         }
         catalogo.setFilial(listaFilial.get(idFilial));
         catalogo.setTitulo(listaTitulo.get(idTitulo));
-        
-        if (!catalogoDB.verificaFilial(catalogo.getFilial(), catalogo.getTitulo())){
+
+        if (!catalogoDB.verificaFilial(catalogo.getFilial(), catalogo.getTitulo())) {
             msgConfirma = "Já existe este catálogo para esta filial.";
             return null;
         }
-        if (catalogo.getId() == -1){
-            if (!catalogoDB.insert(catalogo)){
+        if (catalogo.getId() == -1) {
+            if (!catalogoDB.insert(catalogo)) {
                 msgConfirma = "Erro! Cadastro não foi efetuado.";
-            }else{
+            } else {
                 msgConfirma = "Cadastro efetuado com sucesso!";
             }
-        }else{
-            if (catalogoDB.update(catalogo)){
+        } else {
+            if (catalogoDB.update(catalogo)) {
                 msgConfirma = "Cadastro atualizado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao Atualizar registro!";
             }
         }
-        catalogo = new Catalogo();  
+        catalogo = new Catalogo();
         return null;
     }
 
-   public synchronized String excluir(){
-       CatalogoDB catalogoDB = new CatalogoDBToplink();
-       if (catalogo.getId()!= -1){
+    public synchronized String excluir() {
+        CatalogoDB catalogoDB = new CatalogoDBToplink();
+        if (catalogo.getId() != -1) {
             catalogo = catalogoDB.pesquisaCodigo(getCatalogo().getId());
-           if (catalogoDB.delete(catalogo)){
+            if (catalogoDB.delete(catalogo)) {
                 msgConfirma = "Cadastro excluído com sucesso!";
-           }else{
+            } else {
                 msgConfirma = "Erro! Cadastro não foi excluído";
-        }
-        }else{
+            }
+        } else {
             msgConfirma = "Não há registro para excluir";
         }
         catalogo = new Catalogo();
         return null;
-   }
+    }
 
 //
 //    public synchronized void editar(){
@@ -122,7 +123,6 @@ public class CatalogoJSFBean {
 //            }
 //        }
 //    }
-
 //    private void verificaQuantidadeMatriz(){
 //        Catalogo catalogo = new Catalogo();
 //        for (int i = 0; i < listaFilial.size(); i++){
@@ -133,53 +133,49 @@ public class CatalogoJSFBean {
 //            }
 //        }
 //    }
-
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         setComoPesquisa("I");
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         setComoPesquisa("P");
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
     public Catalogo getCatalogo() {
         return catalogo;
     }
 
-    public List<SelectItem> getListaFilialCombo(){
+    public List<SelectItem> getListaFilialCombo() {
         int i = 0;
         FilialDB db = new FilialDBToplink();
-        if (listaFilial.isEmpty()){
+        if (listaFilial.isEmpty()) {
             setListaFilial((List<Filial>) db.pesquisaTodos());
-            while (i < getListaFilial().size()){
+            while (i < getListaFilial().size()) {
                 listaFilialCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaFilial().get(i).getFilial().getPessoa().getNome()
-                       ));
+                        new Integer(i),
+                        getListaFilial().get(i).getFilial().getPessoa().getNome()));
                 i++;
             }
         }
         return listaFilialCombo;
     }
 
-    public synchronized void pesquisaCatalogo(){
+    public synchronized void pesquisaCatalogo() {
 //        listaCatalogo.clear();
     }
 
-    public List<SelectItem> getListaTituloCombo(){
+    public List<SelectItem> getListaTituloCombo() {
         int i = 0;
         TituloDB db = new TituloDBToplink();
-        if (listaTituloCombo.isEmpty()){
+        if (listaTituloCombo.isEmpty()) {
             setListaTitulo((List<Titulo>) db.pesquisaTodos());
-            while (i < getListaTitulo().size()){
+            while (i < getListaTitulo().size()) {
                 listaTituloCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaTitulo().get(i).getDescricao()
-                       ));
+                        new Integer(i),
+                        getListaTitulo().get(i).getDescricao()));
                 i++;
             }
         }
@@ -199,7 +195,6 @@ public class CatalogoJSFBean {
 //        }
 //        return listaCatalogo;
 //    }
-
     public void setCatalogo(Catalogo catalogo) {
         this.catalogo = catalogo;
     }
@@ -286,7 +281,7 @@ public class CatalogoJSFBean {
 
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
-      
+
     }
 
     public int getIdIndex() {
@@ -296,6 +291,4 @@ public class CatalogoJSFBean {
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
     }
-
-
 }

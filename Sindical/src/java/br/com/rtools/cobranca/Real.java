@@ -4,10 +4,9 @@ import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.utilitarios.Moeda;
 
+public class Real extends Cobranca {
 
-public class Real extends  Cobranca{
-
-    public Real(Movimento movimento, Boleto boleto){
+    public Real(Movimento movimento, Boleto boleto) {
         super(movimento, boleto);
     }
 
@@ -18,29 +17,30 @@ public class Real extends  Cobranca{
         int soma = 0;
         int swap = 0;
         String m;
-        while (i > 0){
+        while (i > 0) {
             m = composicao.substring(i - 1, i);
             swap = Integer.parseInt(m) * j;
-            if (swap > 9){
+            if (swap > 9) {
                 String num = Integer.toString(swap);
                 swap = Integer.parseInt(num.substring(0, 1)) + Integer.parseInt(num.substring(1, 2));
             }
             soma += swap;
-            if (j == 2){
+            if (j == 2) {
                 j = 1;
-            }else if (j == 1){
+            } else if (j == 1) {
                 j = 2;
             }
             i--;
         }
 
-        if (((10 - (soma % 10)) == 10) || ((soma % 10) == 0)){
+        if (((10 - (soma % 10)) == 10) || ((soma % 10) == 0)) {
             return "0";
-        }else{
-            if (soma < 10)
+        } else {
+            if (soma < 10) {
                 return Integer.toString(10 - soma);
-            else
+            } else {
                 return Integer.toString(10 - (soma % 10));
+            }
         }
     }
 
@@ -50,8 +50,8 @@ public class Real extends  Cobranca{
         int j = 2;
         int soma = 0;
         String m;
-        while (i > 0){
-            if (j > 9){
+        while (i > 0) {
+            if (j > 9) {
                 j = 2;
             }
             m = composicao.substring(i - 1, i);
@@ -59,13 +59,12 @@ public class Real extends  Cobranca{
             j++;
             i--;
         }
-        if ((11 - (soma % 11)) > 9){
+        if ((11 - (soma % 11)) > 9) {
             return "0";
-        }else{
+        } else {
             return Integer.toString(11 - (soma % 11));
         }
     }
-
 
     @Override
     public String codigoBarras() {
@@ -74,16 +73,16 @@ public class Real extends  Cobranca{
         codigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
         int i = 0;
         int tam = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor())).length();
-        while ( i != ( 10 -  tam )){ // zeros
+        while (i != (10 - tam)) { // zeros
             codigoBarras += "0";
             i++;
         }
         codigoBarras += Moeda.limparPonto(Float.toString(movimento.getValor())); // valor
         codigoBarras += boleto.getContaCobranca().getContaBanco().getAgencia();
         codigoBarras += boleto.getContaCobranca().getCodCedente();        // codigo cedente
-        codigoBarras += moduloDez(boleto.getBoletoComposto() +
-                        boleto.getContaCobranca().getContaBanco().getAgencia() +
-                        boleto.getContaCobranca().getCodCedente());
+        codigoBarras += moduloDez(boleto.getBoletoComposto()
+                + boleto.getContaCobranca().getContaBanco().getAgencia()
+                + boleto.getContaCobranca().getCodCedente());
         codigoBarras += boleto.getBoletoComposto();       // nosso numero
         codigoBarras = codigoBarras.substring(0, 4) + this.moduloOnzeDV(codigoBarras) + codigoBarras.substring(4, codigoBarras.length());
         return codigoBarras;
@@ -104,19 +103,19 @@ public class Real extends  Cobranca{
         repNumerica += codigoBarras.substring(4, 5);
         swap += codigoBarras.substring(5, 19);
         i = 0;
-        while (i < (15 - swap.length())){
+        while (i < (15 - swap.length())) {
             swap = ("0" + swap);
             i++;
         }
         repNumerica += swap;
-        repNumerica = repNumerica.substring(0, 5) + "." +
-                      repNumerica.substring(5, 10) + " " +
-                      repNumerica.substring(10, 15) + "." +
-                      repNumerica.substring(15, 21) + " " +
-                      repNumerica.substring(21, 26) + "." +
-                      repNumerica.substring(26, 32) + " " +
-                      repNumerica.substring(32, 33) + " " +
-                      repNumerica.substring(34, repNumerica.length());
+        repNumerica = repNumerica.substring(0, 5) + "."
+                + repNumerica.substring(5, 10) + " "
+                + repNumerica.substring(10, 15) + "."
+                + repNumerica.substring(15, 21) + " "
+                + repNumerica.substring(21, 26) + "."
+                + repNumerica.substring(26, 32) + " "
+                + repNumerica.substring(32, 33) + " "
+                + repNumerica.substring(34, repNumerica.length());
         return repNumerica;
     }
 
@@ -127,10 +126,10 @@ public class Real extends  Cobranca{
 
     @Override
     public String getCedenteFormatado() {
-        return boleto.getContaCobranca().getCodCedente() + "/" +
-               moduloDez(boleto.getBoletoComposto() +
-                         boleto.getContaCobranca().getContaBanco().getAgencia() +
-                         boleto.getContaCobranca().getCodCedente());
+        return boleto.getContaCobranca().getCodCedente() + "/"
+                + moduloDez(boleto.getBoletoComposto()
+                + boleto.getContaCobranca().getContaBanco().getAgencia()
+                + boleto.getContaCobranca().getCodCedente());
 
     }
 
@@ -143,8 +142,4 @@ public class Real extends  Cobranca{
     public String codigoBanco() {
         return "356-5";
     }
-
 }
-
-
-

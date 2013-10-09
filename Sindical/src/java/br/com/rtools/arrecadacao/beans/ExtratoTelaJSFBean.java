@@ -347,11 +347,11 @@ public class ExtratoTelaJSFBean {
                 its = 0;
             }
 
-            if(!boletoInicial.equals("") && boletoFinal.equals("")){
+            if (!boletoInicial.equals("") && boletoFinal.equals("")) {
                 boletoFinal = boletoInicial;
             }
-            
-            if(boletoInicial.equals("") && !boletoFinal.equals("")){
+
+            if (boletoInicial.equals("") && !boletoFinal.equals("")) {
                 boletoInicial = boletoFinal;
             }
 
@@ -876,7 +876,7 @@ public class ExtratoTelaJSFBean {
             return result;
         }
     }
-    
+
     public String getSomarVlNaoRecebido() {
         String soma = "";
         float somaFloat = 0;

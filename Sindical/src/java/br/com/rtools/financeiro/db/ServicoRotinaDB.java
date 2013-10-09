@@ -14,6 +14,6 @@ public interface ServicoRotinaDB {
     public List pesquisaTodasRotinasSemServicoOrdenado(int idServico);
 
     public List pesquisaTodosServicosComRotinas(int idRotina);
-    
+
     public boolean existeServicoRotina(int idServico, int idRotina);
 }

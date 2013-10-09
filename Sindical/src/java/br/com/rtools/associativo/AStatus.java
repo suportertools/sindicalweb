@@ -3,13 +3,14 @@ package br.com.rtools.associativo;
 import javax.persistence.*;
 
 @Entity
-@Table(name="EVE_STATUS")
-@NamedQuery(name="AStatus.pesquisaID", query="select s from AStatus s where s.id=:pid")
-public class AStatus implements java.io.Serializable{
+@Table(name = "EVE_STATUS")
+@NamedQuery(name = "AStatus.pesquisaID", query = "select s from AStatus s where s.id=:pid")
+public class AStatus implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", nullable=true)
+    @Column(name = "DS_DESCRICAO", nullable = true)
     private String descricao;
 
     public AStatus() {

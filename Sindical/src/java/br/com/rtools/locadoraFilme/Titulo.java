@@ -14,45 +14,35 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-
 @Entity
-@Table(name="LOC_TITULO")
-@NamedQuery(name="Titulo.pesquisaID", query="Select t from Titulo t where t.id = :pid")
+@Table(name = "LOC_TITULO")
+@NamedQuery(name = "Titulo.pesquisaID", query = "Select t from Titulo t where t.id = :pid")
 public class Titulo implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date data;
-
-    @Column(name="DS_DESCRICAO", length=50, nullable=true)
+    @Column(name = "DS_DESCRICAO", length = 50, nullable = true)
     private String descricao;
-
-    @Column(name="DS_AUTOR", length=100, nullable=true)
+    @Column(name = "DS_AUTOR", length = 100, nullable = true)
     private String autor;
-
-    @JoinColumn(name="ID_GENERO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_GENERO", referencedColumnName = "ID")
     @ManyToOne
     private Genero genero;
-
-    @Column(name="DS_BARRAS", length=100, nullable=true)
+    @Column(name = "DS_BARRAS", length = 100, nullable = true)
     private String barras;
-
-    @Column(name="NR_DURACAO_MINUTOS", length=5, nullable=true)
+    @Column(name = "NR_DURACAO_MINUTOS", length = 5, nullable = true)
     private String duracao;
-
-    @Column(name="ANO_LANCAMENTO")
+    @Column(name = "ANO_LANCAMENTO")
     private int anoLancamento;
-
-    @Column(name="DS_LEGENDA", length=10, nullable=true)
+    @Column(name = "DS_LEGENDA", length = 10, nullable = true)
     private String legenda;
-
-    @Column(name="DS_FORMATO", length=20, nullable=true)
+    @Column(name = "DS_FORMATO", length = 20, nullable = true)
     private String formato;
-
-    @Column(name="IS_IMPRIME_ETIQUETA")
+    @Column(name = "IS_IMPRIME_ETIQUETA")
     private boolean imprimeEtiqueta;
 
     public Titulo(int id, Date data, String descricao, String autor, Genero genero, String barras, String duracao, int anoLancamento, String legenda, String formato, boolean imprimeEtiqueta) {
@@ -171,30 +161,27 @@ public class Titulo implements java.io.Serializable {
         this.imprimeEtiqueta = imprimeEtiqueta;
     }
 
-    public void setDataString (String data){
+    public void setDataString(String data) {
         this.data = DataHoje.converte(data);
     }
 
-    public String getDataString (){
+    public String getDataString() {
         return DataHoje.converteData(data);
     }
 
-    public void setAnoLancamentoString (String anoLancamento){
-        try{
+    public void setAnoLancamentoString(String anoLancamento) {
+        try {
             this.anoLancamento = Integer.parseInt(anoLancamento);
-        }catch(Exception e){
+        } catch (Exception e) {
             this.anoLancamento = 0;
         }
     }
 
-    public String getAnoLancamentoString (){
-        if (anoLancamento == 0){
+    public String getAnoLancamentoString() {
+        if (anoLancamento == 0) {
             return "";
-        }else{
+        } else {
             return Integer.toString(anoLancamento);
         }
     }
-
 }
-
-    

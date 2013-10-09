@@ -5,23 +5,24 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="EVE_EVENTO_BAILE")
-@NamedQuery(name="EventoBaile.pesquisaID", query="select s from EventoBaile s where s.id=:pid")
-public class EventoBaile implements java.io.Serializable{
+@Table(name = "EVE_EVENTO_BAILE")
+@NamedQuery(name = "EventoBaile.pesquisaID", query = "select s from EventoBaile s where s.id=:pid")
+public class EventoBaile implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_EVENTO", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private AEvento evento;
-    @Column(name="NR_MESAS", nullable=true)
+    @Column(name = "NR_MESAS", nullable = true)
     private int quantidadeMesas;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA",  nullable=false)
-    private Date data;    
-    @Column(name="TM_INICIO",  nullable=false)
+    @Column(name = "DT_DATA", nullable = false)
+    private Date data;
+    @Column(name = "TM_INICIO", nullable = false)
     private String horaInicio;
-    @Column(name="TM_FIM",  nullable=true)
+    @Column(name = "TM_FIM", nullable = true)
     private String horaFim;
 
     public EventoBaile() {
@@ -90,16 +91,17 @@ public class EventoBaile implements java.io.Serializable{
         this.horaFim = horaFim;
     }
 
-    public String getDataString(){
-        if (getData() != null)
+    public String getDataString() {
+        if (getData() != null) {
             return DataHoje.converteData(getData());
-        else
+        } else {
             return "";
+        }
     }
 
-    public void setDataString(String data){
-        if (!(data.isEmpty()))
+    public void setDataString(String data) {
+        if (!(data.isEmpty())) {
             this.setData(DataHoje.converte(data));
+        }
     }
-
 }

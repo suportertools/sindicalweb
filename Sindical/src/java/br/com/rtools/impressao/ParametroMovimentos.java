@@ -3,6 +3,7 @@ package br.com.rtools.impressao;
 import java.math.BigDecimal;
 
 public class ParametroMovimentos {
+
     private String sinLogo;
     private String sinNome;
     private String sinEndereco;
@@ -63,17 +64,17 @@ public class ParametroMovimentos {
     private BigDecimal movValorTotal;
     private BigDecimal movRepasse;
     private BigDecimal movLiquido;
-    private boolean totaliza;    
+    private boolean totaliza;
 
     public ParametroMovimentos(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero,
             String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, String sinTelefone,
-            String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento,int jurId, String jurNome, String jurEndereco,
+            String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento, int jurId, String jurNome, String jurEndereco,
             String jurLogradouro, String jurNumero, String jurComplemento, String jurBairro, String jurCep, String jurCidade,
-            String jurUF, String jurTelefone, String jurEmail, String jurTipoDocumento, String jurDocumento,int jurIdCnae, String jurNumeroCnae,
-            String jurCnae,int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
+            String jurUF, String jurTelefone, String jurEmail, String jurTipoDocumento, String jurDocumento, int jurIdCnae, String jurNumeroCnae,
+            String jurCnae, int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
             String escBairro, String escCep, String escCidade, String escUF, String escTelefone, String escEmail, String movNumeroBoleto,
             String movServico, String movTipoServico, String movReferencia, String movVencimento, String movQuitacao, BigDecimal movValorRecebido,
-            BigDecimal movTaxa, String movImportacao, String movUsuario, BigDecimal movJuros,BigDecimal movMulta,BigDecimal movCorrecao, BigDecimal movValorTotal, BigDecimal movRepasse, BigDecimal movLiquido, boolean totaliza) {
+            BigDecimal movTaxa, String movImportacao, String movUsuario, BigDecimal movJuros, BigDecimal movMulta, BigDecimal movCorrecao, BigDecimal movValorTotal, BigDecimal movRepasse, BigDecimal movLiquido, boolean totaliza) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -157,7 +158,7 @@ public class ParametroMovimentos {
         this.jurNome = "";
         this.jurEndereco = "";
         this.jurLogradouro = "";
-        this.jurNumero =  "";
+        this.jurNumero = "";
         this.jurComplemento = "";
         this.jurBairro = "";
         this.jurCep = "";

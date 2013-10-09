@@ -15,21 +15,22 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EVE_ENDERECO")
-@NamedQuery(name="AEndereco.pesquisaID", query="select s from AEndereco s where s.id=:pid")
-public class AEndereco implements java.io.Serializable{
+@Table(name = "EVE_ENDERECO")
+@NamedQuery(name = "AEndereco.pesquisaID", query = "select s from AEndereco s where s.id=:pid")
+public class AEndereco implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_EVENTO", referencedColumnName="ID",  nullable=false)
+    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private AEvento evento;
-    @JoinColumn(name="ID_ENDERECO", referencedColumnName="ID",  nullable=false)
+    @JoinColumn(name = "ID_ENDERECO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Endereco endereco;
-    @Column(name="DS_NOMERO", nullable=true, length=9)
+    @Column(name = "DS_NOMERO", nullable = true, length = 9)
     private String numero;
-    @Column(name="DS_COMPLEMENTO", nullable=true, length=100)
+    @Column(name = "DS_COMPLEMENTO", nullable = true, length = 100)
     private String complemento;
 
     public AEndereco() {
@@ -87,6 +88,4 @@ public class AEndereco implements java.io.Serializable{
     public void setComplemento(String complemento) {
         this.complemento = complemento;
     }
-
-
 }

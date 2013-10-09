@@ -519,7 +519,7 @@ public class BaixaGeralJSFBean {
     public void setRetorna(boolean retorna) {
         this.retorna = retorna;
     }
-    
+
     public void alteraVencimento() {
         int quitacaoInteiro = DataHoje.converteDataParaRefInteger(quitacao);
         int vencimentoInteiro = DataHoje.converteDataParaRefInteger(vencimento);

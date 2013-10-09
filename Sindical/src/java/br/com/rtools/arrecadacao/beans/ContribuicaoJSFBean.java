@@ -31,30 +31,27 @@ public class ContribuicaoJSFBean {
     private boolean enabled = false;
     private Long valorCorrente;
 
-    
-    public void refreshForm(){
-        
-    }        
-    
-    public List<SelectItem> getListaServico(){
-        if(servicos.isEmpty()){
+    public void refreshForm() {
+    }
+
+    public List<SelectItem> getListaServico() {
+        if (servicos.isEmpty()) {
             int i = 0;
             ServicosDB db = new ServicosDBToplink();
             List select = db.pesquisaTodos(4);
-            if (select.size() != 0){
-                while (i < select.size()){
+            if (select.size() != 0) {
+                while (i < select.size()) {
                     servicos.add(new SelectItem(
-                           new Integer(i),
-                           (String) ((Servicos) select.get(i)).getDescricao() ,
-                           Integer.toString(((Servicos) select.get(i)).getId())  ));
+                            new Integer(i),
+                            (String) ((Servicos) select.get(i)).getDescricao(),
+                            Integer.toString(((Servicos) select.get(i)).getId())));
                     listaServicos.add(((Servicos) select.get(i)));
-                   i++;
+                    i++;
                 }
             }
         }
         return servicos;
     }
-
 
 //    public void alterarReferencia(){
 //        try{
@@ -63,29 +60,27 @@ public class ContribuicaoJSFBean {
 //            referencia = "";
 //        }
 //    }
-
-    public void alterarReferenciaDaGrid(){
-        try{
+    public void alterarReferenciaDaGrid() {
+        try {
 //            GGeracao gGeracao = lista.get(htmlTable.getRowIndex());
 //            gGeracao.setReferencia(DataHoje.dataReferencia( gGeracao.getData() ));
-        }catch(Exception e){
+        } catch (Exception e) {
         }
     }
 
-    public void alterarServicoDaGrid(int index){
-        try{
+    public void alterarServicoDaGrid(int index) {
+        try {
             int x = Integer.parseInt(String.valueOf(lista.get(index).getArgumento5()));
             MensagemConvencaoDB mensagemConvencaoDB = new MensagemConvencaoDBToplink();
             MensagemConvencao mensagemConvencao = mensagemConvencaoDB.verificaMensagem(
-                ((ConvencaoCidade)lista.get(index).getArgumento2()).getConvencao().getId(),
-                listaServicos.get( x ).getId(),
-                1,
-                ((ConvencaoCidade)lista.get(index).getArgumento2()).getGrupoCidade().getId(),
-                referencia
-            );
+                    ((ConvencaoCidade) lista.get(index).getArgumento2()).getConvencao().getId(),
+                    listaServicos.get(x).getId(),
+                    1,
+                    ((ConvencaoCidade) lista.get(index).getArgumento2()).getGrupoCidade().getId(),
+                    referencia);
             int a = mensagemConvencao.getId();
             lista.get(index).setArgumento3(DataHoje.converteData(mensagemConvencao.getDtVencimento()));
-        }catch(Exception e){
+        } catch (Exception e) {
             lista.get(index).setArgumento3(null);
         }
     }
@@ -93,68 +88,65 @@ public class ContribuicaoJSFBean {
     public List getLista() {
         if (!lista.isEmpty()) {
             return lista;
-        }else {
-            if((new DataHoje()).integridadeReferencia(referencia)){
+        } else {
+            if ((new DataHoje()).integridadeReferencia(referencia)) {
                 MensagemConvencaoDB mensagemConvencaoDB = new MensagemConvencaoDBToplink();
                 MensagemConvencao mensagemConvencao = null;
                 ConvencaoCidadeDB conDB = new ConvencaoCidadeDBToplink();
                 List<ConvencaoCidade> listaConvencaoCidade = conDB.pesquisaTodos();
-                if (listaConvencaoCidade == null){
+                if (listaConvencaoCidade == null) {
                     listaConvencaoCidade = new ArrayList();
                 }
                 for (int i = 0; i < listaConvencaoCidade.size(); i++) {
                     mensagemConvencao = mensagemConvencaoDB.verificaMensagem(
-                                        listaConvencaoCidade.get(i).getConvencao().getId(),
-                                        listaServicos.get(idContribuicao).getId(),
-                                        1,
-                                        listaConvencaoCidade.get(i).getGrupoCidade().getId(),
-                                        referencia
-                    );
-                    if(mensagemConvencao != null && mensagemConvencao.getId() != -1){
+                            listaConvencaoCidade.get(i).getConvencao().getId(),
+                            listaServicos.get(idContribuicao).getId(),
+                            1,
+                            listaConvencaoCidade.get(i).getGrupoCidade().getId(),
+                            referencia);
+                    if (mensagemConvencao != null && mensagemConvencao.getId() != -1) {
                         vencimento = mensagemConvencao.getVencimento();
-                    }else{
+                    } else {
                         vencimento = null;
                     }
                     lista.add(new DataObject(false,
-                                i,
-                                listaConvencaoCidade.get(i),
-                                vencimento,
-                                referencia,
-                                idContribuicao
-                            )
-                    );
+                            i,
+                            listaConvencaoCidade.get(i),
+                            vencimento,
+                            referencia,
+                            idContribuicao));
                 }
             }
         }
         return lista;
     }
-    
+
     public void processar() {
         boolean selecionado = false;
         mensagem = "";
-        for (int i = 0; i < lista.size(); i++){
+        for (int i = 0; i < lista.size(); i++) {
             GerarMovimento g = new GerarMovimento();
-            if ((Boolean)lista.get(i).getArgumento0()){
+            if ((Boolean) lista.get(i).getArgumento0()) {
                 selecionado = true;
-                mensagem += g.gerarBoletos(String.valueOf(lista.get(i).getArgumento4()), 
-                                           String.valueOf(lista.get(i).getArgumento3()), 
-                                           ((ConvencaoCidade)lista.get(i).getArgumento2()).getGrupoCidade().getId(),
-                                           ((ConvencaoCidade)lista.get(i).getArgumento2()).getConvencao().getId(),
-                                           listaServicos.get(Integer.valueOf(String.valueOf(lista.get(i).getArgumento5()))).getId(), 
-                                           1, 
-                                           4
-                );
+                mensagem += g.gerarBoletos(String.valueOf(lista.get(i).getArgumento4()),
+                        String.valueOf(lista.get(i).getArgumento3()),
+                        ((ConvencaoCidade) lista.get(i).getArgumento2()).getGrupoCidade().getId(),
+                        ((ConvencaoCidade) lista.get(i).getArgumento2()).getConvencao().getId(),
+                        listaServicos.get(Integer.valueOf(String.valueOf(lista.get(i).getArgumento5()))).getId(),
+                        1,
+                        4);
             }
         }
-        if (!selecionado)
+        if (!selecionado) {
             mensagem = "Nenhuma linha foi selecionada!";
+        }
         //movimentoDB.gerarContribuicao(lista, listaServicos, 4);
-    }    
+    }
 
-    public void filtrar(){
+    public void filtrar() {
         lista.clear();
         int i = 0;
-        while(i < lista.size()){
+        while (i < lista.size()) {
             lista.get(i).setArgumento4(referencia);
             lista.get(i).setArgumento5(idContribuicao);
             i++;
@@ -203,21 +195,21 @@ public class ContribuicaoJSFBean {
         return null;
     }
 
-    public synchronized Long getCurrentValue(){
+    public synchronized Long getCurrentValue() {
         long result = 0;
-        if (isEnabled()){
+        if (isEnabled()) {
             long numero = (long) 3.5;
-            if((valorCorrente + numero) < 100){
+            if ((valorCorrente + numero) < 100) {
                 valorCorrente += numero;
-            }else{
+            } else {
                 valorCorrente += (100 - valorCorrente);
             }
             result = valorCorrente;
-            if (valorCorrente == ((long) 100)){
+            if (valorCorrente == ((long) 100)) {
                 result = Long.valueOf(0);
-                enabled=false;
+                enabled = false;
             }
-        }else{
+        } else {
             result = Long.valueOf(0);
         }
         return result;
@@ -238,7 +230,4 @@ public class ContribuicaoJSFBean {
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
     }
-    
-
 }
-

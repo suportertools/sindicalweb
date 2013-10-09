@@ -35,7 +35,7 @@ public class FeriadosJSFBean {
                 return null;
             }
             if (chkCidades) {
-                feriados.setCidade( (Cidade) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaCidade.get(idCidade).getDescription()), "Cidade"));
+                feriados.setCidade((Cidade) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaCidade.get(idCidade).getDescription()), "Cidade"));
             } else {
                 feriados.setCidade(null);
             }
@@ -90,10 +90,10 @@ public class FeriadosJSFBean {
         }
         return listaCidade;
     }
-    
+
     public void setListaCidade(List<SelectItem> listaCidade) {
         this.listaCidade = listaCidade;
-        
+
     }
 
     public void refreshForm() {
@@ -150,5 +150,4 @@ public class FeriadosJSFBean {
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
     }
-    
 }

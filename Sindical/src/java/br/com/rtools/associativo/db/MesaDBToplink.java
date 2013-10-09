@@ -6,41 +6,42 @@ import br.com.rtools.principal.DB;
 import java.util.List;
 import javax.persistence.Query;
 
-public class MesaDBToplink extends DB implements MesaDB{
+public class MesaDBToplink extends DB implements MesaDB {
+
     public boolean insert(Mesa mesa) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(mesa);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(Mesa mesa) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(mesa);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean delete(Mesa mesa) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(mesa);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -48,62 +49,59 @@ public class MesaDBToplink extends DB implements MesaDB{
 
     public Mesa pesquisaCodigo(int id) {
         Mesa result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Mesa.pesquisaID");
             qry.setParameter("pid", id);
             result = (Mesa) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select r from Mesa r");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
-    
+
     public List<Mesa> pesquisaTodosPorEvento(int idEvento) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select m from Mesa m where m.bVenda.evento.id = " + idEvento);
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
     public Mesa pesquisaVendaPorEvt(int idVenda) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select b from Mesa b where b.bVenda.id = " + idVenda
-                    );
+                    "select b from Mesa b where b.bVenda.id = " + idVenda);
             return (Mesa) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
     public Movimento pesquisaMovimentoPorVenda(int idVenda) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
                     "select m "
                     + "from Movimento m,"
                     + "     BVenda v "
                     + "where v.id = " + idVenda
-                    + "  and v.evt.id = m.evt.id"
-                    );
+                    + "  and v.evt.id = m.evt.id");
             return (Movimento) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
-
 }

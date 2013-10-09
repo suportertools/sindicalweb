@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 public class ParametroSenha {
+
     private String sinLogo;
     private String sindNome; //– String (nome da filial do MAC)
     private String sindDocumento; //– String (CNPJ da Matriz)

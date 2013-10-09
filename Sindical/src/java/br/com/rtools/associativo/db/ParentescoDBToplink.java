@@ -5,16 +5,17 @@ import br.com.rtools.principal.DB;
 import java.util.List;
 import javax.persistence.Query;
 
-public class ParentescoDBToplink extends DB implements ParentescoDB{
+public class ParentescoDBToplink extends DB implements ParentescoDB {
+
     @Override
     public boolean insert(Parentesco parentesco) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(parentesco);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -22,13 +23,13 @@ public class ParentescoDBToplink extends DB implements ParentescoDB{
 
     @Override
     public boolean update(Parentesco parentesco) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(parentesco);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -36,13 +37,13 @@ public class ParentescoDBToplink extends DB implements ParentescoDB{
 
     @Override
     public boolean delete(Parentesco parentesco) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(parentesco);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -51,11 +52,11 @@ public class ParentescoDBToplink extends DB implements ParentescoDB{
     @Override
     public Parentesco pesquisaCodigo(int id) {
         Parentesco result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Parentesco.pesquisaID");
             qry.setParameter("pid", id);
             result = (Parentesco) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
@@ -63,22 +64,22 @@ public class ParentescoDBToplink extends DB implements ParentescoDB{
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select p from Parentesco p order by p.id asc");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     @Override
     public List pesquisaTodosSemTitular() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select p from Parentesco p "
-                                                     + " where p.ativo = true "
-                                                     + "   and p.id <> 1 order by p.id");
+                    + " where p.ativo = true "
+                    + "   and p.id <> 1 order by p.id");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
@@ -86,14 +87,14 @@ public class ParentescoDBToplink extends DB implements ParentescoDB{
 
     @Override
     public List pesquisaTodosSemTitularPorSexo(String sexo) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select p from Parentesco p "
-                                                     + " where p.ativo = true "
-                                                     + "   and p.id <> 1 "
-                                                     + "   and p.sexo = '"+sexo+"'"
-                                                     + "order by p.id");
+                    + " where p.ativo = true "
+                    + "   and p.id <> 1 "
+                    + "   and p.sexo = '" + sexo + "'"
+                    + "order by p.id");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }

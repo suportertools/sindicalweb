@@ -14,16 +14,17 @@ import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
 
-public class SociosDBToplink extends DB implements SociosDB{
+public class SociosDBToplink extends DB implements SociosDB {
+
     @Override
     public boolean insert(Socios socios) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(socios);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -31,13 +32,13 @@ public class SociosDBToplink extends DB implements SociosDB{
 
     @Override
     public boolean update(Socios socios) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(socios);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -45,13 +46,13 @@ public class SociosDBToplink extends DB implements SociosDB{
 
     @Override
     public boolean delete(Socios socios) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(socios);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -60,11 +61,11 @@ public class SociosDBToplink extends DB implements SociosDB{
     @Override
     public Socios pesquisaCodigo(int id) {
         Socios result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Socios.pesquisaID");
             qry.setParameter("pid", id);
             result = (Socios) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
@@ -72,10 +73,10 @@ public class SociosDBToplink extends DB implements SociosDB{
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select s from Socios s");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
@@ -83,73 +84,74 @@ public class SociosDBToplink extends DB implements SociosDB{
 
     @Override
     public Socios pesquisaSocioPorId(int idServicoPessoa) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
                     "select s"
                     + " from Socios s"
                     + " where s.servicoPessoa.id = :pid");
             qry.setParameter("pid", idServicoPessoa);
             return (Socios) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new Socios();
         }
     }
 
     @Override
-    public List pesquisaSocios(String desc, String por, String como, String status){
+    public List pesquisaSocios(String desc, String por, String como, String status) {
         List lista = new Vector<Object>();
         String textQuery = null;
-        if (status.equals("inativo"))
+        if (status.equals("inativo")) {
             status = "not";
-        else
+        } else {
             status = "";
-        if(por.equals("nome")){
-           por = "nome";
-            if (como.equals("P")){
+        }
+        if (por.equals("nome")) {
+            por = "nome";
+            if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select soc from Socios soc" +
-                            " where UPPER(soc.servicoPessoa.pessoa.nome) like :desc " +
-                            "   and soc.matriculaSocios.motivoInativacao is "+status+" null"+
-                            " order by soc.servicoPessoa.pessoa.nome";
-            }else if (como.equals("I")){
+                textQuery = "select soc from Socios soc"
+                        + " where UPPER(soc.servicoPessoa.pessoa.nome) like :desc "
+                        + "   and soc.matriculaSocios.motivoInativacao is " + status + " null"
+                        + " order by soc.servicoPessoa.pessoa.nome";
+            } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select soc from Socios soc" +
-                            " where UPPER(soc.servicoPessoa.pessoa.nome) like :desc " +
-                            "   and soc.matriculaSocios.motivoInativacao is "+status+" null"+
-                            " order by soc.servicoPessoa.pessoa.nome";
+                textQuery = "select soc from Socios soc"
+                        + " where UPPER(soc.servicoPessoa.pessoa.nome) like :desc "
+                        + "   and soc.matriculaSocios.motivoInativacao is " + status + " null"
+                        + " order by soc.servicoPessoa.pessoa.nome";
             }
         }
-        if(por.equals("documento")){
+        if (por.equals("documento")) {
             por = "documento";
             desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select soc from Socios soc" +
-                            " where UPPER(soc.servicoPessoa.pessoa.documento) like :desc " +
-                            "   and soc.matriculaSocios.motivoInativacao is "+status+" null"+
-                            " order by soc.servicoPessoa.pessoa.nome";
+            textQuery = "select soc from Socios soc"
+                    + " where UPPER(soc.servicoPessoa.pessoa.documento) like :desc "
+                    + "   and soc.matriculaSocios.motivoInativacao is " + status + " null"
+                    + " order by soc.servicoPessoa.pessoa.nome";
         }
-        try{
+        try {
             Query qry = getEntityManager().createQuery(textQuery);
-                    if (!desc.equals("%%")&& !desc.equals("%"))
-                        qry.setParameter("desc", desc);
-                    lista = qry.getResultList();
-        }
-        catch(Exception e){
+            if (!desc.equals("%%") && !desc.equals("%")) {
+                qry.setParameter("desc", desc);
+            }
+            lista = qry.getResultList();
+        } catch (Exception e) {
             lista = new Vector<Object>();
         }
         return lista;
     }
 
     @Override
-    public List pesquisaDependentes(int idMatricula){
-        try{
-            Query qry = getEntityManager().createQuery("select s "+
-                                                       "  from Socios s " +
-                                                       " where s.parentesco.id <> 1 " +
-                                                       "   and s.matriculaSocios.id = "+idMatricula);
+    public List pesquisaDependentes(int idMatricula) {
+        try {
+            Query qry = getEntityManager().createQuery("select s "
+                    + "  from Socios s "
+                    + " where s.parentesco.id <> 1 "
+                    + "   and s.matriculaSocios.id = " + idMatricula);
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
@@ -172,19 +174,19 @@ public class SociosDBToplink extends DB implements SociosDB{
 //    }
 
     @Override
-    public List pesquisaDependentesOrdenado(int idMatricula){
-        try{
-            Query qry = getEntityManager().createQuery("select s from Socios s " +
-                                                       " where s.parentesco.id <> 1 " +
-                                                       "   and s.matriculaSocios.id = "+idMatricula+
-                                                       " order by s.parentesco.id");
+    public List pesquisaDependentesOrdenado(int idMatricula) {
+        try {
+            Query qry = getEntityManager().createQuery("select s from Socios s "
+                    + " where s.parentesco.id <> 1 "
+                    + "   and s.matriculaSocios.id = " + idMatricula
+                    + " order by s.parentesco.id");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
-    
+
 //    public List pesquisaDependentesOrdenado(int idPessoaSocio){
 //        try{
 //            Query qry = getEntityManager().createQuery("select s from Socios s " +
@@ -202,11 +204,10 @@ public class SociosDBToplink extends DB implements SociosDB{
 //            return null;
 //        }
 //    }
-
     @Override
     public Socios pesquisaSocioPorPessoa(int idPessoa) {
         Socios soc = new Socios();
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
                     "select s"
                     + " from Socios s"
@@ -220,7 +221,7 @@ public class SociosDBToplink extends DB implements SociosDB{
             qry.setParameter("pid", idPessoa);
             qry.setMaxResults(1);
             soc = (Socios) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return soc;
@@ -229,13 +230,13 @@ public class SociosDBToplink extends DB implements SociosDB{
     @Override
     public Socios pesquisaSocioPorPessoaAtivo(int idPessoa) {
         Socios soc = new Socios();
-        try{
-            Query qry = getEntityManager().createQuery("select s from Socios s"+
-                                                       " where s.servicoPessoa.pessoa.id = :pid" +
-                                                       "   and s.matriculaSocios.motivoInativacao is null");
+        try {
+            Query qry = getEntityManager().createQuery("select s from Socios s"
+                    + " where s.servicoPessoa.pessoa.id = :pid"
+                    + "   and s.matriculaSocios.motivoInativacao is null");
             qry.setParameter("pid", idPessoa);
             soc = (Socios) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return soc;
@@ -243,82 +244,82 @@ public class SociosDBToplink extends DB implements SociosDB{
 
     @Override
     public List pesquisaSocioPorPessoaInativo(int idPessoa) {
-        try{
-            Query qry = getEntityManager().createQuery("select s from Socios s"+
-                                                       " where s.servicoPessoa.pessoa.id = :pid" +
-                                                       "   and s.matriculaSocios.motivoInativacao is not null");
+        try {
+            Query qry = getEntityManager().createQuery("select s from Socios s"
+                    + " where s.servicoPessoa.pessoa.id = :pid"
+                    + "   and s.matriculaSocios.motivoInativacao is not null");
             qry.setParameter("pid", idPessoa);
             return qry.getResultList();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
 
     @Override
-    public List pesquisaSociosAtivos(){
-        try{
-            Query qry = getEntityManager().createQuery("select soc from Socios soc" +
-                                                       " where soc.matriculaSocios.motivoInativacao is null");
+    public List pesquisaSociosAtivos() {
+        try {
+            Query qry = getEntityManager().createQuery("select soc from Socios soc"
+                    + " where soc.matriculaSocios.motivoInativacao is null");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
 
     @Override
-    public List pesquisaSociosInativos(){
-        try{
-            Query qry = getEntityManager().createQuery("select soc from Socios soc" +
-                                                       " where soc.matriculaSocios.motivoInativacao is not null");
+    public List pesquisaSociosInativos() {
+        try {
+            Query qry = getEntityManager().createQuery("select soc from Socios soc"
+                    + " where soc.matriculaSocios.motivoInativacao is not null");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
 
     @Override
-    public Socios pesquisaSocioDoDependente(int idDependente){
-        try{
+    public Socios pesquisaSocioDoDependente(int idDependente) {
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select s " +
-                    "  from Socios s "+
-                    " where s.dtValidadeCarteirinha is null " +
-                    "   and s.matriculaSocios.id = (select si.matriculaSocios.id " +
-                    "                                 from Socios si " +
-                    "                                where si.parentesco.id <> 1" +
-                    "                                  and si.id = :pid )");
+                    "select s "
+                    + "  from Socios s "
+                    + " where s.dtValidadeCarteirinha is null "
+                    + "   and s.matriculaSocios.id = (select si.matriculaSocios.id "
+                    + "                                 from Socios si "
+                    + "                                where si.parentesco.id <> 1"
+                    + "                                  and si.id = :pid )");
             qry.setParameter("pid", idDependente);
             return (Socios) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
     @Override
-    public Socios pesquisaSocioDoDependente(Pessoa pessoa){
-        try{
+    public Socios pesquisaSocioDoDependente(Pessoa pessoa) {
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select s " +
-                    "  from Socios s "+
-                    " where s.dtValidadeCarteirinha is null " +
-                    "   and s.matriculaSocios.id = (select si.matriculaSocios.id " +
-                    "                                 from Socios si " +
-                    "                                where si.parentesco.id <> 1" +
-                    "                                  and si.servicoPessoa.pessoa.id = :pid )");
+                    "select s "
+                    + "  from Socios s "
+                    + " where s.dtValidadeCarteirinha is null "
+                    + "   and s.matriculaSocios.id = (select si.matriculaSocios.id "
+                    + "                                 from Socios si "
+                    + "                                where si.parentesco.id <> 1"
+                    + "                                  and si.servicoPessoa.pessoa.id = :pid )");
             qry.setParameter("pid", pessoa.getId());
             return (Socios) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
     @Override
-    public float descontoSocioEve(int idPessoa, int idServico){
+    public float descontoSocioEve(int idPessoa, int idServico) {
         Query qry = null;
         DataHoje dh = new DataHoje();
         Socios socios = new Socios();
@@ -327,12 +328,12 @@ public class SociosDBToplink extends DB implements SociosDB{
         Fisica fisica = new Fisica();
         // PESQUISA PESSOA FISICA ------------------
         String textQry = "select f "
-                       + "  from Fisica f "
-                       + " where f.pessoa.id = " + idPessoa;
-        try{
+                + "  from Fisica f "
+                + " where f.pessoa.id = " + idPessoa;
+        try {
             qry = getEntityManager().createQuery(textQry);
-            fisica = (Fisica)qry.getSingleResult();
-        }catch(Exception e){
+            fisica = (Fisica) qry.getSingleResult();
+        } catch (Exception e) {
             e.getMessage();
             return 0;
         }
@@ -340,12 +341,12 @@ public class SociosDBToplink extends DB implements SociosDB{
 
         // PESQUISA O SOCIO ---
         textQry = "select s "
-                 +"  from Socios s "
-                 +" where s.servicoPessoa.pessoa.id = "+ idPessoa;
-        try{
+                + "  from Socios s "
+                + " where s.servicoPessoa.pessoa.id = " + idPessoa;
+        try {
             qry = getEntityManager().createQuery(textQry);
-            socios = (Socios)qry.getSingleResult();
-        }catch(Exception e){
+            socios = (Socios) qry.getSingleResult();
+        } catch (Exception e) {
             e.getMessage();
             return 0;
         }
@@ -357,17 +358,17 @@ public class SociosDBToplink extends DB implements SociosDB{
                 + "  from CategoriaDesconto cd"
                 + " where cd.categoria.id = " + socios.getMatriculaSocios().getCategoria().getId()
                 + "   and cd.servicos.id = " + idServico;
-        try{
+        try {
             qry = getEntityManager().createQuery(textQry);
-            categoriaDesconto = (CategoriaDesconto)qry.getSingleResult();
-        }catch(Exception e){
+            categoriaDesconto = (CategoriaDesconto) qry.getSingleResult();
+        } catch (Exception e) {
             e.getMessage();
             return 0;
         }
 
 
         // PESQUISA EVE SERVICO VALOR -------------
-        if (fisica.getNascimento().length() != 10){
+        if (fisica.getNascimento().length() != 10) {
             return 0;
         }
         int idade = dh.calcularIdade(fisica.getDtNascimento());
@@ -377,32 +378,32 @@ public class SociosDBToplink extends DB implements SociosDB{
                 + "   and ev.idadeInicial <= " + idade
                 + "   and ev.idadeFinal >= " + idade;
 
-        try{
+        try {
             qry = getEntityManager().createQuery(textQry);
-            eveServicoValor = (EventoServicoValor)qry.getSingleResult();
-        }catch(Exception e){
+            eveServicoValor = (EventoServicoValor) qry.getSingleResult();
+        } catch (Exception e) {
             e.getMessage();
             return 0;
         }
 
         // CALCULA VALOR COM DESCONTO ---
-        if (categoriaDesconto.getDesconto() == 0 ){
+        if (categoriaDesconto.getDesconto() == 0) {
             return 0;
         }
 
-        float soma = Moeda.multiplicarValores(eveServicoValor.getValor(), ( Moeda.divisaoValores(categoriaDesconto.getDesconto(),100)));
+        float soma = Moeda.multiplicarValores(eveServicoValor.getValor(), (Moeda.divisaoValores(categoriaDesconto.getDesconto(), 100)));
         soma = Moeda.subtracaoValores(eveServicoValor.getValor(), soma);
         return soma;
     }
 
     @Override
     public List<SocioCarteirinha> pesquisaCarteirinhasPorSocio(int idSocios) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select sc "
-                                                     + "  from SocioCarteirinha sc"
-                                                     + " where sc.socios.id = "+ idSocios);
+                    + "  from SocioCarteirinha sc"
+                    + " where sc.socios.id = " + idSocios);
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
@@ -410,10 +411,10 @@ public class SociosDBToplink extends DB implements SociosDB{
 
     @Override
     public List pesquisaMotivoInativacao() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select mi from SMotivoInativacao mi order by mi.descricao");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             //e.getMessage();
             return new ArrayList();
         }

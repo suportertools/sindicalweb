@@ -35,7 +35,7 @@ public class ServicoRotinaDBToplink extends DB implements ServicoRotinaDB {
     public List pesquisaTodasRotinasSemServicoOrdenado(int idServico) {
         try {
             Query qry = getEntityManager().createQuery(
-                      "   SELECT ROT "
+                    "   SELECT ROT "
                     + "     FROM Rotina AS ROT "
                     + "    WHERE ROT.id NOT IN(SELECT SC.rotina.id FROM ServicoRotina AS SC WHERE SC.servicos.id = " + idServico + ")"
                     + "      AND ROT.ativo = true "
@@ -53,7 +53,7 @@ public class ServicoRotinaDBToplink extends DB implements ServicoRotinaDB {
     public List pesquisaTodosServicosComRotinas(int idRotina) {
         try {
             Query query = getEntityManager().createQuery(
-                      "   SELECT S "
+                    "   SELECT S "
                     + "     FROM Servicos AS S "
                     + "    WHERE S.id IN(SELECT SR.servicos.id FROM ServicoRotina SR WHERE SR.rotina.id = " + idRotina + ")"
                     + " ORDER BY S.descricao");

@@ -45,14 +45,13 @@ public class RelatorioHomologacaoJSFBean {
     private String dataf = "";
     private String tipoOrdem = "data";
 
-    public String visualizarRelatorio(){
+    public String visualizarRelatorio() {
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         RelatorioHomologacaoDB dbh = new RelatorioHomologacaoDBToplink();
         Relatorios relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorio).getDescription()));
 
         //String di = String.valueOf(datai), df = String.valueOf(dataf);
         if (booData) {
-            
         }
 
         int id_empresa = -1, id_funcionario = -1, id_homologador = -1;
@@ -79,21 +78,20 @@ public class RelatorioHomologacaoJSFBean {
 
         for (int i = 0; i < result.size(); i++) {
             lista.add(new ParametroHomologacao(datai, // DATA INICIAL
-                                               dataf, // DATA FINAL
-                                               getConverteNullString( result.get(i).get(2) ), // DATA 
-                                               getConverteNullString( result.get(i).get(3) ), // HORA
-                                               getConverteNullString( result.get(i).get(4) ), // CNPJ
-                                               getConverteNullString( result.get(i).get(5) ), // EMPRESA
-                                               getConverteNullString( result.get(i).get(6) ), // FUNCIONARIO
-                                               getConverteNullString( result.get(i).get(7) ), // CONTATO
-                                               getConverteNullString( result.get(i).get(8) ), // TELEFONE
-                                               getConverteNullString( result.get(i).get(9) ), // HOMOLOGADOR
-                                               getConverteNullString( result.get(i).get(10) ) // OBS
-                    )
-            );
+                    dataf, // DATA FINAL
+                    getConverteNullString(result.get(i).get(2)), // DATA 
+                    getConverteNullString(result.get(i).get(3)), // HORA
+                    getConverteNullString(result.get(i).get(4)), // CNPJ
+                    getConverteNullString(result.get(i).get(5)), // EMPRESA
+                    getConverteNullString(result.get(i).get(6)), // FUNCIONARIO
+                    getConverteNullString(result.get(i).get(7)), // CONTATO
+                    getConverteNullString(result.get(i).get(8)), // TELEFONE
+                    getConverteNullString(result.get(i).get(9)), // HOMOLOGADOR
+                    getConverteNullString(result.get(i).get(10)) // OBS
+                    ));
         }
 
-        try{
+        try {
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
@@ -109,7 +107,7 @@ public class RelatorioHomologacaoJSFBean {
 
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

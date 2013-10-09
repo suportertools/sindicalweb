@@ -15,7 +15,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 public class BancoBrasil extends ArquivoRetorno {
-    public BancoBrasil(ContaCobranca contaCobranca, boolean pendentes){
+
+    public BancoBrasil(ContaCobranca contaCobranca, boolean pendentes) {
         super(contaCobranca, pendentes);
     }
 
@@ -33,81 +34,82 @@ public class BancoBrasil extends ArquivoRetorno {
         String dataPagamento = "";
         String dataVencimento = "";
         String caminho = "";
-        if (super.isPendentes()){
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/retorno");
-            if (baixar){
-                caminho += "/" +super.getContaCobranca().getApelido()+"_"+super.getContaCobranca().getCodCedente();
+        if (super.isPendentes()) {
+            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno");
+            if (baixar) {
+                caminho += "/" + super.getContaCobranca().getApelido() + "_" + super.getContaCobranca().getCodCedente();
                 caminho += "/pendentes";
                 //pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/pendentes";
-    //            pasta = caminho;
-            }else{
+                //            pasta = caminho;
+            } else {
                 //caminho += "/" +super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente();
                 //caminho += "/"+host;
                 //pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/"+host;
-    //            pasta = caminho;
+                //            pasta = caminho;
             }
-        }else
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/retorno/pendentes");
-            
+        } else {
+            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/pendentes");
+        }
+
         File fl = new File(caminho);
         File listFile[] = fl.listFiles();
         List<GenericaRetorno> listaRetorno = new ArrayList();
-        if (listFile != null){
+        if (listFile != null) {
             int qntRetornos = listFile.length;
-            for (int u = 0; u < qntRetornos; u++){
-                try{
-                    FileReader reader = new FileReader(caminho+"/"+listFile[u].getName());
+            for (int u = 0; u < qntRetornos; u++) {
+                try {
+                    FileReader reader = new FileReader(caminho + "/" + listFile[u].getName());
                     BufferedReader buffReader = new BufferedReader(reader);
                     List lista = new Vector();
-                    while((linha = buffReader.readLine()) != null){
+                    while ((linha = buffReader.readLine()) != null) {
                         lista.add(linha);
                     }
                     reader.close();
-                    buffReader.close();                      
-                    int i=0;
-                    while (i < lista.size()){
-                        if (i < 1){
+                    buffReader.close();
+                    int i = 0;
+                    while (i < lista.size()) {
+                        if (i < 1) {
                             cnpj = ((String) lista.get(i)).substring(18, 32);
                             codigoCedente = ((String) lista.get(i)).substring(58, 70);
                         }
-                        if (((String)lista.get(i)).substring(13,14).equals("T")){
+                        if (((String) lista.get(i)).substring(13, 14).equals("T")) {
                             nossoNumero = ((String) lista.get(i)).substring(37, 57).trim();
-                            valorTaxa      = ((String) lista.get(i)).substring(198, 213);
+                            valorTaxa = ((String) lista.get(i)).substring(198, 213);
                             dataVencimento = ((String) lista.get(i)).substring(73, 81);
                         }
-                        try{
+                        try {
                             int con = Integer.parseInt(dataVencimento);
-                            if (con == 0)
+                            if (con == 0) {
                                 dataVencimento = "11111111";
-                        }catch(Exception e){
-
+                            }
+                        } catch (Exception e) {
                         }
                         i++;
-                        if (i < lista.size() && ((String)lista.get(i)).substring(13,14).equals("U")){
+                        if (i < lista.size() && ((String) lista.get(i)).substring(13, 14).equals("U")) {
                             valorPago = ((String) lista.get(i)).substring(77, 92);
                             dataPagamento = ((String) lista.get(i)).substring(137, 145);
 
-                            genericaRetorno = new GenericaRetorno(cnpj,           //1 ENTIDADE
-                                                                  codigoCedente,  //2 NESTE CASO SICAS
-                                                                  nossoNumero,    //3
-                                                                  valorPago,      //4
-                                                                  valorTaxa,      //5
-                                                                  "",//valorCredito,   //6
-                                                                  dataPagamento,  //7
-                                                                  dataVencimento,//dataVencimento, //8
-                                                                  "",             //9 ACRESCIMO
-                                                                  "",             //10 VALOR DESCONTO
-                                                                  "",             //11 VALOR ABATIMENTO
-                                                                  "",  //12 VALOR REPASSE ...(valorPago - valorCredito)
-                                                                  pasta, // 13 NOME DA PASTA
-                                                                  listFile[u].getName(), //14 NOME DO ARQUIVO
-                                                                  "", //15 DATA CREDITO
-                                                                  ""); // 16 SEQUENCIAL DO ARQUIVO
+                            genericaRetorno = new GenericaRetorno(cnpj, //1 ENTIDADE
+                                    codigoCedente, //2 NESTE CASO SICAS
+                                    nossoNumero, //3
+                                    valorPago, //4
+                                    valorTaxa, //5
+                                    "",//valorCredito,   //6
+                                    dataPagamento, //7
+                                    dataVencimento,//dataVencimento, //8
+                                    "", //9 ACRESCIMO
+                                    "", //10 VALOR DESCONTO
+                                    "", //11 VALOR ABATIMENTO
+                                    "", //12 VALOR REPASSE ...(valorPago - valorCredito)
+                                    pasta, // 13 NOME DA PASTA
+                                    listFile[u].getName(), //14 NOME DO ARQUIVO
+                                    "", //15 DATA CREDITO
+                                    ""); // 16 SEQUENCIAL DO ARQUIVO
                             listaRetorno.add(genericaRetorno);
-                        i++;
+                            i++;
                         }
                     }
-                }catch(Exception e){
+                } catch (Exception e) {
                     continue;
                 }
             }
@@ -116,29 +118,29 @@ public class BancoBrasil extends ArquivoRetorno {
     }
 
     @Override
-    public List<GenericaRetorno> sindical(boolean baixar, String host){
+    public List<GenericaRetorno> sindical(boolean baixar, String host) {
         return new ArrayList();
     }
 
     @Override
-    public List<GenericaRetorno> sigCB(boolean baixar, String host){
+    public List<GenericaRetorno> sigCB(boolean baixar, String host) {
         return new ArrayList();
     }
 
     @Override
-    public String darBaixaSindical(String caminho, Usuario usuario){
+    public String darBaixaSindical(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
 
     @Override
-    public String darBaixaSigCB(String caminho, Usuario usuario){
+    public String darBaixaSigCB(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
 
     @Override
-    public String darBaixaSicob(String caminho, Usuario usuario){
+    public String darBaixaSicob(String caminho, Usuario usuario) {
         String mensagem = super.baixarArquivo(this.sicob(true, ""), caminho, usuario);
         return mensagem;
     }

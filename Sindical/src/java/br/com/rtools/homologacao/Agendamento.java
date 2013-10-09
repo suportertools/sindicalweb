@@ -19,86 +19,86 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="HOM_AGENDAMENTO")
-@NamedQuery(name="Agendamento.pesquisaID", query="select a from Agendamento a where a.id = :pid")
+@Table(name = "HOM_AGENDAMENTO")
+@NamedQuery(name = "Agendamento.pesquisaID", query = "select a from Agendamento a where a.id = :pid")
 public class Agendamento implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-    @JoinColumn(name="ID_HORARIO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_HORARIO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Horarios horarios;
-    @JoinColumn(name="ID_STATUS", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Status status;
-    @JoinColumn(name="ID_PESSOA_EMPRESA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_PESSOA_EMPRESA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private PessoaEmpresa pessoaEmpresa;
-    @JoinColumn(name="ID_AGENDADOR", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_AGENDADOR", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Usuario agendador;
-    @JoinColumn(name="ID_HOMOLOGADOR", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_HOMOLOGADOR", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Usuario homologador;
-    @JoinColumn(name="ID_DEMISSAO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_DEMISSAO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Demissao demissao;
-    @Column(name="DS_CONTATO", length=50, nullable=true)
+    @Column(name = "DS_CONTATO", length = 50, nullable = true)
     private String contato;
-    @Column(name="DS_TELEFONE", length=20, nullable=true)
+    @Column(name = "DS_TELEFONE", length = 20, nullable = true)
     private String telefone;
-    @Column(name="DS_EMAIL", length=50, nullable=true)
+    @Column(name = "DS_EMAIL", length = 50, nullable = true)
     private String email;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
-    @JoinColumn(name="ID_RECEPCAO", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_RECEPCAO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Recepcao recepcao;
-    @Column(name="DS_OBS", length=2000)
+    @Column(name = "DS_OBS", length = 2000)
     private String observacao;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
-    private Date dtEmissao;    
-    
-    public Agendamento(){
-         this.id = -1;
-         this.setData("");
-         this.setEmissao("");
-         this.horarios = new Horarios();
-         this.status = new Status();
-         this.pessoaEmpresa = new PessoaEmpresa();
-         this.agendador = new Usuario();
-         this.homologador = new Usuario();
-         this.demissao = new Demissao();
-         this.contato = "";
-         this.telefone = "";
-         this.email = "";
-         this.filial = new Filial();
-         this.recepcao = new Recepcao();
-         this.observacao = "";
+    @Column(name = "DT_EMISSAO")
+    private Date dtEmissao;
+
+    public Agendamento() {
+        this.id = -1;
+        this.setData("");
+        this.setEmissao("");
+        this.horarios = new Horarios();
+        this.status = new Status();
+        this.pessoaEmpresa = new PessoaEmpresa();
+        this.agendador = new Usuario();
+        this.homologador = new Usuario();
+        this.demissao = new Demissao();
+        this.contato = "";
+        this.telefone = "";
+        this.email = "";
+        this.filial = new Filial();
+        this.recepcao = new Recepcao();
+        this.observacao = "";
     }
 
-    public Agendamento(int id, String data, Horarios horarios,Status status, PessoaEmpresa pessoaEmpresa, Usuario agendador,Usuario homologador,Demissao demissao,String contato,String telefone, String email, Filial filial, Recepcao recepcao, String observacao, String emissao){
-         this.id = id;
-         this.setData(data);
-         this.horarios = horarios;
-         this.status = status;
-         this.pessoaEmpresa = pessoaEmpresa;
-         this.agendador = agendador;
-         this.homologador = homologador;
-         this.demissao = demissao;
-         this.contato = contato;
-         this.telefone = telefone;
-         this.email = email;
-         this.filial = filial;
-         this.recepcao = recepcao;
-         this.observacao = observacao;
-         this.setEmissao(data);
+    public Agendamento(int id, String data, Horarios horarios, Status status, PessoaEmpresa pessoaEmpresa, Usuario agendador, Usuario homologador, Demissao demissao, String contato, String telefone, String email, Filial filial, Recepcao recepcao, String observacao, String emissao) {
+        this.id = id;
+        this.setData(data);
+        this.horarios = horarios;
+        this.status = status;
+        this.pessoaEmpresa = pessoaEmpresa;
+        this.agendador = agendador;
+        this.homologador = homologador;
+        this.demissao = demissao;
+        this.contato = contato;
+        this.telefone = telefone;
+        this.email = email;
+        this.filial = filial;
+        this.recepcao = recepcao;
+        this.observacao = observacao;
+        this.setEmissao(data);
     }
 
     public int getId() {
@@ -118,15 +118,17 @@ public class Agendamento implements java.io.Serializable {
     }
 
     public String getData() {
-        if (dtData != null)
+        if (dtData != null) {
             return DataHoje.converteData(dtData);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setData(String data) {
-        if (!(data.isEmpty()))
+        if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
+        }
     }
 
     public Horarios getHorarios() {
@@ -234,14 +236,16 @@ public class Agendamento implements java.io.Serializable {
     }
 
     public String getEmissao() {
-        if (dtEmissao != null)
+        if (dtEmissao != null) {
             return DataHoje.converteData(dtEmissao);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setEmissao(String data) {
-        if (!(data.isEmpty()))
+        if (!(data.isEmpty())) {
             this.dtEmissao = DataHoje.converte(data);
-    }    
+        }
+    }
 }

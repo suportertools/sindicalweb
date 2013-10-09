@@ -19,19 +19,20 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
-@Table(name="MATR_CONVENIO_MEDICO")
-@NamedQuery(name="MatriculaConvenioMedico.pesquisaID", query="select mc from MatriculaConvenioMedico mc where mc.id=:pid")
-public class MatriculaConvenioMedico implements java.io.Serializable{
+@Table(name = "MATR_CONVENIO_MEDICO")
+@NamedQuery(name = "MatriculaConvenioMedico.pesquisaID", query = "select mc from MatriculaConvenioMedico mc where mc.id=:pid")
+public class MatriculaConvenioMedico implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INATIVO")
+    @Column(name = "DT_INATIVO")
     private Date dtInativo;
-    @JoinColumn(name="ID_SERVICO_PESSOA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_SERVICO_PESSOA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ServicoPessoa servicoPessoa;
-    @Column(name="DS_CODIGO", length=50, nullable=true)
+    @Column(name = "DS_CODIGO", length = 50, nullable = true)
     private String codigo;
 
     public MatriculaConvenioMedico() {
@@ -81,14 +82,16 @@ public class MatriculaConvenioMedico implements java.io.Serializable{
     }
 
     public String getInativo() {
-        if (dtInativo != null)
+        if (dtInativo != null) {
             return DataHoje.converteData(dtInativo);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setInativo(String inativo) {
-        if (!(inativo.isEmpty()))
+        if (!(inativo.isEmpty())) {
             this.dtInativo = DataHoje.converte(inativo);
+        }
     }
 }

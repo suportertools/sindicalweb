@@ -13,49 +13,50 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class RelatorioJSFBean {
+
     private Relatorios relatorio = new Relatorios();
     private List<SelectItem> listaRotina = new ArrayList<SelectItem>();
     private List<Relatorios> listaRelatorio = new ArrayList();
     private String msgConfirma = "";
     private int index = 0;
-    
-    public String salvar(){
-        if (relatorio.getNome().isEmpty()){
+
+    public String salvar() {
+        if (relatorio.getNome().isEmpty()) {
             msgConfirma = "Digite uma descrição!";
             return null;
         }
-        
-        if (relatorio.getJasper().isEmpty()){
+
+        if (relatorio.getJasper().isEmpty()) {
             msgConfirma = "Digite um caminho para o Jasper!";
             return null;
         }
-        
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         NovoLog log = new NovoLog();
-        
-        relatorio.setRotina( (Rotina)sv.pesquisaCodigo( Integer.parseInt(listaRotina.get(index).getDescription()), "Rotina" ) );
-        
+
+        relatorio.setRotina((Rotina) sv.pesquisaCodigo(Integer.parseInt(listaRotina.get(index).getDescription()), "Rotina"));
+
         sv.abrirTransacao();
-        if (relatorio.getId() == -1){
-           if (sv.inserirObjeto(relatorio)){
-               msgConfirma = "Relatório salvo com Sucesso!";
-               
-               log.novo("Novo registro", "Relatório inserido "+relatorio.getId()+" - "+relatorio.getNome()+" / "+relatorio.getJasper());
-           }else{
-               msgConfirma = "Erro ao salvar Relatório!";
-               sv.desfazerTransacao();
-               return null;
-           }
-        }else{
+        if (relatorio.getId() == -1) {
+            if (sv.inserirObjeto(relatorio)) {
+                msgConfirma = "Relatório salvo com Sucesso!";
+
+                log.novo("Novo registro", "Relatório inserido " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+            } else {
+                msgConfirma = "Erro ao salvar Relatório!";
+                sv.desfazerTransacao();
+                return null;
+            }
+        } else {
             Relatorios rel = new Relatorios();
-            rel = (Relatorios)sv.pesquisaCodigo(relatorio.getId(), "Relatorios");
-            String antes = "De: "+rel.getNome()+" / "+relatorio.getNome() +" -  "+rel.getJasper()+" / "+relatorio.getJasper();
-            
-            if (sv.alterarObjeto(relatorio)){
+            rel = (Relatorios) sv.pesquisaCodigo(relatorio.getId(), "Relatorios");
+            String antes = "De: " + rel.getNome() + " / " + relatorio.getNome() + " -  " + rel.getJasper() + " / " + relatorio.getJasper();
+
+            if (sv.alterarObjeto(relatorio)) {
                 msgConfirma = "Registro atualizado!";
-                
-                log.novo("Atualizado", antes +" - para: "+relatorio.getId()+" - "+relatorio.getNome()+" / "+relatorio.getJasper());
-            }else{
+
+                log.novo("Atualizado", antes + " - para: " + relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+            } else {
                 msgConfirma = "Erro ao atualizar!";
                 sv.desfazerTransacao();
                 return null;
@@ -65,54 +66,54 @@ public class RelatorioJSFBean {
         sv.comitarTransacao();
         return null;
     }
-    
-    public String novo(){
+
+    public String novo() {
         relatorio = new Relatorios();
         index = 0;
         msgConfirma = "";
         return "relatorio";
     }
-    
-    public String excluir(){
-        if (relatorio.getId() == -1){
+
+    public String excluir() {
+        if (relatorio.getId() == -1) {
             msgConfirma = "Pesquise um relatório para exclusão";
             return "relatorio";
         }
-        
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         NovoLog log = new NovoLog();
-        
+
         sv.abrirTransacao();
-        
-        relatorio = (Relatorios)sv.pesquisaCodigo(relatorio.getId(), "Relatorios");
-        if (sv.deletarObjeto(relatorio)){
+
+        relatorio = (Relatorios) sv.pesquisaCodigo(relatorio.getId(), "Relatorios");
+        if (sv.deletarObjeto(relatorio)) {
             msgConfirma = "Relatório excluido com Sucesso!";
-            log.novo("Excluido", relatorio.getId()+" - "+relatorio.getNome()+" / "+relatorio.getJasper());
-        }else{
+            log.novo("Excluido", relatorio.getId() + " - " + relatorio.getNome() + " / " + relatorio.getJasper());
+        } else {
             msgConfirma = "Relatório não pode ser excluido";
             sv.desfazerTransacao();
             return null;
         }
-    
+
         sv.comitarTransacao();
         relatorio = new Relatorios();
         index = 0;
         return null;
     }
-    
-    public String editar(Relatorios rela){
+
+    public String editar(Relatorios rela) {
         this.relatorio = rela;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-               if(!getListaRotina().isEmpty()){
-           for(int o = 0; o < listaRotina.size(); o++){
-               if(Integer.parseInt( listaRotina.get(o).getDescription() ) == relatorio.getRotina().getId()){
-                   index = o;
-               }
-           }
-       }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        if (!getListaRotina().isEmpty()) {
+            for (int o = 0; o < listaRotina.size(); o++) {
+                if (Integer.parseInt(listaRotina.get(o).getDescription()) == relatorio.getRotina().getId()) {
+                    index = o;
+                }
+            }
+        }
         return "relatorio";
     }
-    
+
     public Relatorios getRelatorio() {
         return relatorio;
     }
@@ -122,14 +123,13 @@ public class RelatorioJSFBean {
     }
 
     public List<SelectItem> getListaRotina() {
-        if (listaRotina.isEmpty()){
+        if (listaRotina.isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             List<Rotina> result = db.pesquisaRotina();
-            for (int i = 0; i < result.size(); i++){
-                listaRotina.add(new SelectItem(new Integer(i), 
-                                               result.get(i).getRotina(), 
-                                               String.valueOf(result.get(i).getId()))
-                );
+            for (int i = 0; i < result.size(); i++) {
+                listaRotina.add(new SelectItem(new Integer(i),
+                        result.get(i).getRotina(),
+                        String.valueOf(result.get(i).getId())));
             }
         }
         return listaRotina;
@@ -167,8 +167,8 @@ public class RelatorioJSFBean {
         this.index = index;
     }
 
-    public List<Relatorios> getListaRelatorio(){
-        if (listaRelatorio.isEmpty()){
+    public List<Relatorios> getListaRelatorio() {
+        if (listaRelatorio.isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
             listaRelatorio = db.pesquisaTodosRelatorios();
         }

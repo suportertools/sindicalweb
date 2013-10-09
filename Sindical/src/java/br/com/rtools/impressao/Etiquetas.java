@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 public class Etiquetas {
+
     private String nome;
     private String logradouro;
     private String endereco;
@@ -94,6 +95,4 @@ public class Etiquetas {
     public void setComplemento(String complemento) {
         this.complemento = complemento;
     }
-    
-    
 }

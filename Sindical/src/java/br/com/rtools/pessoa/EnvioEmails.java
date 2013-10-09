@@ -5,25 +5,25 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_ENVIO_EMAILS")
-@NamedQuery(name="EnvioEmails.pesquisaID", query="select ee from EnvioEmails ee where ee.id=:pid")
-public class EnvioEmails implements java.io.Serializable{
+@Table(name = "PES_ENVIO_EMAILS")
+@NamedQuery(name = "EnvioEmails.pesquisaID", query = "select ee from EnvioEmails ee where ee.id=:pid")
+public class EnvioEmails implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA_ENVIO")
+    @Column(name = "DT_DATA_ENVIO")
     private Date dtEnvio;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Pessoa pessoa;
-    @Column(name="DS_EMAIL", length=50)
+    @Column(name = "DS_EMAIL", length = 50)
     private String email;
-    @Column(name="DS_HISTORICO", length=100)
+    @Column(name = "DS_HISTORICO", length = 100)
     private String historico;
-    @Column(name="DS_OPERACAO", length=20)
+    @Column(name = "DS_OPERACAO", length = 20)
     private String operacao;
-
 
     public EnvioEmails() {
         this.id = -1;
@@ -33,7 +33,7 @@ public class EnvioEmails implements java.io.Serializable{
         this.historico = "";
         this.operacao = "";
     }
-    
+
     public EnvioEmails(int id, Pessoa pessoa, String email, String historico, String operacao) {
         this.id = id;
         this.pessoa = pessoa;
@@ -91,14 +91,16 @@ public class EnvioEmails implements java.io.Serializable{
     }
 
     public String getEnvio() {
-        if (getDtEnvio() != null)
+        if (getDtEnvio() != null) {
             return DataHoje.converteData(getDtEnvio());
-        else
+        } else {
             return "";
+        }
     }
 
     public void setEnvio(String envio) {
-        if (!(envio.isEmpty()))
+        if (!(envio.isEmpty())) {
             this.setDtEnvio(DataHoje.converte(envio));
+        }
     }
 }

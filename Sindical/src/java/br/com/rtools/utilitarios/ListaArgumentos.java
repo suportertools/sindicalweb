@@ -1,25 +1,21 @@
-
-
-
 package br.com.rtools.utilitarios;
 
 import java.util.List;
 import java.util.Vector;
 
-
 public class ListaArgumentos {
 
     private List lista = new Vector<List>();
 
-    public ListaArgumentos(){
+    public ListaArgumentos() {
         setLista(new Vector<List>());
     }
 
-    public ListaArgumentos(String campo, String tipo){
+    public ListaArgumentos(String campo, String tipo) {
         this.adicionarObjeto(new Vector<List>(), campo, tipo);
     }
 
-    public String adicionarObjeto(List list, String campo, String tipo){
+    public String adicionarObjeto(List list, String campo, String tipo) {
         list.add(campo);
         list.add(tipo);
         lista.add(list);
@@ -30,9 +26,7 @@ public class ListaArgumentos {
         return lista;
     }
 
-
     public void setLista(List lista) {
         this.lista = lista;
     }
-
 }

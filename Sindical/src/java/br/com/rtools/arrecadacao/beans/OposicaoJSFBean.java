@@ -73,25 +73,25 @@ public class OposicaoJSFBean {
             msg = "Informar o período de convenção!";
             return null;
         }
-        if (socios.getId() != -1){
-            if (socios.getServicoPessoa().isAtivo()){
+        if (socios.getId() != -1) {
+            if (socios.getServicoPessoa().isAtivo()) {
                 msg = "CPF cadastrado como sócio, inative para salvar oposição!";
                 return null;
             }
-        }        
+        }
         if (!salvarOposicaoPessoa()) {
             msg = "Falha ao salvar oposição pessoa!";
             return null;
         }
-        
+
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         dB.abrirTransacao();
         if (oposicao.getId() == -1) {
-        OposicaoDB oposicaoDB = new OposicaoDBToplink();
-            if(oposicaoDB.validaOposicao(oposicao)){
+            OposicaoDB oposicaoDB = new OposicaoDBToplink();
+            if (oposicaoDB.validaOposicao(oposicao)) {
                 msg = "Oposição já cadastrada para essa pessoa para a convenção vigente!";
                 return null;
-            }            
+            }
             if (dB.inserirObjeto(oposicao)) {
                 dB.comitarTransacao();
                 novo();
@@ -133,7 +133,7 @@ public class OposicaoJSFBean {
             msg = "Informar o CPF!";
             return false;
         }
-        if(!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))){
+        if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))) {
             msg = "CPF inválido!";
             return false;
         }
@@ -155,7 +155,7 @@ public class OposicaoJSFBean {
                 }
             }
         } else {
-            if (op.getCpf().equals(oposicao.getOposicaoPessoa().getCpf()) && op.getRg().equals(oposicao.getOposicaoPessoa().getRg()) && op.getNome().equals(oposicao.getOposicaoPessoa().getNome()) && op.getSexo().equals(oposicao.getOposicaoPessoa().getSexo())){
+            if (op.getCpf().equals(oposicao.getOposicaoPessoa().getCpf()) && op.getRg().equals(oposicao.getOposicaoPessoa().getRg()) && op.getNome().equals(oposicao.getOposicaoPessoa().getNome()) && op.getSexo().equals(oposicao.getOposicaoPessoa().getSexo())) {
                 return true;
             } else {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
@@ -197,7 +197,7 @@ public class OposicaoJSFBean {
         }
         return "oposicao";
     }
-    
+
     public String consultaPessoa() {
         msgCPF = "";
         boolean isVerificaDocumento = false;
@@ -216,10 +216,10 @@ public class OposicaoJSFBean {
             msgCPF = "";
             return null;
         }
-        if(!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))){
+        if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))) {
             msgCPF = "CPF inválido!";
             return null;
-        }     
+        }
         OposicaoDB oposicaoDB = new OposicaoDBToplink();
         PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
         pessoaEmpresa = oposicaoDB.pesquisaPessoaFisicaEmpresa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
@@ -243,7 +243,7 @@ public class OposicaoJSFBean {
             if (oposicaoPessoa.getId() != -1) {
                 oposicao.setOposicaoPessoa(oposicaoPessoa);
             } else {
-                if(oposicao.getJuridica().getId() != -1 && oposicao.getJuridica().getDtFechamento() == null){
+                if (oposicao.getJuridica().getId() != -1 && oposicao.getJuridica().getDtFechamento() == null) {
                     setDesabilitaPessoa(true);
                 }
                 oposicao.getOposicaoPessoa().setSexo(sexo);
@@ -254,15 +254,15 @@ public class OposicaoJSFBean {
         SociosDB db = new SociosDBToplink();
         socios = db.pesquisaSocioPorId(pessoaEmpresa.getFisica().getPessoa().getId());
 
-        if (socios.getId() != -1){
-            if (socios.getServicoPessoa().isAtivo()){
+        if (socios.getId() != -1) {
+            if (socios.getServicoPessoa().isAtivo()) {
                 msgCPF = "CPF cadastrado como sócio, inative para salvar oposição!";
             }
         }
         return "oposicao";
     }
-    
-    public void convencaoPeriodoConvencaoGrupoCidade(){
+
+    public void convencaoPeriodoConvencaoGrupoCidade() {
         if (oposicao.getJuridica().getId() != -1) {
             OposicaoDB oposicaoDB = new OposicaoDBToplink();
             List list = oposicaoDB.pesquisaPessoaConvencaoGrupoCidade(oposicao.getJuridica().getId());
@@ -271,7 +271,7 @@ public class OposicaoJSFBean {
                 convencaoPeriodo = dB.convencaoPeriodoConvencaoGrupoCidade((Integer) list.get(0), (Integer) list.get(1));
                 if (convencaoPeriodo.getId() == -1) {
                     convencaoPeriodo = new ConvencaoPeriodo();
-                }else{
+                } else {
                     oposicao.setConvencaoPeriodo(convencaoPeriodo);
                 }
             }
@@ -299,7 +299,7 @@ public class OposicaoJSFBean {
         }
         return oposicao;
     }
-    
+
     public void setOposicao(Oposicao oposicao) {
         this.oposicao = oposicao;
     }
@@ -335,7 +335,7 @@ public class OposicaoJSFBean {
     public void setMsgCPF(String msgCPF) {
         this.msgCPF = msgCPF;
     }
-    
+
     public void setMsgEmpresa(String msgEmpresa) {
         this.msgEmpresa = msgEmpresa;
     }

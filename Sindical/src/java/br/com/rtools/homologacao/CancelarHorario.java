@@ -17,22 +17,23 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="HOM_CANCELAR_HORARIO")
-@NamedQuery(name="CancelarHorario.pesquisaID", query="select ch from CancelarHorario ch where ch.id = :pid")
+@Table(name = "HOM_CANCELAR_HORARIO")
+@NamedQuery(name = "CancelarHorario.pesquisaID", query = "select ch from CancelarHorario ch where ch.id = :pid")
 public class CancelarHorario implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_HORARIOS", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_HORARIOS", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Horarios horarios;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-    @Column(name="NR_QUANTIDADE")
+    @Column(name = "NR_QUANTIDADE")
     private int quantidade;
 
     public CancelarHorario() {
@@ -41,7 +42,7 @@ public class CancelarHorario implements java.io.Serializable {
         this.filial = new Filial();
         this.setData("");
         this.quantidade = 0;
-   }
+    }
 
     public CancelarHorario(int idI, Horarios horarios1, Filial filial1, String dataString, int quantidadeI) {
         this.id = idI;
@@ -92,14 +93,16 @@ public class CancelarHorario implements java.io.Serializable {
     }
 
     public String getData() {
-        if (dtData != null)
+        if (dtData != null) {
             return DataHoje.converteData(dtData);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setData(String data) {
-        if (!(data.isEmpty()))
+        if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
+        }
     }
 }

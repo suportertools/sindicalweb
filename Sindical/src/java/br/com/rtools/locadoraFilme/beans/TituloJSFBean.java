@@ -9,7 +9,6 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-
 public class TituloJSFBean {
 
     private Titulo titulo;
@@ -25,7 +24,7 @@ public class TituloJSFBean {
     private boolean required = false;
     private boolean limpar = false;
 
-    public TituloJSFBean(){
+    public TituloJSFBean() {
         titulo = new Titulo();
         comoPesquisa = "";
         descPesquisa = "";
@@ -36,7 +35,7 @@ public class TituloJSFBean {
         required = false;
     }
 
-    public String novo(){
+    public String novo() {
         required = false;
         titulo = new Titulo();
         setComoPesquisa("");
@@ -50,184 +49,183 @@ public class TituloJSFBean {
         return "titulo";
     }
 
-    public String limpar(){
-        if(isLimpar() == true){
+    public String limpar() {
+        if (isLimpar() == true) {
             novo();
         }
         return "titulo";
     }
 
-    public List<SelectItem> getListaGeneroCombo(){
+    public List<SelectItem> getListaGeneroCombo() {
         int i = 0;
         TituloDB db = new TituloDBToplink();
-        if (listaGeneroCombo.isEmpty()){
+        if (listaGeneroCombo.isEmpty()) {
             setListaGenero((List<Genero>) db.pesquisaTodosGenero());
-            while (i < getListaGenero().size()){
+            while (i < getListaGenero().size()) {
                 listaGeneroCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaGenero().get(i).getDescricao()
-                       ));
+                        new Integer(i),
+                        getListaGenero().get(i).getDescricao()));
                 i++;
             }
         }
         return listaGeneroCombo;
     }
 
-    public synchronized String salvar(){
+    public synchronized String salvar() {
         TituloDB db = new TituloDBToplink();
         titulo.setGenero(getListaGenero().get(idGenero));
         int hora = 0;
-        if(!titulo.getDuracao().isEmpty()){
-            hora = Integer.parseInt(titulo.getDuracao().substring(0,2));
+        if (!titulo.getDuracao().isEmpty()) {
+            hora = Integer.parseInt(titulo.getDuracao().substring(0, 2));
             int ano = 0;
             int anoParametro = 1895;
-            if (hora < 8){
+            if (hora < 8) {
                 ano = Integer.parseInt(titulo.getAnoLancamentoString());
-                if(ano >= anoParametro){
-                    if (titulo.getId()== -1){
-                        if (titulo.getDescricao().equals("")){
+                if (ano >= anoParametro) {
+                    if (titulo.getId() == -1) {
+                        if (titulo.getDescricao().equals("")) {
                             msgConfirma = "Digite o nome do titulo!";
-                        }else{
-                            if (db.pesquisaTitulo(titulo.getDescricao()) == null){
-                                if (db.insert(titulo)){
-                                    if(titulo.getBarras().isEmpty()){
+                        } else {
+                            if (db.pesquisaTitulo(titulo.getDescricao()) == null) {
+                                if (db.insert(titulo)) {
+                                    if (titulo.getBarras().isEmpty()) {
                                         titulo.setBarras(Integer.toString(titulo.getId()));
                                         db.update(titulo);
                                     }
                                     setLimpar(false);
-                                   msgConfirma = "Cadastro efetuado com sucesso!";
-                                }else{
-                                   msgConfirma = "Erro! Cadastro não foi efetuado.";
+                                    msgConfirma = "Cadastro efetuado com sucesso!";
+                                } else {
+                                    msgConfirma = "Erro! Cadastro não foi efetuado.";
                                 }
-                            }else{
-                               msgConfirma = "Já existe um titulo com esse nome.";
+                            } else {
+                                msgConfirma = "Já existe um titulo com esse nome.";
                             }
                         }
-                    }else{
-                        if (db.update(titulo)){
+                    } else {
+                        if (db.update(titulo)) {
                             msgConfirma = "Cadastro atualizado com sucesso!";
-                        }else{
+                        } else {
                             msgConfirma = "Erro ao Atualizar.";
                         }
                     }
-                }else{
+                } else {
                     msgConfirma = "O Ano de lançamento deve ser igual ou superior a 1895!";
                 }
-            }else{
+            } else {
                 msgConfirma = "O tempo de duração deve ser inferior ou igual a 8 horas!";
             }
-        }else{
+        } else {
             msgConfirma = "O campo de duração está vazio!";
         }
         return null;
         //return novoOperacao();
     }
 
-   public synchronized String excluir(){
-       TituloDB tituloDB = new TituloDBToplink();
-       if (titulo.getId()!= -1){
-           titulo = tituloDB.pesquisaCodigo(titulo.getId());
-           if (tituloDB.delete(titulo)){
-               setLimpar(true);
-               msgConfirma = "Cadastro excluído com sucesso!";
-           }else{
-               msgConfirma = "Erro! Cadastro não foi excluído.";
-           }
-       }else{
-           msgConfirma = "Não há registro para excluir.";
-       }
-       return null;
-   }
+    public synchronized String excluir() {
+        TituloDB tituloDB = new TituloDBToplink();
+        if (titulo.getId() != -1) {
+            titulo = tituloDB.pesquisaCodigo(titulo.getId());
+            if (tituloDB.delete(titulo)) {
+                setLimpar(true);
+                msgConfirma = "Cadastro excluído com sucesso!";
+            } else {
+                msgConfirma = "Erro! Cadastro não foi excluído.";
+            }
+        } else {
+            msgConfirma = "Não há registro para excluir.";
+        }
+        return null;
+    }
 
-   public String editar(){
-       titulo = (Titulo) listaTitulo.get(idIndex);
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tituloPesquisa", titulo);
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       titulo = new Titulo();
+    public String editar() {
+        titulo = (Titulo) listaTitulo.get(idIndex);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tituloPesquisa", titulo);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        titulo = new Titulo();
         setDescPesquisa("");
         setComoPesquisa("");
         setPorPesquisa("");
-       required = true;
-       if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null)
-           return "titulo";
-       else
-           return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-           //return null;
-   }
+        required = true;
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
+            return "titulo";
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
+        //return null;
+    }
 
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         comoPesquisa = "I";
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         comoPesquisa = "P";
     }
 
-    public List <Titulo> getListaTitulo() {
+    public List<Titulo> getListaTitulo() {
         TituloDB db = new TituloDBToplink();
-        if(descPesquisa.equals("")){
+        if (descPesquisa.equals("")) {
             listaTitulo = new ArrayList();
             return listaTitulo;
-        }else{
+        } else {
             listaTitulo = db.pesquisaTitulos(descPesquisa, porPesquisa, comoPesquisa);
             return listaTitulo;
         }
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
-    public String validaHora(String hora){
+    public String validaHora(String hora) {
         int n1 = 0;
         int n2 = 0;
-        if (hora.length() == 1){
+        if (hora.length() == 1) {
             hora = "0" + hora + ":00";
         }
 
-        if(hora.length() == 2){
-            if ((Integer.parseInt(hora) >= 0) && (Integer.parseInt(hora) <=23)){
+        if (hora.length() == 2) {
+            if ((Integer.parseInt(hora) >= 0) && (Integer.parseInt(hora) <= 23)) {
                 hora = hora + ":00";
-            }else{
+            } else {
                 hora = "";
             }
-        }else if(hora.length() == 3){
+        } else if (hora.length() == 3) {
             n1 = Integer.parseInt(hora.substring(0, 2));
             String pontos = hora.substring(2, 3);
 
-            if (((n1 >= 0) && (n1 <=23)) && pontos.equals(":")){
+            if (((n1 >= 0) && (n1 <= 23)) && pontos.equals(":")) {
                 hora = hora + "00";
-            }else{
+            } else {
                 hora = "";
             }
-        }else if(hora.length() == 4){
+        } else if (hora.length() == 4) {
             n1 = Integer.parseInt(hora.substring(0, 2));
             n2 = Integer.parseInt(hora.substring(3, 4));
             String pontos = hora.substring(2, 3);
 
-            if ((pontos.equals(":")) && ((n1 >= 0) && (n1 <= 23)) && ((n2 >= 0) && (n2 <=5))){
+            if ((pontos.equals(":")) && ((n1 >= 0) && (n1 <= 23)) && ((n2 >= 0) && (n2 <= 5))) {
                 hora = hora + "0";
-            }else{
+            } else {
                 hora = "";
             }
-        }else if (hora.length() == 5){
+        } else if (hora.length() == 5) {
             n1 = Integer.parseInt(hora.substring(0, 2));
             n2 = Integer.parseInt(hora.substring(3, 5));
             String pontos = hora.substring(2, 3);
 
-            if (!   (((n1 >= 0) && (n1 <=23)) && ((n2 >= 0) && (n2 <=59)) && (pontos.equals(":")))    ){
+            if (!(((n1 >= 0) && (n1 <= 23)) && ((n2 >= 0) && (n2 <= 59)) && (pontos.equals(":")))) {
                 hora = "";
             }
         }
         return hora;
     }
 
-    public void validaDuracao(){
+    public void validaDuracao() {
         this.titulo.setDuracao(this.validaHora(this.titulo.getDuracao()));
     }
 
     public Titulo getTitulo() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("tituloPesquisa")!= null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("tituloPesquisa") != null) {
             titulo = (Titulo) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("tituloPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("tituloPesquisa");
         }

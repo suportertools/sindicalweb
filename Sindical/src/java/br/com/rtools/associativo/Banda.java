@@ -9,13 +9,14 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EVE_BANDA")
-@NamedQuery(name="Banda.pesquisaID", query="select s from Banda s where s.id=:pid")
-public class Banda implements java.io.Serializable{
+@Table(name = "EVE_BANDA")
+@NamedQuery(name = "Banda.pesquisaID", query = "select s from Banda s where s.id=:pid")
+public class Banda implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", nullable = false, unique = true)
+    @Column(name = "DS_DESCRICAO", nullable = false, unique = true)
     private String descricao;
 
     public Banda() {
@@ -43,7 +44,4 @@ public class Banda implements java.io.Serializable{
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-
-
-
 }

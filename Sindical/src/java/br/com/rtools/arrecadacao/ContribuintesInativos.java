@@ -6,29 +6,28 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_CONTRIBUINTES_INATIVOS")
-@NamedQuery(name="ContribuintesInativos.pesquisaID", query="select ci from ContribuintesInativos ci where ci.id=:pid")
-
+@Table(name = "ARR_CONTRIBUINTES_INATIVOS")
+@NamedQuery(name = "ContribuintesInativos.pesquisaID", query = "select ci from ContribuintesInativos ci where ci.id=:pid")
 public class ContribuintesInativos implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_JURIDICA", referencedColumnName="ID", nullable=false)
-    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Juridica juridica;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_ATIVACAO")
+    @Column(name = "DT_ATIVACAO")
     private Date dtAtivacao;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INATIVACAO")
+    @Column(name = "DT_INATIVACAO")
     private Date dtInativacao;
-    @JoinColumn(name="ID_MOTIVO_INATIVACAO", referencedColumnName="ID", nullable=false)
-    @OneToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_MOTIVO_INATIVACAO", referencedColumnName = "ID", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER)
     private MotivoInativacao motivoInativacao;
-    @Column(name="DS_SOLICITANTE")
+    @Column(name = "DS_SOLICITANTE")
     private String solicitante;
-    @Column(name="DS_OBS")
+    @Column(name = "DS_OBS")
     private String observacao;
 
     public ContribuintesInativos() {
@@ -40,7 +39,7 @@ public class ContribuintesInativos implements java.io.Serializable {
         this.solicitante = "";
         this.observacao = "";
     }
-    
+
     public ContribuintesInativos(int id, Juridica juridica, String ativacao, String inativacao, MotivoInativacao motivoInativacao, String solicitante, String observacao) {
         this.id = id;
         this.juridica = juridica;
@@ -49,7 +48,7 @@ public class ContribuintesInativos implements java.io.Serializable {
         this.motivoInativacao = motivoInativacao;
         this.solicitante = "";
         this.observacao = "";
-    }    
+    }
 
     public int getId() {
         return id;

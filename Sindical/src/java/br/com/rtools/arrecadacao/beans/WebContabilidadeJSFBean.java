@@ -265,13 +265,13 @@ public class WebContabilidadeJSFBean extends MovimentoValorJSFBean {
                 msgConfirma = "  Não existe conta Cobrança para gerar!";
                 return null;
             }
-            
-            
+
+
             if (dbm.pesquisaMovimentosAcordado(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
                 msgConfirma = " Já foi gerado um Acordo para esta referência, serviço e tipo de serviço!";
                 return null;
             }
-            
+
             if ((new DataHoje()).integridadeReferencia(strReferencia)) {
                 if (!listaEmpresas.isEmpty()) {
                     String msg = "";

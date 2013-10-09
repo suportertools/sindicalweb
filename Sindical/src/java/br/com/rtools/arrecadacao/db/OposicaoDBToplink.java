@@ -57,7 +57,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         }
         return result;
     }
-    
+
     @Override
     public PessoaEmpresa pesquisaPessoaFisicaEmpresa(String cpf, String rg) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -66,24 +66,24 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         String queryString = "  SELECT emp.id                                                                        "
                 + "              FROM pes_pessoa pes                                                                 "
                 + "         INNER JOIN pes_fisica fis ON(fis.id_pessoa = pes.id)                                     "
-                + "         INNER JOIN pes_pessoa_empresa emp ON(emp.id_fisica = fis.id)                             "        
-                + "         INNER JOIN pes_juridica jur ON(jur.id = emp.id_juridica)                                 "        
+                + "         INNER JOIN pes_pessoa_empresa emp ON(emp.id_fisica = fis.id)                             "
+                + "         INNER JOIN pes_juridica jur ON(jur.id = emp.id_juridica)                                 "
                 + "              WHERE (                                                                             "
-                + "                         pes.ds_documento = '"+cpf+"'                                             "
+                + "                         pes.ds_documento = '" + cpf + "'                                             "
                 + "                 OR (                                                                             "
-                + "                      TRANSLATE(UPPER(fis.ds_rg),'./-', '') = TRANSLATE('"+rg+"','./-', '')       "
+                + "                      TRANSLATE(UPPER(fis.ds_rg),'./-', '') = TRANSLATE('" + rg + "','./-', '')       "
                 + "                      AND fis.ds_rg is not null                                                   "
                 + "                      AND trim(fis.ds_rg)<>''                                                     "
-                + "                      AND trim(fis.ds_rg)<>'0'                                                    "    
+                + "                      AND trim(fis.ds_rg)<>'0'                                                    "
                 + "                     )                                                                            "
                 + "               )                                                                                  "
-                + "                AND emp.dt_demissao   is null                                                     "        
+                + "                AND emp.dt_demissao   is null                                                     "
                 + "                AND jur.dt_fechamento is null LIMIT 1                                             ";
-                
+
         try {
             Query qry = getEntityManager().createNativeQuery(queryString);
             list = (Vector) qry.getSingleResult();
-            if (list.size() > 0){
+            if (list.size() > 0) {
                 pessoaEmpresa = (PessoaEmpresa) salvarAcumuladoDB.pesquisaCodigo((Integer) list.get(0), "PessoaEmpresa");
                 return pessoaEmpresa;
             }
@@ -101,18 +101,18 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         String queryString = "                                                                          "
                 + "      SELECT id                                                                        "
                 + "        FROM arr_oposicao_pessoa                                                       "
-                + "       WHERE ds_cpf = '"+cpf+"'                                                        "
+                + "       WHERE ds_cpf = '" + cpf + "'                                                        "
                 + "          OR (                                                                         "
-                + "                 TRANSLATE(UPPER(ds_rg),'./-', '') = TRANSLATE('"+rg+"','./-', '')     "
+                + "                 TRANSLATE(UPPER(ds_rg),'./-', '') = TRANSLATE('" + rg + "','./-', '')     "
                 + "                 AND ds_rg is not null                                                 "
                 + "                 AND trim(ds_rg)<>''                                                   "
-                + "                 AND trim(ds_rg)<>'0'                                                  "    
+                + "                 AND trim(ds_rg)<>'0'                                                  "
                 + "          )                                                                            "
                 + "                                                                                       ";
         try {
             Query qry = getEntityManager().createNativeQuery(queryString);
             vector = (Vector) qry.getSingleResult();
-            if (!vector.isEmpty()){
+            if (!vector.isEmpty()) {
                 oposicaoPessoa = (OposicaoPessoa) salvarAcumuladoDB.pesquisaCodigo((Integer) vector.get(0), "OposicaoPessoa");
                 return oposicaoPessoa;
             }
@@ -155,11 +155,11 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         } else if (tipoPesquisa.equals("observacao")) {
             queryString = " WHERE UPPER(opo.observacao) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("data")) {
-            queryString = " WHERE opo.dtEmissao = '" + DataHoje.livre(DataHoje.converte(descricaoPesquisa), "yyyy-MM-dd") +"'";
+            queryString = " WHERE opo.dtEmissao = '" + DataHoje.livre(DataHoje.converte(descricaoPesquisa), "yyyy-MM-dd") + "'";
         } else if (tipoPesquisa.equals("todos")) {
             queryString = "";
         }
-        
+
         try {
             Query qry = getEntityManager().createQuery(" SELECT opo FROM Oposicao opo " + queryString + " ORDER BY opo.dtEmissao DESC ");
             if (!descricaoPesquisa.equals("") && !tipoPesquisa.equals("todos") && !tipoPesquisa.equals("data")) {

@@ -1,4 +1,3 @@
-
 package br.com.rtools.suporte;
 
 import br.com.rtools.pessoa.Pessoa;
@@ -17,26 +16,21 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="PRO_PROTOCOLO")
-@NamedQuery(name="Protocolo.pesquisaID", query="select p from Protocolo p where p.id=:pid")
-
+@Table(name = "PRO_PROTOCOLO")
+@NamedQuery(name = "Protocolo.pesquisaID", query = "select p from Protocolo p where p.id=:pid")
 public class Protocolo implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date data;
-
-    @Column(name="DS_HORA")
+    @Column(name = "DS_HORA")
     private String hora;
-
-    @Column(name="DS_SOLICITANTE", length=50)
+    @Column(name = "DS_SOLICITANTE", length = 50)
     private String solicitante;
-
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa empresa;
 
@@ -54,7 +48,7 @@ public class Protocolo implements java.io.Serializable {
         this.hora = DataHoje.horaMinuto();
         this.solicitante = "";
         this.empresa = new Pessoa();
-    }    
+    }
 
     public int getId() {
         return id;
@@ -96,11 +90,11 @@ public class Protocolo implements java.io.Serializable {
         this.data = data;
     }
 
-    public String getDataString(){
+    public String getDataString() {
         return DataHoje.converteData(data);
     }
 
-    public void setDataString (String data){
+    public void setDataString(String data) {
         this.data = DataHoje.converte(data);
     }
 }

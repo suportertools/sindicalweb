@@ -6,14 +6,23 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 public interface ServicoPessoaDB {
+
     public boolean insert(ServicoPessoa servicoPessoa);
+
     public boolean update(ServicoPessoa servicoPessoa);
+
     public boolean delete(ServicoPessoa servicoPessoa);
+
     public EntityManager getEntityManager();
+
     public ServicoPessoa pesquisaCodigo(int id);
+
     public List pesquisaTodos();
+
     public List pesquisaTodosParaGeracao(String referencia);
+
     public ServicoPessoa pesquisaServicoPessoaPorPessoa(int idPessoa);
+
     public List pesquisaTodosParaGeracao(String referencia, int idPessoa);
 //    public Responsavel buscaResponsavel(int idServicoPessoa);
 }

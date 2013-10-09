@@ -26,7 +26,7 @@ public class CentroComercialDBToplink extends DB implements CentroComercialDB {
             Query qry = getEntityManager().createQuery(""
                     + "   SELECT CC FROM CentroComercial AS CC                          "
                     + "    WHERE CC.tipoCentroComercial.id = " + idTipoCentroComercial
-                    + "      AND CC.juridica.id = " + idJuridica                         
+                    + "      AND CC.juridica.id = " + idJuridica
                     + " ORDER BY CC.tipoCentroComercial.descricao ASC,                  "
                     + "          CC.juridica.pessoa.nome ASC ");
             List list = qry.getResultList();

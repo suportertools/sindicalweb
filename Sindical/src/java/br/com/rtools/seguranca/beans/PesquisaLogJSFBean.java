@@ -64,7 +64,7 @@ public class PesquisaLogJSFBean {
 
     public List getListaDiretorio() {
         getList();
-        listaDiretorio.clear();        
+        listaDiretorio.clear();
         int dataInicioInt = 0;
         int dataFinalInt = 0;
         if (!dataInicioString.equals("")) {

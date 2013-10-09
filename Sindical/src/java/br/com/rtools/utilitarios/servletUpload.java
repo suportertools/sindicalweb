@@ -22,19 +22,19 @@ public class servletUpload extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, FileUploadException {
         response.setContentType("text/html;charset=UTF-8");
-        
+
         try {
-            DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();  
+            DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
             fileItemFactory.setSizeThreshold(1 * 3072 * 3072); //1 MB  
 
-            ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);  
-            uploadHandler.setSizeMax(3072 * 3072);  
-            try {  
-                List items = uploadHandler.parseRequest(request);  
-                Iterator itr = items.iterator();  
+            ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
+            uploadHandler.setSizeMax(3072 * 3072);
+            try {
+                List items = uploadHandler.parseRequest(request);
+                Iterator itr = items.iterator();
                 int i = 0;
-                while (itr.hasNext()) {  
-                    FileItem item = (FileItem) itr.next();  
+                while (itr.hasNext()) {
+                    FileItem item = (FileItem) itr.next();
                     upload(item, request);
                     i++;
                     //if (!item.isFormField()) {  
@@ -42,40 +42,39 @@ public class servletUpload extends HttpServlet {
                     //    bs = new byte[size];  
                     //    item.getInputStream().read(bs);  
                     //}  
-                }              
-            } finally {            
-                
+                }
+            } finally {
             }
-        }catch(Exception e ){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         //  response.sendRedirect((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno"));
         response.sendRedirect("/Sindical/pessoaFisica.jsf");
         //response.sendRedirect("/Sindical/socios.jsf");
     }
-    
-    public void upload(FileItem item, HttpServletRequest request){
-        
+
+    public void upload(FileItem item, HttpServletRequest request) {
+
         String nomeArq = "fotoTemp";
         String cliente = "";
         boolean fotoTemp = true;
         boolean temFoto = false;
-        if(request.getSession().getAttribute("sessaoCliente") != null){
+        if (request.getSession().getAttribute("sessaoCliente") != null) {
             cliente = (String) request.getSession().getAttribute("sessaoCliente");
-        }       
-        String caminho = request.getServletContext().getRealPath("/Cliente/"+cliente+"/Imagens/Fotos/");
+        }
+        String caminho = request.getServletContext().getRealPath("/Cliente/" + cliente + "/Imagens/Fotos/");
         File fileA = new File(caminho);
-        if(!fileA.exists()){
+        if (!fileA.exists()) {
             fileA.mkdir();
         }
         caminho = caminho + "/" + nomeArq + ".jpg";
-        try{
+        try {
             File fl = new File(caminho);
             InputStream in = item.getInputStream();
             FileOutputStream out = new FileOutputStream(fl.getPath());
 
-            byte[] buf = new byte[(int)item.getSize()];
+            byte[] buf = new byte[(int) item.getSize()];
             int count;
             while ((count = in.read(buf)) >= 0) {
                 out.write(buf, 0, count);
@@ -84,12 +83,13 @@ public class servletUpload extends HttpServlet {
             out.flush();
             out.close();
             temFoto = true;
-            }catch(Exception e){
-                temFoto = false;
-                System.out.println(e);
-            }
-    }    
+        } catch (Exception e) {
+            temFoto = false;
+            System.out.println(e);
+        }
+    }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+
     /**
      * Handles the HTTP
      * <code>GET</code> method.
@@ -122,7 +122,7 @@ public class servletUpload extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            processRequest(request, response);            
+            processRequest(request, response);
         } catch (FileUploadException ex) {
             Logger.getLogger(servletUpload.class.getName()).log(Level.SEVERE, null, ex);
         }

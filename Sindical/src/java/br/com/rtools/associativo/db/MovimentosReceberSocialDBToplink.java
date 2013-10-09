@@ -52,8 +52,8 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();
-        }catch(Exception e){
-           e.getMessage();
+        } catch (Exception e) {
+            e.getMessage();
         }
         return new ArrayList();
     }

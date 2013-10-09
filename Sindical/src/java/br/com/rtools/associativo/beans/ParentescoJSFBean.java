@@ -7,63 +7,65 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ParentescoJSFBean {
-    private Parentesco parentesco  = new Parentesco();
+
+    private Parentesco parentesco = new Parentesco();
     private String msgConfirma = "";
     private int idIndex = -1;
     private List<Parentesco> listaParentesco = new ArrayList();
     private ArrayList listaImagem = new ArrayList();
     private boolean limpar = false;
 
-    public String salvar(){
+    public String salvar() {
         ParentescoDB db = new ParentescoDBToplink();
-        if (getParentesco().getParentesco().equals("") || getParentesco().getParentesco() == null){
+        if (getParentesco().getParentesco().equals("") || getParentesco().getParentesco() == null) {
             setMsgConfirma("Digite um nome para o parentesco!");
             return null;
         }
-        if (getParentesco().getId() == -1){
-            if (db.insert(getParentesco())){
+        if (getParentesco().getId() == -1) {
+            if (db.insert(getParentesco())) {
                 setLimpar(false);
                 setMsgConfirma("Parentesco salvo com sucesso.");
-            }else{
+            } else {
                 setMsgConfirma("Erro ao salvar parentesco!");
             }
-        }else{
-            if (db.update(getParentesco()))
+        } else {
+            if (db.update(getParentesco())) {
                 setMsgConfirma("Parentesco atualizado com sucesso.");
-            else
+            } else {
                 setMsgConfirma("Erro ao atualizar parentesco!");
+            }
         }
         return null;
     }
 
-    public String excluir(){
+    public String excluir() {
         ParentescoDB db = new ParentescoDBToplink();
-        if (parentesco.getId() == -1){
+        if (parentesco.getId() == -1) {
             msgConfirma = "Selecione um parentesco para ser excluído!";
             return null;
         }
-        if (db.delete(db.pesquisaCodigo(parentesco.getId()))){
+        if (db.delete(db.pesquisaCodigo(parentesco.getId()))) {
             setLimpar(true);
             msgConfirma = "Parentesco deletado com sucesso!";
-        }else{
+        } else {
             setMsgConfirma("Erro ao deletar parentesco!");
         }
         return null;
     }
 
-    public String editar(){
+    public String editar() {
         parentesco = (Parentesco) getListaParentesco().get(getIdIndex());
         return "parentesco";
     }
 
-    public String novo(){
+    public String novo() {
         parentesco = new Parentesco();
         listaParentesco.clear();
         return "parentesco";
     }
 
-    public String limpar(){
-        if(limpar == true){
+    public String limpar() {
+        if (limpar == true) {
             novo();
         }
         return "parentesco";
@@ -93,20 +95,20 @@ public class ParentescoJSFBean {
         this.idIndex = idIndex;
     }
 
-    public List <Parentesco> getListaParentesco() {
+    public List<Parentesco> getListaParentesco() {
         ParentescoDB db = new ParentescoDBToplink();
         listaParentesco = db.pesquisaTodos();
-        for(int i = 0; i < listaParentesco.size(); i++){
-            if(listaParentesco.get(i).isAtivo() == true){
+        for (int i = 0; i < listaParentesco.size(); i++) {
+            if (listaParentesco.get(i).isAtivo() == true) {
                 getListaImagem().add("iconTrue.gif");
-            }else{
+            } else {
                 getListaImagem().add("iconFalse.gif");
             }
         }
         return listaParentesco;
     }
 
-    public void setListaParentesco(List <Parentesco> listaParentesco) {
+    public void setListaParentesco(List<Parentesco> listaParentesco) {
         this.setListaParentesco(listaParentesco);
     }
 

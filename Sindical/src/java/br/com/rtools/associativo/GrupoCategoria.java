@@ -9,28 +9,28 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="SOC_GRUPO_CATEGORIA")
-@NamedQuery(name="GrupoCategoria.pesquisaID", query="select gc from GrupoCategoria gc where gc.id = :pid")
-
+@Table(name = "SOC_GRUPO_CATEGORIA")
+@NamedQuery(name = "GrupoCategoria.pesquisaID", query = "select gc from GrupoCategoria gc where gc.id = :pid")
 public class GrupoCategoria implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_GRUPO_CATEGORIA", length=50, nullable=true)
+    @Column(name = "DS_GRUPO_CATEGORIA", length = 50, nullable = true)
     private String grupoCategoria;
-    @Column(name="NR_PROXIMA_MATRICULA", length=10,nullable=true)
+    @Column(name = "NR_PROXIMA_MATRICULA", length = 10, nullable = true)
     private int nrProximaMatricula;
-    @Column(name="NR_VALIDADE_MESES_CARTAO", length=10,nullable=true)
+    @Column(name = "NR_VALIDADE_MESES_CARTAO", length = 10, nullable = true)
     private int nrValidadeMesCartao;
 
-    public GrupoCategoria(){
+    public GrupoCategoria() {
         this.id = -1;
         this.grupoCategoria = "";
         this.nrProximaMatricula = 1;
         this.nrValidadeMesCartao = 12;
     }
 
-    public GrupoCategoria(int id,String grupoCategoria,int nrProximaMatricula, int nrValidadeMesCartao){
+    public GrupoCategoria(int id, String grupoCategoria, int nrProximaMatricula, int nrValidadeMesCartao) {
         this.id = id;
         this.grupoCategoria = grupoCategoria;
         this.nrProximaMatricula = nrProximaMatricula;

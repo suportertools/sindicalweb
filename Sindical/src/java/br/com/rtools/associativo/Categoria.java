@@ -12,20 +12,21 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="SOC_CATEGORIA")
-@NamedQuery(name="Categoria.pesquisaID", query="select c from Categoria c where c.id=:pid")
+@Table(name = "SOC_CATEGORIA")
+@NamedQuery(name = "Categoria.pesquisaID", query = "select c from Categoria c where c.id=:pid")
 public class Categoria implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_CATEGORIA", length=100, nullable=true)
+    @Column(name = "DS_CATEGORIA", length = 100, nullable = true)
     private String categoria;
-    @JoinColumn(name="ID_GRUPO_CATEGORIA", referencedColumnName="ID", nullable=true)
+    @JoinColumn(name = "ID_GRUPO_CATEGORIA", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private GrupoCategoria grupoCategoria;
-    @Column(name="NR_CARENCIA_BALCAO", length=10,nullable=true)
+    @Column(name = "NR_CARENCIA_BALCAO", length = 10, nullable = true)
     private int nrCarenciaBalcao;
-    @Column(name="NR_CARENCIA_DESC_FOLHA", length=10,nullable=true)
+    @Column(name = "NR_CARENCIA_DESC_FOLHA", length = 10, nullable = true)
     private int nrCarenciaDescFolha;
     @Column(name = "EMPRESA_OBRIGATORIA", nullable = true)
     private boolean empresaObrigatoria;
@@ -63,9 +64,9 @@ public class Categoria implements java.io.Serializable {
         this.usaClubeDomingo = false;
     }
 
-    public Categoria(int id, String categoria, GrupoCategoria grupoCategoria, int nrCarenciaBalcao, int nrCarenciaDescFolha, 
-                    boolean empresaObrigatoria,boolean votante, boolean usaClubeSegunda, boolean usaClubeTerca, boolean usaClubeQuarta,
-                    boolean usaClubeQuinta, boolean usaClubeSexta, boolean usaClubeSabado, boolean usaClubeDomingo) {
+    public Categoria(int id, String categoria, GrupoCategoria grupoCategoria, int nrCarenciaBalcao, int nrCarenciaDescFolha,
+            boolean empresaObrigatoria, boolean votante, boolean usaClubeSegunda, boolean usaClubeTerca, boolean usaClubeQuarta,
+            boolean usaClubeQuinta, boolean usaClubeSexta, boolean usaClubeSabado, boolean usaClubeDomingo) {
         this.id = id;
         this.categoria = categoria;
         this.grupoCategoria = grupoCategoria;
@@ -193,5 +194,4 @@ public class Categoria implements java.io.Serializable {
     public void setVotante(boolean votante) {
         this.votante = votante;
     }
-
 }

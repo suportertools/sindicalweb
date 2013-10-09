@@ -10,7 +10,7 @@ public interface AgendaTelefoneDB {
     public EntityManager getEntityManager();
 
     public List pesquisaAgenda(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda);
-    
+
     public List pesquisaAgendaTelefone(String ddd, String descricaoPesquisa, String porPesquisa, String comoPesquisa, int idGrupoAgenda);
 
     public List listaAgendaTelefone(int idAgenda);

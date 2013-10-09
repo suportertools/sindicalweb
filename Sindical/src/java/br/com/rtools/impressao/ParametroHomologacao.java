@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 public class ParametroHomologacao {
+
     private String dataInicial;
     private String dataFinal;
     private String data;
@@ -114,7 +115,4 @@ public class ParametroHomologacao {
     public void setObs(String obs) {
         this.obs = obs;
     }
-
-    
-    
 }

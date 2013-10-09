@@ -6,41 +6,42 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class GrupoCategoriaDBToplink extends DB implements GrupoCategoriaDB{
+public class GrupoCategoriaDBToplink extends DB implements GrupoCategoriaDB {
+
     public boolean insert(GrupoCategoria grupoCategoria) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(grupoCategoria);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(GrupoCategoria grupoCategoria) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(grupoCategoria);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean delete(GrupoCategoria grupoCategoria) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(grupoCategoria);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -49,11 +50,11 @@ public class GrupoCategoriaDBToplink extends DB implements GrupoCategoriaDB{
     @Override
     public GrupoCategoria pesquisaCodigo(int id) {
         GrupoCategoria result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("GrupoCategoria.pesquisaID");
             qry.setParameter("pid", id);
             result = (GrupoCategoria) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
@@ -61,15 +62,14 @@ public class GrupoCategoriaDBToplink extends DB implements GrupoCategoriaDB{
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select g from GrupoCategoria g order by g.grupoCategoria");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
-    
 //    public List<GrupoCategoria> listaGrupoCategoria(String ids) {
 //        try{
 //            Query qry = getEntityManager().createQuery("select gc from GrupoCategoria gc where id in ("+ids+") order by g.grupoCategoria");
@@ -78,5 +78,4 @@ public class GrupoCategoriaDBToplink extends DB implements GrupoCategoriaDB{
 //            return new ArrayList();
 //        }
 //    }
-
 }

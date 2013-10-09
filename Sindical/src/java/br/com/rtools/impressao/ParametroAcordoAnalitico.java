@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class ParametroAcordoAnalitico {
+
     private String cnpj;
     private String empresa;
     private int idAcordo;
@@ -18,8 +19,8 @@ public class ParametroAcordoAnalitico {
     private BigDecimal liquido;
     private Date dtFechamento;
     private Date dtInicio;
-    private BigDecimal comissao;    
-    
+    private BigDecimal comissao;
+
     public ParametroAcordoAnalitico(String cnpj, String empresa, int idAcordo, String boleto, String contribuicao, Date dtImportacao, Date dtRecebimento, Date dtVencimento, BigDecimal valorRecebido, BigDecimal taxa, BigDecimal repasse, BigDecimal liquido, Date dtFechamento, Date dtInicio, BigDecimal comissao) {
         this.cnpj = cnpj;
         this.empresa = empresa;

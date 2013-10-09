@@ -1,8 +1,6 @@
-
 package br.com.rtools.impressao;
 
 import java.math.BigDecimal;
-
 
 public class DemonstrativoAcordo {
 
@@ -16,7 +14,7 @@ public class DemonstrativoAcordo {
     private String complemento;
     private String bairro;
     private String cidade;
-    private String  cep;
+    private String cep;
     private String uf;
     private String telefone;
     private String obs;
@@ -111,7 +109,7 @@ public class DemonstrativoAcordo {
             BigDecimal desconto,
             String tipo,
             String referencia,
-            String titulo ) {
+            String titulo) {
         this.codacordo = codacordo;
         this.data = data;
         this.contato = contato;
@@ -125,7 +123,7 @@ public class DemonstrativoAcordo {
         this.cep = cep;
         this.uf = uf;
         this.telefone = telefone;
-        this.obs = obs;        
+        this.obs = obs;
         this.desc_contribuicao = desc_contribuicao;
         this.boleto = boleto;
         this.vencto = vencto;
@@ -612,7 +610,7 @@ public class DemonstrativoAcordo {
     public void setDesconto(BigDecimal desconto) {
         this.desconto = desconto;
     }
-    
+
     public String getTipo() {
         return tipo;
     }

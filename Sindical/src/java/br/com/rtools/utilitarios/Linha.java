@@ -1,20 +1,18 @@
-
-
 package br.com.rtools.utilitarios;
 
 import java.util.List;
 
-
 public class Linha {
+
     private Object valor;
     private Linha coluna;
 
-    public Linha (Object valor, Linha coluna){
+    public Linha(Object valor, Linha coluna) {
         setValor(valor);
         setColuna(coluna);
     }
 
-    public Linha (){
+    public Linha() {
         setValor(null);
         setColuna(null);
     }
@@ -23,7 +21,7 @@ public class Linha {
         return valor;
     }
 
-    public synchronized  void setValor(Object valor) {
+    public synchronized void setValor(Object valor) {
         this.valor = valor;
     }
 
@@ -35,13 +33,12 @@ public class Linha {
         this.coluna = coluna;
     }
 
-    public static Linha preencherLinha(Linha linha, List lista, int indiceLista){        
-        if (indiceLista < lista.size()){
+    public static Linha preencherLinha(Linha linha, List lista, int indiceLista) {
+        if (indiceLista < lista.size()) {
             linha.setValor(lista.get(indiceLista));
             linha.setColuna(new Linha());
             Linha.preencherLinha(linha.getColuna(), lista, ++indiceLista);
         }
         return linha;
     }
-
 }

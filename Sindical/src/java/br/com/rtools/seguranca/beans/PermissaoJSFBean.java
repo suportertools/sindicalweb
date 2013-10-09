@@ -116,7 +116,6 @@ public class PermissaoJSFBean {
     }
 
     // PERMISSÃO DEPARTAMENTO   
-    
     public String adicionarPermissaoDpto() {
         if (!listaPermissoesDisponiveis.isEmpty()) {
             boolean erro = false;
@@ -149,15 +148,15 @@ public class PermissaoJSFBean {
                 if (temRegistros) {
                     listaPermissoesAdicionadas.clear();
                     listaPermissoesDisponiveis.clear();
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));                    
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));
                 } else {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));                    
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));
                 }
             }
         }
         return null;
     }
-    
+
     public String adicionarPermissaoDptoDBClick(Permissao p) {
         if (!listaPermissoesDisponiveis.isEmpty()) {
             boolean erro = false;
@@ -180,7 +179,7 @@ public class PermissaoJSFBean {
                 sv.comitarTransacao();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));                    
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));
             }
         }
         return null;
@@ -243,7 +242,7 @@ public class PermissaoJSFBean {
                 if (temRegistros) {
                     listaPermissoesAdicionadas.clear();
                     listaPermissoesDisponiveis.clear();
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));                    
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));
                 } else {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));
                 }
@@ -251,7 +250,7 @@ public class PermissaoJSFBean {
         }
         return null;
     }
-    
+
     public String excluirPermissaoDeptoDBClick(PermissaoDepartamento pd) {
         if (!listaPermissoesAdicionadas.isEmpty()) {
             boolean erro = false;
@@ -269,7 +268,7 @@ public class PermissaoJSFBean {
                 sv.comitarTransacao();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));                
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));
             }
         }
         return null;
@@ -294,7 +293,7 @@ public class PermissaoJSFBean {
                 sv.comitarTransacao();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removidas com sucesso"));                    
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removidas com sucesso"));
             }
         }
         permissaoDepartamento = new PermissaoDepartamento();
@@ -309,7 +308,7 @@ public class PermissaoJSFBean {
     public void limparPesquisaPermissoesDepartamento() {
         descricaoPesquisa = "";
         listaPermissoesDisponiveis.clear();
-        listaPermissoesAdicionadas.clear();        
+        listaPermissoesAdicionadas.clear();
     }
 
     public List getPermissaoDisponivel() {
@@ -538,7 +537,7 @@ public class PermissaoJSFBean {
     public void setDescricaoPesquisa(String descricaoPesquisa) {
         this.descricaoPesquisa = descricaoPesquisa;
     }
-    
+
     public List<Permissao> getListaPermissoes() {
         listaPermissoes.clear();
         PermissaoDB db = new PermissaoDBToplink();
@@ -548,5 +547,5 @@ public class PermissaoJSFBean {
 
     public void setListaPermissoes(List<Permissao> listaPermissoes) {
         this.listaPermissoes = listaPermissoes;
-    }    
+    }
 }

@@ -75,13 +75,13 @@ public class servletEnvioArquivoContabilidade extends HttpServlet {
                 File fl2 = new File(caminho + "/Pendentes/");
                 fl2.mkdir();
             }
-            if (!new File(caminho + "/Pendentes/"+tipoEnvio+"/").exists()) {
-                File fl2 = new File(caminho + "/Pendentes/"+tipoEnvio+"/");
+            if (!new File(caminho + "/Pendentes/" + tipoEnvio + "/").exists()) {
+                File fl2 = new File(caminho + "/Pendentes/" + tipoEnvio + "/");
                 fl2.mkdir();
             }
         }
         try {
-            File fl = new File(caminho + "/Pendentes/"+tipoEnvio+"/"+item.getName());
+            File fl = new File(caminho + "/Pendentes/" + tipoEnvio + "/" + item.getName());
             InputStream in = item.getInputStream();
             FileOutputStream out = new FileOutputStream(fl.getPath());
 

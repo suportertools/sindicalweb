@@ -6,25 +6,26 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SIS_LINKS")
-@NamedQuery(name="Links.pesquisaID", query="select l from Links l where l.id = :pid")
+@Table(name = "SIS_LINKS")
+@NamedQuery(name = "Links.pesquisaID", query = "select l from Links l where l.id = :pid")
 public class Links implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=true)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Pessoa pessoa;
-    @Column(name="DS_NOME_ARQUIVO")
-    private String nomeArquivo;   
-    @Column(name="DS_CAMINHO")
-    private String caminho;   
+    @Column(name = "DS_NOME_ARQUIVO")
+    private String nomeArquivo;
+    @Column(name = "DS_CAMINHO")
+    private String caminho;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-    @Column(name="DS_DESCRICAO")
-    private String descricao;  
-    
+    @Column(name = "DS_DESCRICAO")
+    private String descricao;
+
     public Links() {
         this.id = -1;
         this.pessoa = new Pessoa();
@@ -33,7 +34,7 @@ public class Links implements java.io.Serializable {
         this.setEmissao(DataHoje.data());
         this.descricao = "";
     }
-    
+
     public Links(int id, Pessoa pessoa, String nomeArquivo, String caminho, String emissao, String descricao) {
         this.id = id;
         this.pessoa = pessoa;
@@ -74,17 +75,19 @@ public class Links implements java.io.Serializable {
     public void setDtEmissao(Date dtEmissao) {
         this.dtEmissao = dtEmissao;
     }
-    
+
     public String getEmissao() {
-        if (dtEmissao != null)
+        if (dtEmissao != null) {
             return DataHoje.converteData(dtEmissao);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setEmissao(String emissao) {
-        if (!(emissao.isEmpty()))
+        if (!(emissao.isEmpty())) {
             this.dtEmissao = DataHoje.converte(emissao);
+        }
     }
 
     public String getCaminho() {
@@ -102,7 +105,4 @@ public class Links implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-    
-    
-    
 }

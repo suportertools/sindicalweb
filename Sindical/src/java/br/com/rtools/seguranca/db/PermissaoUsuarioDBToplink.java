@@ -241,7 +241,7 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
     public UsuarioAcesso pesquisaUsuarioAcesso(int id_usuario, int id_permissao) {
         UsuarioAcesso usuarioAcesso = new UsuarioAcesso();
         try {
-            Query qry = getEntityManager().createQuery("SELECT ua FROM UsuarioAcesso ua WHERE ua.usuario.id = " + id_usuario + " AND ua.permissao.id = " + id_permissao );
+            Query qry = getEntityManager().createQuery("SELECT ua FROM UsuarioAcesso ua WHERE ua.usuario.id = " + id_usuario + " AND ua.permissao.id = " + id_permissao);
             if (!qry.getResultList().isEmpty()) {
                 return (UsuarioAcesso) qry.getSingleResult();
             }
@@ -257,8 +257,8 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
             Query qry = getEntityManager().createQuery("    "
                     + " SELECT p                            "
                     + "   FROM Permissao p                  "
-                    + "  WHERE p.modulo.id = " + id_modulo  
-                    + "    AND p.rotina.id = " + id_rotina  
+                    + "  WHERE p.modulo.id = " + id_modulo
+                    + "    AND p.rotina.id = " + id_rotina
                     + "    AND p.rotina.ativo = true        "
                     + "    AND p.evento.id = " + id_evento);
             if (!qry.getResultList().isEmpty()) {
@@ -335,7 +335,7 @@ public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB 
         }
         return list;
     }
-    
+
     @Override
     public boolean existePermissaoUsuario(PermissaoUsuario permissaoUsuario) {
         try {

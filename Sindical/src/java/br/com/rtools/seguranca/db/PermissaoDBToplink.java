@@ -40,7 +40,7 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
     public List pesquisaTodosAgrupados() {
         try {
             Query qry = getEntityManager().createQuery(
-                      "   SELECT per                        "
+                    "   SELECT per                        "
                     + "     FROM Permissao per              "
                     + "    WHERE per.evento.id = 1          "
                     + " ORDER BY per.modulo.descricao ASC,  "
@@ -53,15 +53,15 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List pesquisaTodosAgrupadosPorModulo(int idModulo) {
         try {
             Query qry = getEntityManager().createQuery(
-                      "   SELECT per                        "
+                    "   SELECT per                        "
                     + "     FROM Permissao per              "
                     + "    WHERE per.evento.id = 1          "
-                    + "      AND per.modulo.id = "+idModulo
+                    + "      AND per.modulo.id = " + idModulo
                     + " ORDER BY per.modulo.descricao ASC,  "
                     + " per.rotina.rotina ASC               ");
             List list = qry.getResultList();
@@ -78,7 +78,7 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
     public List pesquisaPermissaoModRot(int idModulo, int idRotina) {
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT per                       "
+                    " SELECT per                       "
                     + "   FROM Permissao per             "
                     + "  WHERE per.modulo.id = :idModulo "
                     + "    AND per.rotina.id = :idRotina ");
@@ -141,7 +141,7 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
     public List pesquisaPermissaoModRotEve(int idModulo, int idRotina, int idEvento) {
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT per                       "
+                    " SELECT per                       "
                     + "   FROM Permissao per             "
                     + "  WHERE per.modulo.id = :idModulo "
                     + "    AND per.rotina.id = :idRotina "
@@ -163,7 +163,7 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
         Permissao permissao = new Permissao();
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT per                       "
+                    " SELECT per                       "
                     + "   FROM Permissao per             "
                     + "  WHERE per.modulo.id = :idModulo "
                     + "    AND per.rotina.id = :idRotina "
@@ -184,7 +184,7 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
         UsuarioAcesso usuarioAcesso = new UsuarioAcesso();
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT ua                                   "
+                    " SELECT ua                                   "
                     + "   FROM UsuarioAcesso ua                     "
                     + "  WHERE ua.permissao.modulo.id = :idModulo   "
                     + "    AND ua.permissao.rotina.id = :idRotina   "
@@ -207,18 +207,18 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
         String moduloString = "";
         String rotinaString = "";
         String eventoString = "";
-        if(idModulo > 0) {
-            moduloString = " AND ua.permissao.modulo.id = :idModulo ";            
+        if (idModulo > 0) {
+            moduloString = " AND ua.permissao.modulo.id = :idModulo ";
         }
-        if(idRotina > 0) {
-            rotinaString = " AND ua.permissao.rotina.id = :idRotina ";            
+        if (idRotina > 0) {
+            rotinaString = " AND ua.permissao.rotina.id = :idRotina ";
         }
-        if(idEvento > 0) {
-            eventoString = " AND ua.permissao.evento.id = :idEvento ";            
+        if (idEvento > 0) {
+            eventoString = " AND ua.permissao.evento.id = :idEvento ";
         }
         try {
             Query qry = getEntityManager().createQuery(
-                      "   SELECT ua                                     "
+                    "   SELECT ua                                     "
                     + "     FROM UsuarioAcesso ua                       "
                     + "    WHERE ua.usuario.id = :idUsuario             "
                     + moduloString
@@ -228,15 +228,15 @@ public class PermissaoDBToplink extends DB implements PermissaoDB {
                     + "          ua.permissao.rotina.rotina ASC,            "
                     + "          ua.permissao.evento.descricao ASC");
             qry.setParameter("idUsuario", idUsuario);
-            if(idModulo > 0) {
+            if (idModulo > 0) {
                 qry.setParameter("idModulo", idModulo);
             }
-            if(idRotina > 0) {
+            if (idRotina > 0) {
                 qry.setParameter("idRotina", idRotina);
             }
-            if(idEvento > 0) {
+            if (idEvento > 0) {
                 qry.setParameter("idEvento", idEvento);
-            }            
+            }
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;

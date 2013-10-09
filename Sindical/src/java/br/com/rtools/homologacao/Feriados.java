@@ -17,29 +17,29 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="HOM_FERIADOS")
-@NamedQuery(name="Feriados.pesquisaID", query="select f from Feriados f where f.id = :pid")
+@Table(name = "HOM_FERIADOS")
+@NamedQuery(name = "Feriados.pesquisaID", query = "select f from Feriados f where f.id = :pid")
 public class Feriados implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_NOME", length=50, nullable=true)
+    @Column(name = "DS_NOME", length = 50, nullable = true)
     private String nome;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-    @JoinColumn(name="ID_CIDADE", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Cidade cidade;
 
-    public Feriados(){
-         this.id = -1;
-         this.setData("");
-         this.cidade = new Cidade();
+    public Feriados() {
+        this.id = -1;
+        this.setData("");
+        this.cidade = new Cidade();
     }
 
-    public Feriados(int id, String data,Cidade cidade){
+    public Feriados(int id, String data, Cidade cidade) {
         this.id = id;
         this.setData(data);
         this.cidade = cidade;
@@ -62,15 +62,17 @@ public class Feriados implements java.io.Serializable {
     }
 
     public String getData() {
-        if (dtData != null)
+        if (dtData != null) {
             return DataHoje.converteData(dtData);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setData(String data) {
-        if (!(data.isEmpty()))
+        if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
+        }
     }
 
     public String getNome() {

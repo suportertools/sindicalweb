@@ -7,51 +7,55 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class MidiaJSFBean {
+
     private Midia midia = new Midia();
     private String msgConfirma = "";
 
-    public String salvar(){
+    public String salvar() {
         MidiaDB db = new MidiaDBToplink();
-        if (midia.getId() == -1){
-            if (db.insert(midia))
+        if (midia.getId() == -1) {
+            if (db.insert(midia)) {
                 msgConfirma = "Mídia salva com sucesso!";
-            else
+            } else {
                 msgConfirma = "Erro ao salvar mídia!";
-        }else{
-            if (db.update(midia))
+            }
+        } else {
+            if (db.update(midia)) {
                 msgConfirma = "Mídia atualizada com sucesso!";
-            else
+            } else {
                 msgConfirma = "Erro ao atualizar mídia!";
+            }
         }
         return null;
     }
 
-    public String excluir(){
+    public String excluir() {
         MidiaDB db = new MidiaDBToplink();
-        if (midia.getId() == -1){
+        if (midia.getId() == -1) {
             msgConfirma = "Não existe Mídia para ser excluída!";
-        }else{
-            if (db.delete(midia))
+        } else {
+            if (db.delete(midia)) {
                 msgConfirma = "Mídia excluída com sucesso!";
-            else
+            } else {
                 msgConfirma = "Erro ao excluír mídia!";
+            }
         }
         return null;
     }
 
-    public String editar(){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+    public String editar() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
 //        midia = (Midia)getHtmlTable().getRowData();
         return "midia";
     }
 
-    public String novo(){
+    public String novo() {
         midia = new Midia();
         msgConfirma = "";
         return "midia";
     }
 
-    public List getListaMidias(){
+    public List getListaMidias() {
         MidiaDB db = new MidiaDBToplink();
         List result = db.pesquisaTodos();
         return result;

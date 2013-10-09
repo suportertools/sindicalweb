@@ -11,19 +11,20 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EVE_MESA")
-@NamedQuery(name="Mesa.pesquisaID", query="select s from Mesa s where s.id=:pid")
-public class Mesa implements java.io.Serializable{
+@Table(name = "EVE_MESA")
+@NamedQuery(name = "Mesa.pesquisaID", query = "select s from Mesa s where s.id=:pid")
+public class Mesa implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_VENDA", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_VENDA", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private BVenda bVenda;
-    @JoinColumn(name="ID_STATUS", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private AStatus status;
-    @Column(name="NR_MESAS", nullable=true)
+    @Column(name = "NR_MESAS", nullable = true)
     private int nrMesa;
 
     public Mesa() {
@@ -39,7 +40,7 @@ public class Mesa implements java.io.Serializable{
         this.status = status;
         this.nrMesa = nrMesa;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -70,5 +71,5 @@ public class Mesa implements java.io.Serializable{
 
     public void setNrMesa(int nrMesa) {
         this.nrMesa = nrMesa;
-    }       
+    }
 }

@@ -5,19 +5,20 @@ import br.com.rtools.seguranca.Rotina;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SIS_ATALHOS")
-@NamedQuery(name="Atalhos.pesquisaID", query="select at from Atalhos at where at.id = :pid")
+@Table(name = "SIS_ATALHOS")
+@NamedQuery(name = "Atalhos.pesquisaID", query = "select at from Atalhos at where at.id = :pid")
 public class Atalhos implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name="ID_ROTINA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @Column(name="DS_SIGLA", nullable=false)
+    @Column(name = "DS_SIGLA", nullable = false)
     private String sigla;
 
     public Atalhos() {
@@ -26,7 +27,7 @@ public class Atalhos implements java.io.Serializable {
         this.rotina = new Rotina();
         this.sigla = "";
     }
-    
+
     public Atalhos(int id, Pessoa pessoa, Rotina rotina, String sigla) {
         this.id = id;
         this.pessoa = pessoa;
@@ -65,7 +66,4 @@ public class Atalhos implements java.io.Serializable {
     public void setSigla(String sigla) {
         this.sigla = sigla;
     }
-    
-    
-    
 }

@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class controleUsuarioJSFBean implements Serializable {
-    
+
     private Usuario usuario = new Usuario();
     private String login = "";
     private String linkVoltar;
@@ -280,7 +280,7 @@ public class controleUsuarioJSFBean implements Serializable {
         }
         return novoCliente;
     }
-    
+
     public boolean isBoqueiaMenu() {
         String nomeCliente = getClienteString();
         if (nomeCliente.equals("Rtools") || nomeCliente.equals("Sindical")) {
@@ -291,7 +291,7 @@ public class controleUsuarioJSFBean implements Serializable {
 
     public static void setBloqueiaMenu(String aBloqueiaMenu) {
         bloqueiaMenu = aBloqueiaMenu;
-    }    
+    }
 
     public void removeSessaoModuloMenuPrincipal() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {

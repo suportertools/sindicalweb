@@ -11,16 +11,17 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EVE_EVENTO_BANDA")
-@NamedQuery(name="EventoBanda.pesquisaID", query="select s from EventoBanda s where s.id=:pid")
-public class EventoBanda implements java.io.Serializable{
+@Table(name = "EVE_EVENTO_BANDA")
+@NamedQuery(name = "EventoBanda.pesquisaID", query = "select s from EventoBanda s where s.id=:pid")
+public class EventoBanda implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_BANDA", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_BANDA", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Banda banda;
-    @JoinColumn(name="ID_EVENTO", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private AEvento evento;
 
@@ -59,7 +60,4 @@ public class EventoBanda implements java.io.Serializable{
     public void setEvento(AEvento evento) {
         this.evento = evento;
     }
-
-    
-
 }

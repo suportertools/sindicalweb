@@ -392,10 +392,10 @@ public class CancelarHorarioJSFBean {
                 CancelarHorario cancelarHorarioA = cancelarHorarioDB.pesquisaCancelamentoHorario(data, idHorario, Integer.parseInt(getListaFiliais().get(idFilial).getDescription()));
                 if (cancelarHorarioA != null) {
                     if (horarios.getQuantidade() > 0) {
-                        if(cancelarHorarioA.getQuantidade() > horarios.getQuantidade()) {
+                        if (cancelarHorarioA.getQuantidade() > horarios.getQuantidade()) {
                             nrQuantidadeDisponivel = 0;
                         } else {
-                            nrQuantidadeDisponivel = horarios.getQuantidade() - cancelarHorarioA.getQuantidade();                            
+                            nrQuantidadeDisponivel = horarios.getQuantidade() - cancelarHorarioA.getQuantidade();
                         }
                     }
                     nrQuantidadeCancelado = cancelarHorarioA.getQuantidade();
@@ -409,7 +409,7 @@ public class CancelarHorarioJSFBean {
     public int calculaQuantidadeDisponivel(int quantidadeDisponivel, int quantidadeCancelada) {
         int quantidadeRestante = 0;
         if (quantidadeDisponivel > 0) {
-            if(quantidadeCancelada > quantidadeDisponivel) {
+            if (quantidadeCancelada > quantidadeDisponivel) {
                 quantidadeRestante = 0;
             } else {
                 quantidadeRestante = quantidadeDisponivel - quantidadeCancelada;
@@ -545,7 +545,7 @@ public class CancelarHorarioJSFBean {
                 dB.abrirTransacao();
                 for (int i = 0; i < list.size(); i++) {
                     CancelarHorario ch = (CancelarHorario) dB.pesquisaObjeto(list.get(i).getId(), "CancelarHorario");
-                    if(ch != null) {
+                    if (ch != null) {
                         if (!dB.deletarObjeto(ch)) {
                             erro = true;
                             break;

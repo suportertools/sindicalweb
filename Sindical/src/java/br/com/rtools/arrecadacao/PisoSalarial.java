@@ -4,20 +4,21 @@ import br.com.rtools.pessoa.Porte;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_PISO_SALARIAL")
-@NamedQuery(name="PisoSalarial.pesquisaID", query="select ps from PisoSalarial ps where ps.id = :pid")
+@Table(name = "ARR_PISO_SALARIAL")
+@NamedQuery(name = "PisoSalarial.pesquisaID", query = "select ps from PisoSalarial ps where ps.id = :pid")
 public class PisoSalarial implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;    
-    @JoinColumn(name="ID_PISO_SALARIAL_LOTE", referencedColumnName="ID", nullable=false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_PISO_SALARIAL_LOTE", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private PisoSalarialLote pisoLote;    
-    @Column(name="DS_DESCRICAO", length=300, nullable=true)
-    private String descricao;    
-    @Column(name="NR_VALOR", nullable=false)
-    private float valor;    
-    
+    private PisoSalarialLote pisoLote;
+    @Column(name = "DS_DESCRICAO", length = 300, nullable = true)
+    private String descricao;
+    @Column(name = "NR_VALOR", nullable = false)
+    private float valor;
+
     public PisoSalarial() {
         this.id = -1;
         this.pisoLote = new PisoSalarialLote();

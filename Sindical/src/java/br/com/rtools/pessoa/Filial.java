@@ -3,22 +3,20 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_FILIAL")
-@NamedQuery(name="Filial.pesquisaID", query="select fil from Filial fil where fil.id=:pid")
-public class Filial implements java.io.Serializable {    
+@Table(name = "PES_FILIAL")
+@NamedQuery(name = "Filial.pesquisaID", query = "select fil from Filial fil where fil.id=:pid")
+public class Filial implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @JoinColumn(name="ID_MATRIZ", referencedColumnName="ID", nullable=false)
-    @OneToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_MATRIZ", referencedColumnName = "ID", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER)
     private Juridica matriz;
-
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=false)
-    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Juridica filial;
-
-    @Column(name="NR_CENTRO_CUSTO")
+    @Column(name = "NR_CENTRO_CUSTO")
     private int centroCusto;
 
     public Filial() {

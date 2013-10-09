@@ -22,9 +22,8 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 public class controleAcessoJSFBean implements Serializable {
-    
-    // static final long serialVersionUID = 7220145288109489651L;
 
+    // static final long serialVersionUID = 7220145288109489651L;
     private String login = "";
     private Pessoa loginContribuinte = null;
     private int idModulo = 0;
@@ -368,7 +367,7 @@ public class controleAcessoJSFBean implements Serializable {
             return false;
         }
         if (idMod == 0) {
-            idMod = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo"));            
+            idMod = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo"));
         }
         Class classe = object.getClass();
         Integer id = -1;
@@ -384,8 +383,8 @@ public class controleAcessoJSFBean implements Serializable {
             //System.out.println(erro);
         }
         Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();        
-        Modulo m =  (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Modulo m = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
         boolean retorno = false;
         if (user != null) {
             int idEvento;
@@ -489,14 +488,14 @@ public class controleAcessoJSFBean implements Serializable {
         }
         return retorno;
     }
-    
+
     public boolean getExcluir(int idMod) {
         //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
         if (idMod == 0) {
-            idMod = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo"));            
-        }        
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();        
-        Modulo m =  (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");        
+            idMod = Integer.parseInt((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo"));
+        }
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Modulo m = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
         boolean retorno = false;
         if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
             Permissao permissao;

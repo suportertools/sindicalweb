@@ -92,7 +92,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
         for (int i = 0; i < listaArquivos.size(); i++) {
             aux2.add((File) ((DataObject) listaArquivos.get(i)).getArgumento0());
         }
-        
+
         String[] retorno = EnviarEmail.EnviarEmailPersonalizado(dbf.pesquisaCodigoRegistro(1), aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
         if (retorno[1].isEmpty()) {
             if (!listaArquivos.isEmpty()) {
@@ -162,7 +162,6 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
 //        }
 //        return null;
 //    }
-
     public String marcaTodos() {
         if (!listaEmpresas.isEmpty()) {
             for (int i = 0; i < listaEmpresas.size(); i++) {

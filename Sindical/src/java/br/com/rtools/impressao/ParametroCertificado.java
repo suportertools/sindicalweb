@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class ParametroCertificado {
+
     private String patNome;
     private String patLogo;
     private String patBaseTerr;
@@ -22,8 +23,8 @@ public class ParametroCertificado {
     private String patLogoFundo;
     private String certificado;
     private String barras;
-        
-    public ParametroCertificado(String patNome, String patLogo, String patBaseTerr, String sinNome, String sinLogo, String empNome, String empDoc, String empPorte, String descPisoSal, BigDecimal valorPisoSal, String mensagem, 
+
+    public ParametroCertificado(String patNome, String patLogo, String patBaseTerr, String sinNome, String sinLogo, String empNome, String empDoc, String empPorte, String descPisoSal, BigDecimal valorPisoSal, String mensagem,
             Date validade, String sinCidade, int ano, String patLogoSelo, String patLogoFundo, String certificado, String barras) {
         this.patNome = patNome;
         this.patLogo = patLogo;

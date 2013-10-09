@@ -1,4 +1,3 @@
-
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.pessoa.Pessoa;
@@ -9,7 +8,8 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class PessoaJSFBean {
-    private Pessoa pessoa = new Pessoa(); 
+
+    private Pessoa pessoa = new Pessoa();
     private String descPesquisa = "";
     private String porPesquisa = "nome";
     private String comoPesquisa = "";
@@ -17,19 +17,17 @@ public class PessoaJSFBean {
     private String maxl;
     private int idIndex = -1;
     private List<Pessoa> listaPessoa = new ArrayList();
-        
-    public PessoaJSFBean(){
+
+    public PessoaJSFBean() {
         idIndex = -1;
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
     }
 
-
     public Pessoa getPessoa() {
         return pessoa;
     }
-
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
@@ -66,92 +64,93 @@ public class PessoaJSFBean {
     public void setMasc(String masc) {
         this.masc = masc;
     }
-    
-    
-    public String salvar(){
+
+    public String salvar() {
         PessoaDB db = new PessoaDBToplink();
-        if (pessoa.getId()==-1){
+        if (pessoa.getId() == -1) {
             db.insert(pessoa);
-        }
-        else{
+        } else {
             db.getEntityManager().getTransaction().begin();
-            if (db.update(pessoa))
-            {db.getEntityManager().getTransaction().commit();}
-            else
-            {db.getEntityManager().getTransaction().rollback();}
+            if (db.update(pessoa)) {
+                db.getEntityManager().getTransaction().commit();
+            } else {
+                db.getEntityManager().getTransaction().rollback();
+            }
         }
         return null;
     }
-    
-   public String novo(){
-        setPessoa(pessoa = new Pessoa());
-       return "pessoa";
-   }    
 
-   public String excluir(){
+    public String novo() {
+        setPessoa(pessoa = new Pessoa());
+        return "pessoa";
+    }
+
+    public String excluir() {
         PessoaDB db = new PessoaDBToplink();
-        if (pessoa.getId()!=-1){
+        if (pessoa.getId() != -1) {
             db.getEntityManager().getTransaction().begin();
             setPessoa(db.pesquisaCodigo(pessoa.getId()));
-            if (db.delete(pessoa))
-            {db.getEntityManager().getTransaction().commit();}
-            else
-            {db.getEntityManager().getTransaction().rollback();}
+            if (db.delete(pessoa)) {
+                db.getEntityManager().getTransaction().commit();
+            } else {
+                db.getEntityManager().getTransaction().rollback();
+            }
         }
         setPessoa(pessoa = new Pessoa());
-       return "pesquisaPessoa";
-   }    
-
-    public void CarregarPessoa(){
-                
+        return "pesquisaPessoa";
     }
 
-    public void refreshForm(){
-
+    public void CarregarPessoa() {
     }
 
-    public void acaoPesquisaInicial(){
+    public void refreshForm() {
+    }
+
+    public void acaoPesquisaInicial() {
         comoPesquisa = "I";
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         comoPesquisa = "P";
     }
 
-    public String pesquisarPessoa(){
+    public String pesquisarPessoa() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "agenda");
         return "pesquisaPessoa";
     }
 
-   public String editar(){
-       pessoa = (Pessoa) listaPessoa.get(idIndex);
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", pessoa);
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       pessoa = new Pessoa();
-       descPesquisa = "";
-       porPesquisa = "nome";
-       comoPesquisa = "";
-       if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null)
-           return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-       else
-           return null;
-   }
+    public String editar() {
+        pessoa = (Pessoa) listaPessoa.get(idIndex);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", pessoa);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        pessoa = new Pessoa();
+        descPesquisa = "";
+        porPesquisa = "nome";
+        comoPesquisa = "";
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        } else {
+            return null;
+        }
+    }
 
-   public String getColocarMascara(){
-      if (porPesquisa.equals("telefone1")){
-          masc = "telefone";
-      }else
-          masc = "";
-      return masc;
-   }
+    public String getColocarMascara() {
+        if (porPesquisa.equals("telefone1")) {
+            masc = "telefone";
+        } else {
+            masc = "";
+        }
+        return masc;
+    }
 
-   public String getColocarMaxlenght(){
-      if (porPesquisa.equals("telefone1")){
-          maxl = "14";
-      }else
-          maxl = "50";
-      return maxl;
-   }
+    public String getColocarMaxlenght() {
+        if (porPesquisa.equals("telefone1")) {
+            maxl = "14";
+        } else {
+            maxl = "50";
+        }
+        return maxl;
+    }
 
     public int getIdIndex() {
         return idIndex;
@@ -162,14 +161,14 @@ public class PessoaJSFBean {
     }
 
     public List<Pessoa> getListaPessoa() {
-       PessoaDB pesquisa = new PessoaDBToplink();
-       if(descPesquisa.equals("")){
-           listaPessoa = new ArrayList();
-           return listaPessoa;
-       }else{
-           listaPessoa = pesquisa.pesquisarPessoa(descPesquisa, porPesquisa, comoPesquisa);
-           return listaPessoa;
-       }
+        PessoaDB pesquisa = new PessoaDBToplink();
+        if (descPesquisa.equals("")) {
+            listaPessoa = new ArrayList();
+            return listaPessoa;
+        } else {
+            listaPessoa = pesquisa.pesquisarPessoa(descPesquisa, porPesquisa, comoPesquisa);
+            return listaPessoa;
+        }
     }
 
     public void setListaPessoa(List<Pessoa> listaPessoa) {

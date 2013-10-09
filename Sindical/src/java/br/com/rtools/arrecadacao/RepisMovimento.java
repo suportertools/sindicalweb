@@ -1,4 +1,3 @@
-
 package br.com.rtools.arrecadacao;
 
 import br.com.rtools.pessoa.Pessoa;
@@ -7,30 +6,30 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_REPIS_MOVIMENTO")
-@NamedQuery(name="RepisMovimento.pesquisaID", query="select m from RepisMovimento m where m.id = :pid")
+@Table(name = "ARR_REPIS_MOVIMENTO")
+@NamedQuery(name = "RepisMovimento.pesquisaID", query = "select m from RepisMovimento m where m.id = :pid")
 public class RepisMovimento implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dataEmissao;
-    @Column(name="DS_SOLICITANTE", length=100 , nullable=true)
+    @Column(name = "DS_SOLICITANTE", length = 100, nullable = true)
     private String contato;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_RESPOSTA")
+    @Column(name = "DT_RESPOSTA")
     private Date dataResposta;
-    @Column(name="NR_ANO", length=4, nullable=false)
+    @Column(name = "NR_ANO", length = 4, nullable = false)
     private int ano;
-    @JoinColumn(name="ID_REPIS_STATUS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_REPIS_STATUS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private RepisStatus repisStatus;
-    
+
     public RepisMovimento() {
         this.id = -1;
         this.dataEmissao = DataHoje.dataHoje();
@@ -40,7 +39,7 @@ public class RepisMovimento implements java.io.Serializable {
         this.ano = 0;
         this.repisStatus = new RepisStatus();
     }
-    
+
     public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus) {
         this.id = id;
         setDataEmissaoString(dataEmissaoString);
@@ -49,7 +48,7 @@ public class RepisMovimento implements java.io.Serializable {
         setDataRespostaString(dataRespostaString);
         this.ano = ano;
         this.repisStatus = repisStatus;
-    }    
+    }
 
     public int getId() {
         return id;
@@ -66,7 +65,7 @@ public class RepisMovimento implements java.io.Serializable {
     public void setDataEmissao(Date dataEmissao) {
         this.dataEmissao = dataEmissao;
     }
-    
+
     public String getDataEmissaoString() {
         return DataHoje.converteData(dataEmissao);
     }
@@ -90,6 +89,7 @@ public class RepisMovimento implements java.io.Serializable {
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
     }
+
     public Date getDataResposta() {
         return dataResposta;
     }
@@ -121,5 +121,4 @@ public class RepisMovimento implements java.io.Serializable {
     public void setRepisStatus(RepisStatus repisStatus) {
         this.repisStatus = repisStatus;
     }
-
 }

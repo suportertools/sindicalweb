@@ -18,34 +18,34 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="HOM_CANCELAMENTO")
-@NamedQuery(name="Cancelamento.pesquisaID", query="select c from Cancelamento c where c.id = :pid")
+@Table(name = "HOM_CANCELAMENTO")
+@NamedQuery(name = "Cancelamento.pesquisaID", query = "select c from Cancelamento c where c.id = :pid")
 public class Cancelamento implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_AGENDAMENTO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_AGENDAMENTO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Agendamento agendamento;
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-    @Column(name="DS_MOTIVO", length=200, nullable=false)
+    @Column(name = "DS_MOTIVO", length = 200, nullable = false)
     private String motivo;
 
-    public Cancelamento(){
-         setId(-1);
-         setAgendamento(new Agendamento());
-         setUsuario(new Usuario());
-         setData("");
-         setMotivo("");
+    public Cancelamento() {
+        setId(-1);
+        setAgendamento(new Agendamento());
+        setUsuario(new Usuario());
+        setData("");
+        setMotivo("");
     }
 
-    public Cancelamento(int id, Agendamento agendamento,Usuario usuario,String data, String motivo){
+    public Cancelamento(int id, Agendamento agendamento, Usuario usuario, String data, String motivo) {
         setId(id);
         setAgendamento(agendamento);
         setUsuario(usuario);
@@ -62,15 +62,17 @@ public class Cancelamento implements java.io.Serializable {
     }
 
     public String getData() {
-        if (dtData != null)
+        if (dtData != null) {
             return DataHoje.converteData(dtData);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setData(String data) {
-        if (!(data.isEmpty()))
+        if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
+        }
     }
 
     public int getId() {

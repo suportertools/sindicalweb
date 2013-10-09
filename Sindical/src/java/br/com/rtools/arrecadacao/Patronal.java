@@ -4,23 +4,23 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_PATRONAL")
-@NamedQuery(name="Patronal.pesquisaID", query="select p from Patronal p where p.id = :pid")
+@Table(name = "ARR_PATRONAL")
+@NamedQuery(name = "Patronal.pesquisaID", query = "select p from Patronal p where p.id = :pid")
 public class Patronal implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private Pessoa pessoa;    
-    @JoinColumn(name="ID_CONVENCAO", referencedColumnName="ID", nullable=false)
+    private Pessoa pessoa;
+    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private Convencao convencao;    
-    @JoinColumn(name="ID_GRUPO_CIDADE", referencedColumnName="ID", nullable=false)
+    private Convencao convencao;
+    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
-    @Column(name="DS_BASE_TERRITORIAL", length=2000, nullable=true)
+    @Column(name = "DS_BASE_TERRITORIAL", length = 2000, nullable = true)
     private String baseTerritorial;
 
     public Patronal() {
@@ -37,7 +37,7 @@ public class Patronal implements java.io.Serializable {
         this.convencao = convencao;
         this.grupoCidade = grupoCidade;
         this.baseTerritorial = baseTerritorial;
-    }    
+    }
 
     public int getId() {
         return id;
@@ -78,5 +78,4 @@ public class Patronal implements java.io.Serializable {
     public void setBaseTerritorial(String baseTerritorial) {
         this.baseTerritorial = baseTerritorial;
     }
-
 }

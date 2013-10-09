@@ -92,7 +92,7 @@ public class HorariosDBToplink extends DB implements HorariosDB {
     public List pesquisaPorHorarioFilial(int idFilial, String horario, int idSemana) {
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT h FROM Horarios h "
+                    " SELECT h FROM Horarios h "
                     + "  WHERE h.hora = '" + horario + "'"
                     + "    AND h.semana.id = '" + idSemana + "'"
                     + "    AND h.filial.id = " + idFilial);

@@ -97,7 +97,7 @@ public class controleAcessoWebJSFBean implements java.io.Serializable {
                     msgLoginInvalido = "Usuário não contribuinte!";
                     return null;
                 } else {
-                    if ( ((List) listax.get(0)).get(11) != null) {
+                    if (((List) listax.get(0)).get(11) != null) {
                         msgLoginInvalido = "Contribuinte inativo, contate seu sindicato!";
                         return null;
                     } else {
@@ -285,7 +285,7 @@ public class controleAcessoWebJSFBean implements java.io.Serializable {
     public String getLinkSite() {
         PessoaDB db = new PessoaDBToplink();
         Pessoa p = db.pesquisaCodigo(1);
-        if (p != null){
+        if (p != null) {
             if (p.getSite() != null) {
                 return p.getSite();
             }

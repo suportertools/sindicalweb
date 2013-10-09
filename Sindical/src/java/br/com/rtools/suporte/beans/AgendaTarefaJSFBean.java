@@ -1,4 +1,3 @@
-
 package br.com.rtools.suporte.beans;
 
 import br.com.rtools.pessoa.Pessoa;
@@ -50,10 +49,10 @@ public class AgendaTarefaJSFBean {
     private boolean reInderiza = false;
     private String novaTarefa;
     private boolean finalizar = false;
-    private String porPesquisa  = "todos";
+    private String porPesquisa = "todos";
     private List<DataObject> listaTarefas = new ArrayList();
 
-    public AgendaTarefaJSFBean(){
+    public AgendaTarefaJSFBean() {
         ordemServico = new OrdemServico();
         interrupcao = new Interrupcao();
         protocolo = new Protocolo();
@@ -80,7 +79,7 @@ public class AgendaTarefaJSFBean {
         listaInterrupcao = new ArrayList();
     }
 
-    public String novo(){
+    public String novo() {
         setOrdemServico(new OrdemServico());
         setInterrupcao(new Interrupcao());
         setProtocolo(new Protocolo());
@@ -107,27 +106,28 @@ public class AgendaTarefaJSFBean {
         return "agendaTarefa";
     }
 
-    public String novoRegistro(){
-        if(!isReInderiza()){
+    public String novoRegistro() {
+        if (!isReInderiza()) {
             reInderiza = true;
-        }else{
+        } else {
             reInderiza = false;
         }
         return "agendaTarefa";
     }
 
-    public void pesquisar(){
+    public void pesquisar() {
         listaTarefas.clear();
     }
 
-    public List getListaInterrupcao(){
+    public List getListaInterrupcao() {
         InterrupcaoDB interrupcaoDB = new InterrupcaoDBToplink();
-        if(listaInterrupcao.isEmpty())
+        if (listaInterrupcao.isEmpty()) {
             listaInterrupcao = interrupcaoDB.listaInterrupcao(ordemServico.getId());
+        }
         return listaInterrupcao;
     }
 
-    public List<SelectItem> getListaModuloCombo(){
+    public List<SelectItem> getListaModuloCombo() {
         int i = 0;
 //        ModuloDB db = new ModuloDBToplink();
 //        if (listaModuloCombo.isEmpty()){
@@ -143,111 +143,107 @@ public class AgendaTarefaJSFBean {
         return listaModuloCombo;
     }
 
-    public List<SelectItem> getListaPrioridadeCombo(){
+    public List<SelectItem> getListaPrioridadeCombo() {
         int i = 0;
         PrioridadeDB db = new PrioridadeDBToplink();
-        if (listaPrioridadeCombo.isEmpty()){
-           listaPrioridade = db.pesquisaTodos();
-            while (i < getListaPrioridade().size()){
+        if (listaPrioridadeCombo.isEmpty()) {
+            listaPrioridade = db.pesquisaTodos();
+            while (i < getListaPrioridade().size()) {
                 listaPrioridadeCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaPrioridade().get(i).getDescricao()
-                ));
+                        new Integer(i),
+                        getListaPrioridade().get(i).getDescricao()));
                 i++;
             }
         }
         return listaPrioridadeCombo;
     }
 
-    public List<SelectItem> getListaRotinaCombo(){
+    public List<SelectItem> getListaRotinaCombo() {
         int i = 0;
         RotinaDB db = new RotinaDBToplink();
-        if (listaRotinaCombo.isEmpty()){
-           listaRotina = db.pesquisaTodosOrdenado();
-            while (i < getListaRotina().size()){
+        if (listaRotinaCombo.isEmpty()) {
+            listaRotina = db.pesquisaTodosOrdenado();
+            while (i < getListaRotina().size()) {
                 listaRotinaCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaRotina().get(i).getRotina()
-                ));
+                        new Integer(i),
+                        getListaRotina().get(i).getRotina()));
                 i++;
             }
         }
         return listaRotinaCombo;
     }
 
-    public List<SelectItem> getListaUsuarioCombo(){
+    public List<SelectItem> getListaUsuarioCombo() {
         int i = 0;
         UsuarioDB db = new UsuarioDBToplink();
-        if (listaUsuarioCombo.isEmpty()){
+        if (listaUsuarioCombo.isEmpty()) {
             listaUsuario = db.pesquisaTodos();
-            while (i < getListaUsuario().size()){
+            while (i < getListaUsuario().size()) {
                 listaUsuarioCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaUsuario().get(i).getPessoa().getNome()
-                ));
+                        new Integer(i),
+                        getListaUsuario().get(i).getPessoa().getNome()));
                 i++;
             }
         }
         return listaUsuarioCombo;
     }
 
-    public List<SelectItem> getListaProStatusCombo(){
+    public List<SelectItem> getListaProStatusCombo() {
         int i = 0;
         ProStatusDB db = new ProStatusDBToplink();
-        if (listaProStatusCombo.isEmpty()){
+        if (listaProStatusCombo.isEmpty()) {
             setListaProStatus((List<ProStatus>) db.pesquisaTodos());
-            while (i < getListaProStatus().size()){
+            while (i < getListaProStatus().size()) {
                 listaProStatusCombo.add(new SelectItem(
-                       new Integer(i),
-                       getListaProStatus().get(i).getDescricao()
-                ));
+                        new Integer(i),
+                        getListaProStatus().get(i).getDescricao()));
                 i++;
             }
         }
         return listaProStatusCombo;
     }
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        if(protocolo.getId() == -1){
-            if(validaProtocolo()){
+        if (protocolo.getId() == -1) {
+            if (validaProtocolo()) {
                 dbSalvar.abrirTransacao();
                 OrdemServicoDB ordemServicoDB = new OrdemServicoDBToplink();
-                if (ordemServicoDB.idOrdemServico( ordemServico ) == null ){
-                    if (dbSalvar.inserirObjeto(protocolo)){
-                        if(validaOrdemServico()){
-                            if(dbSalvar.inserirObjeto(ordemServico)){
+                if (ordemServicoDB.idOrdemServico(ordemServico) == null) {
+                    if (dbSalvar.inserirObjeto(protocolo)) {
+                        if (validaOrdemServico()) {
+                            if (dbSalvar.inserirObjeto(ordemServico)) {
                                 dbSalvar.comitarTransacao();
                                 setMsgConfirma("Cadastro efetuado com sucesso!");
                             }
                         }
-                    }else{
+                    } else {
                         dbSalvar.desfazerTransacao();
                         setMsgConfirma("Erro! Cadastro não foi efetuado.");
                     }
-                }else{
+                } else {
                     dbSalvar.desfazerTransacao();
                     setMsgConfirma("Já existe uma O.S. com esse nome.");
                 }
             }
-        }else{
-            if(validaProtocolo()){
+        } else {
+            if (validaProtocolo()) {
                 dbSalvar.abrirTransacao();
-                if(dbSalvar.alterarObjeto(protocolo)){
-                    if(validaOrdemServico()){
-                        if(dbSalvar.alterarObjeto(ordemServico)){
+                if (dbSalvar.alterarObjeto(protocolo)) {
+                    if (validaOrdemServico()) {
+                        if (dbSalvar.alterarObjeto(ordemServico)) {
                             dbSalvar.comitarTransacao();
                             setMsgConfirma("Cadastro atualizado com sucesso!");
-                        }else{
+                        } else {
                             dbSalvar.desfazerTransacao();
-                            setMsgConfirma("Erro! Cadastro não foi efetuado.");                         
+                            setMsgConfirma("Erro! Cadastro não foi efetuado.");
                         }
-                    }else{
+                    } else {
                         dbSalvar.desfazerTransacao();
                         setMsgConfirma("Erro! Cadastro não foi efetuado.");
                     }
                 }
-            }else{
+            } else {
                 dbSalvar.desfazerTransacao();
             }
         }
@@ -260,27 +256,27 @@ public class AgendaTarefaJSFBean {
         return "agendaTarefa";
     }
 
-    public String excluir(){
-        if(ordemServico.getId() != -1){
+    public String excluir() {
+        if (ordemServico.getId() != -1) {
             SalvarAcumuladoDB dbExcluir = new SalvarAcumuladoDBToplink();
-            try{
+            try {
                 dbExcluir.abrirTransacao();
-                if(dbExcluir.deletarObjeto((OrdemServico) dbExcluir.pesquisaCodigo(ordemServico.getId(), "OrdemServico"))){
-                    if(dbExcluir.deletarObjeto ((Protocolo) dbExcluir.pesquisaCodigo(protocolo.getId(), "Protocolo"))){
+                if (dbExcluir.deletarObjeto((OrdemServico) dbExcluir.pesquisaCodigo(ordemServico.getId(), "OrdemServico"))) {
+                    if (dbExcluir.deletarObjeto((Protocolo) dbExcluir.pesquisaCodigo(protocolo.getId(), "Protocolo"))) {
                         dbExcluir.comitarTransacao();
                         setMsgConfirma("Exclusão realizada com sucesso atualizado com sucesso!");
-                    }else{
+                    } else {
                         dbExcluir.desfazerTransacao();
                         setMsgConfirma("Erro! Falha ao excluir o registro.");
                     }
-                }else{
+                } else {
                     dbExcluir.desfazerTransacao();
                     setMsgConfirma("Erro! Não foi possível realiza a exclusão");
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 msgConfirma = e.getMessage();
             }
-        }else{
+        } else {
             msgConfirma = "Registro inválido!";
         }
         ordemServico = new OrdemServico();
@@ -292,34 +288,34 @@ public class AgendaTarefaJSFBean {
         return "agendaTarefa";
     }
 
-    public String editar(){
+    public String editar() {
 //        ordemServico = ((OrdemServico)((DataObject) getHtmlTable().getRowData()).getArgumento1());
         protocolo = getOrdemServico().getProtocolo();
         pessoa = getOrdemServico().getProtocolo().getEmpresa();
         usuario = getOrdemServico().getResponsavel();
         setProStatus(getOrdemServico().getProStatus());
-        for (int j = 0; j < getListaModuloCombo().size(); j++){
-            if (ordemServico.getModulo().getId() == getListaModulo().get(j).getId()){
+        for (int j = 0; j < getListaModuloCombo().size(); j++) {
+            if (ordemServico.getModulo().getId() == getListaModulo().get(j).getId()) {
                 setIdModulo(j);
             }
         }
-        for (int j = 0; j < getListaPrioridadeCombo().size(); j++){
-            if (ordemServico.getPrioridade().getId() == listaPrioridade.get(j).getId()){
+        for (int j = 0; j < getListaPrioridadeCombo().size(); j++) {
+            if (ordemServico.getPrioridade().getId() == listaPrioridade.get(j).getId()) {
                 idPrioridade = j;
             }
         }
-        for (int j = 0; j < getListaRotinaCombo().size(); j++){
-            if (ordemServico.getRotina().getId() == listaRotina.get(j).getId()){
+        for (int j = 0; j < getListaRotinaCombo().size(); j++) {
+            if (ordemServico.getRotina().getId() == listaRotina.get(j).getId()) {
                 idRotina = j;
             }
         }
-        for (int j = 0; j < getListaUsuarioCombo().size(); j++){
-            if (usuario.getId() == listaUsuario.get(j).getId()){
+        for (int j = 0; j < getListaUsuarioCombo().size(); j++) {
+            if (usuario.getId() == listaUsuario.get(j).getId()) {
                 idUsuario = j;
             }
         }
-        for (int j = 0; j < getListaProStatusCombo().size(); j++){
-            if (ordemServico.getProStatus().getId() == getListaProStatus().get(j).getId()){
+        for (int j = 0; j < getListaProStatusCombo().size(); j++) {
+            if (ordemServico.getProStatus().getId() == getListaProStatus().get(j).getId()) {
                 setIdProStatus(j);
             }
         }
@@ -327,50 +323,50 @@ public class AgendaTarefaJSFBean {
         return "agendaTarefa";
     }
 
-    public void linhaInt(){
+    public void linhaInt() {
 //        ordemServico = ((OrdemServico) ((DataObject)getHtmlTable().getRowData()).getArgumento1()) ;
         listaInterrupcao.clear();
         interrupcao = new Interrupcao();
     }
 
-    public void linhaInterrupcao(){
+    public void linhaInterrupcao() {
 //        interrupcao = (Interrupcao) getHtmlTableInterrupcao().getRowData();
         listaInterrupcao.clear();
     }
-    
-    public String salvarInterrupcao(){
+
+    public String salvarInterrupcao() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        if(interrupcao.getId() == -1){
-            if(validaInterrupcao()){
+        if (interrupcao.getId() == -1) {
+            if (validaInterrupcao()) {
                 dbSalvar.abrirTransacao();
                 InterrupcaoDB interrupcaoDB = new InterrupcaoDBToplink();
-                if (interrupcaoDB.idInterrupcao( interrupcao ) == null ){
-                    if (dbSalvar.inserirObjeto(interrupcao)){
+                if (interrupcaoDB.idInterrupcao(interrupcao) == null) {
+                    if (dbSalvar.inserirObjeto(interrupcao)) {
                         dbSalvar.comitarTransacao();
                         setMsgConfirma("Cadastro efetuado com sucesso!");
-                    }else{
+                    } else {
                         dbSalvar.desfazerTransacao();
                         setMsgConfirma("Erro! Cadastro não foi efetuado.");
                     }
-                }else{
+                } else {
                     dbSalvar.desfazerTransacao();
                     setMsgConfirma("Já existe uma O.S. com esse nome.");
                 }
-            }else{
+            } else {
                 dbSalvar.desfazerTransacao();
                 setMsgConfirma("Já existe uma O.S. com esse nome.");
             }
-        }else {
-            if(validaInterrupcao()){
+        } else {
+            if (validaInterrupcao()) {
                 dbSalvar.abrirTransacao();
-                if(dbSalvar.alterarObjeto(interrupcao)){
+                if (dbSalvar.alterarObjeto(interrupcao)) {
                     setMsgConfirma("Cadastro atualizado com sucesso!");
                     dbSalvar.comitarTransacao();
-                }else{
+                } else {
                     dbSalvar.desfazerTransacao();
                     setMsgConfirma("Erro! Cadastro não foi efetuado.");
                 }
-            }else{
+            } else {
                 dbSalvar.desfazerTransacao();
                 setMsgConfirma("Erro! Cadastro não foi efetuado.");
             }
@@ -381,23 +377,23 @@ public class AgendaTarefaJSFBean {
         refreshForm();
         return null;
     }
-    
-    public String excluirInterrupcao(){
-        if(interrupcao.getId() != -1){
+
+    public String excluirInterrupcao() {
+        if (interrupcao.getId() != -1) {
             SalvarAcumuladoDB dbExcluir = new SalvarAcumuladoDBToplink();
-            try{
+            try {
                 dbExcluir.abrirTransacao();
-                if(dbExcluir.deletarObjeto((Interrupcao) dbExcluir.pesquisaCodigo(interrupcao.getId(), "Interrupcao"))){
+                if (dbExcluir.deletarObjeto((Interrupcao) dbExcluir.pesquisaCodigo(interrupcao.getId(), "Interrupcao"))) {
                     dbExcluir.comitarTransacao();
                     setMsgConfirma("Exclusão realizada com sucesso atualizado com sucesso!");
-                }else{
+                } else {
                     dbExcluir.desfazerTransacao();
                     setMsgConfirma("Erro! Falha ao excluir o registro.");
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 msgConfirma = e.getMessage();
             }
-        }else{
+        } else {
             msgConfirma = "Registro inválido!";
         }
         interrupcao = new Interrupcao();
@@ -406,93 +402,92 @@ public class AgendaTarefaJSFBean {
         return null;
     }
 
-    public String editarInterrupcao(){
+    public String editarInterrupcao() {
 //        interrupcao = (Interrupcao) getHtmlTableInterrupcao().getRowData();
 
         return null;
     }
-    
-    public void acaoPesquisaInicial(){
+
+    public void acaoPesquisaInicial() {
         setComoPesquisa("I");
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         setComoPesquisa("P");
     }
 
-    public List getListaOrdemServico(){
+    public List getListaOrdemServico() {
 //        Pesquisa pesquisa = new Pesquisa();
         List result = null;
 //        result = pesquisa.pesquisar("OrdemServico", "descricao" , getDescPesquisa(), "descricao", getComoPesquisa());
         return result;
     }
 
-    public void refreshForm(){
+    public void refreshForm() {
     }
 
-    public boolean validaInterrupcao(){
+    public boolean validaInterrupcao() {
         interrupcao.setOrdemServico(ordemServico);
-        if (interrupcao.getMotivo().isEmpty()){
+        if (interrupcao.getMotivo().isEmpty()) {
             setMsgConfirma("Digite a situção!");
             return false;
         }
         return true;
     }
 
-    public boolean validaOrdemServico(){
+    public boolean validaOrdemServico() {
         ordemServico.setProtocolo(protocolo);
         ordemServico.setModulo(getListaModulo().get(idModulo));
         ordemServico.setRotina(getListaRotina().get(idRotina));
         ordemServico.setPrioridade(getListaPrioridade().get(idPrioridade));
         ordemServico.setResponsavel(getListaUsuario().get(idUsuario));
-        if (ordemServico.getHistorico().isEmpty()){
+        if (ordemServico.getHistorico().isEmpty()) {
             setMsgConfirma("Digite o a situação do histórico atual!");
             return false;
-        }else if(ordemServico.getHistoricoInterno().isEmpty()){
+        } else if (ordemServico.getHistoricoInterno().isEmpty()) {
             setMsgConfirma("Digite o a situação do histórico interno atual!");
             return false;
-        }else if(DataHoje.converteDataParaInteger(ordemServico.getDataPrevisaoString()) <
-            DataHoje.converteDataParaInteger(DataHoje.data())){
-            if(protocolo.getId() == -1){
+        } else if (DataHoje.converteDataParaInteger(ordemServico.getDataPrevisaoString())
+                < DataHoje.converteDataParaInteger(DataHoje.data())) {
+            if (protocolo.getId() == -1) {
                 setMsgConfirma("A data deve ser posterior a data Atual!");
                 return false;
             }
-        }else if(ordemServico.getModulo().getId() == -1){
+        } else if (ordemServico.getModulo().getId() == -1) {
             setMsgConfirma("O modulo esta vazio!");
             return false;
-        }else if(ordemServico.getRotina().getId() == -1){
+        } else if (ordemServico.getRotina().getId() == -1) {
             setMsgConfirma("A rotina esta vazia!");
             return false;
-        }else if(ordemServico.getPrioridade().getId() == -1){
+        } else if (ordemServico.getPrioridade().getId() == -1) {
             setMsgConfirma("A prioridade esta vazia!");
             return false;
         }
-        if(finalizar && ordemServico.getDataConclusao() == null || getListaProStatus().get(idProStatus).getId() == 3){
+        if (finalizar && ordemServico.getDataConclusao() == null || getListaProStatus().get(idProStatus).getId() == 3) {
             ordemServico.setDataConclusao(DataHoje.dataHoje());
             ordemServico.setProStatus(getListaProStatus().get(1));
-        }else if(!finalizar && (ordemServico.getProStatus().getId() == 3)){
+        } else if (!finalizar && (ordemServico.getProStatus().getId() == 3)) {
             ordemServico.setProStatus(getListaProStatus().get(0));
             ordemServico.setDataConclusao(null);
-        }else{
+        } else {
             ordemServico.setProStatus(getListaProStatus().get(getIdProStatus()));
             ordemServico.setDataConclusao(null);
         }
         return true;
     }
 
-   
-    public boolean validaProtocolo(){
+    public boolean validaProtocolo() {
         protocolo.setEmpresa(pessoa);
-        if (protocolo.getSolicitante().isEmpty()){
+        if (protocolo.getSolicitante().isEmpty()) {
             setMsgConfirma("Digite o nome do solicitante!");
             return false;
-        }else if(protocolo.getEmpresa().getId() == -1){
+        } else if (protocolo.getEmpresa().getId() == -1) {
             setMsgConfirma("Digite o nome da Empresa!");
             return false;
-        }else if(protocolo.getDataString().isEmpty()){
+        } else if (protocolo.getDataString().isEmpty()) {
             setMsgConfirma("Digite uma data!");
             return false;
-        }else if(protocolo.getHora().isEmpty()){
+        } else if (protocolo.getHora().isEmpty()) {
             setMsgConfirma("Digite um horário!");
             return false;
         }
@@ -522,7 +517,7 @@ public class AgendaTarefaJSFBean {
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
     }
-    
+
     public OrdemServico getOrdemServico() {
         return ordemServico;
     }
@@ -556,8 +551,8 @@ public class AgendaTarefaJSFBean {
     }
 
     public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null){
-            pessoa = (Pessoa)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         }
         return pessoa;
@@ -668,9 +663,9 @@ public class AgendaTarefaJSFBean {
     }
 
     public boolean isFinalizar() {
-        if(!ordemServico.getDataConclusaoString().isEmpty()){
+        if (!ordemServico.getDataConclusaoString().isEmpty()) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -678,7 +673,6 @@ public class AgendaTarefaJSFBean {
     public void setFinalizar(boolean finalizar) {
         this.finalizar = finalizar;
     }
-
 
     public String getPorPesquisa() {
         return porPesquisa;
@@ -693,31 +687,31 @@ public class AgendaTarefaJSFBean {
     }
 
     public List<DataObject> getListaTarefas() {
-        if(listaTarefas.isEmpty()){
+        if (listaTarefas.isEmpty()) {
             OrdemServicoDB ordemServicoDB = new OrdemServicoDBToplink();
             List<OrdemServico> lista = ordemServicoDB.pesquisaTodos(porPesquisa);
-            for(int i = 0; i < lista.size(); i++ ){
+            for (int i = 0; i < lista.size(); i++) {
                 listaTarefas.add(new DataObject(null, lista.get(i), false, "null.png", "", null));
-                if(lista.get(i).getDataConclusao() == null){
-                    if ( (DataHoje.converteDataParaInteger(DataHoje.data()) == DataHoje.converteDataParaInteger(lista.get(i).getDataPrevisaoString())) || (DataHoje.dataHoje() == lista.get(i).getDataPrevisao()) &&  lista.get(i).getProStatus().getId() != 4){
+                if (lista.get(i).getDataConclusao() == null) {
+                    if ((DataHoje.converteDataParaInteger(DataHoje.data()) == DataHoje.converteDataParaInteger(lista.get(i).getDataPrevisaoString())) || (DataHoje.dataHoje() == lista.get(i).getDataPrevisao()) && lista.get(i).getProStatus().getId() != 4) {
                         listaTarefas.get(i).setArgumento2(true);
                         listaTarefas.get(i).setArgumento3("Prazo Expira Hoje!");
                         listaTarefas.get(i).setArgumento4("alertGreen.png");
-                    }else if ( DataHoje.converteDataParaInteger(DataHoje.data()) > DataHoje.converteDataParaInteger(lista.get(i).getDataPrevisaoString())  && lista.get(i).getProStatus().getId() != 4 ){
+                    } else if (DataHoje.converteDataParaInteger(DataHoje.data()) > DataHoje.converteDataParaInteger(lista.get(i).getDataPrevisaoString()) && lista.get(i).getProStatus().getId() != 4) {
                         listaTarefas.get(i).setArgumento2(true);
                         listaTarefas.get(i).setArgumento3("Prazo Expirado!");
                         listaTarefas.get(i).setArgumento4("alertOrange.png");
-                    }else if ( lista.get(i).getProStatus().getId() == 4 ){
+                    } else if (lista.get(i).getProStatus().getId() == 4) {
                         listaTarefas.get(i).setArgumento2(true);
                         listaTarefas.get(i).setArgumento3("OS esta parada, verificar informações nas Interrupções!");
                         listaTarefas.get(i).setArgumento4("alertPause.png");
                     }
-                }else if(lista.get(i).getDataConclusao() != null) {
-                    if ( DataHoje.converteDataParaInteger(lista.get(i).getDataConclusaoString()) < DataHoje.converteDataParaInteger(lista.get(i).getDataPrevisaoString())){
+                } else if (lista.get(i).getDataConclusao() != null) {
+                    if (DataHoje.converteDataParaInteger(lista.get(i).getDataConclusaoString()) < DataHoje.converteDataParaInteger(lista.get(i).getDataPrevisaoString())) {
                         listaTarefas.get(i).setArgumento2(true);
                         listaTarefas.get(i).setArgumento3("Você foi Ninja!");
                         listaTarefas.get(i).setArgumento4("alertNinja.png");
-                    }else{
+                    } else {
                         listaTarefas.get(i).setArgumento2(true);
                         listaTarefas.get(i).setArgumento3("Concluído!");
                         listaTarefas.get(i).setArgumento4("concluido.png");
@@ -759,6 +753,4 @@ public class AgendaTarefaJSFBean {
     public void setIdProStatus(int idProStatus) {
         this.idProStatus = idProStatus;
     }
-
-
 }

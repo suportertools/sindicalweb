@@ -6,163 +6,163 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SEG_REGISTRO")
-@NamedQuery(name="Registro.pesquisaID", query="select regi from Registro regi where regi.id=:pid")
+@Table(name = "SEG_REGISTRO")
+@NamedQuery(name = "Registro.pesquisaID", query = "select regi from Registro regi where regi.id=:pid")
 public class Registro implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=false)
-    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Juridica filial;
-    @Column(name="DS_TIPO_EMPRESA", length=1, nullable=false)
+    @Column(name = "DS_TIPO_EMPRESA", length = 1, nullable = false)
     private String tipoEmpresa;
-    @Column(name="DS_EMAIL", length=50)
+    @Column(name = "DS_EMAIL", length = 50)
     private String email;
-    @Column(name="DS_SENHA", length=20)
+    @Column(name = "DS_SENHA", length = 20)
     private String senha;
-    @Column(name="DS_SMTP", length=50)
+    @Column(name = "DS_SMTP", length = 50)
     private String smtp;
-    @Column(name="BLOQUEAR_HOMOLOGACAO")
+    @Column(name = "BLOQUEAR_HOMOLOGACAO")
     private boolean bloquearHomologacao;
-    @Column(name="CARTEIRINHA_DEPENDENTE")
+    @Column(name = "CARTEIRINHA_DEPENDENTE")
     private boolean carteirinhaDependente;
-    @Column(name="MESES_INADIMPLENTES_IMPRESSAO_BOLETOS")
+    @Column(name = "MESES_INADIMPLENTES_IMPRESSAO_BOLETOS")
     private int mesesInadimplentes;
-    @Column(name="DS_TIPO_ENTIDADE", length=1)
+    @Column(name = "DS_TIPO_ENTIDADE", length = 1)
     private String tipoEntidade;
-    @Column(name="BAIXA_VENCIMENTO")
+    @Column(name = "BAIXA_VENCIMENTO")
     private boolean baixaVencimento;
-    @Column(name="IS_BLOQUEIA_ATRASADOS_WEB")
+    @Column(name = "IS_BLOQUEIA_ATRASADOS_WEB")
     private boolean bloqueiaAtrasadosWeb;
-    @Column(name="DS_MENSAGEM_BLOQUEIO_BOLETO_WEB", length=8000)
-    private String mensagemBloqueioBoletoWeb;    
-    @Column(name="DS_URL_PATH", length=50)
-    private String urlPath;    
-    @Column(name="DS_OBS_FICHA_SOCIAL", length=8000)
-    private String fichaSocial;    
-    @Column(name="MESES_INADIMPLENTES_AGENDA")
+    @Column(name = "DS_MENSAGEM_BLOQUEIO_BOLETO_WEB", length = 8000)
+    private String mensagemBloqueioBoletoWeb;
+    @Column(name = "DS_URL_PATH", length = 50)
+    private String urlPath;
+    @Column(name = "DS_OBS_FICHA_SOCIAL", length = 8000)
+    private String fichaSocial;
+    @Column(name = "MESES_INADIMPLENTES_AGENDA")
     private int mesesInadimplentesAgenda;
-    @Column(name="DIAS_BLOQUEIA_ATRASADOS_WEB")
+    @Column(name = "DIAS_BLOQUEIA_ATRASADOS_WEB")
     private int diasBloqueiaAtrasadosWeb;
-    @Column(name="IS_EMAIL_AUTENTICADO")
+    @Column(name = "IS_EMAIL_AUTENTICADO")
     private boolean emailAutenticado;
-    @Column(name="IS_SENHA_HOMOLOGACAO")
+    @Column(name = "IS_SENHA_HOMOLOGACAO")
     private boolean senhaHomologacao;
-    @Column(name="DS_DOCUMENTO_HOMOLOGACAO", length=8000)
+    @Column(name = "DS_DOCUMENTO_HOMOLOGACAO", length = 8000)
     private String documentoHomologacao;
-    @Column(name="DS_FORMA_PAGAMENTO_HOMOLOGACAO", length=8000)
+    @Column(name = "DS_FORMA_PAGAMENTO_HOMOLOGACAO", length = 8000)
     private String formaPagamentoHomologacao;
-    @Column(name="IS_AGENDAR_SEM_HORARIO_WEB")
+    @Column(name = "IS_AGENDAR_SEM_HORARIO_WEB")
     private boolean agendarSemHorarioWeb;
-    @Column(name="IS_ENVIAR_EMAIL_ANEXO")
+    @Column(name = "IS_ENVIAR_EMAIL_ANEXO")
     private boolean enviarEmailAnexo;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_ATUALIZA_HOMOLOGACAO")
+    @Column(name = "DT_ATUALIZA_HOMOLOGACAO")
     private Date dataAtualizaHomologacao;
-    @Column(name="IS_BOLETO_WEB")
+    @Column(name = "IS_BOLETO_WEB")
     private boolean boletoWeb;
-    @Column(name="IS_REPIS_WEB")
+    @Column(name = "IS_REPIS_WEB")
     private boolean repisWeb;
-    @Column(name="IS_AGENDAMENTO_WEB")
+    @Column(name = "IS_AGENDAMENTO_WEB")
     private boolean agendamentoWeb;
-    @Column(name="NR_LIMITE_ENVIOS_NOTIFICACAO")
+    @Column(name = "NR_LIMITE_ENVIOS_NOTIFICACAO")
     private int limiteEnvios;
-    @Column(name="NR_INTERVALO_ENVIOS_NOTIFICACAO")
+    @Column(name = "NR_INTERVALO_ENVIOS_NOTIFICACAO")
     private int intervaloEnvios;
-    
-    public Registro(){
-         this.id = -1;
-         this.filial = new Juridica();
-         this.tipoEmpresa = "E";
-         this.email = "";
-         this.senha = "";
-         this.smtp = "";
-         this.bloquearHomologacao = false;
-         this.carteirinhaDependente =false;
-         this.mesesInadimplentes = 0;
-         this.tipoEntidade = "S";
-         this.baixaVencimento = true;
-         this.bloqueiaAtrasadosWeb = true;
-         this.mensagemBloqueioBoletoWeb = "";
-         this.urlPath = "";
-         this.fichaSocial = "";
-         this.mesesInadimplentesAgenda = 0;
-         this.diasBloqueiaAtrasadosWeb = 0;
-         this.emailAutenticado = true;
-         this.senhaHomologacao = false;
-         this.documentoHomologacao = "";
-         this.formaPagamentoHomologacao = "";
-         this.agendarSemHorarioWeb = false;
-         this.enviarEmailAnexo = true;
-         this.dataAtualizaHomologacao = new Date();
-         this.boletoWeb = false;
-         this.repisWeb = false;
-         this.agendamentoWeb = false;
-         this.limiteEnvios = 0;
-         this.intervaloEnvios = 0;
+
+    public Registro() {
+        this.id = -1;
+        this.filial = new Juridica();
+        this.tipoEmpresa = "E";
+        this.email = "";
+        this.senha = "";
+        this.smtp = "";
+        this.bloquearHomologacao = false;
+        this.carteirinhaDependente = false;
+        this.mesesInadimplentes = 0;
+        this.tipoEntidade = "S";
+        this.baixaVencimento = true;
+        this.bloqueiaAtrasadosWeb = true;
+        this.mensagemBloqueioBoletoWeb = "";
+        this.urlPath = "";
+        this.fichaSocial = "";
+        this.mesesInadimplentesAgenda = 0;
+        this.diasBloqueiaAtrasadosWeb = 0;
+        this.emailAutenticado = true;
+        this.senhaHomologacao = false;
+        this.documentoHomologacao = "";
+        this.formaPagamentoHomologacao = "";
+        this.agendarSemHorarioWeb = false;
+        this.enviarEmailAnexo = true;
+        this.dataAtualizaHomologacao = new Date();
+        this.boletoWeb = false;
+        this.repisWeb = false;
+        this.agendamentoWeb = false;
+        this.limiteEnvios = 0;
+        this.intervaloEnvios = 0;
     }
 
-    public Registro(int id, 
-                    Juridica filial, 
-                    String tipoEmpresa, 
-                    String email, 
-                    String senha, 
-                    String smtp,
-                    boolean bloquearHomologacao,
-                    boolean carteirinhaDependente, 
-                    int mesesInadimplentes, 
-                    String tipoEntidade, 
-                    boolean baixaVencimento,
-                    boolean bloqueiaAtrasadosWeb,
-                    String mensagemBloqueioBoletoWeb,
-                    String urlPath,
-                    String fichaSocial,
-                    int mesesInadimplentesAgenda,
-                    int diasBloqueiaAtrasadosWeb,
-                    boolean emailAutenticado,
-                    boolean senhaHomologação, 
-                    String documentoHomologacao, 
-                    String formaPagamentoHomologacao,
-                    boolean agendarSemHorarioWeb,
-                    boolean enviarEmailAnexo,
-                    String dataAtualizaHomologacao,
-                    boolean boletoWeb,
-                    boolean repisWeb,
-                    boolean agendamentoWeb, 
-                    int limiteEnvios,
-                    int intervaloEnvios){
-        
-         this.id = id;
-         this.filial = filial;
-         this.tipoEmpresa = tipoEmpresa;
-         this.email = email;
-         this.senha = senha;
-         this.smtp = smtp;
-         this.bloquearHomologacao = bloquearHomologacao;
-         this.carteirinhaDependente =carteirinhaDependente;
-         this.mesesInadimplentes = mesesInadimplentes;
-         this.tipoEntidade = tipoEntidade;
-         this.baixaVencimento = baixaVencimento;
-         this.bloqueiaAtrasadosWeb = bloqueiaAtrasadosWeb;
-         this.mensagemBloqueioBoletoWeb = mensagemBloqueioBoletoWeb;
-         this.urlPath = urlPath;
-         this.fichaSocial = fichaSocial;
-         this.mesesInadimplentesAgenda = mesesInadimplentesAgenda;
-         this.diasBloqueiaAtrasadosWeb = diasBloqueiaAtrasadosWeb;
-         this.emailAutenticado = emailAutenticado;
-         this.senhaHomologacao = senhaHomologação;
-         this.documentoHomologacao = documentoHomologacao;
-         this.formaPagamentoHomologacao = formaPagamentoHomologacao;
-         this.agendarSemHorarioWeb = agendarSemHorarioWeb;
-         this.enviarEmailAnexo = enviarEmailAnexo;
-         setDataAtualizaHomologacaoStr(dataAtualizaHomologacao);
-         this.boletoWeb = boletoWeb;
-         this.repisWeb = repisWeb;
-         this.agendamentoWeb = agendamentoWeb;
-         this.limiteEnvios = limiteEnvios;
-         this.intervaloEnvios = intervaloEnvios;
+    public Registro(int id,
+            Juridica filial,
+            String tipoEmpresa,
+            String email,
+            String senha,
+            String smtp,
+            boolean bloquearHomologacao,
+            boolean carteirinhaDependente,
+            int mesesInadimplentes,
+            String tipoEntidade,
+            boolean baixaVencimento,
+            boolean bloqueiaAtrasadosWeb,
+            String mensagemBloqueioBoletoWeb,
+            String urlPath,
+            String fichaSocial,
+            int mesesInadimplentesAgenda,
+            int diasBloqueiaAtrasadosWeb,
+            boolean emailAutenticado,
+            boolean senhaHomologação,
+            String documentoHomologacao,
+            String formaPagamentoHomologacao,
+            boolean agendarSemHorarioWeb,
+            boolean enviarEmailAnexo,
+            String dataAtualizaHomologacao,
+            boolean boletoWeb,
+            boolean repisWeb,
+            boolean agendamentoWeb,
+            int limiteEnvios,
+            int intervaloEnvios) {
+
+        this.id = id;
+        this.filial = filial;
+        this.tipoEmpresa = tipoEmpresa;
+        this.email = email;
+        this.senha = senha;
+        this.smtp = smtp;
+        this.bloquearHomologacao = bloquearHomologacao;
+        this.carteirinhaDependente = carteirinhaDependente;
+        this.mesesInadimplentes = mesesInadimplentes;
+        this.tipoEntidade = tipoEntidade;
+        this.baixaVencimento = baixaVencimento;
+        this.bloqueiaAtrasadosWeb = bloqueiaAtrasadosWeb;
+        this.mensagemBloqueioBoletoWeb = mensagemBloqueioBoletoWeb;
+        this.urlPath = urlPath;
+        this.fichaSocial = fichaSocial;
+        this.mesesInadimplentesAgenda = mesesInadimplentesAgenda;
+        this.diasBloqueiaAtrasadosWeb = diasBloqueiaAtrasadosWeb;
+        this.emailAutenticado = emailAutenticado;
+        this.senhaHomologacao = senhaHomologação;
+        this.documentoHomologacao = documentoHomologacao;
+        this.formaPagamentoHomologacao = formaPagamentoHomologacao;
+        this.agendarSemHorarioWeb = agendarSemHorarioWeb;
+        this.enviarEmailAnexo = enviarEmailAnexo;
+        setDataAtualizaHomologacaoStr(dataAtualizaHomologacao);
+        this.boletoWeb = boletoWeb;
+        this.repisWeb = repisWeb;
+        this.agendamentoWeb = agendamentoWeb;
+        this.limiteEnvios = limiteEnvios;
+        this.intervaloEnvios = intervaloEnvios;
     }
 
     public int getId() {
@@ -252,7 +252,7 @@ public class Registro implements java.io.Serializable {
     public void setBaixaVencimento(boolean baixaVencimento) {
         this.baixaVencimento = baixaVencimento;
     }
-    
+
     public String getMensagemBloqueioBoletoWeb() {
         return mensagemBloqueioBoletoWeb;
     }
@@ -267,7 +267,7 @@ public class Registro implements java.io.Serializable {
 
     public void setBloqueiaAtrasadosWeb(boolean bloqueiaAtrasadosWeb) {
         this.bloqueiaAtrasadosWeb = bloqueiaAtrasadosWeb;
-    }    
+    }
 
     public String getUrlPath() {
         return urlPath;
@@ -356,9 +356,9 @@ public class Registro implements java.io.Serializable {
     public void setDataAtualizaHomologacao(Date dataAtualizaHomologacao) {
         this.dataAtualizaHomologacao = dataAtualizaHomologacao;
     }
-    
+
     public String getDataAtualizaHomologacaoStr() {
-        if (dataAtualizaHomologacao != null){
+        if (dataAtualizaHomologacao != null) {
             return DataHoje.converteData(dataAtualizaHomologacao);
         } else {
             return "";

@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 public class ParametroEscritorios {
+
     private String sinLogo;
     private String sinNome;
     private String sinEndereco;
@@ -30,11 +31,11 @@ public class ParametroEscritorios {
     private String escEmail;
     private int escQuantidadeEmpresas;
 
-    public ParametroEscritorios(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, 
-                                String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF,
-                                String sinTelefone, String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento,
-                                int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
-                                String escBairro, String escCep, String escCidade, String escUF, String escTelefone, String escEmail, int escQuantidadeEmpresas) {
+    public ParametroEscritorios(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero,
+            String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF,
+            String sinTelefone, String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento,
+            int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
+            String escBairro, String escCep, String escCidade, String escUF, String escTelefone, String escEmail, int escQuantidadeEmpresas) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -64,7 +65,6 @@ public class ParametroEscritorios {
         this.escEmail = escEmail;
         this.escQuantidadeEmpresas = escQuantidadeEmpresas;
     }
-
 
     public ParametroEscritorios() {
         this.sinLogo = "";
@@ -96,7 +96,7 @@ public class ParametroEscritorios {
         this.escEmail = "";
         this.escQuantidadeEmpresas = 0;
     }
-    
+
     public String getSinLogo() {
         return sinLogo;
     }
@@ -320,5 +320,4 @@ public class ParametroEscritorios {
     public void setEscQuantidadeEmpresas(int escQuantidadeEmpresas) {
         this.escQuantidadeEmpresas = escQuantidadeEmpresas;
     }
-
 }

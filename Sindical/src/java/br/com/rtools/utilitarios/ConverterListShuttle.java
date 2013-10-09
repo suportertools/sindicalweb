@@ -10,23 +10,23 @@ import javax.faces.convert.Converter;
 
 public class ConverterListShuttle implements Converter {
 
-    public Object getAsObject(FacesContext facesContext, UIComponent component,String value) {
-        if(value == null){
+    public Object getAsObject(FacesContext facesContext, UIComponent component, String value) {
+        if (value == null) {
             return null;
-        }else{
+        } else {
             CnaeDB db = new CnaeDBToplink();
             int fdf = Integer.parseInt(value);
-            Cnae cnae = db.pesquisaCodigo( Integer.parseInt(value) );
+            Cnae cnae = db.pesquisaCodigo(Integer.parseInt(value));
             return cnae;
         }
     }
 
     public String getAsString(FacesContext facesContext, UIComponent uIComponent, Object object) {
-        if(object == null){
+        if (object == null) {
             return null;
-        }else{
-            String dd = String.valueOf( ( (Cnae) object).getId() );
-            return String.valueOf( ( (Cnae) object).getId() );
+        } else {
+            String dd = String.valueOf(((Cnae) object).getId());
+            return String.valueOf(((Cnae) object).getId());
         }
     }
 }

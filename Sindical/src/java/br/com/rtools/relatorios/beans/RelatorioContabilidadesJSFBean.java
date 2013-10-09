@@ -35,6 +35,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 public class RelatorioContabilidadesJSFBean {
+
     List<SelectItem> qntEmpresas = new Vector<SelectItem>();
     List<SelectItem> qntEmpresas2 = new Vector<SelectItem>();
     private int idRelatorios = 0;
@@ -51,7 +52,7 @@ public class RelatorioContabilidadesJSFBean {
     private boolean chkCnaes = true;
     private List resultCnae = new ArrayList();
 
-    public String condicaoDePesquisa(){
+    public String condicaoDePesquisa() {
         String pEmpresas = "";
         String cidades = "";
         String pCidade = "";
@@ -79,75 +80,78 @@ public class RelatorioContabilidadesJSFBean {
         int qntEmpresasPorContabel = -1;
 
         // CONTABILIDADES DO RELATORIO -----------------------------------------------------------
-        if (radioEmpresas.equals("todas")){
+        if (radioEmpresas.equals("todas")) {
             pEmpresas = "todas";
-        }else if (radioEmpresas.equals("semEmpresas")){
+        } else if (radioEmpresas.equals("semEmpresas")) {
             pEmpresas = "semEmpresas";
-        }else if (radioEmpresas.equals("comEmpresas")){
+        } else if (radioEmpresas.equals("comEmpresas")) {
             pEmpresas = "comEmpresas";
             indexEmp1 = Integer.parseInt(getListaQntEmpresas1().get(idEmpInicial).getLabel());
             indexEmp2 = Integer.parseInt(getListaQntEmpresas2().get(idEmpFinal).getLabel());
         }
 
         // CIDADE DO RELATORIO -----------------------------------------------------------
-        if (radioCidades.equals("todas"))
+        if (radioCidades.equals("todas")) {
             pCidade = "todas";
-        else if (radioCidades.equals("especificas")){
+        } else if (radioCidades.equals("especificas")) {
             cidade = dbCidade.pesquisaCodigo(Integer.parseInt(getListaCidades().get(idCidades).getDescription()));
             cidades = Integer.toString(cidade.getId());
             pCidade = "especificas";
-        }else if (radioCidades.equals("local")){
+        } else if (radioCidades.equals("local")) {
             cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
             cidades = Integer.toString(cidade.getId());
             pCidade = "local";
-        }else if (radioCidades.equals("outras")){
+        } else if (radioCidades.equals("outras")) {
             cidade = dbPesEnd.pesquisaEndPorPessoaTipo(1, 2).getEndereco().getCidade();
             cidades = Integer.toString(cidade.getId());
             pCidade = "outras";
         }
 
         // ORDEM DO RELATORIO -----------------------------------------------------------
-        if (radioOrdem.equals("razao"))
+        if (radioOrdem.equals("razao")) {
             ordem = "razao";
-        else if (radioOrdem.equals("documento"))
+        } else if (radioOrdem.equals("documento")) {
             ordem = "documento";
-        else if (radioOrdem.equals("endereco"))
+        } else if (radioOrdem.equals("endereco")) {
             ordem = "endereco";
-        else if (radioOrdem.equals("cep"))
+        } else if (radioOrdem.equals("cep")) {
             ordem = "cep";
+        }
 
         // CNAES DO RELATORIO -----------------------------------------------------------
-        if (!resultCnae.isEmpty()){
-            for(int i = 0; i < resultCnae.size();i++){
-                if((Boolean) ((DataObject)resultCnae.get(i)).getArgumento0() == true ){
-                    listaCnaes.add( (Cnae)((DataObject)resultCnae.get(i)).getArgumento1() ) ;
+        if (!resultCnae.isEmpty()) {
+            for (int i = 0; i < resultCnae.size(); i++) {
+                if ((Boolean) ((DataObject) resultCnae.get(i)).getArgumento0() == true) {
+                    listaCnaes.add((Cnae) ((DataObject) resultCnae.get(i)).getArgumento1());
                 }
             }
-            for (int i = 0; i < listaCnaes.size();i++){
-                if (cnaes.length() > 0 && i != resultCnae.size())
-                    cnaes = cnaes+",";
-                cnaes = cnaes + Integer.toString(((Cnae)listaCnaes.get(i)).getId());
+            for (int i = 0; i < listaCnaes.size(); i++) {
+                if (cnaes.length() > 0 && i != resultCnae.size()) {
+                    cnaes = cnaes + ",";
+                }
+                cnaes = cnaes + Integer.toString(((Cnae) listaCnaes.get(i)).getId());
             }
-        }else
+        } else {
             cnaes = "";
+        }
         sindicato = dbJur.pesquisaCodigo(1);
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
 
-        List<Juridica> result = dbConta.listaRelatorioContabilidades(pEmpresas, indexEmp1, indexEmp2, pCidade, cidades, ordem, cnaes,tipoEndereco.getId());
-        try{
+        List<Juridica> result = dbConta.listaRelatorioContabilidades(pEmpresas, indexEmp1, indexEmp2, pCidade, cidades, ordem, cnaes, tipoEndereco.getId());
+        try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             byte[] arquivo = new byte[0];
 //             JasperReport jasper = null;
             Collection listaEsc = new ArrayList<ParametroEscritorios>();
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
-            try{
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            try {
                 String dados[] = new String[8];
-                for(int i = 0; i < result.size();i++){
+                for (int i = 0; i < result.size(); i++) {
                     endEscritorio = dbPesEnd.pesquisaEndPorPessoaTipo(result.get(i).getPessoa().getId(), tipoEndereco.getId());
                     qntEmpresasPorContabel = dbJur.quantidadeEmpresas(result.get(i).getId());
-                    try{
+                    try {
                         dados[0] = endEscritorio.getEndereco().getDescricaoEndereco().getDescricao();
                         dados[1] = endEscritorio.getEndereco().getLogradouro().getDescricao();
                         dados[2] = endEscritorio.getNumero();
@@ -156,7 +160,7 @@ public class RelatorioContabilidadesJSFBean {
                         dados[5] = endEscritorio.getEndereco().getCep();
                         dados[6] = endEscritorio.getEndereco().getCidade().getCidade();
                         dados[7] = endEscritorio.getEndereco().getCidade().getUf();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[0] = "";
                         dados[1] = "";
                         dados[2] = "";
@@ -166,60 +170,57 @@ public class RelatorioContabilidadesJSFBean {
                         dados[6] = "";
                         dados[7] = "";
                     }
-                    listaEsc.add(new ParametroEscritorios(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
-                                                          sindicato.getPessoa().getNome(),
-                                                          endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                                                          endSindicato.getEndereco().getLogradouro().getDescricao(),
-                                                          endSindicato.getNumero(),
-                                                          endSindicato.getComplemento(),
-                                                          endSindicato.getEndereco().getBairro().getDescricao(),
-                                                          endSindicato.getEndereco().getCep(),
-                                                          endSindicato.getEndereco().getCidade().getCidade(),
-                                                          endSindicato.getEndereco().getCidade().getUf(),
-                                                          sindicato.getPessoa().getTelefone1(),
-                                                          sindicato.getPessoa().getEmail1(),
-                                                          sindicato.getPessoa().getSite(),
-                                                          sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                                                          sindicato.getPessoa().getDocumento(),
-                                                          result.get(i).getId(),
-                                                          result.get(i).getPessoa().getNome(),
-                                                          dados[0], // DESCRICAO ENDERECO CONTABIL
-                                                          dados[1], // LOGRADOURO CONTABIL
-                                                          dados[2], // NUMERO CONTABIL
-                                                          dados[3], // COMPLEMENTO CONTABIL
-                                                          dados[4], // BAIRRO CONTABIL
-                                                          dados[5], // CEP CONTABIL
-                                                          dados[6], // CIDADE CONTABIL
-                                                          dados[7], // UF CONTABIL
-                                                          result.get(i).getPessoa().getTelefone1(),
-                                                          result.get(i).getPessoa().getEmail1(),
-                                                          qntEmpresasPorContabel
-                                                          )
-                                 );
+                    listaEsc.add(new ParametroEscritorios(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            sindicato.getPessoa().getNome(),
+                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                            endSindicato.getEndereco().getLogradouro().getDescricao(),
+                            endSindicato.getNumero(),
+                            endSindicato.getComplemento(),
+                            endSindicato.getEndereco().getBairro().getDescricao(),
+                            endSindicato.getEndereco().getCep(),
+                            endSindicato.getEndereco().getCidade().getCidade(),
+                            endSindicato.getEndereco().getCidade().getUf(),
+                            sindicato.getPessoa().getTelefone1(),
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
+                            sindicato.getPessoa().getDocumento(),
+                            result.get(i).getId(),
+                            result.get(i).getPessoa().getNome(),
+                            dados[0], // DESCRICAO ENDERECO CONTABIL
+                            dados[1], // LOGRADOURO CONTABIL
+                            dados[2], // NUMERO CONTABIL
+                            dados[3], // COMPLEMENTO CONTABIL
+                            dados[4], // BAIRRO CONTABIL
+                            dados[5], // CEP CONTABIL
+                            dados[6], // CIDADE CONTABIL
+                            dados[7], // UF CONTABIL
+                            result.get(i).getPessoa().getTelefone1(),
+                            result.get(i).getPessoa().getEmail1(),
+                            qntEmpresasPorContabel));
                     endEscritorio = new PessoaEndereco();
                     qntEmpresasPorContabel = -1;
                 }
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaEsc);
                 JasperPrint print = JasperFillManager.fillReport(
-                         jasper,
-                         null,
-                         dtSource);
+                        jasper,
+                        null,
+                        dtSource);
                 arquivo = JasperExportManager.exportReportToPdf(print);
-                     
-                String nomeDownload = "relatorio_escritorios_"+DataHoje.horaMinuto().replace(":", "")+".pdf";
-                
+
+                String nomeDownload = "relatorio_escritorios_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/relatorios");
-                
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+
                 sa.salvaNaPasta(pathPasta);
 
-                Download download =  new Download(nomeDownload,
+                Download download = new Download(nomeDownload,
                         pathPasta,
                         "application/pdf",
-                        FacesContext.getCurrentInstance()
-                        );
-                download.baixar();                  
-                 
+                        FacesContext.getCurrentInstance());
+                download.baixar();
+
             } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 return null;
@@ -231,34 +232,34 @@ public class RelatorioContabilidadesJSFBean {
         return null;
     }
 
-    public List<SelectItem> getListaTipoRelatorios(){
+    public List<SelectItem> getListaTipoRelatorios() {
         List<SelectItem> relatorios = new Vector<SelectItem>();
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         List select = db.pesquisaTipoRelatorio(6);
-        for (int i = 0; i < select.size(); i++){
-            relatorios.add (new SelectItem( new Integer(i),
-                                        (String) ((Relatorios) select.get(i)).getNome(),
-                                        Integer.toString(((Relatorios) select.get(i)).getId()) ));
+        for (int i = 0; i < select.size(); i++) {
+            relatorios.add(new SelectItem(new Integer(i),
+                    (String) ((Relatorios) select.get(i)).getNome(),
+                    Integer.toString(((Relatorios) select.get(i)).getId())));
         }
-    return relatorios;
+        return relatorios;
     }
 
-    public List<SelectItem> getListaCidades(){
+    public List<SelectItem> getListaCidades() {
         List<SelectItem> cidades = new Vector<SelectItem>();
         int i = 0;
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         List select = db.pesquisaCidadesRelatorio();
-        while (i < select.size()){
-            cidades.add (new SelectItem( new Integer(i),
-                                        (String) ((Cidade) select.get(i)).getCidade(),
-                                        Integer.toString(((Cidade) select.get(i)).getId()) ));
+        while (i < select.size()) {
+            cidades.add(new SelectItem(new Integer(i),
+                    (String) ((Cidade) select.get(i)).getCidade(),
+                    Integer.toString(((Cidade) select.get(i)).getId())));
             i++;
         }
-    return cidades;
+        return cidades;
     }
 
-    public List<SelectItem> getListaQntEmpresas1(){
-        if (qntEmpresas.isEmpty()){
+    public List<SelectItem> getListaQntEmpresas1() {
+        if (qntEmpresas.isEmpty()) {
             qntEmpresas = new Vector<SelectItem>();
             int i = 0;
             RelatorioContabilidadesDB db = new RelatorioContabilidadesDBToplink();
@@ -268,21 +269,22 @@ public class RelatorioContabilidadesJSFBean {
             int quantidade = 0;
             boolean tem = false;
             int ind = 0;
-            while (i < contabilidades.size()){
+            while (i < contabilidades.size()) {
                 tem = false;
-                contabil = ((Juridica)contabilidades.get(i));
+                contabil = ((Juridica) contabilidades.get(i));
                 quantidade = dbJur.quantidadeEmpresas(contabil.getId());
-                if (quantidade > 0){
-                    if (qntEmpresas.isEmpty()){
-                        qntEmpresas.add (new SelectItem( new Integer( ind ),Integer.toString(quantidade), String.valueOf(new Integer( ind )) ));
+                if (quantidade > 0) {
+                    if (qntEmpresas.isEmpty()) {
+                        qntEmpresas.add(new SelectItem(new Integer(ind), Integer.toString(quantidade), String.valueOf(new Integer(ind))));
                         ind++;
-                    }else{
-                        for (int o = 0; o < qntEmpresas.size(); o++){
-                            if (quantidade == Integer.parseInt(qntEmpresas.get(o).getLabel()) )
+                    } else {
+                        for (int o = 0; o < qntEmpresas.size(); o++) {
+                            if (quantidade == Integer.parseInt(qntEmpresas.get(o).getLabel())) {
                                 tem = true;
+                            }
                         }
-                        if (!tem){
-                            qntEmpresas.add (new SelectItem( new Integer( ind ),Integer.toString(quantidade),String.valueOf(new Integer( ind ))));
+                        if (!tem) {
+                            qntEmpresas.add(new SelectItem(new Integer(ind), Integer.toString(quantidade), String.valueOf(new Integer(ind))));
                             ind++;
                         }
                     }
@@ -294,30 +296,30 @@ public class RelatorioContabilidadesJSFBean {
         return qntEmpresas;
     }
 
-    public List<SelectItem> getListaQntEmpresas2(){
-        if (qntEmpresas2.isEmpty()){
+    public List<SelectItem> getListaQntEmpresas2() {
+        if (qntEmpresas2.isEmpty()) {
             qntEmpresas2.addAll(qntEmpresas);
             idEmpFinal = Integer.parseInt(qntEmpresas2.get(qntEmpresas2.size() - 1).getDescription());
         }
         return qntEmpresas2;
     }
 
-    public List<SelectItem> getListaTipoEndereco(){
+    public List<SelectItem> getListaTipoEndereco() {
         List<SelectItem> tipoEnderecos = new Vector<SelectItem>();
         int i = 0;
         TipoEnderecoDB db = new TipoEnderecoDBToplink();
         List select = db.listaTipoEnderecoParaJuridica();
-        while (i < select.size()){
-            tipoEnderecos.add (new SelectItem( new Integer(i),
-                                        (String) ((TipoEndereco) select.get(i)).getDescricao(),
-                                        Integer.toString(((TipoEndereco) select.get(i)).getId()) ));
+        while (i < select.size()) {
+            tipoEnderecos.add(new SelectItem(new Integer(i),
+                    (String) ((TipoEndereco) select.get(i)).getDescricao(),
+                    Integer.toString(((TipoEndereco) select.get(i)).getId())));
             i++;
         }
-    return tipoEnderecos;
+        return tipoEnderecos;
     }
 
-    public List getListaCnaes(){
-        if (carregaCnae){
+    public List getListaCnaes() {
+        if (carregaCnae) {
             RelatorioContabilidadesDB db = new RelatorioContabilidadesDBToplink();
             CnaeDB dbCnae = new CnaeDBToplink();
             List listCnae = new ArrayList();
@@ -325,16 +327,17 @@ public class RelatorioContabilidadesJSFBean {
             listCnae = db.pesquisarCnaeContabilidade();
             DataObject dtObject;
             boolean tem = false;
-            for(int i = 0; i < listCnae.size(); i++){
-                if (((Cnae)(listCnae.get(i))).getId() == 1)
+            for (int i = 0; i < listCnae.size(); i++) {
+                if (((Cnae) (listCnae.get(i))).getId() == 1) {
                     tem = true;
+                }
             }
-            if (tem == false){
-                dtObject = new DataObject(new Boolean(true),dbCnae.pesquisaCodigo(1) );
+            if (tem == false) {
+                dtObject = new DataObject(new Boolean(true), dbCnae.pesquisaCodigo(1));
                 resultCnae.add(dtObject);
             }
-            for(int i = 0; i < listCnae.size(); i++){
-                dtObject = new DataObject(new Boolean(true),((Cnae)(listCnae.get(i))) );
+            for (int i = 0; i < listCnae.size(); i++) {
+                dtObject = new DataObject(new Boolean(true), ((Cnae) (listCnae.get(i))));
                 resultCnae.add(dtObject);
             }
             carregaCnae = false;
@@ -342,18 +345,20 @@ public class RelatorioContabilidadesJSFBean {
         return resultCnae;
     }
 
-    public String marcaTodos(){
-        if (chkCnaes){
-            for (int i = 0; i < resultCnae.size();i++)
-                ((DataObject)resultCnae.get(i)).setArgumento0(new Boolean(true));
-        }else{
-            for (int i = 0; i < resultCnae.size();i++)
-                ((DataObject)resultCnae.get(i)).setArgumento0(new Boolean(false));
+    public String marcaTodos() {
+        if (chkCnaes) {
+            for (int i = 0; i < resultCnae.size(); i++) {
+                ((DataObject) resultCnae.get(i)).setArgumento0(new Boolean(true));
+            }
+        } else {
+            for (int i = 0; i < resultCnae.size(); i++) {
+                ((DataObject) resultCnae.get(i)).setArgumento0(new Boolean(false));
+            }
         }
         return "relatorioContabilidades";
     }
 
-    public static void BubbleSort (List<SelectItem> dados) {
+    public static void BubbleSort(List<SelectItem> dados) {
         boolean trocou;
         int limite = dados.size() - 1;
         String swap1 = null;
@@ -363,7 +368,7 @@ public class RelatorioContabilidadesJSFBean {
             trocou = false;
             i = 0;
             while (i < limite) {
-                if ( (Integer.parseInt(dados.get(i).getLabel())) > (Integer.parseInt(dados.get(i + 1).getLabel()))){
+                if ((Integer.parseInt(dados.get(i).getLabel())) > (Integer.parseInt(dados.get(i + 1).getLabel()))) {
                     swap1 = dados.get(i).getLabel();
                     swap2 = dados.get(i + 1).getLabel();
                     dados.get(i).setLabel(swap2);
@@ -376,11 +381,10 @@ public class RelatorioContabilidadesJSFBean {
         } while (trocou);
     }
 
-    public void refreshForm(){
-        
+    public void refreshForm() {
     }
 
-    public String atualizaPG(){
+    public String atualizaPG() {
         return "relatorioContabilidades";
     }
 
@@ -401,9 +405,9 @@ public class RelatorioContabilidadesJSFBean {
     }
 
     public boolean isRenEmpresas() {
-        if (radioEmpresas.equals("comEmpresas"))
+        if (radioEmpresas.equals("comEmpresas")) {
             renEmpresas = true;
-        else{
+        } else {
             renEmpresas = false;
             idEmpInicial = 0;
         }
@@ -415,8 +419,9 @@ public class RelatorioContabilidadesJSFBean {
     }
 
     public int getIdEmpInicial() {
-        if (idEmpInicial > idEmpFinal)
+        if (idEmpInicial > idEmpFinal) {
             idEmpFinal = idEmpInicial;
+        }
         return idEmpInicial;
     }
 
@@ -425,8 +430,9 @@ public class RelatorioContabilidadesJSFBean {
     }
 
     public int getIdEmpFinal() {
-        if (idEmpInicial > idEmpFinal)
+        if (idEmpInicial > idEmpFinal) {
             idEmpFinal = idEmpInicial;
+        }
         return idEmpFinal;
     }
 
@@ -443,9 +449,9 @@ public class RelatorioContabilidadesJSFBean {
     }
 
     public boolean isRenCidades() {
-        if (radioCidades.equals("especificas"))
+        if (radioCidades.equals("especificas")) {
             renCidades = true;
-        else{
+        } else {
             renCidades = false;
         }
         return renCidades;
@@ -454,6 +460,7 @@ public class RelatorioContabilidadesJSFBean {
     public void setRenCidades(boolean renCidades) {
         this.renCidades = renCidades;
     }
+
     public String getRadioCidades() {
         return radioCidades;
     }

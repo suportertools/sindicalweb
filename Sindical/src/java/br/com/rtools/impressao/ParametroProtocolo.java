@@ -2,12 +2,12 @@ package br.com.rtools.impressao;
 
 public class ParametroProtocolo {
 // MATRIZ -------------
+
     private String sinLogo;
     private String sinNome;
     private String sinSite;
     private String sinTipoDocumento;
     private String sinDocumento;
-
 // FILIAL --------------
     private String sinEndereco;
     private String sinLogradouro;
@@ -19,7 +19,6 @@ public class ParametroProtocolo {
     private String sinUF;
     private String sinTelefone;
     private String sinEmail;
-
 // Outros ---------------
     private String protocolo;// (id do agendamento)
     private String dataHomologacao;
@@ -269,5 +268,4 @@ public class ParametroProtocolo {
     public void setDataHoje(String dataHoje) {
         this.dataHoje = dataHoje;
     }
-    
 }

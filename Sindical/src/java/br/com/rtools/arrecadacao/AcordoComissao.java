@@ -6,30 +6,25 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_ACORDO_COMISSAO")
-@NamedQuery(name="AcordoComissao.pesquisaID", query="select c from AcordoComissao c where c.id = :pid")
+@Table(name = "ARR_ACORDO_COMISSAO")
+@NamedQuery(name = "AcordoComissao.pesquisaID", query = "select c from AcordoComissao c where c.id = :pid")
 public class AcordoComissao implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @JoinColumn(name="ID_CONTA_COBRANCA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CONTA_COBRANCA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private ContaCobranca contaCobranca;
-
-    @Column(name="NR_NUM_DOCUMENTO", length=100 , nullable=true)
+    @Column(name = "NR_NUM_DOCUMENTO", length = 100, nullable = true)
     private String numero;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INICIO")
+    @Column(name = "DT_INICIO")
     private Date dtInicio;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_FECHAMENTO")
+    @Column(name = "DT_FECHAMENTO")
     private Date dtFechamento;
-
-    @JoinColumn(name="ID_ACORDO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ACORDO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Acordo acordo;
 

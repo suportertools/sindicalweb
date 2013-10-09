@@ -12,43 +12,41 @@ import javax.persistence.Query;
 public class ConvencaoPeriodoDBTopLink extends DB implements ConvencaoPeriodoDB {
 
     @Override
-    public ConvencaoPeriodo pesquisaCodigo(int id){
-       ConvencaoPeriodo convencaoPeriodo = new ConvencaoPeriodo();
-       try{
-            Query qry = getEntityManager().createQuery( " select cp from ConvencaoPeriodo cp where cp.id = :id " );
+    public ConvencaoPeriodo pesquisaCodigo(int id) {
+        ConvencaoPeriodo convencaoPeriodo = new ConvencaoPeriodo();
+        try {
+            Query qry = getEntityManager().createQuery(" select cp from ConvencaoPeriodo cp where cp.id = :id ");
             qry.setParameter("id", id);
-            if(!qry.getResultList().isEmpty()) {
+            if (!qry.getResultList().isEmpty()) {
                 convencaoPeriodo = (ConvencaoPeriodo) qry.getSingleResult();
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return convencaoPeriodo;
     }
-    
+
     @Override
-    public List listaGrupoCidadePorConvencao(int idConvencao){
+    public List listaGrupoCidadePorConvencao(int idConvencao) {
         List<ConvencaoCidade> lista;
-        try{
+        try {
             Query query = getEntityManager().createQuery("      "
                     + "     SELECT cc                           "
                     + "       FROM ConvencaoCidade cc           "
                     + "      WHERE cc.convencao.id = :id        "
-                    + "   ORDER BY cc.grupoCidade.descricao ASC "
-                    );
+                    + "   ORDER BY cc.grupoCidade.descricao ASC ");
             query.setParameter("id", idConvencao);
-            if(!query.getResultList().isEmpty()) {
+            if (!query.getResultList().isEmpty()) {
                 lista = query.getResultList();
                 return lista;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
         }
         return new ArrayList();
     }
-    
+
     @Override
-    public boolean convencaoPeriodoExiste(ConvencaoPeriodo convencaoPeriodo){
-        try{
+    public boolean convencaoPeriodoExiste(ConvencaoPeriodo convencaoPeriodo) {
+        try {
             Query query = getEntityManager().createQuery("                      "
                     + "     SELECT cp                                           "
                     + "       FROM ConvencaoPeriodo cp                          "
@@ -60,36 +58,35 @@ public class ConvencaoPeriodoDBTopLink extends DB implements ConvencaoPeriodoDB 
             query.setParameter("grupoCidade", convencaoPeriodo.getGrupoCidade().getId());
             query.setParameter("referenciaInicial", convencaoPeriodo.getReferenciaInicial());
             query.setParameter("referenciaFinal", convencaoPeriodo.getReferenciaFinal());
-            if(!query.getResultList().isEmpty()) {
+            if (!query.getResultList().isEmpty()) {
                 return true;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
         }
         return false;
     }
-    
+
     @Override
-    public List<ConvencaoPeriodo> listaConvencaoPeriodo(){
-        try{
+    public List<ConvencaoPeriodo> listaConvencaoPeriodo() {
+        try {
             Query query = getEntityManager().createQuery("      "
                     + "     SELECT cp                           "
                     + "       FROM ConvencaoPeriodo cp          "
-                    + "   ORDER BY cp.id DESC                   "
-                    );
-            if(!query.getResultList().isEmpty()) {
+                    + "   ORDER BY cp.id DESC                   ");
+            if (!query.getResultList().isEmpty()) {
                 return (List<ConvencaoPeriodo>) query.getResultList();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
         }
         return new ArrayList();
     }
-    
+
     @Override
-    public ConvencaoPeriodo convencaoPeriodoConvencaoGrupoCidade(int idConvencao, int idGrupoCidade){
+    public ConvencaoPeriodo convencaoPeriodoConvencaoGrupoCidade(int idConvencao, int idGrupoCidade) {
         ConvencaoPeriodo convencaoPeriodo = new ConvencaoPeriodo();
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         String queryString = "";
-        if(idConvencao > 0 && idGrupoCidade > 0){
+        if (idConvencao > 0 && idGrupoCidade > 0) {
             queryString = ""
                     + " SELECT id "
                     + "   FROM arr_convencao_periodo "
@@ -99,15 +96,15 @@ public class ConvencaoPeriodoDBTopLink extends DB implements ConvencaoPeriodoDB 
                     + "    AND id_grupo_cidade = " + idGrupoCidade + " LIMIT 1";
         }
         List list;
-        try{
-            if(idConvencao > 0 && idGrupoCidade > 0){
+        try {
+            if (idConvencao > 0 && idGrupoCidade > 0) {
                 Query query = getEntityManager().createNativeQuery(queryString);
                 if (!query.getResultList().isEmpty()) {
                     list = (List) query.getSingleResult();
                     convencaoPeriodo = (ConvencaoPeriodo) dB.pesquisaCodigo((Integer) list.get(0), "ConvencaoPeriodo");
-                } 
+                }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
         }
         return convencaoPeriodo;
     }

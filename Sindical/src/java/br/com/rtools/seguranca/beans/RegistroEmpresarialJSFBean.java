@@ -23,7 +23,8 @@ public class RegistroEmpresarialJSFBean {
     private String msgConfirma = "";
     private int codigoModulo = 0;
 
-    public void refreshForm() {}
+    public void refreshForm() {
+    }
 
     public String salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -44,7 +45,7 @@ public class RegistroEmpresarialJSFBean {
         }
         return null;
     }
-    
+
     public String salvarSemSenha() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
@@ -57,7 +58,6 @@ public class RegistroEmpresarialJSFBean {
         }
         return null;
     }
-    
 
     public String criarLoginsUsuarios() {
         List<Pessoa> listaPessoas = new ArrayList<Pessoa>();
@@ -85,7 +85,7 @@ public class RegistroEmpresarialJSFBean {
     }
 
     public Registro getRegistro() {
-        if(registro != null) {
+        if (registro != null) {
             if (registro.getId() == -1) {
                 FilialDB db = new FilialDBToplink();
                 registro = db.pesquisaCodigoRegistro(1);

@@ -25,19 +25,18 @@ public class TurmaDBToplink extends DB implements TurmaDB {
     @Override
     public List<TurmaProfessor> listaTurmaProfessor(int idTurma) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor TP WHERE TP.turma.id = " + idTurma + " ORDER BY TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC " );
+            Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor TP WHERE TP.turma.id = " + idTurma + " ORDER BY TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC ");
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
-    
-    
+
     @Override
     public boolean existeTurma(Turma turma) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT T FROM Turma AS T WHERE T.dtInicio = :dataInicio AND T.dtTermino = :dataTermino AND T.horaInicio = :hInicio AND T.horaTermino = :hTermino  AND T.cursos.id = :idCurso AND T.filial.id = :idFilial " );
+            Query qry = getEntityManager().createQuery(" SELECT T FROM Turma AS T WHERE T.dtInicio = :dataInicio AND T.dtTermino = :dataTermino AND T.horaInicio = :hInicio AND T.horaTermino = :hTermino  AND T.cursos.id = :idCurso AND T.filial.id = :idFilial ");
             qry.setParameter("dataInicio", turma.getDtInicio());
             qry.setParameter("dataTermino", turma.getDtTermino());
             qry.setParameter("hInicio", turma.getHoraInicio());
@@ -52,13 +51,13 @@ public class TurmaDBToplink extends DB implements TurmaDB {
             return false;
         }
         return false;
-        
+
     }
 
     @Override
     public boolean existeTurmaProfessor(TurmaProfessor turmaProfessor) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor AS TP WHERE TP.turma.id = :idTurma AND TP.componenteCurricular.id = :idComponenteCurricular AND TP.professor.id = :idProfessor " );
+            Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor AS TP WHERE TP.turma.id = :idTurma AND TP.componenteCurricular.id = :idComponenteCurricular AND TP.professor.id = :idProfessor ");
             qry.setParameter("idTurma", turmaProfessor.getTurma().getId());
             qry.setParameter("idProfessor", turmaProfessor.getProfessor().getId());
             qry.setParameter("idComponenteCurricular", turmaProfessor.getComponenteCurricular().getId());

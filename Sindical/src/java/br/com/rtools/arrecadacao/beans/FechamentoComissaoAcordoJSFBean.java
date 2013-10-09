@@ -25,143 +25,140 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 public class FechamentoComissaoAcordoJSFBean {
+
     private List<SelectItem> listaData;
     private int idDataFechamento;
     private String mensagem;
 
-    public FechamentoComissaoAcordoJSFBean(){
+    public FechamentoComissaoAcordoJSFBean() {
         listaData = new ArrayList<SelectItem>();
         idDataFechamento = 0;
         mensagem = "";
     }
 
     public List<SelectItem> getListaData() {
-        if(listaData.isEmpty()){
+        if (listaData.isEmpty()) {
             int i = 0;
             AcordoComissaoDB db = new AcordoComissaoDBToplink();
             List<Date> select = db.pesquisaTodosFechamento();
-            if(select != null){
-                while (i < select.size()){
+            if (select != null) {
+                while (i < select.size()) {
                     listaData.add(new SelectItem(
-                           new Integer(i),
-                           DataHoje.converteData(select.get(i)) ));
-                   i++;
+                            new Integer(i),
+                            DataHoje.converteData(select.get(i))));
+                    i++;
                 }
             }
         }
         return listaData;
     }
 
-    public synchronized void processar(){
+    public synchronized void processar() {
         AcordoComissaoDB acordoComissaoDB = new AcordoComissaoDBToplink();
-        if (acordoComissaoDB.inserirAcordoComissao()){
+        if (acordoComissaoDB.inserirAcordoComissao()) {
             listaData.clear();
             setMensagem("Concluído com sucesso!");
-        }else{
+        } else {
             setMensagem("Erro ao gerar comissão!");
 
         }
     }
 
-    public void visualizar(){
-        if (!listaData.isEmpty()){
+    public void visualizar() {
+        if (!listaData.isEmpty()) {
             AcordoComissaoDB db = new AcordoComissaoDBToplink();
             List result = db.listaAcordoComissao(listaData.get(idDataFechamento).getLabel());
 
             JasperReport jasper = null;
-                Collection lista = new ArrayList<ParametroAcordoAnalitico>();
-            BigDecimal repasse = new BigDecimal(0), 
-                       liquido = new BigDecimal(0),
-                       comissao = new BigDecimal(0),
-                       valor = new BigDecimal(0),
-                       taxa = new BigDecimal(0);
+            Collection lista = new ArrayList<ParametroAcordoAnalitico>();
+            BigDecimal repasse = new BigDecimal(0),
+                    liquido = new BigDecimal(0),
+                    comissao = new BigDecimal(0),
+                    valor = new BigDecimal(0),
+                    taxa = new BigDecimal(0);
 
-            for(int i = 0; i < result.size(); i++){
-                valor = new BigDecimal( Double.valueOf(((Vector)result.get(i)).get(9).toString() ));
-                taxa = new BigDecimal( Double.valueOf(((Vector)result.get(i)).get(10).toString() ));
-                repasse = new BigDecimal( Double.valueOf(((Vector)result.get(i)).get(11).toString() ));
+            for (int i = 0; i < result.size(); i++) {
+                valor = new BigDecimal(Double.valueOf(((Vector) result.get(i)).get(9).toString()));
+                taxa = new BigDecimal(Double.valueOf(((Vector) result.get(i)).get(10).toString()));
+                repasse = new BigDecimal(Double.valueOf(((Vector) result.get(i)).get(11).toString()));
 
-                repasse = ( valor.subtract(taxa).multiply(repasse)).divide(new BigDecimal(100));
+                repasse = (valor.subtract(taxa).multiply(repasse)).divide(new BigDecimal(100));
                 liquido = valor.subtract(taxa).subtract(repasse);
                 comissao = valor.subtract(taxa).subtract(repasse).multiply(new BigDecimal(0.015));
 
-                lista.add( new ParametroAcordoAnalitico( ((Vector)result.get(i)).get(0).toString(), 
-                                           ((Vector)result.get(i)).get(1).toString(), 
-                                           (Integer)((Vector)result.get(i)).get(2), 
-                                           ((Vector)result.get(i)).get(3).toString(), 
-                                           ((Vector)result.get(i)).get(4).toString(), 
-                                           (Date)((Vector)result.get(i)).get(5), 
-                                           (Date)((Vector)result.get(i)).get(6), 
-                                           (Date)((Vector)result.get(i)).get(7), 
-                                           valor, 
-                                           taxa, 
-                                           repasse, 
-                                           liquido, 
-                                           DataHoje.converte(listaData.get(idDataFechamento).getLabel()), 
-                                           (Date)((Vector)result.get(i)).get(8), 
-                                           comissao
-                                          ) 
-                );
+                lista.add(new ParametroAcordoAnalitico(((Vector) result.get(i)).get(0).toString(),
+                        ((Vector) result.get(i)).get(1).toString(),
+                        (Integer) ((Vector) result.get(i)).get(2),
+                        ((Vector) result.get(i)).get(3).toString(),
+                        ((Vector) result.get(i)).get(4).toString(),
+                        (Date) ((Vector) result.get(i)).get(5),
+                        (Date) ((Vector) result.get(i)).get(6),
+                        (Date) ((Vector) result.get(i)).get(7),
+                        valor,
+                        taxa,
+                        repasse,
+                        liquido,
+                        DataHoje.converte(listaData.get(idDataFechamento).getLabel()),
+                        (Date) ((Vector) result.get(i)).get(8),
+                        comissao));
             }
-            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos");
-            File fileA = new File(patch+"/downloads");
-            if(!fileA.exists()){
+            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos");
+            File fileA = new File(patch + "/downloads");
+            if (!fileA.exists()) {
                 fileA.mkdir();
             }
-            File fileB = new File(patch+"/downloads/relatorios");
-            if(!fileB.exists()){
+            File fileB = new File(patch + "/downloads/relatorios");
+            if (!fileB.exists()) {
                 fileB.mkdir();
-            } 
-            try{
-                String patchRelatorio = "/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Relatorios/ACORDO_ANALITICO.jasper";
+            }
+            try {
+                String patchRelatorio = "/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Relatorios/ACORDO_ANALITICO.jasper";
                 byte[] arquivo = new byte[0];
-                if (!new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Relatorios/ACORDO_ANALITICO.jasper")).exists()) {
+                if (!new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Relatorios/ACORDO_ANALITICO.jasper")).exists()) {
                     patchRelatorio = "/Relatorios/ACORDO_ANALITICO.jasper";
                 }
                 jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(patchRelatorio));
-                           JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
                 JasperPrint print = JasperFillManager.fillReport(
-                         jasper,
-                         null,
-                         dtSource);
-                 arquivo = JasperExportManager.exportReportToPdf(print);
-                     
-                 String nomeDownload = "acordo_analitico_"+DataHoje.horaMinuto().replace(":", "")+".pdf";
-                
-                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                 String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/relatorios");
-                
-                 sa.salvaNaPasta(pathPasta);
+                        jasper,
+                        null,
+                        dtSource);
+                arquivo = JasperExportManager.exportReportToPdf(print);
 
-                 Download download =  new Download(nomeDownload,
-                         pathPasta,
-                         "application/pdf",
-                         FacesContext.getCurrentInstance()
-                         );
-                 download.baixar(); 
-            }catch(Exception e){
-                
+                String nomeDownload = "acordo_analitico_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+
+                SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+
+                sa.salvaNaPasta(pathPasta);
+
+                Download download = new Download(nomeDownload,
+                        pathPasta,
+                        "application/pdf",
+                        FacesContext.getCurrentInstance());
+                download.baixar();
+            } catch (Exception e) {
             }
         }
     }
 
-    public void estornar(){
-        if (!listaData.isEmpty()){
+    public void estornar() {
+        if (!listaData.isEmpty()) {
             AcordoComissaoDB acordoComissaoDB = new AcordoComissaoDBToplink();
-            if (acordoComissaoDB.estornarAcordoComissao(listaData.get(idDataFechamento).getLabel()))
+            if (acordoComissaoDB.estornarAcordoComissao(listaData.get(idDataFechamento).getLabel())) {
                 mensagem = "Fechamento estornado com sucesso";
-            else
+            } else {
                 mensagem = "Erro ao estornar Fechamento";
+            }
             listaData.clear();
-        }else{
+        } else {
             mensagem = "Data de Fechamento vazia";
         }
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
-    
+
     public void setListaData(List<SelectItem> listaData) {
         this.listaData = listaData;
     }
@@ -181,5 +178,4 @@ public class FechamentoComissaoAcordoJSFBean {
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
     }
-
 }

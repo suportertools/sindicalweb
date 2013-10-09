@@ -23,7 +23,7 @@ public class ConfiguracaoJSFBean implements java.io.Serializable {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
         configuracao.setJuridica(juridica);
-        
+
         if (configuracao.getJuridica().getId() == -1) {
             setMensagem("Pesquisar pessoa jurídica!");
             return null;
@@ -50,7 +50,7 @@ public class ConfiguracaoJSFBean implements java.io.Serializable {
             if (configuracaoDB.existeIdentificadorPessoa(configuracao)) {
                 setMensagem("Identificador já existe para essa pessoa!");
                 return null;
-            }            
+            }
             sv.abrirTransacao();
             if (sv.inserirObjeto(configuracao)) {
                 sv.comitarTransacao();
@@ -132,7 +132,7 @@ public class ConfiguracaoJSFBean implements java.io.Serializable {
             configuracao = (Configuracao) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("configuracaoPesquisa");
             juridica = configuracao.getJuridica();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("configuracaoPesquisa");
-        }        
+        }
         return configuracao;
     }
 

@@ -11,21 +11,19 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="SOC_CONVENIO_SERVICO")
-@NamedQuery(name="ConvenioServico.pesquisaID", query="select cs from ConvenioServico cs where cs.id=:pid")
+@Table(name = "SOC_CONVENIO_SERVICO")
+@NamedQuery(name = "ConvenioServico.pesquisaID", query = "select cs from ConvenioServico cs where cs.id=:pid")
 public class ConvenioServico implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_CONVENIO_SUB_GRUPO", referencedColumnName="ID", nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_CONVENIO_SUB_GRUPO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private SubGrupoConvenio subGrupoConvenio;
-
-    @JoinColumn(name="ID_SERVICO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-
 
     public ConvenioServico() {
         this.id = -1;

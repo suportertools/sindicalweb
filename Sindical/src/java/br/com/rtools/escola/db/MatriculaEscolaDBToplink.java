@@ -105,11 +105,10 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
 
     @Override
     public MatriculaIndividual pesquisaCodigoMIndividual(int matriculaEscola) {
-        MatriculaIndividual individual = new MatriculaIndividual();
         try {
             Query query = getEntityManager().createQuery(" SELECT mi FROM MatriculaIndividual mi WHERE mi.matriculaEscola.id = :matriculaEscola ");
             query.setParameter("matriculaEscola", matriculaEscola);
-            individual = (MatriculaIndividual) query.getSingleResult();
+            MatriculaIndividual individual = (MatriculaIndividual) query.getSingleResult();
             return individual;
         } catch (Exception e) {
             e.getMessage();
@@ -138,7 +137,7 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 if (list.size() == 1) {
-                    return (PessoaComplemento) query.getSingleResult();                
+                    return (PessoaComplemento) query.getSingleResult();
                 }
             }
         } catch (Exception e) {
@@ -173,11 +172,10 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
     }
 
     public ServicoValor pesquisaValorTaxa(int idCurso) {
-        ServicoValor servicoValor = new ServicoValor();
         try {
             Query query = getEntityManager().createQuery(" SELECT sv FROM ServicoValor sv WHERE sv.servicos.id = :idServico ");
             query.setParameter("idServico", idCurso);
-            servicoValor = (ServicoValor) query.getSingleResult();
+            ServicoValor servicoValor = (ServicoValor) query.getSingleResult();
             return servicoValor;
         } catch (Exception e) {
             e.getMessage();
@@ -241,11 +239,11 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
                 return true;
             }
         } catch (Exception e) {
-            return false;            
+            return false;
         }
         return false;
     }
-    
+
     @Override
     public boolean existeMatriculaIndividual(MatriculaIndividual mi) {
         try {
@@ -259,7 +257,7 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
                 return true;
             }
         } catch (Exception e) {
-            return false;            
+            return false;
         }
         return false;
     }

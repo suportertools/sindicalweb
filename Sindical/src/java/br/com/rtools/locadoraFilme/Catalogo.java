@@ -12,26 +12,22 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="LOC_TITULO_FILIAL")
-@NamedQuery(name="Catalogo.pesquisaID", query="Select c from Catalogo c where c.id = :pid")
+@Table(name = "LOC_TITULO_FILIAL")
+@NamedQuery(name = "Catalogo.pesquisaID", query = "Select c from Catalogo c where c.id = :pid")
 public class Catalogo implements java.io.Serializable {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @ManyToOne
     private Filial filial;
-
     @JoinColumn(name = "ID_TITULO", referencedColumnName = "ID")
     @ManyToOne
     private Titulo titulo;
-
     @Column(name = "NR_QTDE")
     private int quantidade;
-    
+
     public Catalogo(int id, Filial filial, Titulo titulo, int quantidade) {
         this.id = id;
         this.filial = filial;
@@ -77,6 +73,4 @@ public class Catalogo implements java.io.Serializable {
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
-    
 }
-

@@ -19,7 +19,7 @@ public final class GenericaRetorno {
     private String dataCredito;
     private String sequencialArquivo;
 
-    public GenericaRetorno(){
+    public GenericaRetorno() {
         this.setCnpj("");
         this.setCodigoCedente("");
         this.setNossoNumero("");
@@ -39,22 +39,22 @@ public final class GenericaRetorno {
     }
 
     public GenericaRetorno(
-        String cnpj,
-        String codigoCedente,
-        String nossoNumero,
-        String valorPago,
-        String valorTaxa,
-        String valorCredito,
-        String dataPagamento,
-        String dataVencimento,
-        String acrescimo,
-        String valorDesconto,
-        String valorAbatimento,
-        String valorRepasse,
-        String nomePasta,
-        String nomeArquivo,
-        String dataCredito,
-        String sequencialArquivo){
+            String cnpj,
+            String codigoCedente,
+            String nossoNumero,
+            String valorPago,
+            String valorTaxa,
+            String valorCredito,
+            String dataPagamento,
+            String dataVencimento,
+            String acrescimo,
+            String valorDesconto,
+            String valorAbatimento,
+            String valorRepasse,
+            String nomePasta,
+            String nomeArquivo,
+            String dataCredito,
+            String sequencialArquivo) {
         this.setCnpj(cnpj);
         this.setCodigoCedente(codigoCedente);
         this.setNossoNumero(nossoNumero);
@@ -200,5 +200,4 @@ public final class GenericaRetorno {
     public void setSequencialArquivo(String sequencialArquivo) {
         this.sequencialArquivo = sequencialArquivo;
     }
-
 }

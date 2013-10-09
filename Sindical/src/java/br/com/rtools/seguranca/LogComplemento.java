@@ -3,24 +3,23 @@ package br.com.rtools.seguranca;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SEG_LOG_COMPLEMENTO")
-@NamedQuery(name="LogComplemento.pesquisaID", query="select lc from LogComplemento lc where lc.id=:pid")
-
-public class LogComplemento implements java.io.Serializable{
+@Table(name = "SEG_LOG_COMPLEMENTO")
+@NamedQuery(name = "LogComplemento.pesquisaID", query = "select lc from LogComplemento lc where lc.id=:pid")
+public class LogComplemento implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_LOG", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_LOG", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Log log;
-    @Column(name="DS_CAMPO", length=50,nullable=false)
+    @Column(name = "DS_CAMPO", length = 50, nullable = false)
     private String campo;
-    @Column(name="DS_CONTEUDO_ORIGINAL", length=100,nullable=true)
+    @Column(name = "DS_CONTEUDO_ORIGINAL", length = 100, nullable = true)
     private String conteudoOriginal;
-    @Column(name="DS_CONTEUDO_ALTERADO", length=100,nullable=true)
+    @Column(name = "DS_CONTEUDO_ALTERADO", length = 100, nullable = true)
     private String conteudoAlterado;
-    
+
     public LogComplemento() {
         this.id = -1;
         this.log = new Log();
@@ -28,7 +27,7 @@ public class LogComplemento implements java.io.Serializable{
         this.conteudoOriginal = "";
         this.conteudoAlterado = "";
     }
-    
+
     public LogComplemento(int id, Log log, String campo, String conteudoOriginal, String conteudoAlterado) {
         this.id = id;
         this.log = log;
@@ -36,7 +35,7 @@ public class LogComplemento implements java.io.Serializable{
         this.conteudoOriginal = conteudoOriginal;
         this.conteudoAlterado = conteudoAlterado;
     }
-    
+
     public int getId() {
         return id;
     }

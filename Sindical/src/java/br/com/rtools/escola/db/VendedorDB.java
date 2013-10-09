@@ -7,8 +7,8 @@ import javax.persistence.EntityManager;
 public interface VendedorDB {
 
     public EntityManager getEntityManager();
-    
-    public Vendedor pesquisaCodigo(int id);    
+
+    public Vendedor pesquisaCodigo(int id);
 
     public List pesquisaTodos();
 

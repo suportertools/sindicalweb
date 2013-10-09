@@ -1,5 +1,3 @@
-
-
 package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.GrupoConvenio;
@@ -8,19 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-
-
 public class GrupoConvenioDBToplink extends DB implements GrupoConvenioDB {
 
     @Override
     public boolean insert(GrupoConvenio grupoConvenio) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(grupoConvenio);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -28,22 +24,22 @@ public class GrupoConvenioDBToplink extends DB implements GrupoConvenioDB {
 
     @Override
     public boolean update(GrupoConvenio grupoConvenio) {
-        try{
+        try {
             getEntityManager().merge(grupoConvenio);
             getEntityManager().flush();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public boolean delete(GrupoConvenio grupoConvenio) {
-        try{
+        try {
             getEntityManager().remove(grupoConvenio);
             getEntityManager().flush();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
@@ -51,11 +47,11 @@ public class GrupoConvenioDBToplink extends DB implements GrupoConvenioDB {
     @Override
     public GrupoConvenio pesquisaCodigo(int id) {
         GrupoConvenio result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("GrupoConvenio.pesquisaID");
             qry.setParameter("pid", id);
             result = (GrupoConvenio) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
@@ -63,35 +59,33 @@ public class GrupoConvenioDBToplink extends DB implements GrupoConvenioDB {
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select g from GrupoConvenio g ");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
     @Override
-    public List pesquisaGrupoConvenioPorDescricao(String descricao){
+    public List pesquisaGrupoConvenioPorDescricao(String descricao) {
         List lista = null;
         descricao = descricao.toUpperCase().trim();
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select g" +
-                    "  from GrupoConvenio g" +
-                    " where UPPER(g.descricao) like :descricao");
+                    "select g"
+                    + "  from GrupoConvenio g"
+                    + " where UPPER(g.descricao) like :descricao");
             qry.setParameter("descricao", descricao);
             lista = qry.getResultList();
-            if (lista == null){
+            if (lista == null) {
                 lista = new ArrayList();
             }
             return lista;
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
-
-
 }

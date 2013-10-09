@@ -12,22 +12,23 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EVE_EVENTO_SERVICO_VALOR")
-@NamedQuery(name="EventoServicoValor.pesquisaID", query="select es from EventoServicoValor es where es.id=:pid")
+@Table(name = "EVE_EVENTO_SERVICO_VALOR")
+@NamedQuery(name = "EventoServicoValor.pesquisaID", query = "select es from EventoServicoValor es where es.id=:pid")
 public class EventoServicoValor implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_EVENTO_SERVICO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_EVENTO_SERVICO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private EventoServico eventoServico;
-    @Column(name="NR_VALOR", nullable=true)
+    @Column(name = "NR_VALOR", nullable = true)
     private float valor;
-    @Column(name="NR_IDADE_INICIAL", nullable=false)
+    @Column(name = "NR_IDADE_INICIAL", nullable = false)
     private int idadeInicial;
-    @Column(name="NR_IDADE_FINAL", nullable=false)
+    @Column(name = "NR_IDADE_FINAL", nullable = false)
     private int idadeFinal;
-    @Column(name="DS_SEXO", nullable=true, length=1)
+    @Column(name = "DS_SEXO", nullable = true, length = 1)
     private String sexo;
 
     public EventoServicoValor() {
@@ -103,7 +104,4 @@ public class EventoServicoValor implements java.io.Serializable {
     public void setSexo(String sexo) {
         this.sexo = sexo;
     }
-
-    
-
 }

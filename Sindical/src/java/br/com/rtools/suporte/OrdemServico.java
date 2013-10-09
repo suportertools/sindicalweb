@@ -20,51 +20,40 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="PRO_OS")
-@NamedQuery(name="OrdemServico.pesquisaID", query="select os from OrdemServico os where os.id=:pid")
-
+@Table(name = "PRO_OS")
+@NamedQuery(name = "OrdemServico.pesquisaID", query = "select os from OrdemServico os where os.id=:pid")
 public class OrdemServico implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @JoinColumn(name="ID_PROTOCOLO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PROTOCOLO", referencedColumnName = "ID")
     @ManyToOne
     private Protocolo protocolo;
-
-    @JoinColumn(name="ID_MODULO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID")
     @ManyToOne
     private Modulo modulo;
-
-    @JoinColumn(name="ID_ROTINA", referencedColumnName="ID")
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID")
     @ManyToOne
     private Rotina rotina;
-
-    @JoinColumn(name="ID_RESPONSAVEL", referencedColumnName="ID")
+    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID")
     @ManyToOne
     private Usuario responsavel;
-
-    @Column(name="DS_HISTORICO", length=2000)
+    @Column(name = "DS_HISTORICO", length = 2000)
     private String historico;
-
-    @Column(name="DS_HISTORICO_INTERNO", length=2000)
+    @Column(name = "DS_HISTORICO_INTERNO", length = 2000)
     private String historicoInterno;
-
-    @JoinColumn(name="ID_PRIORIDADE", referencedColumnName="ID")
+    @JoinColumn(name = "ID_PRIORIDADE", referencedColumnName = "ID")
     @ManyToOne
     private Prioridade prioridade;
-
-    @JoinColumn(name="ID_STATUS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
     @ManyToOne
     private ProStatus proStatus;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_PREVISAO")
+    @Column(name = "DT_PREVISAO")
     private Date dataPrevisao;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_CONCLUSAO")
+    @Column(name = "DT_CONCLUSAO")
     private Date dataConclusao;
 
     public OrdemServico(int id, Protocolo protocolo, Modulo modulo, Rotina rotina, Usuario responsavel, String historico, String historicoInterno, Prioridade prioridade, ProStatus proStatus, Date dataPrevisao, Date dataConclusao) {
@@ -92,7 +81,7 @@ public class OrdemServico implements java.io.Serializable {
         this.prioridade = new Prioridade();
         this.proStatus = new ProStatus();
         this.dataPrevisao = null;
-        this.dataConclusao  = null;
+        this.dataConclusao = null;
     }
 
     public int getId() {
@@ -159,11 +148,11 @@ public class OrdemServico implements java.io.Serializable {
         this.dataPrevisao = dataPrevisao;
     }
 
-    public String getDataPrevisaoString(){
+    public String getDataPrevisaoString() {
         return DataHoje.converteData(dataPrevisao);
     }
 
-    public void setDataPrevisaoString (String dataPrevisao){
+    public void setDataPrevisaoString(String dataPrevisao) {
         this.dataPrevisao = DataHoje.converte(dataPrevisao);
     }
 
@@ -175,11 +164,11 @@ public class OrdemServico implements java.io.Serializable {
         this.dataConclusao = dataConclusao;
     }
 
-    public String getDataConclusaoString(){
+    public String getDataConclusaoString() {
         return DataHoje.converteData(dataConclusao);
     }
 
-    public void setDataConclusaoString (String dataConclusao){
+    public void setDataConclusaoString(String dataConclusao) {
         this.dataConclusao = DataHoje.converte(dataConclusao);
     }
 

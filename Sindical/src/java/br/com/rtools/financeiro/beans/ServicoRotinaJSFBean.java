@@ -104,7 +104,7 @@ public class ServicoRotinaJSFBean implements java.io.Serializable {
         }
         if (sr.getId() == -1) {
             msgConfirma = "";
-            return null;            
+            return null;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         servicoRotina = (ServicoRotina) salvarAcumuladoDB.pesquisaCodigo(servicoRotina.getId(), "ServicoRotina");

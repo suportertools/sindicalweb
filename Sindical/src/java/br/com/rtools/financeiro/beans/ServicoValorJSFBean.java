@@ -1,4 +1,3 @@
-
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.financeiro.ServicoValor;
@@ -8,10 +7,10 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class ServicoValorJSFBean {
+
     private ServicoValor servicoValor = new ServicoValor();
     private String comoPesquisa = "T";
     private String descPesquisa = "";
-
 
     public String getComoPesquisa() {
         return comoPesquisa;
@@ -29,7 +28,7 @@ public class ServicoValorJSFBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public ServicoValorJSFBean(){
+    public ServicoValorJSFBean() {
 //        htmlTable = new HtmlDataTable();
     }
 
@@ -74,56 +73,43 @@ public class ServicoValorJSFBean {
 //       servicoValor = new ServicoValor();
 //       return "pesquisaServicoValor";
 //   }
-
-   public List getListaServicoValor(){
+    public List getListaServicoValor() {
 //       Pesquisa pesqisa = new Pesquisa();
-       List result = null;
+        List result = null;
 //       result = pesquisa.pesquisar("ServicoValor", "servicoValor" , descPesquisa, "servicos", comoPesquisa);
-       return result;
-   }
-
-    public void refreshForm(){
-
+        return result;
     }
-/*
-    public Logradouro getLogradouroPesquisa(){
-        try{
-            Logradouro c = (Logradouro) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("logradouroPesquisa");
-            if (c == null){
-                c = new Logradouro();
-            }
-            this.endereco.setLogradouro(c);
-            return c;
-        }catch(Exception e){
-            Logradouro c = new Logradouro();
-            this.endereco.setLogradouro(c);
-            return c;
-        }
-    }    */
 
+    public void refreshForm() {
+    }
+    /*
+     public Logradouro getLogradouroPesquisa(){
+     try{
+     Logradouro c = (Logradouro) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("logradouroPesquisa");
+     if (c == null){
+     c = new Logradouro();
+     }
+     this.endereco.setLogradouro(c);
+     return c;
+     }catch(Exception e){
+     Logradouro c = new Logradouro();
+     this.endereco.setLogradouro(c);
+     return c;
+     }
+     }    */
 
-
-
-
-
-
-    public String pesquisarServicoValor(){
+    public String pesquisarServicoValor() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "cadEndereco");
         return "pesquisaServicoValor";
     }
 
-   public String editar(){
+    public String editar() {
 //       servicoValor = (ServicoValor) getHtmlTable().getRowData();
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoValorPesquisa", servicoValor);
-       if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null)
-           return "cadServicoValor";
-       else
-           return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-   }
-
-
-
-
-
-
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoValorPesquisa", servicoValor);
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
+            return "cadServicoValor";
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
+    }
 }

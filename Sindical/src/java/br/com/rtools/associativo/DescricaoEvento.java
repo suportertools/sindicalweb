@@ -13,18 +13,19 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="EVE_DESC_EVENTO")
-@NamedQuery(name="DescricaoEvento.pesquisaID", query="select de from DescricaoEvento de where de.id=:pid")
+@Table(name = "EVE_DESC_EVENTO")
+@NamedQuery(name = "DescricaoEvento.pesquisaID", query = "select de from DescricaoEvento de where de.id=:pid")
 public class DescricaoEvento implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", length=100, nullable=true)
+    @Column(name = "DS_DESCRICAO", length = 100, nullable = true)
     private String descricao;
-    @JoinColumn(name="ID_GRUPO_EVENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_GRUPO_EVENTO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private GrupoEvento grupoEvento;
-    @JoinColumn(name="ID_SERVICO_MOVIMENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_SERVICO_MOVIMENTO", referencedColumnName = "ID")
     @ManyToOne
     private Servicos servicoMovimento;
 

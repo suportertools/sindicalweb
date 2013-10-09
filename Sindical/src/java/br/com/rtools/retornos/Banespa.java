@@ -7,8 +7,9 @@ import br.com.rtools.utilitarios.GenericaRetorno;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Banespa extends ArquivoRetorno{
-    public Banespa(ContaCobranca contaCobranca, boolean pendentes){
+public class Banespa extends ArquivoRetorno {
+
+    public Banespa(ContaCobranca contaCobranca, boolean pendentes) {
         super(contaCobranca, pendentes);
     }
 
@@ -19,29 +20,29 @@ public class Banespa extends ArquivoRetorno{
     }
 
     @Override
-    public List<GenericaRetorno> sindical(boolean baixar, String host){
+    public List<GenericaRetorno> sindical(boolean baixar, String host) {
         return new ArrayList();
     }
 
     @Override
-    public List<GenericaRetorno> sigCB(boolean baixar, String host){
+    public List<GenericaRetorno> sigCB(boolean baixar, String host) {
         return new ArrayList();
     }
 
     @Override
-    public String darBaixaSindical(String caminho, Usuario usuario){
+    public String darBaixaSindical(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
 
     @Override
-    public String darBaixaSigCB(String caminho, Usuario usuario){
+    public String darBaixaSigCB(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
 
     @Override
-    public String darBaixaSicob(String caminho, Usuario usuario){
+    public String darBaixaSicob(String caminho, Usuario usuario) {
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
@@ -51,5 +52,4 @@ public class Banespa extends ArquivoRetorno{
         String mensagem = "NÃO EXISTE IMPLEMENTAÇÃO PARA ESTE TIPO!";
         return mensagem;
     }
-
 }

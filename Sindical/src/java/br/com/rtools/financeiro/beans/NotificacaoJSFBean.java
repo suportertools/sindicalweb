@@ -72,12 +72,12 @@ public class NotificacaoJSFBean {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         registro = (Registro) sv.pesquisaCodigo(1, "Registro");
     }
-    
-    public void iniciar(){
+
+    public void iniciar() {
         progressoAtivo = true;
         valorAtual = 0;
     }
-    
+
     public void increment() {
         if (valorAtual < 100) {
             valorAtual += 2;
@@ -86,7 +86,7 @@ public class NotificacaoJSFBean {
             }
         }
     }
-    
+
     public void gerarParaTodas() {
         listaNotificacao.clear();
         listaEmpresaAdd.clear();
@@ -102,7 +102,7 @@ public class NotificacaoJSFBean {
         comContabil = true;
         semContabil = false;
     }
-    
+
     public void gerarSemContabil() {
         listaNotificacao.clear();
         listaEmpresaAdd.clear();
@@ -126,13 +126,13 @@ public class NotificacaoJSFBean {
         semContabil = false;
         listaEmpresaAdd.clear();
     }
-    
+
     public void addCidades() {
         listaNotificacao.clear();
         comContabil = false;
         semContabil = false;
     }
-    
+
     public synchronized List<DataObject> getListaNotificacao() {
         if (listaNotificacao.isEmpty()) {
             NotificacaoDB db = new NotificacaoDBToplink();
@@ -151,30 +151,31 @@ public class NotificacaoJSFBean {
                 }
                 contabils += listaContabilAdd.get(i).getArgumento0();
             }
-            
+
             for (int i = 0; i < listaCidadesBase.size(); i++) {
-                if ((Boolean)listaCidadesBase.get(i).getArgumento0()){
+                if ((Boolean) listaCidadesBase.get(i).getArgumento0()) {
                     if (cidades.length() > 0 && i != listaCidadesBase.size()) {
                         cidades += ",";
                     }
-                    cidades += ((Cidade)listaCidadesBase.get(i).getArgumento1()).getId();
+                    cidades += ((Cidade) listaCidadesBase.get(i).getArgumento1()).getId();
                 }
             }
 
             List<Vector> result = null;
             Object[] obj = new Object[2];
-                    
-            if (lote.getId() != -1)
+
+            if (lote.getId() != -1) {
                 obj = db.listaParaNotificacao(lote.getId(), DataHoje.data(), empresas, contabils, cidades, comContabil, semContabil);
-            else
+            } else {
                 obj = db.listaParaNotificacao(-1, DataHoje.data(), empresas, contabils, cidades, comContabil, semContabil);
-                
-            result = (Vector)obj[1];
+            }
+
+            result = (Vector) obj[1];
             if (!result.isEmpty()) {
                 query = String.valueOf(obj[0]);
                 for (int i = 0; i < result.size(); i++) {
-                    
-                    String noti = (result.get(i).get(5) == null) ? "Nunca" : DataHoje.converteData((Date)result.get(i).get(5));
+
+                    String noti = (result.get(i).get(5) == null) ? "Nunca" : DataHoje.converteData((Date) result.get(i).get(5));
                     listaNotificacao.add(new DataObject(true, result.get(i), noti, null, null, null));
 //                    List<Vector> listaNots = db.listaNotificado( (Integer) result.get(i).get(0) );
 //                    if (listaNots.isEmpty())
@@ -186,8 +187,9 @@ public class NotificacaoJSFBean {
                 quantidade = listaNotificacao.size();
             }
         }
-        if (listaNotificacao.isEmpty())
+        if (listaNotificacao.isEmpty()) {
             query = "";
+        }
         return listaNotificacao;
     }
 
@@ -202,29 +204,30 @@ public class NotificacaoJSFBean {
         }
 
         LinksDB db = new LinksDBToplink();
-        try{
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+        try {
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             File files = new File(caminho);
             File listFile[] = files.listFiles();
 
-            for (int i = 0; i < listFile.length; i++){
+            for (int i = 0; i < listFile.length; i++) {
                 Links link = db.pesquisaNomeArquivo(listFile[i].getName());
                 if (link == null) {
                     continue;
                 }
 
-                if (sv.deletarObjeto(sv.pesquisaCodigo(link.getId(), "Links"))){
-                    File f_delete = new File(caminho+"/"+listFile[i].getName());
-                    if (f_delete.exists())
+                if (sv.deletarObjeto(sv.pesquisaCodigo(link.getId(), "Links"))) {
+                    File f_delete = new File(caminho + "/" + listFile[i].getName());
+                    if (f_delete.exists()) {
                         f_delete.delete();
+                    }
                 }
                 listaArquivo.clear();
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             sv.desfazerTransacao();
             return null;
-        }   
-        
+        }
+
         sv.comitarTransacao();
         msgConfirma = "Atualizado com sucesso!";
         return null;
@@ -235,8 +238,8 @@ public class NotificacaoJSFBean {
             msgConfirma = "Usuário não esta na sessão, faça seu login novamente!";
             return null;
         }
-        
-        if (lote.getId() != -1){
+
+        if (lote.getId() != -1) {
             lote = new CobrancaLote();
         }
         lote.setUsuario(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")));
@@ -260,7 +263,7 @@ public class NotificacaoJSFBean {
 
         sv.abrirTransacao();
         //for (int i = 0; i < listaNotificacao.size(); i++) {
-        if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " +lote.getId()+ query +" and fc.id_lote is null order by c.ds_nome, c.id_pessoa)")){
+        if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " and fc.id_lote is null order by c.ds_nome, c.id_pessoa)")) {
 //            if ((Boolean) listaNotificacao.get(i).getArgumento0()) {
 //                if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) values (" + ((Vector) listaNotificacao.get(i).getArgumento1()).get(0) + "," + lote.getId() + ")")) {
             msgConfirma = "Erro ao inserir Cobrança";
@@ -278,7 +281,7 @@ public class NotificacaoJSFBean {
         sv.comitarTransacao();
         msgConfirma = "Gerado com sucesso!";
         itensLista.clear();
-        
+
         listaNotificacao.clear();
         listaEmpresaAdd.clear();
         listaContabilAdd.clear();
@@ -297,16 +300,16 @@ public class NotificacaoJSFBean {
             return;
         }
         Registro reg = (Registro) sv.pesquisaCodigo(1, "Registro");
-        
+
         List<Vector> lista = db.pollingEmail(reg.getLimiteEnvios(), usu.getId());
         if (!lista.isEmpty()) {
             sv.abrirTransacao();
 
             for (int i = 0; i < lista.size(); i++) {
                 PollingEmail pe = (PollingEmail) sv.pesquisaCodigo((Integer) lista.get(i).get(0), "PollingEmail");
-                
+
                 enviarEmailPolling(pe.getLinks());
-                
+
                 pe.setAtivo(false);
                 pe.setEnvio(DataHoje.data());
                 if (!sv.alterarObjeto(pe)) {
@@ -315,7 +318,7 @@ public class NotificacaoJSFBean {
                 }
             }
         }
-        
+
         if (!erro) {
             sv.comitarTransacao();
             habilitaNot = false;
@@ -324,11 +327,11 @@ public class NotificacaoJSFBean {
             habilitaNot = true;
             return;
         }
-        
+
         sv.abrirTransacao();
         lista.clear();
         lista = db.pollingEmail(reg.getLimiteEnvios(), usu.getId());
-        if (lista.isEmpty()){
+        if (lista.isEmpty()) {
             lista = db.pollingEmailNovo(reg.getLimiteEnvios());
             if (!lista.isEmpty()) {
                 String ph = DataHoje.incrementarHora(DataHoje.horaMinuto(), reg.getIntervaloEnvios());
@@ -346,7 +349,7 @@ public class NotificacaoJSFBean {
             }
 
         }
-        
+
         if (!erro) {
             sv.comitarTransacao();
             habilitaNot = false;
@@ -373,16 +376,16 @@ public class NotificacaoJSFBean {
         NotificacaoDB db = new NotificacaoDBToplink();
         List<Vector> result = db.listaNotificacaoEnvio(ct.getId(), lote.getId());
 
-        if (result.isEmpty()){
+        if (result.isEmpty()) {
             msgConfirma = "Lista de parametros para envio vazia!";
             return null;
         }
-        
+
         List<ParametroNotificacao> listax = new ArrayList();
         CobrancaEnvio ce = db.pesquisaCobrancaEnvio(lote.getId());
-        
+
         sv.abrirTransacao();
-        if (ce.getId() == -1){
+        if (ce.getId() == -1) {
             ce.setDtEmissao(DataHoje.dataHoje());
             ce.setHora(DataHoje.horaMinuto());
             ce.setLote(lote);
@@ -394,18 +397,18 @@ public class NotificacaoJSFBean {
                 return null;
             }
         }
-        
+
         if (ct.getId() == 4 || ct.getId() == 5) {
             List<Vector> lista = db.pollingEmailTrue();
-            if (!lista.isEmpty()){
-                msgConfirma = "Existem notificações às "+lista.get(0).get(1)+" para serem enviadas, conclua o envio antes de notificar mais!";
+            if (!lista.isEmpty()) {
+                msgConfirma = "Existem notificações às " + lista.get(0).get(1) + " para serem enviadas, conclua o envio antes de notificar mais!";
                 sv.desfazerTransacao();
                 return null;
             }
-            
+
             int id_compara = 0;
             boolean enviar = false;
-            
+
             Pessoa pes = new Pessoa();
             String jasper = "";
 
@@ -479,17 +482,17 @@ public class NotificacaoJSFBean {
 
                 if (enviar) {
                     try {
-                        if (atual <= registro.getLimiteEnvios() && ph.isEmpty()){
-                            if (!pes.getEmail1().isEmpty()){
+                        if (atual <= registro.getLimiteEnvios() && ph.isEmpty()) {
+                            if (!pes.getEmail1().isEmpty()) {
                                 enviarEmail(pes, listax, sv, jasper);
                                 atual++;
                             }
-                        }else{
-                            if (atual > registro.getLimiteEnvios() && ph.isEmpty()){
+                        } else {
+                            if (atual > registro.getLimiteEnvios() && ph.isEmpty()) {
                                 atual = 1;
                                 ph = DataHoje.incrementarHora(DataHoje.horaMinuto(), registro.getIntervaloEnvios());
                             }
-                            
+
                             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
                             JasperReport jasperx = null;
                             jasperx = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/" + jasper));
@@ -502,17 +505,17 @@ public class NotificacaoJSFBean {
                             String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
                             Thread.sleep(2000);
                             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+                            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
 
                             File create = new File(pathPasta);
-                            if (!create.exists()){
+                            if (!create.exists()) {
                                 create.mkdir();
                             }
-                            
+
                             sa.salvaNaPasta(pathPasta);
 
                             Links link = new Links();
-                            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+                            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
                             link.setNomeArquivo(nomeDownload);
                             link.setPessoa(pes);
                             link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
@@ -527,14 +530,14 @@ public class NotificacaoJSFBean {
                             pe.setDtEmissao(DataHoje.dataHoje());
                             pe.setLinks(link);
                             pe.setCobrancaEnvio(ce);
-                            
+
                             if (atual <= registro.getLimiteEnvios()) {
                                 pe.setAtivo(true);
                                 pe.setHora(ph);
                             } else {
                                 pe.setAtivo(false);
                             }
-                            
+
                             if (!sv.inserirObjeto(pe)) {
                                 msgConfirma = "Erro ao salvar Polling de envio!";
                                 sv.desfazerTransacao();
@@ -553,7 +556,7 @@ public class NotificacaoJSFBean {
             boolean imprimir = false;
             int atual = 0, limite = 5000;
             JasperReport jasper = null;
-            
+
             for (int i = 0; i < result.size(); i++) {
                 listax.add(new ParametroNotificacao(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
                         getConverteNullString(result.get(i).get(1)),
@@ -592,9 +595,8 @@ public class NotificacaoJSFBean {
                         getConverteNullString(result.get(i).get(34)),
                         getConverteNullString(result.get(i).get(35)),
                         getConverteNullString(result.get(i).get(36)),
-                        getConverteNullString(result.get(i).get(37)))
-                );
-                
+                        getConverteNullString(result.get(i).get(37))));
+
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
                 String nomeArq = "notificacao_";
                 try {
@@ -607,7 +609,7 @@ public class NotificacaoJSFBean {
                     } else if (ct.getId() == 2) {
                         id_compara = getConverteNullInt(result.get(i).get(39)); // ID_PESSOA
                         jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
-                        if (id_compara != getConverteNullInt(result.get(i + 1).get(39))  && !imprimir) {
+                        if (id_compara != getConverteNullInt(result.get(i + 1).get(39)) && !imprimir) {
                             imprimir = true;
                         }
                     } else if (ct.getId() == 3) {
@@ -621,9 +623,9 @@ public class NotificacaoJSFBean {
                     imprimir = true;
                     atual = limite;
                 }
-                            
-                try{
-                    if (imprimir && (atual >= limite)){
+
+                try {
+                    if (imprimir && (atual >= limite)) {
                         JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
                         byte[] arquivo = new byte[0];
                         arquivo = JasperExportManager.exportReportToPdf(print);
@@ -631,17 +633,17 @@ public class NotificacaoJSFBean {
                         String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
                         Thread.sleep(2000);
                         SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
-                        
+                        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+
                         File create = new File(pathPasta);
-                        if (!create.exists()){
+                        if (!create.exists()) {
                             create.mkdir();
                         }
-                        
+
                         sa.salvaNaPasta(pathPasta);
 
                         Links link = new Links();
-                        link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+                        link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
                         link.setNomeArquivo(nomeDownload);
                         link.setPessoa(null);
                         link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
@@ -650,18 +652,17 @@ public class NotificacaoJSFBean {
                             msgConfirma = "Erro ao salvar Link de envio!";
                             sv.desfazerTransacao();
                             return null;
-                        }                        
-                        
+                        }
+
 //                        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
 //                        download.baixar();
-                        
+
                         imprimir = false;
                         atual = 0;
                         listax.clear();
                     }
-                    
-                }catch(Exception e){
-                    
+
+                } catch (Exception e) {
                 }
                 atual++;
             }
@@ -670,7 +671,7 @@ public class NotificacaoJSFBean {
         if (!result.isEmpty()) {
             sv.comitarTransacao();
         }
-        
+
         listaNotificacao.clear();
         return "notificacao";
     }
@@ -717,16 +718,14 @@ public class NotificacaoJSFBean {
 //                    imprimir = true;
 //                }
 //                atual++;
-    
-    
     public String enviarEmailPolling(Links link) {
         try {
-            if (link.getPessoa().getEmail1().isEmpty()){
+            if (link.getPessoa().getEmail1().isEmpty()) {
                 return null;
             }
             List<Pessoa> pes_add = new ArrayList();
             pes_add.add(link.getPessoa());
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             String[] ret = new String[2];
             if (!registro.isEnviarEmailAnexo()) {
                 ret = EnviarEmail.EnviarEmailPersonalizado(registro,
@@ -755,7 +754,7 @@ public class NotificacaoJSFBean {
         }
         return null;
     }
-    
+
     public String enviarEmail(Pessoa pessoa, List<ParametroNotificacao> lista, SalvarAcumuladoDB sv, String nomeJasper) {
 
         JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
@@ -770,11 +769,11 @@ public class NotificacaoJSFBean {
 
             String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             sa.salvaNaPasta(pathPasta);
 
             Links link = new Links();
-            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             link.setNomeArquivo(nomeDownload);
             link.setPessoa(pessoa);
             link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
@@ -799,7 +798,7 @@ public class NotificacaoJSFBean {
             } else {
                 List<File> fls = new ArrayList<File>();
                 fls.add(new File(pathPasta + "/" + link.getNomeArquivo()));
-                
+
                 ret = EnviarEmail.EnviarEmailPersonalizado(registro,
                         pes_add,
                         " <h5>Baixe sua notificação em Anexada neste email</5><br /><br />",
@@ -859,7 +858,7 @@ public class NotificacaoJSFBean {
             itensLista.add(new SelectItem(0, "<< Gerar novo Lote de Notificação >>", String.valueOf(-1)));
             for (int i = 0; i < result.size(); i++) {
                 itensLista.add(new SelectItem(new Integer(i + 1),
-                        "Lote gerado - " + result.get(i).getEmissao() +" às "+ result.get(i).getHora() + " - " + result.get(i).getUsuario().getLogin(),
+                        "Lote gerado - " + result.get(i).getEmissao() + " às " + result.get(i).getHora() + " - " + result.get(i).getUsuario().getLogin(),
                         String.valueOf(result.get(i).getId())));
             }
         }
@@ -988,7 +987,7 @@ public class NotificacaoJSFBean {
 //            registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 //        }
         Usuario usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
-        if (usu == null || (usu != null && usu.getId() == -1)){
+        if (usu == null || (usu != null && usu.getId() == -1)) {
             return false;
         }
         List<Vector> lista = db.pollingEmail(reg.getLimiteEnvios(), ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId());
@@ -1012,15 +1011,14 @@ public class NotificacaoJSFBean {
     public void setQuantidadeMenu(int quantidadeMenu) {
         this.quantidadeMenu = quantidadeMenu;
     }
-    
-    
+
     public List<DataObject> getListaCidadesBase() {
-        if (listaCidadesBase.isEmpty()){
+        if (listaCidadesBase.isEmpty()) {
             GrupoCidadesDB db = new GrupoCidadesDBToplink();
             List select = new ArrayList();
             select.addAll(db.pesquisaCidadesBase());
-            for (int i = 0; i < select.size(); i++){
-                listaCidadesBase.add(new DataObject(false, ((Cidade)select.get(i))));
+            for (int i = 0; i < select.size(); i++) {
+                listaCidadesBase.add(new DataObject(false, ((Cidade) select.get(i))));
             }
         }
         return listaCidadesBase;
@@ -1033,10 +1031,9 @@ public class NotificacaoJSFBean {
     public void setChkCidadesBase(boolean chkCidadesBase) {
         this.chkCidadesBase = chkCidadesBase;
     }
-    
-    
-    public void marcarCidadesBase(){
-        for(int i = 0; i < listaCidadesBase.size(); i ++){
+
+    public void marcarCidadesBase() {
+        for (int i = 0; i < listaCidadesBase.size(); i++) {
             listaCidadesBase.get(i).setArgumento0(chkCidadesBase);
         }
         listaNotificacao.clear();
@@ -1067,27 +1064,27 @@ public class NotificacaoJSFBean {
     }
 
     public List<DataObject> getListaArquivo() {
-        if (listaNotificacao.isEmpty()){
+        if (listaNotificacao.isEmpty()) {
             listaArquivo.clear();
         }
-        if (listaArquivo.isEmpty()){
+        if (listaArquivo.isEmpty()) {
             LinksDB db = new LinksDBToplink();
-            try{
-                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId());
+            try {
+                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
                 File files = new File(caminho);
                 File listFile[] = files.listFiles();
 
-                for (int i = 0; i < listFile.length; i++){
+                for (int i = 0; i < listFile.length; i++) {
                     Links link = db.pesquisaNomeArquivo(listFile[i].getName());
                     if (link == null) {
                         continue;
                     }
 
-                    listaArquivo.add(new DataObject(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/"+lote.getId()+"/"+listFile[i].getName(), i+1+" - " + link.getDescricao()));
+                    listaArquivo.add(new DataObject(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId() + "/" + listFile[i].getName(), i + 1 + " - " + link.getDescricao()));
                 }
-            }catch(Exception e){
+            } catch (Exception e) {
                 return new ArrayList();
-            }        
+            }
         }
         return listaArquivo;
     }
@@ -1095,5 +1092,4 @@ public class NotificacaoJSFBean {
     public void setListaArquivo(List<DataObject> listaArquivo) {
         this.listaArquivo = listaArquivo;
     }
-    
 }

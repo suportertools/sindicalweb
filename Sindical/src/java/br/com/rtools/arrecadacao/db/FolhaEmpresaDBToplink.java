@@ -10,13 +10,13 @@ public class FolhaEmpresaDBToplink extends DB implements FolhaEmpresaDB {
 
     @Override
     public boolean insert(FolhaEmpresa folhaEmpresa) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(folhaEmpresa);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(folhaEmpresa);
+            getEntityManager().flush();
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -24,24 +24,22 @@ public class FolhaEmpresaDBToplink extends DB implements FolhaEmpresaDB {
 
     @Override
     public boolean update(FolhaEmpresa folhaEmpresa) {
-        try{
-        getEntityManager().merge(folhaEmpresa);
-        getEntityManager().flush();
-        return true;
-        }
-        catch(Exception e){
+        try {
+            getEntityManager().merge(folhaEmpresa);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public boolean delete(FolhaEmpresa folhaEmpresa) {
-        try{
-        getEntityManager().remove(folhaEmpresa);
-        getEntityManager().flush();
-        return true;
-        }
-        catch(Exception e){
+        try {
+            getEntityManager().remove(folhaEmpresa);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
@@ -49,23 +47,21 @@ public class FolhaEmpresaDBToplink extends DB implements FolhaEmpresaDB {
     @Override
     public FolhaEmpresa pesquisaCodigo(int id) {
         FolhaEmpresa result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("FolhaEmpresa.pesquisaID");
             qry.setParameter("pid", id);
             result = (FolhaEmpresa) qry.getSingleResult();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return result;
     }
 
     @Override
-    public List pesquisaTodos(){
-        try{
+    public List pesquisaTodos() {
+        try {
             Query qry = getEntityManager().createQuery("select de from FolhaEmpresa de ");
             return (qry.getResultList());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -73,26 +69,20 @@ public class FolhaEmpresaDBToplink extends DB implements FolhaEmpresaDB {
     @Override
     public FolhaEmpresa pesquisaPorPessoa(int idPessoa, int idTipoServico, String referencia) {
         FolhaEmpresa result = null;
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select f" +
-                    "  from FolhaEmpresa f " +
-                    " where f.referencia = :r" +
-                    "   and f.tipoServico.id = :t" +
-                    "   and f.juridica.pessoa.id = :p"
-            );
+                    "select f"
+                    + "  from FolhaEmpresa f "
+                    + " where f.referencia = :r"
+                    + "   and f.tipoServico.id = :t"
+                    + "   and f.juridica.pessoa.id = :p");
             qry.setParameter("p", idPessoa);
             qry.setParameter("t", idTipoServico);
             qry.setParameter("r", referencia);
             result = (FolhaEmpresa) qry.getSingleResult();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
         return result;
     }
-
-
-
-
 }

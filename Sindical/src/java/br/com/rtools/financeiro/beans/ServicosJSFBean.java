@@ -276,7 +276,7 @@ public class ServicosJSFBean implements java.io.Serializable {
     }
 
     public String editarValor(int index) {
-        if(index == -1){
+        if (index == -1) {
             return null;
         }
         servicoValor = (ServicoValor) listaServicoValor.get(index);
@@ -292,10 +292,10 @@ public class ServicosJSFBean implements java.io.Serializable {
         excluirValor(-1);
         return null;
     }
-    
+
     public String excluirValor(int index) {
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-        if(index != -1){
+        if (index != -1) {
             servicoValor.setId(listaServicoValor.get(index).getId());
         }
         textoBtnServico = "Adicionar";
@@ -323,7 +323,7 @@ public class ServicosJSFBean implements java.io.Serializable {
     public void setServicoValor(ServicoValor servicoValor) {
         this.servicoValor = servicoValor;
     }
-    
+
     public String getValor() {
         return Moeda.converteR$(valor);
     }

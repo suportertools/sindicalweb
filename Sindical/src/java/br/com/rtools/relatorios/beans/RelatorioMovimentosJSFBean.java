@@ -35,7 +35,8 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
+public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
+
     private Juridica juridica = new Juridica();
     private int idRelatorios = 0;
     private int idServicos = 0;
@@ -45,15 +46,15 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
     private String comboCondicao = "todos";
     private String comboGeradosPelaCaixa = "naoVerificar";
     private String tipoDataPesquisa = "vencimento";
-    private String dataInicial      = "";
-    private String dataFinal        = "";
-    private String dataRefInicial   = "";
-    private String dataRefFinal     = "";
-    private String radioOrdem       = "vencimento";
-    private String porPesquisa      = "todos";
-    private String porContabilidade = "todos";    
-    private String relEmpresa      = "empresa";
-    private String msgEmail      = "";
+    private String dataInicial = "";
+    private String dataFinal = "";
+    private String dataRefInicial = "";
+    private String dataRefFinal = "";
+    private String radioOrdem = "vencimento";
+    private String porPesquisa = "todos";
+    private String porContabilidade = "todos";
+    private String relEmpresa = "empresa";
+    private String msgEmail = "";
     private String renEnviarEmail = "true";
     private boolean chkTipo = false;
     private boolean chkData = false;
@@ -62,12 +63,12 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
     private boolean chkEmpresa = false;
     private boolean chkConvencao = false;
     private boolean chkCidadesBase = false;
-    private boolean chkContabilidades = false;    
+    private boolean chkContabilidades = false;
     private boolean totaliza = false;
     private List listaCidadesBase = new ArrayList();
-    private List listaContabilidades = new ArrayList();    
-    
-    public String condicaoDePesquisa(){
+    private List listaContabilidades = new ArrayList();
+
+    public String condicaoDePesquisa() {
         String condicao = "";
         String geradosPelaCaixa = "";
         int idServ = 0;
@@ -98,205 +99,208 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         geradosPelaCaixa = comboGeradosPelaCaixa;
 
         // SERVICO DO RELATORIO -----------------------------------------------------------
-        if (chkContribuicao){
+        if (chkContribuicao) {
             idServ = Integer.parseInt(getListaServico().get(idServicos).getDescription());
         }
 
         // TIPO SERVICO DO RELATORIO ------------------------------------------------------
-        if(chkTipo){
+        if (chkTipo) {
             idTipoServ = Integer.parseInt(getListaTipoServico().get(idTipoServico).getDescription());
         }
         // PESSOA DO RELATORIO -----------------------------------------------------------
-        if(chkEmpresa && juridica != null){
+        if (chkEmpresa && juridica != null) {
             idJuridica = juridica.getId();
         }
 
         // DATA DO RELATORIO ------------------------------------------------------------
-        if (chkData){
-            if (!tipoDataPesquisa.equals("referencia")){
-                if (!dataInicial.equals("")&&(!dataFinal.equals(""))){
+        if (chkData) {
+            if (!tipoDataPesquisa.equals("referencia")) {
+                if (!dataInicial.equals("") && (!dataFinal.equals(""))) {
                     dtInicial = DataHoje.converte(dataInicial);
-                    dtFinal   = DataHoje.converte(dataFinal);
-                }else {
+                    dtFinal = DataHoje.converte(dataFinal);
+                } else {
                     dtInicial = null;
-                    dtFinal   = null;
+                    dtFinal = null;
                 }
-            }else{
-                 if (!dataRefInicial.equals("") && !dataRefFinal.equals("")){
-                     
-                 }
+            } else {
+                if (!dataRefInicial.equals("") && !dataRefFinal.equals("")) {
+                }
             }
         }
 
         // CONVENCAO DO RELATORIO ------------------------------------------------------------
-        if (chkConvencao){
+        if (chkConvencao) {
             idConv = Integer.parseInt(getListaConvencao().get(idConvencao).getDescription());
         }
 
         // GRUPO CIDADE DO RELATORIO -------------------------------------------------------------
-        if (chkConvencao){
+        if (chkConvencao) {
             idGrup = Integer.parseInt(getListaGrupoCidade().get(idGrupoCidade).getDescription());
         }
-        
+
         // IDS DAS CONTABILIDADES -----------------------------------------------------------------
         String idsEcs = "";
-        if (!porContabilidade.equals("sem")){
-            for (int i = 0; i < listaContabilidades.size(); i++){
-                if ((Boolean)((DataObject)listaContabilidades.get(i)).getArgumento0() == true){
-                    if (idsEcs.length() > 0 && i != listaContabilidades.size())
+        if (!porContabilidade.equals("sem")) {
+            for (int i = 0; i < listaContabilidades.size(); i++) {
+                if ((Boolean) ((DataObject) listaContabilidades.get(i)).getArgumento0() == true) {
+                    if (idsEcs.length() > 0 && i != listaContabilidades.size()) {
                         idsEcs += ",";
-                    idsEcs += ((Juridica)((DataObject) listaContabilidades.get(i)).getArgumento1()).getId();
+                    }
+                    idsEcs += ((Juridica) ((DataObject) listaContabilidades.get(i)).getArgumento1()).getId();
                 }
             }
-        }else idsEcs = "sem";        
+        } else {
+            idsEcs = "sem";
+        }
 
         // IDS DAS CIDADES DA BASE ----------------------------------------------------------------
         String cidBase = "";
-        for (int i = 0; i < listaCidadesBase.size(); i++){
-            if ((Boolean)((DataObject)listaCidadesBase.get(i)).getArgumento0() == true){
-                if (cidBase.length() > 0 && i != listaCidadesBase.size())
+        for (int i = 0; i < listaCidadesBase.size(); i++) {
+            if ((Boolean) ((DataObject) listaCidadesBase.get(i)).getArgumento0() == true) {
+                if (cidBase.length() > 0 && i != listaCidadesBase.size()) {
                     cidBase += ",";
-                cidBase += ((Cidade)((DataObject) listaCidadesBase.get(i)).getArgumento1()).getId();
-                if (cidBase.length() == 1)
-                    cidBase = "0"+cidBase;
+                }
+                cidBase += ((Cidade) ((DataObject) listaCidadesBase.get(i)).getArgumento1()).getId();
+                if (cidBase.length() == 1) {
+                    cidBase = "0" + cidBase;
+                }
             }
         }
         sindicato = dbJur.pesquisaCodigo(1);
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
 
-        List result = dbMov.listaMovimentos(relatorios, condicao,idServ,idTipoServ,idJuridica,chkData, tipoDataPesquisa, dtInicial, dtFinal,
-                                            dataRefInicial,dataRefFinal,radioOrdem,chkPesquisaEmpresa,porPesquisa,relEmpresa,idConv,idGrup,cidBase, idsEcs);
-        try{
+        List result = dbMov.listaMovimentos(relatorios, condicao, idServ, idTipoServ, idJuridica, chkData, tipoDataPesquisa, dtInicial, dtFinal,
+                dataRefInicial, dataRefFinal, radioOrdem, chkPesquisaEmpresa, porPesquisa, relEmpresa, idConv, idGrup, cidBase, idsEcs);
+        try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             byte[] arquivo = new byte[0];
             JasperReport jasper = null;
             Collection listaMovs = new ArrayList<ParametroMovimentos>();
             jasper = (JasperReport) JRLoader.loadObject(
-                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             String quitacao, importacao, usuario;
             float valor = 0, repasse = 0, valorLiquido = 0;
-            
-            
-            
-            try{
-                for(int i = 0; i < result.size();i++){
+
+
+
+            try {
+                for (int i = 0; i < result.size(); i++) {
                     valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))); // VALOR ORIGINAL     
-                    if (((Vector) result.get(i)).get(38) == null){
-                        quitacao = ""; importacao = ""; usuario = "";
-                    }else{
+                    if (((Vector) result.get(i)).get(38) == null) {
+                        quitacao = "";
+                        importacao = "";
+                        usuario = "";
+                    } else {
 //                        if (!getConverteNullString(((Vector) result.get(i)).get(6)).equals("") && Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))) == 0 ){
 //                            valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))); // VALOR DA BAIXA
 //                        }else{
 //                        }
-                            
-                        quitacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(39));
-                        importacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(40));
+
+                        quitacao = DataHoje.converteData((Date) ((Vector) result.get(i)).get(39));
+                        importacao = DataHoje.converteData((Date) ((Vector) result.get(i)).get(40));
                         usuario = getConverteNullString(((Vector) result.get(i)).get(42));
                     }
                     String srepasse = getConverteNullString(((Vector) result.get(i)).get(48));
-                    if (srepasse.isEmpty())
+                    if (srepasse.isEmpty()) {
                         repasse = Moeda.multiplicarValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Moeda.divisaoValores(0, 100));
-                    else
+                    } else {
                         repasse = Moeda.multiplicarValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Moeda.divisaoValores(Float.parseFloat(srepasse), 100));
-                        
-                    valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Float.valueOf(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) ))),repasse);
-                    
-                    listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
-                                                                sindicato.getPessoa().getNome(),
-                                                                endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                                                                endSindicato.getEndereco().getLogradouro().getDescricao(),
-                                                                endSindicato.getNumero(),
-                                                                endSindicato.getComplemento(),
-                                                                endSindicato.getEndereco().getBairro().getDescricao(),
-                                                                endSindicato.getEndereco().getCep(),
-                                                                endSindicato.getEndereco().getCidade().getCidade(),
-                                                                endSindicato.getEndereco().getCidade().getUf(),
-                                                                sindicato.getPessoa().getTelefone1(),
-                                                                sindicato.getPessoa().getEmail1(),
-                                                                sindicato.getPessoa().getSite(),
-                                                                sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                                                                sindicato.getPessoa().getDocumento(),
-                                                                getConverteNullInt( ((Vector) result.get(i)).get(41) ), // ID JURIDICA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(10)), // NOME PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(11)), // ENDERECO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(12)), // LOGRADOURO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(13)), // NUMERO ENDERECO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(14)), // COMPLEMENTO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(15)), // BAIRRO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(16)), // CEP PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(17)), // CIDADE PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(18)), // UF PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(19)), // TELEFONE PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(20)), // EMAIL PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(21)), // TIPO DOC PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(22)), // DOCUMENTO PESSOA
-                                                                getConverteNullInt(((Vector) result.get(i)).get(23)), // ID CNAE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(24)), // NUMERO CNAE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(25)), // NOME CNAE
-                                                                getConverteNullInt(((Vector) result.get(i)).get(26)), // ID CONTABILIDADE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(27)), // NOME CONTABILIDADE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(28)), // ENDERECO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(29)), // LOGRADOURO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(30)), // NUMERO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(31)), // COMPLEMENTO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(32)), // BAIRRO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(33)), // CEP CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(34)), // CIDADE CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(35)), // UF CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(36)), // TELEFONE CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(37)), // EMAIL CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(1)), // NUMERO BOLETO
-                                                                getConverteNullString( ((Vector) result.get(i)).get(2)), // SERVICO
-                                                                getConverteNullString( ((Vector) result.get(i)).get(3)), // TIPO SERVICO
-                                                                getConverteNullString( ((Vector) result.get(i)).get(4)), // REFERENCIA
-                                                                DataHoje.converteData( (Date)((Vector) result.get(i)).get(5)), // VENCIMENTO
-                                                                quitacao, //result.get(i).getLoteBaixa().getQuitacao(),
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(47)) )), // VALOR BAIXA
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) )),// TAXA
-                                                                importacao, //result.get(i).getLoteBaixa().getImportacao(),
-                                                                usuario,// result.get(i).getLoteBaixa().getUsuario().getPessoa().getNome()
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(44)) )),// MULTA,
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(45)) )),// JUROS,
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(46)) )),// CORRECAO,
-                                                                new BigDecimal(valor), // VALOR TOTAL
-                                                                new BigDecimal(repasse), // REPASSE
-                                                                new BigDecimal(valorLiquido), // VALOR LIQUIDO
-                                                                totaliza
+                    }
 
-                                        ));
-                 }
-                
-                
-                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaMovs);
-                 
-                 //String ini = DataHoje.hora();
-                 
-                 JasperPrint print = JasperFillManager.fillReport(
-                          jasper,
-                          null,
-                          dtSource
-                 );
-                 
-                 //String fim = DataHoje.hora();
-                 
-                 arquivo = JasperExportManager.exportReportToPdf(print);
-               
-                 String nomeDownload = "relatorio_movimentos_"+DataHoje.horaMinuto().replace(":", "") +".pdf";
-                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                 
-                 String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/relatorios");
-                 sa.salvaNaPasta(pathPasta);
+                    valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Float.valueOf(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(43))))), repasse);
 
-                 Download download =  new Download(nomeDownload,
-                         pathPasta,
-                         "application/pdf",
-                         FacesContext.getCurrentInstance()
-                         );
-                 download.baixar();                  
-                 
-                 //msgEmail = "Inicio: "+ini+" Fim: "+fim;
-                 return null;
+                    listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            sindicato.getPessoa().getNome(),
+                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                            endSindicato.getEndereco().getLogradouro().getDescricao(),
+                            endSindicato.getNumero(),
+                            endSindicato.getComplemento(),
+                            endSindicato.getEndereco().getBairro().getDescricao(),
+                            endSindicato.getEndereco().getCep(),
+                            endSindicato.getEndereco().getCidade().getCidade(),
+                            endSindicato.getEndereco().getCidade().getUf(),
+                            sindicato.getPessoa().getTelefone1(),
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
+                            sindicato.getPessoa().getDocumento(),
+                            getConverteNullInt(((Vector) result.get(i)).get(41)), // ID JURIDICA
+                            getConverteNullString(((Vector) result.get(i)).get(10)), // NOME PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(11)), // ENDERECO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(12)), // LOGRADOURO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(13)), // NUMERO ENDERECO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(14)), // COMPLEMENTO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(15)), // BAIRRO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(16)), // CEP PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(17)), // CIDADE PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(18)), // UF PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(19)), // TELEFONE PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(20)), // EMAIL PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(21)), // TIPO DOC PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(22)), // DOCUMENTO PESSOA
+                            getConverteNullInt(((Vector) result.get(i)).get(23)), // ID CNAE
+                            getConverteNullString(((Vector) result.get(i)).get(24)), // NUMERO CNAE
+                            getConverteNullString(((Vector) result.get(i)).get(25)), // NOME CNAE
+                            getConverteNullInt(((Vector) result.get(i)).get(26)), // ID CONTABILIDADE
+                            getConverteNullString(((Vector) result.get(i)).get(27)), // NOME CONTABILIDADE
+                            getConverteNullString(((Vector) result.get(i)).get(28)), // ENDERECO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(29)), // LOGRADOURO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(30)), // NUMERO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(31)), // COMPLEMENTO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(32)), // BAIRRO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(33)), // CEP CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(34)), // CIDADE CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(35)), // UF CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(36)), // TELEFONE CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(37)), // EMAIL CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(1)), // NUMERO BOLETO
+                            getConverteNullString(((Vector) result.get(i)).get(2)), // SERVICO
+                            getConverteNullString(((Vector) result.get(i)).get(3)), // TIPO SERVICO
+                            getConverteNullString(((Vector) result.get(i)).get(4)), // REFERENCIA
+                            DataHoje.converteData((Date) ((Vector) result.get(i)).get(5)), // VENCIMENTO
+                            quitacao, //result.get(i).getLoteBaixa().getQuitacao(),
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47)))), // VALOR BAIXA
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(43)))),// TAXA
+                            importacao, //result.get(i).getLoteBaixa().getImportacao(),
+                            usuario,// result.get(i).getLoteBaixa().getUsuario().getPessoa().getNome()
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(44)))),// MULTA,
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(45)))),// JUROS,
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(46)))),// CORRECAO,
+                            new BigDecimal(valor), // VALOR TOTAL
+                            new BigDecimal(repasse), // REPASSE
+                            new BigDecimal(valorLiquido), // VALOR LIQUIDO
+                            totaliza));
+                }
+
+
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaMovs);
+
+                //String ini = DataHoje.hora();
+
+                JasperPrint print = JasperFillManager.fillReport(
+                        jasper,
+                        null,
+                        dtSource);
+
+                //String fim = DataHoje.hora();
+
+                arquivo = JasperExportManager.exportReportToPdf(print);
+
+                String nomeDownload = "relatorio_movimentos_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+                sa.salvaNaPasta(pathPasta);
+
+                Download download = new Download(nomeDownload,
+                        pathPasta,
+                        "application/pdf",
+                        FacesContext.getCurrentInstance());
+                download.baixar();
+
+                //msgEmail = "Inicio: "+ini+" Fim: "+fim;
+                return null;
 //                 
 //         
 //                String conteudo = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n" +
@@ -334,39 +338,39 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         //return null;
     }
 
-   public List<SelectItem> getListaConvencao(){
-       List<SelectItem> convencao = new Vector<SelectItem>();
-       if (chkConvencao){
-           int i = 0;
-           ConvencaoDB db = new ConvencaoDBToplink();
-           List select = db.pesquisaTodos();
-           while (i < select.size()){
-               convencao.add(new SelectItem(new Integer(i),
-                      (String) ((Convencao) select.get(i)).getDescricao(),
-                      Integer.toString(((Convencao) select.get(i)).getId())  ));
-              i++;
-           }
-       }
-       return convencao;
-   }
+    public List<SelectItem> getListaConvencao() {
+        List<SelectItem> convencao = new Vector<SelectItem>();
+        if (chkConvencao) {
+            int i = 0;
+            ConvencaoDB db = new ConvencaoDBToplink();
+            List select = db.pesquisaTodos();
+            while (i < select.size()) {
+                convencao.add(new SelectItem(new Integer(i),
+                        (String) ((Convencao) select.get(i)).getDescricao(),
+                        Integer.toString(((Convencao) select.get(i)).getId())));
+                i++;
+            }
+        }
+        return convencao;
+    }
 
-   public List<SelectItem> getListaGrupoCidade(){
-       List<SelectItem> grupoCidade = new Vector<SelectItem>();
-       if (chkConvencao){
-           int i = 0;
-           GrupoCidadeDB db = new GrupoCidadeDBToplink();
-           List select = db.pesquisaGrupoPorConvencao(Integer.parseInt(getListaConvencao().get(idConvencao).getDescription()));
-           while (i < select.size()){
-               grupoCidade.add(new SelectItem(new Integer(i),
-                      (String) ((ConvencaoCidade) select.get(i)).getGrupoCidade().getDescricao(),
-                      Integer.toString(((ConvencaoCidade) select.get(i)).getGrupoCidade().getId())  ));
-              i++;
-           }
-       }
-       return grupoCidade;
-   }
+    public List<SelectItem> getListaGrupoCidade() {
+        List<SelectItem> grupoCidade = new Vector<SelectItem>();
+        if (chkConvencao) {
+            int i = 0;
+            GrupoCidadeDB db = new GrupoCidadeDBToplink();
+            List select = db.pesquisaGrupoPorConvencao(Integer.parseInt(getListaConvencao().get(idConvencao).getDescription()));
+            while (i < select.size()) {
+                grupoCidade.add(new SelectItem(new Integer(i),
+                        (String) ((ConvencaoCidade) select.get(i)).getGrupoCidade().getDescricao(),
+                        Integer.toString(((ConvencaoCidade) select.get(i)).getGrupoCidade().getId())));
+                i++;
+            }
+        }
+        return grupoCidade;
+    }
 
-    public String enviarEmail(){
+    public String enviarEmail() {
         String condicao = "";
         String geradosPelaCaixa = "";
         int idServ = 0;
@@ -387,9 +391,9 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEndereco endSindicato = new PessoaEndereco();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        
+
         Registro reg = new Registro();
-        reg = (Registro)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
+        reg = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
 
         // CONDICAO DO RELATORIO -----------------------------------------------------------
         condicao = comboCondicao;
@@ -398,185 +402,190 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         geradosPelaCaixa = comboGeradosPelaCaixa;
 
         // SERVICO DO RELATORIO -----------------------------------------------------------
-        if (chkContribuicao){
+        if (chkContribuicao) {
             idServ = Integer.parseInt(getListaServico().get(idServicos).getDescription());
         }
 
         // TIPO SERVICO DO RELATORIO ------------------------------------------------------
-        if(chkTipo){
+        if (chkTipo) {
             idTipoServ = Integer.parseInt(getListaTipoServico().get(idTipoServico).getDescription());
         }
         // PESSOA DO RELATORIO -----------------------------------------------------------
-        if(chkEmpresa && juridica != null){
+        if (chkEmpresa && juridica != null) {
             idJuridica = juridica.getPessoa().getId();
         }
 
         // DATA DO RELATORIO ------------------------------------------------------------
-        if (chkData){
-            if (!tipoDataPesquisa.equals("referencia")){
-                if (!dataInicial.equals("")&&(!dataFinal.equals(""))){
+        if (chkData) {
+            if (!tipoDataPesquisa.equals("referencia")) {
+                if (!dataInicial.equals("") && (!dataFinal.equals(""))) {
                     dtInicial = DataHoje.converte(dataInicial);
-                    dtFinal   = DataHoje.converte(dataFinal);
-                }else {
+                    dtFinal = DataHoje.converte(dataFinal);
+                } else {
                     dtInicial = null;
-                    dtFinal   = null;
+                    dtFinal = null;
                 }
-            }else{
-                 if (!dataRefInicial.equals("") && !dataRefFinal.equals("")){
-
-                 }
+            } else {
+                if (!dataRefInicial.equals("") && !dataRefFinal.equals("")) {
+                }
             }
         }
-        
+
         // IDS DAS CONTABILIDADES -----------------------------------------------------------------
         String idsEcs = "";
-        if (!porContabilidade.equals("sem")){
-            for (int i = 0; i < listaContabilidades.size(); i++){
-                if ((Boolean)((DataObject)listaContabilidades.get(i)).getArgumento0() == true){
-                    if (idsEcs.length() > 0 && i != listaContabilidades.size())
+        if (!porContabilidade.equals("sem")) {
+            for (int i = 0; i < listaContabilidades.size(); i++) {
+                if ((Boolean) ((DataObject) listaContabilidades.get(i)).getArgumento0() == true) {
+                    if (idsEcs.length() > 0 && i != listaContabilidades.size()) {
                         idsEcs += ",";
-                    idsEcs += ((Juridica)((DataObject) listaContabilidades.get(i)).getArgumento1()).getId();
+                    }
+                    idsEcs += ((Juridica) ((DataObject) listaContabilidades.get(i)).getArgumento1()).getId();
                 }
             }
-        }else idsEcs = "sem";      
-        
+        } else {
+            idsEcs = "sem";
+        }
+
         // IDS DAS CIDADES DA BASE ----------------------------------------------------------------
         String cidBase = "";
-        for (int i = 0; i < listaCidadesBase.size(); i++){
-            if ((Boolean)((DataObject)listaCidadesBase.get(i)).getArgumento0() == true){
-                if (cidBase.length() > 0 && i != listaCidadesBase.size())
+        for (int i = 0; i < listaCidadesBase.size(); i++) {
+            if ((Boolean) ((DataObject) listaCidadesBase.get(i)).getArgumento0() == true) {
+                if (cidBase.length() > 0 && i != listaCidadesBase.size()) {
                     cidBase += ",";
-                cidBase += ((Cidade)((DataObject) listaCidadesBase.get(i)).getArgumento1()).getId();
-                if (cidBase.length() == 1)
-                    cidBase = "0"+cidBase;
+                }
+                cidBase += ((Cidade) ((DataObject) listaCidadesBase.get(i)).getArgumento1()).getId();
+                if (cidBase.length() == 1) {
+                    cidBase = "0" + cidBase;
+                }
             }
         }
-        
+
         String pathPasta = "";
 
         sindicato = dbJur.pesquisaCodigo(1);
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
 
-        List result = dbMov.listaMovimentos(relatorios, condicao,idServ,idTipoServ,idJuridica,chkData, tipoDataPesquisa, dtInicial, dtFinal,
-                                            dataRefInicial,dataRefFinal,radioOrdem,chkPesquisaEmpresa,porPesquisa,relEmpresa,idConv,idGrup,cidBase, idsEcs);
+        List result = dbMov.listaMovimentos(relatorios, condicao, idServ, idTipoServ, idJuridica, chkData, tipoDataPesquisa, dtInicial, dtFinal,
+                dataRefInicial, dataRefFinal, radioOrdem, chkPesquisaEmpresa, porPesquisa, relEmpresa, idConv, idGrup, cidBase, idsEcs);
         FacesContext faces = FacesContext.getCurrentInstance();
         int qnt = 0;
         String nomeDownload = "";
-        try{
+        try {
             byte[] arquivo = new byte[0];
             JasperReport jasper = null;
             Collection listaMovs = new ArrayList<ParametroMovimentos>();
             jasper = (JasperReport) JRLoader.loadObject(
-                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             String quitacao, importacao, usuario;
             float valor = 0, repasse = 0, valorLiquido = 0;
-            try{
-                for(int i = 0; i < result.size();i++){
-                    if (((Vector) result.get(i)).get(38) == null){
-                        quitacao = ""; importacao = ""; usuario = ""; valor = 0;
-                    }else{
-                        if (!getConverteNullString(((Vector) result.get(i)).get(6)).equals("") && Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))) == 0 ){
-                          valor = super.carregarValor( getConverteNullInt( ((Vector) result.get(i)).get(7)) , getConverteNullInt( ((Vector) result.get(i)).get(8)),
-                                                        getConverteNullString( ((Vector) result.get(i)).get(4)), getConverteNullInt( ((Vector) result.get(i)).get(9)));
-                        }else{
-                            if (porPesquisa.equals("recebidas"))
+            try {
+                for (int i = 0; i < result.size(); i++) {
+                    if (((Vector) result.get(i)).get(38) == null) {
+                        quitacao = "";
+                        importacao = "";
+                        usuario = "";
+                        valor = 0;
+                    } else {
+                        if (!getConverteNullString(((Vector) result.get(i)).get(6)).equals("") && Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))) == 0) {
+                            valor = super.carregarValor(getConverteNullInt(((Vector) result.get(i)).get(7)), getConverteNullInt(((Vector) result.get(i)).get(8)),
+                                    getConverteNullString(((Vector) result.get(i)).get(4)), getConverteNullInt(((Vector) result.get(i)).get(9)));
+                        } else {
+                            if (porPesquisa.equals("recebidas")) {
                                 valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))); // VALOR DA BAIXA
-                            else
+                            } else {
                                 valor = Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(6))); // VALOR ORIGINAL
-                                
+                            }
                         }
-                        
-                        
-                        
-                        quitacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(39));
-                        importacao = DataHoje.converteData((Date)((Vector) result.get(i)).get(40));
+
+
+
+                        quitacao = DataHoje.converteData((Date) ((Vector) result.get(i)).get(39));
+                        importacao = DataHoje.converteData((Date) ((Vector) result.get(i)).get(40));
                         usuario = getConverteNullString(((Vector) result.get(i)).get(42));
                     }
-                    
+
                     repasse = Moeda.multiplicarValores(valor, Moeda.divisaoValores(
-                                                                            Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(48))), 100 // 48 % NR_REPASSE DA CONTA COBRANCA
-                                                                          )
-                                              );                    
-                    valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.valueOf(valor), Float.valueOf(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) ))),repasse);
-                    
+                            Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(48))), 100 // 48 % NR_REPASSE DA CONTA COBRANCA
+                            ));
+                    valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.valueOf(valor), Float.valueOf(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(43))))), repasse);
+
                     listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
-                                                                sindicato.getPessoa().getNome(),
-                                                                endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                                                                endSindicato.getEndereco().getLogradouro().getDescricao(),
-                                                                endSindicato.getNumero(),
-                                                                endSindicato.getComplemento(),
-                                                                endSindicato.getEndereco().getBairro().getDescricao(),
-                                                                endSindicato.getEndereco().getCep(),
-                                                                endSindicato.getEndereco().getCidade().getCidade(),
-                                                                endSindicato.getEndereco().getCidade().getUf(),
-                                                                sindicato.getPessoa().getTelefone1(),
-                                                                sindicato.getPessoa().getEmail1(),
-                                                                sindicato.getPessoa().getSite(),
-                                                                sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                                                                sindicato.getPessoa().getDocumento(),
-                                                                getConverteNullInt( ((Vector) result.get(i)).get(41) ), // ID JURIDICA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(10)), // NOME PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(11)), // ENDERECO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(12)), // LOGRADOURO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(13)), // NUMERO ENDERECO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(14)), // COMPLEMENTO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(15)), // BAIRRO PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(16)), // CEP PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(17)), // CIDADE PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(18)), // UF PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(19)), // TELEFONE PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(20)), // EMAIL PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(21)), // TIPO DOC PESSOA
-                                                                getConverteNullString( ((Vector) result.get(i)).get(22)), // DOCUMENTO PESSOA
-                                                                getConverteNullInt(((Vector) result.get(i)).get(23)), // ID CNAE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(24)), // NUMERO CNAE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(25)), // NOME CNAE
-                                                                getConverteNullInt(((Vector) result.get(i)).get(26)), // ID CONTABILIDADE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(27)), // NOME CONTABILIDADE
-                                                                getConverteNullString( ((Vector) result.get(i)).get(28)), // ENDERECO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(29)), // LOGRADOURO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(30)), // NUMERO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(31)), // COMPLEMENTO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(32)), // BAIRRO CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(33)), // CEP CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(34)), // CIDADE CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(35)), // UF CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(36)), // TELEFONE CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(37)), // EMAIL CONTABIL
-                                                                getConverteNullString( ((Vector) result.get(i)).get(1)), // NUMERO BOLETO
-                                                                getConverteNullString( ((Vector) result.get(i)).get(2)), // SERVICO
-                                                                getConverteNullString( ((Vector) result.get(i)).get(3)), // TIPO SERVICO
-                                                                getConverteNullString( ((Vector) result.get(i)).get(4)), // REFERENCIA
-                                                                DataHoje.converteData( (Date)((Vector) result.get(i)).get(5)), // VENCIMENTO
-                                                                quitacao, //result.get(i).getLoteBaixa().getQuitacao(),
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(47)) )),// VALOR BAIXA
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(43)) )),// TAXA
-                                                                importacao, //result.get(i).getLoteBaixa().getImportacao(),
-                                                                usuario,// result.get(i).getLoteBaixa().getUsuario().getPessoa().getNome()
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString( ((Vector) result.get(i)).get(44)) )),// MULTA,
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(45)) )),// JUROS,
-                                                                new BigDecimal(Float.parseFloat( getConverteNullString(((Vector) result.get(i)).get(46)) )),// CORRECAO,
-                                                                new BigDecimal(valor),// VALOR TOTAL
-                                                                new BigDecimal(repasse),// REPASSE
-                                                                new BigDecimal(valorLiquido),// VALOR LIQUIDO
-                                                                totaliza
-                                        ));
+                            sindicato.getPessoa().getNome(),
+                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                            endSindicato.getEndereco().getLogradouro().getDescricao(),
+                            endSindicato.getNumero(),
+                            endSindicato.getComplemento(),
+                            endSindicato.getEndereco().getBairro().getDescricao(),
+                            endSindicato.getEndereco().getCep(),
+                            endSindicato.getEndereco().getCidade().getCidade(),
+                            endSindicato.getEndereco().getCidade().getUf(),
+                            sindicato.getPessoa().getTelefone1(),
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
+                            sindicato.getPessoa().getDocumento(),
+                            getConverteNullInt(((Vector) result.get(i)).get(41)), // ID JURIDICA
+                            getConverteNullString(((Vector) result.get(i)).get(10)), // NOME PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(11)), // ENDERECO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(12)), // LOGRADOURO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(13)), // NUMERO ENDERECO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(14)), // COMPLEMENTO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(15)), // BAIRRO PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(16)), // CEP PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(17)), // CIDADE PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(18)), // UF PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(19)), // TELEFONE PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(20)), // EMAIL PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(21)), // TIPO DOC PESSOA
+                            getConverteNullString(((Vector) result.get(i)).get(22)), // DOCUMENTO PESSOA
+                            getConverteNullInt(((Vector) result.get(i)).get(23)), // ID CNAE
+                            getConverteNullString(((Vector) result.get(i)).get(24)), // NUMERO CNAE
+                            getConverteNullString(((Vector) result.get(i)).get(25)), // NOME CNAE
+                            getConverteNullInt(((Vector) result.get(i)).get(26)), // ID CONTABILIDADE
+                            getConverteNullString(((Vector) result.get(i)).get(27)), // NOME CONTABILIDADE
+                            getConverteNullString(((Vector) result.get(i)).get(28)), // ENDERECO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(29)), // LOGRADOURO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(30)), // NUMERO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(31)), // COMPLEMENTO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(32)), // BAIRRO CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(33)), // CEP CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(34)), // CIDADE CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(35)), // UF CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(36)), // TELEFONE CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(37)), // EMAIL CONTABIL
+                            getConverteNullString(((Vector) result.get(i)).get(1)), // NUMERO BOLETO
+                            getConverteNullString(((Vector) result.get(i)).get(2)), // SERVICO
+                            getConverteNullString(((Vector) result.get(i)).get(3)), // TIPO SERVICO
+                            getConverteNullString(((Vector) result.get(i)).get(4)), // REFERENCIA
+                            DataHoje.converteData((Date) ((Vector) result.get(i)).get(5)), // VENCIMENTO
+                            quitacao, //result.get(i).getLoteBaixa().getQuitacao(),
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47)))),// VALOR BAIXA
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(43)))),// TAXA
+                            importacao, //result.get(i).getLoteBaixa().getImportacao(),
+                            usuario,// result.get(i).getLoteBaixa().getUsuario().getPessoa().getNome()
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(44)))),// MULTA,
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(45)))),// JUROS,
+                            new BigDecimal(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(46)))),// CORRECAO,
+                            new BigDecimal(valor),// VALOR TOTAL
+                            new BigDecimal(repasse),// REPASSE
+                            new BigDecimal(valorLiquido),// VALOR LIQUIDO
+                            totaliza));
                 }
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaMovs);
                 JasperPrint print = JasperFillManager.fillReport(
-                         jasper,
-                         null,
-                         dtSource);
-                 arquivo = JasperExportManager.exportReportToPdf(print);
-                 
-                 nomeDownload = "relatorio_movimentos_"+DataHoje.horaMinuto().replace(":", "") +".pdf";
-                
-                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                 pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/relatorios");
-                
-                 sa.salvaNaPasta(pathPasta);
+                        jasper,
+                        null,
+                        dtSource);
+                arquivo = JasperExportManager.exportReportToPdf(print);
 
-                 qnt = listaMovs.size();
+                nomeDownload = "relatorio_movimentos_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+
+                SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+                pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+
+                sa.salvaNaPasta(pathPasta);
+
+                qnt = listaMovs.size();
             } catch (Exception erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 return null;
@@ -585,55 +594,55 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             return null;
         }
-        if (qnt > 0){
-            if (juridica.getId() != -1){
-                try{
+        if (qnt > 0) {
+            if (juridica.getId() != -1) {
+                try {
                     List<Pessoa> p = new ArrayList();
                     p.add(juridica.getPessoa());
-                    
-                    
-                    String[] ret = new String[2];
-                    if (!reg.isEnviarEmailAnexo()){
-                        ret = EnviarEmail.EnviarEmailPersonalizado(reg, 
-                                         p, 
-                                         " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />" +
-                                         " <a href='"+reg.getUrlPath()+"/Sindical/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/relatorios/"+nomeDownload+"' target='_blank'>Clique aqui para abrir relatório</a><br />",
-                                         new ArrayList(), 
-                                         "Envio de Relatório");
-                    }else{
-                        List<File> fls = new ArrayList<File>();
-                        fls.add(new File(pathPasta+"/"+nomeDownload));
-                            
-                        ret = EnviarEmail.EnviarEmailPersonalizado(reg, 
-                                                            p, 
-                                                            " <h5>Baixe seu relatório Anexado neste email</5><br /><br />", 
-                                                            fls, 
-                                                            "Envio de Relatório");
-                    }
-                    
-                    if (!ret[1].isEmpty())
-                        msgEmail = ret[1];
-                    else
-                        msgEmail = ret[0];
-   
-                }catch(Exception e){
 
+
+                    String[] ret = new String[2];
+                    if (!reg.isEnviarEmailAnexo()) {
+                        ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+                                p,
+                                " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
+                                + " <a href='" + reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
+                                new ArrayList(),
+                                "Envio de Relatório");
+                    } else {
+                        List<File> fls = new ArrayList<File>();
+                        fls.add(new File(pathPasta + "/" + nomeDownload));
+
+                        ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+                                p,
+                                " <h5>Baixe seu relatório Anexado neste email</5><br /><br />",
+                                fls,
+                                "Envio de Relatório");
+                    }
+
+                    if (!ret[1].isEmpty()) {
+                        msgEmail = ret[1];
+                    } else {
+                        msgEmail = ret[0];
+                    }
+
+                } catch (Exception e) {
                 }
-            }else
+            } else {
                 msgEmail = "Pesquisar uma Empresa para envio!";
+            }
             FacesContext.getCurrentInstance().responseComplete();
         }
         return "relatorioMovimentos";
     }
 
-
     public List getListaCidadesBase() {
-        if (listaCidadesBase.isEmpty()){
+        if (listaCidadesBase.isEmpty()) {
             GrupoCidadesDB db = new GrupoCidadesDBToplink();
             List select = new ArrayList();
             select.addAll(db.pesquisaCidadesBase());
-            for (int i = 0; i < select.size(); i++){
-                listaCidadesBase.add(new DataObject(false, ((Cidade)select.get(i))));
+            for (int i = 0; i < select.size(); i++) {
+                listaCidadesBase.add(new DataObject(false, ((Cidade) select.get(i))));
             }
         }
         return listaCidadesBase;
@@ -643,72 +652,74 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         this.listaCidadesBase = listaCidadesBase;
     }
 
-    public void marcarCidadesBase(){
-        for(int i = 0; i < listaCidadesBase.size(); i ++){
-            ((DataObject)listaCidadesBase.get(i)).setArgumento0(chkCidadesBase);
+    public void marcarCidadesBase() {
+        for (int i = 0; i < listaCidadesBase.size(); i++) {
+            ((DataObject) listaCidadesBase.get(i)).setArgumento0(chkCidadesBase);
         }
     }
 
-    public List<SelectItem> getListaTipoRelatorios(){
+    public List<SelectItem> getListaTipoRelatorios() {
         List<SelectItem> relatorios = new Vector<SelectItem>();
         int i = 0;
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
         List select = db.pesquisaTipoRelatorio(110);
-        while (i < select.size()){
-            relatorios.add (new SelectItem( new Integer(i),
-                                        (String) ((Relatorios) select.get(i)).getNome(),
-                                        Integer.toString(((Relatorios) select.get(i)).getId()) ));
+        while (i < select.size()) {
+            relatorios.add(new SelectItem(new Integer(i),
+                    (String) ((Relatorios) select.get(i)).getNome(),
+                    Integer.toString(((Relatorios) select.get(i)).getId())));
             i++;
         }
-    return relatorios;
+        return relatorios;
     }
 
-   public List<SelectItem> getListaServico(){
-       List<SelectItem> servicos = new Vector<SelectItem>();
-       if (chkContribuicao){
-           int i = 0;
-           ServicosDB db = new ServicosDBToplink();
-           List select = db.pesquisaTodos();
-           while (i < select.size()){
-               servicos.add(new SelectItem(new Integer(i),
-                      (String) ((Servicos) select.get(i)).getDescricao(),
-                      Integer.toString(((Servicos) select.get(i)).getId())  ));
-              i++;
-           }
-       }
-       return servicos;
-   }
+    public List<SelectItem> getListaServico() {
+        List<SelectItem> servicos = new Vector<SelectItem>();
+        if (chkContribuicao) {
+            int i = 0;
+            ServicosDB db = new ServicosDBToplink();
+            List select = db.pesquisaTodos();
+            while (i < select.size()) {
+                servicos.add(new SelectItem(new Integer(i),
+                        (String) ((Servicos) select.get(i)).getDescricao(),
+                        Integer.toString(((Servicos) select.get(i)).getId())));
+                i++;
+            }
+        }
+        return servicos;
+    }
 
-   public List<SelectItem> getListaTipoServico(){
-       List<SelectItem> tipoServico = new Vector<SelectItem>();
-       if (chkTipo){
-           int i = 0;
-           TipoServicoDB db = new TipoServicoDBToplink();
-           List select = db.pesquisaTodos();
-           while (i < select.size()){
-               tipoServico.add(new SelectItem(new Integer(i),
-                      (String) ((TipoServico) select.get(i)).getDescricao(),
-                      Integer.toString(((TipoServico) select.get(i)).getId())  ));
-              i++;
-           }
-       }
-       return tipoServico;
-   }
+    public List<SelectItem> getListaTipoServico() {
+        List<SelectItem> tipoServico = new Vector<SelectItem>();
+        if (chkTipo) {
+            int i = 0;
+            TipoServicoDB db = new TipoServicoDBToplink();
+            List select = db.pesquisaTodos();
+            while (i < select.size()) {
+                tipoServico.add(new SelectItem(new Integer(i),
+                        (String) ((TipoServico) select.get(i)).getDescricao(),
+                        Integer.toString(((TipoServico) select.get(i)).getId())));
+                i++;
+            }
+        }
+        return tipoServico;
+    }
 
-   public String getConverteNullString(Object object){
-       if (object == null)
-           return "";
-       else
-           return String.valueOf(object);
-   }
+    public String getConverteNullString(Object object) {
+        if (object == null) {
+            return "";
+        } else {
+            return String.valueOf(object);
+        }
+    }
 
-   public int getConverteNullInt(Object object){
-       if (object == null)
-           return 0;
-       else
-           return (Integer)object;
-   }
-   
+    public int getConverteNullInt(Object object) {
+        if (object == null) {
+            return 0;
+        } else {
+            return (Integer) object;
+        }
+    }
+
     @Override
     public void carregarFolha() {
         throw new UnsupportedOperationException("Not supported yet.");
@@ -719,9 +730,9 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public String novo(){
-       juridica = new Juridica();
-       return null;
+    public String novo() {
+        juridica = new Juridica();
+        return null;
     }
 
     public int getIdRelatorios() {
@@ -797,7 +808,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
     }
 
     public Juridica getJuridica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
             juridica = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         }
@@ -807,7 +818,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
     public void setJuridica(Juridica juridica) {
         this.juridica = juridica;
     }
-    
+
     public String getTipoDataPesquisa() {
         return tipoDataPesquisa;
     }
@@ -889,10 +900,11 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
     }
 
     public String getRenEnviarEmail() {
-        if (chkEmpresa)
+        if (chkEmpresa) {
             renEnviarEmail = "false";
-        else
+        } else {
             renEnviarEmail = "true";
+        }
         return renEnviarEmail;
     }
 
@@ -949,14 +961,14 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
     }
 
     public List getListaContabilidades() {
-        if (listaContabilidades.isEmpty()){
+        if (listaContabilidades.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
             List select = new ArrayList();
             select.addAll(db.pesquisaContabilidade());
-            for (int i = 0; i < select.size(); i++){
-                listaContabilidades.add(new DataObject(false, ((Juridica)select.get(i))));
+            for (int i = 0; i < select.size(); i++) {
+                listaContabilidades.add(new DataObject(false, ((Juridica) select.get(i))));
             }
-        }          
+        }
         return listaContabilidades;
     }
 
@@ -964,11 +976,11 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean{
         this.listaContabilidades = listaContabilidades;
     }
 
-    public void marcarContabilidades(){
-        for(int i = 0; i < listaContabilidades.size(); i ++){
-            ((DataObject)listaContabilidades.get(i)).setArgumento0(chkContabilidades);
+    public void marcarContabilidades() {
+        for (int i = 0; i < listaContabilidades.size(); i++) {
+            ((DataObject) listaContabilidades.get(i)).setArgumento0(chkContabilidades);
         }
-    }    
+    }
 
     public boolean isTotaliza() {
         return totaliza;

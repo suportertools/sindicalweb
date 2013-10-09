@@ -30,11 +30,11 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
             return null;
         }
     }
-    
+
     @Override
     public List<Usuario> pesquisaTodosPorDescricao(String descricaoPesquisa) {
         try {
-            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU WHERE UPPER(USU.pessoa.nome) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' OR UPPER(USU.login) LIKE '%"+descricaoPesquisa.toUpperCase()+"%' ORDER BY USU.pessoa.nome ASC ");
+            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU WHERE UPPER(USU.pessoa.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' OR UPPER(USU.login) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' ORDER BY USU.pessoa.nome ASC ");
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -66,7 +66,7 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
         Usuario result = null;
         try {
             Query qry = getEntityManager().createQuery(
-                      " SELECT usu"
+                    " SELECT usu"
                     + "   FROM Usuario usu"
                     + "  WHERE usu.login = :log"
                     + "    AND usu.senha = :sen");
@@ -75,10 +75,10 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
             if (!qry.getResultList().isEmpty()) {
                 result = (Usuario) qry.getSingleResult();
                 if (result.getId() != 1) {
-                    if(!result.getAtivo()) {
+                    if (!result.getAtivo()) {
                         result = null;
                     }
-                }                
+                }
             }
         } catch (Exception e) {
             // e.printStackTrace();
