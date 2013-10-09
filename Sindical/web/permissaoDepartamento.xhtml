@@ -83,10 +83,10 @@
                             </rich:panel>   
                             <rich:panel style="border: 0; background: transparent;">
                                 <h:panelGrid columns="1">
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Todas"       style="width: 100px;" action="#{permissaoBean.adicionarTodasPermissaoDpto}" id="idDPClick" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Adicionar"   style="width: 100px;" action="#{permissaoBean.adicionarPermissaoDpto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" id="idAdicionar"/>
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Remover"     style="width: 100px;" action="#{permissaoBean.excluirPermissaoDepto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Nenhum"      style="width: 100px;"  action="#{permissaoBean.excluirTodasPermissaoDepto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Todas"       style="width: 100px;" action="#{permissaoBean.adicionarTodasPermissaoDpto}" id="idDPClick" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status"/>
+                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Adicionar"   style="width: 100px;" action="#{permissaoBean.adicionarPermissaoDpto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" id="idAdicionar" status="i_status"/>
+                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Remover"     style="width: 100px;" action="#{permissaoBean.excluirPermissaoDepto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}" status="i_status"/>
+                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Nenhum"      style="width: 100px;"  action="#{permissaoBean.excluirTodasPermissaoDepto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}" status="i_status"/>
                                 </h:panelGrid>
                             </rich:panel>
                             <rich:panel>
