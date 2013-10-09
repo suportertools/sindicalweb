@@ -13,7 +13,7 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
         String textqry = " select  "
                         + "     se.ds_descricao as servico,  "
                         + "     tp.ds_descricao as tipo, "
-                        +       "m.ds_referencia, "
+                        + "     m.ds_referencia, "
                         + "     m.dt_vencimento as vencimento, "
                         + "     m.nr_valor as valor, "
                         + "     func_multa_ass(m.id)+func_juros_ass(m.id)+func_correcao_ass(m.id) as acrescimo, "
@@ -23,12 +23,12 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                         + "     nr_valor_baixa as valor_pago,  "
                         + "     m.ds_es as es, "
                         + "     p.ds_nome as responsavel, "
-                        + "     b.ds_nome as beneficiario, "
-                        + "     t.ds_nome as titular, "
+                        + "     b.ds_nome as beneficiario, " //12
+                        + "     t.ds_nome as titular, " //13
                         + "     m.id as id_movimento, "
                         + "     m.id_lote as lote, "
-                        + "     l.dt_lancamento as criacao,  "
-                        + "     m.ds_documento as boleto, "
+                        + "     l.dt_lancamento as criacao,  " //16
+                        + "     m.ds_documento as boleto, " //17
                         + "     func_intervalo_dias(m.dt_vencimento,CURRENT_DATE) as dias_atraso, "
                         + "     func_multa_ass(m.id) as multa,  "
                         + "     func_juros_ass(m.id) as juros, "

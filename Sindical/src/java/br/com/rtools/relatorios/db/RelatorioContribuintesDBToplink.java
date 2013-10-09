@@ -106,19 +106,24 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
                            "   left join end_descricao_endereco as decon on decon.id = econ.id_descricao_endereco"+
                            "   left join end_bairro             as bcon  on bcon.id = econ.id_bairro";
 
+               // CONVENCAO GRUPO --------------------------------------------
+               String cg_where = "", cg_and = "";
+               if (idGrupos.length() != 0){
+                       //textQuery += " and c.id in (select gc.id_cidade from arr_grupo_cidades gc where gc.id_grupo_cidade in ("+idGrupos+") group by gc.id_cidade)";
+                       //textQuery += " and c.id in (select gc.id_cidade from arr_grupo_cidades gc where gc.id_grupo_cidade in ("+idGrupos+") group by gc.id_cidade)";
+                       cg_where += " where c.id_grupo_cidade in ("+idGrupos+")";
+                       cg_and += " and c.id_grupo_cidade in ("+idGrupos+")";
+               }
+               
                // CONDICAO -----------------------------------------------------
                if (condicao.equals("contribuintes")){
-/*                   
-                   textQuery += "   where (j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is null)"+
-                                "    or j.id in (select ci.id_juridica from arr_contribuintes_inativos ci)"+
-*/
-                   textQuery += "   where (j.id in (select c.id_juridica from arr_contribuintes_vw c) ) ";
+                  textQuery += " where (j.id in (select c.id_juridica from arr_contribuintes_vw c "+cg_where+") ) ";
                }else if (condicao.equals("ativos")){
-                   textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is null) ";
+                   textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is null "+cg_and+") ";
                }else if (condicao.equals("inativos")){
-                   textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is not null)";
+                   textQuery += "  where j.id in (select c.id_juridica from arr_contribuintes_vw c where c.dt_inativacao is not null "+cg_and+")";
                }else if (condicao.equals("naoContribuinte")){
-                   textQuery += "  where (j.id not in (select c.id_juridica from arr_contribuintes_vw c)) ";
+                   textQuery += "  where (j.id not in (select c.id_juridica from arr_contribuintes_vw c "+cg_where+")) ";
                }
                
                // ESCRITORIO ---------------------------------------------------
@@ -160,11 +165,6 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
                        textQuery += " and pe.id in (select pe2.id from pes_pessoa_endereco pe2 where pe2.id_tipo_endereco = 5 and pe2.id_endereco in ("+idEndereco+") and pe2.ds_numero in ("+dsNumero+"))";
                    else
                        textQuery += " and pe.id not in (select pe2.id from pes_pessoa_endereco pe2 where pe2.id_tipo_endereco = 5 and pe2.id_endereco in ("+idEndereco+") and pe2.ds_numero in ("+dsNumero+"))";
-               }
-
-               // CONVENCAO GRUPO --------------------------------------------
-               if (idGrupos.length() != 0){
-                       textQuery += " and c.id in (select gc.id_cidade from arr_grupo_cidades gc where gc.id_grupo_cidade in ("+idGrupos+") group by gc.id_cidade)";
                }
 
                if (bairros.length() != 0){

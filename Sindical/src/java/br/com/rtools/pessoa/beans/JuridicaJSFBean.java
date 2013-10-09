@@ -863,7 +863,90 @@ public class JuridicaJSFBean {
         return "pessoaJuridica";
     }
 
-    public String editarContabilidade() {
+    public String editarEmpresaPertencente(){
+       juridica = (Juridica)listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
+       if (juridica.getContabilidade() == null)
+           contabilidade = new Juridica();
+       else
+           contabilidade = juridica.getContabilidade();
+       contabilidade = juridica.getContabilidade();
+       String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+       descPesquisa = "";
+       porPesquisa = "nome";
+       comoPesquisa = "";
+       
+       if(!getListaPorte().isEmpty()){
+           for(int o = 0; o < listaPorte.size(); o++){
+               if(Integer.parseInt( listaPorte.get(o).getDescription() ) == juridica.getPorte().getId()){
+                   idPorte = o;
+               }
+           }
+       }
+       
+       if (url != null){
+           if(!getListaTipoDocumento().isEmpty()){
+               for(int o = 0; o < listaTipoDocumento.size(); o++){
+                   if(Integer.parseInt( listaTipoDocumento.get(o).getDescription() ) == juridica.getPessoa().getTipoDocumento().getId()){
+                       setIdTipoDocumento(o);
+                   }
+               }
+           }
+           if (juridica.getContabilidade() == null){
+               renChkEndereco = "false";
+           }else{
+               renChkEndereco = "true";
+           }
+           renNovoEndereco = "false";
+           renEndereco = "false";
+           alterarEnd = true;
+           listaEnd = new ArrayList();
+           enderecoCobranca = "NENHUM";
+           listaContribuintesInativos.clear();
+           getListaEnderecos();
+           return "pessoaJuridica";
+       }
+       return "pessoaJuridica";
+   }
+
+   public String editarEmpresaContabilidade(){
+       JuridicaDB db = new JuridicaDBToplink();
+       juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
+       if (juridica.getContabilidade() == null)
+           contabilidade = new Juridica();
+       else
+           contabilidade = juridica.getContabilidade();
+       String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+       descPesquisa = "";
+       porPesquisa = "nome";
+       comoPesquisa = "";
+       if (url != null){
+           if(!getListaTipoDocumento().isEmpty()){
+               for(int o = 0; o < listaTipoDocumento.size(); o++){
+                   if(Integer.parseInt( listaTipoDocumento.get(o).getDescription() ) == juridica.getPessoa().getTipoDocumento().getId()){
+                       setIdTipoDocumento(o);
+                   }
+               }
+           }
+           if (juridica.getContabilidade() == null){
+               renChkEndereco = "false";
+           }else{
+               renChkEndereco = "true";
+           }
+           renNovoEndereco = "false";
+           renEndereco = "false";
+           alterarEnd = true;
+           listaEnd = new ArrayList();
+           enderecoCobranca = "NENHUM";
+           listaContribuintesInativos.clear();
+           getListaEnderecos();
+           return "pessoaJuridica";
+       }
+       return "pessoaJuridica";
+   }   
+   
+   public String editarContabilidade(){
         contabilidade = (Juridica) listaContabilidade.get(idIndexContabilidade);
         juridica.setContabilidade(contabilidade);
         juridica.setEmailEscritorio(true);
@@ -1503,82 +1586,6 @@ public class JuridicaJSFBean {
             }
         }
         return listaEmpresasPertencentes;
-    }
-
-    public String editarEmpresaPertencente() {
-        juridica = (Juridica) listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
-        if (juridica.getContabilidade() == null) {
-            contabilidade = new Juridica();
-        } else {
-            contabilidade = juridica.getContabilidade();
-        }
-        contabilidade = juridica.getContabilidade();
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        descPesquisa = "";
-        porPesquisa = "nome";
-        comoPesquisa = "";
-        if (url != null) {
-            if (!getListaTipoDocumento().isEmpty()) {
-                for (int o = 0; o < listaTipoDocumento.size(); o++) {
-                    if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
-                        setIdTipoDocumento(o);
-                    }
-                }
-            }
-            if (juridica.getContabilidade() == null) {
-                renChkEndereco = "false";
-            } else {
-                renChkEndereco = "true";
-            }
-            renNovoEndereco = "false";
-            renEndereco = "false";
-            alterarEnd = true;
-            listaEnd = new ArrayList();
-            enderecoCobranca = "NENHUM";
-            listaContribuintesInativos.clear();
-            getListaEnderecos();
-            return "pessoaJuridica";
-        }
-        return "pessoaJuridica";
-    }
-
-    public String editarEmpresaContabilidade() {
-        JuridicaDB db = new JuridicaDBToplink();
-        juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
-        if (juridica.getContabilidade() == null) {
-            contabilidade = new Juridica();
-        } else {
-            contabilidade = juridica.getContabilidade();
-        }
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        descPesquisa = "";
-        porPesquisa = "nome";
-        comoPesquisa = "";
-        if (url != null) {
-            if (!getListaTipoDocumento().isEmpty()) {
-                for (int o = 0; o < listaTipoDocumento.size(); o++) {
-                    if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
-                        setIdTipoDocumento(o);
-                    }
-                }
-            }
-            if (juridica.getContabilidade() == null) {
-                renChkEndereco = "false";
-            } else {
-                renChkEndereco = "true";
-            }
-            renNovoEndereco = "false";
-            renEndereco = "false";
-            alterarEnd = true;
-            listaEnd = new ArrayList();
-            enderecoCobranca = "NENHUM";
-            listaContribuintesInativos.clear();
-            getListaEnderecos();
-            return "pessoaJuridica";
-        }
-        return "pessoaJuridica";
     }
 
     public void enviarEmail() {

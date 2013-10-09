@@ -58,14 +58,6 @@
                                 <rich:tab header="ARRECADAÇÃO" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">
                                     <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
                                         <h:column>
-                                            <h:outputLabel value="Meses inadimplentes: " styleClass="fontePadrao"/>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:inputText id="idper" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentesAgenda}" disabled="#{!registroEmpresarialBean.registro.bloquearHomologacao}" class="textoDireita"/>
-                                            <h:outputLabel value=" meses de atraso" styleClass="fontePadrao"/>
-                                            <h:outputLabel value=" ( zero para meses indefinidos )" styleClass="fontePadraoVermelho" style="font-size: 8pt"/>
-                                        </h:column>                                        
-                                        <h:column>
                                             <h:outputLabel value="Imprimir Boleto de Arrecadação até: " styleClass="fontePadrao"/>
                                         </h:column>                                        
                                         <h:column>
@@ -95,14 +87,6 @@
                                             <h:outputLabel for="i_enviar_anexo" value=" Enviar email por Anexo" styleClass="fontePadrao"/>                                            
                                         </h:column>                                        
                                         <h:column>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="chkbloAtras" value="#{registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma dias_atraso"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="chkbloAtras" value=" Bloqueia boletos atrasados" styleClass="fontePadrao"/>
-                                        </h:column> 
-                                        <h:column>
                                             <h:outputText value="Limite para envio de Notificações" styleClass="fontePadrao"/>
                                         </h:column>
                                         <h:column>
@@ -118,15 +102,26 @@
                                         </h:column>
                                         <h:column>
                                             <h4 class="border-radius padding margin-top-maior" style="background: #e0dfdf">WEB Contribuinte/Contabilidade</h4>
-                                        </h:column>                                        
+                                        </h:column> 
+                                        
                                         <h:column>
                                         </h:column>
+                                         
+                                        <h:column>
+                                        </h:column>                                        
+                                        <h:column>
+                                            <h:selectBooleanCheckbox id="chkbloAtras" value="#{registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}">
+                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma dias_atraso"/>
+                                            </h:selectBooleanCheckbox>
+                                            <h:outputLabel for="chkbloAtras" value=" Bloqueia boletos atrasados" styleClass="fontePadrao"/>
+                                        </h:column> 
                                         <h:column>
                                             <h:outputText value="Qtde Dias" style="font-size: 8pt"/>
                                         </h:column>
+                                        
                                         <h:column>
-                                            <h:inputText id="dias_atraso" value="#{registroEmpresarialBean.registro.diasBloqueiaAtrasadosWeb}" size="2" title="Quantidades de dias permitido após o Vencimento" disabled="#{!registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}"/>
-                                            <h:outputText value=" Quantidades de dias permitido após o Vencimento" style="font-size: 8pt" />
+                                            <h:inputText id="dias_atraso" value="#{registroEmpresarialBean.registro.diasBloqueiaAtrasadosWeb}" size="2" title="Quantidades de dias permitido após o vencimento" disabled="#{!registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}"/>
+                                            <h:outputText value=" Quantidade de dias permitido após o Vencimento na geração e impressão de Boletos via Web" style="font-size: 8pt" />
                                         </h:column>
                                         <h:column>
                                         </h:column>                                        
@@ -175,46 +170,61 @@
                                 <rich:tab header="HOMOLOGAÇÃO" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 4}">
                                     <h:panelGrid cellpadding="3">
                                         <h:column>
-                                            <h:selectBooleanCheckbox id="i_per" value="#{registroEmpresarialBean.registro.bloquearHomologacao}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()"  render="this outConfirma idper"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_per" value=" Permitir agendamento para empresas em débito " styleClass="fontePadrao"/>
-                                        </h:column> 
-                                        <h:column>
                                             <h:selectBooleanCheckbox id="chkSenhaHom" value="#{registroEmpresarialBean.registro.senhaHomologacao}">
                                                 <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
                                             </h:selectBooleanCheckbox>                                                
                                             <h:outputLabel for="chkSenhaHom" value=" Senha Homologação" styleClass="fontePadrao"/>
-                                        </h:column>                                        
+                                        </h:column> 
+                                        
                                         <h:column>
                                             <h:selectBooleanCheckbox id="chkAgendaSem" value="#{registroEmpresarialBean.registro.agendarSemHorarioWeb}">
                                                 <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
                                             </h:selectBooleanCheckbox>                                                
                                             <h:outputLabel for="chkAgendaSem" value=" Agendar Sem horário" styleClass="fontePadrao"/>                                        
-                                        </h:column>                                        
+                                        </h:column>   
+                                        
                                         <h:column>
                                             <h:outputLabel value="Documentos Necessários Homologação" styleClass="fontePadrao negrito"/>
                                             <div class="clear"></div>
                                             <h:inputTextarea value="#{registroEmpresarialBean.registro.documentoHomologacao}" cols="75" rows="7" />                                            
-                                        </h:column>                                        
+                                        </h:column>  
+                                        
                                         <h:column>
                                             <h:outputLabel value="Formas de Pagamento Homologação" styleClass="fontePadrao negrito"/>
                                             <div class="clear"></div>
                                             <h:inputTextarea value="#{registroEmpresarialBean.registro.formaPagamentoHomologacao}" cols="75" rows="7" />                                            
-                                        </h:column>                                        
+                                        </h:column>  
+                                        
                                         <h:column>
                                             <h4 class="border-radius padding margin-top-maior" style="background: #e0dfdf">WEB Contribuinte/Contabilidade</h4>
-                                        </h:column>                                        
+                                        </h:column>  
+                                        
                                         <h:column>
-                                        </h:column>                                        
+                                        </h:column> 
+                                        
                                         <h:column>
-                                        </h:column>                                        
+                                        </h:column>  
+                                        
                                         <h:column>
                                             <h:selectBooleanCheckbox id="i_agendamento_web" value="#{registroEmpresarialBean.registro.agendamentoWeb}" title="Disponibilizar pelo site">
                                                 <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
                                             </h:selectBooleanCheckbox>
                                             <h:outputLabel for="i_agendamento_web" value="Agendamento WEB" styleClass="fontePadrao" title="Disponibilizar pelo site"/>
-                                        </h:column>                                         
+                                        </h:column>  
+                                        
+                                        <h:column>
+                                            <h:selectBooleanCheckbox id="i_per" value="#{registroEmpresarialBean.registro.bloquearHomologacao}">
+                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()"  render="this outConfirma idper"/>
+                                            </h:selectBooleanCheckbox>
+                                            <h:outputLabel for="i_per" value=" Permitir agendamento para empresas em débito " styleClass="fontePadrao"/>
+                                        </h:column>
+                                                                              
+                                        
+                                        <h:column>
+                                            <h:inputText id="idper" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentesAgenda}" disabled="#{!registroEmpresarialBean.registro.bloquearHomologacao}" class="textoDireita" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                            <h:outputLabel value=" meses de atraso" styleClass="fontePadrao" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                            <h:outputLabel value=" ( zero para meses indefinidos )" styleClass="fontePadraoVermelho" style="font-size: 8pt" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                        </h:column>    
                                     </h:panelGrid>                                    
                                 </rich:tab>
                             </rich:tabPanel>

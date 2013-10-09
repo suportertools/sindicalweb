@@ -23,7 +23,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             Query qry = getEntityManager().createNamedQuery("Movimento.pesquisaID");
             qry.setParameter("pid", id);
             result = (Movimento) qry.getSingleResult();
-        } catch (Exception e) {
+        } catch (EJBQLException e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -2004,4 +2005,30 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return new ArrayList();
     }
+    
+    @Override
+    public Movimento pesquisaMovimentosAcordado(int idPessoa, String idRef, int idTipoServ, int idServicos) {
+        int i = 0;
+        String texto = "";
+
+        try {
+            texto = "select mov "
+                    + "  from Movimento mov            "
+                    + " where mov.referencia = :r      "
+                    + "   and mov.tipoServico.id = :t  "
+                    + "   and mov.servicos.id = :s     "
+                    + "   and mov.pessoa.id  = :p      "
+                    + "   and mov.ativo = false "
+                    + "   and mov.acordo is not null";
+            Query qry = getEntityManager().createQuery(texto);
+            qry.setParameter("r", idRef);
+            qry.setParameter("t", idTipoServ);
+            qry.setParameter("s", idServicos);
+            qry.setParameter("p", idPessoa);
+            return (Movimento) qry.getSingleResult();
+        } catch (Exception e) {
+
+            return null;
+        }
+    }    
 }

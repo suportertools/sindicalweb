@@ -138,6 +138,10 @@
                         <h:panelGrid columns="4" id="idPainelG5">
                             <h:column>
                                 <h:panelGrid columns="3">
+                                    <h:outputLabel value="Centro Comercial" styleClass="fonteFranklinNegrito"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid columns="3">
                                     <h:selectOneRadio id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}" styleClass="fontePadrao">
                                         <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
                                         <f:selectItem itemValue="com"    itemLabel="Com"/>
@@ -145,8 +149,7 @@
                                         <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
                                     </h:selectOneRadio>
                                 </h:panelGrid>
-
-                                <div style="overflow:auto; height:130px; width:300px">
+                                <div style="overflow:auto; height:150px; width:300px">
                                     <rich:dataTable value="#{relatorioContribuintesBean.listaCentroComercial}" var="linha" id="tblCentro">
                                         <rich:column styleClass="coluna">
                                             <f:facet name="header">
@@ -174,63 +177,9 @@
 
                             <h:column>
                                 <h:panelGrid columns="3">
-                                    <h:outputLabel value="Convenções e Grupos" styleClass="fonteFranklinNegrito"/>
+                                    <h:outputLabel value="Convenções" styleClass="fonteFranklinNegrito"/>
                                 </h:panelGrid>
 
-                                <div style="overflow:auto; height: 130px; width: 230px">
-                                    <h:panelGrid columns="1">
-                                        <rich:dataTable value="#{relatorioContribuintesBean.listaConvencao}" var="linha" style="width:100%" id="tblConGrupo">
-                                            <rich:column styleClass="coluna">
-                                                <f:facet name="header">
-                                                    <h:selectBooleanCheckbox id="i_chk_t" value="#{relatorioContribuintesBean.chkConvencaoPesquisa}">
-                                                        <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosConv}" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                                    </h:selectBooleanCheckbox>
-                                                </f:facet>
-                                                <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                    <a4j:ajax event="change" listener="#{relatorioContribuintesBean.atualizaGridGrupo}" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                                </h:selectBooleanCheckbox>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Convenção"/>
-                                                </f:facet>
-                                                <h:outputText value="#{linha.argumento1.descricao}"/>
-                                            </rich:column>
-                                        </rich:dataTable>
-                                    </h:panelGrid>
-                                </div>
-                            </h:column>
-
-                            <h:column>
-                                <div style="overflow:auto; height:130px; width:200px">
-                                    <h:panelGrid columns="1">
-                                        <rich:dataTable value="#{relatorioContribuintesBean.listaGrupo}" style="width: 100%" var="linha" id="tblGrupo">
-                                            <rich:column styleClass="coluna">
-                                                <f:facet name="header">
-                                                    <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkGrupo}">
-                                                        <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosGrupo}" render="tblGrupo"/>
-                                                    </h:selectBooleanCheckbox>
-                                                </f:facet>
-                                                <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                    <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                                </h:selectBooleanCheckbox>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Grupo Cidade"/>
-                                                </f:facet>
-                                                <h:outputText value="#{linha.argumento1.descricao}"/>
-                                            </rich:column>
-                                        </rich:dataTable>
-                                    </h:panelGrid>
-                                </div>
-                            </h:column>
-                        </h:panelGrid>
-
-                        <h:panelGrid columns="2" id="idPainelG6">
-                            <h:column>
                                 <rich:panel>
                                     <div style="overflow:auto; height:150px; width:200px">
                                         <rich:dataTable value="#{relatorioContribuintesBean.listaConvencoes}" var="linha" id="tblConvencao">
@@ -257,24 +206,57 @@
                             </h:column>
 
                             <h:column>
-                                <rich:panel style=" margin-left: 5px">
-                                    <div style="overflow:auto; height:150px; width:425px">
-                                        <rich:dataTable value="#{relatorioContribuintesBean.listaCnaeConvencao}" var="linha" id="tblCnaeConvencao">
-                                        <rich:column styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkCnaeConvencao}">
-                                                    <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosCnae}" render="tblCnaeConvencao"/>
-                                                </h:selectBooleanCheckbox>
-                                            </f:facet>
-                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" />
-                                        </rich:column>
+                                <h:panelGrid columns="3">
+                                    <h:outputLabel value=" Grupos" styleClass="fonteFranklinNegrito"/>
+                                </h:panelGrid>
+                                <rich:panel>
+                                    <div style="overflow:auto; height:150px; width:200px">
+                                        <h:panelGrid columns="1">
+                                            <rich:dataTable value="#{relatorioContribuintesBean.listaGrupo}" style="width: 100%" var="linha" id="tblGrupo">
+                                                <rich:column styleClass="coluna">
+                                                    <f:facet name="header">
+                                                        <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkGrupo}">
+                                                            <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosGrupo}" render="tblGrupo"/>
+                                                        </h:selectBooleanCheckbox>
+                                                    </f:facet>
+                                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
+                                                        <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </rich:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Cnae"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.argumento1.cnae.numero} - #{linha.argumento1.cnae.cnae}"/>
-                                        </rich:column>
+                                                <rich:column>
+                                                    <f:facet name="header">
+                                                        <h:outputText value="Grupo Cidade"/>
+                                                    </f:facet>
+                                                    <h:outputText value="#{linha.argumento1.descricao}"/>
+                                                </rich:column>
+                                            </rich:dataTable>
+                                        </h:panelGrid>
+                                    </div>
+                                </rich:panel>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1" id="idPainelG6">
+                            <h:column>
+                                <rich:panel style=" margin-left: 5px">
+                                    <div style="overflow:auto; height:150px; width:725px">
+                                        <rich:dataTable value="#{relatorioContribuintesBean.listaCnaeConvencao}" var="linha" id="tblCnaeConvencao">
+                                            <rich:column styleClass="coluna">
+                                                <f:facet name="header">
+                                                    <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkCnaeConvencao}">
+                                                        <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosCnae}" render="tblCnaeConvencao"/>
+                                                    </h:selectBooleanCheckbox>
+                                                </f:facet>
+                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" />
+                                            </rich:column>
+
+                                            <rich:column>
+                                                <f:facet name="header">
+                                                    <h:outputText value="Cnae"/>
+                                                </f:facet>
+                                                    <h:outputText value="#{linha.argumento1.cnae.numero} - #{linha.argumento1.cnae.cnae}"/>
+                                            </rich:column>
                                         </rich:dataTable>
                                     </div>
                                 </rich:panel>

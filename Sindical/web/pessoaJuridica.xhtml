@@ -34,8 +34,8 @@
                                     <h:outputLabel value="Cnae: " styleClass="fontePadrao"/>
                                     <h:outputText  value="#{juridicaBean.juridica.cnae.numero} - " styleClass="fontePadraoNegrito"/>
                                     <h:outputLabel value="#{juridicaBean.juridica.cnae.cnae}" styleClass="fontePadraoNegrito"/>
-                                    <h:outputText value="#{juridicaBean.cnaeContribuinte}" styleClass="fonteCnaeContribuinte" style="color: #{juridicaBean.colorContri}; margin-left: 20px;"/>
-                                    <a4j:commandButton id="idExcluirCnae" image="/Imagens/excluirp.png" action="#{juridicaBean.limparCnae()}" render="i_panel_cnae idExcluirCnae" title="Limpar CNAE" rendered="#{juridicaBean.juridica.cnae != null}" />
+                                    <h:outputText value="#{juridicaBean.cnaeContribuinte}" styleClass="fonteCnaeContribuinte" style="color: #{juridicaBean.colorContri}; margin-left: 20px;" rendered="#{juridicaBean.juridica.cnae != null and juridicaBean.juridica.cnae.id != -1} "/>
+                                    <a4j:commandButton id="idExcluirCnae" image="/Imagens/excluirp.png" action="#{juridicaBean.limparCnae()}" render="i_panel_cnae idExcluirCnae" title="Limpar CNAE" rendered="#{juridicaBean.juridica.cnae != null and juridicaBean.juridica.cnae.id != -1}" />
                                 </h:panelGrid>
 
                                 <h:panelGrid columns="2" columnClasses="coluna1, coluna2" id="i_panel_dados">
@@ -110,9 +110,7 @@
                                     <h:outputText value="Serviço Contabil: " styleClass="fontePadrao"/>
 
                                     <h:commandLink value="#{juridicaBean.juridica.contabilidade.pessoa.nome}" action="#{juridicaBean.editarEmpresaContabilidade}" style="font-weight:bold;"/>
-                                    <a4j:commandButton image="/Imagens/excluir.png" rendered="#{ (juridicaBean.juridica.contabilidade != null)}" title="Excluir Serviço Contábil"
-                                        action="#{juridicaBean.btnExcluirContabilidadePertencente}">
-                                    </a4j:commandButton>
+                                    <a4j:commandButton image="/Imagens/excluir.png" rendered="#{ (juridicaBean.juridica.contabilidade != null)}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" />
                                     
                                     <h:selectBooleanCheckbox id="i_chk_contabil" value="#{juridicaBean.chkEndContabilidade}" rendered="#{(juridicaBean.juridica.contabilidade != null)}">
                                         <a4j:ajax event="change" render="i_p"/>

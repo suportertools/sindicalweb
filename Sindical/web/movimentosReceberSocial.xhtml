@@ -25,24 +25,27 @@
                     <br /><br />
                     <div class="divMae divFundo">
                         <h:panelGrid style="float: left">
-                            <h:selectOneMenu value="" style="padding: 5px">
+                            
+                        </h:panelGrid>
+                        <h:panelGrid style="float: left">
+                            <h:selectOneMenu value="#{movimentosSocialBean.porPesquisa}" style="padding: 5px">
                                 <a4j:ajax event="change" render="this" />
                                 <f:selectItem itemValue="todos"    itemLabel="Todos"/>
                                 <f:selectItem itemValue="abertos"  itemLabel="Abertos"/>
                                 <f:selectItem itemValue="quitados" itemLabel="Quitados"/>
                             </h:selectOneMenu>
                         </h:panelGrid>
-                        <h:panelGrid style="clear: both" >
+                        <h:panelGrid>
                             <rich:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma pendência foi encontrada" rows="13">
                                 <rich:column style="text-align: center;">
                                     <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                        <a4j:ajax event="change" render="@this"/>
+                                        <a4j:ajax event="change" render="tbl soma_total soma_acrescimo soma_total_calculado"/>
                                     </h:selectBooleanCheckbox>
                                 </rich:column>
                                 
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="ID"/></f:facet>
-                                    <h:outputText value="#{linha.argumento1}" />
+                                    <a4j:commandLink value="#{linha.argumento1}" action="#{movimentosSocialBean.complementoPessoa(linha)}" oncomplete="#{rich:component('popup')}.show(); return false;" render="popup"/>
                                 </rich:column>
                                 
                                 <rich:column>
@@ -105,8 +108,88 @@
                             </rich:dataTable>
                         </h:panelGrid>
                     </div>
+                    
                 </center>
+                <h:panelGrid styleClass="divMae" columns="10">
+                    <h:column>
+                        <h:outputText value="Total: " styleClass="fontePadraoPequeno"/>
+                        <h:outputText id="soma_total" value="#{movimentosSocialBean.total}" styleClass="fontePadraoNegrito" />
+                    </h:column>
+                    
+                    <h:column>
+                        <h:outputText value="Acréscimo: " styleClass="fontePadraoPequeno"/>
+                        <h:outputText id="soma_acrescimo" value="#{movimentosSocialBean.acrescimo}" styleClass="fontePadraoNegrito" />
+                    </h:column>
+                    
+                    <h:column>
+                        <h:outputText value="Desconto: " styleClass="fontePadraoPequeno"/>
+                        <h:inputText id="soma_desconto" size="10" value="#{movimentosSocialBean.desconto}" styleClass="fontePadrao">
+                            <a4j:ajax event="change" render="soma_desconto soma_total_calculado" />
+                        </h:inputText>
+                    </h:column>
+                    
+                    <h:column>
+                        <h:outputText value="Total Calculado: " styleClass="fontePadraoPequeno"/>
+                        <h:outputText id="soma_total_calculado" value="#{movimentosSocialBean.totalCalculado}" styleClass="fontePadraoNegrito" />
+                    </h:column>
+                </h:panelGrid>
                 
+                <h:panelGrid styleClass="divMae" style="clear: both" columns="3">
+                    <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar este movimento" oncomplete="modalMensagem()" render="outConfirma"/>
+                    <a4j:commandLink styleClass="idNovo iLink" value="Estornar" title="Estornar este movimento" oncomplete="modalMensagem()" render="outConfirma"/>
+                    <h:commandLink styleClass="idNovo iLink" value="Recibo" title="Imprimir Recibo" />
+                    
+                    <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer um acordo" oncomplete="modalMensagem()" render="outConfirma"/>
+                </h:panelGrid>
+                
+                <rich:popupPanel id="popup" modal="true" resizeable="false" height="360" width="500">
+                    <f:facet name="controls">
+                        <a4j:commandButton image="/Imagens/excluirp.png" onclick="#{rich:component('popup')}.hide(); return false;" title="Fechar"/>
+                    </f:facet>
+                    
+                    <br />
+                    <h:panelGrid>
+                        <h:outputLabel value="Data / Boleto" styleClass="fontePadraoNegrito"/>
+                        <h:outputLabel value="#{movimentosSocialBean.data} - #{movimentosSocialBean.boleto}" styleClass="fontePadrao"/>
+                    </h:panelGrid>
+                    
+                    <br />
+                    <h:panelGrid>
+                        <h:outputLabel value="Titular" styleClass="fontePadraoNegrito"/>
+                        <h:outputLabel value="#{movimentosSocialBean.titular}" styleClass="fontePadrao"/>
+                    </h:panelGrid>
+                    
+                    <br />
+                    <h:panelGrid>
+                        <h:outputLabel value="Beneficiário" styleClass="fontePadraoNegrito"/>
+                        <h:outputLabel value="#{movimentosSocialBean.beneficiario}" styleClass="fontePadrao"/>
+                    </h:panelGrid>
+                    
+                    <br />
+                    <h:panelGrid columns="4" style="background: #e2e2e2;">
+                        <h:column>
+                            <h:outputLabel value="Dias em Atraso" styleClass="fontePadraoNegrito"/><br />
+                            <h:outputLabel value="#{movimentosSocialBean.diasAtraso}" styleClass="fontePadrao" />
+                        </h:column>
+                        
+                        <h:column>
+                            <h:outputLabel value="Multa / Juros / Correção" styleClass="fontePadraoNegrito" style="float: right"/>
+                            <h:outputLabel value="#{movimentosSocialBean.multa} - #{movimentosSocialBean.juros} - #{movimentosSocialBean.correcao}" styleClass="fontePadrao" style="float: right"/>
+                        </h:column>
+                    </h:panelGrid>
+                    
+                    <br />
+                    <h:panelGrid>
+                        <h:outputLabel value="Caixa" styleClass="fontePadraoNegrito"/>
+                        <h:outputLabel value="#{movimentosSocialBean.caixa}" styleClass="fontePadrao"/>
+                    </h:panelGrid>
+                    
+                    <br />
+                    <h:panelGrid>
+                        <h:outputLabel value="Documento" styleClass="fontePadraoNegrito"/>
+                        <h:outputLabel value="#{movimentosSocialBean.documento}" styleClass="fontePadrao"/>
+                    </h:panelGrid>
+                </rich:popupPanel>                
             </h:form>
         </f:view>
     </h:body>

@@ -876,6 +876,26 @@ public class ExtratoTelaJSFBean {
             return result;
         }
     }
+    
+    public String getSomarVlNaoRecebido() {
+        String soma = "";
+        float somaFloat = 0;
+        int i = 0;
+        String result = "R$ ";
+        String r = "";
+        if (!listMov.isEmpty()) {
+            while (i < listMov.size()) {
+                soma = String.valueOf((Double) lista.get(i).getArgumento11());
+                somaFloat = Moeda.somaValores(somaFloat, Float.valueOf(soma));
+                i++;
+            }
+            //vlRecebido = String.valueOf(somaFloat);
+            r = Moeda.converteR$(String.valueOf(somaFloat));
+            return result + r;
+        } else {
+            return result;
+        }
+    }
 
     public String getSomarVlTotal() {
         String soma = "";
