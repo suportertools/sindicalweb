@@ -1991,7 +1991,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return result;
         }
     }
-    
+
     @Override
     public List movimentosBaixadosPorEvt(int idEvt) {
         try {
@@ -2005,7 +2005,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public Movimento pesquisaMovimentosAcordado(int idPessoa, String idRef, int idTipoServ, int idServicos) {
         int i = 0;
@@ -2030,5 +2030,5 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
 
             return null;
         }
-    }    
+    }
 }

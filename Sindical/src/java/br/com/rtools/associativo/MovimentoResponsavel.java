@@ -5,23 +5,24 @@ import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SOC_MOVIMENTO_RESPONSAVEL")
-@NamedQuery(name="MovimentoResponsavel.pesquisaID", query="select m from MovimentoResponsavel m where m.id=:pid")
+@Table(name = "SOC_MOVIMENTO_RESPONSAVEL")
+@NamedQuery(name = "MovimentoResponsavel.pesquisaID", query = "select m from MovimentoResponsavel m where m.id=:pid")
 public class MovimentoResponsavel implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name="ID_TITULAR", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_TITULAR", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa titular;
-    @JoinColumn(name="ID_BENEFICIARIO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_BENEFICIARIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa beneficiario;
 
-    public MovimentoResponsavel(){
+    public MovimentoResponsavel() {
         this.id = -1;
         this.movimento = new Movimento();
         this.titular = new Pessoa();
@@ -66,7 +67,4 @@ public class MovimentoResponsavel implements java.io.Serializable {
     public void setBeneficiario(Pessoa beneficiario) {
         this.beneficiario = beneficiario;
     }
-
-
-
 }

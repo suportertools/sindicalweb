@@ -14,27 +14,28 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
-@Table(name="CAR_VENDA")
-@NamedQuery(name="CVenda.pesquisaID", query="select cv from CVenda cv where cv.id=:pid")
+@Table(name = "CAR_VENDA")
+@NamedQuery(name = "CVenda.pesquisaID", query = "select cv from CVenda cv where cv.id=:pid")
 public class CVenda implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_RESPONSAVEL", referencedColumnName="ID")
+    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID")
     @OneToOne
     private Pessoa responsavel;
-    @JoinColumn(name="ID_AEVENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_AEVENTO", referencedColumnName = "ID")
     @ManyToOne
     private AEvento aEvento;
-    @JoinColumn(name="ID_EVT", referencedColumnName="ID")
+    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
     @ManyToOne
     private Evt evt;
-    @Column(name="NR_QUARTO")
+    @Column(name = "NR_QUARTO")
     private int quarto;
-    @Column(name="DS_OBSERVACAO")
+    @Column(name = "DS_OBSERVACAO")
     private String observacao;
 
-    public CVenda(int id, Pessoa responsavel, AEvento aEvento, Evt evt, int quarto,String observacao) {
+    public CVenda(int id, Pessoa responsavel, AEvento aEvento, Evt evt, int quarto, String observacao) {
         this.id = id;
         this.responsavel = responsavel;
         this.aEvento = aEvento;

@@ -5,34 +5,34 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SEG_LOG")
-@NamedQuery(name="Log.pesquisaID", query="select l from Log l where l.id=:pid")
+@Table(name = "SEG_LOG")
+@NamedQuery(name = "Log.pesquisaID", query = "select l from Log l where l.id=:pid")
 public class Log implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-    @Column(name="DS_HORA", length=50,nullable=false)
+    @Column(name = "DS_HORA", length = 50, nullable = false)
     private String hora;
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name="ID_PERMISSAO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PERMISSAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Permissao permissao;
 
-    public Log(){
-         this.id = -1;
-         setData("");
-         this.hora = "";
-         this.usuario = new Usuario();
-         this.permissao = new Permissao();
+    public Log() {
+        this.id = -1;
+        setData("");
+        this.hora = "";
+        this.usuario = new Usuario();
+        this.permissao = new Permissao();
     }
 
-    public Log(int id, String data, String hora,Usuario usuario,Permissao permissao){
+    public Log(int id, String data, String hora, Usuario usuario, Permissao permissao) {
         this.id = id;
         setData("");
         this.hora = hora;
@@ -81,14 +81,16 @@ public class Log implements java.io.Serializable {
     }
 
     public String getData() {
-        if (dtData != null)
+        if (dtData != null) {
             return DataHoje.converteData(dtData);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setData(String data) {
-        if (!(data.isEmpty()))
-        this.dtData = DataHoje.converte(data);
+        if (!(data.isEmpty())) {
+            this.dtData = DataHoje.converte(data);
+        }
     }
 }

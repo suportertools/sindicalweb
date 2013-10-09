@@ -37,8 +37,8 @@ public class Oposicao implements java.io.Serializable {
     @JoinColumn(name = "ID_CONVENCAO_PERIODO", referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.EAGER)
     private ConvencaoPeriodo convencaoPeriodo;
-    @Column(name="DS_OBS", length=500)
-    private String observacao;     
+    @Column(name = "DS_OBS", length = 500)
+    private String observacao;
 
     public Oposicao(int id, String emissao, OposicaoPessoa oposicaoPessoa, Juridica juridica, ConvencaoPeriodo convencaoPeriodo, String observacao) {
         this.id = id;

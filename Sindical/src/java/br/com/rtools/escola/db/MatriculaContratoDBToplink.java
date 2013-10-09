@@ -125,7 +125,7 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
             tipoPesquisaModulo = " WHERE MCC.modulo.id = :idModulo ";
         }
         try {
-            Query query = getEntityManager().createQuery(" SELECT MCC FROM MatriculaContratoCampos AS MCC "+tipoPesquisaModulo+" ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ");
+            Query query = getEntityManager().createQuery(" SELECT MCC FROM MatriculaContratoCampos AS MCC " + tipoPesquisaModulo + " ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ");
             if (idModulo > 0) {
                 query.setParameter("idModulo", idModulo);
             }
@@ -139,7 +139,7 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
             return list;
         }
     }
-    
+
     @Override
     public List listaModulosMatriculaContratoCampos() {
         List list = new ArrayList();

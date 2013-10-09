@@ -90,7 +90,7 @@ public class RotinaDBToplink extends DB implements RotinaDB {
     @Override
     public List pesquisaRotinasDisponiveisModulo(int idModulo) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT ROT FROM Rotina AS ROT WHERE ROT.ativo = true AND ROT.id NOT IN ( SELECT PER.rotina.id FROM Permissao AS PER WHERE PER.modulo.id = "+idModulo+" GROUP BY PER.rotina.id ) ORDER BY ROT.rotina ASC ");
+            Query query = getEntityManager().createQuery(" SELECT ROT FROM Rotina AS ROT WHERE ROT.ativo = true AND ROT.id NOT IN ( SELECT PER.rotina.id FROM Permissao AS PER WHERE PER.modulo.id = " + idModulo + " GROUP BY PER.rotina.id ) ORDER BY ROT.rotina ASC ");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -169,12 +169,12 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         }
         return lista;
     }
-    
+
     @Override
     public Rotina pesquisaRotinaPorPagina(String pagina) {
         Rotina rotina = new Rotina();
         try {
-            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE ROT.pagina LIKE 'Sindical/"+pagina+".jsf' OR ROT.pagina LIKE '\"/Sindical/"+pagina+".jsf\"'");
+            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE ROT.pagina LIKE 'Sindical/" + pagina + ".jsf' OR ROT.pagina LIKE '\"/Sindical/" + pagina + ".jsf\"'");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return (Rotina) query.getSingleResult();

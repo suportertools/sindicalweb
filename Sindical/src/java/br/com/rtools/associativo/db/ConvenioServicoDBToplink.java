@@ -7,41 +7,42 @@ import java.util.List;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
-public class ConvenioServicoDBToplink extends DB implements ConvenioServicoDB{
+public class ConvenioServicoDBToplink extends DB implements ConvenioServicoDB {
+
     public boolean insert(ConvenioServico convenioServico) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(convenioServico);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(ConvenioServico convenioServico) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(convenioServico);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean delete(ConvenioServico convenioServico) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(convenioServico);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -49,45 +50,45 @@ public class ConvenioServicoDBToplink extends DB implements ConvenioServicoDB{
 
     public ConvenioServico pesquisaCodigo(int id) {
         ConvenioServico result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("ConvenioServico.pesquisaID");
             qry.setParameter("pid", id);
             result = (ConvenioServico) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select cs from ConvenioServico cs");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
-    public ConvenioServico pesquisaConvenioServicoPorServESubGrupo(int idServico,int idSubGrupo){
-        try{
+    public ConvenioServico pesquisaConvenioServicoPorServESubGrupo(int idServico, int idSubGrupo) {
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select cs" +
-                    "  from ConvenioServico cs" +
-                    " where cs.servicos.id = "+idServico+
-                    "   and cs.subGrupoConvenio.id = "+idSubGrupo);
-            return (ConvenioServico)qry.getSingleResult();
-        }catch(EJBQLException e){
+                    "select cs"
+                    + "  from ConvenioServico cs"
+                    + " where cs.servicos.id = " + idServico
+                    + "   and cs.subGrupoConvenio.id = " + idSubGrupo);
+            return (ConvenioServico) qry.getSingleResult();
+        } catch (EJBQLException e) {
             e.getMessage();
             return null;
         }
     }
 
-    public List pesquisaServicosSubGrupoConvenio(int idSubGrupo){
-        try{
-            Query qry = getEntityManager().createQuery("select cs.servicos from ConvenioServico cs where cs.subGrupoConvenio.id = "+ idSubGrupo);
+    public List pesquisaServicosSubGrupoConvenio(int idSubGrupo) {
+        try {
+            Query qry = getEntityManager().createQuery("select cs.servicos from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo);
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }

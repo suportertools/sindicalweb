@@ -29,7 +29,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public Agendamento pesquisaCodigo(int id) {
         Agendamento result = null;
@@ -45,7 +44,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public Agendamento pesquisaProtocolo(int id) {
         Agendamento result = null;
@@ -89,32 +87,32 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return new ArrayList();
     }
-    
+
     public List<Agendamento> pesquisaNaoAtendido(int idFilial, Date dataInicial, Date dataFinal) {
         List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         String dataCampo = "";
         if (dataInicial != null) {
-            dataCampo = " AND age.dt_data = '"+DataHoje.converteData(dataInicial)+"'  ";
+            dataCampo = " AND age.dt_data = '" + DataHoje.converteData(dataInicial) + "'  ";
         }
         if (dataFinal != null && dataInicial != null) {
-            dataCampo = " AND age.dt_data BETWEEN '"+DataHoje.converteData(dataInicial)+"' AND '"+DataHoje.converteData(dataFinal)+"'  ";
+            dataCampo = " AND age.dt_data BETWEEN '" + DataHoje.converteData(dataInicial) + "' AND '" + DataHoje.converteData(dataFinal) + "'  ";
         }
         try {
-            String textoQry =   "     SELECT age.id                                      "
-                              + "       FROM hom_agendamento age                         "
-                              + " INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
-                              + "      WHERE age.id_horario IS NOT NULL                  " 
-                              +              dataCampo
-                              + "                             "
-                              + "        AND age.id_status = 7                           "
-                              + "        AND hor.ativo = true                            "
-                              + "        AND age.id_filial = "+idFilial 
-                              + "   ORDER BY hor.ds_hora                                 ";
+            String textoQry = "     SELECT age.id                                      "
+                    + "       FROM hom_agendamento age                         "
+                    + " INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
+                    + "      WHERE age.id_horario IS NOT NULL                  "
+                    + dataCampo
+                    + "                             "
+                    + "        AND age.id_status = 7                           "
+                    + "        AND hor.ativo = true                            "
+                    + "        AND age.id_filial = " + idFilial
+                    + "   ORDER BY hor.ds_hora                                 ";
             Query qry = getEntityManager().createNativeQuery(textoQry);
             if (!qry.getResultList().isEmpty()) {
                 SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
                 List list = qry.getResultList();
-                for(int i = 0; i < list.size(); i++){
+                for (int i = 0; i < list.size(); i++) {
                     agendamentos.add((Agendamento) dB.pesquisaCodigo((Integer) ((List) list.get(i)).get(0), "Agendamento"));
                 }
                 return agendamentos;
@@ -124,8 +122,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return new ArrayList();
     }
-    
-    
+
     @Override
     public List pesquisaAgendadoDataMaior(Date data) {
         try {
@@ -145,7 +142,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public List pesquisaAgendadoPorEmpresa(Date data, int idEmpresa) {
         try {
@@ -167,7 +163,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public List pesquisaAgendadoPorEmpresaSemHorario(int id_filial, Date data, int idEmpresa) {
         try {
@@ -191,7 +186,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public List pesquisaAgendadoPorEmpresaDataMaior(int idEmpresa) {
         try {
@@ -276,64 +270,63 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public List<Agendamento> pesquisaAgendamento(int idStatus, int idFilial, Date dataInicial, Date dataFinal, int idUsuario, int idPessoaFisica, int idPessoaJuridica) {
-        
+
         List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         String dataCampo = "";
         String homologadorCampo = "";
         String statusCampo = "";
         String innerPessoaEmpresa = "";
         String pessoaEmpresaCampo = "";
-        if(idPessoaFisica > 0  || idPessoaJuridica > 0){
+        if (idPessoaFisica > 0 || idPessoaJuridica > 0) {
             innerPessoaEmpresa = " INNER JOIN pes_pessoa_empresa pesemp ON pesemp.id = age.id_pessoa_empresa ";
-            if(idPessoaFisica > 0){
-                pessoaEmpresaCampo = " AND pesemp.id_fisica = "+idPessoaFisica;
-            }else{
-                pessoaEmpresaCampo = " AND pesemp.id_juridica = "+idPessoaJuridica;                
+            if (idPessoaFisica > 0) {
+                pessoaEmpresaCampo = " AND pesemp.id_fisica = " + idPessoaFisica;
+            } else {
+                pessoaEmpresaCampo = " AND pesemp.id_juridica = " + idPessoaJuridica;
             }
         }
         if (dataInicial != null) {
-            dataCampo = " AND age.dt_data = '"+DataHoje.converteData(dataInicial)+"'  ";
+            dataCampo = " AND age.dt_data = '" + DataHoje.converteData(dataInicial) + "'  ";
         }
         if (dataFinal != null && dataInicial != null) {
-            dataCampo = " AND age.dt_data BETWEEN '"+DataHoje.converteData(dataInicial)+"' AND '"+DataHoje.converteData(dataFinal)+"'  ";
+            dataCampo = " AND age.dt_data BETWEEN '" + DataHoje.converteData(dataInicial) + "' AND '" + DataHoje.converteData(dataFinal) + "'  ";
         }
         if (idUsuario != 0) {
-            homologadorCampo = " and age.id_homologador = "+idUsuario+" ";
+            homologadorCampo = " and age.id_homologador = " + idUsuario + " ";
         }
-        if(idStatus > 0){
-            statusCampo = " AND age.id_status = "+idStatus;
+        if (idStatus > 0) {
+            statusCampo = " AND age.id_status = " + idStatus;
         }
         try {
-            String textoQry =   "     SELECT age.id                                      "
-                              + "       FROM hom_agendamento age                         "
-                              + " INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
-                              +              innerPessoaEmpresa
-                              + "      WHERE age.id_horario IS NOT NULL                  " 
-                              +              dataCampo
-                              +              homologadorCampo                            
-                              +              statusCampo
-                              +              pessoaEmpresaCampo
-                              + "        AND hor.ativo = true                            "
-                              + "        AND age.id_filial = "+idFilial 
-                              + "      LIMIT 1000                                        ";
+            String textoQry = "     SELECT age.id                                      "
+                    + "       FROM hom_agendamento age                         "
+                    + " INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
+                    + innerPessoaEmpresa
+                    + "      WHERE age.id_horario IS NOT NULL                  "
+                    + dataCampo
+                    + homologadorCampo
+                    + statusCampo
+                    + pessoaEmpresaCampo
+                    + "        AND hor.ativo = true                            "
+                    + "        AND age.id_filial = " + idFilial
+                    + "      LIMIT 1000                                        ";
             Query qry = getEntityManager().createNativeQuery(textoQry);
             if (!qry.getResultList().isEmpty()) {
                 SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
                 List list = qry.getResultList();
                 String stringIn = "";
-                for(int i = 0; i < list.size(); i++){
-                    if(i == 0){
+                for (int i = 0; i < list.size(); i++) {
+                    if (i == 0) {
                         stringIn = ((Integer) ((List) list.get(i)).get(0)).toString();
-                    }else{
-                        stringIn += " , " +((Integer) ((List) list.get(i)).get(0)).toString();
+                    } else {
+                        stringIn += " , " + ((Integer) ((List) list.get(i)).get(0)).toString();
                     }
                 }
-                Query qryListaAgendamento = getEntityManager().createQuery( " SELECT A FROM Agendamento AS A WHERE A.id IN("+stringIn+") ORDER BY A.dtData DESC, A.horarios.hora ASC " );
-                if(!qryListaAgendamento.getResultList().isEmpty()){
-                    agendamentos = qryListaAgendamento.getResultList();                    
+                Query qryListaAgendamento = getEntityManager().createQuery(" SELECT A FROM Agendamento AS A WHERE A.id IN(" + stringIn + ") ORDER BY A.dtData DESC, A.horarios.hora ASC ");
+                if (!qryListaAgendamento.getResultList().isEmpty()) {
+                    agendamentos = qryListaAgendamento.getResultList();
                 }
                 return agendamentos;
             }
@@ -342,14 +335,14 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo) {
         List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         try {
-            Query qry = getEntityManager().createQuery( " SELECT A FROM Agendamento AS A WHERE A.id = :id " );
+            Query qry = getEntityManager().createQuery(" SELECT A FROM Agendamento AS A WHERE A.id = :id ");
             qry.setParameter("id", numeroProtocolo);
-            if(!qry.getResultList().isEmpty()){                
+            if (!qry.getResultList().isEmpty()) {
                 agendamentos = qry.getResultList();
             }
             return agendamentos;
@@ -357,36 +350,36 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             return new ArrayList();
         }
     }
-    
+
     public List<Agendamento> pesquisaAtendimento(int idFilial, Date dataInicial, Date dataFinal, int idUsuario) {
         List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         String dataCampo = "";
         String homologadorCampo = "";
         if (dataInicial != null) {
-            dataCampo = " AND age.dt_data = '"+DataHoje.converteData(dataInicial)+"'  ";
+            dataCampo = " AND age.dt_data = '" + DataHoje.converteData(dataInicial) + "'  ";
         }
         if (dataFinal != null && dataInicial != null) {
-            dataCampo = " AND age.dt_data BETWEEN '"+DataHoje.converteData(dataInicial)+"' AND '"+DataHoje.converteData(dataFinal)+"'  ";
+            dataCampo = " AND age.dt_data BETWEEN '" + DataHoje.converteData(dataInicial) + "' AND '" + DataHoje.converteData(dataFinal) + "'  ";
         }
         if (idUsuario != 0) {
-            homologadorCampo = " and a.id_homologador = "+idUsuario+" ";
-        }        
+            homologadorCampo = " and a.id_homologador = " + idUsuario + " ";
+        }
         try {
-            String textoQry =   "     SELECT age.id                                      "
-                              + "       FROM hom_agendamento age                         "
-                              + " INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
-                              + "      WHERE age.id_horario IS NOT NULL                  " 
-                              +              dataCampo
-                              +              homologadorCampo                            
-                              + "        AND age.id_status = 5                           "
-                              + "        AND hor.ativo = true                            "
-                              + "        AND age.id_filial = "+idFilial 
-                              + "   ORDER BY hor.ds_hora                                 ";
+            String textoQry = "     SELECT age.id                                      "
+                    + "       FROM hom_agendamento age                         "
+                    + " INNER JOIN hom_horarios hor ON hor.id = age.id_horario "
+                    + "      WHERE age.id_horario IS NOT NULL                  "
+                    + dataCampo
+                    + homologadorCampo
+                    + "        AND age.id_status = 5                           "
+                    + "        AND hor.ativo = true                            "
+                    + "        AND age.id_filial = " + idFilial
+                    + "   ORDER BY hor.ds_hora                                 ";
             Query qry = getEntityManager().createNativeQuery(textoQry);
             if (!qry.getResultList().isEmpty()) {
                 SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
                 List list = qry.getResultList();
-                for(int i = 0; i < list.size(); i++){
+                for (int i = 0; i < list.size(); i++) {
                     agendamentos.add((Agendamento) dB.pesquisaCodigo((Integer) ((List) list.get(i)).get(0), "Agendamento"));
                 }
                 return agendamentos;
@@ -397,7 +390,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public List pesquisaTodos(int idFilial) {
         try {
@@ -418,7 +410,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
 //    @Override
 //    public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data) {
 //        try {
@@ -446,67 +437,63 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 //        }
 //        return -1;
 //    }
-    
     @Override
     public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data) {
         try {
-            String text = " " 
-            +"      SELECT CASE WHEN  "  
-            +"      ( SELECT nr_quantidade  "
-            +"          FROM hom_horarios   "
-            +"         WHERE id = " + horarios.getId() + " ) -                                                                                                                                         "    
-            +"      ( SELECT func_nullInteger ( "
-            +"          ( SELECT nr_quantidade "
-            +"              FROM hom_cancelar_horario "
-            +"             WHERE id_horarios = " + horarios.getId() 
-            +"               AND dt_data = '" + data + "' "
-            +"          )"
-            +"        ) "
-            +"      ) - "
-            +"    ( SELECT func_nullInteger ("
-            +"          ( SELECT cast(count(*) AS int) "
-            +"              FROM hom_agendamento "
-            +"             WHERE id_horario = " + horarios.getId() + " "
-            +"               AND id_filial = " + idFilial + " "
-            +"               AND dt_data = '" + data + "' "
-            +"               AND id_status = 2 "
-            +"          ) "
-            + "     ) "
-            + "  ) IS NULL THEN 0 ELSE "
-            +"      ( SELECT "  
-            +"      ( SELECT nr_quantidade  "
-            +"          FROM hom_horarios   "
-            +"         WHERE id = " + horarios.getId() + " ) -                                                                                                                                         "    
-            +"      ( SELECT func_nullInteger ( "
-            +"          ( SELECT nr_quantidade "
-            +"              FROM hom_cancelar_horario "
-            +"             WHERE id_horarios = " + horarios.getId() 
-            +"               AND dt_data = '" + data + "' "
-            +"          )"
-            +"        ) "
-            +"      ) - "
-            +"    ( SELECT func_nullInteger ("
-            +"          ( SELECT cast(count(*) AS int) "
-            +"              FROM hom_agendamento "
-            +"             WHERE id_horario = " + horarios.getId() + " "
-            +"               AND id_filial = " + idFilial + " "
-            +"               AND dt_data = '" + data + "' "
-            +"               AND id_status = 2 "
-            +"          ) "
-            + "     ) ) ) END; " 
-                    
-                    
-                    ;                
+            String text = " "
+                    + "      SELECT CASE WHEN  "
+                    + "      ( SELECT nr_quantidade  "
+                    + "          FROM hom_horarios   "
+                    + "         WHERE id = " + horarios.getId() + " ) -                                                                                                                                         "
+                    + "      ( SELECT func_nullInteger ( "
+                    + "          ( SELECT nr_quantidade "
+                    + "              FROM hom_cancelar_horario "
+                    + "             WHERE id_horarios = " + horarios.getId()
+                    + "               AND dt_data = '" + data + "' "
+                    + "          )"
+                    + "        ) "
+                    + "      ) - "
+                    + "    ( SELECT func_nullInteger ("
+                    + "          ( SELECT cast(count(*) AS int) "
+                    + "              FROM hom_agendamento "
+                    + "             WHERE id_horario = " + horarios.getId() + " "
+                    + "               AND id_filial = " + idFilial + " "
+                    + "               AND dt_data = '" + data + "' "
+                    + "               AND id_status = 2 "
+                    + "          ) "
+                    + "     ) "
+                    + "  ) IS NULL THEN 0 ELSE "
+                    + "      ( SELECT "
+                    + "      ( SELECT nr_quantidade  "
+                    + "          FROM hom_horarios   "
+                    + "         WHERE id = " + horarios.getId() + " ) -                                                                                                                                         "
+                    + "      ( SELECT func_nullInteger ( "
+                    + "          ( SELECT nr_quantidade "
+                    + "              FROM hom_cancelar_horario "
+                    + "             WHERE id_horarios = " + horarios.getId()
+                    + "               AND dt_data = '" + data + "' "
+                    + "          )"
+                    + "        ) "
+                    + "      ) - "
+                    + "    ( SELECT func_nullInteger ("
+                    + "          ( SELECT cast(count(*) AS int) "
+                    + "              FROM hom_agendamento "
+                    + "             WHERE id_horario = " + horarios.getId() + " "
+                    + "               AND id_filial = " + idFilial + " "
+                    + "               AND dt_data = '" + data + "' "
+                    + "               AND id_status = 2 "
+                    + "          ) "
+                    + "     ) ) ) END; ";
             Query qry = getEntityManager().createNativeQuery(text);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 try {
                     Integer quantidade = Integer.valueOf(String.valueOf(((List) list.get(0)).get(0)));
-                    if(quantidade < 0){
+                    if (quantidade < 0) {
                         return 0;
                     }
                     return quantidade;
-                } catch (Exception e) { 
+                } catch (Exception e) {
                     return 0;
                 }
             }
@@ -514,7 +501,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return -1;
     }
-    
+
     @Override
     public int pesquisaQuantidadeAgendado(int idFilial, Horarios horarios, Date data) {
         try {
@@ -530,12 +517,11 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return -1;
     }
 
-    
     @Override
     public List pesquisaTodosHorariosDisponiveis(int idFilial, int idDiaSemana) {
         try {
             Query qry = getEntityManager().createQuery(
-                      "   SELECT h "
+                    "   SELECT h "
                     + "     FROM Horarios h "
                     + "    WHERE h.ativo = true "
                     + "      AND h.filial.id = :idFilial "
@@ -552,7 +538,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public PessoaEmpresa pesquisaPessoaEmpresaOutra(String doc) {
         PessoaEmpresa result = new PessoaEmpresa();
@@ -573,7 +558,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public List pesquisaPessoaEmpresaPertencente(String doc) {
         List result = new ArrayList();
@@ -594,7 +578,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public List pesquisaEmpresaEmDebito(int id_pessoa, String vencimento) {
         try {
@@ -609,7 +592,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public List pesquisaAgendamentoPorPessoaEmpresa(int idPessoaEmpresa) {
         try {
@@ -624,7 +606,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-    
     @Override
     public Oposicao pesquisaFisicaOposicao(String cpf, int id_juridica) {
         Oposicao result = null;
@@ -640,7 +621,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public List<Oposicao> pesquisaFisicaOposicaoSemEmpresa(String cpf) {
         List<Oposicao> result = new ArrayList();
@@ -659,7 +639,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public Oposicao pesquisaFisicaOposicaoAgendamento(String cpf, int id_juridica, String referencia) {
         Oposicao result = null;
@@ -678,7 +657,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public Agendamento pesquisaFisicaAgendada(int id_fisica) {
         Agendamento result = null;
@@ -694,12 +672,12 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return result;
     }
-    
+
     @Override
     public int pesquisaUltimaSenha(int id_filial) {
         int result = 0;
         try {
-            Query qry = getEntityManager().createQuery("SELECT max(s.senha) FROM Senha s WHERE s.dtData = :data AND s.filial.id = "+id_filial);
+            Query qry = getEntityManager().createQuery("SELECT max(s.senha) FROM Senha s WHERE s.dtData = :data AND s.filial.id = " + id_filial);
             qry.setParameter("data", DataHoje.dataHoje());
             if (!qry.getResultList().isEmpty()) {
                 result = (Integer) qry.getSingleResult();
@@ -710,7 +688,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public Senha pesquisaSenhaAgendamento(int id_agendamento) {
         Senha result = new Senha();
@@ -725,15 +702,14 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public Senha pesquisaSenhaAtendimento(int id_filial) {
         Senha result = new Senha();
         try {
             Query qry = getEntityManager().createQuery("select s "
-                                                     + " from Senha s "
-                                                     + " where s.senha = (select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.filial.id = "+id_filial+") "
-                                                     + " and s.dtData = :data and s.filial.id = "+id_filial);
+                    + " from Senha s "
+                    + " where s.senha = (select min(s2.senha) from Senha s2 where s2.dtData = :data and s2.mesa = 0 and s2.filial.id = " + id_filial + ") "
+                    + " and s.dtData = :data and s.filial.id = " + id_filial);
             qry.setParameter("data", DataHoje.dataHoje());
             if (!qry.getResultList().isEmpty()) {
                 result = (Senha) qry.getSingleResult();
@@ -744,7 +720,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public Senha pesquisaAtendimentoIniciado(int id_usuario, int nr_mesa, int id_filial) {
         Senha result = new Senha();
@@ -769,18 +744,17 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return result;
     }
 
-    
     @Override
     public boolean verificaNaoAtendidosSegRegistroAgendamento() {
         try {
             Query qry = getEntityManager().createNativeQuery(
-                      " SELECT *                                            "
+                    " SELECT *                                            "
                     + "   FROM seg_registro                                 "
                     + "  WHERE (CURRENT_DATE - 1) = dt_atualiza_homologacao ");
             if (qry.getResultList().isEmpty()) {
                 getEntityManager().getTransaction().begin();
                 Query qryUpdateAgendamento = getEntityManager().createNativeQuery(
-                          "UPDATE hom_agendamento                                                               "
+                        "UPDATE hom_agendamento                                                               "
                         + "   SET id_status = 7                                                                 "
                         + " WHERE dt_data > (                                                                   "
                         + "       SELECT dt_atualiza_homologacao                                                "
@@ -795,7 +769,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     return false;
                 }
                 Query qryUpdateRegistro = getEntityManager().createNativeQuery(
-                          " UPDATE seg_registro                              "
+                        " UPDATE seg_registro                              "
                         + "    SET dt_atualiza_homologacao = CURRENT_DATE - 1");
                 if (qryUpdateRegistro.executeUpdate() == 0) {
                     getEntityManager().getTransaction().rollback();
@@ -809,7 +783,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return true;
     }
-    
+
     @Override
     public boolean existeHorarioDisponivel(Date date, Horarios horarios) {
         String dateString = DataHoje.converteData(date);
@@ -819,26 +793,26 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "       FROM hom_horarios                                                     "
                     + "      WHERE TEXT(id_filial) || TEXT(id_semana) || ds_hora = TEXT(1) || (     "
                     + "            EXTRACT(                                                         "
-                    + "                     DOW FROM to_date('"+dateString+"', 'DD-MM-YYYY')) + 1   "
-                    + "      ) || '"+horarios.getHora()+"'" );
+                    + "                     DOW FROM to_date('" + dateString + "', 'DD-MM-YYYY')) + 1   "
+                    + "      ) || '" + horarios.getHora() + "'");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 int idHorario = (Integer) ((List) (list.get(0))).get(0);
                 int quantidade = (Integer) ((List) (list.get(0))).get(1);
                 list.clear();
                 query = getEntityManager().createNativeQuery(""
-                        + "     SELECT "+quantidade+" - (count(*) - (           "
+                        + "     SELECT " + quantidade + " - (count(*) - (           "
                         + "             SELECT COUNT(*)                         "
                         + "               FROM hom_cancelar_horario             "
-                        + "              WHERE id_horarios = "+idHorario+"      "
-                        + "                AND dt_data='"+dateString+"')        "
-                        + "     )                                               "   
+                        + "              WHERE id_horarios = " + idHorario + "      "
+                        + "                AND dt_data='" + dateString + "')        "
+                        + "     )                                               "
                         + "       FROM hom_agendamento                          "
-                        + "      WHERE id_horario = "+idHorario+"               "
-                        + "        AND dt_data = '"+dateString+"'               "
-                        + "        AND id_status <> 3;" );
+                        + "      WHERE id_horario = " + idHorario + "               "
+                        + "        AND dt_data = '" + dateString + "'               "
+                        + "        AND id_status <> 3;");
                 list = query.getResultList();
-                if (!list.isEmpty()) {                    
+                if (!list.isEmpty()) {
                     quantidade = Integer.parseInt(((List) (list.get(0))).get(0).toString());
                     if (quantidade > 0) {
                         return true;
@@ -846,7 +820,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 }
             }
         } catch (Exception exception) {
-            return false;            
+            return false;
         }
         return false;
     }

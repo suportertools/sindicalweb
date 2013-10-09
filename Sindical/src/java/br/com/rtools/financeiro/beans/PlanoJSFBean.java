@@ -1,4 +1,3 @@
-
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.financeiro.*;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-
 
 public class PlanoJSFBean {
 
@@ -41,8 +39,8 @@ public class PlanoJSFBean {
     private String cor3 = "";
     private String cor4 = "";
     private String cor5 = "";
-    
-    public String novo(){
+
+    public String novo() {
         plano = new Plano();
         plano2 = new Plano2();
         plano3 = new Plano3();
@@ -51,59 +49,59 @@ public class PlanoJSFBean {
         return "plano";
     }
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
         db.abrirTransacao();
 
-        if(radioPlano.equals("pl1") && divNovoPlano.equals("divPlano")){
-            if (!salvarPlano(db)){
+        if (radioPlano.equals("pl1") && divNovoPlano.equals("divPlano")) {
+            if (!salvarPlano(db)) {
                 db.desfazerTransacao();
                 return null;
             }
         }
 
-        if ((radioPlano.equals("pl2")||radioPlano.equals("pl1")) && divNovoPlano.equals("divPlano2")){
-            if (!salvarPlano2(db)){
+        if ((radioPlano.equals("pl2") || radioPlano.equals("pl1")) && divNovoPlano.equals("divPlano2")) {
+            if (!salvarPlano2(db)) {
                 db.desfazerTransacao();
                 return null;
             }
 
-            if (radioPlano.equals("pl1") && divNovoPlano.equals("divPlano2")){
+            if (radioPlano.equals("pl1") && divNovoPlano.equals("divPlano2")) {
                 radioPlano = "pl2";
             }
 
         }
 
-        if ((radioPlano.equals("pl3")||radioPlano.equals("pl2")) && divNovoPlano.equals("divPlano3")){
-            if (!salvarPlano3(db)){
+        if ((radioPlano.equals("pl3") || radioPlano.equals("pl2")) && divNovoPlano.equals("divPlano3")) {
+            if (!salvarPlano3(db)) {
                 db.desfazerTransacao();
                 return null;
             }
 
-            if (radioPlano.equals("pl2") && divNovoPlano.equals("divPlano3")){
+            if (radioPlano.equals("pl2") && divNovoPlano.equals("divPlano3")) {
                 radioPlano = "pl3";
             }
 
         }
 
-        if ((radioPlano.equals("pl4")||radioPlano.equals("pl3")) && divNovoPlano.equals("divPlano4")){
-            if (!salvarPlano4(db)){
+        if ((radioPlano.equals("pl4") || radioPlano.equals("pl3")) && divNovoPlano.equals("divPlano4")) {
+            if (!salvarPlano4(db)) {
                 db.desfazerTransacao();
                 return null;
             }
 
-            if (radioPlano.equals("pl3") && divNovoPlano.equals("divPlano4")){
+            if (radioPlano.equals("pl3") && divNovoPlano.equals("divPlano4")) {
                 radioPlano = "pl4";
             }
         }
 
-        if ((radioPlano.equals("pl5")||radioPlano.equals("pl4")) && divNovoPlano.equals("divPlano5")){
-            if (!salvarPlano5(db)){
+        if ((radioPlano.equals("pl5") || radioPlano.equals("pl4")) && divNovoPlano.equals("divPlano5")) {
+            if (!salvarPlano5(db)) {
                 db.desfazerTransacao();
                 return null;
             }
 
-            if (radioPlano.equals("pl4") && divNovoPlano.equals("divPlano5")){
+            if (radioPlano.equals("pl4") && divNovoPlano.equals("divPlano5")) {
                 radioPlano = "pl5";
             }
         }
@@ -115,40 +113,40 @@ public class PlanoJSFBean {
         return null;
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
         db.abrirTransacao();
 
-        if(radioPlano.equals("pl1")){
-            if (!excluirPlano(db)){
+        if (radioPlano.equals("pl1")) {
+            if (!excluirPlano(db)) {
                 db.desfazerTransacao();
                 return null;
             }
         }
 
-        if(radioPlano.equals("pl2")){
-            if (!excluirPlano2(db)){
+        if (radioPlano.equals("pl2")) {
+            if (!excluirPlano2(db)) {
                 db.desfazerTransacao();
                 return null;
             }
         }
 
-        if(radioPlano.equals("pl3")){
-            if (!excluirPlano3(db)){
+        if (radioPlano.equals("pl3")) {
+            if (!excluirPlano3(db)) {
                 db.desfazerTransacao();
                 return null;
             }
         }
 
-        if(radioPlano.equals("pl4")){
-            if (!excluirPlano4(db)){
+        if (radioPlano.equals("pl4")) {
+            if (!excluirPlano4(db)) {
                 db.desfazerTransacao();
                 return null;
             }
         }
 
-        if(radioPlano.equals("pl5")){
-            if (!excluirPlano5(db)){
+        if (radioPlano.equals("pl5")) {
+            if (!excluirPlano5(db)) {
                 db.desfazerTransacao();
                 return null;
             }
@@ -160,36 +158,35 @@ public class PlanoJSFBean {
         return null;
     }
 
-    public String acaoPlano(String valor){
+    public String acaoPlano(String valor) {
         radioPlano = valor;
         listaPlano.clear();
-        if(valor.equals("pl1")){
+        if (valor.equals("pl1")) {
             radioPlanoVisivel = true;
-        }else{
+        } else {
             radioPlanoVisivel = false;
         }
         return "plano";
     }
 
-    public String editar(){
-        if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano")){
+    public String editar() {
+        if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano")) {
             plano = (Plano) listaPlano.get(idIndex).getArgumento0();
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano2")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano2")) {
             plano2 = (Plano2) listaPlano.get(idIndex).getArgumento0();
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano3")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano3")) {
             plano3 = (Plano3) listaPlano.get(idIndex).getArgumento0();
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano4")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano4")) {
             plano4 = (Plano4) listaPlano.get(idIndex).getArgumento0();
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano5")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano5")) {
             plano5 = (Plano5) listaPlano.get(idIndex).getArgumento0();
         }
         return null;
     }
 
-
-    public String editarPesquisa(){
+    public String editarPesquisa() {
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
 //        if(listaPlanoPorPesquisa.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano")){
 //            plano = (Plano) listaPlanoPorPesquisa.get(idIndex).getArgumento0();
 //            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaPlano", plano);
@@ -209,17 +206,17 @@ public class PlanoJSFBean {
         return url;
     }
 
-    public boolean salvarPlano(SalvarAcumuladoDB db){
-        if(plano.getId() == -1){
-            if(db.inserirObjeto(plano)){
-                msgConfirma  = "Plano 1 salvo com sucesso!";
-            }else{
+    public boolean salvarPlano(SalvarAcumuladoDB db) {
+        if (plano.getId() == -1) {
+            if (db.inserirObjeto(plano)) {
+                msgConfirma = "Plano 1 salvo com sucesso!";
+            } else {
                 return false;
             }
-        }else{
-            if(db.alterarObjeto(plano)){
-                msgConfirma  = "Plano 1 atualizado com sucesso!";
-            }else{
+        } else {
+            if (db.alterarObjeto(plano)) {
+                msgConfirma = "Plano 1 atualizado com sucesso!";
+            } else {
                 return false;
             }
         }
@@ -227,11 +224,11 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean excluirPlano(SalvarAcumuladoDB db){
-        if(plano.getId() != -1){
-            if(db.deletarObjeto((Plano) db.pesquisaCodigo(plano.getId(), "Plano"))){
+    public boolean excluirPlano(SalvarAcumuladoDB db) {
+        if (plano.getId() != -1) {
+            if (db.deletarObjeto((Plano) db.pesquisaCodigo(plano.getId(), "Plano"))) {
                 msgConfirma = "Plano 1 deletado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao deletar plano 1!";
                 return false;
             }
@@ -240,20 +237,19 @@ public class PlanoJSFBean {
         return true;
     }
 
-
-    public boolean salvarPlano2(SalvarAcumuladoDB db){
-        if(plano2.getId() == -1){
-            plano2.setNumero(plano.getNumero()+"."+plano2.getNumero());
-            if(db.inserirObjeto(plano2)){
+    public boolean salvarPlano2(SalvarAcumuladoDB db) {
+        if (plano2.getId() == -1) {
+            plano2.setNumero(plano.getNumero() + "." + plano2.getNumero());
+            if (db.inserirObjeto(plano2)) {
                 msgConfirma = "Plano 2 salvo com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao inserir o Plano 2";
                 return false;
             }
-        }else{
-            if(db.alterarObjeto(plano2)){
+        } else {
+            if (db.alterarObjeto(plano2)) {
                 msgConfirma = "Plano 2 atualizado com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao atualizar o Plano 2";
                 return false;
             }
@@ -262,11 +258,11 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean excluirPlano2(SalvarAcumuladoDB db){
-        if(plano2.getId() != -1){
-            if(db.deletarObjeto((Plano2) db.pesquisaCodigo(plano2.getId(), "Plano2"))){
+    public boolean excluirPlano2(SalvarAcumuladoDB db) {
+        if (plano2.getId() != -1) {
+            if (db.deletarObjeto((Plano2) db.pesquisaCodigo(plano2.getId(), "Plano2"))) {
                 msgConfirma = "Plano 2 deletado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao deletar plano 2!";
                 return false;
             }
@@ -275,19 +271,19 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean salvarPlano3(SalvarAcumuladoDB db){
-        if(plano3.getId() == -1){
-            plano3.setNumero(plano2.getNumero()+"."+plano3.getNumero());
-            if(db.inserirObjeto(plano3)){
+    public boolean salvarPlano3(SalvarAcumuladoDB db) {
+        if (plano3.getId() == -1) {
+            plano3.setNumero(plano2.getNumero() + "." + plano3.getNumero());
+            if (db.inserirObjeto(plano3)) {
                 msgConfirma = "Plano 3 Salvo com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao inserir o Plano 3";
                 return false;
             }
-        }else{
-            if(db.alterarObjeto(plano3)){
+        } else {
+            if (db.alterarObjeto(plano3)) {
                 msgConfirma = "Plano 3 atualizado com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao atualizar o Plano 3";
                 return false;
             }
@@ -296,11 +292,11 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean excluirPlano3(SalvarAcumuladoDB db){
-        if(plano3.getId() != -1){
-            if(db.deletarObjeto((Plano3) db.pesquisaCodigo(plano3.getId(), "Plano3"))){
+    public boolean excluirPlano3(SalvarAcumuladoDB db) {
+        if (plano3.getId() != -1) {
+            if (db.deletarObjeto((Plano3) db.pesquisaCodigo(plano3.getId(), "Plano3"))) {
                 msgConfirma = "Plano 3 deletado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao deletar plano 3!";
                 return false;
             }
@@ -309,19 +305,19 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean salvarPlano4(SalvarAcumuladoDB db){
-        if(plano4.getId() == -1){
-            plano4.setNumero(plano3.getNumero()+"."+plano4.getNumero());
-            if(db.inserirObjeto(plano4)){
+    public boolean salvarPlano4(SalvarAcumuladoDB db) {
+        if (plano4.getId() == -1) {
+            plano4.setNumero(plano3.getNumero() + "." + plano4.getNumero());
+            if (db.inserirObjeto(plano4)) {
                 msgConfirma = "Plano 4 Salvo com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao inserir o Plano 4";
                 return false;
             }
-        }else{
-            if(db.alterarObjeto(plano4)){
+        } else {
+            if (db.alterarObjeto(plano4)) {
                 msgConfirma = "Plano 4 atualizar com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao atualizar o Plano 4";
                 return false;
             }
@@ -331,11 +327,11 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean excluirPlano4(SalvarAcumuladoDB db){
-        if(plano4.getId() != -1){
-            if(db.deletarObjeto((Plano4) db.pesquisaCodigo(plano4.getId(), "Plano4"))){
+    public boolean excluirPlano4(SalvarAcumuladoDB db) {
+        if (plano4.getId() != -1) {
+            if (db.deletarObjeto((Plano4) db.pesquisaCodigo(plano4.getId(), "Plano4"))) {
                 msgConfirma = "Plano 4 deletado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao deletar plano 4!";
                 return false;
             }
@@ -344,19 +340,19 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean salvarPlano5(SalvarAcumuladoDB db){
-        if(plano5.getId() == -1){
+    public boolean salvarPlano5(SalvarAcumuladoDB db) {
+        if (plano5.getId() == -1) {
             plano5.setContaBanco(null);
-            if(db.inserirObjeto(plano5)){
+            if (db.inserirObjeto(plano5)) {
                 msgConfirma = "Plano 5 Salvo com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao inserir o Plano 5";
                 return false;
             }
-        }else{
-            if(db.alterarObjeto(plano5)){
+        } else {
+            if (db.alterarObjeto(plano5)) {
                 msgConfirma = "Plano 5 atualizar com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Falha ao atualizar o Plano 5";
                 return false;
             }
@@ -365,11 +361,11 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public boolean excluirPlano5(SalvarAcumuladoDB db){
-        if(plano5.getId() != -1){
-            if(db.deletarObjeto((Plano5) db.pesquisaCodigo(plano5.getId(), "Plano5"))){
+    public boolean excluirPlano5(SalvarAcumuladoDB db) {
+        if (plano5.getId() != -1) {
+            if (db.deletarObjeto((Plano5) db.pesquisaCodigo(plano5.getId(), "Plano5"))) {
                 msgConfirma = "Plano 5 deletado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao deletar plano 5!";
                 return false;
             }
@@ -378,45 +374,45 @@ public class PlanoJSFBean {
         return true;
     }
 
-    public String adicionarPlano1(){
+    public String adicionarPlano1() {
         plano = new Plano();
         divNovoPlano = "divPlano";
         return null;
     }
 
-    public String adicionarNovo(){
-        if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano")){
+    public String adicionarNovo() {
+        if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano")) {
             plano2 = new Plano2();
 
             plano = (Plano) listaPlano.get(idIndex).getArgumento0();
             plano2.setPlano(plano);
             divNovoPlano = "divPlano2";
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano2")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano2")) {
             plano3 = new Plano3();
 
             plano2 = (Plano2) listaPlano.get(idIndex).getArgumento0();
             plano3.setPlano2(plano2);
             divNovoPlano = "divPlano3";
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano3")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano3")) {
             plano4 = new Plano4();
 
             plano3 = (Plano3) listaPlano.get(idIndex).getArgumento0();
             plano4.setPlano3(plano3);
             divNovoPlano = "divPlano4";
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano4")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano4")) {
             plano5 = new Plano5();
 
             plano4 = (Plano4) listaPlano.get(idIndex).getArgumento0();
             plano5.setPlano4(plano4);
             divNovoPlano = "divPlano5";
-        }else if(listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano5")){
+        } else if (listaPlano.get(idIndex).getArgumento0().getClass().getSimpleName().equals("Plano5")) {
             plano5 = (Plano5) listaPlano.get(idIndex).getArgumento0();
             divNovoPlano = "divPlanox";
         }
         return null;
     }
 
-    public String ok(){
+    public String ok() {
 
         return "plano";
     }
@@ -449,59 +445,56 @@ public class PlanoJSFBean {
 //        }
 //    }
 
-    public List <DataObject> getListaPlano() {
+    public List<DataObject> getListaPlano() {
         PlanoDB db = new PlanoDBToplink();
 
         List listaAuxiliar = new ArrayList();
 
-        if(listaPlano.isEmpty()){
+        if (listaPlano.isEmpty()) {
 
-            if(radioPlano.equals("pl1")){
+            if (radioPlano.equals("pl1")) {
                 listaAuxiliar = db.pesquisaPlanos("Plano");
-                for(int i = 0; i < listaAuxiliar.size(); i++){
-                    listaPlano.add(new DataObject(((Plano) listaAuxiliar.get(i)), ((Plano) listaAuxiliar.get(i)).getNumero()+" "+(((Plano)listaAuxiliar.get(i)).getConta()), "divPlano", "Novo Plano 2", null, null));
+                for (int i = 0; i < listaAuxiliar.size(); i++) {
+                    listaPlano.add(new DataObject(((Plano) listaAuxiliar.get(i)), ((Plano) listaAuxiliar.get(i)).getNumero() + " " + (((Plano) listaAuxiliar.get(i)).getConta()), "divPlano", "Novo Plano 2", null, null));
                 }
 
-            }else if(radioPlano.equals("pl2")){
+            } else if (radioPlano.equals("pl2")) {
                 listaAuxiliar = db.pesquisaPlanos("Plano2");
-                for(int i = 0; i < listaAuxiliar.size(); i++){
-                    listaPlano.add(new DataObject(((Plano2) listaAuxiliar.get(i)), ((Plano2) listaAuxiliar.get(i)).getNumero()+" "+(((Plano2)listaAuxiliar.get(i)).getConta()), "divPlano2", "Novo Plano 3", null, null));
+                for (int i = 0; i < listaAuxiliar.size(); i++) {
+                    listaPlano.add(new DataObject(((Plano2) listaAuxiliar.get(i)), ((Plano2) listaAuxiliar.get(i)).getNumero() + " " + (((Plano2) listaAuxiliar.get(i)).getConta()), "divPlano2", "Novo Plano 3", null, null));
                 }
 
-            }else if(radioPlano.equals("pl3")){
+            } else if (radioPlano.equals("pl3")) {
                 listaAuxiliar = db.pesquisaPlanos("Plano3");
-                for(int i = 0; i < listaAuxiliar.size(); i++){
-                    listaPlano.add(new DataObject(((Plano3) listaAuxiliar.get(i)), ((Plano3) listaAuxiliar.get(i)).getNumero()+" "+(((Plano3)listaAuxiliar.get(i)).getConta()), "divPlano3", "Novo Plano 4", null, null));
+                for (int i = 0; i < listaAuxiliar.size(); i++) {
+                    listaPlano.add(new DataObject(((Plano3) listaAuxiliar.get(i)), ((Plano3) listaAuxiliar.get(i)).getNumero() + " " + (((Plano3) listaAuxiliar.get(i)).getConta()), "divPlano3", "Novo Plano 4", null, null));
                 }
 
-            }else if(radioPlano.equals("pl4")){
+            } else if (radioPlano.equals("pl4")) {
                 listaAuxiliar = db.pesquisaPlanos("Plano4");
-                for(int i = 0; i < listaAuxiliar.size(); i++){
-                    listaPlano.add(new DataObject(((Plano4) listaAuxiliar.get(i)), ((Plano4) listaAuxiliar.get(i)).getNumero()+" "+(((Plano4)listaAuxiliar.get(i)).getConta()), "divPlano4", "Novo Plano 5", null, null));
+                for (int i = 0; i < listaAuxiliar.size(); i++) {
+                    listaPlano.add(new DataObject(((Plano4) listaAuxiliar.get(i)), ((Plano4) listaAuxiliar.get(i)).getNumero() + " " + (((Plano4) listaAuxiliar.get(i)).getConta()), "divPlano4", "Novo Plano 5", null, null));
                 }
 
-            }else if(radioPlano.equals("pl5")){
+            } else if (radioPlano.equals("pl5")) {
                 listaAuxiliar = db.pesquisaPlanos("Plano5");
-                for(int i = 0; i < listaAuxiliar.size(); i++){
-                    listaPlano.add(new DataObject(((Plano5) listaAuxiliar.get(i)), ((Plano5) listaAuxiliar.get(i)).getNumero()+" "+(((Plano5)listaAuxiliar.get(i)).getConta()), "divPlano5", null, null, null));
+                for (int i = 0; i < listaAuxiliar.size(); i++) {
+                    listaPlano.add(new DataObject(((Plano5) listaAuxiliar.get(i)), ((Plano5) listaAuxiliar.get(i)).getNumero() + " " + (((Plano5) listaAuxiliar.get(i)).getConta()), "divPlano5", null, null, null));
                 }
             }
         }
         return listaPlano;
     }
 
-
-
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         comoPesquisa = "I";
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         comoPesquisa = "P";
     }
 
-
-    public String divNovoPlano(){
+    public String divNovoPlano() {
         return divNovoPlano;
     }
 
@@ -574,7 +567,7 @@ public class PlanoJSFBean {
     }
 
     public void setRadioPlano(String radioPlano) {
-        if(this.radioPlano != radioPlano){
+        if (this.radioPlano != radioPlano) {
             listaPlano.clear();
         }
         this.radioPlano = radioPlano;
@@ -592,14 +585,14 @@ public class PlanoJSFBean {
         this.divNovoPlano = divNovoPlano;
     }
 
-    public List<SelectItem> getListaContaBanco(){
+    public List<SelectItem> getListaContaBanco() {
         ContaBancoDB db = new ContaBancoDBToplink();
-        if (listaContaBanco.isEmpty()){
+        if (listaContaBanco.isEmpty()) {
             int i = 0;
             List select = db.pesquisaTodos();
-            while (i < select.size()){
-               listaContaBanco.add(new SelectItem( new Integer(i), (String) ((ContaBanco) select.get(i)).getBanco().getBanco() +" - "+ ((ContaBanco) select.get(i)).getAgencia() +" - "+ ((ContaBanco) select.get(i)).getConta(), Integer.toString(((ContaBanco) select.get(i)).getId()) ));
-               i++;
+            while (i < select.size()) {
+                listaContaBanco.add(new SelectItem(new Integer(i), (String) ((ContaBanco) select.get(i)).getBanco().getBanco() + " - " + ((ContaBanco) select.get(i)).getAgencia() + " - " + ((ContaBanco) select.get(i)).getConta(), Integer.toString(((ContaBanco) select.get(i)).getId())));
+                i++;
             }
         }
         return listaContaBanco;
@@ -662,21 +655,21 @@ public class PlanoJSFBean {
         PlanoDB db = new PlanoDBToplink();
         String tipoPlano = "Plano5";
 
-        if(radioPlano.equals("pl1")){
+        if (radioPlano.equals("pl1")) {
             tipoPlano = "Plano";
-        }else if(radioPlano.equals("pl2")){
+        } else if (radioPlano.equals("pl2")) {
             tipoPlano = "Plano2";
-        }else if(radioPlano.equals("pl3")){
+        } else if (radioPlano.equals("pl3")) {
             tipoPlano = "Plano3";
-        }else if(radioPlano.equals("pl4")){
+        } else if (radioPlano.equals("pl4")) {
             tipoPlano = "Plano4";
-        }else if(radioPlano.equals("pl5")){
+        } else if (radioPlano.equals("pl5")) {
             tipoPlano = "Plano5";
         }
 
-        if(descPesquisa.equals("")){
+        if (descPesquisa.equals("")) {
             listaPlanoPorPesquisa = new ArrayList();
-        }else{
+        } else {
             listaPlanoPorPesquisa = db.pesquisaPorPlano(descPesquisa, porPesquisa, comoPesquisa, tipoPlano);
 //
 //            for(int i = 0; i < listaAuxiliar.size(); i++){
@@ -702,10 +695,11 @@ public class PlanoJSFBean {
     }
 
     public String getCor1() {
-        if (radioPlano.equals("pl1"))
+        if (radioPlano.equals("pl1")) {
             cor1 = "color:white; background: dodgerblue;";
-        else
+        } else {
             cor1 = "";
+        }
         return cor1;
     }
 
@@ -714,10 +708,11 @@ public class PlanoJSFBean {
     }
 
     public String getCor2() {
-        if (radioPlano.equals("pl2"))
+        if (radioPlano.equals("pl2")) {
             cor2 = "color:white; background: dodgerblue;";
-        else
+        } else {
             cor2 = "";
+        }
         return cor2;
     }
 
@@ -726,10 +721,11 @@ public class PlanoJSFBean {
     }
 
     public String getCor3() {
-        if (radioPlano.equals("pl3"))
+        if (radioPlano.equals("pl3")) {
             cor3 = "color:white; background: dodgerblue;";
-        else
+        } else {
             cor3 = "";
+        }
         return cor3;
     }
 
@@ -738,10 +734,11 @@ public class PlanoJSFBean {
     }
 
     public String getCor4() {
-        if (radioPlano.equals("pl4"))
+        if (radioPlano.equals("pl4")) {
             cor4 = "color:white; background: dodgerblue;";
-        else
+        } else {
             cor4 = "";
+        }
         return cor4;
     }
 
@@ -750,10 +747,11 @@ public class PlanoJSFBean {
     }
 
     public String getCor5() {
-        if (radioPlano.equals("pl5"))
+        if (radioPlano.equals("pl5")) {
             cor5 = "color:white; background: dodgerblue;";
-        else
+        } else {
             cor5 = "";
+        }
         return cor5;
     }
 

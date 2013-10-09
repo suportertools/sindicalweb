@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 public class ParametroNotificacao {
+
     private String sinlogo;
     private String sindsite;
     private String sinnome;
@@ -384,6 +385,4 @@ public class ParametroNotificacao {
     public void setDs_mensagem(String ds_mensagem) {
         this.ds_mensagem = ds_mensagem;
     }
-    
-    
 }

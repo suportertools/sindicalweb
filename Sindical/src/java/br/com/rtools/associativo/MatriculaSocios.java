@@ -18,42 +18,43 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
-@Table(name="MATR_SOCIOS")
-@NamedQuery(name="MatriculaSocios.pesquisaID", query="select ms from MatriculaSocios ms where ms.id=:pid")
-public class MatriculaSocios implements java.io.Serializable{
+@Table(name = "MATR_SOCIOS")
+@NamedQuery(name = "MatriculaSocios.pesquisaID", query = "select ms from MatriculaSocios ms where ms.id=:pid")
+public class MatriculaSocios implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INATIVO")
+    @Column(name = "DT_INATIVO")
     private Date dtInativo;
-    @JoinColumn(name="ID_CATEGORIA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_CATEGORIA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Categoria categoria;
-    @Column(name="NR_MATRICULA", length=10,nullable=true)
+    @Column(name = "NR_MATRICULA", length = 10, nullable = true)
     private int nrMatricula;
-    @JoinColumn(name="ID_CIDADE", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Cidade cidade;
-    @Column(name="DS_OBSERVACAO", length=100, nullable=true)
+    @Column(name = "DS_OBSERVACAO", length = 100, nullable = true)
     private String observacao;
-    @Column(name="DS_OBSERVACAO_AVISO", length=100, nullable=true)
+    @Column(name = "DS_OBSERVACAO_AVISO", length = 100, nullable = true)
     private String observacaoAviso;
     @Column(name = "BLOQUEIA_OBS_AVISO", nullable = true)
     private boolean bloqueiaObsAviso;
-    @JoinColumn(name="ID_MOTIVO_INATIVACAO", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_MOTIVO_INATIVACAO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private SMotivoInativacao motivoInativacao;
-    @JoinColumn(name="ID_TITULAR", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_TITULAR", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa titular;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
 
-    public MatriculaSocios(int id,String inativo, Categoria categoria, int nrMatricula, Cidade cidade, 
-                           String observacao, String observacaoAviso, boolean bloqueiaObsAviso, SMotivoInativacao motivoInativacao,
-                           Pessoa titular, String emissao) {
+    public MatriculaSocios(int id, String inativo, Categoria categoria, int nrMatricula, Cidade cidade,
+            String observacao, String observacaoAviso, boolean bloqueiaObsAviso, SMotivoInativacao motivoInativacao,
+            Pessoa titular, String emissao) {
         this.id = id;
         this.setInativo(inativo);
         this.categoria = categoria;
@@ -68,7 +69,7 @@ public class MatriculaSocios implements java.io.Serializable{
 
     }
 
-    public MatriculaSocios(){
+    public MatriculaSocios() {
         this.id = -1;
         this.setInativo("");
         this.categoria = new Categoria();
@@ -99,15 +100,17 @@ public class MatriculaSocios implements java.io.Serializable{
     }
 
     public String getInativo() {
-        if (dtInativo != null)
+        if (dtInativo != null) {
             return DataHoje.converteData(dtInativo);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setInativo(String inativo) {
-        if (!(inativo.isEmpty()))
+        if (!(inativo.isEmpty())) {
             this.dtInativo = DataHoje.converte(inativo);
+        }
     }
 
     public Categoria getCategoria() {

@@ -1,7 +1,4 @@
-
-
 package br.com.rtools.utilitarios;
-
 
 public class GenericaQuery {
 
@@ -22,7 +19,7 @@ public class GenericaQuery {
     private String argumento14;
     private String argumento15;
 
-    public GenericaQuery(){
+    public GenericaQuery() {
         setArgumento0("");
         setArgumento1("");
         setArgumento2("");
@@ -36,21 +33,21 @@ public class GenericaQuery {
     }
 
     public GenericaQuery(
-        String argumento0,
-        String argumento1,
-        String argumento2,
-        String argumento3,
-        String argumento4,
-        String argumento5,
-        String argumento6,
-        String argumento7,
-        String argumento8,
-        String argumento9){
+            String argumento0,
+            String argumento1,
+            String argumento2,
+            String argumento3,
+            String argumento4,
+            String argumento5,
+            String argumento6,
+            String argumento7,
+            String argumento8,
+            String argumento9) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
         setArgumento3(argumento3);
-        setArgumento4(argumento4);       
+        setArgumento4(argumento4);
         setArgumento5(argumento5);
         setArgumento6(argumento6);
         setArgumento7(argumento7);
@@ -58,14 +55,13 @@ public class GenericaQuery {
         setArgumento9(argumento9);
     }
 
-
     public GenericaQuery(
-        String argumento0,
-        String argumento1,
-        String argumento2,
-        String argumento3,
-        String argumento4,
-        String argumento5){
+            String argumento0,
+            String argumento1,
+            String argumento2,
+            String argumento3,
+            String argumento4,
+            String argumento5) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -75,18 +71,18 @@ public class GenericaQuery {
     }
 
     public GenericaQuery(
-        String argumento0,
-        String argumento1,
-        String argumento2,
-        String argumento3,
-        String argumento4,
-        String argumento5,
-        String argumento6,
-        String argumento7,
-        String argumento8,
-        String argumento9,
-        String argumento10,
-        String argumento11){
+            String argumento0,
+            String argumento1,
+            String argumento2,
+            String argumento3,
+            String argumento4,
+            String argumento5,
+            String argumento6,
+            String argumento7,
+            String argumento8,
+            String argumento9,
+            String argumento10,
+            String argumento11) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -102,22 +98,22 @@ public class GenericaQuery {
     }
 
     public GenericaQuery(
-        String argumento0,
-        String argumento1,
-        String argumento2,
-        String argumento3,
-        String argumento4,
-        String argumento5,
-        String argumento6,
-        String argumento7,
-        String argumento8,
-        String argumento9,
-        String argumento10,
-        String argumento11,
-        String argumento12,
-        String argumento13,
-        String argumento14,
-        String argumento15){
+            String argumento0,
+            String argumento1,
+            String argumento2,
+            String argumento3,
+            String argumento4,
+            String argumento5,
+            String argumento6,
+            String argumento7,
+            String argumento8,
+            String argumento9,
+            String argumento10,
+            String argumento11,
+            String argumento12,
+            String argumento13,
+            String argumento14,
+            String argumento15) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);

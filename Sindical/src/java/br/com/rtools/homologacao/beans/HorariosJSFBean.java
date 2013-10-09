@@ -192,13 +192,13 @@ public class HorariosJSFBean {
         msgConfirma = "Horário reativado!";
         return null;
     }
-    
+
     public String editarQuantidade(Horarios h) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
-        if(h.getQuantidade() <= 0) {
+        if (h.getQuantidade() <= 0) {
             h.setQuantidade(0);
-            h.setAtivo(false);            
+            h.setAtivo(false);
         }
         if (salvarAcumuladoDB.alterarObjeto(h)) {
             salvarAcumuladoDB.comitarTransacao();

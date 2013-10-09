@@ -8,13 +8,22 @@ import java.util.List;
 import java.util.Vector;
 
 public interface OposicaoDB {
+
     public ConvencaoPeriodo pesquisaConvencaoPeriodo(int id_convencao, int id_grupo);
+
     public List<ConvencaoPeriodo> listaConvencaoPeriodo();
+
     public List<Oposicao> listaTodos();
+
     public Oposicao pesquisaOposicao(int id_fisica, int id_juridica);
+
     public PessoaEmpresa pesquisaPessoaFisicaEmpresa(String cpf, String rg);
+
     public OposicaoPessoa pesquisaOposicaoPessoa(String cpf, String rg);
+
     public List<Vector> pesquisaPessoaConvencaoGrupoCidade(int id);
+
     public List<Oposicao> pesquisaOposicao(String descricaoPesquisa, String tipoPesquisa, String comoPesquisa);
+
     public boolean validaOposicao(Oposicao oposicao);
 }

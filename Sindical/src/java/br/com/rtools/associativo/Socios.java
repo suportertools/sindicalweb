@@ -17,25 +17,26 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="SOC_SOCIOS")
-@NamedQuery(name="Socios.pesquisaID", query="select s from Socios s where s.id=:pid")
-public class Socios implements java.io.Serializable{
+@Table(name = "SOC_SOCIOS")
+@NamedQuery(name = "Socios.pesquisaID", query = "select s from Socios s where s.id=:pid")
+public class Socios implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_MATRICULA_SOCIOS", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private MatriculaSocios matriculaSocios;
-    @JoinColumn(name="ID_SERVICO_PESSOA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_SERVICO_PESSOA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ServicoPessoa servicoPessoa;
-    @JoinColumn(name="ID_PARENTESCO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_PARENTESCO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Parentesco parentesco;
-    @Column(name="NR_VIA_CARTEIRINHA", length=10,nullable=true)
+    @Column(name = "NR_VIA_CARTEIRINHA", length = 10, nullable = true)
     private int nrViaCarteirinha;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_VALIDADE_CARTEIRINHA")
+    @Column(name = "DT_VALIDADE_CARTEIRINHA")
     private Date dtValidadeCarteirinha;
 
     public Socios() {
@@ -55,8 +56,6 @@ public class Socios implements java.io.Serializable{
         this.nrViaCarteirinha = nrViaCarteirinha;
         this.dtValidadeCarteirinha = dtValidadeCarteirinha;
     }
-
-
 
     public int getId() {
         return id;
@@ -106,15 +105,17 @@ public class Socios implements java.io.Serializable{
         this.dtValidadeCarteirinha = dtValidadeCarteirinha;
     }
 
-    public String getValidadeCarteirinha(){
-        if (dtValidadeCarteirinha != null)
+    public String getValidadeCarteirinha() {
+        if (dtValidadeCarteirinha != null) {
             return DataHoje.converteData(dtValidadeCarteirinha);
-        else
+        } else {
             return "";
+        }
     }
 
-    public void setValidadeCarteirinha(String validadeCarteirinha){
-        if (!(validadeCarteirinha.isEmpty()))
+    public void setValidadeCarteirinha(String validadeCarteirinha) {
+        if (!(validadeCarteirinha.isEmpty())) {
             this.dtValidadeCarteirinha = DataHoje.converte(validadeCarteirinha);
+        }
     }
 }

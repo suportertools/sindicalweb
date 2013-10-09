@@ -1,4 +1,3 @@
-
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.arrecadacao.DescontoEmpregado;
@@ -30,92 +29,84 @@ public abstract class MovimentoValorJSFBean {
     private String labelFolha2 = "";
     private String labelLink = "";
     private Movimento movimento = null;
-    private int idTipoServico = -1;   
+    private int idTipoServico = -1;
 
-    public MovimentoValorJSFBean(){
-
+    public MovimentoValorJSFBean() {
     }
 
     public abstract void carregarFolha();
 
     public abstract void atualizaValorGrid();
 
-    public synchronized float carregarValor(int idServico, int idTipo, String ref, int idPessoa){
+    public synchronized float carregarValor(int idServico, int idTipo, String ref, int idPessoa) {
         MovimentoDB movDB = new MovimentoDBToplink();
         Object[] valorFloat = movDB.pesquisaValorFolha(idServico, idTipo, ref, idPessoa);
         this.idTipoServico = idTipo;
         FolhaEmpresa folha = null;
         DescontoEmpregadoDB desDB = new DescontoEmpregadoDBToplink();
         DescontoEmpregado desEmpregado = desDB.pesquisaEntreReferencias(
-            ref,
-            idServico,
-            idPessoa
-        );
+                ref,
+                idServico,
+                idPessoa);
         FolhaEmpresaDB dbFolha = new FolhaEmpresaDBToplink();
         folha = dbFolha.pesquisaPorPessoa(
                 idPessoa,
                 idTipo,
                 ref);
-        if (valorFloat == null){
-            valorFloat = new Float[] {new Float(0),new Float(0)};
+        if (valorFloat == null) {
+            valorFloat = new Float[]{new Float(0), new Float(0)};
         }
-        if (( (Float) valorFloat[0]) != 0){
+        if (((Float) valorFloat[0]) != 0) {
             return Moeda.converteFloatR$Float(
-                Moeda.somaValores(
+                    Moeda.somaValores(
                     Moeda.multiplicarValores(
-                        ( (Float) valorFloat[0]),
-                        (( (Float) valorFloat[1]) / 100)
-                    ),
+                    ((Float) valorFloat[0]),
+                    (((Float) valorFloat[1]) / 100)),
                     Moeda.multiplicarValores(
-                        folha.getNumFuncionarios(),
-                        desEmpregado.getValorEmpregado()
-                    )
-                )
-            );
-        }else{
+                    folha.getNumFuncionarios(),
+                    desEmpregado.getValorEmpregado())));
+        } else {
             return (float) 0.0;
         }
     }
 
-    public boolean carregarFolha(Movimento movimento){
+    public boolean carregarFolha(Movimento movimento) {
         folhaEmpresa = new FolhaEmpresa();
         descontoEmpregado = new DescontoEmpregado();
-        if (movimento == null){
+        if (movimento == null) {
             return false;
         }
         this.movimento = movimento;
-        DescontoEmpregadoDB desDB = new DescontoEmpregadoDBToplink();        
+        DescontoEmpregadoDB desDB = new DescontoEmpregadoDBToplink();
         descontoEmpregado = desDB.pesquisaEntreReferencias(
-            movimento.getReferencia(),
-            movimento.getServicos().getId(),
-            movimento.getPessoa().getId()
-        );
+                movimento.getReferencia(),
+                movimento.getServicos().getId(),
+                movimento.getPessoa().getId());
 
-        if (descontoEmpregado == null){
+        if (descontoEmpregado == null) {
             descontoEmpregado = new DescontoEmpregado();
             mostrarPainel = true;
             labelLink = "Informe o desconto empregado para referência - Click aqui " + movimento.getReferencia();
             labelFolha = "";
             labelFolha2 = "";
-        }else{
+        } else {
             labelLink = "";
             labelFolha2 = "Número de Funcionários: ";
             labelFolha = "Atualizar valor da folha do mês para referência " + movimento.getReferencia();
             mostrarPainel = false;
         }
 
-        if (idTipoServico != 4){
+        if (idTipoServico != 4) {
             folhaEmpresa = this.pesquisaFolhaEmpresa(
-                movimento.getPessoa().getId(),
-                movimento.getTipoServico().getId(),
-                movimento.getReferencia()
-            );
+                    movimento.getPessoa().getId(),
+                    movimento.getTipoServico().getId(),
+                    movimento.getReferencia());
 
-            if (folhaEmpresa.getId() != -1){
+            if (folhaEmpresa.getId() != -1) {
                 String valorFolha = Float.toString(folhaEmpresa.getValorMes());
                 setValor(valorFolha);
-                setQtdFuncionario(folhaEmpresa.getNumFuncionarios());               
-            }else{
+                setQtdFuncionario(folhaEmpresa.getNumFuncionarios());
+            } else {
                 setValor("0");
                 setQtdFuncionario(0);
             }
@@ -123,16 +114,16 @@ public abstract class MovimentoValorJSFBean {
         return true;
     }
 
-    public void esconder(){
+    public void esconder() {
         setQtdFuncionario(0);
-        setValor("0");        
+        setValor("0");
     }
 
-    public String getLabelFolha(){
+    public String getLabelFolha() {
         return labelFolha;
     }
 
-    public void setLabelFolha(String labelFolha){
+    public void setLabelFolha(String labelFolha) {
         this.labelFolha = labelFolha;
     }
 
@@ -144,26 +135,26 @@ public abstract class MovimentoValorJSFBean {
         this.valor = Moeda.substituiVirgula(valor);
     }
 
-    public synchronized String atualizaValor(boolean salvar){
-        if (movimento == null){
+    public synchronized String atualizaValor(boolean salvar) {
+        if (movimento == null) {
             return "";
         }
-        try{
+        try {
             float valorMes = Float.parseFloat(valor);
-            if (valorMes != 0){
-                JuridicaDB jurDB = new JuridicaDBToplink();      
+            if (valorMes != 0) {
+                JuridicaDB jurDB = new JuridicaDBToplink();
                 //FolhaEmpresaDB dbFolha = new FolhaEmpresaDBToplink();
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
                 sv.abrirTransacao();
-                if (folhaEmpresa.getId() == -1){
+                if (folhaEmpresa.getId() == -1) {
                     folhaEmpresa.setValorMes(valorMes);
                     folhaEmpresa.setNumFuncionarios(qtdFuncionario);
-                    folhaEmpresa.setJuridica(jurDB.pesquisaJuridicaPorPessoa( movimento.getPessoa().getId() ));
+                    folhaEmpresa.setJuridica(jurDB.pesquisaJuridicaPorPessoa(movimento.getPessoa().getId()));
                     folhaEmpresa.setReferencia(movimento.getReferencia());
                     folhaEmpresa.setTipoServico(movimento.getTipoServico());
                     //salvar(folhaEmpresa);
                     sv.inserirObjeto(folhaEmpresa);
-                }else{
+                } else {
                     folhaEmpresa.setValorMes(valorMes);
                     folhaEmpresa.setAlteracoes(folhaEmpresa.getAlteracoes() + 1);
                     folhaEmpresa.setNumFuncionarios(qtdFuncionario);
@@ -171,30 +162,25 @@ public abstract class MovimentoValorJSFBean {
                     sv.alterarObjeto(folhaEmpresa);
                 }
 
-         
-                if (valorMes == 0){
+
+                if (valorMes == 0) {
                     return "";
                 }
                 movimento.setValor(
                         Moeda.converteFloatR$Float(
-                            Moeda.somaValores(
-                                Moeda.multiplicarValores(
-                                    valorMes,
-                                    (descontoEmpregado.getPercentual() / 100)
-                                ),
-                                Moeda.multiplicarValores(
-                                    folhaEmpresa.getNumFuncionarios(),
-                                    descontoEmpregado.getValorEmpregado()
-                                )
-                            )
-                        )
-                );
-                if (salvar){
-                    if (movimento.getId() == -1){
+                        Moeda.somaValores(
+                        Moeda.multiplicarValores(
+                        valorMes,
+                        (descontoEmpregado.getPercentual() / 100)),
+                        Moeda.multiplicarValores(
+                        folhaEmpresa.getNumFuncionarios(),
+                        descontoEmpregado.getValorEmpregado()))));
+                if (salvar) {
+                    if (movimento.getId() == -1) {
                         //sv.inserirObjeto(movimento);
-                    }else{
+                    } else {
                         sv.alterarObjeto(movimento);
-                        Lote lote = (Lote)sv.pesquisaCodigo(movimento.getLote().getId(), "Lote");
+                        Lote lote = (Lote) sv.pesquisaCodigo(movimento.getLote().getId(), "Lote");
                         lote.setValor(movimento.getValor());
                         sv.alterarObjeto(lote);
                     }
@@ -208,7 +194,7 @@ public abstract class MovimentoValorJSFBean {
             }
             esconder();
             return Moeda.converteR$Float(movimento.getValor());
-        }catch (Exception e){
+        } catch (Exception e) {
             String a = e.getMessage();
             esconder();
             return "";
@@ -216,41 +202,41 @@ public abstract class MovimentoValorJSFBean {
 
     }
 
-    protected FolhaEmpresa pesquisaFolhaEmpresa(int idPessoa, int idTipoServico, String referencia){
+    protected FolhaEmpresa pesquisaFolhaEmpresa(int idPessoa, int idTipoServico, String referencia) {
         FolhaEmpresa result = null;
         FolhaEmpresaDB dbFolha = new FolhaEmpresaDBToplink();
-        result = dbFolha.pesquisaPorPessoa(idPessoa,idTipoServico,referencia);
-        if (result != null){
+        result = dbFolha.pesquisaPorPessoa(idPessoa, idTipoServico, referencia);
+        if (result != null) {
             return result;
-        }else{
+        } else {
             return new FolhaEmpresa();
         }
     }
 
-    public String salvar(Object object, int id){
+    public String salvar(Object object, int id) {
         FinanceiroDB db = new FinanceiroDBToplink();
-        if (id == -1){
+        if (id == -1) {
             db.insert(object);
-        }else{
+        } else {
             db.getEntityManager().getTransaction().begin();
-            if (db.update(object)){
+            if (db.update(object)) {
                 db.getEntityManager().getTransaction().commit();
-            }else{
+            } else {
                 db.getEntityManager().getTransaction().rollback();
             }
         }
         return null;
     }
-    
-    public String salvar(FolhaEmpresa object){
+
+    public String salvar(FolhaEmpresa object) {
         FolhaEmpresaDB db = new FolhaEmpresaDBToplink();
-        if (object.getId() == -1){
+        if (object.getId() == -1) {
             db.insert(object);
-        }else{
+        } else {
             db.getEntityManager().getTransaction().begin();
-            if (db.update(object)){
+            if (db.update(object)) {
                 db.getEntityManager().getTransaction().commit();
-            }else{
+            } else {
                 db.getEntityManager().getTransaction().rollback();
             }
         }
@@ -304,6 +290,4 @@ public abstract class MovimentoValorJSFBean {
     public void setLabelLink(String labelLink) {
         this.labelLink = labelLink;
     }
-
-
 }

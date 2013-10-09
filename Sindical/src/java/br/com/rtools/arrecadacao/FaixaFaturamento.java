@@ -1,29 +1,28 @@
-
 package br.com.rtools.arrecadacao;
 
 import br.com.rtools.financeiro.Servicos;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_FAIXA_FATURAMENTO")
-@NamedQuery(name="FaixaFaturamento.pesquisaID", query="select c from FaixaFaturamento c where c.id = :pid")
+@Table(name = "ARR_FAIXA_FATURAMENTO")
+@NamedQuery(name = "FaixaFaturamento.pesquisaID", query = "select c from FaixaFaturamento c where c.id = :pid")
 public class FaixaFaturamento implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name="NR_MIN", nullable=true)
+    @Column(name = "NR_MIN", nullable = true)
     private double min;
-    @Column(name="NR_MAX", nullable=true)
+    @Column(name = "NR_MAX", nullable = true)
     private double max;
-    @Column(name="NR_CONTRIBUICAO", nullable=true)
+    @Column(name = "NR_CONTRIBUICAO", nullable = true)
     private float contribuicao;
-    @Column(name="DS_REF_INICIAL", length=7 , nullable=true)
+    @Column(name = "DS_REF_INICIAL", length = 7, nullable = true)
     private String referenciaInicial;
-    @Column(name="DS_REF_FINAL",  length=7 , nullable=true)
+    @Column(name = "DS_REF_FINAL", length = 7, nullable = true)
     private String referenciaFinal;
 
     public FaixaFaturamento() {
@@ -35,7 +34,7 @@ public class FaixaFaturamento implements java.io.Serializable {
         this.referenciaInicial = "";
         this.referenciaFinal = "";
     }
-    
+
     public FaixaFaturamento(int id, Servicos servicos, double min, double max, float contribuicao, String referenciaInicial, String referenciaFinal) {
         this.id = id;
         this.servicos = servicos;
@@ -44,7 +43,7 @@ public class FaixaFaturamento implements java.io.Serializable {
         this.contribuicao = contribuicao;
         this.referenciaInicial = referenciaInicial;
         this.referenciaFinal = referenciaFinal;
-    }    
+    }
 
     public int getId() {
         return id;

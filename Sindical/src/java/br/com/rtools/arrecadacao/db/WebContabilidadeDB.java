@@ -6,7 +6,8 @@ import java.util.List;
 public interface WebContabilidadeDB {
 
     public List listaEmpresasPertContabilidade(int idContabilidade);
-    public List pesquisaMovParaWebContabilidade(int idJuridica);
-    public List pesquisaMovParaWebContabilidadeComRef(int idJuridica, String referencia);
 
+    public List pesquisaMovParaWebContabilidade(int idJuridica);
+
+    public List pesquisaMovParaWebContabilidadeComRef(int idJuridica, String referencia);
 }

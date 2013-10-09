@@ -113,7 +113,7 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
             Query query = getEntityManager().createQuery(
                     "  SELECT PE                                    "
                     + "  FROM PessoaEmpresa AS PE                   "
-                    + " WHERE PE.fisica.pessoa.id = " + idPessoa      
+                    + " WHERE PE.fisica.pessoa.id = " + idPessoa
                     + "   AND PE.dtDemissao IS NULL                 ");
             List list = query.getResultList();
             if (!list.isEmpty()) {

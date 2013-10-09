@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.bean.ManagedBean; 
+import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -514,11 +514,11 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");            
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
-        
+
         pessoaProfissao = dbp.pesquisaProfPorFisica(fisica.getId());
         if (pessoaProfissao.getId() != -1) {
             for (int i = 0; i < listaProfissoes.size(); i++) {
@@ -712,7 +712,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         List list = db.pesquisaTodos();
         if (list == null) {
             return new ArrayList();
-        }   
+        }
         return list;
     }
 
@@ -957,19 +957,19 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             "Uraguaia(o)",
             "Venezuelana(o)"};
         List<SelectItem> selectPais = new ArrayList<SelectItem>();
-        int i = 0;        
+        int i = 0;
         while (i < lista.length) {
             selectPais.add(new SelectItem(new Integer(i), lista[i], String.valueOf(i)));
             i++;
         }
 //        if (selectPais != null) {
-            if (fisica.getId() != -1) {
-                for (i = 0; i < selectPais.size(); i++) {
-                    if (selectPais.get(i).getLabel().equals(fisica.getNacionalidade())) {
-                        idPais = i;
-                    }
+        if (fisica.getId() != -1) {
+            for (i = 0; i < selectPais.size(); i++) {
+                if (selectPais.get(i).getLabel().equals(fisica.getNacionalidade())) {
+                    idPais = i;
                 }
             }
+        }
 //        }
         return selectPais;
     }

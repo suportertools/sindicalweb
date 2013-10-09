@@ -21,6 +21,7 @@ import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
 public class ServicoPessoaJSFBean {
+
     protected String indexTab;
     protected String strEndereco;
     protected ServicoPessoa servicoPessoa;
@@ -48,9 +49,9 @@ public class ServicoPessoaJSFBean {
         listaServicos = new ArrayList();
     }
 
-    public void pesquisaFisica(){
-        Fisica fis = (Fisica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
-        if (fis != null){
+    public void pesquisaFisica() {
+        Fisica fis = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+        if (fis != null) {
             PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
             titular = fis;
             titularEndereco = db.pesquisaEndPorPessoaTipo(fis.getPessoa().getId(), 3);
@@ -59,31 +60,31 @@ public class ServicoPessoaJSFBean {
         }
     }
 
-    public String chamadaPesquisa(){
-        return ((chamadaPaginaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
+    public String chamadaPesquisa() {
+        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
     }
 
-    public void editar(ServicoPessoa servicoPessoa){
+    public void editar(ServicoPessoa servicoPessoa) {
         int qntTipoDocumento = getListaTipoDocumento().size();
         int qntServicos = getListaServicos().size();
         chkContaCobranca = servicoPessoa.isBanco();
         this.servicoPessoa = servicoPessoa;
-        
+
         FisicaDB db = new FisicaDBToplink();
         titular = db.pesquisaFisicaPorPessoa(servicoPessoa.getPessoa().getId());
-        
+
         PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
         titularEndereco = dbe.pesquisaEndPorPessoaTipo(titular.getPessoa().getId(), 3);
-        
-        for (int i = 0; i < qntTipoDocumento; i ++){
-            if (Integer.parseInt( (String)getListaTipoDocumento().get(i).getDescription() ) == servicoPessoa.getTipoDocumento().getId()){
+
+        for (int i = 0; i < qntTipoDocumento; i++) {
+            if (Integer.parseInt((String) getListaTipoDocumento().get(i).getDescription()) == servicoPessoa.getTipoDocumento().getId()) {
                 setIdTipoDocumento(i);
                 break;
             }
         }
-        
-        for (int i = 0; i < qntServicos; i ++){
-            if (Integer.parseInt( (String)getListaServicos().get(i).getDescription() ) == servicoPessoa.getServicos().getId()){
+
+        for (int i = 0; i < qntServicos; i++) {
+            if (Integer.parseInt((String) getListaServicos().get(i).getDescription()) == servicoPessoa.getServicos().getId()) {
                 setIdServico(i);
                 break;
             }
@@ -91,24 +92,25 @@ public class ServicoPessoaJSFBean {
     }
 
     public String getStrEndereco() {
-       if (titular.getId() != -1){
-            if (titularEndereco != null && titularEndereco.getId() != -1){
+        if (titular.getId() != -1) {
+            if (titularEndereco != null && titularEndereco.getId() != -1) {
                 String strCompl = "";
-                if(titularEndereco.getComplemento().equals(""))
+                if (titularEndereco.getComplemento().equals("")) {
                     strCompl = " ";
-                else
-                    strCompl = " ( "+titularEndereco.getComplemento()+ " ) ";
+                } else {
+                    strCompl = " ( " + titularEndereco.getComplemento() + " ) ";
+                }
 
-                    strEndereco = titularEndereco.getEndereco().getLogradouro().getDescricao()+ " " +
-                                  titularEndereco.getEndereco().getDescricaoEndereco().getDescricao()+", " +titularEndereco.getNumero()+" " +titularEndereco.getEndereco().getBairro().getDescricao()+","+
-                                  strCompl+titularEndereco.getEndereco().getCidade().getCidade() +" - "+ titularEndereco.getEndereco().getCidade().getUf()+ " - "+AnaliseString.mascaraCep(titularEndereco.getEndereco().getCep());
-            }else{
+                strEndereco = titularEndereco.getEndereco().getLogradouro().getDescricao() + " "
+                        + titularEndereco.getEndereco().getDescricaoEndereco().getDescricao() + ", " + titularEndereco.getNumero() + " " + titularEndereco.getEndereco().getBairro().getDescricao() + ","
+                        + strCompl + titularEndereco.getEndereco().getCidade().getCidade() + " - " + titularEndereco.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(titularEndereco.getEndereco().getCep());
+            } else {
                 strEndereco = " NENHUM ";
             }
-       }else{
-           titularEndereco = new PessoaEndereco();
-           strEndereco = "";
-       }
+        } else {
+            titularEndereco = new PessoaEndereco();
+            strEndereco = "";
+        }
         return strEndereco;
     }
 
@@ -116,156 +118,166 @@ public class ServicoPessoaJSFBean {
         this.strEndereco = strEndereco;
     }
 
-    public List<SelectItem> getListaTipoDocumento(){
-        if (listaTipoDocumento.isEmpty()){
+    public List<SelectItem> getListaTipoDocumento() {
+        if (listaTipoDocumento.isEmpty()) {
             int i = 0;
             FTipoDocumentoDB db = new FTipoDocumentoDBToplink();
             List<FTipoDocumento> select = new ArrayList();
-            if (isChkContaCobranca())
+            if (isChkContaCobranca()) {
                 select.add(db.pesquisaCodigo(2));
-            else
+            } else {
                 select = db.pesquisaListaTipoExtrato();
-            while (i < select.size()){
-                listaTipoDocumento.add(new SelectItem( new Integer(i),
-                            (String) (select.get(i).getDescricao()),
-                            Integer.toString(select.get(i).getId()) ));
+            }
+            while (i < select.size()) {
+                listaTipoDocumento.add(new SelectItem(new Integer(i),
+                        (String) (select.get(i).getDescricao()),
+                        Integer.toString(select.get(i).getId())));
                 i++;
             }
         }
         return listaTipoDocumento;
     }
 
-    public List<SelectItem> getListaServicos(){
-        if (listaServicos.isEmpty()){
+    public List<SelectItem> getListaServicos() {
+        if (listaServicos.isEmpty()) {
             int i = 0, idRotina = 0;
             ServicosDB db = new ServicosDBToplink();
             RotinaDB dbr = new RotinaDBToplink();
-            idRotina = ((Rotina)dbr.pesquisaPaginaRotina(getRefreshPagina())).getId() ;
+            idRotina = ((Rotina) dbr.pesquisaPaginaRotina(getRefreshPagina())).getId();
             List<Servicos> select = new ArrayList();
             select = db.pesquisaTodos(idRotina);
-            while (i < select.size()){
-                listaServicos.add(new SelectItem( new Integer(i),
-                            (String) select.get(i).getDescricao(),
-                            Integer.toString( select.get(i).getId()) ));
+            while (i < select.size()) {
+                listaServicos.add(new SelectItem(new Integer(i),
+                        (String) select.get(i).getDescricao(),
+                        Integer.toString(select.get(i).getId())));
                 i++;
             }
         }
         return listaServicos;
     }
 
-    public String salvarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar){
+    public String salvarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar) {
         ServicosDB dbServico = new ServicosDBToplink();
         ServicoContaCobrancaDB dbSCB = new ServicoContaCobrancaDBToplink();
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
 
         // --------------------------------------------
-        if (servico == null)
-            servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt( getListaServicos().get(idServico).getDescription())));
-        else
+        if (servico == null) {
+            servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription())));
+        } else {
             servicoPessoa.setServicos(dbServico.pesquisaCodigo(servico.getId()));
-        try{
-            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt( getListaTipoDocumento().get(idTipoDocumento).getDescription())));
-        }catch(Exception e){
-            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt( getListaTipoDocumento().get(0).getDescription())));
-        }        
-        
-        if (chkContaCobranca){
+        }
+        try {
+            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription())));
+        } catch (Exception e) {
+            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(0).getDescription())));
+        }
+
+        if (chkContaCobranca) {
             List l = dbSCB.pesquisaServPorIdServIdTipoServ(servicoPessoa.getServicos().getId(), 1);
-            if (!l.isEmpty()){
+            if (!l.isEmpty()) {
                 servicoPessoa.setBanco(true);
-            }else{
+            } else {
                 servicoPessoa.setBanco(false);
                 return "Não Existe serviço conta cobrança!";
             }
-        } else{
+        } else {
             servicoPessoa.setBanco(false);
         }
-        
+
         PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
         PessoaEmpresa pe = null;
-        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1){
+        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1) {
             pe = dbp.pesquisaPessoaEmpresaPorFisica(titular.getId());
-            if (pe.getId() != -1)
+            if (pe.getId() != -1) {
                 servicoPessoa.setCobranca(pe.getJuridica().getPessoa());
-            else
+            } else {
                 servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-        }else
+            }
+        } else {
             servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-        
-        if (servicoPessoa.getPessoa().getId() != -1){
-            if (dbSalvar.inserirObjeto(servicoPessoa))
+        }
+
+        if (servicoPessoa.getPessoa().getId() != -1) {
+            if (dbSalvar.inserirObjeto(servicoPessoa)) {
                 return "";
-            else
+            } else {
                 return "Erro ao salvar serviço pessoa!";
-        }else
+            }
+        } else {
             return "Não existe pessoa pesquisada";
+        }
     }
 
-    public String atualizarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar){
+    public String atualizarServicoPessoa(Servicos servico, SalvarAcumuladoDB dbSalvar) {
         ServicosDB dbServico = new ServicosDBToplink();
         ServicoContaCobrancaDB dbSCB = new ServicoContaCobrancaDBToplink();
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
-        
-        if (servico == null)
-            servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt( getListaServicos().get(idServico).getDescription())));
-        else
+
+        if (servico == null) {
+            servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription())));
+        } else {
             servicoPessoa.setServicos(dbServico.pesquisaCodigo(servico.getId()));
+        }
         // --------------------------------------------
-        try{
-            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt( getListaTipoDocumento().get(idTipoDocumento).getDescription())));
-        }catch(Exception e){
-            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt( getListaTipoDocumento().get(0).getDescription())));
-        }        
-        
-        if (chkContaCobranca){
+        try {
+            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription())));
+        } catch (Exception e) {
+            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(0).getDescription())));
+        }
+
+        if (chkContaCobranca) {
             List l = dbSCB.pesquisaServPorIdServIdTipoServ(servicoPessoa.getServicos().getId(), 1);
-            if (!l.isEmpty()){
+            if (!l.isEmpty()) {
                 servicoPessoa.setBanco(true);
-            }else{
+            } else {
                 servicoPessoa.setBanco(false);
                 return "Não Existe serviço conta cobrança!";
             }
-        } else{
+        } else {
             servicoPessoa.setBanco(false);
         }
         // --------------------------------------------
 
         PessoaEmpresaDB dbp = new PessoaEmpresaDBToplink();
         PessoaEmpresa pe = null;
-        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1){
+        if (servicoPessoa.isDescontoFolha() && titular.getId() != -1) {
             pe = dbp.pesquisaPessoaEmpresaPorFisica(titular.getId());
-            if (pe.getId() != -1)
+            if (pe.getId() != -1) {
                 servicoPessoa.setCobranca(pe.getJuridica().getPessoa());
-            else
+            } else {
                 servicoPessoa.setCobranca(servicoPessoa.getPessoa());
-        }else
+            }
+        } else {
             servicoPessoa.setCobranca(servicoPessoa.getPessoa());
+        }
 
-        if (servicoPessoa.getPessoa().getId() != -1){
-            if (dbSalvar.alterarObjeto(servicoPessoa))
+        if (servicoPessoa.getPessoa().getId() != -1) {
+            if (dbSalvar.alterarObjeto(servicoPessoa)) {
                 return "";
-            else
+            } else {
                 return "Erro ao alterar serviço pessoa!";
-        }else
+            }
+        } else {
             return "Não existe pessoa pesquisada";
+        }
     }
 
-    public String getRefreshPagina(){
-        return converteURL(((HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRequestURI());
+    public String getRefreshPagina() {
+        return converteURL(((HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest()).getRequestURI());
     }
 
-    public String converteURL(String urlDest){
-            String url = "";
-            url = urlDest;
-            int iniURL = url.lastIndexOf("/");
-            int fimURL = url.lastIndexOf(".");
-        return url.substring(iniURL+1,fimURL);
+    public String converteURL(String urlDest) {
+        String url = "";
+        url = urlDest;
+        int iniURL = url.lastIndexOf("/");
+        int fimURL = url.lastIndexOf(".");
+        return url.substring(iniURL + 1, fimURL);
     }
-    
-    public void refreshFormServico(){
 
+    public void refreshFormServico() {
     }
-    
+
     public String getIndexTab() {
         return indexTab;
     }

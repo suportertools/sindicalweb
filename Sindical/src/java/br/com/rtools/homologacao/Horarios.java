@@ -14,36 +14,36 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="HOM_HORARIOS")
-@NamedQuery(name="Horarios.pesquisaID", query="select h from Horarios h where h.id = :pid")
+@Table(name = "HOM_HORARIOS")
+@NamedQuery(name = "Horarios.pesquisaID", query = "select h from Horarios h where h.id = :pid")
 public class Horarios implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_HORA", length = 5, nullable = false)
+    @Column(name = "DS_HORA", length = 5, nullable = false)
     private String hora;
-    @Column(name="NR_QUANTIDADE", nullable = false)
+    @Column(name = "NR_QUANTIDADE", nullable = false)
     private int quantidade;
-    @Column(name="ATIVO", nullable = true)
+    @Column(name = "ATIVO", nullable = true)
     private boolean ativo;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
-    @JoinColumn(name="ID_SEMANA", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_SEMANA", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Semana semana;
 
-    public Horarios(){
-         id = -1;
-         hora = "";
-         quantidade = 0;
-         ativo = true;
-         filial = new Filial();
-         semana = new Semana();
+    public Horarios() {
+        id = -1;
+        hora = "";
+        quantidade = 0;
+        ativo = true;
+        filial = new Filial();
+        semana = new Semana();
     }
 
-    public Horarios(int id, String hora, int quantidade, boolean ativo, Filial filial, Semana semana){
+    public Horarios(int id, String hora, int quantidade, boolean ativo, Filial filial, Semana semana) {
         this.id = id;
         this.hora = hora;
         this.quantidade = quantidade;
@@ -91,7 +91,7 @@ public class Horarios implements java.io.Serializable {
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
-    
+
     public Semana getSemana() {
         return semana;
     }

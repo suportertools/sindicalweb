@@ -141,7 +141,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
             setAbrirTurma(true);
         }
     }
-    
+
     public String novo() {
         pessoaAlunoMemoria = new Pessoa();
         pessoaResponsavelMemoria = new Pessoa();

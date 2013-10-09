@@ -4,17 +4,17 @@ import br.com.rtools.pessoa.Cnae;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_CNAE_CONVENCAO")
-@NamedQuery(name="CnaeConvencao.pesquisaID", query="select cc from CnaeConvencao cc where cc.id = :pid")
+@Table(name = "ARR_CNAE_CONVENCAO")
+@NamedQuery(name = "CnaeConvencao.pesquisaID", query = "select cc from CnaeConvencao cc where cc.id = :pid")
 public class CnaeConvencao implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_CNAE", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CNAE", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Cnae cnae;
-    @JoinColumn(name="ID_CONVENCAO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Convencao convencao;
 
@@ -23,7 +23,7 @@ public class CnaeConvencao implements java.io.Serializable {
         this.cnae = new Cnae();
         this.convencao = new Convencao();
     }
-    
+
     public CnaeConvencao(int id, Cnae cnae, Convencao convencao) {
         this.id = id;
         this.cnae = cnae;
@@ -53,5 +53,4 @@ public class CnaeConvencao implements java.io.Serializable {
     public void setConvencao(Convencao convencao) {
         this.convencao = convencao;
     }
-
 }

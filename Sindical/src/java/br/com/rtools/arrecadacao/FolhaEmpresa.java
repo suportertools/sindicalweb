@@ -1,4 +1,3 @@
-
 package br.com.rtools.arrecadacao;
 
 import br.com.rtools.financeiro.TipoServico;
@@ -6,26 +5,26 @@ import br.com.rtools.pessoa.Juridica;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_FATURAMENTO_FOLHA_EMPRESA")
-@NamedQuery(name="FolhaEmpresa.pesquisaID", query="select c from FolhaEmpresa c where c.id = :pid")
+@Table(name = "ARR_FATURAMENTO_FOLHA_EMPRESA")
+@NamedQuery(name = "FolhaEmpresa.pesquisaID", query = "select c from FolhaEmpresa c where c.id = :pid")
 public class FolhaEmpresa implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_JURIDICA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Juridica juridica;
-    @JoinColumn(name="ID_TIPO_SERVICO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private TipoServico tipoServico;
-    @Column(name="DS_REFERENCIA", length=7 , nullable=true)
+    @Column(name = "DS_REFERENCIA", length = 7, nullable = true)
     private String referencia;
-    @Column(name="NR_VALOR", nullable=true)
+    @Column(name = "NR_VALOR", nullable = true)
     private float valorMes;
-    @Column(name="NR_NUM_FUNCIONARIOS", nullable=true)
+    @Column(name = "NR_NUM_FUNCIONARIOS", nullable = true)
     private int numFuncionarios;
-    @Column(name="NR_ALTERACOES", nullable=false)
+    @Column(name = "NR_ALTERACOES", nullable = false)
     private int alteracoes;
 
     public FolhaEmpresa() {
@@ -37,7 +36,7 @@ public class FolhaEmpresa implements java.io.Serializable {
         this.numFuncionarios = 0;
         this.alteracoes = 1;
     }
-    
+
     public FolhaEmpresa(int id, Juridica juridica, TipoServico tipoServico, String referencia, float valorMes, int numFuncionarios, int alteracoes) {
         this.id = id;
         this.juridica = juridica;
@@ -103,9 +102,4 @@ public class FolhaEmpresa implements java.io.Serializable {
     public void setAlteracoes(int alteracoes) {
         this.alteracoes = alteracoes;
     }
-
-
-
-
-
 }

@@ -1,6 +1,4 @@
-
 package br.com.rtools.utilitarios;
-
 
 public class DataObject {
 
@@ -62,7 +60,7 @@ public class DataObject {
         this.argumento24 = argumento24;
     }
 
-    public DataObject(){
+    public DataObject() {
         setArgumento0("");
         setArgumento1("");
         setArgumento2("");
@@ -76,16 +74,16 @@ public class DataObject {
     }
 
     public DataObject(
-        Object argumento0,
-        Object argumento1,
-        Object argumento2,
-        Object argumento3,
-        Object argumento4,
-        Object argumento5,
-        Object argumento6,
-        Object argumento7,
-        Object argumento8,
-        Object argumento9){
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5,
+            Object argumento6,
+            Object argumento7,
+            Object argumento8,
+            Object argumento9) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -98,14 +96,13 @@ public class DataObject {
         setArgumento9(argumento9);
     }
 
-
     public DataObject(
-        Object argumento0,
-        Object argumento1,
-        Object argumento2,
-        Object argumento3,
-        Object argumento4,
-        Object argumento5){
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -115,18 +112,18 @@ public class DataObject {
     }
 
     public DataObject(
-        Object argumento0,
-        Object argumento1,
-        Object argumento2,
-        Object argumento3,
-        Object argumento4,
-        Object argumento5,
-        Object argumento6,
-        Object argumento7,
-        Object argumento8,
-        Object argumento9,
-        Object argumento10,
-        Object argumento11){
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5,
+            Object argumento6,
+            Object argumento7,
+            Object argumento8,
+            Object argumento9,
+            Object argumento10,
+            Object argumento11) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -142,22 +139,22 @@ public class DataObject {
     }
 
     public DataObject(
-        Object argumento0,
-        Object argumento1,
-        Object argumento2,
-        Object argumento3,
-        Object argumento4,
-        Object argumento5,
-        Object argumento6,
-        Object argumento7,
-        Object argumento8,
-        Object argumento9,
-        Object argumento10,
-        Object argumento11,
-        Object argumento12,
-        Object argumento13,
-        Object argumento14,
-        Object argumento15){
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5,
+            Object argumento6,
+            Object argumento7,
+            Object argumento8,
+            Object argumento9,
+            Object argumento10,
+            Object argumento11,
+            Object argumento12,
+            Object argumento13,
+            Object argumento14,
+            Object argumento15) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -177,28 +174,28 @@ public class DataObject {
     }
 
     public DataObject(
-        Object argumento0,
-        Object argumento1,
-        Object argumento2,
-        Object argumento3,
-        Object argumento4,
-        Object argumento5,
-        Object argumento6,
-        Object argumento7,
-        Object argumento8,
-        Object argumento9,
-        Object argumento10,
-        Object argumento11,
-        Object argumento12,
-        Object argumento13,
-        Object argumento14,
-        Object argumento15,
-        Object argumento16,
-        Object argumento17,
-        Object argumento18,
-        Object argumento19,
-        Object argumento20,
-        Object argumento21){
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5,
+            Object argumento6,
+            Object argumento7,
+            Object argumento8,
+            Object argumento9,
+            Object argumento10,
+            Object argumento11,
+            Object argumento12,
+            Object argumento13,
+            Object argumento14,
+            Object argumento15,
+            Object argumento16,
+            Object argumento17,
+            Object argumento18,
+            Object argumento19,
+            Object argumento20,
+            Object argumento21) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -222,37 +219,37 @@ public class DataObject {
         setArgumento20(argumento20);
         setArgumento21(argumento21);
     }
-    
+
     public DataObject(
-        Object argumento0,
-        Object argumento1,
-        Object argumento2,
-        Object argumento3,
-        Object argumento4,
-        Object argumento5,
-        Object argumento6,
-        Object argumento7,
-        Object argumento8,
-        Object argumento9,
-        Object argumento10,
-        Object argumento11,
-        Object argumento12,
-        Object argumento13,
-        Object argumento14,
-        Object argumento15,
-        Object argumento16,
-        Object argumento17,
-        Object argumento18,
-        Object argumento19,
-        Object argumento20,
-        Object argumento21,
-        Object argumento22,
-        Object argumento23,
-        Object argumento24,
-        Object argumento25,
-        Object argumento26,
-        Object argumento27,
-        Object argumento28){
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3,
+            Object argumento4,
+            Object argumento5,
+            Object argumento6,
+            Object argumento7,
+            Object argumento8,
+            Object argumento9,
+            Object argumento10,
+            Object argumento11,
+            Object argumento12,
+            Object argumento13,
+            Object argumento14,
+            Object argumento15,
+            Object argumento16,
+            Object argumento17,
+            Object argumento18,
+            Object argumento19,
+            Object argumento20,
+            Object argumento21,
+            Object argumento22,
+            Object argumento23,
+            Object argumento24,
+            Object argumento25,
+            Object argumento26,
+            Object argumento27,
+            Object argumento28) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
         setArgumento2(argumento2);
@@ -285,8 +282,8 @@ public class DataObject {
     }
 
     public DataObject(
-        Object argumento0,
-        Object argumento1){
+            Object argumento0,
+            Object argumento1) {
         setArgumento0(argumento0);
         setArgumento1(argumento1);
     }
@@ -522,5 +519,4 @@ public class DataObject {
     public void setArgumento28(Object argumento28) {
         this.argumento28 = argumento28;
     }
-
 }

@@ -18,13 +18,13 @@ import javax.servlet.ServletContext;
 
 public class ArquivoContrato {
 
-    public static void lerContrato(){
+    public static void lerContrato() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/ArquivoContrato/");
-        File fl = new File(caminho+"/contrato01.odt");
-        try{
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoContrato/");
+        File fl = new File(caminho + "/contrato01.odt");
+        try {
             FileInputStream fileInput = new FileInputStream(fl);
-            BufferedReader buffReader = new BufferedReader(new InputStreamReader(fileInput,"ISO-8859-1"));
+            BufferedReader buffReader = new BufferedReader(new InputStreamReader(fileInput, "ISO-8859-1"));
 //            String linha = "";
 //            String xxxxxxxxx = "";
 //            while((linha = buffReader.readLine()) != null){
@@ -32,8 +32,7 @@ public class ArquivoContrato {
 //            }
             gerarPdf(fl.getPath(), "C:/ContratoModificado.pdf");
             Desktop.getDesktop().open(fl);
-        }catch(Exception e){
-            
+        } catch (Exception e) {
         }
     }
 
@@ -69,7 +68,4 @@ public class ArquivoContrato {
         // save the pdf to disk
         document.close();
     }
-
-
-
 }

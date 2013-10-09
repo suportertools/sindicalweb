@@ -589,7 +589,7 @@ public class RecepcaoJSFBean {
                 if (senha.getId() != -1) {
                     // senhaString = senha.getId() == -1 ? null : senha.getSenha();
                     senhaId = "tblListaRecepcao";
-                    senhaString = ( (Integer)  senha.getSenha()).toString();
+                    senhaString = ((Integer) senha.getSenha()).toString();
                 } else {
                 }
             }

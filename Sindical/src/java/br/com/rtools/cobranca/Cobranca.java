@@ -1,5 +1,3 @@
-
-
 package br.com.rtools.cobranca;
 
 import br.com.rtools.financeiro.Boleto;
@@ -22,27 +20,30 @@ public abstract class Cobranca {
     public final static int SINDICAL = 2;
     public final static int SIGCB = 3;
 
-
     public Cobranca(Movimento movimento, Boleto boleto) {
         setMovimento(movimento);
         setBoleto(boleto);
     }
 
     public abstract String moduloDez(String composicao);
+
     public abstract String moduloOnze(String composicao);
+
     public abstract String codigoBarras();
+
     public abstract String representacao();
+
     public abstract String codigoBanco();
 
     public String fatorVencimento(Date vencimento) {
-       if (vencimento != null){
-           Date dataModel = DataHoje.converte("07/10/1997");
-           long dias = vencimento.getTime() - dataModel.getTime();
-           long total = dias / 86400000;
-           return Long.toString(total);
-       }else{
-           return "";
-       }
+        if (vencimento != null) {
+            Date dataModel = DataHoje.converte("07/10/1997");
+            long dias = vencimento.getTime() - dataModel.getTime();
+            long total = dias / 86400000;
+            return Long.toString(total);
+        } else {
+            return "";
+        }
     }
 
     public String moduloOnzeDV(String composicao) {
@@ -69,8 +70,8 @@ public abstract class Cobranca {
         }
 
         if (((11 - (soma % 11)) > 9)
-           || ((11 - (soma % 11)) == 0) // Digito verificador geral nunca dara zero
-           || ((11 - (soma % 11)) == 1)) {
+                || ((11 - (soma % 11)) == 0) // Digito verificador geral nunca dara zero
+                || ((11 - (soma % 11)) == 1)) {
             return "1";
         } else {
             return Integer.toString(11 - (soma % 11));
@@ -82,8 +83,8 @@ public abstract class Cobranca {
     }
 
     public String getCedenteFormatado() {
-        return boleto.getContaCobranca().getCodCedente().substring(0, 3) + "." + boleto.getContaCobranca().getCodCedente().substring(3) + "-" +
-               moduloOnze(boleto.getContaCobranca().getContaBanco().getAgencia() + boleto.getContaCobranca().getCodCedente());
+        return boleto.getContaCobranca().getCodCedente().substring(0, 3) + "." + boleto.getContaCobranca().getCodCedente().substring(3) + "-"
+                + moduloOnze(boleto.getContaCobranca().getContaBanco().getAgencia() + boleto.getContaCobranca().getCodCedente());
     }
 
     public String getAgenciaFormatada() {
@@ -105,7 +106,4 @@ public abstract class Cobranca {
     public void setMovimento(Movimento movimento) {
         this.movimento = movimento;
     }
-
-
-
 }

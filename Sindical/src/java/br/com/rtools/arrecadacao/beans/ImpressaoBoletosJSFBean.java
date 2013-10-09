@@ -57,6 +57,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 public class ImpressaoBoletosJSFBean {
+
     private String escritorio = "null";
     private List<DataObject> listaDatas = new ArrayList<DataObject>();
     private List<Linha> listaMovGrid = new ArrayList<Linha>();
@@ -82,25 +83,26 @@ public class ImpressaoBoletosJSFBean {
     private String regraEscritorios = "all";
     private String cbEmail = "todos";
     private boolean chkTodosVencimentos = false;
-    
-    public ImpressaoBoletosJSFBean(){
+
+    public ImpressaoBoletosJSFBean() {
     }
 
-    public String removerContabilidade(){
+    public String removerContabilidade() {
         contabilidade = new Juridica();
         return "impressaoBoletos";
     }
-    
-    public void marcaVencimentos(){
-        for (int i = 0; i < listaDatas.size(); i++){
-            if (chkTodosVencimentos)
+
+    public void marcaVencimentos() {
+        for (int i = 0; i < listaDatas.size(); i++) {
+            if (chkTodosVencimentos) {
                 listaDatas.get(i).setArgumento0(true);
-            else
+            } else {
                 listaDatas.get(i).setArgumento0(false);
-                
+            }
+
         }
     }
-    
+
     public String getEscritorio() {
         return escritorio;
     }
@@ -117,28 +119,28 @@ public class ImpressaoBoletosJSFBean {
         this.idCombo = idCombo;
     }
 
-    public String marcarUm(int index){
-        if ((Boolean)listaMovGrid.get(index).getValor()){
+    public String marcarUm(int index) {
+        if ((Boolean) listaMovGrid.get(index).getValor()) {
             marcados++;
-        }else{
+        } else {
             marcados--;
         }
 
         return null;
     }
 
-    public boolean getDesabilitarContas(){
-        if (this.todasContas.equals("false")){
+    public boolean getDesabilitarContas() {
+        if (this.todasContas.equals("false")) {
             return false;
-        }else{
+        } else {
             return true;
         }
     }
 
     public int getQuantidade() {
-        if (!(getListaMovGrid().isEmpty())){
-            if (((quantidade <= listaMovGrid.size()) && (fInicio <= listaMovGrid.size()) && (fFim <= listaMovGrid.size()))&&
-               ((fInicio != 0) && (fFim != 0))){
+        if (!(getListaMovGrid().isEmpty())) {
+            if (((quantidade <= listaMovGrid.size()) && (fInicio <= listaMovGrid.size()) && (fFim <= listaMovGrid.size()))
+                    && ((fInicio != 0) && (fFim != 0))) {
                 quantidade = (fFim - fInicio) + 1;
             }
         }
@@ -177,64 +179,66 @@ public class ImpressaoBoletosJSFBean {
         return listaMovGrid;
     }
 
-    public synchronized void carregarGrid(){
-        try{
+    public synchronized void carregarGrid() {
+        try {
             listaMovGrid.clear();
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
             MovimentoDB movDB = new MovimentoDBToplink();
             List<Linha> listaSwap = new ArrayList<Linha>();
             ServicoContaCobranca contaCobranca;
             Linha linha = new Linha();
-            
+
             List<Integer> listG = new ArrayList();
             List<Integer> listC = new ArrayList();
-            Object[] result = new Object[] { new ArrayList(), new Integer(0) };
-            
+            Object[] result = new Object[]{new ArrayList(), new Integer(0)};
+
             marcados = 0;
             totalBoletos = 0;
             totalEmpresas = 0;
             totalEscritorios = 0;
 
-            try{
-                contaCobranca =  servDB.pesquisaCodigo(Integer.parseInt( ((SelectItem) getListaServicoCobranca().get(idCombo)).getDescription()));
-            }catch(Exception e){
+            try {
+                contaCobranca = servDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaServicoCobranca().get(idCombo)).getDescription()));
+            } catch (Exception e) {
                 contaCobranca = new ServicoContaCobranca();
             }
 
 
-            if((!listaGrupoCidade.isEmpty()) && (!listaConvencao.isEmpty())){
-                for(int i = 0; i < listaGrupoCidade.size(); i++){
-                    if((Boolean)listaGrupoCidade.get(i).getArgumento0()){
-                        listG.add( ((GrupoCidade)listaGrupoCidade.get(i).getArgumento1()).getId());
+            if ((!listaGrupoCidade.isEmpty()) && (!listaConvencao.isEmpty())) {
+                for (int i = 0; i < listaGrupoCidade.size(); i++) {
+                    if ((Boolean) listaGrupoCidade.get(i).getArgumento0()) {
+                        listG.add(((GrupoCidade) listaGrupoCidade.get(i).getArgumento1()).getId());
                     }
                 }
-                for(int i = 0; i < listaConvencao.size(); i++){
-                    if((Boolean)listaConvencao.get(i).getArgumento0()){
-                        listC.add( ((Convencao)listaConvencao.get(i).getArgumento1()).getId());
+                for (int i = 0; i < listaConvencao.size(); i++) {
+                    if ((Boolean) listaConvencao.get(i).getArgumento0()) {
+                        listC.add(((Convencao) listaConvencao.get(i).getArgumento1()).getId());
                     }
                 }
             }
 
-            if (!(listaDatas.isEmpty())){
+            if (!(listaDatas.isEmpty())) {
                 List ids = new ArrayList<String>();
-                
-                for(int i = 0; i < listaDatas.size(); i++){
-                    if ( (Boolean) listaDatas.get(i).getArgumento0())
+
+                for (int i = 0; i < listaDatas.size(); i++) {
+                    if ((Boolean) listaDatas.get(i).getArgumento0()) {
                         ids.add((String) listaDatas.get(i).getArgumento1());
+                    }
                 }
                 Vector vetorAux = new Vector();
 
-                if (this.regraEscritorios.equals("all")){
+                if (this.regraEscritorios.equals("all")) {
                     this.quantidadeEmpresas = 0;
-                }else if (this.quantidadeEmpresas == 0){
+                } else if (this.quantidadeEmpresas == 0) {
                     this.quantidadeEmpresas = 1;
                 }
 
                 int id_esc = 0;
-                
-                if (contabilidade.getId() != -1)
+
+                if (contabilidade.getId() != -1) {
                     id_esc = contabilidade.getId();
-                
+                }
+
                 result = movDB.listaImpressaoGeral(
                         contaCobranca.getServicos().getId(),
                         contaCobranca.getTipoServico().getId(),
@@ -244,25 +248,24 @@ public class ImpressaoBoletosJSFBean {
                         listC,
                         listG,
                         this.todasContas,
-                        cbEmail, 
-                        id_esc
-                        );
+                        cbEmail,
+                        id_esc);
 
                 Vector v = (Vector) result[0];
 
                 int auxEsc = 0;
                 int auxEmpresa = 0;
                 int ate = 0, apartir = 0;
-                for (int i = 0; i < v.size(); i++){
+                for (int i = 0; i < v.size(); i++) {
                     vetorAux = (Vector) v.get(i);
-                    if(this.regraEscritorios.equals("ate")){
-                        if (((Long)vetorAux.get(11)) <= this.quantidadeEmpresas){
+                    if (this.regraEscritorios.equals("ate")) {
+                        if (((Long) vetorAux.get(11)) <= this.quantidadeEmpresas) {
                             linha = addGrid(vetorAux, ate);
-                            if(auxEsc != ((Integer) vetorAux.get(9))){
+                            if (auxEsc != ((Integer) vetorAux.get(9))) {
                                 totalEscritorios++;
                             }
                             auxEsc = ((Integer) vetorAux.get(9));
-                            if(auxEmpresa != ((Integer) vetorAux.get(10))){
+                            if (auxEmpresa != ((Integer) vetorAux.get(10))) {
                                 totalEmpresas++;
                             }
                             auxEmpresa = ((Integer) vetorAux.get(10));
@@ -270,14 +273,14 @@ public class ImpressaoBoletosJSFBean {
                             listaSwap.add(linha);
                             ate++;
                         }
-                    }else if(this.regraEscritorios.equals("apartir")){
-                        if (((Long)vetorAux.get(11)) >= this.quantidadeEmpresas){
+                    } else if (this.regraEscritorios.equals("apartir")) {
+                        if (((Long) vetorAux.get(11)) >= this.quantidadeEmpresas) {
                             linha = addGrid(vetorAux, apartir);
-                            if(auxEsc != ((Integer) vetorAux.get(9))){
+                            if (auxEsc != ((Integer) vetorAux.get(9))) {
                                 totalEscritorios++;
                             }
                             auxEsc = ((Integer) vetorAux.get(9));
-                            if(auxEmpresa != ((Integer) vetorAux.get(10))){
+                            if (auxEmpresa != ((Integer) vetorAux.get(10))) {
                                 totalEmpresas++;
                             }
                             auxEmpresa = ((Integer) vetorAux.get(10));
@@ -285,13 +288,13 @@ public class ImpressaoBoletosJSFBean {
                             listaSwap.add(linha);
                             apartir++;
                         }
-                    }else{
+                    } else {
                         linha = addGrid((Vector) v.get(i), i);
-                        if(auxEsc != ((Integer) vetorAux.get(9))){
+                        if (auxEsc != ((Integer) vetorAux.get(9))) {
                             totalEscritorios++;
                         }
                         auxEsc = ((Integer) vetorAux.get(9));
-                        if(auxEmpresa != ((Integer) vetorAux.get(10))){
+                        if (auxEmpresa != ((Integer) vetorAux.get(10))) {
                             totalEmpresas++;
                         }
                         auxEmpresa = ((Integer) vetorAux.get(10));
@@ -301,12 +304,12 @@ public class ImpressaoBoletosJSFBean {
                 }
             }
             listaMovGrid = listaSwap;
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public Linha addGrid(Vector vetorAux, int i){
+    public Linha addGrid(Vector vetorAux, int i) {
         List lista = new ArrayList();
         Linha linha = new Linha();
         lista.add(new Boolean(false)); //marcar
@@ -317,7 +320,7 @@ public class ImpressaoBoletosJSFBean {
         lista.add(vetorAux.get(3));    //escritorio
         lista.add(vetorAux.get(4));    //servico
         lista.add(vetorAux.get(5));    //tipo
-        lista.add(DataHoje.converteData( (Date) vetorAux.get(6))); //vencimento
+        lista.add(DataHoje.converteData((Date) vetorAux.get(6))); //vencimento
         lista.add(vetorAux.get(7));    //referencia
         lista.add(vetorAux.get(8));    //id
         lista.add(vetorAux.get(9));    //id_contabilidade ( pessoa )
@@ -335,154 +338,154 @@ public class ImpressaoBoletosJSFBean {
         this.listaMovGrid = listaMovGrid;
     }
 
-    public void filtrar(){
+    public void filtrar() {
         carregarGrid();
     }
 
-    public synchronized void refreshForm(){}
+    public synchronized void refreshForm() {
+    }
 
-    public void alterarTodasDatas(){
+    public void alterarTodasDatas() {
         listaMovGrid.clear();
-        if(this.todasContas.equals("true")){
+        if (this.todasContas.equals("true")) {
             idData = -2;
-        }else{
+        } else {
             idData = -1;
         }
     }
 
-    public boolean getDesabilitaComboQuantidadeEmpresas(){
-        if (regraEscritorios.equals("all")){
+    public boolean getDesabilitaComboQuantidadeEmpresas() {
+        if (regraEscritorios.equals("all")) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     public synchronized List<DataObject> getListaDatas() {
-        try{
+        try {
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
             ServicoContaCobranca contaCobranca;
-            try{
-                contaCobranca =  servDB.pesquisaCodigo(Integer.parseInt( ((SelectItem) getListaServicoCobranca().get(idCombo)).getDescription()));
-            }catch(Exception e){
+            try {
+                contaCobranca = servDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaServicoCobranca().get(idCombo)).getDescription()));
+            } catch (Exception e) {
                 contaCobranca = new ServicoContaCobranca();
             }
             MovimentoDB db = new MovimentoDBToplink();
             List lista = new ArrayList();
             int i = 0;
-            if(this.todasContas.equals("false")){
-                if (contaCobranca.getId() != idData){
+            if (this.todasContas.equals("false")) {
+                if (contaCobranca.getId() != idData) {
                     listaDatas.clear();
                     idData = contaCobranca.getId();
-                    lista  = db.datasMovimento(
+                    lista = db.datasMovimento(
                             contaCobranca.getServicos().getId(),
                             contaCobranca.getTipoServico().getId(),
                             contaCobranca.getContaCobranca().getId());
                 }
 
-            }else{
-                if(idData == -2){
+            } else {
+                if (idData == -2) {
                     idData = -1;
                     listaDatas.clear();
-                    lista  = db.datasMovimento();
+                    lista = db.datasMovimento();
                 }
             }
 
-            if (lista == null){
+            if (lista == null) {
                 lista = new ArrayList<DataObject>();
             }
-            while (i < lista.size()){
+            while (i < lista.size()) {
                 listaDatas.add(new DataObject(
                         false,
-                        DataHoje.converteData((Date) lista.get(i))
-                        ));
+                        DataHoje.converteData((Date) lista.get(i))));
                 i++;
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return listaDatas;
 
     }
 
-
     public void setListaDatas(List<DataObject> listaDatas) {
         this.listaDatas = listaDatas;
     }
 
-    public synchronized void controleMovimentos(){
-        if(quantidade > 0 ){
+    public synchronized void controleMovimentos() {
+        if (quantidade > 0) {
             marcados = quantidade;
-        }else{
-            marcados = (fFim - fInicio) +1;
+        } else {
+            marcados = (fFim - fInicio) + 1;
         }
         int i = 0;
         limparGrid();
-        if((quantidade != 0) && fInicio == 0 && fFim == 0){//CASO 1 SOMENTE POR QUANTIDADE
-            if (quantidade > listaMovGrid.size()){
+        if ((quantidade != 0) && fInicio == 0 && fFim == 0) {//CASO 1 SOMENTE POR QUANTIDADE
+            if (quantidade > listaMovGrid.size()) {
                 quantidade = listaMovGrid.size();
             }
-            while(i < quantidade){
+            while (i < quantidade) {
                 listaMovGrid.get(i).setValor(new Boolean(true));
                 i++;
             }
-        }else if(quantidade == 0 && fInicio != 0 && fFim == 0){//CASO 2 SOMENTE POR INICIO
-            if (fInicio <= listaMovGrid.size()){
-                i = fInicio -1;
-                while(i < listaMovGrid.size()){
+        } else if (quantidade == 0 && fInicio != 0 && fFim == 0) {//CASO 2 SOMENTE POR INICIO
+            if (fInicio <= listaMovGrid.size()) {
+                i = fInicio - 1;
+                while (i < listaMovGrid.size()) {
                     quantidade++;
                     listaMovGrid.get(i).setValor(new Boolean(true));
                     i++;
                 }
             }
-        }else if(quantidade != 0 && fInicio != 0 && fFim == 0){//CASO 3 SOMENTE POR INICIO E QUANTIDADE
-            if ((quantidade <= listaMovGrid.size()) && (fInicio <= listaMovGrid.size())){
+        } else if (quantidade != 0 && fInicio != 0 && fFim == 0) {//CASO 3 SOMENTE POR INICIO E QUANTIDADE
+            if ((quantidade <= listaMovGrid.size()) && (fInicio <= listaMovGrid.size())) {
                 int o = 0;
-                i = fInicio -1;
-                while((o < quantidade) && (i < listaMovGrid.size())){
+                i = fInicio - 1;
+                while ((o < quantidade) && (i < listaMovGrid.size())) {
                     listaMovGrid.get(i).setValor(new Boolean(true));
                     i++;
                     o++;
                 }
             }
-        }else if(quantidade == 0 && fInicio != 0 && fFim != 0){//CASO 4 SOMENTE POR INICIO E FIM
-            if ((fInicio <= listaMovGrid.size()) && (fFim <= listaMovGrid.size()) ){
-                i = fInicio -1;
-                while(i < fFim){
+        } else if (quantidade == 0 && fInicio != 0 && fFim != 0) {//CASO 4 SOMENTE POR INICIO E FIM
+            if ((fInicio <= listaMovGrid.size()) && (fFim <= listaMovGrid.size())) {
+                i = fInicio - 1;
+                while (i < fFim) {
                     quantidade++;
                     listaMovGrid.get(i).setValor(new Boolean(true));
                     i++;
                 }
             }
-        }else if(quantidade == 0 && fInicio == 0 && fFim != 0){//CASO 5 SOMENTE POR FIM
-            if (fFim <= listaMovGrid.size()){
-                while(i < fFim){
+        } else if (quantidade == 0 && fInicio == 0 && fFim != 0) {//CASO 5 SOMENTE POR FIM
+            if (fFim <= listaMovGrid.size()) {
+                while (i < fFim) {
                     quantidade++;
                     listaMovGrid.get(i).setValor(new Boolean(true));
                     i++;
                 }
             }
-        }else if(quantidade != 0 && fInicio == 0 && fFim != 0){//CASO 6 SOMENTE POR FIM E QUANTIDADE
-            if ((quantidade <= listaMovGrid.size()) && (fFim <= listaMovGrid.size())){
-                if((quantidade - fFim) < 0)
+        } else if (quantidade != 0 && fInicio == 0 && fFim != 0) {//CASO 6 SOMENTE POR FIM E QUANTIDADE
+            if ((quantidade <= listaMovGrid.size()) && (fFim <= listaMovGrid.size())) {
+                if ((quantidade - fFim) < 0) {
                     i = fFim - quantidade;
-                else
+                } else {
                     i = quantidade - fFim;
+                }
                 quantidade = 0;
-                while(i < fFim){
+                while (i < fFim) {
                     quantidade++;
                     listaMovGrid.get(i).setValor(new Boolean(true));
                     i++;
                 }
             }
-        }else if(quantidade != 0 && fInicio != 0 && fFim != 0){//CASO 7 POR QUANTIDADE INICIO E FIM
-            if ((quantidade <= listaMovGrid.size()) && (fInicio <= listaMovGrid.size()) && (fFim <= listaMovGrid.size())){
-                i = fInicio -1;
-                if (quantidade > 1){
+        } else if (quantidade != 0 && fInicio != 0 && fFim != 0) {//CASO 7 POR QUANTIDADE INICIO E FIM
+            if ((quantidade <= listaMovGrid.size()) && (fInicio <= listaMovGrid.size()) && (fFim <= listaMovGrid.size())) {
+                i = fInicio - 1;
+                if (quantidade > 1) {
                     quantidade = (fFim - fInicio) + 1;
                 }
                 quantidade = 0;
-                while(i < fFim){
+                while (i < fFim) {
                     quantidade++;
                     listaMovGrid.get(i).setValor(new Boolean(true));
                     i++;
@@ -491,94 +494,94 @@ public class ImpressaoBoletosJSFBean {
         }
     }
 
-    public void limparGrid(){
+    public void limparGrid() {
         int i = 0;
-        while(i < listaMovGrid.size()){
+        while (i < listaMovGrid.size()) {
             listaMovGrid.get(i).setValor(new Boolean(false));
             i++;
         }
     }
 
-   public List<SelectItem> getListaServicoCobranca(){
-       List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
-       int i = 0;
-       ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
-       List<ServicoContaCobranca> select = servDB.pesquisaTodos();
-       if (select == null){
-           select = new ArrayList<ServicoContaCobranca>();
-       }
-       while (i < select.size()){
-          servicoCobranca.add(
-                  new SelectItem(
-                  new Integer(i),
-                  select.get(i).getServicos().getDescricao() +" - " +
-                  select.get(i).getTipoServico().getDescricao() +" - "+
-                  select.get(i).getContaCobranca().getCodCedente(), //+" "+
-                  //select.get(i).getContaCobranca().getCedente(),
-                  Integer.toString(select.get(i).getId())
-          ));
-          i++;
-       }
-       return servicoCobranca;
-   }
-   
-   public String criarArquivoBanco(){
+    public List<SelectItem> getListaServicoCobranca() {
+        List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
+        int i = 0;
+        ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
+        List<ServicoContaCobranca> select = servDB.pesquisaTodos();
+        if (select == null) {
+            select = new ArrayList<ServicoContaCobranca>();
+        }
+        while (i < select.size()) {
+            servicoCobranca.add(
+                    new SelectItem(
+                    new Integer(i),
+                    select.get(i).getServicos().getDescricao() + " - "
+                    + select.get(i).getTipoServico().getDescricao() + " - "
+                    + select.get(i).getContaCobranca().getCodCedente(), //+" "+
+                    //select.get(i).getContaCobranca().getCedente(),
+                    Integer.toString(select.get(i).getId())));
+            i++;
+        }
+        return servicoCobranca;
+    }
+
+    public String criarArquivoBanco() {
         List movs = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
-        try{
+        try {
             ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
             Movimento mov = new Movimento();
-            if (todasContas.equals("true")){
+            if (todasContas.equals("true")) {
                 msgImpressao = "Selecione específicas para gerar o Arquivo!";
                 return "impressaoBoletos";
             }
-            
-            for (int o = 0; o < listaMovGrid.size(); o++){
-                if ((Boolean) listaMovGrid.get(o).getValor()){
+
+            for (int o = 0; o < listaMovGrid.size(); o++) {
+                if ((Boolean) listaMovGrid.get(o).getValor()) {
                     mov = db.pesquisaCodigo(
-                            (Integer) listaMovGrid.get(o).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor()
-                          );
+                            (Integer) listaMovGrid.get(o).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
                     movs.add(mov);
                 }
             }
-            if (!movs.isEmpty()){
-                if (arquivoBanco.criarArquivoTXT(movs))
+            if (!movs.isEmpty()) {
+                if (arquivoBanco.criarArquivoTXT(movs)) {
                     msgImpressao = "Arquivo gerado com sucesso!";
-                else
+                } else {
                     msgImpressao = "Erro ao processar arquivos!";
-            }else msgImpressao = "Lista vazia!";
-        }catch(Exception e){
+                }
+            } else {
+                msgImpressao = "Lista vazia!";
+            }
+        } catch (Exception e) {
             System.out.println("Não foi possivel criar arquivo de envio! " + e);
         }
         return "impressaoBoletos";
     }
 
-   public String baixarArquivosGerados(){
-       ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
-       arquivoBanco.baixarArquivosGerados();
-           
-       return null;
-   }
-      
-    public void limparIn(){
+    public String baixarArquivosGerados() {
+        ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
+        arquivoBanco.baixarArquivosGerados();
+
+        return null;
+    }
+
+    public void limparIn() {
         ArquivoBancoJSFBean arquivoBanco = new ArquivoBancoJSFBean();
         arquivoBanco.limparDiretorio("");
-    }      
-   
+    }
+
     public String imprimirBoleto() {
         boolean marcado = false;
         int i = 0;
         MovimentoDB db = new MovimentoDBToplink();
         List<Movimento> lista = new ArrayList<Movimento>();
         List<Float> listaValores = new ArrayList<Float>();
-        List<String> listaVencimentos = new ArrayList<String>();  
+        List<String> listaVencimentos = new ArrayList<String>();
         Movimento mov = new Movimento();
-        while (i < listaMovGrid.size()){
+        while (i < listaMovGrid.size()) {
             marcado = (Boolean) listaMovGrid.get(i).getValor();
-            if (marcado){
+            if (marcado) {
                 mov = db.pesquisaCodigo(
-                        (Integer) listaMovGrid.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor()
-                        );
+                        (Integer) listaMovGrid.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
                 lista.add(mov);
                 listaValores.add(mov.getValor());
                 listaVencimentos.add(mov.getVencimento());
@@ -590,17 +593,17 @@ public class ImpressaoBoletosJSFBean {
         //imp.visualizar(null);
         imp.baixarArquivo();
         return null;
-   }
+    }
 
-    public String getPainelMenssagem(){
-        if(movimentosSemMensagem == null){
+    public String getPainelMenssagem() {
+        if (movimentosSemMensagem == null) {
             return "";
-        }else{
+        } else {
             return "boletoSemMensagem";
         }
     }
 
-    public String etiquetaEmpresa(){
+    public String etiquetaEmpresa() {
         String condicao = "";
         String escritorios = "";
         String cidades = "";
@@ -638,62 +641,68 @@ public class ImpressaoBoletosJSFBean {
 
         // CNAES DO RELATORIO -----------------------------------------------------------
         List<Convencao> resultConvencoes = dbConv.pesquisaTodos();
-        String ids = "",idsJuridica = "";
-        for (int i = 0; i < resultConvencoes.size(); i++){
-            if (ids.length() > 0 && i != resultConvencoes.size())
-                ids = ids+",";
+        String ids = "", idsJuridica = "";
+        for (int i = 0; i < resultConvencoes.size(); i++) {
+            if (ids.length() > 0 && i != resultConvencoes.size()) {
+                ids = ids + ",";
+            }
             ids = ids + String.valueOf(resultConvencoes.get(i).getId());
         }
         List<CnaeConvencao> resultCnaeConvencao = new ArrayList();
-        if (!ids.isEmpty())
+        if (!ids.isEmpty()) {
             resultCnaeConvencao = dbContri.pesquisarCnaeConvencaoPorConvencao(ids);
+        }
 
-        if (!resultConvencoes.isEmpty()){
-            for(int i = 0; i < resultCnaeConvencao.size();i++){
-                listaCnaes.add(resultCnaeConvencao.get(i)) ;
+        if (!resultConvencoes.isEmpty()) {
+            for (int i = 0; i < resultCnaeConvencao.size(); i++) {
+                listaCnaes.add(resultCnaeConvencao.get(i));
             }
-            for (int i = 0; i < listaCnaes.size();i++){
-                if (cnaes.length() > 0 && i != resultCnaeConvencao.size())
-                    cnaes = cnaes+",";
-                cnaes = cnaes + Integer.toString(((CnaeConvencao)listaCnaes.get(i)).getCnae().getId());
+            for (int i = 0; i < listaCnaes.size(); i++) {
+                if (cnaes.length() > 0 && i != resultCnaeConvencao.size()) {
+                    cnaes = cnaes + ",";
+                }
+                cnaes = cnaes + Integer.toString(((CnaeConvencao) listaCnaes.get(i)).getCnae().getId());
             }
-        }else
+        } else {
             cnaes = "";
+        }
 
-        for(int i = 0; i < listaMovGrid.size(); i++){
-            if ((Boolean) listaMovGrid.get(i).getValor()){
-                if (idsJuridica.length() > 0 && i != listaMovGrid.size())
-                    idsJuridica = idsJuridica+",";
-                idsJuridica = idsJuridica +  ( (Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor()) ;
+        for (int i = 0; i < listaMovGrid.size(); i++) {
+            if ((Boolean) listaMovGrid.get(i).getValor()) {
+                if (idsJuridica.length() > 0 && i != listaMovGrid.size()) {
+                    idsJuridica = idsJuridica + ",";
+                }
+                idsJuridica = idsJuridica + ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
             }
         }
 
         sindicato = dbJur.pesquisaCodigo(1);
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         List<Juridica> result = new ArrayList();
-        if (!resultCnaeConvencao.isEmpty() && !listaCnaes.isEmpty() && !idsJuridica.isEmpty())
-            result = dbContri.listaRelatorioContribuintesPorJuridica(condicao, escritorios,pCidade, cidades, ordem, cnaes,tipoEndereco.getId(),idsJuridica);
+        if (!resultCnaeConvencao.isEmpty() && !listaCnaes.isEmpty() && !idsJuridica.isEmpty()) {
+            result = dbContri.listaRelatorioContribuintesPorJuridica(condicao, escritorios, pCidade, cidades, ordem, cnaes, tipoEndereco.getId(), idsJuridica);
+        }
 
-        try{
+        try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             byte[] arquivo = new byte[0];
             JasperReport jasper = null;
             Collection listaContrs = new ArrayList<ParametroContribuintes>();
             jasper = (JasperReport) JRLoader.loadObject(
-                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
-            try{
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            try {
                 String dados[] = new String[21];
-                for(int i = 0; i < result.size();i++){
+                for (int i = 0; i < result.size(); i++) {
                     endEmpresa = dbPesEnd.pesquisaEndPorPessoaTipo(result.get(i).getPessoa().getId(), tipoEndereco.getId());
-                    try{
+                    try {
                         dados[0] = endEmpresa.getEndereco().getDescricaoEndereco().getDescricao();
                         dados[1] = endEmpresa.getEndereco().getLogradouro().getDescricao();
                         dados[2] = endEmpresa.getEndereco().getBairro().getDescricao();
                         dados[3] = endEmpresa.getEndereco().getCep();
                         dados[4] = endEmpresa.getEndereco().getCidade().getCidade();
                         dados[5] = endEmpresa.getEndereco().getCidade().getUf();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[0] = "";
                         dados[1] = "";
                         dados[2] = "";
@@ -702,29 +711,29 @@ public class ImpressaoBoletosJSFBean {
                         dados[5] = "";
                     }
 
-                    try{
+                    try {
                         dados[6] = String.valueOf(result.get(i).getCnae().getId());
                         dados[7] = result.get(i).getCnae().getNumero();
                         dados[8] = result.get(i).getCnae().getCnae();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[6] = "0";
                         dados[7] = "";
                         dados[8] = "";
                     }
 
-                    try{
+                    try {
                         dados[9] = String.valueOf(result.get(i).getContabilidade().getId());
                         dados[10] = result.get(i).getContabilidade().getPessoa().getNome();
                         dados[11] = result.get(i).getContabilidade().getPessoa().getTelefone1();
                         dados[12] = result.get(i).getContabilidade().getPessoa().getEmail1();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[9] = "0";
                         dados[10] = "";
                         dados[11] = "";
                         dados[12] = "";
                     }
 
-                    try{
+                    try {
                         endEscritorio = dbPesEnd.pesquisaEndPorPessoaTipo(result.get(i).getContabilidade().getPessoa().getId(), 2);
                         dados[13] = endEscritorio.getEndereco().getDescricaoEndereco().getDescricao();
                         dados[14] = endEscritorio.getEndereco().getLogradouro().getDescricao();
@@ -734,7 +743,7 @@ public class ImpressaoBoletosJSFBean {
                         dados[18] = endEscritorio.getEndereco().getCep();
                         dados[19] = endEscritorio.getEndereco().getCidade().getCidade();
                         dados[20] = endEscritorio.getEndereco().getCidade().getUf();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[13] = "";
                         dados[14] = "";
                         dados[15] = "";
@@ -745,86 +754,84 @@ public class ImpressaoBoletosJSFBean {
                         dados[20] = "";
                     }
                     listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
-                                                               sindicato.getPessoa().getNome(),
-                                                               endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                                                               endSindicato.getEndereco().getLogradouro().getDescricao(),
-                                                               endSindicato.getNumero(),
-                                                               endSindicato.getComplemento(),
-                                                               endSindicato.getEndereco().getBairro().getDescricao(),
-                                                               endSindicato.getEndereco().getCep(),
-                                                               endSindicato.getEndereco().getCidade().getCidade(),
-                                                               endSindicato.getEndereco().getCidade().getUf(),
-                                                               sindicato.getPessoa().getTelefone1(),
-                                                               sindicato.getPessoa().getEmail1(),
-                                                               sindicato.getPessoa().getSite(),
-                                                               sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                                                               sindicato.getPessoa().getDocumento(),
-                                                               result.get(i).getId(),
-                                                               result.get(i).getPessoa().getNome(),
-                                                               dados[0], // DESCRICAO ENDERECO
-                                                               dados[1], // LOGRADOURO
-                                                               endEmpresa.getNumero(),
-                                                               endEmpresa.getComplemento(),
-                                                               dados[2], // BAIRRO
-                                                               dados[3], // CEP
-                                                               dados[4], // CIDADE
-                                                               dados[5], // UF
-                                                               result.get(i).getPessoa().getTelefone1(),
-                                                               result.get(i).getPessoa().getEmail1(),
-                                                               result.get(i).getPessoa().getTipoDocumento().getDescricao(),
-                                                               result.get(i).getPessoa().getDocumento(),
-                                                               Integer.parseInt(dados[6]), // ID CNAE
-                                                               dados[7], // NUMERO CNAE
-                                                               dados[8], // DESCRICAO CNAE
-                                                               Integer.parseInt(dados[9]), // ID CONTABILIDADE
-                                                               dados[10], // NOME CONTABILIDADE
-                                                               dados[13], // DESCRICAO ENDERECO CONTABILIDADE
-                                                               dados[14], // LOGRADOURO CONTABILIDADE
-                                                               dados[15], // NUMERO CONTABILIDADE
-                                                               dados[16], // COMPLEMENTO CONTABILIDADE
-                                                               dados[17], // BAIRRO CONTABILIDADE
-                                                               dados[18], // CEP CONTABILIDADE
-                                                               dados[19], // CIDADE CONTABILIDADE
-                                                               dados[20], // UF CONTABILIDADE
-                                                               dados[11], // TELEFONE CONTABILIDADE
-                                                               dados[12] // EMAIL CONTABILIDADE
-                                                               )
-                                        );
+                            sindicato.getPessoa().getNome(),
+                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                            endSindicato.getEndereco().getLogradouro().getDescricao(),
+                            endSindicato.getNumero(),
+                            endSindicato.getComplemento(),
+                            endSindicato.getEndereco().getBairro().getDescricao(),
+                            endSindicato.getEndereco().getCep(),
+                            endSindicato.getEndereco().getCidade().getCidade(),
+                            endSindicato.getEndereco().getCidade().getUf(),
+                            sindicato.getPessoa().getTelefone1(),
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
+                            sindicato.getPessoa().getDocumento(),
+                            result.get(i).getId(),
+                            result.get(i).getPessoa().getNome(),
+                            dados[0], // DESCRICAO ENDERECO
+                            dados[1], // LOGRADOURO
+                            endEmpresa.getNumero(),
+                            endEmpresa.getComplemento(),
+                            dados[2], // BAIRRO
+                            dados[3], // CEP
+                            dados[4], // CIDADE
+                            dados[5], // UF
+                            result.get(i).getPessoa().getTelefone1(),
+                            result.get(i).getPessoa().getEmail1(),
+                            result.get(i).getPessoa().getTipoDocumento().getDescricao(),
+                            result.get(i).getPessoa().getDocumento(),
+                            Integer.parseInt(dados[6]), // ID CNAE
+                            dados[7], // NUMERO CNAE
+                            dados[8], // DESCRICAO CNAE
+                            Integer.parseInt(dados[9]), // ID CONTABILIDADE
+                            dados[10], // NOME CONTABILIDADE
+                            dados[13], // DESCRICAO ENDERECO CONTABILIDADE
+                            dados[14], // LOGRADOURO CONTABILIDADE
+                            dados[15], // NUMERO CONTABILIDADE
+                            dados[16], // COMPLEMENTO CONTABILIDADE
+                            dados[17], // BAIRRO CONTABILIDADE
+                            dados[18], // CEP CONTABILIDADE
+                            dados[19], // CIDADE CONTABILIDADE
+                            dados[20], // UF CONTABILIDADE
+                            dados[11], // TELEFONE CONTABILIDADE
+                            dados[12] // EMAIL CONTABILIDADE
+                            ));
                     endEmpresa = new PessoaEndereco();
                     endEscritorio = new PessoaEndereco();
                 }
-               JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
-               JasperPrint print = JasperFillManager.fillReport(
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
+                JasperPrint print = JasperFillManager.fillReport(
                         jasper,
                         null,
                         dtSource);
                 arquivo = JasperExportManager.exportReportToPdf(print);
 
-                String nomeDownload = "etiquetas_empresa_"+DataHoje.horaMinuto().replace(":", "")+".pdf";
-                
+                String nomeDownload = "etiquetas_empresa_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/etiquetas");
-                
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/etiquetas");
+
                 sa.salvaNaPasta(pathPasta);
 
-                Download download =  new Download(nomeDownload,
+                Download download = new Download(nomeDownload,
                         pathPasta,
                         "application/pdf",
-                        FacesContext.getCurrentInstance()
-                        );
-                download.baixar(); 
-               } catch (Exception erro) {
-                   System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-                   return null;
-               }
-           } catch (Exception erro) {
-               System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-               return null;
-           }
+                        FacesContext.getCurrentInstance());
+                download.baixar();
+            } catch (Exception erro) {
+                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+                return null;
+            }
+        } catch (Exception erro) {
+            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            return null;
+        }
         return null;
     }
 
-    public String etiquetaEscritorio(){
+    public String etiquetaEscritorio() {
         String condicao = "";
         String escritorios = "";
         String cidades = "";
@@ -862,76 +869,83 @@ public class ImpressaoBoletosJSFBean {
 
         // CNAES DO RELATORIO -----------------------------------------------------------
         List<Convencao> resultConvencoes = dbConv.pesquisaTodos();
-        String ids = "",idsJuridica = "";
-        for (int i = 0; i < resultConvencoes.size(); i++){
-            if (ids.length() > 0 && i != resultConvencoes.size())
-                ids = ids+",";
+        String ids = "", idsJuridica = "";
+        for (int i = 0; i < resultConvencoes.size(); i++) {
+            if (ids.length() > 0 && i != resultConvencoes.size()) {
+                ids = ids + ",";
+            }
             ids = ids + String.valueOf(resultConvencoes.get(i).getId());
         }
         List<CnaeConvencao> resultCnaeConvencao = new ArrayList();
-        if (!ids.isEmpty())
+        if (!ids.isEmpty()) {
             resultCnaeConvencao = dbContri.pesquisarCnaeConvencaoPorConvencao(ids);
+        }
 
-        if (!resultConvencoes.isEmpty()){
-            for(int i = 0; i < resultCnaeConvencao.size();i++){
-                listaCnaes.add(resultCnaeConvencao.get(i)) ;
+        if (!resultConvencoes.isEmpty()) {
+            for (int i = 0; i < resultCnaeConvencao.size(); i++) {
+                listaCnaes.add(resultCnaeConvencao.get(i));
             }
-            for (int i = 0; i < listaCnaes.size();i++){
-                if (cnaes.length() > 0 && i != resultCnaeConvencao.size())
-                    cnaes = cnaes+",";
-                cnaes = cnaes + Integer.toString(((CnaeConvencao)listaCnaes.get(i)).getCnae().getId());
+            for (int i = 0; i < listaCnaes.size(); i++) {
+                if (cnaes.length() > 0 && i != resultCnaeConvencao.size()) {
+                    cnaes = cnaes + ",";
+                }
+                cnaes = cnaes + Integer.toString(((CnaeConvencao) listaCnaes.get(i)).getCnae().getId());
             }
-        }else
+        } else {
             cnaes = "";
+        }
 
         int idContabil1 = 0, idContabil2 = 0;
         boolean um = true;
-        for(int i = 0; i < listaMovGrid.size(); i++){
-            if ((Boolean) listaMovGrid.get(i).getValor()){
-                if (um){
-                    if (idsJuridica.length() > 0 && i != listaMovGrid.size())
-                        idsJuridica = idsJuridica+",";
-                    idsJuridica = idsJuridica +  ( (Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+        for (int i = 0; i < listaMovGrid.size(); i++) {
+            if ((Boolean) listaMovGrid.get(i).getValor()) {
+                if (um) {
+                    if (idsJuridica.length() > 0 && i != listaMovGrid.size()) {
+                        idsJuridica = idsJuridica + ",";
+                    }
+                    idsJuridica = idsJuridica + ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
                     um = false;
-                }else{
-                    idContabil1 = ((Integer) getListaMovGrid().get(i-1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+                } else {
+                    idContabil1 = ((Integer) getListaMovGrid().get(i - 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
                     idContabil2 = ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
-                    if (idContabil1 != idContabil2 ){
-                        if (idsJuridica.length() > 0 && i != listaMovGrid.size())
-                            idsJuridica = idsJuridica+",";
-                        idsJuridica = idsJuridica +  ( (Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+                    if (idContabil1 != idContabil2) {
+                        if (idsJuridica.length() > 0 && i != listaMovGrid.size()) {
+                            idsJuridica = idsJuridica + ",";
+                        }
+                        idsJuridica = idsJuridica + ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
                     }
                 }
             }
         }
-    
+
 
         sindicato = dbJur.pesquisaCodigo(1);
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         List<Juridica> result = new ArrayList();
-        if (!resultCnaeConvencao.isEmpty() && !listaCnaes.isEmpty() && !idsJuridica.isEmpty())
-            result = dbContri.listaRelatorioContribuintesPorJuridica(condicao, escritorios,pCidade, cidades, ordem, cnaes,tipoEndereco.getId(),idsJuridica);
+        if (!resultCnaeConvencao.isEmpty() && !listaCnaes.isEmpty() && !idsJuridica.isEmpty()) {
+            result = dbContri.listaRelatorioContribuintesPorJuridica(condicao, escritorios, pCidade, cidades, ordem, cnaes, tipoEndereco.getId(), idsJuridica);
+        }
 
-        try{
+        try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             byte[] arquivo = new byte[0];
             JasperReport jasper = null;
             Collection listaContrs = new ArrayList<ParametroContribuintes>();
             jasper = (JasperReport) JRLoader.loadObject(
-                 ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
-            try{
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            try {
                 String dados[] = new String[21];
-                for(int i = 0; i < result.size();i++){
+                for (int i = 0; i < result.size(); i++) {
                     endEmpresa = dbPesEnd.pesquisaEndPorPessoaTipo(result.get(i).getPessoa().getId(), tipoEndereco.getId());
-                    try{
+                    try {
                         dados[0] = endEmpresa.getEndereco().getDescricaoEndereco().getDescricao();
                         dados[1] = endEmpresa.getEndereco().getLogradouro().getDescricao();
                         dados[2] = endEmpresa.getEndereco().getBairro().getDescricao();
                         dados[3] = endEmpresa.getEndereco().getCep();
                         dados[4] = endEmpresa.getEndereco().getCidade().getCidade();
                         dados[5] = endEmpresa.getEndereco().getCidade().getUf();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[0] = "";
                         dados[1] = "";
                         dados[2] = "";
@@ -940,29 +954,29 @@ public class ImpressaoBoletosJSFBean {
                         dados[5] = "";
                     }
 
-                    try{
+                    try {
                         dados[6] = String.valueOf(result.get(i).getCnae().getId());
                         dados[7] = result.get(i).getCnae().getNumero();
                         dados[8] = result.get(i).getCnae().getCnae();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[6] = "0";
                         dados[7] = "";
                         dados[8] = "";
                     }
 
-                    try{
+                    try {
                         dados[9] = String.valueOf(result.get(i).getContabilidade().getId());
                         dados[10] = result.get(i).getContabilidade().getPessoa().getNome();
                         dados[11] = result.get(i).getContabilidade().getPessoa().getTelefone1();
                         dados[12] = result.get(i).getContabilidade().getPessoa().getEmail1();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[9] = "0";
                         dados[10] = "";
                         dados[11] = "";
                         dados[12] = "";
                     }
 
-                    try{
+                    try {
                         endEscritorio = dbPesEnd.pesquisaEndPorPessoaTipo(result.get(i).getContabilidade().getPessoa().getId(), 2);
                         dados[13] = endEscritorio.getEndereco().getDescricaoEndereco().getDescricao();
                         dados[14] = endEscritorio.getEndereco().getLogradouro().getDescricao();
@@ -972,7 +986,7 @@ public class ImpressaoBoletosJSFBean {
                         dados[18] = endEscritorio.getEndereco().getCep();
                         dados[19] = endEscritorio.getEndereco().getCidade().getCidade();
                         dados[20] = endEscritorio.getEndereco().getCidade().getUf();
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         dados[13] = "";
                         dados[14] = "";
                         dados[15] = "";
@@ -982,163 +996,168 @@ public class ImpressaoBoletosJSFBean {
                         dados[19] = "";
                         dados[20] = "";
                     }
-                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoCliente.png"),
-                                                               sindicato.getPessoa().getNome(),
-                                                               endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                                                               endSindicato.getEndereco().getLogradouro().getDescricao(),
-                                                               endSindicato.getNumero(),
-                                                               endSindicato.getComplemento(),
-                                                               endSindicato.getEndereco().getBairro().getDescricao(),
-                                                               endSindicato.getEndereco().getCep(),
-                                                               endSindicato.getEndereco().getCidade().getCidade(),
-                                                               endSindicato.getEndereco().getCidade().getUf(),
-                                                               sindicato.getPessoa().getTelefone1(),
-                                                               sindicato.getPessoa().getEmail1(),
-                                                               sindicato.getPessoa().getSite(),
-                                                               sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                                                               sindicato.getPessoa().getDocumento(),
-                                                               result.get(i).getId(),
-                                                               result.get(i).getPessoa().getNome(),
-                                                               dados[0], // DESCRICAO ENDERECO
-                                                               dados[1], // LOGRADOURO
-                                                               endEmpresa.getNumero(),
-                                                               endEmpresa.getComplemento(),
-                                                               dados[2], // BAIRRO
-                                                               dados[3], // CEP
-                                                               dados[4], // CIDADE
-                                                               dados[5], // UF
-                                                               result.get(i).getPessoa().getTelefone1(),
-                                                               result.get(i).getPessoa().getEmail1(),
-                                                               result.get(i).getPessoa().getTipoDocumento().getDescricao(),
-                                                               result.get(i).getPessoa().getDocumento(),
-                                                               Integer.parseInt(dados[6]), // ID CNAE
-                                                               dados[7], // NUMERO CNAE
-                                                               dados[8], // DESCRICAO CNAE
-                                                               Integer.parseInt(dados[9]), // ID CONTABILIDADE
-                                                               dados[10], // NOME CONTABILIDADE
-                                                               dados[13], // DESCRICAO ENDERECO CONTABILIDADE
-                                                               dados[14], // LOGRADOURO CONTABILIDADE
-                                                               dados[15], // NUMERO CONTABILIDADE
-                                                               dados[16], // COMPLEMENTO CONTABILIDADE
-                                                               dados[17], // BAIRRO CONTABILIDADE
-                                                               dados[18], // CEP CONTABILIDADE
-                                                               dados[19], // CIDADE CONTABILIDADE
-                                                               dados[20], // UF CONTABILIDADE
-                                                               dados[11], // TELEFONE CONTABILIDADE
-                                                               dados[12] // EMAIL CONTABILIDADE
-                                                               )
-                                        );
+                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            sindicato.getPessoa().getNome(),
+                            endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                            endSindicato.getEndereco().getLogradouro().getDescricao(),
+                            endSindicato.getNumero(),
+                            endSindicato.getComplemento(),
+                            endSindicato.getEndereco().getBairro().getDescricao(),
+                            endSindicato.getEndereco().getCep(),
+                            endSindicato.getEndereco().getCidade().getCidade(),
+                            endSindicato.getEndereco().getCidade().getUf(),
+                            sindicato.getPessoa().getTelefone1(),
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getTipoDocumento().getDescricao(),
+                            sindicato.getPessoa().getDocumento(),
+                            result.get(i).getId(),
+                            result.get(i).getPessoa().getNome(),
+                            dados[0], // DESCRICAO ENDERECO
+                            dados[1], // LOGRADOURO
+                            endEmpresa.getNumero(),
+                            endEmpresa.getComplemento(),
+                            dados[2], // BAIRRO
+                            dados[3], // CEP
+                            dados[4], // CIDADE
+                            dados[5], // UF
+                            result.get(i).getPessoa().getTelefone1(),
+                            result.get(i).getPessoa().getEmail1(),
+                            result.get(i).getPessoa().getTipoDocumento().getDescricao(),
+                            result.get(i).getPessoa().getDocumento(),
+                            Integer.parseInt(dados[6]), // ID CNAE
+                            dados[7], // NUMERO CNAE
+                            dados[8], // DESCRICAO CNAE
+                            Integer.parseInt(dados[9]), // ID CONTABILIDADE
+                            dados[10], // NOME CONTABILIDADE
+                            dados[13], // DESCRICAO ENDERECO CONTABILIDADE
+                            dados[14], // LOGRADOURO CONTABILIDADE
+                            dados[15], // NUMERO CONTABILIDADE
+                            dados[16], // COMPLEMENTO CONTABILIDADE
+                            dados[17], // BAIRRO CONTABILIDADE
+                            dados[18], // CEP CONTABILIDADE
+                            dados[19], // CIDADE CONTABILIDADE
+                            dados[20], // UF CONTABILIDADE
+                            dados[11], // TELEFONE CONTABILIDADE
+                            dados[12] // EMAIL CONTABILIDADE
+                            ));
                     endEmpresa = new PessoaEndereco();
                     endEscritorio = new PessoaEndereco();
                 }
-               JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
-               JasperPrint print = JasperFillManager.fillReport(
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
+                JasperPrint print = JasperFillManager.fillReport(
                         jasper,
                         null,
                         dtSource);
                 arquivo = JasperExportManager.exportReportToPdf(print);
-                
-                String nomeDownload = "etiquetas_contabil_"+DataHoje.horaMinuto().replace(":", "")+".pdf";
-                
+
+                String nomeDownload = "etiquetas_contabil_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/etiquetas");
-                
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/etiquetas");
+
                 sa.salvaNaPasta(pathPasta);
 
-                Download download =  new Download(nomeDownload,
+                Download download = new Download(nomeDownload,
                         pathPasta,
                         "application/pdf",
-                        FacesContext.getCurrentInstance()
-                        );
-                download.baixar(); 
-               } catch (Exception erro) {
-                   System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-                   return null;
-               }
-           } catch (Exception erro) {
-               System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-               return null;
-           }
+                        FacesContext.getCurrentInstance());
+                download.baixar();
+            } catch (Exception erro) {
+                System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+                return null;
+            }
+        } catch (Exception erro) {
+            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            return null;
+        }
         return null;
     }
-    
-    public boolean getDesabilitaVi(){
-        if (cbEmail.equals("todos")){
+
+    public boolean getDesabilitaVi() {
+        if (cbEmail.equals("todos")) {
             return false;
-        }else if (cbEmail.equals("com")){
+        } else if (cbEmail.equals("com")) {
             return true;
-        }else if (cbEmail.equals("sem")){
+        } else if (cbEmail.equals("sem")) {
             return false;
         }
         return false;
     }
-        
-    public boolean getDesabilitaEmail(){
-        if (cbEmail.equals("todos")){
+
+    public boolean getDesabilitaEmail() {
+        if (cbEmail.equals("todos")) {
             return true;
-        }else if (cbEmail.equals("com")){
+        } else if (cbEmail.equals("com")) {
             return false;
-        }else if (cbEmail.equals("sem")){
-            
+        } else if (cbEmail.equals("sem")) {
+
             return true;
         }
         return true;
     }
-           
-    public String enviarEmail(){
+
+    public String enviarEmail() {
         Movimento movimento = new Movimento();
-        Juridica juridica = new Juridica();        
-        
+        Juridica juridica = new Juridica();
+
         JuridicaDB dbj = new JuridicaDBToplink();
         MovimentoDB dbM = new MovimentoDBToplink();
-        
+
         List<Movimento> movadd = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
-        List<String> listaVencimentos = new ArrayList<String>();  
-        
-        List<Linha> select  = new ArrayList();
-        
+        List<String> listaVencimentos = new ArrayList<String>();
+
+        List<Linha> select = new ArrayList();
+
         boolean enviar = false;
         int id_contabil = 0, id_empresa = 0, id_compara = 0;
-        for (int i = 0; i < listaMovGrid.size(); i++){
-            if ((Boolean) listaMovGrid.get(i).getValor())
+        for (int i = 0; i < listaMovGrid.size(); i++) {
+            if ((Boolean) listaMovGrid.get(i).getValor()) {
                 select.add(listaMovGrid.get(i));
+            }
         }
-        
-        for (int i = 0; i < select.size(); i++){
+
+        for (int i = 0; i < select.size(); i++) {
             id_contabil = (Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
             id_empresa = (Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
 
             /* ENVIO PARA CONTABILIDADE */
-            movimento = dbM.pesquisaCodigo( (Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+            movimento = dbM.pesquisaCodigo((Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
             juridica = dbj.pesquisaCodigo(id_empresa);
-            
-            if (id_contabil != 0 && juridica.isEmailEscritorio()){
+
+            if (id_contabil != 0 && juridica.isEmailEscritorio()) {
                 movadd.add(movimento);
                 listaValores.add(movimento.getValor());
                 listaVencimentos.add(movimento.getVencimento());
-                
+
                 juridica = dbj.pesquisaJuridicaPorPessoa(id_contabil);
 
-                try{
-                    id_compara = (Integer) select.get(i+1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
-                    if (id_contabil != id_compara)
+                try {
+                    id_compara = (Integer) select.get(i + 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
+                    if (id_contabil != id_compara) {
                         enviar = true;
-                }catch(Exception e){enviar = true;}
-            /* ENVIO PARA EMPRESA */
-            }else{
+                    }
+                } catch (Exception e) {
+                    enviar = true;
+                }
+                /* ENVIO PARA EMPRESA */
+            } else {
                 movadd.add(movimento);
                 listaValores.add(movimento.getValor());
                 listaVencimentos.add(movimento.getVencimento());
-                
-                try{
-                    id_compara = (Integer) select.get(i+1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
-                    if (id_empresa != id_compara)
+
+                try {
+                    id_compara = (Integer) select.get(i + 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
+                    if (id_empresa != id_compara) {
                         enviar = true;
-                }catch(Exception e){enviar = true;}                    
+                    }
+                } catch (Exception e) {
+                    enviar = true;
+                }
             }
-            
-            if (enviar){
+
+            if (enviar) {
                 enviar(movadd, listaValores, listaVencimentos, juridica);
                 enviar = false;
                 movadd.clear();
@@ -1148,52 +1167,52 @@ public class ImpressaoBoletosJSFBean {
         }
         return null;
     }
-    
-    public void enviar(List<Movimento> mov, List<Float>listaValores,List<String> listaVencimentos, Juridica jur){
-        try{
+
+    public void enviar(List<Movimento> mov, List<Float> listaValores, List<String> listaVencimentos, Juridica jur) {
+        try {
 
             Registro reg = new Registro();
-            reg = (Registro)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
+            reg = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
 
             ImprimirBoleto imp = new ImprimirBoleto();
             imp.imprimirBoleto(mov, listaValores, listaVencimentos, false);
-            String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath()+"/Sindical/Cliente/"+controleUsuarioJSFBean.getCliente()+"/Arquivos/downloads/boletos");
+            String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
 
             p.add(jur.getPessoa());
-            
-            String[] ret = new String[2];
-            if (!reg.isEnviarEmailAnexo()){
-                
-                ret = EnviarEmail.EnviarEmailPersonalizado(reg, 
-                                                    p, 
-                                                    " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>"+jur.getPessoa().getNome()+" </b></div><br />"+ 
-                                                    " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />" +
-                                                    " <a href=\""+reg.getUrlPath()+"/Sindical/acessoLinks.jsf?cliente="+controleUsuarioJSFBean.getCliente()+"&amp;arquivo="+nome+"\">Clique aqui para abrir boleto</a><br />",
-                                                    new ArrayList(), 
-                                                    "Envio de Boleto");
-            }else{
-                 List<File> fls = new ArrayList<File>();
-                fls.add(new File(imp.getPathPasta()+"/"+nome));
 
-                ret = EnviarEmail.EnviarEmailPersonalizado(reg, 
-                                                    p, 
-                                                    " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>"+jur.getPessoa().getNome()+" </b></div><br />"+ 
-                                                    " <h5>Baixe seu boleto anexado neste email</5><br /><br />", 
-                                                    fls, 
-                                                    "Envio de Boleto");                
+            String[] ret = new String[2];
+            if (!reg.isEnviarEmailAnexo()) {
+
+                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+                        p,
+                        " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+                        + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
+                        + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />",
+                        new ArrayList(),
+                        "Envio de Boleto");
+            } else {
+                List<File> fls = new ArrayList<File>();
+                fls.add(new File(imp.getPathPasta() + "/" + nome));
+
+                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+                        p,
+                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+                        + " <h5>Baixe seu boleto anexado neste email</5><br /><br />",
+                        fls,
+                        "Envio de Boleto");
             }
 //            if (!ret[1].isEmpty())
 //                msgImpressao = ret[1];
 //            else
 //                msgImpressao = ret[0];
-                msgImpressao = "Envio Concluído!";
+            msgImpressao = "Envio Concluído!";
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
 
         }
     }
-    
+
 //    public String enviarEmail(){
 //        int idMovimento = 0, idJuridica = 0,qnt = 0;
 //        JuridicaDB dbJ = new JuridicaDBToplink();
@@ -1246,7 +1265,6 @@ public class ImpressaoBoletosJSFBean {
 //            msgImpressao = "Nao existe boleto na lista!";
 //        return null;
 //    }
-
     public long getTotalBoletos() {
         return totalBoletos;
     }
@@ -1288,41 +1306,41 @@ public class ImpressaoBoletosJSFBean {
     }
 
     public List<DataObject> getListaConvencao() {
-        if(listaConvencao.isEmpty()){
+        if (listaConvencao.isEmpty()) {
             ConvencaoDB convencaoDB = new ConvencaoDBToplink();
             List<Convencao> lista = convencaoDB.pesquisaTodos();
-            if(lista == null){
+            if (lista == null) {
                 lista = new ArrayList();
             }
-            for( Convencao convencao : lista){
-                listaConvencao.add(new DataObject( false, convencao));
+            for (Convencao convencao : lista) {
+                listaConvencao.add(new DataObject(false, convencao));
             }
         }
         return listaConvencao;
     }
 
     public List<DataObject> getListaGrupoCidade() {
-        if(listaGrupoCidade.isEmpty()){
+        if (listaGrupoCidade.isEmpty()) {
             this.carregarGrupos();
         }
         return listaGrupoCidade;
     }
 
-    public void carregarGrupos(){
+    public void carregarGrupos() {
         listaGrupoCidade.clear();
-        if(!listaConvencao.isEmpty()){
+        if (!listaConvencao.isEmpty()) {
             ConvencaoCidadeDB convencaoCidadeDB = new ConvencaoCidadeDBToplink();
             List<Integer> listInt = new ArrayList();
-            for(int i = 0; i < listaConvencao.size(); i++){
-                if((Boolean)listaConvencao.get(i).getArgumento0()){
-                    listInt.add(((Convencao)listaConvencao.get(i).getArgumento1()).getId());
+            for (int i = 0; i < listaConvencao.size(); i++) {
+                if ((Boolean) listaConvencao.get(i).getArgumento0()) {
+                    listInt.add(((Convencao) listaConvencao.get(i).getArgumento1()).getId());
                 }
             }
             List<GrupoCidade> listGrupo = convencaoCidadeDB.pesquisarConvencaoCidade(listInt);
-            if (listGrupo == null){
+            if (listGrupo == null) {
                 listGrupo = new ArrayList();
             }
-            for( GrupoCidade grupoCidade : listGrupo){
+            for (GrupoCidade grupoCidade : listGrupo) {
                 listaGrupoCidade.add(new DataObject(false, grupoCidade));
             }
         }
@@ -1331,7 +1349,6 @@ public class ImpressaoBoletosJSFBean {
     public void setListaConvencao(List<DataObject> listaConvencao) {
         this.listaConvencao = listaConvencao;
     }
-
 
     public void setListaGrupoCidade(List<DataObject> listaGrupoCidade) {
         this.listaGrupoCidade = listaGrupoCidade;
@@ -1394,7 +1411,7 @@ public class ImpressaoBoletosJSFBean {
     }
 
     public Juridica getContabilidade() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
             contabilidade = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         }

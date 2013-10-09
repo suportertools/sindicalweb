@@ -21,7 +21,7 @@ public class ConvencaoPeriodoJSFBean {
     private int idGrupoCidade = 0;
     private List<ConvencaoPeriodo> listaConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
     private List<SelectItem> listaConvencao = new ArrayList();
-    private List<SelectItem> listaGrupoCidade = new ArrayList();    
+    private List<SelectItem> listaGrupoCidade = new ArrayList();
 
     public String novo() {
         convencaoPeriodo = new ConvencaoPeriodo();
@@ -142,13 +142,13 @@ public class ConvencaoPeriodoJSFBean {
     public List<SelectItem> getListaGrupoCidade() {
         listaGrupoCidade.clear();
 //        if (listaGrupoCidade.isEmpty()) {
-            ConvencaoPeriodoDB db = new ConvencaoPeriodoDBTopLink();
-            List<ConvencaoCidade> list = db.listaGrupoCidadePorConvencao(Integer.parseInt(listaConvencao.get(idConvencao).getDescription()));
-            for (int i = 0; i < list.size(); i++) {
-                listaGrupoCidade.add(new SelectItem(new Integer(i),
-                        list.get(i).getGrupoCidade().getDescricao(),
-                        Integer.toString(list.get(i).getGrupoCidade().getId())));
-            }
+        ConvencaoPeriodoDB db = new ConvencaoPeriodoDBTopLink();
+        List<ConvencaoCidade> list = db.listaGrupoCidadePorConvencao(Integer.parseInt(listaConvencao.get(idConvencao).getDescription()));
+        for (int i = 0; i < list.size(); i++) {
+            listaGrupoCidade.add(new SelectItem(new Integer(i),
+                    list.get(i).getGrupoCidade().getDescricao(),
+                    Integer.toString(list.get(i).getGrupoCidade().getId())));
+        }
 
 //        }
         return listaGrupoCidade;

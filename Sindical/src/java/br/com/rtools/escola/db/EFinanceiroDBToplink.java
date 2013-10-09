@@ -6,41 +6,42 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class EFinanceiroDBToplink extends DB implements EFinanceiroDB{
+public class EFinanceiroDBToplink extends DB implements EFinanceiroDB {
+
     public boolean insert(EFinanceiro eFinanceiro) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(eFinanceiro);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(eFinanceiro);
+            getEntityManager().flush();
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(EFinanceiro eFinanceiro) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(eFinanceiro);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean delete(EFinanceiro eFinanceiro) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(eFinanceiro);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -48,21 +49,21 @@ public class EFinanceiroDBToplink extends DB implements EFinanceiroDB{
 
     public EFinanceiro pesquisaCodigo(int id) {
         EFinanceiro result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("EFinanceiro.pesquisaID");
             qry.setParameter("pid", id);
             result = (EFinanceiro) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select ef from EFinanceiro ef");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }

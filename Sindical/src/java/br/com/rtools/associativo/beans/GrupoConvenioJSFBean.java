@@ -1,6 +1,5 @@
 package br.com.rtools.associativo.beans;
 
-
 import br.com.rtools.associativo.GrupoConvenio;
 import br.com.rtools.associativo.db.GrupoConvenioDB;
 import br.com.rtools.associativo.db.GrupoConvenioDBToplink;
@@ -8,51 +7,51 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class GrupoConvenioJSFBean {
+
     private GrupoConvenio grupoConvenio = new GrupoConvenio();
     private String msgConfirma;
     private String comoPesquisa = "I";
     private String descPesquisa = "";
 
-
-    public void salvar(){
+    public void salvar() {
         GrupoConvenioDB db = new GrupoConvenioDBToplink();
-        if (db.pesquisaGrupoConvenioPorDescricao(getGrupoConvenio().getDescricao()).isEmpty()){
-            if (getGrupoConvenio().getId() == -1){
-                if (db.insert(getGrupoConvenio())){
+        if (db.pesquisaGrupoConvenioPorDescricao(getGrupoConvenio().getDescricao()).isEmpty()) {
+            if (getGrupoConvenio().getId() == -1) {
+                if (db.insert(getGrupoConvenio())) {
                     setMsgConfirma("Grupo do convênio cadastrado com sucesso!");
-                }else{
+                } else {
                     setMsgConfirma("Erro ao cadastrar grupo do convênio!");
                 }
-            }else{
+            } else {
                 db.getEntityManager().getTransaction().begin();
-                if (db.update(getGrupoConvenio())){
+                if (db.update(getGrupoConvenio())) {
                     db.getEntityManager().getTransaction().commit();
                     setMsgConfirma("Grupo do convênio atualizado com Sucesso!");
-                }else{
+                } else {
                     db.getEntityManager().getTransaction().rollback();
                     setMsgConfirma("Erro ao atualizar grupo do convênio!");
-                }                
+                }
             }
-        }else{
+        } else {
             setMsgConfirma("Grupo já existe!");
         }
     }
 
-    public String novo(){
+    public String novo() {
         setGrupoConvenio(new GrupoConvenio());
         setMsgConfirma("");
         return "grupoConvenio";
     }
 
-    public String excluir(){
+    public String excluir() {
         GrupoConvenioDB db = new GrupoConvenioDBToplink();
-        if (getGrupoConvenio().getId() != -1){
+        if (getGrupoConvenio().getId() != -1) {
             db.getEntityManager().getTransaction().begin();
             setGrupoConvenio(db.pesquisaCodigo(getGrupoConvenio().getId()));
-            if (db.delete(getGrupoConvenio())){
+            if (db.delete(getGrupoConvenio())) {
                 db.getEntityManager().getTransaction().commit();
                 setMsgConfirma("Grupo do convênio excluido com sucesso!");
-            }else{
+            } else {
                 db.getEntityManager().getTransaction().rollback();
                 setMsgConfirma("Grupo convênio não pode ser Excluido!");
             }
@@ -61,36 +60,34 @@ public class GrupoConvenioJSFBean {
         return null;
     }
 
-    public String editar(){
+    public String editar() {
 //        setGrupoConvenio((GrupoConvenio) getHtmlTable().getRowData());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("grupoConvenioPesquisa", getGrupoConvenio());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         setDescPesquisa("");
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "grupoConvenio";
-        }else{
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
     }
 
-    public List getListaGrupoConvenio(){
+    public List getListaGrupoConvenio() {
 //        Pesquisa pesquisa = new Pesquisa();
         List result = null;
 //        result = pesquisa.pesquisar("GrupoConvenio", "descricao" , getDescPesquisa(), "descricao", getComoPesquisa());
         return result;
     }
 
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         comoPesquisa = "I";
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         comoPesquisa = "P";
     }
 
-
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
     public GrupoConvenio getGrupoConvenio() {
@@ -124,5 +121,4 @@ public class GrupoConvenioJSFBean {
     public void setDescPesquisa(String descPesquisa) {
         this.descPesquisa = descPesquisa;
     }
-
 }

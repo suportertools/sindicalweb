@@ -5,19 +5,20 @@ import br.com.rtools.seguranca.Usuario;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SIS_CONTADOR_ACESSOS")
-@NamedQuery(name="ContadorAcessos.pesquisaID", query="select ca from ContadorAcessos ca where ca.id = :pid")
+@Table(name = "SIS_CONTADOR_ACESSOS")
+@NamedQuery(name = "ContadorAcessos.pesquisaID", query = "select ca from ContadorAcessos ca where ca.id = :pid")
 public class ContadorAcessos implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name="ID_ROTINA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @Column(name="NR_ACESSO")
+    @Column(name = "NR_ACESSO")
     private int acessos;
 
     public ContadorAcessos() {
@@ -26,7 +27,7 @@ public class ContadorAcessos implements java.io.Serializable {
         this.rotina = new Rotina();
         this.acessos = 0;
     }
-    
+
     public ContadorAcessos(int id, Usuario usuario, Rotina rotina, int acessos) {
         this.id = id;
         this.usuario = usuario;

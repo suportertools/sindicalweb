@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 public class Promissoria {
+
     private String numeropromissoria;
     private String extenso;
     private BigDecimal vlrpagar;
@@ -47,27 +48,27 @@ public class Promissoria {
         this.fundo_promissoria = "";
         this.venctoExtenso = "";
     }
-    
-    public Promissoria(String numeropromissoria, 
-                       String extenso, 
-                       BigDecimal vlrpagar, 
-                       String razao, 
-                       String tipodocumento, 
-                       String cnpj, 
-                       String endereco, 
-                       String complemento, 
-                       String numero, 
-                       String bairro, 
-                       String cidade, 
-                       String cep, 
-                       String uf, 
-                       String sinnome, 
-                       String sindocumento, 
-                       String sincidade, 
-                       String sinuf, 
-                       String vencto,
-                       String fundo_promissoria,
-                       String venctoExtenso) {
+
+    public Promissoria(String numeropromissoria,
+            String extenso,
+            BigDecimal vlrpagar,
+            String razao,
+            String tipodocumento,
+            String cnpj,
+            String endereco,
+            String complemento,
+            String numero,
+            String bairro,
+            String cidade,
+            String cep,
+            String uf,
+            String sinnome,
+            String sindocumento,
+            String sincidade,
+            String sinuf,
+            String vencto,
+            String fundo_promissoria,
+            String venctoExtenso) {
         this.numeropromissoria = numeropromissoria;
         this.extenso = extenso;
         this.vlrpagar = vlrpagar;
@@ -249,7 +250,4 @@ public class Promissoria {
     public void setVenctoExtenso(String venctoExtenso) {
         this.venctoExtenso = venctoExtenso;
     }
-
-
-
 }

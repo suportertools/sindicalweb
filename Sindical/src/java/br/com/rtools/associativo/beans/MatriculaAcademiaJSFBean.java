@@ -12,6 +12,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class MatriculaAcademiaJSFBean {
+
     private MatriculaAcademia matriculaAcademia;
     private ServicoPessoaJSFBean servicoPessoaJSFBean;
     private String descPesquisa;
@@ -21,9 +22,9 @@ public class MatriculaAcademiaJSFBean {
     private int idIndex;
     private List<MatriculaAcademia> listaAcademia;
 
-    public MatriculaAcademiaJSFBean(){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean",new ServicoPessoaJSFBean());
-        servicoPessoaJSFBean = ((ServicoPessoaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
+    public MatriculaAcademiaJSFBean() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaJSFBean());
+        servicoPessoaJSFBean = ((ServicoPessoaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
         servicoPessoaJSFBean.setRenderServicos(true);
         matriculaAcademia = new MatriculaAcademia();
         descPesquisa = "";
@@ -34,44 +35,44 @@ public class MatriculaAcademiaJSFBean {
         listaAcademia = new ArrayList();
     }
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        if ( servicoPessoaJSFBean.getServicoPessoa().getPessoa().getId() == -1 ){
+        if (servicoPessoaJSFBean.getServicoPessoa().getPessoa().getId() == -1) {
             msgConfirma = "Pesquise uma Pessoa!";
             return null;
         }
         dbSalvar.abrirTransacao();
-        if (servicoPessoaJSFBean.getServicoPessoa().getId() == -1){
+        if (servicoPessoaJSFBean.getServicoPessoa().getId() == -1) {
             msgConfirma = servicoPessoaJSFBean.salvarServicoPessoa(null, dbSalvar);
-            if (msgConfirma.isEmpty()){
+            if (msgConfirma.isEmpty()) {
                 matriculaAcademia.setServicoPessoa(servicoPessoaJSFBean.getServicoPessoa());
                 matriculaAcademia.setUsuario((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-                if (dbSalvar.inserirObjeto(matriculaAcademia)){
+                if (dbSalvar.inserirObjeto(matriculaAcademia)) {
                     msgConfirma = "Matricula salva com Sucesso!";
                     dbSalvar.comitarTransacao();
                     //novoGenerico();
-                }else{
+                } else {
                     msgConfirma = "Erro ao Salvar Matricula!";
                     dbSalvar.desfazerTransacao();
                 }
-            }else{
+            } else {
                 //msgConfirma = "Erro ao Salvar serviço pessoa!";
                 dbSalvar.desfazerTransacao();
             }
-        }else{
+        } else {
             msgConfirma = servicoPessoaJSFBean.atualizarServicoPessoa(null, dbSalvar);
-            if (msgConfirma.isEmpty()){
+            if (msgConfirma.isEmpty()) {
                 matriculaAcademia.setServicoPessoa(servicoPessoaJSFBean.getServicoPessoa());
                 matriculaAcademia.setUsuario((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-                if (dbSalvar.alterarObjeto(matriculaAcademia)){
+                if (dbSalvar.alterarObjeto(matriculaAcademia)) {
                     msgConfirma = "Matricula atualizada com Sucesso!";
                     dbSalvar.comitarTransacao();
                     //novoGenerico();
-                }else{
+                } else {
                     msgConfirma = "Erro ao atualizar Matricula!";
                     dbSalvar.desfazerTransacao();
                 }
-            }else{
+            } else {
                 //msgConfirma = "Erro ao atualizar serviço pessoa!";
                 dbSalvar.desfazerTransacao();
             }
@@ -79,25 +80,25 @@ public class MatriculaAcademiaJSFBean {
         return null;
     }
 
-    public String novo(){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaAcademiaBean",new MatriculaAcademiaJSFBean());
+    public String novo() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaAcademiaBean", new MatriculaAcademiaJSFBean());
         return "academia";
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         dbSalvar.abrirTransacao();
-        if (servicoPessoaJSFBean.getServicoPessoa().getId() != -1){
-            if (dbSalvar.deletarObjeto((MatriculaAcademia)dbSalvar.pesquisaCodigo(matriculaAcademia.getId(), "MatriculaAcademia"))){
-                if (dbSalvar.deletarObjeto((ServicoPessoa)dbSalvar.pesquisaCodigo(servicoPessoaJSFBean.getServicoPessoa().getId(),"ServicoPessoa"))){
+        if (servicoPessoaJSFBean.getServicoPessoa().getId() != -1) {
+            if (dbSalvar.deletarObjeto((MatriculaAcademia) dbSalvar.pesquisaCodigo(matriculaAcademia.getId(), "MatriculaAcademia"))) {
+                if (dbSalvar.deletarObjeto((ServicoPessoa) dbSalvar.pesquisaCodigo(servicoPessoaJSFBean.getServicoPessoa().getId(), "ServicoPessoa"))) {
                     dbSalvar.comitarTransacao();
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaAcademiaBean",new MatriculaAcademiaJSFBean());
-                    ((MatriculaAcademiaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).setMsgConfirma("Matricula Excluida com sucesso!"); 
-                }else{
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaAcademiaBean", new MatriculaAcademiaJSFBean());
+                    ((MatriculaAcademiaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).setMsgConfirma("Matricula Excluida com sucesso!");
+                } else {
                     msgConfirma = "Erro ao excluir serviço pessoa!";
                     dbSalvar.desfazerTransacao();
                 }
-            }else{
+            } else {
                 msgConfirma = "Erro ao excluir Matricula!";
                 dbSalvar.desfazerTransacao();
             }
@@ -105,31 +106,31 @@ public class MatriculaAcademiaJSFBean {
         return null;
     }
 
-    public String editar(){
+    public String editar() {
         matriculaAcademia = (MatriculaAcademia) listaAcademia.get(idIndex);
         servicoPessoaJSFBean.setServicoPessoa(matriculaAcademia.getServicoPessoa());
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
         servicoPessoaJSFBean.editar(matriculaAcademia.getServicoPessoa());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         listaAcademia.clear();
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null)
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "academia";
-        else
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         listaAcademia.clear();
         comoPesquisa = "I";
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         listaAcademia.clear();
         comoPesquisa = "P";
     }
@@ -157,7 +158,7 @@ public class MatriculaAcademiaJSFBean {
     public void setComoPesquisa(String comoPesquisa) {
         this.comoPesquisa = comoPesquisa;
     }
-    
+
     public MatriculaAcademia getMatriculaAcademia() {
         return matriculaAcademia;
     }
@@ -183,9 +184,9 @@ public class MatriculaAcademiaJSFBean {
     }
 
     public List<MatriculaAcademia> getListaAcademia() {
-        if (listaAcademia.isEmpty()){
+        if (listaAcademia.isEmpty()) {
             MatriculaAcademiaDB db = new MatriculaAcademiaDBToplink();
-            listaAcademia = db.pesquisaMatriculaAcademia(descPesquisa , porPesquisa, comoPesquisa);
+            listaAcademia = db.pesquisaMatriculaAcademia(descPesquisa, porPesquisa, comoPesquisa);
         }
         return listaAcademia;
     }
@@ -193,5 +194,4 @@ public class MatriculaAcademiaJSFBean {
     public void setListaAcademia(List<MatriculaAcademia> listaAcademia) {
         this.listaAcademia = listaAcademia;
     }
-    
 }

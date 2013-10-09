@@ -18,14 +18,14 @@ import javax.servlet.ServletContext;
 
 public class ContratoJSFBean {
 
-    private File files ;
+    private File files;
     private List listaArquivo;
     private List itens;
     private List<String> listaAtributo;
     private List<String> listaConteudo;
     private String nomeArquivo;
 
-    public ContratoJSFBean(){
+    public ContratoJSFBean() {
         files = null;
         listaArquivo = new ArrayList<GenericaQuery>();
         itens = new ArrayList();
@@ -33,7 +33,7 @@ public class ContratoJSFBean {
         listaConteudo = new ArrayList<String>();
     }
 
-    public List getListaArquivo(){
+    public List getListaArquivo() {
         return listaArquivo;
     }
 
@@ -60,79 +60,78 @@ public class ContratoJSFBean {
 //            System.out.println(e);
 //        }
 //    }
-
-    public String download(){
+    public String download() {
         //GenericaQuery genericaQuery = (GenericaQuery) htmlDataTable.getRowData();
         String arquivoDownload = "Imprimir_Contrato.xml";
-        String diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/ArquivoContrato/");
+        String diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoContrato/");
 
         listaAtributo.add("@criatura@");
         listaAtributo.add("@característica@");
         listaConteudo.add("Vampiro");
         listaConteudo.add("Doidão");
         this.gerarArquivo(nomeArquivo, arquivoDownload, diretorio);
-        Download download =  new Download(
-                    arquivoDownload,
-                    diretorio,
-                    "xml",
-                    FacesContext.getCurrentInstance()
-                );
+        Download download = new Download(
+                arquivoDownload,
+                diretorio,
+                "xml",
+                FacesContext.getCurrentInstance());
         download.baixar();
         return null;
     }
 
-    public void gerarArquivo(String arquivoEntrada, String arquivoSaida, String diretorio){
-        if(listaAtributo.size() == listaConteudo.size()){
-            try{
+    public void gerarArquivo(String arquivoEntrada, String arquivoSaida, String diretorio) {
+        if (listaAtributo.size() == listaConteudo.size()) {
+            try {
                 BufferedReader in = new BufferedReader(new FileReader(diretorio + "/" + arquivoEntrada));
                 BufferedWriter out = new BufferedWriter(new FileWriter(diretorio + "/" + arquivoSaida));
                 String linha;
                 while (in.ready()) {
                     linha = in.readLine();
-                    for(int i = 0; i < listaAtributo.size(); i++){
+                    for (int i = 0; i < listaAtributo.size(); i++) {
                         linha = linha.replace(listaAtributo.get(i), listaConteudo.get(i));
                     }
                     out.append(linha);
                 }
                 in.close();
                 out.close();
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.getMessage();
             }
         }
     }
 
-    public void preencherLista(){
+    public void preencherLista() {
         listaArquivo.clear();
         GenericaQuery generica = new GenericaQuery();
         FacesContext context = FacesContext.getCurrentInstance();
-        setFiles(new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Arquivos/ArquivoContrato/")));
+        setFiles(new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoContrato/")));
         File listFile[] = getFiles().listFiles();
         int i = 0;
-        while (i < listFile.length){
-            if(listFile[i].getName().length() > 9){
-                if(!listFile[i].getName().substring(0, 9).equals("Imprimir_")){
+        while (i < listFile.length) {
+            if (listFile[i].getName().length() > 9) {
+                if (!listFile[i].getName().substring(0, 9).equals("Imprimir_")) {
                     continue;
                 }
             }
             generica = new GenericaQuery(
-                                   listFile[i].getName(),
-                                   "",
-                                   "",
-                                   "",
-                                   "",
-                                   "");
+                    listFile[i].getName(),
+                    "",
+                    "",
+                    "",
+                    "",
+                    "");
             listaArquivo.add(generica);
             i++;
         }
     }
-  
-    public String imprimirDocumentos(){ 
 
-       return null;
+    public String imprimirDocumentos() {
+
+        return null;
     }
 
-    public void refreshForm(){}
+    public void refreshForm() {
+    }
 
     public List getItens() {
         return itens;

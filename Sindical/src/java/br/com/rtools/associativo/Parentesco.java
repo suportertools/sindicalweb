@@ -3,19 +3,18 @@ package br.com.rtools.associativo;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SOC_PARENTESCO")
-@NamedQuery(name="Parentesco.pesquisaID", query="select p from Parentesco p where p.id = :pid")
+@Table(name = "SOC_PARENTESCO")
+@NamedQuery(name = "Parentesco.pesquisaID", query = "select p from Parentesco p where p.id = :pid")
+public class Parentesco implements java.io.Serializable {
 
-public class Parentesco implements java.io.Serializable{
-
-   @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_PARENTESCO", length=30, nullable=true)
+    @Column(name = "DS_PARENTESCO", length = 30, nullable = true)
     private String parentesco;
-    @Column(name="DS_SEXO", length=1, nullable=true)
+    @Column(name = "DS_SEXO", length = 1, nullable = true)
     private String sexo;
-    @Column(name="NR_VALIDADE", length=10, nullable=true)
+    @Column(name = "NR_VALIDADE", length = 10, nullable = true)
     private int nrValidade;
     @Column(name = "VALIDADE", nullable = true)
     private boolean validade;

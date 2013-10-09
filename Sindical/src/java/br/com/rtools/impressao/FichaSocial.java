@@ -3,6 +3,7 @@ package br.com.rtools.impressao;
 import java.util.Date;
 
 public class FichaSocial {
+
     private int ordem;
     private int codsocio;
     private int matricula;
@@ -80,15 +81,15 @@ public class FichaSocial {
     private String fantasia;
     private String logrent;
     private String e_logradouro;
-    
-    public FichaSocial(int ordem, int codsocio, int matricula, Date datacadastro, Date recadastro, String grupo, String categoria, String nome, String sexo, Date datanascimento, 
-                       String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String seriectps, String estadocivil, String pai, String mae, String telefone,
-                       String celular, String email, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep,
-                       boolean imprimeVerso, String dest_cgc, String dest_nome, String dest_logradouro, String dest_endereco, String dest_numero, String dest_complemento,
-                       String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String e_nome, String e_telefone, String e_fax, Date e_admissao, String e_cargo,
-                       String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String imagem, String obs, String grau,
-                       String entidade, String endent, String nument, String compent, String baient, String cident, String estent, String cepent, String cgcent, String texto,
-                       String imagem2,String foto,String emailent,String siteent,String telent,String caminhoverso, String cgc,Date datarecadastro, String fantasia, String logrent, String e_logradouro) {
+
+    public FichaSocial(int ordem, int codsocio, int matricula, Date datacadastro, Date recadastro, String grupo, String categoria, String nome, String sexo, Date datanascimento,
+            String naturalidade, String nacionalidade, String rg, String cpf, String ctps, String seriectps, String estadocivil, String pai, String mae, String telefone,
+            String celular, String email, String logradouro, String endereco, String numero, String complemento, String bairro, String cidade, String uf, String cep,
+            boolean imprimeVerso, String dest_cgc, String dest_nome, String dest_logradouro, String dest_endereco, String dest_numero, String dest_complemento,
+            String dest_bairro, String dest_cidade, String dest_uf, String dest_cep, String e_nome, String e_telefone, String e_fax, Date e_admissao, String e_cargo,
+            String e_endereco, String e_numero, String e_complemento, String e_bairro, String e_cidade, String e_uf, String e_cep, String imagem, String obs, String grau,
+            String entidade, String endent, String nument, String compent, String baient, String cident, String estent, String cepent, String cgcent, String texto,
+            String imagem2, String foto, String emailent, String siteent, String telent, String caminhoverso, String cgc, Date datarecadastro, String fantasia, String logrent, String e_logradouro) {
         this.ordem = ordem;
         this.codsocio = codsocio;
         this.matricula = matricula;
@@ -839,14 +840,14 @@ public class FichaSocial {
     public void setDatarecadastro(Date datarecadastro) {
         this.datarecadastro = datarecadastro;
     }
-    
+
     public String getFantasia() {
         return fantasia;
     }
 
     public void setFantasia(String fantasia) {
         this.fantasia = fantasia;
-    }    
+    }
 
     public String getLogrent() {
         return logrent;

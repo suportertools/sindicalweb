@@ -76,13 +76,13 @@ public class servletEnvioArquivoContribuinte extends HttpServlet {
                 File fl2 = new File(caminho + "/Pendentes/");
                 fl2.mkdir();
             }
-            if (!new File(caminho + "/Pendentes/"+tipoEnvio+"/").exists()) {
-                File fl2 = new File(caminho + "/Pendentes/"+tipoEnvio+"/");
+            if (!new File(caminho + "/Pendentes/" + tipoEnvio + "/").exists()) {
+                File fl2 = new File(caminho + "/Pendentes/" + tipoEnvio + "/");
                 fl2.mkdir();
             }
         }
         try {
-            File fl = new File(caminho + "/Pendentes/"+tipoEnvio+"/"+item.getName());
+            File fl = new File(caminho + "/Pendentes/" + tipoEnvio + "/" + item.getName());
             InputStream in = item.getInputStream();
             FileOutputStream out = new FileOutputStream(fl.getPath());
 
@@ -95,7 +95,7 @@ public class servletEnvioArquivoContribuinte extends HttpServlet {
             out.flush();
             out.close();
             request.getSession().removeAttribute("enviarArquivosBean");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");            
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
         } catch (Exception e) {
             System.out.println(e);
         }

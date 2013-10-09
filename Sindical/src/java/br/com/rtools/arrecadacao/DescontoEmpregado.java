@@ -1,33 +1,32 @@
-
 package br.com.rtools.arrecadacao;
 
 import br.com.rtools.financeiro.Servicos;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_DESCONTO_EMPREGADO")
-@NamedQuery(name="DescontoEmpregado.pesquisaID", query="select c from DescontoEmpregado c where c.id = :pid")
+@Table(name = "ARR_DESCONTO_EMPREGADO")
+@NamedQuery(name = "DescontoEmpregado.pesquisaID", query = "select c from DescontoEmpregado c where c.id = :pid")
 public class DescontoEmpregado implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name="NR_PERCENTUAL", nullable=true)
+    @Column(name = "NR_PERCENTUAL", nullable = true)
     private float percentual;
-    @Column(name="DS_REF_INICIAL", length=7 , nullable=true)
+    @Column(name = "DS_REF_INICIAL", length = 7, nullable = true)
     private String referenciaInicial;
-    @Column(name="DS_REF_FINAL",  length=7 , nullable=true)
+    @Column(name = "DS_REF_FINAL", length = 7, nullable = true)
     private String referenciaFinal;
-    @JoinColumn(name="ID_GRUPO_CIDADE", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private GrupoCidade grupoCidade;
-    @JoinColumn(name="ID_CONVENCAO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Convencao convencao;
-    @Column(name="NR_VALOR_POR_EMPREGADO", nullable=false)
+    @Column(name = "NR_VALOR_POR_EMPREGADO", nullable = false)
     private float valorEmpregado;
 
     public DescontoEmpregado() {
@@ -40,7 +39,7 @@ public class DescontoEmpregado implements java.io.Serializable {
         this.convencao = new Convencao();
         this.valorEmpregado = 0;
     }
-    
+
     public DescontoEmpregado(int id, Servicos servicos, float percentual, String referenciaInicial, String referenciaFinal, GrupoCidade grupoCidade, Convencao convencao, float valorEmpregado) {
         this.id = id;
         this.servicos = servicos;
@@ -50,7 +49,7 @@ public class DescontoEmpregado implements java.io.Serializable {
         this.grupoCidade = grupoCidade;
         this.convencao = convencao;
         this.valorEmpregado = valorEmpregado;
-    }    
+    }
 
     public int getId() {
         return id;
@@ -115,10 +114,4 @@ public class DescontoEmpregado implements java.io.Serializable {
     public void setValorEmpregado(float valorEmpregado) {
         this.valorEmpregado = valorEmpregado;
     }
-
-
-
-
-
-
 }

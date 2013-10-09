@@ -17,11 +17,10 @@ public class controleAcessoSuporteWebJSFBean {
     private String verificaSenha = "";
     private String msgLoginInvalido = "";
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
-    public String refreshFormStr(){
+    public String refreshFormStr() {
         return "indexSuporteWeb";
     }
 
@@ -41,31 +40,31 @@ public class controleAcessoSuporteWebJSFBean {
         this.login = login;
     }
 
-    public String validacao() throws IOException{
-       String pagina = null;
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("indicaAcesso", "suporteWeb");
-       UsuarioDB db = new UsuarioDBToplink();
+    public String validacao() throws IOException {
+        String pagina = null;
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("indicaAcesso", "suporteWeb");
+        UsuarioDB db = new UsuarioDBToplink();
         usuario = (db.ValidaUsuarioSuporteWeb(usuario.getLogin(), usuario.getSenha()));
-       if ((getUsuario() != null)){
-           pagina = "menuPrincipalSuporteWeb";
-           FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoUsuario", getUsuario());
-           login = usuario.getPessoa().getNome() + " - " +
-                   usuario.getPessoa().getTipoDocumento().getDescricao()+": "+
-                   usuario.getPessoa().getDocumento();
-           usuario = new Usuario();
-           FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-       }else{
-           if ( getUsuario() == null)
-               msgLoginInvalido = "Usuário ou/e senha inválidos!";
-           else{
-               msgLoginInvalido = "Usuário não existe!";
-           }
+        if ((getUsuario() != null)) {
+            pagina = "menuPrincipalSuporteWeb";
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoUsuario", getUsuario());
+            login = usuario.getPessoa().getNome() + " - "
+                    + usuario.getPessoa().getTipoDocumento().getDescricao() + ": "
+                    + usuario.getPessoa().getDocumento();
+            usuario = new Usuario();
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        } else {
+            if (getUsuario() == null) {
+                msgLoginInvalido = "Usuário ou/e senha inválidos!";
+            } else {
+                msgLoginInvalido = "Usuário não existe!";
+            }
             setUsuario(new Usuario());
-       }
-       return pagina;
+        }
+        return pagina;
     }
-    
-    public String getLinkSite(){
+
+    public String getLinkSite() {
         return "indexSuporte";
     }
 

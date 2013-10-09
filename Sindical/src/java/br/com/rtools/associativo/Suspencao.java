@@ -6,31 +6,30 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SOC_SUSPENCAO")
-@NamedQuery(name="Suspencao.pesquisaID", query="select s from Suspencao s where s.id = :pid")
-
+@Table(name = "SOC_SUSPENCAO")
+@NamedQuery(name = "Suspencao.pesquisaID", query = "select s from Suspencao s where s.id = :pid")
 public class Suspencao implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INICIAL")
+    @Column(name = "DT_INICIAL")
     private Date dtInicial;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_FINAL")
+    @Column(name = "DT_FINAL")
     private Date dtFinal;
-    @Column(name="DS_MOTIVO", length=300, nullable=true)
-    private String motivo;    
+    @Column(name = "DS_MOTIVO", length = 300, nullable = true)
+    private String motivo;
 
     public Suspencao() {
         this.id = -1;
         this.pessoa = new Pessoa();
-         setDataInicial("");
-         setDataFinal("");
+        setDataInicial("");
+        setDataFinal("");
         this.motivo = "";
     }
 
@@ -83,26 +82,30 @@ public class Suspencao implements java.io.Serializable {
     }
 
     public String getDataInicial() {
-        if (dtInicial != null)
+        if (dtInicial != null) {
             return DataHoje.converteData(dtInicial);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataInicial(String dataInicial) {
-        if (!(dataInicial.isEmpty()))
+        if (!(dataInicial.isEmpty())) {
             this.dtInicial = DataHoje.converte(dataInicial);
+        }
     }
 
     public String getDataFinal() {
-        if (dtFinal != null)
+        if (dtFinal != null) {
             return DataHoje.converteData(dtFinal);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataFinal(String dataFinal) {
-        if (!(dataFinal.isEmpty()))
+        if (!(dataFinal.isEmpty())) {
             this.dtFinal = DataHoje.converte(dataFinal);
+        }
     }
 }

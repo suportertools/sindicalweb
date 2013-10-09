@@ -15,18 +15,17 @@ public class CaixaFederalSindical extends Cobranca {
     }
 
     //
-
     @Override
     public String codigoBarras() {
         JuridicaDB jurDB = new JuridicaDBToplink();
         FilialDB dbf = new FilialDBToplink();
         String ent = dbf.pesquisaCodigoRegistro(1).getTipoEntidade();
         // (1-Sindicato, 2-Federação, 3-Confederação)
-        if (ent.equals("S")){
+        if (ent.equals("S")) {
             ent = "1";
-        }else if(ent.equals("F")){
+        } else if (ent.equals("F")) {
             ent = "2";
-        }else if(ent.equals("C")){
+        } else if (ent.equals("C")) {
             ent = "3";
         }
         String codigoBarras = "";
@@ -110,8 +109,8 @@ public class CaixaFederalSindical extends Cobranca {
         int j = 2;
         int soma = 0;
         String m;
-        while (i > 0){
-            if (j > 9){
+        while (i > 0) {
+            if (j > 9) {
                 j = 2;
             }
             m = composicao.substring(i - 1, i);
@@ -119,19 +118,19 @@ public class CaixaFederalSindical extends Cobranca {
             j++;
             i--;
         }
-        if ((11 - (soma % 11)) > 9){
+        if ((11 - (soma % 11)) > 9) {
             return "0";
-        }else{
+        } else {
             return Integer.toString(11 - (soma % 11));
         }
     }
 
     @Override
     public String getCedenteFormatado() {
-        return boleto.getContaCobranca().getCodCedente().substring(0, 3) + "." +
-               boleto.getContaCobranca().getCodCedente().substring(3, 6) + "." +
-               boleto.getContaCobranca().getCodCedente().substring(6) + "-" +
-               this.moduloOnze(boleto.getContaCobranca().getCodCedente());
+        return boleto.getContaCobranca().getCodCedente().substring(0, 3) + "."
+                + boleto.getContaCobranca().getCodCedente().substring(3, 6) + "."
+                + boleto.getContaCobranca().getCodCedente().substring(6) + "-"
+                + this.moduloOnze(boleto.getContaCobranca().getCodCedente());
     }
 
     @Override
@@ -144,4 +143,3 @@ public class CaixaFederalSindical extends Cobranca {
         return "104-0";
     }
 }
-

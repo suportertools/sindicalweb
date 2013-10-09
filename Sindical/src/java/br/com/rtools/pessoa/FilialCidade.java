@@ -4,16 +4,17 @@ import br.com.rtools.endereco.Cidade;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_FILIAL_CIDADE")
-@NamedQuery(name="FilialCidade.pesquisaID", query="select fd from FilialCidade fd where fd.id=:pid")
-public class FilialCidade implements java.io.Serializable{
+@Table(name = "PES_FILIAL_CIDADE")
+@NamedQuery(name = "FilialCidade.pesquisaID", query = "select fd from FilialCidade fd where fd.id=:pid")
+public class FilialCidade implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_CIDADE", referencedColumnName="ID", nullable=true)
+    @JoinColumn(name = "ID_CIDADE", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Cidade cidade;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=true)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Filial filial;
 

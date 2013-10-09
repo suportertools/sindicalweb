@@ -1,4 +1,3 @@
-
 package br.com.rtools.suporte;
 
 import br.com.rtools.utilitarios.DataHoje;
@@ -16,27 +15,22 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="PRO_INTERRUPCAO")
-@NamedQuery(name="Interrupcao.pesquisaID", query="select os from Interrupcao os where os.id=:pid")
-
+@Table(name = "PRO_INTERRUPCAO")
+@NamedQuery(name = "Interrupcao.pesquisaID", query = "select os from Interrupcao os where os.id=:pid")
 public class Interrupcao implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @JoinColumn(name="ID_OS", referencedColumnName="ID")
+    @JoinColumn(name = "ID_OS", referencedColumnName = "ID")
     @ManyToOne
     private OrdemServico ordemServico;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date date;
-
-    @Column(name="TM_HORARIO", length=5)
+    @Column(name = "TM_HORARIO", length = 5)
     private String horario;
-
-    @Column(name="DS_MOTIVO", length=500)
+    @Column(name = "DS_MOTIVO", length = 500)
     private String motivo;
 
     public Interrupcao(int id, OrdemServico ordemServico, Date date, String horario, String motivo) {
@@ -54,7 +48,7 @@ public class Interrupcao implements java.io.Serializable {
         this.horario = DataHoje.horaMinuto();
         this.motivo = "";
     }
-    
+
     public int getId() {
         return id;
     }
@@ -95,12 +89,11 @@ public class Interrupcao implements java.io.Serializable {
         this.motivo = motivo;
     }
 
-    public String getDataString(){
+    public String getDataString() {
         return DataHoje.converteData(date);
     }
 
-    public void setDataString (String date){
+    public void setDataString(String date) {
         this.date = DataHoje.converte(date);
     }
-    
 }

@@ -1,4 +1,3 @@
-
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.endereco.Endereco;
@@ -13,7 +12,8 @@ import java.util.Vector;
 import javax.faces.context.FacesContext;
 
 public class PessoaEnderecoJSFBean {
-    private PessoaEndereco pessoaEndereco = new PessoaEndereco(); 
+
+    private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private String indicaTab;
     private String enderecoCompleto;
     private int Cpessoa;
@@ -21,68 +21,70 @@ public class PessoaEnderecoJSFBean {
     public void setEnderecoCompleto(String enderecoCompleto) {
         this.enderecoCompleto = enderecoCompleto;
     }
-    
+
     public String getEnderecoCompleto() {
         return enderecoCompleto;
-    }                            
-                                
+    }
+
     public void setPessoaEndereco(PessoaEndereco pessoaEndereco) {
         this.pessoaEndereco = pessoaEndereco;
     }
-    
+
     public PessoaEndereco getPessoaEndereco() {
         return pessoaEndereco;
     }
-    public String salvar(){
+
+    public String salvar() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
         PessoaDB db_pessoa = new PessoaDBToplink();
-        if (pessoaEndereco.getId()==-1){
-            pessoaEndereco.setTipoEndereco(db_tipoEndereco.idTipoEndereco(pessoaEndereco.getTipoEndereco()));            
+        if (pessoaEndereco.getId() == -1) {
+            pessoaEndereco.setTipoEndereco(db_tipoEndereco.idTipoEndereco(pessoaEndereco.getTipoEndereco()));
             db.insert(pessoaEndereco);
-        }
-        else{
+        } else {
             db.getEntityManager().getTransaction().begin();
-            if (db.update(pessoaEndereco))
-            {db.getEntityManager().getTransaction().commit();}
-            else
-            {db.getEntityManager().getTransaction().rollback();}
-        }        
+            if (db.update(pessoaEndereco)) {
+                db.getEntityManager().getTransaction().commit();
+            } else {
+                db.getEntityManager().getTransaction().rollback();
+            }
+        }
         return null;
     }
-    
-   public String novo(){
-       pessoaEndereco = new PessoaEndereco();//zera objeto
-       return "cadPessoaEndereco";
-   }    
 
-   public String excluir(){
+    public String novo() {
+        pessoaEndereco = new PessoaEndereco();//zera objeto
+        return "cadPessoaEndereco";
+    }
+
+    public String excluir() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        if (pessoaEndereco.getId()!=-1){
+        if (pessoaEndereco.getId() != -1) {
             db.getEntityManager().getTransaction().begin();
             pessoaEndereco = db.pesquisaCodigo(pessoaEndereco.getId());
-            if (db.delete(pessoaEndereco))
-            {db.getEntityManager().getTransaction().commit();}
-            else
-            {db.getEntityManager().getTransaction().rollback();}
+            if (db.delete(pessoaEndereco)) {
+                db.getEntityManager().getTransaction().commit();
+            } else {
+                db.getEntityManager().getTransaction().rollback();
+            }
         }
-       pessoaEndereco = new PessoaEndereco(); 
-       return "pesquisaPessoaEndereco";
-   }       
-   
-   public String editar(){
-       //pessoaEndereco = (PessoaEndereco) getHtmlTable().getRowData();
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       return "cadFilial";
-   }
-   
-   public List getListaPessoaEndereco(){
-       List result = null;
-       PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-       result = db.pesquisaTodos();
-       return result;
-   }
-    
+        pessoaEndereco = new PessoaEndereco();
+        return "pesquisaPessoaEndereco";
+    }
+
+    public String editar() {
+        //pessoaEndereco = (PessoaEndereco) getHtmlTable().getRowData();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        return "cadFilial";
+    }
+
+    public List getListaPessoaEndereco() {
+        List result = null;
+        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+        result = db.pesquisaTodos();
+        return result;
+    }
+
     public List<String> BuscaTipoEndereco(Object event) {
         List<String> result = new Vector<String>();
         String txtDigitado = event.toString().toLowerCase().toUpperCase();
@@ -103,17 +105,17 @@ public class PessoaEnderecoJSFBean {
         EnderecoDB db = new EnderecoDBToplink();
         String uf = pessoaEndereco.getEndereco().getCidade().getUf();
         String cidade = pessoaEndereco.getEndereco().getCidade().getCidade();
-        String log =  pessoaEndereco.getEndereco().getLogradouro().getDescricao();
+        String log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
         String desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
         result = db.pesquisaEnderecoDes(uf, cidade, log, desc, "P");
 
 
 
         /*result = db.pesquisaEnderecoDes(
-                pessoaEndereco.getEndereco().getCidade().getUf(),
-                pessoaEndereco.getEndereco().getCidade().getCidade(),
-                pessoaEndereco.getEndereco().getLogradouro().getLogradouro(),
-                pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricaoEndereco());*/
+         pessoaEndereco.getEndereco().getCidade().getUf(),
+         pessoaEndereco.getEndereco().getCidade().getCidade(),
+         pessoaEndereco.getEndereco().getLogradouro().getLogradouro(),
+         pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricaoEndereco());*/
         return result;
     }
 
@@ -122,32 +124,31 @@ public class PessoaEnderecoJSFBean {
         return pessoaEndereco.getEndereco();
     }
 
-
-    public String LimpaObjetoDesFisica(){
+    public String LimpaObjetoDesFisica() {
         Endereco endereco = new Endereco();
         pessoaEndereco.setEndereco(endereco);
         return "pesquisaEndDesFisica";
     }
 
-    public String LimpaObjetoCepFisica(){
+    public String LimpaObjetoCepFisica() {
         Endereco endereco = new Endereco();
         pessoaEndereco.setEndereco(endereco);
         return "pesquisaCepFisica";
     }
 
-    public String LimpaObjetoDesJuridica(){
+    public String LimpaObjetoDesJuridica() {
         Endereco endereco = new Endereco();
         pessoaEndereco.setEndereco(endereco);
         return "pesquisaEndDesJuridica";
     }
 
-    public String LimpaObjetoCepJuridica(){
+    public String LimpaObjetoCepJuridica() {
         Endereco endereco = new Endereco();
         pessoaEndereco.setEndereco(endereco);
         return "pesquisaCepJuridica";
     }
 
-    public void refreshForm(){
+    public void refreshForm() {
     }
 
     public List<String> BuscaCidade(Object event) {
@@ -157,7 +158,7 @@ public class PessoaEnderecoJSFBean {
         String str = pessoaEndereco.getEndereco().getCidade().getUf();
         result = db.pesquisaCidade('%' + txtDigitado + '%', str);
         return (result);
-    }             
+    }
 
     public List<String> BuscaLogradouro(Object event) {
         List<String> result = new Vector<String>();
@@ -174,5 +175,4 @@ public class PessoaEnderecoJSFBean {
         //result = db.pesquisaDescricaoEndereco('%' + txtDigitado + '%');
         return (result);
     }
-    
 }

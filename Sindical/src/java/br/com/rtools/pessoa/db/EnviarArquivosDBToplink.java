@@ -55,11 +55,11 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
 
     @Override
     public List pesquisaContribuintes(List<Convencao> listaConvencao, List<GrupoCidade> listaGrupoCidade, List<Cnae> listaCnae) {
- 
+
         String caso = "";
         String inString = "";
         String inStringCnae = "";
-        
+
         if (!listaCnae.isEmpty()) {
 //            caso = "1";
             inString = "";
@@ -68,10 +68,10 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                 if (k == 0) {
                     idCnaes = Integer.toString(((Cnae) (listaCnae.get(k))).getId());
                 } else {
-                    idCnaes += ", "+ Integer.toString(((Cnae) (listaCnae.get(k))).getId());
+                    idCnaes += ", " + Integer.toString(((Cnae) (listaCnae.get(k))).getId());
                 }
             }
-            inStringCnae = " AND j.id_cnae IN("+idCnaes+")";
+            inStringCnae = " AND j.id_cnae IN(" + idCnaes + ")";
 //            } else {
 //                for (int i = 0; i < listaConvencao.size(); i++) {
 //                    for (int j = 0; j < listaGrupoCidade.size(); j++) {
@@ -87,16 +87,16 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
 //                inString = inString + ")";
 //            }
         }
-        
+
         if (!listaGrupoCidade.isEmpty() && caso.equals("")) {
             caso = "2";
             inString = "";
             if (listaConvencao.isEmpty()) {
                 for (int i = 0; i < listaGrupoCidade.size(); i++) {
                     if (i == 0) {
-                        inString = "  AND ( c.id_grupo_cidade = " +Integer.toString(((GrupoCidade) (listaGrupoCidade.get(i))).getId()) + "";
+                        inString = "  AND ( c.id_grupo_cidade = " + Integer.toString(((GrupoCidade) (listaGrupoCidade.get(i))).getId()) + "";
                     } else {
-                        inString += " OR c.id_grupo_cidade = " +Integer.toString(((GrupoCidade) (listaGrupoCidade.get(i))).getId()) + "";
+                        inString += " OR c.id_grupo_cidade = " + Integer.toString(((GrupoCidade) (listaGrupoCidade.get(i))).getId()) + "";
                     }
                 }
                 inString = inString + ")";
@@ -105,9 +105,9 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                 for (int i = 0; i < listaConvencao.size(); i++) {
                     for (int j = 0; j < listaGrupoCidade.size(); j++) {
                         if (x == 0) {
-                            inString = " AND ( c.id_convencao = " + Integer.toString(((Convencao) (listaConvencao.get(i))).getId()) + " AND c.id_grupo_cidade = " +Integer.toString(((GrupoCidade) (listaGrupoCidade.get(j))).getId()) + " ";
+                            inString = " AND ( c.id_convencao = " + Integer.toString(((Convencao) (listaConvencao.get(i))).getId()) + " AND c.id_grupo_cidade = " + Integer.toString(((GrupoCidade) (listaGrupoCidade.get(j))).getId()) + " ";
                         } else {
-                            inString += " OR  c.id_convencao = " + Integer.toString(((Convencao) (listaConvencao.get(i))).getId()) + " AND c.id_grupo_cidade = " +Integer.toString(((GrupoCidade) (listaGrupoCidade.get(j))).getId()) + " ";
+                            inString += " OR  c.id_convencao = " + Integer.toString(((Convencao) (listaConvencao.get(i))).getId()) + " AND c.id_grupo_cidade = " + Integer.toString(((GrupoCidade) (listaGrupoCidade.get(j))).getId()) + " ";
                         }
                         x++;
                     }
@@ -115,7 +115,7 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                 inString = inString + ")";
             }
         }
-        
+
         if (!listaConvencao.isEmpty() && caso.equals("")) {
             caso = "3";
             for (int i = 0; i < listaConvencao.size(); i++) {
@@ -125,9 +125,9 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                     inString += ", " + Integer.toString(((Convencao) (listaConvencao.get(i))).getId());
                 }
             }
-            inString = " AND c.id_convencao IN ("+inString+") ";
+            inString = " AND c.id_convencao IN (" + inString + ") ";
         }
-        
+
         String textQuery = "";
         String textQuery1;
         String textQuery2;
@@ -140,7 +140,7 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                     + "       FROM arr_contribuintes_vw as c                    "
                     + " INNER JOIN pes_pessoa as p on p.id = c.id_pessoa        "
                     + " INNER JOIN pes_juridica AS j on j.id = c.id_juridica    "
-                    + " INNER JOIN pes_cnae as cn ON cn.id = j.id_cnae          "                    
+                    + " INNER JOIN pes_cnae as cn ON cn.id = j.id_cnae          "
                     + "      WHERE c.dt_inativacao is null                      "
                     + "        AND length(rtrim(p.ds_email1)) > 0               ";
 
@@ -158,17 +158,17 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
 //                        "           WHERE c.dt_inativacao is null                       "+
 //                        "             AND length(rtrim(p.ds_email1)) > 0                ";
 
-           if (caso.equals("1")) {
-               textQuery += textQuery1 + "  " + inString + " ";           
-           } else if (caso.equals("2")) {
-               textQuery += textQuery1 + " " + inString + " ";
-           } else if (caso.equals("3")) {           
-               textQuery += textQuery1 + " " + inString + " ";
-           } else {
-               textQuery += textQuery1;           
-           }
-           
-           textQuery += inStringCnae + "   ORDER BY p.ds_nome  ;";
+            if (caso.equals("1")) {
+                textQuery += textQuery1 + "  " + inString + " ";
+            } else if (caso.equals("2")) {
+                textQuery += textQuery1 + " " + inString + " ";
+            } else if (caso.equals("3")) {
+                textQuery += textQuery1 + " " + inString + " ";
+            } else {
+                textQuery += textQuery1;
+            }
+
+            textQuery += inStringCnae + "   ORDER BY p.ds_nome  ;";
             Query qry = getEntityManager().createNativeQuery(textQuery);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -187,9 +187,9 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
         try {
 
             textQuery = "   SELECT c.id_convencao                 "
-                      + "     FROM arr_contribuintes_vw AS c      "
-                      + " GROUP BY c.id_convencao                 "
-                      + " ORDER BY c.id_convencao                 ";
+                    + "     FROM arr_contribuintes_vw AS c      "
+                    + " GROUP BY c.id_convencao                 "
+                    + " ORDER BY c.id_convencao                 ";
             Query qry = getEntityManager().createNativeQuery(textQuery);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -199,15 +199,15 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                         if (i == 0) {
                             idConvencao = ((List) list.get(i)).get(0).toString();
                         } else {
-                            idConvencao += ", " +((List) list.get(i)).get(0).toString() ;                    
+                            idConvencao += ", " + ((List) list.get(i)).get(0).toString();
                         }
                     }
-                    Query qryConvencoes = getEntityManager().createQuery(" SELECT con FROM Convencao AS con WHERE con.id IN ("+idConvencao+")");
+                    Query qryConvencoes = getEntityManager().createQuery(" SELECT con FROM Convencao AS con WHERE con.id IN (" + idConvencao + ")");
                     List list1 = qryConvencoes.getResultList();
                     if (!list1.isEmpty()) {
                         return list1;
                     }
-                }        
+                }
                 return list;
             }
         } catch (EJBQLException e) {
@@ -215,7 +215,7 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List<GrupoCidade> listaConvencaoGrupoCidade(List<Convencao> listaConvencao) {
         String textQuery = "";
@@ -226,18 +226,18 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                 if (i == 0) {
                     idConvencao = Integer.toString(listaConvencao.get(i).getId());
                 } else {
-                    idConvencao += ", " +Integer.toString(listaConvencao.get(i).getId());                    
+                    idConvencao += ", " + Integer.toString(listaConvencao.get(i).getId());
                 }
             }
-            filtroPorConvencao = " WHERE c.id_convencao in ("+idConvencao+")   ";
+            filtroPorConvencao = " WHERE c.id_convencao in (" + idConvencao + ")   ";
         }
         try {
 
-            textQuery   = "   SELECT c.id_grupo_cidade          "
-                        + "     FROM arr_contribuintes_vw AS c  "                        
-                        +            filtroPorConvencao
-                        + " GROUP BY c.id_grupo_cidade          "
-                        + " ORDER BY c.id_grupo_cidade          ";
+            textQuery = "   SELECT c.id_grupo_cidade          "
+                    + "     FROM arr_contribuintes_vw AS c  "
+                    + filtroPorConvencao
+                    + " GROUP BY c.id_grupo_cidade          "
+                    + " ORDER BY c.id_grupo_cidade          ";
             Query qry = getEntityManager().createNativeQuery(textQuery);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -246,10 +246,10 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                     if (i == 0) {
                         idGrupoCidade = ((List) list.get(i)).get(0).toString();
                     } else {
-                        idGrupoCidade += ", " +((List) list.get(i)).get(0).toString();                  
+                        idGrupoCidade += ", " + ((List) list.get(i)).get(0).toString();
                     }
                 }
-                Query qryGrupoCidade = getEntityManager().createQuery(" SELECT gc FROM GrupoCidade AS gc WHERE gc.id IN("+idGrupoCidade+")");
+                Query qryGrupoCidade = getEntityManager().createQuery(" SELECT gc FROM GrupoCidade AS gc WHERE gc.id IN(" + idGrupoCidade + ")");
                 List list1 = qryGrupoCidade.getResultList();
                 if (!list1.isEmpty()) {
                     return list1;
@@ -260,8 +260,7 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
         }
         return new ArrayList();
     }
-    
-    
+
     @Override
     public List<Cnae> listaCnaeConvencao(List<Convencao> listaConvencao) {
         String textQuery = "";
@@ -272,19 +271,19 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                 if (i == 0) {
                     idConvencao = Integer.toString(listaConvencao.get(i).getId());
                 } else {
-                    idConvencao += ", " +Integer.toString(listaConvencao.get(i).getId());                    
+                    idConvencao += ", " + Integer.toString(listaConvencao.get(i).getId());
                 }
             }
-            filtroPorConvencao = " WHERE c.id_convencao in ("+idConvencao+")   ";
+            filtroPorConvencao = " WHERE c.id_convencao in (" + idConvencao + ")   ";
         }
         try {
-                textQuery = "     SELECT cn.id                                      "
-                           +"       FROM arr_contribuintes_vw AS c                  "
-                           +" INNER JOIN pes_juridica AS j on j.id = c.id_juridica  "
-                           +" INNER JOIN pes_cnae AS cn on cn.id = j.id_cnae        "
-                            +            filtroPorConvencao                        
-                           +"   GROUP BY cn.id                                      "
-                           +"   ORDER BY cn.id                                      ";
+            textQuery = "     SELECT cn.id                                      "
+                    + "       FROM arr_contribuintes_vw AS c                  "
+                    + " INNER JOIN pes_juridica AS j on j.id = c.id_juridica  "
+                    + " INNER JOIN pes_cnae AS cn on cn.id = j.id_cnae        "
+                    + filtroPorConvencao
+                    + "   GROUP BY cn.id                                      "
+                    + "   ORDER BY cn.id                                      ";
             Query qry = getEntityManager().createNativeQuery(textQuery);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -293,10 +292,10 @@ public class EnviarArquivosDBToplink extends DB implements EnviarArquivosDB {
                     if (i == 0) {
                         idCnaeConvencao = ((List) list.get(i)).get(0).toString();
                     } else {
-                        idCnaeConvencao += ", " +((List) list.get(i)).get(0).toString();                  
+                        idCnaeConvencao += ", " + ((List) list.get(i)).get(0).toString();
                     }
                 }
-                Query qryGrupoCidade = getEntityManager().createQuery(" SELECT C FROM Cnae AS C WHERE C.id IN("+idCnaeConvencao+") ");
+                Query qryGrupoCidade = getEntityManager().createQuery(" SELECT C FROM Cnae AS C WHERE C.id IN(" + idCnaeConvencao + ") ");
                 List list1 = qryGrupoCidade.getResultList();
                 if (!list1.isEmpty()) {
                     return list1;

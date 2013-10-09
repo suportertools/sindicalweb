@@ -20,20 +20,21 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Entity
-@Table(name="MATR_ACADEMIA")
-@NamedQuery(name="MatriculaAcademia.pesquisaID", query="select ma from MatriculaAcademia ma where ma.id=:pid")
-public class MatriculaAcademia implements java.io.Serializable{
+@Table(name = "MATR_ACADEMIA")
+@NamedQuery(name = "MatriculaAcademia.pesquisaID", query = "select ma from MatriculaAcademia ma where ma.id=:pid")
+public class MatriculaAcademia implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_INATIVO")
+    @Column(name = "DT_INATIVO")
     private Date dtInativo;
-    @JoinColumn(name="ID_SERVICO_PESSOA", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_SERVICO_PESSOA", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private ServicoPessoa servicoPessoa;
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID",  nullable=true)
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
 
     public MatriculaAcademia() {
@@ -75,15 +76,17 @@ public class MatriculaAcademia implements java.io.Serializable{
     }
 
     public String getInativo() {
-        if (dtInativo != null)
+        if (dtInativo != null) {
             return DataHoje.converteData(dtInativo);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setInativo(String inativo) {
-        if (!(inativo.isEmpty()))
+        if (!(inativo.isEmpty())) {
             this.dtInativo = DataHoje.converte(inativo);
+        }
     }
 
     public Usuario getUsuario() {

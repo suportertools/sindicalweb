@@ -8,35 +8,35 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_MENSAGEM_CONVENCAO")
-@NamedQuery(name="MensagemConvencao.pesquisaID", query="select c from MensagemConvencao c where c.id=:pid")
+@Table(name = "ARR_MENSAGEM_CONVENCAO")
+@NamedQuery(name = "MensagemConvencao.pesquisaID", query = "select c from MensagemConvencao c where c.id=:pid")
 public class MensagemConvencao implements Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;    
-    @JoinColumn(name="ID_GRUPO_CIDADE", referencedColumnName="ID", nullable=false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private GrupoCidade grupoCidade;            
-    @JoinColumn(name="ID_CONVENCAO", referencedColumnName="ID", nullable=false)
+    private GrupoCidade grupoCidade;
+    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Convencao convencao;
-    @JoinColumn(name="ID_SERVICOS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @JoinColumn(name="ID_TIPO_SERVICO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private TipoServico tipoServico;
-    @Column(name="DS_MENSAGEM_CONTRIBUITE", length=2000,nullable=false)
+    @Column(name = "DS_MENSAGEM_CONTRIBUITE", length = 2000, nullable = false)
     private String mensagemContribuinte;
-    @Column(name="DS_MENSAGEM_COMPENSACAO", length=2000,nullable=false)
+    @Column(name = "DS_MENSAGEM_COMPENSACAO", length = 2000, nullable = false)
     private String mensagemCompensacao;
-    @Column(name="DS_REFERENCIA", length=7,nullable=true)
+    @Column(name = "DS_REFERENCIA", length = 7, nullable = true)
     private String referencia;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_VENCIMENTO")
+    @Column(name = "DT_VENCIMENTO")
     private Date dtVencimento;
-    
+
     public MensagemConvencao() {
         this.id = -1;
         this.grupoCidade = new GrupoCidade();
@@ -48,7 +48,7 @@ public class MensagemConvencao implements Serializable {
         this.referencia = "";
         this.dtVencimento = new Date();
     }
-    
+
     public MensagemConvencao(int id, GrupoCidade grupoCidade, Convencao convencao, Servicos servicos, TipoServico tipoServico, String mensagemContribuinte, String mensagemCompensacao, String referencia, Date dtVencimento) {
         this.id = id;
         this.grupoCidade = grupoCidade;
@@ -59,7 +59,7 @@ public class MensagemConvencao implements Serializable {
         this.mensagemCompensacao = mensagemCompensacao;
         this.referencia = referencia;
         this.dtVencimento = dtVencimento;
-    }    
+    }
 
     public int getId() {
         return id;

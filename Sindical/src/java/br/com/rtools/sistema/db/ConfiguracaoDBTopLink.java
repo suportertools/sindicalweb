@@ -31,21 +31,22 @@ public class ConfiguracaoDBTopLink extends DB implements ConfiguracaoDB {
             if (!query.getResultList().isEmpty()) {
                 return true;
             }
-        } catch (Exception e) { 
+        } catch (Exception e) {
             return false;
         }
         return false;
     }
-    
+
     @Override
     public List listaConfiguracao(String descricaoPesquisa) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT C FROM Configuracao AS C WHERE C.juridica.fantasia LIKE '%"+descricaoPesquisa+"%' OR C.identifica LIKE '%"+descricaoPesquisa+"%' OR C.juridica.pessoa.nome LIKE '%"+descricaoPesquisa+"%' ");
+            Query query = getEntityManager().createQuery(" SELECT C FROM Configuracao AS C WHERE C.juridica.fantasia LIKE '%" + descricaoPesquisa + "%' OR C.identifica LIKE '%" + descricaoPesquisa + "%' OR C.juridica.pessoa.nome LIKE '%" + descricaoPesquisa + "%' ");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
         return new ArrayList();
     }
 }

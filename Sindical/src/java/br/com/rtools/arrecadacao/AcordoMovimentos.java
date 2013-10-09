@@ -1,24 +1,23 @@
-
 package br.com.rtools.arrecadacao;
 
 import br.com.rtools.financeiro.Movimento;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ARR_ACORDO_MOVIMENTOS")
-@NamedQuery(name="AcordoMovimentos.pesquisaID", query="select c from AcordoMovimentos c where c.id = :pid")
+@Table(name = "ARR_ACORDO_MOVIMENTOS")
+@NamedQuery(name = "AcordoMovimentos.pesquisaID", query = "select c from AcordoMovimentos c where c.id = :pid")
 public class AcordoMovimentos implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_MOVIMENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Movimento movimento;
-    @JoinColumn(name="ID_ACORDO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ACORDO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Acordo acordo;
-    @Column(name="BO_ACORDADO", nullable=false)
+    @Column(name = "BO_ACORDADO", nullable = false)
     private boolean acordado;
 
     public AcordoMovimentos() {
@@ -27,14 +26,14 @@ public class AcordoMovimentos implements java.io.Serializable {
         this.acordo = new Acordo();
         this.acordado = false;
     }
-    
+
     public AcordoMovimentos(int id, Movimento movimento, Acordo acordo, boolean acordado) {
         this.id = id;
         this.movimento = movimento;
         this.acordo = acordo;
         this.acordado = acordado;
-    }    
-    
+    }
+
     public int getId() {
         return id;
     }

@@ -147,7 +147,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                 String juros = "0";
                 String multa = "0";
                 String correcao = "0";
-                if(m){
+                if (m) {
                     juros = Moeda.converteR$Float(Float.valueOf(Double.toString(db.funcaoJuros(id_pessoa, id_servico, id_tipo_servico, referencia))));
                     multa = Moeda.converteR$Float(Float.valueOf(Double.toString(db.funcaoMulta(id_pessoa, id_servico, id_tipo_servico, referencia))));
                     correcao = Moeda.converteR$Float(Float.valueOf(Double.toString(db.funcaoCorrecao(id_pessoa, id_servico, id_tipo_servico, referencia))));
@@ -371,13 +371,13 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
             return;
         }
         msgConfirma = "";
-        
+
         MensagemConvencao mensagemConvencao = menDB.retornaDiaString(
                 juridica.getId(),
                 strReferencia,
                 Integer.valueOf(getListaTipoServico().get(idTipoServico).getDescription()),
                 Integer.valueOf(getListaServico().get(idServicos).getDescription()));
-        
+
         if (mensagemConvencao != null) {
             vencimento = mensagemConvencao.getVencimento();
             if (vencimento.isEmpty()) {
@@ -797,11 +797,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                     //String pathFile = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(link.getCaminho() + "/" + link.getNomeArquivo());
                     String pathFile = link.getCaminho() + "/" + link.getNomeArquivo();
                     //if (new File(pathFile).exists()) {
-                        response.sendRedirect(link.getCaminho() + "/" + link.getNomeArquivo());
+                    response.sendRedirect(link.getCaminho() + "/" + link.getNomeArquivo());
                     //} else {
                     //    NovoLog log = new NovoLog();
                     //    log.novo("Arquivo não encontrado", "Arquivo não existe no caminho específicado: " + link.getCaminho() + "/" + link.getNomeArquivo());
-                   // }
+                    // }
                 }
             }
         }

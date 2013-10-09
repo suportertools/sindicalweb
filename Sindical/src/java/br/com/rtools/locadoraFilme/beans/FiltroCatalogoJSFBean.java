@@ -4,22 +4,20 @@ import br.com.rtools.locadoraFilme.Catalogo;
 import java.util.ArrayList;
 import javax.faces.model.SelectItem;
 
-
-
 public class FiltroCatalogoJSFBean {
 
     private String filtroDescricao = "5";
     private String filtroValor = "";
     private ArrayList<SelectItem> filtrarDescricoes = new ArrayList<SelectItem>();
 
-    public boolean filtrarDescricao (Object current) {
-        Catalogo catalogo = (Catalogo)current;
-        if (getFiltroValor().length()==0) {
+    public boolean filtrarDescricao(Object current) {
+        Catalogo catalogo = (Catalogo) current;
+        if (getFiltroValor().length() == 0) {
             return true;
         }
         if (catalogo.getTitulo().getDescricao().toLowerCase().startsWith(getFiltroValor().toLowerCase())) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
@@ -56,5 +54,4 @@ public class FiltroCatalogoJSFBean {
     public void setFiltrarDescricoes(ArrayList<SelectItem> filtrarDescricoes) {
         this.filtrarDescricoes = filtrarDescricoes;
     }
-
 }

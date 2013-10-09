@@ -24,7 +24,7 @@ import org.postgresql.util.Base64;
 
 public class PDF {
 
-    public static void arquivoPDF(String args, String filename) throws DocumentException, FileNotFoundException, IOException{
+    public static void arquivoPDF(String args, String filename) throws DocumentException, FileNotFoundException, IOException {
         Document pdfDocument = new Document();
         Reader htmlreader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -46,4 +46,3 @@ public class PDF {
         out.close();
     }
 }
-

@@ -125,7 +125,7 @@ public class TurmaJSFBean implements java.io.Serializable {
             salvarAcumuladoDB.abrirTransacao();
             for (int i = 0; i < listaTurmaProfessor.size(); i++) {
                 if (listaTurmaProfessor.get(i).getId() != -1) {
-                    if (!salvarAcumuladoDB.deletarObjeto( (TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor.get(i).getId(), "TurmaProfessor"))) {
+                    if (!salvarAcumuladoDB.deletarObjeto((TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor.get(i).getId(), "TurmaProfessor"))) {
                         msgConfirma = "Erro ao excluir Professores!";
                         salvarAcumuladoDB.desfazerTransacao();
                         return null;
@@ -133,7 +133,7 @@ public class TurmaJSFBean implements java.io.Serializable {
                 }
             }
 
-            if (!salvarAcumuladoDB.deletarObjeto( (Turma) salvarAcumuladoDB.pesquisaCodigo(turma.getId(), "Turma"))) {
+            if (!salvarAcumuladoDB.deletarObjeto((Turma) salvarAcumuladoDB.pesquisaCodigo(turma.getId(), "Turma"))) {
                 msgConfirma = "Erro ao excluir Turma!";
                 salvarAcumuladoDB.desfazerTransacao();
                 return null;

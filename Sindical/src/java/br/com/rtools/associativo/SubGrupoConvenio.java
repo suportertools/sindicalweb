@@ -11,18 +11,18 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="SOC_CONVENIO_SUB_GRUPO")
-@NamedQuery(name="SubGrupoConvenio.pesquisaID", query="select g from SubGrupoConvenio g where g.id=:pid")
+@Table(name = "SOC_CONVENIO_SUB_GRUPO")
+@NamedQuery(name = "SubGrupoConvenio.pesquisaID", query = "select g from SubGrupoConvenio g where g.id=:pid")
 public class SubGrupoConvenio implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
-    @Column(name="DS_DESCRICAO", length=100,nullable=true)
-    private String descricao;
 
-    @JoinColumn(name="ID_GRUPO_CONVENIO", referencedColumnName="ID", nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Column(name = "DS_DESCRICAO", length = 100, nullable = true)
+    private String descricao;
+    @JoinColumn(name = "ID_GRUPO_CONVENIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private GrupoConvenio grupoConvenio;    
+    private GrupoConvenio grupoConvenio;
 
     public SubGrupoConvenio() {
         this.id = -1;
@@ -59,5 +59,4 @@ public class SubGrupoConvenio implements java.io.Serializable {
     public void setGrupoConvenio(GrupoConvenio grupoConvenio) {
         this.grupoConvenio = grupoConvenio;
     }
-
 }

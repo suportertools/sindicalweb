@@ -4,10 +4,9 @@ import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.utilitarios.Moeda;
 
+public class Bradesco extends Cobranca {
 
-public class Bradesco extends  Cobranca{
-
-    public Bradesco(Movimento movimento, Boleto boleto){
+    public Bradesco(Movimento movimento, Boleto boleto) {
         super(movimento, boleto);
     }
 
@@ -18,29 +17,30 @@ public class Bradesco extends  Cobranca{
         int soma = 0;
         int swap = 0;
         String m;
-        while (i > 0){
+        while (i > 0) {
             m = composicao.substring(i - 1, i);
             swap = Integer.parseInt(m) * j;
-            if (swap > 9){
+            if (swap > 9) {
                 String num = Integer.toString(swap);
                 swap = Integer.parseInt(num.substring(0, 1)) + Integer.parseInt(num.substring(1, 2));
             }
             soma += swap;
-            if (j == 2){
+            if (j == 2) {
                 j = 1;
-            }else if (j == 1){
+            } else if (j == 1) {
                 j = 2;
             }
             i--;
         }
 
-        if ((10 - (soma % 10)) == 10){
+        if ((10 - (soma % 10)) == 10) {
             return "0";
-        }else{
-            if (soma < 10)
+        } else {
+            if (soma < 10) {
                 return Integer.toString(10 - soma);
-            else
+            } else {
                 return Integer.toString(10 - (soma % 10));
+            }
         }
     }
 
@@ -50,8 +50,8 @@ public class Bradesco extends  Cobranca{
         int j = 2;
         int soma = 0;
         String m;
-        while (i > 0){
-            if (j > 7){
+        while (i > 0) {
+            if (j > 7) {
                 j = 2;
             }
             m = composicao.substring(i - 1, i);
@@ -59,15 +59,14 @@ public class Bradesco extends  Cobranca{
             j++;
             i--;
         }
-        if ((11 - (soma % 11)) > 9){
+        if ((11 - (soma % 11)) > 9) {
             return "P";
-        }else if ((soma % 11) == 0){
+        } else if ((soma % 11) == 0) {
             return "0";
-        }else{
+        } else {
             return Integer.toString(11 - (soma % 11));
         }
     }
-
 
     @Override
     public String codigoBarras() {
@@ -77,7 +76,7 @@ public class Bradesco extends  Cobranca{
         int i = 0;
         int j = 0;
         int tam = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor())).length();
-        while ( i != ( 10 -  tam )){ // zeros
+        while (i != (10 - tam)) { // zeros
             codigoBarras += "0";
             i++;
         }
@@ -86,7 +85,7 @@ public class Bradesco extends  Cobranca{
         codigoBarras += boleto.getContaCobranca().getContaBanco().getAgencia();
         codigoBarras += boleto.getContaCobranca().getCarteira();
         codigoBarras += boleto.getBoletoComposto();       // nosso numero
-        codigoBarras += boleto.getContaCobranca().getCodCedente( );        // codigo cedente
+        codigoBarras += boleto.getContaCobranca().getCodCedente();        // codigo cedente
         codigoBarras += "0";
         j = codigoBarras.length();
         codigoBarras = codigoBarras.substring(0, 4) + this.moduloOnzeDV(codigoBarras) + codigoBarras.substring(4, codigoBarras.length());
@@ -108,19 +107,19 @@ public class Bradesco extends  Cobranca{
         repNumerica += codigoBarras.substring(4, 5);
         swap += codigoBarras.substring(5, 19);
         i = 0;
-        while (i < (15 - swap.length())){
+        while (i < (15 - swap.length())) {
             swap = ("0" + swap);
             i++;
         }
         repNumerica += swap;
-        repNumerica = repNumerica.substring(0, 5) + "." +
-                      repNumerica.substring(5, 10) + " " +
-                      repNumerica.substring(10, 15) + "." +
-                      repNumerica.substring(15, 21) + " " +
-                      repNumerica.substring(21, 26) + "." +
-                      repNumerica.substring(26, 32) + " " +
-                      repNumerica.substring(32, 33) + " " +
-                      repNumerica.substring(34, repNumerica.length());
+        repNumerica = repNumerica.substring(0, 5) + "."
+                + repNumerica.substring(5, 10) + " "
+                + repNumerica.substring(10, 15) + "."
+                + repNumerica.substring(15, 21) + " "
+                + repNumerica.substring(21, 26) + "."
+                + repNumerica.substring(26, 32) + " "
+                + repNumerica.substring(32, 33) + " "
+                + repNumerica.substring(34, repNumerica.length());
         return repNumerica;
     }
 
@@ -144,8 +143,4 @@ public class Bradesco extends  Cobranca{
     public String codigoBanco() {
         return "237-2";
     }
-
 }
-
-
-

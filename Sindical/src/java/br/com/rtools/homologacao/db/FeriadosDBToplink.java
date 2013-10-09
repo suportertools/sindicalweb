@@ -103,7 +103,7 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
             List list;
             if (!listFilial.isEmpty()) {
                 PessoaEndereco pe = (PessoaEndereco) queryFilial.getSingleResult();
-                Query queryNativa = getEntityManager().createNativeQuery("SELECT id FROM hom_feriados WHERE (dt_data = '"+DataHoje.converte(data)+"' AND id_cidade = "+pe.getEndereco().getCidade().getId()+") AND dt_data = '"+DataHoje.converte(data)+"'");
+                Query queryNativa = getEntityManager().createNativeQuery("SELECT id FROM hom_feriados WHERE (dt_data = '" + DataHoje.converte(data) + "' AND id_cidade = " + pe.getEndereco().getCidade().getId() + ") AND dt_data = '" + DataHoje.converte(data) + "'");
                 list = queryNativa.getResultList();
                 if (!list.isEmpty()) {
                     String listaFeriadosString = "";
@@ -111,10 +111,10 @@ public class FeriadosDBToplink extends DB implements FeriadosDB {
                         if (i == 0) {
                             listaFeriadosString = ((List) list.get(i)).get(0).toString();
                         } else {
-                            listaFeriadosString = "," +((List) list.get(i)).get(0).toString();                            
+                            listaFeriadosString = "," + ((List) list.get(i)).get(0).toString();
                         }
                     }
-                    Query query = getEntityManager().createQuery("SELECT F FROM Feriados AS F WHERE F.id IN ("+listaFeriadosString+")");
+                    Query query = getEntityManager().createQuery("SELECT F FROM Feriados AS F WHERE F.id IN (" + listaFeriadosString + ")");
                     list.clear();
                     list = query.getResultList();
                     if (!list.isEmpty()) {

@@ -3,13 +3,14 @@ package br.com.rtools.associativo;
 import javax.persistence.*;
 
 @Entity
-@Table(name="EVE_EVENTO")
-@NamedQuery(name="AEvento.pesquisaID", query="select s from AEvento s where s.id=:pid")
-public class AEvento implements java.io.Serializable{
+@Table(name = "EVE_EVENTO")
+@NamedQuery(name = "AEvento.pesquisaID", query = "select s from AEvento s where s.id=:pid")
+public class AEvento implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_DESCRICAO_EVENTO", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_DESCRICAO_EVENTO", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private DescricaoEvento descricaoEvento;
 
@@ -38,9 +39,4 @@ public class AEvento implements java.io.Serializable{
     public void setDescricaoEvento(DescricaoEvento descricaoEvento) {
         this.descricaoEvento = descricaoEvento;
     }
-
-    
-
-
-
 }

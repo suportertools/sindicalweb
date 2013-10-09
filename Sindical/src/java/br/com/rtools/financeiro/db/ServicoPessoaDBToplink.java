@@ -7,41 +7,42 @@ import java.util.List;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
-public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB{
+public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
+
     public boolean insert(ServicoPessoa servicoPessoa) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(servicoPessoa);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(ServicoPessoa servicoPessoa) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(servicoPessoa);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean delete(ServicoPessoa servicoPessoa) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(servicoPessoa);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -49,21 +50,21 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB{
 
     public ServicoPessoa pesquisaCodigo(int id) {
         ServicoPessoa result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("ServicoPessoa.pesquisaID");
             qry.setParameter("pid", id);
             result = (ServicoPessoa) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select sp from ServicoPessoa sp");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
@@ -71,59 +72,56 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB{
 
     public ServicoPessoa pesquisaServicoPessoaPorPessoa(int idPessoa) {
         ServicoPessoa result = null;
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select sp " +
-                    "  from ServicoPessoa sp" +
-                    " where sp.pessoa.id = :pid" +
-                    "   and sp.ativo = true");
+                    "select sp "
+                    + "  from ServicoPessoa sp"
+                    + " where sp.pessoa.id = :pid"
+                    + "   and sp.ativo = true");
             qry.setParameter("pid", idPessoa);
             result = (ServicoPessoa) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
 
     public List pesquisaTodosParaGeracao(String referencia) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select sp" +
-                    "  from ServicoPessoa sp" +
-                    " where sp.id in (select s.servicoPessoa.id from Socios s where s.matriculaSocios.dtInativo is null)" +
-                    "  and CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) <= :ref" +
-                    "  and ((CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) > :ref) or " +
-                    "       (sp.referenciaValidade is null))"
-                    );
-                    qry.setParameter("ref", referencia.substring(3, 7) + referencia.substring(0, 2));
+                    "select sp"
+                    + "  from ServicoPessoa sp"
+                    + " where sp.id in (select s.servicoPessoa.id from Socios s where s.matriculaSocios.dtInativo is null)"
+                    + "  and CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) <= :ref"
+                    + "  and ((CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) > :ref) or "
+                    + "       (sp.referenciaValidade is null))");
+            qry.setParameter("ref", referencia.substring(3, 7) + referencia.substring(0, 2));
             return (qry.getResultList());
-        }catch(EJBQLException e){
+        } catch (EJBQLException e) {
             e.getMessage();
             return null;
         }
     }
 
     public List pesquisaTodosParaGeracao(String referencia, int idPessoa) {
-        try{
+        try {
             Query qry = getEntityManager().createQuery(
-                    "select sp" +
-                    "  from Socios s join s.servicoPessoa sp  " +
-                    " where s.matriculaSocios.dtInativo is null" +
-                    "  and CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) <= :ref" +
-                    "  and ((CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) > :ref) or " +
-                    "       (sp.referenciaValidade is null))" +
-                    "  and (   (sp.pessoa.id = :idPessoa)" +
-                    "       or (s.matriculaSocios.pessoa.id = :idPessoa))"
-                    );
-                    qry.setParameter("ref", referencia.substring(3, 7) + referencia.substring(0, 2));
-                    qry.setParameter("idPessoa", idPessoa);
+                    "select sp"
+                    + "  from Socios s join s.servicoPessoa sp  "
+                    + " where s.matriculaSocios.dtInativo is null"
+                    + "  and CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) <= :ref"
+                    + "  and ((CONCAT( SUBSTRING(sp.referenciaVigoracao,4,8) , SUBSTRING(sp.referenciaVigoracao,0,3) ) > :ref) or "
+                    + "       (sp.referenciaValidade is null))"
+                    + "  and (   (sp.pessoa.id = :idPessoa)"
+                    + "       or (s.matriculaSocios.pessoa.id = :idPessoa))");
+            qry.setParameter("ref", referencia.substring(3, 7) + referencia.substring(0, 2));
+            qry.setParameter("idPessoa", idPessoa);
             return (qry.getResultList());
-        }catch(EJBQLException e){
+        } catch (EJBQLException e) {
             e.getMessage();
             return null;
         }
     }
-
 //    public Responsavel buscaResponsavel(int idServicoPessoa) {
 //        try{
 //            Query qry = getEntityManager().createQuery(
@@ -145,7 +143,4 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB{
 //            return null;
 //        }
 //    }
-
 }
-
-

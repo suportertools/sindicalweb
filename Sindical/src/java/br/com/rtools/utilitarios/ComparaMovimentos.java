@@ -6,7 +6,6 @@ public class ComparaMovimentos {
     private float arqValorPago;
     private String arqDataPagamento;
     private String arqDataVencimento;
-
     private String movBoleto;
     private float movValorPago;
     private String movDataPagamento;
@@ -15,24 +14,23 @@ public class ComparaMovimentos {
     private String movNome;
     private String movServico;
     private String movTipoServico;
-
     private String nomePasta;
     private String nomeArquivo;
 
-    public ComparaMovimentos(String arqBoleto, 
-                             float arqValorPago,
-                             String arqDataPagamento,
-                             String arqDataVencimento,
-                             String movBoleto,
-                             float movValorPago,
-                             String movDataPagamento,
-                             String movDataVencimento,
-                             String movCnpj,
-                             String movNome,
-                             String movServico,
-                             String movTipoServico,
-                             String nomePasta,
-                             String nomeArquivo) {
+    public ComparaMovimentos(String arqBoleto,
+            float arqValorPago,
+            String arqDataPagamento,
+            String arqDataVencimento,
+            String movBoleto,
+            float movValorPago,
+            String movDataPagamento,
+            String movDataVencimento,
+            String movCnpj,
+            String movNome,
+            String movServico,
+            String movTipoServico,
+            String nomePasta,
+            String nomeArquivo) {
         this.arqBoleto = arqBoleto;
         this.arqValorPago = arqValorPago;
         this.arqDataPagamento = arqDataPagamento;
@@ -65,8 +63,6 @@ public class ComparaMovimentos {
         this.nomePasta = "";
         this.nomeArquivo = "";
     }
-
-
 
     public String getArqBoleto() {
         return arqBoleto;
@@ -179,7 +175,4 @@ public class ComparaMovimentos {
     public void setNomeArquivo(String nomeArquivo) {
         this.nomeArquivo = nomeArquivo;
     }
-
-
-
 }

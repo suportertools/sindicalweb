@@ -5,41 +5,42 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_JURIDICA")
-@NamedQuery(name="Juridica.pesquisaID", query="select jur from Juridica jur where jur.id=:pid")
+@Table(name = "PES_JURIDICA")
+@NamedQuery(name = "Juridica.pesquisaID", query = "select jur from Juridica jur where jur.id=:pid")
 public class Juridica implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @OneToOne //(fetch=FetchType.EAGER)//(optional=false)   (cascade=CascadeType.ALL)
     private Pessoa pessoa;
-    @Column(name="DS_FANTASIA", length=200,nullable=false)
+    @Column(name = "DS_FANTASIA", length = 200, nullable = false)
     private String fantasia;
-    @JoinColumn(name="ID_CNAE", referencedColumnName="ID",  nullable=true)
-    @OneToOne (fetch=FetchType.EAGER) 
+    @JoinColumn(name = "ID_CNAE", referencedColumnName = "ID", nullable = true)
+    @OneToOne(fetch = FetchType.EAGER)
     private Cnae cnae;
-    @JoinColumn(name="ID_CONTABILIDADE", referencedColumnName="ID",  nullable=true)
+    @JoinColumn(name = "ID_CONTABILIDADE", referencedColumnName = "ID", nullable = true)
     @OneToOne
     private Juridica contabilidade;
-    @Column(name="DS_INSCRICAO_ESTADUAL", length=30,nullable=true)
-    private String inscricaoEstadual;    
-    @Column(name="DS_INSCRICAO_MUNICIPAL", length=30, nullable=true)
+    @Column(name = "DS_INSCRICAO_ESTADUAL", length = 30, nullable = true)
+    private String inscricaoEstadual;
+    @Column(name = "DS_INSCRICAO_MUNICIPAL", length = 30, nullable = true)
     private String inscricaoMunicipal;
-    @Column(name="DS_CONTATO", length=50, nullable=true)
+    @Column(name = "DS_CONTATO", length = 50, nullable = true)
     private String contato;
-    @Column(name="DS_RESPONSAVEL", length=50, nullable=true)
+    @Column(name = "DS_RESPONSAVEL", length = 50, nullable = true)
     private String responsavel;
-    @JoinColumn(name="ID_PORTE", referencedColumnName="ID", nullable=true)
+    @JoinColumn(name = "ID_PORTE", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Porte porte;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_ABERTURA")
-    private Date dtAbertura;    
+    @Column(name = "DT_ABERTURA")
+    private Date dtAbertura;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_FECHAMENTO")
+    @Column(name = "DT_FECHAMENTO")
     private Date dtFechamento;
-    @Column(name="IS_EMAIL_ESCRITORIO")
+    @Column(name = "IS_EMAIL_ESCRITORIO")
     private boolean emailEscritorio;
 
     public Juridica() {
@@ -57,7 +58,7 @@ public class Juridica implements java.io.Serializable {
         setFechamento("");
         this.emailEscritorio = false;
     }
-    
+
     public Juridica(int id, Pessoa pessoa, String fantasia, Cnae cnae, Juridica contabilidade, String inscricaoEstadual, String inscricaoMunicipal, String contato, String responsavel, Porte porte, String abertura, String fechamento, boolean emailEscritorio) {
         this.id = id;
         this.pessoa = pessoa;
@@ -155,27 +156,31 @@ public class Juridica implements java.io.Serializable {
     }
 
     public String getAbertura() {
-        if (dtAbertura != null)
+        if (dtAbertura != null) {
             return DataHoje.converteData(dtAbertura);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setAbertura(String abertura) {
-        if (!(abertura.isEmpty()))
+        if (!(abertura.isEmpty())) {
             this.dtAbertura = DataHoje.converte(abertura);
+        }
     }
 
     public String getFechamento() {
-        if (dtAbertura != null)
+        if (dtAbertura != null) {
             return DataHoje.converteData(dtFechamento);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setFechamento(String fechamento) {
-        if (!(fechamento.isEmpty()))
-        this.dtFechamento = DataHoje.converte(fechamento);
+        if (!(fechamento.isEmpty())) {
+            this.dtFechamento = DataHoje.converte(fechamento);
+        }
     }
 
     public Porte getPorte() {

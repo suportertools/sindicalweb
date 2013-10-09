@@ -1,4 +1,3 @@
-
 package br.com.rtools.arrecadacao.beans;
 
 import br.com.rtools.arrecadacao.MotivoInativacao;
@@ -9,12 +8,12 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class MotivoInativacaoJSFBean {
+
     private MotivoInativacao motivoInativacao = new MotivoInativacao();
     private String comoPesquisa = "T";
     private String descPesquisa = "";
     private String msgConfirma;
     private String linkVoltar;
-
 
     public String getComoPesquisa() {
         return comoPesquisa;
@@ -32,7 +31,7 @@ public class MotivoInativacaoJSFBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public MotivoInativacaoJSFBean(){
+    public MotivoInativacaoJSFBean() {
 //        htmlTable = new HtmlDataTable();
     }
 
@@ -52,107 +51,105 @@ public class MotivoInativacaoJSFBean {
         this.msgConfirma = msgConfirma;
     }
 
-    public String salvar(){
+    public String salvar() {
         MotivoInativacaoDB db = new MotivoInativacaoDBToplink();
         NovoLog log = new NovoLog();
-        if (motivoInativacao.getId()==-1){
-            if (motivoInativacao.getDescricao().equals("")){
+        if (motivoInativacao.getId() == -1) {
+            if (motivoInativacao.getDescricao().equals("")) {
                 msgConfirma = "Digite um Motivo de inativação por favor!";
-            }else{
-                if (db.idMotivoInativacao(motivoInativacao) == null){
-                   db.insert(motivoInativacao);
-                   msgConfirma = "Motivo de Inativação salva com Sucesso!";
-                   log.novo("Novo registro", "Motivo inserido "+motivoInativacao.getId()+" - "+motivoInativacao.getDescricao());
+            } else {
+                if (db.idMotivoInativacao(motivoInativacao) == null) {
+                    db.insert(motivoInativacao);
+                    msgConfirma = "Motivo de Inativação salva com Sucesso!";
+                    log.novo("Novo registro", "Motivo inserido " + motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
+                } else {
+                    msgConfirma = "Este Motivo de Inativação já existe no Sistema.";
                 }
-                else
-                   msgConfirma = "Este Motivo de Inativação já existe no Sistema.";
             }
-        }
-        else{
+        } else {
             MotivoInativacao mi = new MotivoInativacao();
             mi = db.pesquisaCodigo(motivoInativacao.getId());
-            String antes = "De: "+mi.getDescricao();
+            String antes = "De: " + mi.getDescricao();
             db.getEntityManager().getTransaction().begin();
-            if (db.update(motivoInativacao)){
+            if (db.update(motivoInativacao)) {
                 db.getEntityManager().getTransaction().commit();
                 msgConfirma = "Motivo de Inativação atualizado com Sucesso!";
-                log.novo("Atualizado", antes +" - para: "+motivoInativacao.getId()+" - "+motivoInativacao.getDescricao());
+                log.novo("Atualizado", antes + " - para: " + motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
+            } else {
+                db.getEntityManager().getTransaction().rollback();
             }
-            else
-            {db.getEntityManager().getTransaction().rollback();}
         }
         return null;
     }
 
-   public String novo(){
-       motivoInativacao = new MotivoInativacao();
-       msgConfirma = "";
-       return "motivoInativacao";
-   }
+    public String novo() {
+        motivoInativacao = new MotivoInativacao();
+        msgConfirma = "";
+        return "motivoInativacao";
+    }
 
-   public String excluir(){
+    public String excluir() {
         MotivoInativacaoDB db = new MotivoInativacaoDBToplink();
         NovoLog log = new NovoLog();
-        if (motivoInativacao.getId()!=-1){
+        if (motivoInativacao.getId() != -1) {
             db.getEntityManager().getTransaction().begin();
             motivoInativacao = db.pesquisaCodigo(motivoInativacao.getId());
-            if (db.delete(motivoInativacao)){
+            if (db.delete(motivoInativacao)) {
                 db.getEntityManager().getTransaction().commit();
                 msgConfirma = "Motivo de Inativação Excluida com Sucesso!";
-                log.novo("Excluido", motivoInativacao.getId()+" - "+motivoInativacao.getDescricao());
+                log.novo("Excluido", motivoInativacao.getId() + " - " + motivoInativacao.getDescricao());
+            } else {
+                db.getEntityManager().getTransaction().rollback();
+                msgConfirma = "Motivo de Inativação não pode ser excluido";
             }
-            else
-            {db.getEntityManager().getTransaction().rollback();
-            msgConfirma = "Motivo de Inativação não pode ser excluido";}
         }
-       motivoInativacao = new MotivoInativacao();
-       return null;
-   }
+        motivoInativacao = new MotivoInativacao();
+        return null;
+    }
 
-   //ESTA PESQUISA ERA A ATUAL
+    //ESTA PESQUISA ERA A ATUAL
     /*public List getListaMotivoInativacao(){
-    Pesquisa pesquisa = new Pesquisa();
-    List result = null;
-    result = pesquisa.pesquisar("MotivoInativacao", "motivoInativacao" , descPesquisa, "inativacao", comoPesquisa);
-    return result;
-    }*/
+     Pesquisa pesquisa = new Pesquisa();
+     List result = null;
+     result = pesquisa.pesquisar("MotivoInativacao", "motivoInativacao" , descPesquisa, "inativacao", comoPesquisa);
+     return result;
+     }*/
+    public List getListaMotivoInativacao() {
+        MotivoInativacaoDB db = new MotivoInativacaoDBToplink();
+        List result = null;
+        result = db.pesquisaTodos();
+        return result;
+    }
 
-   public List getListaMotivoInativacao(){
-       MotivoInativacaoDB db = new MotivoInativacaoDBToplink();
-       List result = null;
-       result = db.pesquisaTodos();
-       return result;
-   }
-
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
     /*public String pesquisarMotivoInativacao(){
-    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "cadMotivoInativacao");
-    return "pesquisaMotivoInativacao";
-    }*/
+     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "cadMotivoInativacao");
+     return "pesquisaMotivoInativacao";
+     }*/
 
-   public String editar(){
+    public String editar() {
 //       motivoInativacao = (MotivoInativacao) getHtmlTable().getRowData();
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("motivoInativacaoPesquisa", motivoInativacao);
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null)
-           return "motivoInativacao";
-       else
-           return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-   }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("motivoInativacaoPesquisa", motivoInativacao);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
+            return "motivoInativacao";
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
+    }
     /*public String linkVoltar(){
-    if ( FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null){
-    return "menuArrecadacao";
-    }else
-    return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-    }*/
+     if ( FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null){
+     return "menuArrecadacao";
+     }else
+     return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+     }*/
     /*public String linkVoltarPesquisaMotivoInativacao(){
-    linkVoltar = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-    if ( linkVoltar == null){
-    return "cadMotivoInativacao";
-    }else
-    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("urlRetorno");
-    return linkVoltar;
-    }*/
+     linkVoltar = (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+     if ( linkVoltar == null){
+     return "cadMotivoInativacao";
+     }else
+     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("urlRetorno");
+     return linkVoltar;
+     }*/
 }

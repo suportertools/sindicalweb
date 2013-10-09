@@ -15,46 +15,47 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="CAR_CARAVANA")
-@NamedQuery(name="Caravana.pesquisaID", query="select c from Caravana c where c.id=:pid")
+@Table(name = "CAR_CARAVANA")
+@NamedQuery(name = "Caravana.pesquisaID", query = "select c from Caravana c where c.id=:pid")
 public class Caravana implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_AEVENTO", referencedColumnName="ID")
+    @JoinColumn(name = "ID_AEVENTO", referencedColumnName = "ID")
     @ManyToOne
     private AEvento aEvento;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_SAIDA",  nullable=false)
+    @Column(name = "DT_SAIDA", nullable = false)
     private Date dtSaida;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_RETORNO",  nullable=false)
+    @Column(name = "DT_RETORNO", nullable = false)
     private Date dtRetorno;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_CHEGADA",  nullable=false)
+    @Column(name = "DT_CHEGADA", nullable = false)
     private Date dtChegada;
-    @Column(name="TM_SAIDA",  nullable=false)
+    @Column(name = "TM_SAIDA", nullable = false)
     private String horaSaida;
-    @Column(name="TM_RETORNO",  nullable=false)
+    @Column(name = "TM_RETORNO", nullable = false)
     private String horaRetorno;
-    @Column(name="TM_CHEGADA",  nullable=false)
+    @Column(name = "TM_CHEGADA", nullable = false)
     private String horaChegada;
-    @Column(name="IS_CAFE", nullable=true)
+    @Column(name = "IS_CAFE", nullable = true)
     private boolean isCafe;
-    @Column(name="IS_ALMOCO", nullable=true)
+    @Column(name = "IS_ALMOCO", nullable = true)
     private boolean isAlmoco;
-    @Column(name="IS_JANTAR", nullable=true)
+    @Column(name = "IS_JANTAR", nullable = true)
     private boolean isJantar;
-    @Column(name="NR_POLTRONAS", nullable=true)
+    @Column(name = "NR_POLTRONAS", nullable = true)
     private int quantidadePoltronas;
-    @Column(name="NR_GUIA_RECOLHIMENTO", nullable=true)
+    @Column(name = "NR_GUIA_RECOLHIMENTO", nullable = true)
     private int guiaRecolhimento;
-    @Column(name="DS_OBSERVACAO")
+    @Column(name = "DS_OBSERVACAO")
     private String observacao;
 
     public Caravana(int id, AEvento aEvento, String dataSaida, String dataRetorno, String dataChegada, String horaSaida, String horaRetorno,
-                    String horaChegada, boolean isCafe, boolean isAlmoco, boolean isJantar, int quantidadePoltronas,
-                    int guiaRecolhimento, String observacao) {
+            String horaChegada, boolean isCafe, boolean isAlmoco, boolean isJantar, int quantidadePoltronas,
+            int guiaRecolhimento, String observacao) {
         this.id = id;
         this.aEvento = aEvento;
         setDataSaida(dataSaida);
@@ -201,38 +202,44 @@ public class Caravana implements java.io.Serializable {
     }
 
     public String getDataSaida() {
-        if (dtSaida != null)
+        if (dtSaida != null) {
             return DataHoje.converteData(dtSaida);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataSaida(String dataSaida) {
-        if (!(dataSaida.isEmpty()))
+        if (!(dataSaida.isEmpty())) {
             this.dtSaida = DataHoje.converte(dataSaida);
+        }
     }
 
     public String getDataRetorno() {
-        if (dtRetorno != null)
+        if (dtRetorno != null) {
             return DataHoje.converteData(dtRetorno);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataRetorno(String dataRetorno) {
-        if (!(dataRetorno.isEmpty()))
+        if (!(dataRetorno.isEmpty())) {
             this.dtRetorno = DataHoje.converte(dataRetorno);
+        }
     }
 
     public String getDataChegada() {
-        if (dtChegada != null)
+        if (dtChegada != null) {
             return DataHoje.converteData(dtChegada);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setDataChegada(String dataChegada) {
-        if (!(dataChegada.isEmpty()))
+        if (!(dataChegada.isEmpty())) {
             this.dtChegada = DataHoje.converte(dataChegada);
+        }
     }
 }

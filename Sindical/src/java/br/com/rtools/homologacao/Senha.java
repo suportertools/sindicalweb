@@ -18,31 +18,32 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="HOM_SENHA")
-@NamedQuery(name="Senha.pesquisaID", query="select s from Senha s where s.id = :pid")
+@Table(name = "HOM_SENHA")
+@NamedQuery(name = "Senha.pesquisaID", query = "select s from Senha s where s.id = :pid")
 public class Senha implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_AGENDAMENTO", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @JoinColumn(name = "ID_AGENDAMENTO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Agendamento agendamento;
-    @Column(name="DS_HORA", length=5)
-    private String hora;    
-    @Column(name="DS_HORA_CHAMADA", length=5)
-    private String horaChamada;    
-    @Column(name="NR_MESA")
-    private int mesa;    
-    @JoinColumn(name="ID_USUARIO", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @Column(name = "DS_HORA", length = 5)
+    private String hora;
+    @Column(name = "DS_HORA_CHAMADA", length = 5)
+    private String horaChamada;
+    @Column(name = "NR_MESA")
+    private int mesa;
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Usuario usuario;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
-    @Column(name="NR_SENHA")
-    private int senha;    
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID")
-    @ManyToOne (fetch=FetchType.EAGER)
+    @Column(name = "NR_SENHA")
+    private int senha;
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
 
     public Senha() {
@@ -56,7 +57,7 @@ public class Senha implements java.io.Serializable {
         this.senha = 0;
         this.filial = new Filial();
     }
-    
+
     public Senha(int id, Agendamento agendamento, String hora, String horaChamada, int mesa, Usuario usuario, String data, int senha, Filial filial) {
         this.id = id;
         this.agendamento = agendamento;
@@ -140,17 +141,18 @@ public class Senha implements java.io.Serializable {
     public void setFilial(Filial filial) {
         this.filial = filial;
     }
-    
+
     public String getData() {
-        if (dtData != null)
+        if (dtData != null) {
             return DataHoje.converteData(dtData);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setData(String data) {
-        if (!(data.isEmpty()))
+        if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
-    }    
-    
+        }
+    }
 }

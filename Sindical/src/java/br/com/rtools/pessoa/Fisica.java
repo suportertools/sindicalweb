@@ -5,52 +5,53 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_FISICA")
-@NamedQuery(name="Fisica.pesquisaID", query="select fis from Fisica fis where fis.id=:pid")
-public class Fisica implements java.io.Serializable {    
+@Table(name = "PES_FISICA")
+@NamedQuery(name = "Fisica.pesquisaID", query = "select fis from Fisica fis where fis.id=:pid")
+public class Fisica implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PESSOA", referencedColumnName="ID", nullable=false)
-    @OneToOne(fetch=FetchType.EAGER)//(optional=false)   (cascade=CascadeType.ALL)
-    private Pessoa pessoa;  
-    @Column(name="DS_RG", length=12,nullable=false)
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER)//(optional=false)   (cascade=CascadeType.ALL)
+    private Pessoa pessoa;
+    @Column(name = "DS_RG", length = 12, nullable = false)
     private String rg;
-    @Column(name="DS_CARTEIRA", length=30,nullable=false)
-    private String carteira;    
-    @Column(name="DS_SERIE", length=15, nullable=false)
+    @Column(name = "DS_CARTEIRA", length = 30, nullable = false)
+    private String carteira;
+    @Column(name = "DS_SERIE", length = 15, nullable = false)
     private String serie;
-    @Column(name="DS_SEXO", length=1, nullable=false)
+    @Column(name = "DS_SEXO", length = 1, nullable = false)
     private String sexo;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_NASCIMENTO")
+    @Column(name = "DT_NASCIMENTO")
     private Date dtNascimento;
-    @Column(name="DS_NACIONALIDADE", length=50,nullable=false)
-    private String nacionalidade;    
-    @Column(name="DS_NATURALIDADE", length=50,nullable=false)
+    @Column(name = "DS_NACIONALIDADE", length = 50, nullable = false)
+    private String nacionalidade;
+    @Column(name = "DS_NATURALIDADE", length = 50, nullable = false)
     private String naturalidade;
-    @Column(name="DS_ORGAO_EMISSAO_RG", length=30,nullable=false)
-    private String orgaoEmissaoRG;        
-    @Column(name="DS_UF_EMISSAO_RG", length=2,nullable=false)
+    @Column(name = "DS_ORGAO_EMISSAO_RG", length = 30, nullable = false)
+    private String orgaoEmissaoRG;
+    @Column(name = "DS_UF_EMISSAO_RG", length = 2, nullable = false)
     private String ufEmissaoRG;
-    @Column(name="DS_ESTADO_CIVIL", length=30,nullable=false)
-    private String estadoCivil;        
-    @Column(name="DS_PAI", length=100,nullable=false)
-    private String pai;        
-    @Column(name="DS_MAE", length=100,nullable=false)
+    @Column(name = "DS_ESTADO_CIVIL", length = 30, nullable = false)
+    private String estadoCivil;
+    @Column(name = "DS_PAI", length = 100, nullable = false)
+    private String pai;
+    @Column(name = "DS_MAE", length = 100, nullable = false)
     private String mae;
-    @Column(name="DS_NIT", length=30,nullable=false)
-    private String nit;        
-    @Column(name="DS_PIS", length=30,nullable=false)
+    @Column(name = "DS_NIT", length = 30, nullable = false)
+    private String nit;
+    @Column(name = "DS_PIS", length = 30, nullable = false)
     private String pis;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_APOSENTADORIA")
+    @Column(name = "DT_APOSENTADORIA")
     private Date dtAposentadoria;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_RECADASTRO")
+    @Column(name = "DT_RECADASTRO")
     private Date dtRecadastro;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_FOTO")
+    @Column(name = "DT_FOTO")
     private Date dtFoto;
 
     public Fisica() {
@@ -76,8 +77,8 @@ public class Fisica implements java.io.Serializable {
     }
 
     public Fisica(int id, Pessoa pessoa, String rg, String carteira, String serie, String sexo, Date dtNascimento, String nacionalidade,
-                    String naturalidade, String orgaoEmissaoRG, String ufEmissaoRG, String estadoCivil, String pai, String mae, String nit,
-                    String pis, String aposentadoria, String recadastro, String dataFoto) {
+            String naturalidade, String orgaoEmissaoRG, String ufEmissaoRG, String estadoCivil, String pai, String mae, String nit,
+            String pis, String aposentadoria, String recadastro, String dataFoto) {
         this.id = id;
         this.pessoa = pessoa;
         this.rg = rg;
@@ -98,8 +99,6 @@ public class Fisica implements java.io.Serializable {
         this.setRecadastro(recadastro);
         this.setDataFoto(dataFoto);
     }
-
-
 
     public int getId() {
         return id;
@@ -230,15 +229,17 @@ public class Fisica implements java.io.Serializable {
     }
 
     public String getNascimento() {
-        if (dtNascimento != null)
+        if (dtNascimento != null) {
             return DataHoje.converteData(dtNascimento);
-        else
+        } else {
             return "";
+        }
     }
 
     public void setNascimento(String nascimento) {
-        if (!(nascimento.isEmpty()))
+        if (!(nascimento.isEmpty())) {
             this.dtNascimento = DataHoje.converte(nascimento);
+        }
     }
 
     public Date getDtAposentadoria() {

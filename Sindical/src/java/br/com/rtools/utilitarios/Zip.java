@@ -9,15 +9,15 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 public class Zip {
-   
-   //Constantes
-   static final int TAMANHO_BUFFER = 4096; // 4kb
-   
-   //método para compactar arquivo
+
+    //Constantes
+    static final int TAMANHO_BUFFER = 4096; // 4kb
+
+    //método para compactar arquivo
     public void zip(File[] files, File outputFile) throws IOException {
         if (files != null && files.length > 0) {
             ZipOutputStream out = new ZipOutputStream(
-            new FileOutputStream(outputFile));
+                    new FileOutputStream(outputFile));
             Stack<File> parentDirs = new Stack<File>();
             zipFiles(parentDirs, files, out);
             out.close();
@@ -39,7 +39,7 @@ public class Zip {
                 //itera sobre os itens da pilha para montar o caminho
                 //completo do arquivo
                 String path = "";
-                for(File parentDir : parentDirs) {
+                for (File parentDir : parentDirs) {
                     path += parentDir.getName() + "/";
                 }
                 //grava os dados no arquivo zip
@@ -53,7 +53,7 @@ public class Zip {
             }
         }
     }
-    
+
     public void unzip(File zipFile, File dir) throws IOException {
         ZipFile zip = null;
         File arquivo = null;
@@ -66,8 +66,8 @@ public class Zip {
                 dir.mkdirs();
             }
             if (!dir.exists() || !dir.isDirectory()) {
-                throw new IOException("O diretório " + dir.getName() +
-                " não é um diretório válido");
+                throw new IOException("O diretório " + dir.getName()
+                        + " não é um diretório válido");
             }
             zip = new ZipFile(zipFile);
             Enumeration e = zip.entries();
@@ -90,8 +90,8 @@ public class Zip {
                     os = new FileOutputStream(arquivo);
                     int bytesLidos = 0;
                     if (is == null) {
-                        throw new ZipException("Erro ao ler a entrada do zip: " +
-                        entrada.getName());
+                        throw new ZipException("Erro ao ler a entrada do zip: "
+                                + entrada.getName());
                     }
                     while ((bytesLidos = is.read(buffer)) > 0) {
                         os.write(buffer, 0, bytesLidos);
@@ -120,6 +120,4 @@ public class Zip {
             }
         }
     }
-    
-    
 }

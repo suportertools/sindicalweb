@@ -13,13 +13,13 @@ public class Cidade implements java.io.Serializable {
     @Column(name = "DS_CIDADE", length = 50, nullable = false)
     private String cidade;
     @Column(name = "DS_UF", length = 2, nullable = false)
-    private String uf;    
+    private String uf;
 
     public Cidade() {
         this.id = -1;
         this.cidade = "";
         this.uf = "";
-    }    
+    }
 
     public Cidade(int id, String cidade, String uf) {
         this.id = id;
@@ -51,10 +51,11 @@ public class Cidade implements java.io.Serializable {
         this.uf = uf;
     }
 
-    public String getCidadeToString(){
-        if (cidade.equals(""))
+    public String getCidadeToString() {
+        if (cidade.equals("")) {
             return "";
-        else
+        } else {
             return cidade + " - " + uf;
+        }
     }
 }

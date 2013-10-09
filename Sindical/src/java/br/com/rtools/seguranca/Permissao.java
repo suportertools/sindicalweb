@@ -3,20 +3,20 @@ package br.com.rtools.seguranca;
 import javax.persistence.*;
 
 @Entity
-@Table(name="SEG_PERMISSAO")
-@NamedQuery(name="Permissao.pesquisaID", query="select per from Permissao per where per.id=:pid")
+@Table(name = "SEG_PERMISSAO")
+@NamedQuery(name = "Permissao.pesquisaID", query = "select per from Permissao per where per.id=:pid")
 public class Permissao implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_MODULO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_MODULO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Modulo modulo;
-    @JoinColumn(name="ID_ROTINA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Rotina rotina;
-    @JoinColumn(name="ID_EVENTO", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_EVENTO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Evento evento;
 
@@ -33,7 +33,7 @@ public class Permissao implements java.io.Serializable {
         this.rotina = rotina;
         this.evento = evento;
     }
-    
+
     public int getId() {
         return id;
     }

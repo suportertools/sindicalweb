@@ -1,4 +1,3 @@
-
 package br.com.rtools.atendimento;
 
 import br.com.rtools.pessoa.Filial;
@@ -8,29 +7,29 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="ATE_MOVIMENTO")
-@NamedQuery(name="AteMovimento.pesquisaID", query="select amov from AteMovimento amov where amov.id=:pid")
-public class AteMovimento  implements java.io.Serializable {    
+@Table(name = "ATE_MOVIMENTO")
+@NamedQuery(name = "AteMovimento.pesquisaID", query = "select amov from AteMovimento amov where amov.id=:pid")
+public class AteMovimento implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_ATE_PESSOA", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_ATE_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private AtePessoa pessoa;
-    @JoinColumn(name="ID_FILIAL", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Filial filial;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dataEmissao;
-    @Column(name="DS_HORA", length=5 )
-    private String horaEmissao;    
-    @JoinColumn(name="ID_OPERACAO", referencedColumnName="ID", nullable=false)
+    @Column(name = "DS_HORA", length = 5)
+    private String horaEmissao;
+    @JoinColumn(name = "ID_OPERACAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private AteOperacao operacao;
-    @Column(name="DS_HISTORICO", length=500)
-    private String historico;    
+    @Column(name = "DS_HISTORICO", length = 500)
+    private String historico;
 
     public AteMovimento() {
         this.id = -1;
@@ -42,7 +41,7 @@ public class AteMovimento  implements java.io.Serializable {
         this.operacao = new AteOperacao();
         this.historico = "";
     }
-    
+
     public AteMovimento(int id, AtePessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico) {
         this.id = id;
         this.pessoa = pessoa;
@@ -53,7 +52,6 @@ public class AteMovimento  implements java.io.Serializable {
         this.historico = historico;
     }
 
-    
     public int getId() {
         return id;
     }
@@ -109,7 +107,7 @@ public class AteMovimento  implements java.io.Serializable {
     public void setHistorico(String historico) {
         this.historico = historico;
     }
-    
+
     public String getDataEmissaoString() {
         return DataHoje.converteData(this.dataEmissao);
     }
@@ -117,8 +115,4 @@ public class AteMovimento  implements java.io.Serializable {
     public void setDataEmissaoString(String criacao) {
         this.dataEmissao = DataHoje.converte(criacao);
     }
-
-
 }
-
-    

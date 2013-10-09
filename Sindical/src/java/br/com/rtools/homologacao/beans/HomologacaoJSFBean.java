@@ -80,7 +80,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
         }
         msgConfirma = "Senha excluída com sucesso";
         sv.comitarTransacao();
-        
+
         strEndereco = "";
         renderHomologacao = true;
         renderConcluir = false;
@@ -246,10 +246,10 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
                 }
 
                 if (senha.getId() == -1) {
-                    if (    ag.get(i).getStatus().getId() != 7 && 
-                            ag.get(i).getStatus().getId() != 3 && 
-                            ag.get(i).getStatus().getId() != 4 && 
-                            ag.get(i).getStatus().getId() != 5) {
+                    if (ag.get(i).getStatus().getId() != 7
+                            && ag.get(i).getStatus().getId() != 3
+                            && ag.get(i).getStatus().getId() != 4
+                            && ag.get(i).getStatus().getId() != 5) {
                         continue;
                     }
                 }
@@ -488,7 +488,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
 
     public String agendar() {
         HomologacaoDB db = new HomologacaoDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();        
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
         if (nrStatus == 3 || nrStatus == 4 || nrStatus == 5) {
@@ -509,8 +509,8 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
         StatusDB dbSta = new StatusDBToplink();
         renderHomologacao = false;
         renderConcluir = true;
-        
-        if(nrStatus > 0) {
+
+        if (nrStatus > 0) {
             fisica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFisica();
             juridica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getJuridica();
             pessoaEmpresa = agendamento.getPessoaEmpresa();
@@ -559,7 +559,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
                 case 5: {
                     if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == agendamento.getHomologador().getId()) {
                         renderHomologar = true;
-                        renderCancelarHorario = true;                    
+                        renderCancelarHorario = true;
                         renderHomologacao = false;
                         renderConcluir = true;
                         break;
@@ -574,12 +574,12 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
                 }
                 case 7: {
                     renderHomologar = true;
-                    renderCancelarHorario = true;                    
+                    renderCancelarHorario = true;
                     break;
                 }
             }
         }
-        
+
         return "homologacao";
     }
 
@@ -686,8 +686,8 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
         //agendamento.setHomologador(null);
 
         if (registro.isSenhaHomologacao()) {
-            if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) != 4 && 
-                Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) != 7) {
+            if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) != 4
+                    && Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) != 7) {
                 Senha senha = dbAg.pesquisaSenhaAgendamento(agendamento.getId());
                 senha.setMesa(0);
                 senha.setHoraChamada("");
@@ -706,10 +706,10 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
             agendamento.setStatus(dbSta.pesquisaCodigo(7));
             agendamento.setHomologador(null);
         } else if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) == 5) {
-            if(DataHoje.converteDataParaInteger(agendamento.getData()) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+            if (DataHoje.converteDataParaInteger(agendamento.getData()) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
                 agendamento.setStatus(dbSta.pesquisaCodigo(2));
                 agendamento.setHomologador(null);
-            }else {
+            } else {
                 agendamento.setStatus(dbSta.pesquisaCodigo(5));
             }
         }

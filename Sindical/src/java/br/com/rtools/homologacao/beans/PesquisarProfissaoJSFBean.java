@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PesquisarProfissaoJSFBean {
+
     protected Profissao profissao = new Profissao();
     private String por;
     private String combo;
@@ -21,11 +22,11 @@ public class PesquisarProfissaoJSFBean {
         listaProfissao = new ArrayList();
     }
 
-    public List<Profissao> getListaProfissao(){
-        if(!descricaoProfissao.equals("")){
+    public List<Profissao> getListaProfissao() {
+        if (!descricaoProfissao.equals("")) {
             profissao.setProfissao(descricaoProfissao);
-        }        
-        if (listaProfissao.isEmpty() && !por.isEmpty()){
+        }
+        if (listaProfissao.isEmpty() && !por.isEmpty()) {
             ProfissaoDB db = new ProfissaoDBToplink();
             listaProfissao = (List<Profissao>) db.pesquisaProfParametros(por, combo, profissao.getProfissao());
         }
@@ -33,24 +34,24 @@ public class PesquisarProfissaoJSFBean {
         return listaProfissao;
     }
 
-    public void inicial(){
+    public void inicial() {
         listaProfissao.clear();
 //        combo = "profissao";
         por = "I";
     }
 
-    public void parcial(){
+    public void parcial() {
         listaProfissao.clear();
 //        combo = "profissao";
         por = "P";
     }
 
-    public void editar(){
+    public void editar() {
         profissao = (Profissao) listaProfissao.get(idIndexProf);
     }
 
     public Profissao getProfissao() {
-        if (profissao.getId() == -1){
+        if (profissao.getId() == -1) {
             profissao = new Profissao();
         }
         return profissao;
@@ -87,12 +88,12 @@ public class PesquisarProfissaoJSFBean {
     public void setListaProfissao(List<Profissao> listaProfissao) {
         this.listaProfissao = listaProfissao;
     }
-    
+
     public String getDescricaoProfissao() {
         return descricaoProfissao;
     }
 
     public void setDescricaoProfissao(String descricaoProfissao) {
         this.descricaoProfissao = descricaoProfissao;
-    }    
+    }
 }

@@ -11,13 +11,13 @@ public class ProfissaoDBToplink extends DB implements ProfissaoDB {
 
     @Override
     public boolean insert(Profissao profissao) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(profissao);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(profissao);
+            getEntityManager().flush();
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -25,14 +25,13 @@ public class ProfissaoDBToplink extends DB implements ProfissaoDB {
 
     @Override
     public boolean update(Profissao profissao) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(profissao);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -40,14 +39,13 @@ public class ProfissaoDBToplink extends DB implements ProfissaoDB {
 
     @Override
     public boolean delete(Profissao profissao) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(profissao);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -56,11 +54,11 @@ public class ProfissaoDBToplink extends DB implements ProfissaoDB {
     @Override
     public Profissao pesquisaCodigo(int id) {
         Profissao result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Profissao.pesquisaID");
             qry.setParameter("pid", id);
             result = (Profissao) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
@@ -68,63 +66,59 @@ public class ProfissaoDBToplink extends DB implements ProfissaoDB {
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select pro from Profissao pro order by pro.profissao");
             return (qry.getResultList());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     @Override
-    public List<String> pesquisaProfissao(String des_tipo){
+    public List<String> pesquisaProfissao(String des_tipo) {
         List<String> result = null;
-        try{
-           Query qry = getEntityManager().createQuery("select prof.profissao from Profissao prof where prof.profissao like :texto");
-           qry.setParameter("texto", des_tipo);
-           result = (List<String>) qry.getResultList();
-        }
-        catch(Exception e){
+        try {
+            Query qry = getEntityManager().createQuery("select prof.profissao from Profissao prof where prof.profissao like :texto");
+            qry.setParameter("texto", des_tipo);
+            result = (List<String>) qry.getResultList();
+        } catch (Exception e) {
         }
         return result;
     }
 
-    public Profissao idProfissao(Profissao des_prof){
+    public Profissao idProfissao(Profissao des_prof) {
         Profissao result = null;
-        try{
-           Query qry = getEntityManager().createQuery("select prof from Profissao prof where prof.profissao = :d_prof");
-           qry.setParameter("d_prof", des_prof.getProfissao());
-           result = (Profissao) qry.getSingleResult();
-        }
-        catch(Exception e){
+        try {
+            Query qry = getEntityManager().createQuery("select prof from Profissao prof where prof.profissao = :d_prof");
+            qry.setParameter("d_prof", des_prof.getProfissao());
+            result = (Profissao) qry.getSingleResult();
+        } catch (Exception e) {
         }
         return result;
     }
 
     @Override
-    public List pesquisaProfParametros(String por,String combo,String desc) {
+    public List pesquisaProfParametros(String por, String combo, String desc) {
         String textQuery = "";
-        if (!desc.equals("") && !por.equals("")){
-            if (por.equals("I")){
-                desc = desc+"%";
-            }else if(por.equals("P")){
-                desc = "%"+desc+"%";
+        if (!desc.equals("") && !por.equals("")) {
+            if (por.equals("I")) {
+                desc = desc + "%";
+            } else if (por.equals("P")) {
+                desc = "%" + desc + "%";
             }
-        }else{
+        } else {
             desc = "";
             return new ArrayList();
         }
-        if (combo.equals("")){
+        if (combo.equals("")) {
             combo = "profissao";
         }
-        try{
-            textQuery = "select prof from Profissao prof where upper(prof."+combo+") like :profissao order by prof.profissao";
+        try {
+            textQuery = "select prof from Profissao prof where upper(prof." + combo + ") like :profissao order by prof.profissao";
             Query qry = getEntityManager().createQuery(textQuery);
             qry.setParameter("profissao", desc.toLowerCase().toUpperCase());
             return (qry.getResultList());
-        }
-        catch(EJBQLException e){
+        } catch (EJBQLException e) {
             return new ArrayList();
         }
     }

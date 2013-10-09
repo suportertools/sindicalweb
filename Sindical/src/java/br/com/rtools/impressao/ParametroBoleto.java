@@ -1,11 +1,9 @@
-
-
 package br.com.rtools.impressao;
 
 import java.math.BigDecimal;
 
-
 public class ParametroBoleto {
+
     private String ref;
     private boolean imprimeVerso;
     private String escritorio;
@@ -60,138 +58,137 @@ public class ParametroBoleto {
     private String logoBanco;
     private String logoEmpresa;
     private String serrilha;
-    private String cnae;    
+    private String cnae;
     private String categoria;
     private String codigosindical;
     private String usoBanco;
     private String textoTitulo;
-    private String caminhoVerso;  
+    private String caminhoVerso;
     private String entidade;
 
     public ParametroBoleto(
-        String ref,
-        boolean imprimeVerso,
-        String escritorio,
-        String contribuicao,
-        String tipo,
-        String grupo,
-        String cgc,
-        String sacado,
-        BigDecimal valor,
-        String endereco,
-        String numero,
-        String complemento,
-        String bairro,
-        String cidade,
-        String estado,
-        String cep,
-        String boleto,
-        String sacado_endereco,
-        String sacado_numero,
-        String sacado_complemento,
-        String sacado_bairro,
-        String sacado_cidade,
-        String sacado_estado,
-        String sacado_cep,
-        String nossonum,
-        String datadoc,
-        String VENCIMENTO,
-        String codbanco,
-        String moeda,
-        String especie,
-        String especie_doc,
-        String cod_agencia,
-        String codcedente,
-        String aceite,
-        String carteira,
-        String exercicio,
-        String nomeentidade,
-        String LAYOUT,
-        String mensagem,
-        String local_pag,
-        String endent,
-        String nument,
-        String compent,
-        String baient,
-        String cident,
-        String estent,
-        String cepent,
-        String cgcent,
-        String REPNUM,
-        String CODBAR,
-        String mensagem_boleto,
-        String logoBanco,
-        String logoEmpresa,
-        String serrilha,
-        String cnae,
-        String categoria,
-        String codigosindical,
-        String usoBanco,
-        String textoTitulo,
-        String caminhoVerso,
-        String entidade
-        ){
-    this.ref = ref;
-    this.imprimeVerso = imprimeVerso;
-    this.escritorio = escritorio;
-    this.contribuicao = contribuicao;
-    this.tipo = tipo;
-    this.grupo = grupo;
-    this.cgc = cgc;
-    this.sacado = sacado;
-    this.valor = valor;
-    this.endereco = endereco;
-    this.numero = numero;
-    this.complemento = complemento;
-    this.bairro = bairro;
-    this.cidade = cidade;
-    this.estado = estado;
-    this.cep = cep;
-    this.boleto = boleto;
-    this.sacado_endereco = sacado_endereco;
-    this.sacado_numero = sacado_numero;
-    this.sacado_complemento = sacado_complemento;
-    this.sacado_bairro = sacado_bairro;
-    this.sacado_cidade = sacado_cidade;
-    this.sacado_estado = sacado_estado;
-    this.sacado_cep = sacado_cep;
-    this.nossonum = nossonum;
-    this.datadoc = datadoc;
-    this.VENCIMENTO = VENCIMENTO;
-    this.codbanco = codbanco;
-    this.moeda = moeda;
-    this.especie = especie;
-    this.especie_doc = especie_doc;
-    this.cod_agencia = cod_agencia;
-    this.codcedente = codcedente;
-    this.aceite = aceite;
-    this.carteira = carteira;
-    this.exercicio = exercicio;
-    this.nomeentidade = nomeentidade;
-    this.LAYOUT = LAYOUT;
-    this.mensagem = mensagem;
-    this.local_pag = local_pag;
-    this.endent = endent;
-    this.nument = nument;
-    this.compent = compent;
-    this.baient = baient;
-    this.cident = cident;
-    this.estent = estent;
-    this.cepent = cepent;
-    this.cgcent = cgcent;
-    this.REPNUM = REPNUM;
-    this.CODBAR = CODBAR;
-    this.mensagem_boleto = mensagem_boleto;
-    this.logoBanco = logoBanco;
-    this.logoEmpresa = logoEmpresa;
-    this.serrilha = serrilha;
-    this.cnae = cnae;
-    this.categoria = categoria;
-    this.codigosindical = codigosindical;
-    this.usoBanco = usoBanco;
-    this.textoTitulo = textoTitulo;
-    this.caminhoVerso = caminhoVerso;
-    this.entidade = entidade;
+            String ref,
+            boolean imprimeVerso,
+            String escritorio,
+            String contribuicao,
+            String tipo,
+            String grupo,
+            String cgc,
+            String sacado,
+            BigDecimal valor,
+            String endereco,
+            String numero,
+            String complemento,
+            String bairro,
+            String cidade,
+            String estado,
+            String cep,
+            String boleto,
+            String sacado_endereco,
+            String sacado_numero,
+            String sacado_complemento,
+            String sacado_bairro,
+            String sacado_cidade,
+            String sacado_estado,
+            String sacado_cep,
+            String nossonum,
+            String datadoc,
+            String VENCIMENTO,
+            String codbanco,
+            String moeda,
+            String especie,
+            String especie_doc,
+            String cod_agencia,
+            String codcedente,
+            String aceite,
+            String carteira,
+            String exercicio,
+            String nomeentidade,
+            String LAYOUT,
+            String mensagem,
+            String local_pag,
+            String endent,
+            String nument,
+            String compent,
+            String baient,
+            String cident,
+            String estent,
+            String cepent,
+            String cgcent,
+            String REPNUM,
+            String CODBAR,
+            String mensagem_boleto,
+            String logoBanco,
+            String logoEmpresa,
+            String serrilha,
+            String cnae,
+            String categoria,
+            String codigosindical,
+            String usoBanco,
+            String textoTitulo,
+            String caminhoVerso,
+            String entidade) {
+        this.ref = ref;
+        this.imprimeVerso = imprimeVerso;
+        this.escritorio = escritorio;
+        this.contribuicao = contribuicao;
+        this.tipo = tipo;
+        this.grupo = grupo;
+        this.cgc = cgc;
+        this.sacado = sacado;
+        this.valor = valor;
+        this.endereco = endereco;
+        this.numero = numero;
+        this.complemento = complemento;
+        this.bairro = bairro;
+        this.cidade = cidade;
+        this.estado = estado;
+        this.cep = cep;
+        this.boleto = boleto;
+        this.sacado_endereco = sacado_endereco;
+        this.sacado_numero = sacado_numero;
+        this.sacado_complemento = sacado_complemento;
+        this.sacado_bairro = sacado_bairro;
+        this.sacado_cidade = sacado_cidade;
+        this.sacado_estado = sacado_estado;
+        this.sacado_cep = sacado_cep;
+        this.nossonum = nossonum;
+        this.datadoc = datadoc;
+        this.VENCIMENTO = VENCIMENTO;
+        this.codbanco = codbanco;
+        this.moeda = moeda;
+        this.especie = especie;
+        this.especie_doc = especie_doc;
+        this.cod_agencia = cod_agencia;
+        this.codcedente = codcedente;
+        this.aceite = aceite;
+        this.carteira = carteira;
+        this.exercicio = exercicio;
+        this.nomeentidade = nomeentidade;
+        this.LAYOUT = LAYOUT;
+        this.mensagem = mensagem;
+        this.local_pag = local_pag;
+        this.endent = endent;
+        this.nument = nument;
+        this.compent = compent;
+        this.baient = baient;
+        this.cident = cident;
+        this.estent = estent;
+        this.cepent = cepent;
+        this.cgcent = cgcent;
+        this.REPNUM = REPNUM;
+        this.CODBAR = CODBAR;
+        this.mensagem_boleto = mensagem_boleto;
+        this.logoBanco = logoBanco;
+        this.logoEmpresa = logoEmpresa;
+        this.serrilha = serrilha;
+        this.cnae = cnae;
+        this.categoria = categoria;
+        this.codigosindical = codigosindical;
+        this.usoBanco = usoBanco;
+        this.textoTitulo = textoTitulo;
+        this.caminhoVerso = caminhoVerso;
+        this.entidade = entidade;
     }
 
     public String getRef() {
@@ -681,12 +678,4 @@ public class ParametroBoleto {
     public void setEntidade(String entidade) {
         this.entidade = entidade;
     }
-
 }
-
-
-
-
-
-
-

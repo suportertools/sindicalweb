@@ -7,17 +7,17 @@ import java.util.List;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
-public class ServicoCategoriaDBToplink extends DB implements ServicoCategoriaDB{
+public class ServicoCategoriaDBToplink extends DB implements ServicoCategoriaDB {
 
     @Override
-public boolean insert(ServicoCategoria servicoCategoria) {
-        try{
+    public boolean insert(ServicoCategoria servicoCategoria) {
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().persist(servicoCategoria);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        } catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -25,13 +25,13 @@ public boolean insert(ServicoCategoria servicoCategoria) {
 
     @Override
     public boolean update(ServicoCategoria servicoCategoria) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(servicoCategoria);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -39,13 +39,13 @@ public boolean insert(ServicoCategoria servicoCategoria) {
 
     @Override
     public boolean delete(ServicoCategoria servicoCategoria) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(servicoCategoria);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -54,11 +54,11 @@ public boolean insert(ServicoCategoria servicoCategoria) {
     @Override
     public ServicoCategoria pesquisaCodigo(int id) {
         ServicoCategoria result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("ServicoCategoria.pesquisaID");
             qry.setParameter("pid", id);
             result = (ServicoCategoria) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
@@ -66,10 +66,10 @@ public boolean insert(ServicoCategoria servicoCategoria) {
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select sc from ServicoCategoria sc");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
@@ -77,13 +77,13 @@ public boolean insert(ServicoCategoria servicoCategoria) {
 
     @Override
     public List pesquisaServCatPorId(int idCategoria) {
-        try{
-            Query qry = getEntityManager().createQuery("select sc " +
-                                                       "  from ServicoCategoria sc" +
-                                                       " where sc.categoria.id = "+ idCategoria +
-                                                       " order by sc.parentesco.id");
+        try {
+            Query qry = getEntityManager().createQuery("select sc "
+                    + "  from ServicoCategoria sc"
+                    + " where sc.categoria.id = " + idCategoria
+                    + " order by sc.parentesco.id");
             return (qry.getResultList());
-        }catch(EJBQLException e){
+        } catch (EJBQLException e) {
             e.getMessage();
             return new ArrayList();
         }
@@ -92,12 +92,12 @@ public boolean insert(ServicoCategoria servicoCategoria) {
     @Override
     public ServicoCategoria pesquisaPorParECat(int idParentesco, int idCategoria) {
         ServicoCategoria result = null;
-        try{
-            Query qry = getEntityManager().createQuery("select sc from ServicoCategoria sc " +
-                                                       " where sc.categoria.id = "+idCategoria+" " +
-                                                       "   and sc.parentesco.id = "+idParentesco);
+        try {
+            Query qry = getEntityManager().createQuery("select sc from ServicoCategoria sc "
+                    + " where sc.categoria.id = " + idCategoria + " "
+                    + "   and sc.parentesco.id = " + idParentesco);
             result = (ServicoCategoria) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;

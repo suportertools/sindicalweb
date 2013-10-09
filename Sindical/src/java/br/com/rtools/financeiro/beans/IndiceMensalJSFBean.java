@@ -24,53 +24,51 @@ public class IndiceMensalJSFBean {
     private String valor = "";
     private int idIndice = 0;
     private boolean limpar = false;
-    
-    public String novo(){
+
+    public String novo() {
         msgConfirma = "";
         indiceMensal = new IndiceMensal();
         limpar = false;
         return "indiceMensal";
     }
 
-   public List<SelectItem> getListaIndices(){
-       List<SelectItem> result = new Vector<SelectItem>();
-       int i = 0;
-       IndiceMensalDB db = new IndiceMensalDBToplink();
-       List select = null;
-       select = db.pesquisaTodosIndices();
-       while (i < select.size()){
-          result.add(new SelectItem(  new Integer(i),
-                                      ((Indice) select.get(i)).getDescricao(),
-                                      Integer.toString( ((Indice) select.get(i)).getId() )
-                                  )
-                    );
-          i++;
-       }
-       return result;
-   }
+    public List<SelectItem> getListaIndices() {
+        List<SelectItem> result = new Vector<SelectItem>();
+        int i = 0;
+        IndiceMensalDB db = new IndiceMensalDBToplink();
+        List select = null;
+        select = db.pesquisaTodosIndices();
+        while (i < select.size()) {
+            result.add(new SelectItem(new Integer(i),
+                    ((Indice) select.get(i)).getDescricao(),
+                    Integer.toString(((Indice) select.get(i)).getId())));
+            i++;
+        }
+        return result;
+    }
 
-    public String salvar(){
-        
+    public String salvar() {
+
         msgConfirma = "";
-        
-        if(valor.equals("")){
+
+        if (valor.equals("")) {
             msgConfirma = "Digite um valor válido!";
         }
-        
+
         IndiceMensalDB db = new IndiceMensalDBToplink();
         Indice indice = new Indice();
-        indice = db.pesquisaCodigoIndice( Integer.valueOf(getListaIndices().get(idIndice).getDescription()));
-        indiceMensal.setAno(Integer.valueOf( getListaAnos().get(ano).getDescription()) );
+        indice = db.pesquisaCodigoIndice(Integer.valueOf(getListaIndices().get(idIndice).getDescription()));
+        indiceMensal.setAno(Integer.valueOf(getListaAnos().get(ano).getDescription()));
         indiceMensal.setMes(numMes);
-        indiceMensal.setValor( Moeda.substituiVirgulaFloat( valor ));
+        indiceMensal.setValor(Moeda.substituiVirgulaFloat(valor));
         indiceMensal.setIndice(indice);
-        if (db.pesquisaIndMensalExistente(indice.getId(), indiceMensal.getAno(), indiceMensal.getMes()).isEmpty()){
-            if (db.insert(indiceMensal)){
+        if (db.pesquisaIndMensalExistente(indice.getId(), indiceMensal.getAno(), indiceMensal.getMes()).isEmpty()) {
+            if (db.insert(indiceMensal)) {
                 msgConfirma = "Indice Mensal salvo com Sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Erro ao salvar Indice Mensal";
             }
-        }else{
+        } else {
             msgConfirma = "Indice Mensal ja existe no Sistema!";
         }
         indiceMensal = new IndiceMensal();
@@ -78,34 +76,34 @@ public class IndiceMensalJSFBean {
         return null;
     }
 
-    public String btnExcluir(){
-        indiceMensal =  (IndiceMensal) listaIndiceMensal.get(idIndex);
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();        
+    public String btnExcluir() {
+        indiceMensal = (IndiceMensal) listaIndiceMensal.get(idIndex);
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(indiceMensal.getId(), "IndiceMensal") )){
+
+        if (!sv.deletarObjeto(sv.pesquisaCodigo(indiceMensal.getId(), "IndiceMensal"))) {
             msgConfirma = "Erro ao excluir Indice Mensal!";
             sv.desfazerTransacao();
             return null;
-        }else{
+        } else {
             msgConfirma = "Registro excluido com Sucesso!";
             indiceMensal = new IndiceMensal();
             listaIndiceMensal.clear();
             setLimpar(true);
             sv.comitarTransacao();
         }
-        
+
         return null;
     }
 
-    public List<SelectItem> getListaAnos(){
+    public List<SelectItem> getListaAnos() {
         List<SelectItem> result = new Vector<SelectItem>();
         int an = 0;
         an = Integer.valueOf(DataHoje.data().substring(6, 10));
-        for (int o = 0; o < 6; o++){
-            result.add(new SelectItem(  new Integer(o),
-                                        String.valueOf(an),
-                                        String.valueOf(an)));
+        for (int o = 0; o < 6; o++) {
+            result.add(new SelectItem(new Integer(o),
+                    String.valueOf(an),
+                    String.valueOf(an)));
             an = an - 1;
         }
         return result;
@@ -121,21 +119,19 @@ public class IndiceMensalJSFBean {
 
     public List<IndiceMensal> getListaIndiceMensal() {
         IndiceMensalDB db = new IndiceMensalDBToplink();
-        listaIndiceMensal = db.pesquisaIndiceMensalPorIDIndice(Integer.valueOf( getListaIndices().get(idIndice).getDescription()));
+        listaIndiceMensal = db.pesquisaIndiceMensalPorIDIndice(Integer.valueOf(getListaIndices().get(idIndice).getDescription()));
         return listaIndiceMensal;
     }
-    
-    
-    
-    public void limpar(){
-        if(limpar == true){
+
+    public void limpar() {
+        if (limpar == true) {
             novo();
-        }          
+        }
         listaIndiceMensal.clear();
         indiceMensal = new IndiceMensal();
         valor = "";
         ano = 0;
-        numMes = 0;      
+        numMes = 0;
     }
 
     public void setListaIndiceMensal(List<IndiceMensal> listaIndiceMensal) {
@@ -157,7 +153,7 @@ public class IndiceMensalJSFBean {
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
     }
-    
+
     public int getNumMes() {
         return numMes;
     }
@@ -203,7 +199,4 @@ public class IndiceMensalJSFBean {
     public void setLimpar(boolean limpar) {
         this.limpar = limpar;
     }
-
-
-
 }

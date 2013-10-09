@@ -1,6 +1,7 @@
 package br.com.rtools.impressao;
 
 public class ParametroContribuintes {
+
     private String sinLogo;
     private String sinNome;
     private String sinEndereco;
@@ -48,10 +49,10 @@ public class ParametroContribuintes {
 
     public ParametroContribuintes(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero,
             String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, String sinTelefone,
-            String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento,int jurId, String jurNome, String jurEndereco,
+            String sinEmail, String sinSite, String sinTipoDocumento, String sinDocumento, int jurId, String jurNome, String jurEndereco,
             String jurLogradouro, String jurNumero, String jurComplemento, String jurBairro, String jurCep, String jurCidade,
-            String jurUF, String jurTelefone, String jurEmail, String jurTipoDocumento, String jurDocumento,int jurIdCnae, String jurNumeroCnae,
-            String jurCnae,int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
+            String jurUF, String jurTelefone, String jurEmail, String jurTipoDocumento, String jurDocumento, int jurIdCnae, String jurNumeroCnae,
+            String jurCnae, int escId, String escNome, String escEndereco, String escLogradouro, String escNumero, String escComplemento,
             String escBairro, String escCep, String escCidade, String escUF, String escTelefone, String escEmail) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
@@ -119,7 +120,7 @@ public class ParametroContribuintes {
         this.jurNome = "";
         this.jurEndereco = "";
         this.jurLogradouro = "";
-        this.jurNumero =  "";
+        this.jurNumero = "";
         this.jurComplemento = "";
         this.jurBairro = "";
         this.jurCep = "";
@@ -497,6 +498,4 @@ public class ParametroContribuintes {
     public void setEscEmail(String escEmail) {
         this.escEmail = escEmail;
     }
-
-
 }

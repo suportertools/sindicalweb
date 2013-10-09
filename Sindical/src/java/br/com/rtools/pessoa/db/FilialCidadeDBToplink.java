@@ -55,7 +55,7 @@ public class FilialCidadeDBToplink extends DB implements FilialCidadeDB {
         try {
             Query qry = getEntityManager().createNamedQuery("FilialCidade.pesquisaID");
             qry.setParameter("pid", id);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = (FilialCidade) qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -71,7 +71,7 @@ public class FilialCidadeDBToplink extends DB implements FilialCidadeDB {
             Query qry = getEntityManager().createQuery("select fc from FilialCidade fc"
                     + " where fc.cidade.id = " + idCidade
                     + "   and fc.filial.id = " + idFilial);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = (FilialCidade) qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -86,7 +86,7 @@ public class FilialCidadeDBToplink extends DB implements FilialCidadeDB {
         try {
             Query qry = getEntityManager().createQuery("select fc from FilialCidade fc"
                     + " where fc.cidade.id = " + idCidade);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = (FilialCidade) qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -100,7 +100,7 @@ public class FilialCidadeDBToplink extends DB implements FilialCidadeDB {
         try {
             Query qry = getEntityManager().createQuery("select fc from FilialCidade fc");
             List list = qry.getResultList();
-            if(!list.isEmpty()){
+            if (!list.isEmpty()) {
                 return list;
             }
         } catch (Exception e) {

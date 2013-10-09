@@ -3,27 +3,23 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name="FIN_BOLETO")
-@NamedQuery(name="Boleto.pesquisaID", query="select b from Boleto b where b.id=:pid")
+@Table(name = "FIN_BOLETO")
+@NamedQuery(name = "Boleto.pesquisaID", query = "select b from Boleto b where b.id=:pid")
 public class Boleto implements java.io.Serializable {
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    private int id;
 
-    @JoinColumn(name="ID_CONTA_COBRANCA", referencedColumnName="ID", nullable=false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @JoinColumn(name = "ID_CONTA_COBRANCA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private ContaCobranca contaCobranca;
-
-    @Column(name="NR_BOLETO")
+    @Column(name = "NR_BOLETO")
     private long nrBoleto;
-
-    @Column(name="DS_BOLETO", length=50)
+    @Column(name = "DS_BOLETO", length = 50)
     private String boletoComposto;
-
-    @Column(name="NR_CTR_BOLETO", length=20)
+    @Column(name = "NR_CTR_BOLETO", length = 20)
     private String nrCtrBoleto;
-    
-    @Column(name="IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean ativo;
 
     public Boleto() {
@@ -91,5 +87,4 @@ public class Boleto implements java.io.Serializable {
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
-
 }

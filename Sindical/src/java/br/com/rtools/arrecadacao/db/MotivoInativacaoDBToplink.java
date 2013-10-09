@@ -9,13 +9,13 @@ public class MotivoInativacaoDBToplink extends DB implements MotivoInativacaoDB 
 
     @Override
     public boolean insert(MotivoInativacao motivoInativacao) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(motivoInativacao);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(motivoInativacao);
+            getEntityManager().flush();
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -23,24 +23,22 @@ public class MotivoInativacaoDBToplink extends DB implements MotivoInativacaoDB 
 
     @Override
     public boolean update(MotivoInativacao motivoInativacao) {
-        try{
-        getEntityManager().merge(motivoInativacao);
-        getEntityManager().flush();
-        return true;
-        }
-        catch(Exception e){
+        try {
+            getEntityManager().merge(motivoInativacao);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
 
     @Override
     public boolean delete(MotivoInativacao motivoInativacao) {
-        try{
-        getEntityManager().remove(motivoInativacao);
-        getEntityManager().flush();
-        return true;
-        }
-        catch(Exception e){
+        try {
+            getEntityManager().remove(motivoInativacao);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
@@ -48,40 +46,35 @@ public class MotivoInativacaoDBToplink extends DB implements MotivoInativacaoDB 
     @Override
     public MotivoInativacao pesquisaCodigo(int id) {
         MotivoInativacao result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("MotivoInativacao.pesquisaID");
             qry.setParameter("pid", id);
             result = (MotivoInativacao) qry.getSingleResult();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return result;
     }
 
     @Override
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select cont from MotivoInativacao cont ");
             return (qry.getResultList());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     @Override
-    public MotivoInativacao idMotivoInativacao(MotivoInativacao des_motivoInativacao){
+    public MotivoInativacao idMotivoInativacao(MotivoInativacao des_motivoInativacao) {
         MotivoInativacao result = null;
         String descricao = des_motivoInativacao.getDescricao().toLowerCase().toUpperCase();
-        try{
-           Query qry = getEntityManager().createQuery("select mot from MotivoInativacao mot where UPPER(mot.descricao) = :d_motivoInativacao");
-           qry.setParameter("d_motivoInativacao", descricao);
-           result = (MotivoInativacao) qry.getSingleResult();
-        }
-        catch(Exception e){
+        try {
+            Query qry = getEntityManager().createQuery("select mot from MotivoInativacao mot where UPPER(mot.descricao) = :d_motivoInativacao");
+            qry.setParameter("d_motivoInativacao", descricao);
+            result = (MotivoInativacao) qry.getSingleResult();
+        } catch (Exception e) {
         }
         return result;
     }
-
-
 }

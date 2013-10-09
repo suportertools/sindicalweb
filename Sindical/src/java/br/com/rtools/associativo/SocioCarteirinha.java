@@ -15,17 +15,18 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="SOC_CARTEIRINHA")
-@NamedQuery(name="SocioCarteirinha.pesquisaID", query="select sc from SocioCarteirinha sc where sc.id=:pid")
+@Table(name = "SOC_CARTEIRINHA")
+@NamedQuery(name = "SocioCarteirinha.pesquisaID", query = "select sc from SocioCarteirinha sc where sc.id=:pid")
 public class SocioCarteirinha implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_SOCIO", referencedColumnName="ID", nullable=true)
+    @JoinColumn(name = "ID_SOCIO", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Socios socios;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_EMISSAO")
+    @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
 
     public SocioCarteirinha(int id, Socios socios, Date dtEmissao) {
@@ -64,15 +65,17 @@ public class SocioCarteirinha implements java.io.Serializable {
         this.dtEmissao = dtEmissao;
     }
 
-    public String getEmissao(){
-        if (dtEmissao != null)
+    public String getEmissao() {
+        if (dtEmissao != null) {
             return DataHoje.converteData(dtEmissao);
-        else
+        } else {
             return "";
+        }
     }
 
-    public void setEmissao(String emissao){
-        if (!(emissao.isEmpty()))
+    public void setEmissao(String emissao) {
+        if (!(emissao.isEmpty())) {
             this.dtEmissao = DataHoje.converte(emissao);
+        }
     }
 }

@@ -1,19 +1,16 @@
-
 package br.com.rtools.suporte;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="PRO_PRIORIDADE")
-@NamedQuery(name="Prioridade.pesquisaID", query="select p from Prioridade p where p.id=:pid")
-
+@Table(name = "PRO_PRIORIDADE")
+@NamedQuery(name = "Prioridade.pesquisaID", query = "select p from Prioridade p where p.id=:pid")
 public class Prioridade implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column(name="DS_DESCRICAO", length=30)
+    @Column(name = "DS_DESCRICAO", length = 30)
     private String descricao;
 
     public Prioridade(int id, String descricao) {
@@ -25,7 +22,7 @@ public class Prioridade implements java.io.Serializable {
         this.id = -1;
         this.descricao = "";
     }
-    
+
     public int getId() {
         return id;
     }
@@ -41,6 +38,4 @@ public class Prioridade implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
-
-
 }

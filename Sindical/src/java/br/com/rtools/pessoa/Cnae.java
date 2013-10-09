@@ -3,16 +3,16 @@ package br.com.rtools.pessoa;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_CNAE")
-@NamedQuery(name="Cnae.pesquisaID", query="select cnae from Cnae cnae where cnae.id=:pid")
-public class Cnae implements java.io.Serializable {    
-    
+@Table(name = "PES_CNAE")
+@NamedQuery(name = "Cnae.pesquisaID", query = "select cnae from Cnae cnae where cnae.id=:pid")
+public class Cnae implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_CNAE", length=1000, nullable=false)
+    @Column(name = "DS_CNAE", length = 1000, nullable = false)
     private String cnae;
-    @Column(name="DS_NUMERO", length=50, nullable=false)
+    @Column(name = "DS_NUMERO", length = 50, nullable = false)
     private String numero;
 
     public Cnae() {
@@ -20,7 +20,7 @@ public class Cnae implements java.io.Serializable {
         this.cnae = "";
         this.numero = "";
     }
-    
+
     public Cnae(int id, String cnae, String numero) {
         this.id = id;
         this.cnae = cnae;

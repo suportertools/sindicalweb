@@ -6,10 +6,11 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class IndiceJSFBean {
+
     private Indice indice = new Indice();
     private String msgConfirma = "";
 
-    public String salvar(){
+    public String salvar() {
 //        IndiceDB db = new IndiceDBToplink();
 //        if (indice.getId() == -1){
 //            if (indice.getDescricao().equals("")){
@@ -32,21 +33,22 @@ public class IndiceJSFBean {
         return null;
     }
 
-    public String editar(){
+    public String editar() {
 //       indice = (Indice) getHtmlTable().getRowData();
-       FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-       if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null)
-           return "indice";
-       else
-           return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
+            return "indice";
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
     }
 
-    public String novo(){
+    public String novo() {
         indice = new Indice();
         return "indice";
     }
 
-    public String excluir(){
+    public String excluir() {
 //        IndiceDB db = new IndiceDBToplink();
 //        if (indice.getId() != -1){
 //            db.getEntityManager().getTransaction().begin();
@@ -63,7 +65,7 @@ public class IndiceJSFBean {
         return null;
     }
 
-    public List getListaIndices(){
+    public List getListaIndices() {
 //        IndiceDB db = new IndiceDBToplink();
         List result = new ArrayList();
 //        result = db.pesquisaTodos();

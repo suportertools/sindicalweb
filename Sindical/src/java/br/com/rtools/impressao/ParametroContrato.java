@@ -1,13 +1,14 @@
 package br.com.rtools.impressao;
 
 public class ParametroContrato {
+
     private String nomePessoa;
 
     public ParametroContrato(String nomePessoa) {
         this.nomePessoa = nomePessoa;
     }
 
-    public ParametroContrato(){
+    public ParametroContrato() {
         this.nomePessoa = "João Aparecido de Paula";
     }
 

@@ -1,24 +1,23 @@
-               
 package br.com.rtools.endereco;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="END_LOGRADOURO")
-@NamedQuery(name="Logradouro.pesquisaID", query="select logr from Logradouro logr where logr.id=:pid")
+@Table(name = "END_LOGRADOURO")
+@NamedQuery(name = "Logradouro.pesquisaID", query = "select logr from Logradouro logr where logr.id=:pid")
 public class Logradouro implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name="DS_DESCRICAO", length=50, nullable = false, unique = true)
+    @Column(name = "DS_DESCRICAO", length = 50, nullable = false, unique = true)
     private String descricao;
 
     public Logradouro() {
         this.id = -1;
         this.descricao = "";
     }
-    
+
     public Logradouro(int id, String descricao) {
         this.id = id;
         this.descricao = descricao;
@@ -40,7 +39,3 @@ public class Logradouro implements java.io.Serializable {
         this.descricao = descricao;
     }
 }
-    
-    
-
-    

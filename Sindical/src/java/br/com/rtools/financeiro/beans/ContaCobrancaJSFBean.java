@@ -18,6 +18,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 public class ContaCobrancaJSFBean {
+
     private ContaCobranca contaCobranca = new ContaCobranca();
     private List<ContaCobranca> listaContaCobranca = new ArrayList();
     private int idIndex = -1;
@@ -28,86 +29,86 @@ public class ContaCobrancaJSFBean {
     private String codigoCedente = "";
     private boolean limpar = false;
 
-    public String salvar(){
-        
+    public String salvar() {
+
         ContaCobrancaDB db = new ContaCobrancaDBToplink();
         Layout la = db.pesquisaLayoutId(Integer.valueOf(getListaLayout().get(idLayout).getDescription()));
-        
+
         msgConfirma = "";
-        
+
         contaCobranca.setSicasSindical(sicas);
         contaCobranca.setCodigoSindical(codigoCedente);
         contaCobranca.setLayout(la);
         //contaCobranca.setRepasse( Moeda.substituiVirgulaFloat(repasse) );
 
-        if (contaCobranca.getContaBanco().getBanco().getBanco().equals("")){
+        if (contaCobranca.getContaBanco().getBanco().getBanco().equals("")) {
             msgConfirma = "Atenção, é preciso pesquisar um Banco!";
             return null;
         }
 
-        if ((contaCobranca.getCodCedente().equals("")) || (contaCobranca.getCodCedente().equals("0"))){
+        if ((contaCobranca.getCodCedente().equals("")) || (contaCobranca.getCodCedente().equals("0"))) {
             msgConfirma = "Digite um Código Cedente!";
             return null;
         }
 
-        if (contaCobranca.getCedente().equals("")){
+        if (contaCobranca.getCedente().equals("")) {
             msgConfirma = "Digite um Cedente!";
             return null;
         }
 
-        if (contaCobranca.getLocalPagamento().equals("")){
+        if (contaCobranca.getLocalPagamento().equals("")) {
             msgConfirma = "Local de Pagamento não pode ser nulo!";
             return null;
         }
 
-        if ((contaCobranca.getBoletoInicial().equals("0")) || (contaCobranca.getBoletoInicial().equals(""))){
+        if ((contaCobranca.getBoletoInicial().equals("0")) || (contaCobranca.getBoletoInicial().equals(""))) {
             msgConfirma = "Boleto Inicial está em branco!";
             return null;
         }
 
-        if (contaCobranca.getMoeda().equals("")){
+        if (contaCobranca.getMoeda().equals("")) {
             msgConfirma = "O campo Moeda está em branco!";
             return null;
         }
 
-        if (contaCobranca.getEspecieMoeda().equals("")){
+        if (contaCobranca.getEspecieMoeda().equals("")) {
             msgConfirma = "O campo Espécie Moeda está em branco!";
             return null;
         }
 
-        if (contaCobranca.getEspecieDoc().equals("")){
+        if (contaCobranca.getEspecieDoc().equals("")) {
             msgConfirma = "Digite uma Espécie de Documento!";
             return null;
         }
 
-        if (contaCobranca.getAceite().equals("")){
+        if (contaCobranca.getAceite().equals("")) {
             msgConfirma = "Digite um Aceite!";
             return null;
         }
-        
+
         NovoLog log = new NovoLog();
-        
-        if(contaCobranca.getId() == -1){
-            if (db.idContaCobranca(contaCobranca) != null){
-                    msgConfirma = "Este cadastro já existe no Sistema.";
-            }else{               
+
+        if (contaCobranca.getId() == -1) {
+            if (db.idContaCobranca(contaCobranca) != null) {
+                msgConfirma = "Este cadastro já existe no Sistema.";
+            } else {
                 atualizarSicas();
-                if(db.insert(contaCobranca)){
-                    log.novo("Novo Registro", " ID: " +contaCobranca.getId()+" Banco: "+contaCobranca.getContaBanco().getBanco().getBanco()+" - Agência: "+contaCobranca.getContaBanco().getAgencia()+" - Conta: "+contaCobranca.getContaBanco().getConta()+" - Cedente: "+contaCobranca.getCedente()+" - Código Cedente: "+contaCobranca.getCodCedente());
+                if (db.insert(contaCobranca)) {
+                    log.novo("Novo Registro", " ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                     msgConfirma = "Cadastro salvo com Sucesso!";
-                }else{
+                } else {
                     msgConfirma = "Erro ao Salvar!";
                 }
             }
-        }else{
+        } else {
             ContaCobranca conta = new ContaCobranca();
             conta = (ContaCobranca) db.pesquisaCodigo(contaCobranca.getId());
-            String antes = conta.getId()+" Banco: "+conta.getContaBanco().getBanco().getBanco()+" - Agência: "+conta.getContaBanco().getAgencia()+" - Conta: "+conta.getContaBanco().getConta()+" - Cedente: "+conta.getCedente()+" - Código Cedente: "+conta.getCodCedente();
+            String antes = conta.getId() + " Banco: " + conta.getContaBanco().getBanco().getBanco() + " - Agência: " + conta.getContaBanco().getAgencia() + " - Conta: " + conta.getContaBanco().getConta() + " - Cedente: " + conta.getCedente() + " - Código Cedente: " + conta.getCodCedente();
             atualizarSicas();
-            if (db.update(contaCobranca)){
-                log.novo("Atualizado", antes + " - para ID: " +contaCobranca.getId()+" Banco: "+contaCobranca.getContaBanco().getBanco().getBanco()+" - Agência: "+contaCobranca.getContaBanco().getAgencia()+" - Conta: "+contaCobranca.getContaBanco().getConta()+" - Cedente: "+contaCobranca.getCedente()+" - Código Cedente: "+contaCobranca.getCodCedente());
+            if (db.update(contaCobranca)) {
+                log.novo("Atualizado", antes + " - para ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                 msgConfirma = "Cadastro atualizado com sucesso!";
-            }else{
+            } else {
                 msgConfirma = "Falha na atualização do cadastro!";
             }
         }
@@ -115,25 +116,25 @@ public class ContaCobrancaJSFBean {
         return null;
     }
 
-    private void atualizarSicas(){
+    private void atualizarSicas() {
         String codigoSindical = "";
-        try{
+        try {
             FilialDB filialDB = new FilialDBToplink();
             String entidade = filialDB.pesquisaRegistroPorFilial(1).getTipoEntidade();
             codigoSindical = contaCobranca.getCodigoSindical();
-            if(entidade.equals("S")){
+            if (entidade.equals("S")) {
                 contaCobranca.setSicasSindical(codigoSindical.substring(6, 11));
-            }else if(entidade.equals("C")){
+            } else if (entidade.equals("C")) {
                 contaCobranca.setSicasSindical("00" + codigoSindical.substring(0, 3));
-            }else if(entidade.equals("F")){
+            } else if (entidade.equals("F")) {
                 contaCobranca.setSicasSindical("00" + codigoSindical.substring(3, 6));
             }
-        }catch(Exception e) {
+        } catch (Exception e) {
             contaCobranca.setSicasSindical("");
         }
     }
 
-    public String novo(){
+    public String novo() {
         contaCobranca = new ContaCobranca();
         listaContaCobranca.clear();
         sicas = "";
@@ -145,79 +146,79 @@ public class ContaCobrancaJSFBean {
         limpar = false;
         return "contaCobranca";
     }
-    
-    public void limpar(){
-        if(limpar == true){
+
+    public void limpar() {
+        if (limpar == true) {
             novo();
         }
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
-        if (contaCobranca.getId()!=-1){
+        if (contaCobranca.getId() != -1) {
             db.abrirTransacao();
-            contaCobranca = (ContaCobranca) db.pesquisaCodigo( contaCobranca.getId(), "ContaCobranca");
+            contaCobranca = (ContaCobranca) db.pesquisaCodigo(contaCobranca.getId(), "ContaCobranca");
             NovoLog log = new NovoLog();
-            if (db.deletarObjeto(contaCobranca)){
-                log.novo("Excluído", " ID: " +contaCobranca.getId() + " - Banco: " +  contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() +" - Código Cedente: " + contaCobranca.getCodCedente());
+            if (db.deletarObjeto(contaCobranca)) {
+                log.novo("Excluído", " ID: " + contaCobranca.getId() + " - Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                 msgConfirma = "Cadastro Excluido com sucesso!";
                 limpar = true;
                 db.comitarTransacao();
-            }else{
+            } else {
                 db.desfazerTransacao();
-                msgConfirma = "Não foi possível excluir esse cadastro. Verifique se há vínculos externos!";                
+                msgConfirma = "Não foi possível excluir esse cadastro. Verifique se há vínculos externos!";
             }
         }
         return null;
     }
 
     public List<ContaCobranca> getListaContaCobranca() {
-       ContaCobrancaDB db = new ContaCobrancaDBToplink();
-       listaContaCobranca = db.pesquisaTodos();
-       return listaContaCobranca;
-    }    
+        ContaCobrancaDB db = new ContaCobrancaDBToplink();
+        listaContaCobranca = db.pesquisaTodos();
+        return listaContaCobranca;
+    }
 
     public void setListaContaCobranca(List<ContaCobranca> listaContaCobranca) {
         this.listaContaCobranca = listaContaCobranca;
-    }    
+    }
 
-    public List<SelectItem> getListaLayout(){
+    public List<SelectItem> getListaLayout() {
         ContaCobrancaDB db = new ContaCobrancaDBToplink();
         List<SelectItem> result = new Vector<SelectItem>();
         List layouts = db.pesquisaLayouts();
-        for (int i = 0; i < layouts.size(); i++){
+        for (int i = 0; i < layouts.size(); i++) {
             result.add(new SelectItem(new Integer(i),
-                                        ((Layout) layouts.get(i)).getDescricao(),
-                                        Integer.toString(((Layout) layouts.get(i)).getId()) ) );
+                    ((Layout) layouts.get(i)).getDescricao(),
+                    Integer.toString(((Layout) layouts.get(i)).getId())));
         }
         return result;
     }
-    
-    public String editar(){
+
+    public String editar() {
         contaCobranca = (ContaCobranca) listaContaCobranca.get(idIndex);
         ContaCobrancaDB db = new ContaCobrancaDBToplink();
-        List<Layout> layouts = db.pesquisaLayouts();        
-        for (int i = 0; i < layouts.size(); i++){
-            if (layouts.get(i).getId() == contaCobranca.getLayout().getId()){
+        List<Layout> layouts = db.pesquisaLayouts();
+        for (int i = 0; i < layouts.size(); i++) {
+            if (layouts.get(i).getId() == contaCobranca.getLayout().getId()) {
                 idLayout = i;
             }
         }
-        
+
         setSicas(contaCobranca.getSicasSindical());
         setCodigoCedente(contaCobranca.getCodigoSindical());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("contaCobrancaPesquisa", contaCobranca);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "contaCobranca";
-        }else{
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");           
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
-    }    
-   
-    public String preencheSicasECodSindical(){
-        if( contaCobranca.getCodCedente().length() >= 5 ){
+    }
+
+    public String preencheSicasECodSindical() {
+        if (contaCobranca.getCodCedente().length() >= 5) {
             sicas = contaCobranca.getCodCedente().substring(contaCobranca.getCodCedente().length() - 5, contaCobranca.getCodCedente().length());
-        }else{
+        } else {
             sicas = "";
         }
         codigoCedente = contaCobranca.getCodCedente();
@@ -241,12 +242,12 @@ public class ContaCobrancaJSFBean {
     }
 
     public ContaCobranca getContaCobranca() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaCobrancaPesquisa") != null){
-            contaCobranca = (ContaCobranca)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaCobrancaPesquisa");
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaCobrancaPesquisa") != null) {
+            contaCobranca = (ContaCobranca) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaCobrancaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("contaCobrancaPesquisa");
         }
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaBancoPesquisa") != null){
-            contaCobranca.setContaBanco((ContaBanco)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaBancoPesquisa"));
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaBancoPesquisa") != null) {
+            contaCobranca.setContaBanco((ContaBanco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("contaBancoPesquisa"));
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("contaBancoPesquisa");
         }
         return contaCobranca;

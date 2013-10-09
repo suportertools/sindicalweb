@@ -9,99 +9,91 @@ import oracle.toplink.essentials.exceptions.EJBQLException;
 public class PrioridadeDBToplink extends DB implements PrioridadeDB {
 
     public boolean insert(Prioridade prioridade) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(prioridade);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(prioridade);
+            getEntityManager().flush();
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(Prioridade prioridade) {
-        try{
-        getEntityManager().merge(prioridade);
-        getEntityManager().flush();
-        return true;
-        }
-        catch(Exception e){
+        try {
+            getEntityManager().merge(prioridade);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
 
     public boolean delete(Prioridade prioridade) {
-        try{
-        getEntityManager().remove(prioridade);
-        getEntityManager().flush();
-        return true;
-        }
-        catch(Exception e){
+        try {
+            getEntityManager().remove(prioridade);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }
 
     public Prioridade pesquisaCodigo(int id) {
         Prioridade result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Prioridade.pesquisaID");
             qry.setParameter("pid", id);
             result = (Prioridade) qry.getSingleResult();
-        }
-        catch(Exception e){
+        } catch (Exception e) {
         }
         return result;
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select pri from Prioridade pri order by pri.prioridade desc ");
             return (qry.getResultList());
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
-    public List<String> pesquisaPrioridade(String des_tipo){
+    public List<String> pesquisaPrioridade(String des_tipo) {
         List<String> result = null;
-        try{
-           Query qry = getEntityManager().createQuery("select pri.prioridade from Prioridade pri where pri.prioridade like :texto");
-           qry.setParameter("texto", des_tipo);
-           result = (List<String>) qry.getResultList();
-        }
-        catch(Exception e){
+        try {
+            Query qry = getEntityManager().createQuery("select pri.prioridade from Prioridade pri where pri.prioridade like :texto");
+            qry.setParameter("texto", des_tipo);
+            result = (List<String>) qry.getResultList();
+        } catch (Exception e) {
         }
         return result;
     }
 
-    public List pesquisaPrioridadeParametros(String por,String combo,String desc) {
+    public List pesquisaPrioridadeParametros(String por, String combo, String desc) {
         String textQuery = "";
-        if (!desc.equals("") && !por.equals("")){
-            if (por.equals("I")){
-                desc = desc+"%";
-            }else if(por.equals("P")){
-                desc = "%"+desc+"%";
+        if (!desc.equals("") && !por.equals("")) {
+            if (por.equals("I")) {
+                desc = desc + "%";
+            } else if (por.equals("P")) {
+                desc = "%" + desc + "%";
             }
-        }else{
+        } else {
             desc = "";
             return null;
         }
-        if (combo.equals("")){
+        if (combo.equals("")) {
             combo = "prioridade";
         }
-        try{
-            textQuery = "select pri from Prioridade pri where upper(pri."+combo+") like :prioridade order by pri.prioridade";
+        try {
+            textQuery = "select pri from Prioridade pri where upper(pri." + combo + ") like :prioridade order by pri.prioridade";
             Query qry = getEntityManager().createQuery(textQuery);
             qry.setParameter("prioridade", desc.toLowerCase().toUpperCase());
             return (qry.getResultList());
-        }
-        catch(EJBQLException e){
+        } catch (EJBQLException e) {
             return null;
         }
     }
-
 }
-

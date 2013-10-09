@@ -409,8 +409,8 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
             ContaCobrancaDB ctaCobraDB = new ContaCobrancaDBToplink();
             ContaCobranca contaCob = new ContaCobranca();
             String dataValida = "";
-            DataHoje dh= new DataHoje();
-            
+            DataHoje dh = new DataHoje();
+
             if (getListaServicos().isEmpty()) {
                 msgConfirma = "Lista de Serviços está vazia!";
                 return null;
@@ -430,21 +430,21 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
             }
 
             MovimentoDB dbm = new MovimentoDBToplink();
-            
+
             if (dbm.pesquisaMovimentos(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
                 msgConfirma = " Este boleto já existe!";
                 return null;
             }
-            
+
             if (dbm.pesquisaMovimentosAcordado(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servico.getId()) != null) {
                 msgConfirma = " Já foi gerado um Acordo para esta referência, serviço e tipo de serviço!";
                 return null;
             }
-            
+
             if ((new DataHoje()).integridadeReferencia(strReferencia)) {
                 mc = dbCon.retornaDiaString(juridica.getId(), strReferencia, tipoServico.getId(), servico.getId());
                 if (mc != null) {
-                    
+
                     if (registro.getDiasBloqueiaAtrasadosWeb() <= 0) {
                         strVencimento = mc.getVencimento();
                         dataValida = strVencimento;
@@ -452,7 +452,7 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
                         strVencimento = mc.getVencimento();
                         dataValida = dh.incrementarDias(registro.getDiasBloqueiaAtrasadosWeb(), strVencimento);
                     }
-                    
+
                     if (validaBloqueio(dataValida)) {
                         msgConfirma = " Não é permitido gerar boleto vencido! " + registro.getMensagemBloqueioBoletoWeb();
                         return null;

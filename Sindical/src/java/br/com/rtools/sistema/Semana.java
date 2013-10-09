@@ -11,12 +11,12 @@ public class Semana implements java.io.Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "DS_DESCRICAO", length = 15, unique = true)
-    private String descricao;  
+    private String descricao;
 
     public Semana() {
         this.id = -1;
         this.descricao = "";
-    }    
+    }
 
     public Semana(int id, String descricao) {
         this.id = id;

@@ -13,23 +13,23 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="ARR_OPOSICAO_PESSOA")
-@NamedQuery(name="OposicaoPessoa.pesquisaID", query="select op from OposicaoPessoa op where op.id=:pid")
+@Table(name = "ARR_OPOSICAO_PESSOA")
+@NamedQuery(name = "OposicaoPessoa.pesquisaID", query = "select op from OposicaoPessoa op where op.id=:pid")
 public class OposicaoPessoa implements java.io.Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_CADASTRO")
+    @Column(name = "DT_CADASTRO")
     private Date dataCadastro;
-    @Column(name="DS_NOME", length=200, nullable=false)
+    @Column(name = "DS_NOME", length = 200, nullable = false)
     private String nome;
-    @Column(name="DS_SEXO", length=1)
+    @Column(name = "DS_SEXO", length = 1)
     private String sexo;
-    @Column(name="DS_CPF", length=15)
-    private String cpf;    
-    @Column(name="DS_RG", length=12)
+    @Column(name = "DS_CPF", length = 15)
+    private String cpf;
+    @Column(name = "DS_RG", length = 12)
     private String rg;
 
     public OposicaoPessoa() {
@@ -39,7 +39,7 @@ public class OposicaoPessoa implements java.io.Serializable {
         this.cpf = "";
         this.rg = "";
     }
-    
+
     public OposicaoPessoa(int id, String dataCadastro, String nome, String cpf, String rg, String observacao) {
         this.id = id;
         setDataCadastroString(dataCadastro);
@@ -47,7 +47,7 @@ public class OposicaoPessoa implements java.io.Serializable {
         this.cpf = cpf;
         this.rg = rg;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -87,14 +87,14 @@ public class OposicaoPessoa implements java.io.Serializable {
     public void setRg(String rg) {
         this.rg = rg;
     }
-    
+
     public String getDataCadastroString() {
         return DataHoje.converteData(this.dataCadastro);
     }
 
     public void setDataCadastroString(String dataCadastro) {
         this.dataCadastro = DataHoje.converte(dataCadastro);
-    }    
+    }
 
     public String getSexo() {
         return sexo;
@@ -103,5 +103,4 @@ public class OposicaoPessoa implements java.io.Serializable {
     public void setSexo(String sexo) {
         this.sexo = sexo;
     }
-
 }

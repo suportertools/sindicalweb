@@ -5,21 +5,19 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name="PES_PESSOA_SEM_CADASTRO")
-@NamedQuery(name="PessoaSemCadastro.pesquisaID", query="select p from PessoaSemCadastro p where p.id=:pid")
+@Table(name = "PES_PESSOA_SEM_CADASTRO")
+@NamedQuery(name = "PessoaSemCadastro.pesquisaID", query = "select p from PessoaSemCadastro p where p.id=:pid")
 public class PessoaSemCadastro implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Column(name="DS_NOME", length=100)
+    @Column(name = "DS_NOME", length = 100)
     private String nome;
-    
-    @Column(name="DS_DOCUMENTO", length=50)
+    @Column(name = "DS_DOCUMENTO", length = 50)
     private String documento;
-
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_DATA")
+    @Column(name = "DT_DATA")
     private Date dtData;
 
     public PessoaSemCadastro() {
@@ -28,7 +26,7 @@ public class PessoaSemCadastro implements java.io.Serializable {
         this.documento = "";
         setData(DataHoje.data());
     }
-    
+
     public PessoaSemCadastro(int id, String nome, String documento, String data) {
         this.id = id;
         this.nome = nome;
@@ -74,5 +72,5 @@ public class PessoaSemCadastro implements java.io.Serializable {
 
     public void setData(String data) {
         this.dtData = DataHoje.converte(data);
-    }    
+    }
 }

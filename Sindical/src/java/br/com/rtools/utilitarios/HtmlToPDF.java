@@ -12,17 +12,16 @@ import com.lowagie.text.DocumentException;
 
 /**
  * http://javafree.uol.com.br/topic-866449-Converta-HTML-para-PDF-com-06-linhas-de-Codigo.html
- * OutputStream os = new FileOutputStream("C:\hello.pdf");
- * Html2Pdf.convert("<h1 style=\"color:red\">Hello PDF</h1>", os);
- * os.close();
- */  
-public class HtmlToPDF {  
+ * OutputStream os = new FileOutputStream("C:\hello.pdf"); Html2Pdf.convert("<h1
+ * style=\"color:red\">Hello PDF</h1>", os); os.close();
+ */
+public class HtmlToPDF {
 
-    public static void convert(String input, OutputStream out) throws DocumentException{  
-        convert(new ByteArrayInputStream(input.getBytes()), out);  
-    }  
+    public static void convert(String input, OutputStream out) throws DocumentException {
+        convert(new ByteArrayInputStream(input.getBytes()), out);
+    }
 
-    public static void convert(InputStream input, OutputStream out) throws DocumentException{
+    public static void convert(InputStream input, OutputStream out) throws DocumentException {
         Tidy tidy = new Tidy();
         Document doc = tidy.parseDOM(input, null);
         ITextRenderer renderer = new ITextRenderer();

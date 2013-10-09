@@ -16,24 +16,25 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="ARR_PISO_SALARIAL_LOTE")
-@NamedQuery(name="PisoSalarialLote.pesquisaID", query="select psl from PisoSalarialLote psl where psl.id = :pid")
+@Table(name = "ARR_PISO_SALARIAL_LOTE")
+@NamedQuery(name = "PisoSalarialLote.pesquisaID", query = "select psl from PisoSalarialLote psl where psl.id = :pid")
 public class PisoSalarialLote implements java.io.Serializable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name="ID_PATRONAL", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PATRONAL", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Patronal patronal;
-    @JoinColumn(name="ID_PORTE", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name = "ID_PORTE", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Porte porte;
-    @Column(name="NR_ANO", length=4, nullable=false)
+    @Column(name = "NR_ANO", length = 4, nullable = false)
     private int ano;
-    @Column(name="DS_MENSAGEM", length=3000, nullable=true)
+    @Column(name = "DS_MENSAGEM", length = 3000, nullable = true)
     private String mensagem;
     @Temporal(TemporalType.DATE)
-    @Column(name="DT_VALIDADE")
+    @Column(name = "DT_VALIDADE")
     private Date dtValidade;
 
     public PisoSalarialLote() {
@@ -44,7 +45,7 @@ public class PisoSalarialLote implements java.io.Serializable {
         this.mensagem = "";
         this.setValidade("");
     }
-    
+
     public PisoSalarialLote(int id, Patronal patronal, Porte porte, int ano, String mensagem, String validade) {
         this.id = id;
         this.patronal = patronal;
@@ -53,7 +54,7 @@ public class PisoSalarialLote implements java.io.Serializable {
         this.mensagem = mensagem;
         this.setValidade(validade);
     }
-    
+
     public int getId() {
         return id;
     }
@@ -101,12 +102,12 @@ public class PisoSalarialLote implements java.io.Serializable {
     public void setDtValidade(Date dtValidade) {
         this.dtValidade = dtValidade;
     }
-    
+
     public String getValidade() {
         return DataHoje.converteData(dtValidade);
     }
 
     public void setValidade(String validade) {
         this.dtValidade = DataHoje.converte(validade);
-    }    
+    }
 }

@@ -13,87 +13,87 @@ public class ProtocoloJSFBean {
     private String descPesquisa;
     private String msgConfirma;
 
-    public ProtocoloJSFBean(){
+    public ProtocoloJSFBean() {
         protocolo = new Protocolo();
         comoPesquisa = "";
         descPesquisa = "";
     }
 
-    public String novo(){
+    public String novo() {
         setProtocolo(new Protocolo());
         return "protocolo";
     }
 
-    public String salvar(){
+    public String salvar() {
         ProtocoloDB protocoloDB = new ProtocoloDBToplink();
-        if (getProtocolo().getId()==-1){
-            if (getProtocolo().getSolicitante().equals("")){
+        if (getProtocolo().getId() == -1) {
+            if (getProtocolo().getSolicitante().equals("")) {
                 setMsgConfirma("Digite o a situação do histórico atual!");
-            }else{
-                if (protocoloDB.pesquisaCodigo(getProtocolo().getId()) == null){
-                   if (protocoloDB.insert(getProtocolo())){
+            } else {
+                if (protocoloDB.pesquisaCodigo(getProtocolo().getId()) == null) {
+                    if (protocoloDB.insert(getProtocolo())) {
                         setMsgConfirma("Cadastro efetuado com sucesso!");
-                   }else{
+                    } else {
                         setMsgConfirma("Erro! Cadastro não foi efetuado.");
-                   }
-                }else{
+                    }
+                } else {
                     setMsgConfirma("Já existe um componente curricular com esse nome.");
                 }
             }
-        }else{
-            if (protocoloDB.update(getProtocolo())){
+        } else {
+            if (protocoloDB.update(getProtocolo())) {
                 setMsgConfirma("Cadastro atualizado com sucesso!");
-            }else{
+            } else {
             }
         }
         setProtocolo(new Protocolo());
         return null;
     }
 
-   public String excluir(){
-       ProtocoloDB protocoloDB = new ProtocoloDBToplink();
-       if (getProtocolo().getId()!= -1){
+    public String excluir() {
+        ProtocoloDB protocoloDB = new ProtocoloDBToplink();
+        if (getProtocolo().getId() != -1) {
             setProtocolo(protocoloDB.pesquisaCodigo(getProtocolo().getId()));
-           if (protocoloDB.delete(getProtocolo())){
+            if (protocoloDB.delete(getProtocolo())) {
                 setMsgConfirma("Cadastro excluído com sucesso!");
-           }else{
+            } else {
                 setMsgConfirma("Erro! Cadastro não foi excluído.");
-           }
-       }else{
+            }
+        } else {
             setMsgConfirma("Não há registro para excluir.");
-       }
+        }
         setProtocolo(new Protocolo());
-       return null;
-   }
-
-    public String editar(){
-//        setProtocolo((Protocolo) getHtmlTable().getRowData());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("ordemProtocolo", getProtocolo());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-        setDescPesquisa("");
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null)
-            return "ordemServico";
-        else
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        return null;
     }
 
-    public void acaoPesquisaInicial(){
+    public String editar() {
+//        setProtocolo((Protocolo) getHtmlTable().getRowData());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("ordemProtocolo", getProtocolo());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        setDescPesquisa("");
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
+            return "ordemServico";
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
+    }
+
+    public void acaoPesquisaInicial() {
         setComoPesquisa("I");
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         setComoPesquisa("P");
     }
 
-    public List getListaOrdemServico(){
+    public List getListaOrdemServico() {
 //        Pesquisa pesquisa = new Pesquisa();
         List result = null;
 //        result = pesquisa.pesquisar("OrdemServico", "descricao" , getDescPesquisa(), "descricao", getComoPesquisa());
         return result;
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
     public Protocolo getProtocolo() {

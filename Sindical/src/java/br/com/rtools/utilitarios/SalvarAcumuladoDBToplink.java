@@ -44,9 +44,9 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         try {
             Method metodo = classe.getMethod("getId", new Class[]{});
             id = (Integer) metodo.invoke(objeto, (Object[]) null);
-            if(id == -1){
+            if (id == -1) {
                 NovoLog log = new NovoLog();
-                log.novo("Alterar "+objeto.getClass().getSimpleName(), "Objeto esta passando -1");
+                log.novo("Alterar " + objeto.getClass().getSimpleName(), "Objeto esta passando -1");
                 return false;
             }
             getEntityManager().merge(objeto);
@@ -78,7 +78,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         try {
             Query qry = getEntityManager().createNamedQuery(tipo + ".pesquisaID");
             qry.setParameter("pid", id);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -92,7 +92,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         Object result = null;
         try {
             Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB.id = " + id);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -106,7 +106,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         List result = new ArrayList();
         try {
             Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " AS OB");
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
@@ -120,7 +120,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         try {
             Query qry = getEntityManager().createQuery("select ob from " + tabela + " ob order by ob.descricao");
             qry.setMaxResults(100);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
@@ -131,13 +131,13 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     @Override
     public List listaObjetoGenericoOrdemDesc(String tabela, String descricao) {
         List result = new ArrayList();
-        if(tabela.isEmpty()){
-            return result;            
+        if (tabela.isEmpty()) {
+            return result;
         }
         try {
             Query qry = getEntityManager().createQuery("SELECT ob FROM " + tabela + " ob WHERE UPPER(ob.descricao) LIKE '%" + descricao.toUpperCase() + "%' ORDER BY ob.descricao");
             qry.setMaxResults(100);
-            if(!qry.getResultList().isEmpty()){
+            if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
         } catch (Exception e) {

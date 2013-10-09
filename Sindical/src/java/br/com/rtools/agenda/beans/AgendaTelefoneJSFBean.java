@@ -591,7 +591,7 @@ public class AgendaTelefoneJSFBean implements Serializable {
                 idTipoTelefone = i;
                 break;
             }
-        }       
+        }
         return null;
         //return "agendaTelefone";
     }

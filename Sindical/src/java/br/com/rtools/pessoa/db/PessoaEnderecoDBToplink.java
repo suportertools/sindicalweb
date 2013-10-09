@@ -109,38 +109,38 @@ public class PessoaEnderecoDBToplink extends DB implements PessoaEnderecoDB {
         List vetor;
         Endereco endereco = new Endereco();
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        
+
         try {
             String text_qry = "select * from end_endereco e "
-                            + " inner join end_descricao_endereco de on (de.id = e.id_descricao_endereco) "
-                            + " inner join end_bairro ba on (ba.id = e.id_bairro) "
-                            + " where ds_cep = '"+cep+"'";
+                    + " inner join end_descricao_endereco de on (de.id = e.id_descricao_endereco) "
+                    + " inner join end_bairro ba on (ba.id = e.id_bairro) "
+                    + " where ds_cep = '" + cep + "'";
             String or_desc = "", or_bairro = "";
-            for (int i = 0; i < descricao.length; i++){
-                if (descricao.length == 1){
-                    text_qry += " and ( upper(translate(de.ds_descricao)) like upper('%"+descricao[i]+"%') ) ";
+            for (int i = 0; i < descricao.length; i++) {
+                if (descricao.length == 1) {
+                    text_qry += " and ( upper(translate(de.ds_descricao)) like upper('%" + descricao[i] + "%') ) ";
                     break;
-                }else{
-                    or_desc += " or upper(translate(de.ds_descricao)) like upper('%"+descricao[i]+"%') ";
+                } else {
+                    or_desc += " or upper(translate(de.ds_descricao)) like upper('%" + descricao[i] + "%') ";
                 }
             }
-            if (descricao.length > 1){
-                text_qry += " and ( upper(translate(de.ds_descricao)) like upper('%"+descricao[0]+"%') "+or_desc+") ";
+            if (descricao.length > 1) {
+                text_qry += " and ( upper(translate(de.ds_descricao)) like upper('%" + descricao[0] + "%') " + or_desc + ") ";
             }
-            
-            
-            for (int i = 0; i < bairro.length; i++){
-                if (bairro.length == 1){
-                    text_qry += " and ( upper(translate(ba.ds_descricao)) like upper('%"+bairro[i]+"%') ) ";
+
+
+            for (int i = 0; i < bairro.length; i++) {
+                if (bairro.length == 1) {
+                    text_qry += " and ( upper(translate(ba.ds_descricao)) like upper('%" + bairro[i] + "%') ) ";
                     break;
-                }else{
-                    or_bairro += " or upper(translate(ba.ds_descricao)) like upper('%"+bairro[i]+"%') ";
+                } else {
+                    or_bairro += " or upper(translate(ba.ds_descricao)) like upper('%" + bairro[i] + "%') ";
                 }
             }
-            if (bairro.length > 1){
-                text_qry += " and ( upper(translate(ba.ds_descricao)) like upper('%"+bairro[0]+"%') "+or_bairro+") ";
+            if (bairro.length > 1) {
+                text_qry += " and ( upper(translate(ba.ds_descricao)) like upper('%" + bairro[0] + "%') " + or_bairro + ") ";
             }
-            
+
             Query qry = getEntityManager().createNativeQuery(text_qry);
             qry.setMaxResults(1);
             vetor = qry.getResultList();

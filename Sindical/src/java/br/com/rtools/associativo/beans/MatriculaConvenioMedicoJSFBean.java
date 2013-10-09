@@ -11,6 +11,7 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 
 public class MatriculaConvenioMedicoJSFBean {
+
     private MatriculaConvenioMedico matriculaConvenioMedico;
     private ServicoPessoaJSFBean servicoPessoaJSFBean = null;
     private String msgConfirma;
@@ -20,9 +21,9 @@ public class MatriculaConvenioMedicoJSFBean {
     private int idIndex;
     private List<MatriculaConvenioMedico> listaConvenio;
 
-    public MatriculaConvenioMedicoJSFBean(){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean",new ServicoPessoaJSFBean());
-        servicoPessoaJSFBean = ((ServicoPessoaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
+    public MatriculaConvenioMedicoJSFBean() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaJSFBean());
+        servicoPessoaJSFBean = ((ServicoPessoaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
         servicoPessoaJSFBean.setRenderServicos(true);
         matriculaConvenioMedico = new MatriculaConvenioMedico();
         msgConfirma = "";
@@ -33,44 +34,44 @@ public class MatriculaConvenioMedicoJSFBean {
         listaConvenio = new ArrayList();
     }
 
-    public String salvar(){
+    public String salvar() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         MatriculaConvenioMedicoDB db = new MatriculaConvenioMedicoDBToplink();
-        if ( servicoPessoaJSFBean.getServicoPessoa().getPessoa().getId() == -1 ){
+        if (servicoPessoaJSFBean.getServicoPessoa().getPessoa().getId() == -1) {
             msgConfirma = "Pesquise uma Pessoa!";
             return null;
         }
         dbSalvar.abrirTransacao();
-        if (servicoPessoaJSFBean.getServicoPessoa().getId() == -1){
-            msgConfirma = servicoPessoaJSFBean.salvarServicoPessoa(null,dbSalvar);
-            if (!msgConfirma.isEmpty()){
+        if (servicoPessoaJSFBean.getServicoPessoa().getId() == -1) {
+            msgConfirma = servicoPessoaJSFBean.salvarServicoPessoa(null, dbSalvar);
+            if (!msgConfirma.isEmpty()) {
                 dbSalvar.desfazerTransacao();
                 return null;
             }
-            
+
             matriculaConvenioMedico.setServicoPessoa(servicoPessoaJSFBean.getServicoPessoa());
-            if (dbSalvar.inserirObjeto(matriculaConvenioMedico)){
+            if (dbSalvar.inserirObjeto(matriculaConvenioMedico)) {
                 msgConfirma = "Matricula salva com Sucesso!";
                 dbSalvar.comitarTransacao();
                 //novoGenerico();
-            }else{
+            } else {
                 msgConfirma = "Erro ao Salvar Matricula!";
                 dbSalvar.desfazerTransacao();
             }
-        }else{
-            msgConfirma = servicoPessoaJSFBean.atualizarServicoPessoa(null,dbSalvar);
+        } else {
+            msgConfirma = servicoPessoaJSFBean.atualizarServicoPessoa(null, dbSalvar);
 
-            if (!msgConfirma.isEmpty()){
+            if (!msgConfirma.isEmpty()) {
                 dbSalvar.desfazerTransacao();
                 return null;
             }
-            
+
             matriculaConvenioMedico.setServicoPessoa(servicoPessoaJSFBean.getServicoPessoa());
-            if (dbSalvar.alterarObjeto(matriculaConvenioMedico)){
+            if (dbSalvar.alterarObjeto(matriculaConvenioMedico)) {
                 msgConfirma = "Matricula atualizada com Sucesso!";
                 dbSalvar.comitarTransacao();
                 //novoGenerico();
-            }else{
+            } else {
                 msgConfirma = "Erro ao atualizar Matricula!";
                 dbSalvar.desfazerTransacao();
             }
@@ -78,25 +79,25 @@ public class MatriculaConvenioMedicoJSFBean {
         return null;
     }
 
-    public String novo(){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaConvenioMedicoBean",new MatriculaConvenioMedicoJSFBean());
+    public String novo() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaConvenioMedicoBean", new MatriculaConvenioMedicoJSFBean());
         return "convenioMedico";
     }
 
-    public String excluir(){
+    public String excluir() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         dbSalvar.abrirTransacao();
-        if (servicoPessoaJSFBean.getServicoPessoa().getId() != -1){
-            if (dbSalvar.deletarObjeto((MatriculaConvenioMedico) dbSalvar.pesquisaCodigo(matriculaConvenioMedico.getId(),"MatriculaConvenioMedico") )){
-                if (dbSalvar.deletarObjeto((ServicoPessoa)dbSalvar.pesquisaCodigo(servicoPessoaJSFBean.getServicoPessoa().getId(), "ServicoPessoa"))){
+        if (servicoPessoaJSFBean.getServicoPessoa().getId() != -1) {
+            if (dbSalvar.deletarObjeto((MatriculaConvenioMedico) dbSalvar.pesquisaCodigo(matriculaConvenioMedico.getId(), "MatriculaConvenioMedico"))) {
+                if (dbSalvar.deletarObjeto((ServicoPessoa) dbSalvar.pesquisaCodigo(servicoPessoaJSFBean.getServicoPessoa().getId(), "ServicoPessoa"))) {
                     dbSalvar.comitarTransacao();
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaConvenioMedicoBean",new MatriculaConvenioMedicoJSFBean());
-                    ((MatriculaConvenioMedicoJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaConvenioMedicoBean")).setMsgConfirma("Matricula Excluida com sucesso!"); 
-                }else{
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaConvenioMedicoBean", new MatriculaConvenioMedicoJSFBean());
+                    ((MatriculaConvenioMedicoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaConvenioMedicoBean")).setMsgConfirma("Matricula Excluida com sucesso!");
+                } else {
                     msgConfirma = "Erro ao excluir serviço pessoa!";
                     dbSalvar.desfazerTransacao();
                 }
-            }else{
+            } else {
                 msgConfirma = "Erro ao excluir Convênio médico!";
                 dbSalvar.desfazerTransacao();
             }
@@ -104,7 +105,7 @@ public class MatriculaConvenioMedicoJSFBean {
         return null;
     }
 
-    public String editar(){
+    public String editar() {
         matriculaConvenioMedico = (MatriculaConvenioMedico) listaConvenio.get(idIndex);
         servicoPessoaJSFBean.setServicoPessoa(matriculaConvenioMedico.getServicoPessoa());
         descPesquisa = "";
@@ -112,23 +113,23 @@ public class MatriculaConvenioMedicoJSFBean {
         comoPesquisa = "";
         servicoPessoaJSFBean.editar(matriculaConvenioMedico.getServicoPessoa());
         listaConvenio.clear();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null)
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "convenioMedico";
-        else
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
     }
 
-    public void refreshForm(){
-
+    public void refreshForm() {
     }
 
-    public void acaoPesquisaInicial(){
+    public void acaoPesquisaInicial() {
         listaConvenio.clear();
         comoPesquisa = "I";
     }
 
-    public void acaoPesquisaParcial(){
+    public void acaoPesquisaParcial() {
         listaConvenio.clear();
         comoPesquisa = "P";
     }
@@ -158,9 +159,9 @@ public class MatriculaConvenioMedicoJSFBean {
     }
 
     public List<MatriculaConvenioMedico> getListaConvenio() {
-        if (listaConvenio.isEmpty()){
+        if (listaConvenio.isEmpty()) {
             MatriculaConvenioMedicoDB db = new MatriculaConvenioMedicoDBToplink();
-            listaConvenio = db.pesquisaConvenioMedico(descPesquisa , porPesquisa, comoPesquisa);        
+            listaConvenio = db.pesquisaConvenioMedico(descPesquisa, porPesquisa, comoPesquisa);
         }
         return listaConvenio;
     }
@@ -191,6 +192,5 @@ public class MatriculaConvenioMedicoJSFBean {
 
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
-    }    
-    
+    }
 }

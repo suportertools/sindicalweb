@@ -246,7 +246,7 @@ public class UsuarioJSFBean {
             if (!sv.deletarObjeto(usuario)) {
                 sv.desfazerTransacao();
                 msgConfirma = "Login não pode ser  Excluido!";
-            } else {                
+            } else {
                 sv.comitarTransacao();
                 msgConfirma = "Login excluido com Sucesso!";
                 NovoLog novoLog = new NovoLog();

@@ -1,4 +1,3 @@
-
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.homologacao.beans.PesquisarProfissaoJSFBean;
@@ -9,13 +8,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 
 public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
+
     private Profissao prof = new Profissao();
     private String msgConfirma;
     private String s_cbo = "";
     private String s_profissao = "";
     private int idIndexProfissao = -1;
-    
-    public String novaProfissao(){
+
+    public String novaProfissao() {
         prof = new Profissao();
         super.profissao = new Profissao();
         return "profissao";
@@ -28,14 +28,14 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
     }
-    
-    public void editarProfissao(){
+
+    public void editarProfissao() {
         prof = (Profissao) super.getListaProfissao().get(super.getIdIndexProf());
     }
 
-    public String salvarProfissao(){
+    public String salvarProfissao() {
 
-        if (prof.getProfissao().equals("")){
+        if (prof.getProfissao().equals("")) {
             msgConfirma = "Digite a profissão!";
             return null;
         }
@@ -43,28 +43,28 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
         ProfissaoDB db = new ProfissaoDBToplink();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        if (prof.getId() == -1){
-            if(sv.descricaoExiste(prof.getProfissao(), "profissao", "Profissao")){
+        if (prof.getId() == -1) {
+            if (sv.descricaoExiste(prof.getProfissao(), "profissao", "Profissao")) {
                 msgConfirma = "Profissão já cadastrada!";
                 return null;
             }
-            if(!prof.getCbo().equals("")){
-                if(sv.descricaoExiste(prof.getCbo(), "cbo", "Profissao")){
+            if (!prof.getCbo().equals("")) {
+                if (sv.descricaoExiste(prof.getCbo(), "cbo", "Profissao")) {
                     msgConfirma = "CBO já existe!";
                     return null;
                 }
             }
-            if (sv.inserirObjeto(prof)){
+            if (sv.inserirObjeto(prof)) {
                 msgConfirma = "Profissão salva com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Erro ao salvar profissão!";
                 sv.desfazerTransacao();
                 return null;
             }
-        }else{
-            if (sv.alterarObjeto(prof)){
+        } else {
+            if (sv.alterarObjeto(prof)) {
                 msgConfirma = "Profissão atualizada com sucesso";
-            }else{
+            } else {
                 msgConfirma = "Erro ao atualizar profissão!";
                 sv.desfazerTransacao();
                 return null;
@@ -75,7 +75,7 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
         sv.comitarTransacao();
         return null;
     }
-    
+
 //    public String salvarProfissao(){
 //
 //        if (s_profissao.equals("")){
@@ -111,21 +111,20 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
 //        sv.comitarTransacao();
 //        return null;
 //    }
-    
-    public String excluirProfissao(){
-        
-        if (prof.getId() == -1){
+    public String excluirProfissao() {
+
+        if (prof.getId() == -1) {
             msgConfirma = "Selecione uma profissão para ser excluída!";
             return null;
         }
-        
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
+
         sv.abrirTransacao();
-        if (sv.deletarObjeto(prof = (Profissao) sv.pesquisaCodigo(prof.getId(), "Profissao"))){
+        if (sv.deletarObjeto(prof = (Profissao) sv.pesquisaCodigo(prof.getId(), "Profissao"))) {
             msgConfirma = "Profissão deletada com sucesso!";
             sv.comitarTransacao();
-        }else{
+        } else {
             msgConfirma = "Erro ao deletar profissão!";
             sv.desfazerTransacao();
         }
@@ -133,7 +132,7 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
         prof = new Profissao();
         return "profissao";
     }
-    
+
 //    public String excluirProfissao(){
 //        ProfissaoDB db = new ProfissaoDBToplink();
 //        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -155,7 +154,6 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
 //        super.profissao = new Profissao();
 //        return null;
 //    }
-
     public int getIdIndexProfissao() {
         return idIndexProfissao;
     }
@@ -189,5 +187,4 @@ public class ProfissaoJSFBean extends PesquisarProfissaoJSFBean {
     public void setProf(Profissao prof) {
         this.prof = prof;
     }
-
 }

@@ -6,41 +6,42 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
-public class MidiaDBToplink extends DB implements MidiaDB{
+public class MidiaDBToplink extends DB implements MidiaDB {
+
     public boolean insert(Midia midia) {
-        try{
-          getEntityManager().getTransaction().begin();
-          getEntityManager().persist(midia);
-          getEntityManager().flush();
-          getEntityManager().getTransaction().commit();
-          return true;
-        } catch(Exception e){
+        try {
+            getEntityManager().getTransaction().begin();
+            getEntityManager().persist(midia);
+            getEntityManager().flush();
+            getEntityManager().getTransaction().commit();
+            return true;
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean update(Midia midia) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().merge(midia);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
     }
 
     public boolean delete(Midia midia) {
-        try{
+        try {
             getEntityManager().getTransaction().begin();
             getEntityManager().remove(midia);
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
-        }catch(Exception e){
+        } catch (Exception e) {
             getEntityManager().getTransaction().rollback();
             return false;
         }
@@ -48,24 +49,23 @@ public class MidiaDBToplink extends DB implements MidiaDB{
 
     public Midia pesquisaCodigo(int id) {
         Midia result = null;
-        try{
+        try {
             Query qry = getEntityManager().createNamedQuery("Midia.pesquisaID");
             qry.setParameter("pid", id);
             result = (Midia) qry.getSingleResult();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
         return result;
     }
 
     public List pesquisaTodos() {
-        try{
+        try {
             Query qry = getEntityManager().createQuery("select m from Midia m");
             return (qry.getResultList());
-        }catch(Exception e){
+        } catch (Exception e) {
             e.getMessage();
             return new ArrayList();
         }
     }
-
 }
