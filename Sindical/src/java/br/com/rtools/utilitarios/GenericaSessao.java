@@ -1,10 +1,25 @@
 package br.com.rtools.utilitarios;
 
+import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
+@ManagedBean(name = "genericaSessao")
+@RequestScoped
 public class GenericaSessao {
 
     public static void put(String sessionName, String sessionValue) {
+        if (GenericaSessao.exists(sessionName)) {
+            GenericaSessao.remove(sessionName);
+        }
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
+    }
+    
+    public void putString(String sessionName, String sessionValue) {
+        if (GenericaSessao.exists(sessionName)) {
+            GenericaSessao.remove(sessionName);
+        }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
     }
 
@@ -47,6 +62,12 @@ public class GenericaSessao {
 
     public static void remove(String sessionName) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
+    }
+
+    public static void remove(List list) {
+        for (int i = 0; i < list.size(); i++) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(list.get(i).toString());
+        }
     }
 
     public static boolean exists(String sessionName) {
