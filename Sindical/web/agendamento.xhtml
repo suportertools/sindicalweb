@@ -16,7 +16,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formAgendamento">
+            <h:form id="form_agendamento">
                 <h:outputLink id="i_status_inativo" value=""></h:outputLink>
                 <center>
                     <rich:panel styleClass="headerPanel">
@@ -45,7 +45,7 @@
                                         <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
                                     </h:selectOneMenu>
                                     <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Adicionar horário alternativo" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
-                                        <a4j:ajax event="click" listener="#{agendamentoBean.adicionarHorarioAlternativo}" oncomplete="#{rich:component('formAgendamento:i_painel_mensagem')}.hide(); return false;" render="i_panel_horario, id_ocultar_horario_alternativo" status="i_status"/> 
+                                        <a4j:ajax event="click" listener="#{agendamentoBean.adicionarHorarioAlternativo}" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;" render="i_panel_horario, id_ocultar_horario_alternativo" status="i_status"/> 
                                     </a4j:commandLink>
                                 </h:column>
                                 <a4j:commandButton image="/Imagens/horario.png" title="Transferir horário" render="i_panel_horario" action="#{agendamentoBean.trasfere()}" rendered="#{agendamentoBean.agendamento.id != -1}" styleClass="margin-left-max" status="i_status"/>
@@ -58,7 +58,7 @@
                                     <a4j:ajax event="change" render="i_horario_transferencia" status="i_status" />
                                     <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
                                 </h:selectOneMenu>
-                                <a4j:commandButton action="#{agendamentoBean.salvarTransferencia()}" rendered="#{agendamentoBean.renderTransfere}" value="OK" oncomplete="#{rich:component('formAgendamento:i_painel_mensagem')}.show(); return false;"/>
+                                <a4j:commandButton action="#{agendamentoBean.salvarTransferencia()}" rendered="#{agendamentoBean.renderTransfere}" value="OK" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" render="i_painel_mensagem"/>
                             </h:panelGrid>
                             <h:panelGrid id="i_panel_1" columns="2" columnClasses="coluna1, coluna2" cellspacing="3">
                                 <h:column>
@@ -95,7 +95,7 @@
                                         <a4j:ajax event="blur" render="this" />
                                     </h:inputText>
                                 </h:column>
-                                <a4j:commandLink styleClass="idPesquisar iLink" value="Endereço" oncomplete="#{rich:component('formAgendamento:i_painel_endereco')}.show(); return false;" title="Pesquisar Endereço" /> 
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Endereço" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.show(); return false;" title="Pesquisar Endereço" /> 
                                 <h:column id="idOutEndX">
                                     <h:outputLabel id="idOutEnd" value="#{agendamentoBean.enderecoFisica.endereco.logradouro.descricao} #{agendamentoBean.enderecoFisica.endereco.descricaoEndereco.descricao},
                                                    #{agendamentoBean.enderecoFisica.endereco.cidade.cidade} - #{agendamentoBean.enderecoFisica.endereco.cidade.uf}" styleClass="fontePadrao" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
@@ -125,10 +125,10 @@
                                     <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                     <f:selectItem itemValue="M" itemLabel="Masculino"/>
                                 </h:selectOneRadio>
-                                <a4j:commandLink id="btnFuncao" value="Função" styleClass="idSalvar iLink" oncomplete="#{rich:component('formAgendamento:i_painel_profissao')}.show(); return false;" /> 
+                                <a4j:commandLink id="btnFuncao" value="Função" styleClass="idSalvar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.show(); return false;" /> 
                                 <h:column>
                                     <h:inputText id="idFuncao" size="40" value="#{agendamentoBean.profissao.cbo}  #{agendamentoBean.profissao.profissao}" styleClass="fontePadraoNegrito" readonly="true">
-                                        <a4j:ajax event="click" oncomplete="#{rich:component('formAgendamento:i_painel_profissao')}.show(); return false;" />
+                                        <a4j:ajax event="click" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.show(); return false;" />
                                     </h:inputText>
                                     <h:outputText value="SETOR: " styleClass="fontePadrao margin-left-max"/>
                                     <h:inputText id="iSetor" size="20" value="#{agendamentoBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
@@ -171,7 +171,7 @@
                                 </h:column>
                                 <h:column></h:column>
                                 <h:column>
-                                    <a4j:commandLink id="iEnviarPlanilha" value="Enviar Planilha por Email para" title="Enviar Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.enviarPlanilha}" oncomplete="#{rich:component('formAgendamento:i_painel_mensagem')}.show(); return false;" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}"/>
+                                    <a4j:commandLink id="iEnviarPlanilha" value="Enviar Planilha por Email para" title="Enviar Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.enviarPlanilha}" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" render="i_painel_mensagem"/>
                                     <h:selectOneMenu id="chkEmail" value="#{agendamentoBean.enviarPara}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" class=" margin-left-max">
                                         <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
                                         <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
@@ -215,7 +215,7 @@
                                     <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="20" styleClass="fontePadraoNegrito" onblur="lowerCase(this);">
                                         <a4j:ajax event="blur" render="this"  />
                                     </h:inputText>
-                                    <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" oncomplete="#{rich:component('formAgendamento:i_painel_mensagem')}.show(); return false;" render="i_painel_mensagem" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}">
+                                    <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" oncomplete="#{rich:component('i_painel_mensagem')}.show(); return false;" render="id_enviar_p_email, i_painel_mensagem" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" status="i_status">
                                         <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
                                     </a4j:commandLink>
                                     <h:outputText value="Tel: " styleClass="fontePadrao margin-left-max" title="Telefone"/>
@@ -231,7 +231,7 @@
                                 </h:column>                                
                             </h:panelGrid>
                             <h:panelGrid columns="5" style="margin-top: 20px;" id="id_menu_acao">
-                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('formAgendamento:i_painel_mensagem')}.show(); return false;" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="id_form_agendamento i_painel_mensagem" status="i_status"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="id_form_agendamento i_painel_mensagem" status="i_status"/>
                                 <a4j:commandLink styleClass="idSalvar iLink"    value="Voltar" action="#{agendamentoBean.cancelar}" render="id_form_agendamento, id_form_agendamento_novo" status="i_status"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" status="i_status"/>
                                 <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
@@ -344,7 +344,7 @@
                         <h:outputText value="Profissão"/>
                     </f:facet>
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('formAgendamento:i_painel_profissao')}.hide(); return false;">
+                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
                         </h:outputLink>
                     </f:facet>
@@ -373,7 +373,7 @@
                                         <f:facet name="header">
                                             <h:outputText value="Id"/>
                                         </f:facet>
-                                        <a4j:commandLink id="linkPro" action="#{agendamentoBean.editar}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('formAgendamento:i_painel_profissao')}.hide(); return false;" status="i_status">
+                                        <a4j:commandLink id="linkPro" action="#{agendamentoBean.editar}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status">
                                             <a4j:param value="#{it.index}" assignTo="#{agendamentoBean.idIndexProf}" />
                                         </a4j:commandLink>
                                     </rich:column>
@@ -399,7 +399,7 @@
                         <h:outputText value="Endereço"/>
                     </f:facet>
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('formAgendamento:i_painel_endereco')}.hide(); return false;">
+                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
                         </h:outputLink>
                     </f:facet>
@@ -418,7 +418,7 @@
                                         <f:facet name="header">
                                             <h:outputText value="Id"/>
                                         </f:facet>
-                                        <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" render="id_form_agendamento" oncomplete="#{rich:component('formAgendamento:i_painel_endereco')}.hide(); return false;" status="i_status" />
+                                        <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" />
                                     </rich:column>
 
                                     <rich:column styleClass="coluna">
@@ -437,7 +437,7 @@
                         <h:outputText value="Mensagem"/>
                     </f:facet>
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('formAgendamento:i_painel_mensagem')}.hide(); return false;">
+                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;">
                             <a4j:ajax event="click" render="id_form_agendamento" />
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
                         </h:outputLink>
@@ -446,7 +446,7 @@
                         <h:outputText value="#{agendamentoBean.msgConfirma}" styleClass="fontePadrao" rendered="#{!agendamentoBean.imprimirPro}" />
                         <h:commandLink value="#{agendamentoBean.msgConfirma}" target="_blank" action="#{agendamentoBean.imprimirProtocolo(agendamentoBean.agendamento.id)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao" />
                         <br /><br />
-                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('formAgendamento:i_painel_mensagem')}.hide(); return false;" render="id_form_agendamento" />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;" render="id_form_agendamento" action="agendamento" immediate="true" />
                         <br /><br />
                     </center>
                 </rich:popupPanel>
