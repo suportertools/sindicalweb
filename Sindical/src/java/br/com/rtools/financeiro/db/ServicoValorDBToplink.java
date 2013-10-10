@@ -2,72 +2,17 @@ package br.com.rtools.financeiro.db;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.financeiro.ServicoValor;
-import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
 
 public class ServicoValorDBToplink extends DB implements ServicoValorDB {
-
-//    public boolean insert(ServicoValor servicoValor) {
-//        try{
-//          getEntityManager().getTransaction().begin();
-//          getEntityManager().persist(servicoValor);
-//          getEntityManager().flush();
-//          getEntityManager().getTransaction().commit();
-//          return true;
-//        } catch(Exception e){
-//            getEntityManager().getTransaction().rollback();
-//            return false;
-//        }
-//    }
-//
-//    public boolean update(ServicoValor servicoValor) {
-//        try{
-//        getEntityManager().merge(servicoValor);
-//        getEntityManager().flush();
-//        return true;
-//        }
-//        catch(Exception e){
-//            return false;
-//        }
-//    }
-//
-//    public boolean delete(ServicoValor servicoValor) {
-//        try{
-//        getEntityManager().remove(servicoValor);
-//        getEntityManager().flush();
-//        return true;
-//        }
-//        catch(Exception e){
-//            return false;
-//        }
-//    }
-//
-//    public ServicoValor pesquisaCodigo(int id) {
-//        ServicoValor result = null;
-//        try{
-//            Query qry = getEntityManager().createNamedQuery("ServicoValor.pesquisaID");
-//            qry.setParameter("pid", id);
-//            result = (ServicoValor) qry.getSingleResult();
-//        }
-//        catch(Exception e){
-//        }
-//        return result;
-//    }
-//
-//    public List pesquisaTodos() {
-//        try{
-//            Query qry = getEntityManager().createQuery("select p from ServicoValor p ");
-//            return (qry.getResultList());
-//        }catch(Exception e){
-//            return null;
-//        }
-//    }
-//
+    
     @Override
     public List pesquisaServicoValor(int idServico) {
         try {
@@ -144,6 +89,31 @@ public class ServicoValorDBToplink extends DB implements ServicoValorDB {
             return (new BigDecimal((Double) vector.get(0))).floatValue();
         } catch (Exception e) {
             e.getMessage();
+        }
+        return 0;
+    }
+    
+    /**
+     * 
+     * @param idPessoa
+     * @param idServico
+     * @param date
+     * @param tipo (0 -> Valor (já calculado) - ), (1 -> Valor até o vencimento (já calculado)), (2 -> Taxa até o vencimento (já calculado))
+     * @return float valor
+     */
+    @Override
+    public float funcaoValorServico(int idPessoa, int idServico, Date date, int tipo) {        
+        String dataString = DataHoje.converteData(date);
+        try {
+            Query qry = getEntityManager().createNativeQuery( "SELECT func_valor_servico("+idPessoa+", "+idServico+", '"+dataString+"', "+tipo+") ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                list = (List) qry.getSingleResult();
+                float valor = Float.parseFloat(list.get(0).toString());
+                return valor;
+            }
+        } catch (Exception e) {
+            return 0;
         }
         return 0;
     }
