@@ -791,7 +791,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             Query query = getEntityManager().createNativeQuery(" "
                     + "     SELECT id, nr_quantidade                                                "
                     + "       FROM hom_horarios                                                     "
-                    + "      WHERE TEXT(id_filial) || TEXT(id_semana) || ds_hora = TEXT(1) || (     "
+                    + "      WHERE TEXT(id_filial) || TEXT(id_semana) || ds_hora = TEXT("+horarios.getFilial().getId()+") || ("
                     + "            EXTRACT(                                                         "
                     + "                     DOW FROM to_date('" + dateString + "', 'DD-MM-YYYY')) + 1   "
                     + "      ) || '" + horarios.getHora() + "'");
