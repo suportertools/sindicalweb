@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Fechamento Comissão Acordo</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -17,7 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formFechamentoComissaoAcordo">
-            
+
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Comissão Acordo" styleClass="fontePanel" style="width: 100%;"/>
@@ -32,13 +32,13 @@
                                 </h:selectOneMenu>
                             </h:column>
                         </h:panelGrid>                                      
-                        
+
                         <a4j:commandLink styleClass="idPesquisar iLink" value="Processar" action="#{fechamentoComissaoAcordoJSFBean.processar}" render="cbDataFechamento outConfirma" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()"/>
                         <h:commandLink styleClass="idPesquisar iLink" value="Visualizar" action="#{fechamentoComissaoAcordoJSFBean.visualizar}"/>
                         <a4j:commandLink styleClass="idPesquisar iLink" value="Estornar" action="#{fechamentoComissaoAcordoJSFBean.estornar}" render="cbDataFechamento outConfirma" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()"/>                        
                     </div>
                 </center>
-                
+
                 <div id="boxes">
                     <div id="divProcesso" class="window">
                         <br />
@@ -48,7 +48,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>
-                
+
                 <div id="boxes">
                     <div id="divMensagem" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">

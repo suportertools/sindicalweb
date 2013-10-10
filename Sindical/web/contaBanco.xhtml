@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Conta Banco</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -22,156 +22,156 @@
                     <div class="headerPanel">
                         <h:outputText value="Conta Banco" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
-                 </center>
-                    <br />
-                        <div class="divMae">
-                            <div class="divFundo" style="text-align: left; width: 700px; z-index: 5; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
-                                <h:panelGrid columns="2" columnClasses="coluna1, coluna2 " style="margin-bottom: 25px;">
-                                    <h:column>
-                                        <h:outputLabel value="Agência: " styleClass="fontePadrao" for="idAgencia"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:inputText id="idAgencia" size="10" value="#{contaBancoBean.contaBanco.agencia}" title="Agência:">
-                                            <a4j:ajax event="blur" render="this"/>
-                                        </h:inputText>
-                                        <h:outputLabel value="Código da Conta: " styleClass="fontePadrao" for="idCodigo"/>
-                                        <h:inputText id="idCodigo" size="15" value="#{contaBancoBean.contaBanco.conta}" title="Código da Conta">
-                                            <a4j:ajax event="blur" render="this"/>
-                                        </h:inputText>
-                                        <h:outputLabel value="Plano de Contas: " styleClass="fontePadrao" for="idPlanoConta"/>
-                                        <h:selectOneMenu id="idPlanoConta" value="#{contaBancoBean.idPlanoContas}" style="width: 150px;" title="Plano de Contas">
-                                            <a4j:ajax event="change" render="this"/>
-                                            <f:selectItems value="#{contaBancoBean.listaPlano5Conta}"/>
-                                        </h:selectOneMenu>
-                                    </h:column>
-                                    <h:column>
-                                        <h:outputLabel value="Banco: " styleClass="fontePadrao" for="idBanco" title="Banco"/>   
-                                    </h:column>
-                                    <h:column> 
-                                        <h:selectOneMenu id="idBanco" value="#{contaBancoBean.idBanco}" style="width: 150px;"> 
-                                            <a4j:ajax event="change" render="this"/>
-                                            <f:selectItems value="#{contaBancoBean.listaBancoCompleta}"/>
-                                        </h:selectOneMenu>
-                                        <h:outputLabel value="Filial: " styleClass="fontePadrao" title="Filial" for="idFilial"/>
-                                        <h:selectOneMenu id="idFilial" value="#{contaBancoBean.idFilial}" style="width: 150px;">
-                                            <a4j:ajax event="change" render="this"/>
-                                            <f:selectItems value="#{contaBancoBean.listaFilial}"/>
-                                        </h:selectOneMenu>
-                                    </h:column>
-                                    <h:column>
-                                        <h:commandButton id="idPesquisarCidade" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.cidade}" immediate="true" title="Pesquisar Cidade"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:outputLabel value="Pesquisar Cidade" styleClass="fontePadrao" rendered="#{contaBancoBean.cidade.id == -1}" for="idPesquisarCidade"/>
-                                        <h:outputLabel value="#{contaBancoBean.cidade.cidade} - #{contaBancoBean.cidade.uf}" styleClass="fontePadrao" style="font-weight: bold" rendered="#{contaBancoBean.cidade.id != -1}"/>
-                                    </h:column>
-                                </h:panelGrid>
-                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar"/>
-                                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{contaBancoBean.novoGeral}"/>
-                                <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
-                            </div>
-                        </div>
-                    <br /><br />
-                    <rich:dataTable value="#{contaBancoBean.listaContaBanco}" var="linha" style="width: 90%; margin-left: 65px; margin-right: 5%;" id="tbl" iterationStatusVar="it">                        
-                        <rich:column style="text-align: center;">
-                            <f:facet name="header">
-                                <h:outputText value="#"/>
-                            </f:facet>
-                            <h:outputText value="#{it.index}"/>
-                        </rich:column>
-
-                        <rich:column styleClass="coluna">
-                            <f:facet name="header">
-                                <h:outputText value="ID"/>
-                            </f:facet>
-                            <a4j:commandLink value="#{linha.id}" action="#{contaBancoBean.editar}" styleClass="iLink">
-                                <a4j:param value="#{it.index}" assignTo="#{contaBancoBean.idIndex}"/>
-                            </a4j:commandLink>
-                        </rich:column>
-
-                        <rich:column>
-                            <f:facet name="header">
-                                <h:outputText value="Banco"/>
-                            </f:facet>
-                            <h:outputText value="#{linha.banco.numero} - #{linha.banco.banco}"/>
-                        </rich:column>
-
-                        <rich:column>
-                            <f:facet name="header">
-                                <h:outputText value="Agência"/>
-                            </f:facet>
-                            <h:outputText value="#{linha.agencia}"/>
-                        </rich:column>
-
-                        <rich:column>
-                            <f:facet name="header">
-                                <h:outputText value="Conta"/>
-                            </f:facet>
-                            <h:outputText value="#{linha.conta}"/>
-                        </rich:column>
-
-                        <rich:column>
-                            <f:facet name="header">
-                                <h:outputText value="Cidade"/>
-                            </f:facet>
-                            <h:outputText value="#{linha.cidade.cidade} - #{linha.cidade.uf}"/>
-                        </rich:column>
-                    </rich:dataTable>
-                    <div id="boxes">
-                        <div id="divSalvar" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja salvar esta Conta banco?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                                </h:panelGrid>
-
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{contaBancoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
+                </center>
+                <br />
+                <div class="divMae">
+                    <div class="divFundo" style="text-align: left; width: 700px; z-index: 5; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2 " style="margin-bottom: 25px;">
+                            <h:column>
+                                <h:outputLabel value="Agência: " styleClass="fontePadrao" for="idAgencia"/>
+                            </h:column>
+                            <h:column>
+                                <h:inputText id="idAgencia" size="10" value="#{contaBancoBean.contaBanco.agencia}" title="Agência:">
+                                    <a4j:ajax event="blur" render="this"/>
+                                </h:inputText>
+                                <h:outputLabel value="Código da Conta: " styleClass="fontePadrao" for="idCodigo"/>
+                                <h:inputText id="idCodigo" size="15" value="#{contaBancoBean.contaBanco.conta}" title="Código da Conta">
+                                    <a4j:ajax event="blur" render="this"/>
+                                </h:inputText>
+                                <h:outputLabel value="Plano de Contas: " styleClass="fontePadrao" for="idPlanoConta"/>
+                                <h:selectOneMenu id="idPlanoConta" value="#{contaBancoBean.idPlanoContas}" style="width: 150px;" title="Plano de Contas">
+                                    <a4j:ajax event="change" render="this"/>
+                                    <f:selectItems value="#{contaBancoBean.listaPlano5Conta}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Banco: " styleClass="fontePadrao" for="idBanco" title="Banco"/>   
+                            </h:column>
+                            <h:column> 
+                                <h:selectOneMenu id="idBanco" value="#{contaBancoBean.idBanco}" style="width: 150px;"> 
+                                    <a4j:ajax event="change" render="this"/>
+                                    <f:selectItems value="#{contaBancoBean.listaBancoCompleta}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel value="Filial: " styleClass="fontePadrao" title="Filial" for="idFilial"/>
+                                <h:selectOneMenu id="idFilial" value="#{contaBancoBean.idFilial}" style="width: 150px;">
+                                    <a4j:ajax event="change" render="this"/>
+                                    <f:selectItems value="#{contaBancoBean.listaFilial}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <h:commandButton id="idPesquisarCidade" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.cidade}" immediate="true" title="Pesquisar Cidade"/>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Pesquisar Cidade" styleClass="fontePadrao" rendered="#{contaBancoBean.cidade.id == -1}" for="idPesquisarCidade"/>
+                                <h:outputLabel value="#{contaBancoBean.cidade.cidade} - #{contaBancoBean.cidade.uf}" styleClass="fontePadrao" style="font-weight: bold" rendered="#{contaBancoBean.cidade.id != -1}"/>
+                            </h:column>
+                        </h:panelGrid>
+                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{contaBancoBean.novoGeral}"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
                     </div>
+                </div>
+                <br /><br />
+                <rich:dataTable value="#{contaBancoBean.listaContaBanco}" var="linha" style="width: 90%; margin-left: 65px; margin-right: 5%;" id="tbl" iterationStatusVar="it">                        
+                    <rich:column style="text-align: center;">
+                        <f:facet name="header">
+                            <h:outputText value="#"/>
+                        </f:facet>
+                        <h:outputText value="#{it.index}"/>
+                    </rich:column>
 
-                    <div id="boxes">
-                        <div id="divExcluir" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
+                    <rich:column styleClass="coluna">
+                        <f:facet name="header">
+                            <h:outputText value="ID"/>
+                        </f:facet>
+                        <a4j:commandLink value="#{linha.id}" action="#{contaBancoBean.editar}" styleClass="iLink">
+                            <a4j:param value="#{it.index}" assignTo="#{contaBancoBean.idIndex}"/>
+                        </a4j:commandLink>
+                    </rich:column>
+
+                    <rich:column>
+                        <f:facet name="header">
+                            <h:outputText value="Banco"/>
+                        </f:facet>
+                        <h:outputText value="#{linha.banco.numero} - #{linha.banco.banco}"/>
+                    </rich:column>
+
+                    <rich:column>
+                        <f:facet name="header">
+                            <h:outputText value="Agência"/>
+                        </f:facet>
+                        <h:outputText value="#{linha.agencia}"/>
+                    </rich:column>
+
+                    <rich:column>
+                        <f:facet name="header">
+                            <h:outputText value="Conta"/>
+                        </f:facet>
+                        <h:outputText value="#{linha.conta}"/>
+                    </rich:column>
+
+                    <rich:column>
+                        <f:facet name="header">
+                            <h:outputText value="Cidade"/>
+                        </f:facet>
+                        <h:outputText value="#{linha.cidade.cidade} - #{linha.cidade.uf}"/>
+                    </rich:column>
+                </rich:dataTable>
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja salvar esta Conta banco?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
                             <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja excluir esta Conta banco?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                                </h:panelGrid>
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{contaBancoBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{contaBancoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
                     </div>
+                    <div id="mask"></div>
+                </div>
 
-                    <div id="boxes">
-                        <div id="divMensagem" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
+                <div id="boxes">
+                    <div id="divExcluir" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja excluir esta Conta banco?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
                             <br />
-                            <center>
-                                <h:outputText id="outConfirma" value="#{contaBancoBean.msgConfirma}" styleClass="fontePadrao"/>
-                                <br /><br />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="contaBanco" title="OK" render="tbl,idAgencia,idCodigo, idPanel"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>                   
-               
-                
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{contaBancoBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{contaBancoBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="contaBanco" title="OK" render="tbl,idAgencia,idCodigo, idPanel"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                   
+
+
             </h:form>
         </f:view>
     </h:body>

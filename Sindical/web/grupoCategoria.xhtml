@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Grupo Categoria</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -28,24 +28,24 @@
                             <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
                             <h:inputText id="idGrupo" size="50" value="#{grupoCategoriaBean.grupoCategoria.grupoCategoria}" onblur="upperCase(this);" />
                         </h:panelGrid>
-                        
+
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Matrícula: " styleClass="fontePadrao"/>
                             <h:inputText id="idMatricula" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrProximaMatricula}"/>
                         </h:panelGrid>
-                        
+
                         <h:panelGrid columns="2">
                             <h:outputLabel value="Validade do Cartão em Meses: " styleClass="fontePadrao"/>
                             <h:inputText id="idValidade" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrValidadeMesCartao}"/>
                         </h:panelGrid>
-                        
+
                         <h:panelGroup style="overflow:auto; height:200px; width:300px;" layout="block">
                             <rich:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="linha" style="width:100%" iterationStatusVar="it" id="tbl">
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="#"/></f:facet>
                                     <h:outputText value="#{it.index}"/>
                                 </rich:column>
-                                
+
                                 <rich:column styleClass="coluna">
                                     <f:facet name="header"><h:outputText value="ID"/></f:facet>
                                     <h:commandLink value="#{linha.id}" action="#{grupoCategoriaBean.editar}">
@@ -62,12 +62,12 @@
                                     <f:facet name="header"><h:outputText value="Matricula"/></f:facet>
                                     <h:outputText value="#{linha.nrProximaMatricula}"/>
                                 </rich:column>
-                                
+
                                 <rich:column>
                                     <f:facet name="header"><h:outputText value="Validade Meses"/></f:facet>
                                     <h:outputText value="#{linha.nrValidadeMesCartao}"/>
                                 </rich:column>
-                                
+
                             </rich:dataTable>
                         </h:panelGroup>                        
                     </div>
@@ -79,7 +79,7 @@
                         </h:column>
                     </h:panelGrid>
                 </center>
-                
+
                 <div id="boxes">
                     <div id="divSalvar" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -91,7 +91,7 @@
                                 <h:outputText value="Deseja salvar este Cadastro?" styleClass="fontePadrao"/>
                                 <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
                             </h:panelGrid>
-                            
+
                             <br />
                             <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{grupoCategoriaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" />
@@ -99,7 +99,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>
-                
+
                 <div id="boxes">
                     <div id="divExcluir" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -118,7 +118,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>
-                
+
                 <div id="boxes">
                     <div id="divMensagem" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">

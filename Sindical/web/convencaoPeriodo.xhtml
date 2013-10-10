@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Convenção Período</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -18,8 +18,8 @@
         <f:view>
             <h:form id="formConvencaoPeriodo">
                 <rich:panel id="id_panel_formulario" style="border: 0; background: transparent;">
-                <c:set scope="request" var="object" value="${convencaoPeriodoBean.convencaoPeriodo}"/>
-                <h:outputScript library="js" name="jScripts.js" />
+                    <c:set scope="request" var="object" value="${convencaoPeriodoBean.convencaoPeriodo}"/>
+                    <h:outputScript library="js" name="jScripts.js" />
                     <center>
                         <div class="headerPanel">
                             <h:outputText value="Convenção Período" styleClass="fontePanel" style="width: 100%;"/>

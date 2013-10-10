@@ -14,7 +14,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formCadastroSimples">
+            <h:form id="form_cadastro_simples">
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Cadastro #{simplesBean.sessoes[1]}" styleClass="fontePanel" style="width: 100%;"/>
@@ -34,28 +34,23 @@
                                 <h:column>
                                     <h:panelGrid columns="3">
                                         <h:inputText id="iDescricao" size="20" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" />
-                                        <a4j:commandButton image="/Imagens/novo.png" action="#{simplesBean.salvar}" oncomplete="modalMensagem()" render="outConfirma,tbl,iDescricao" />
+                                        <a4j:commandButton image="/Imagens/novo.png" action="#{simplesBean.salvar}" oncomplete="#{rich:component('form_cadastro_simples:i_painel_mensagem')}.show(); return false;" render="tbl, i_painel_mensagem, iDescricao" />
                                     </h:panelGrid>
                                 </h:column>                                
                             </h:panelGrid>
-                            <a4j:commandLink action="#{simplesBean.limpar}" value="Novo" styleClass="idSalvar iLink" />
+                            <a4j:commandLink action="#{simplesBean.limpar}" value="Novo" styleClass="idSalvar iLink" status="i_status"/>
                         </rich:panel>
                     </div>
 
                    <div style="overflow:auto; height:330px;">
                        <div style=" margin-bottom: 10px; margin-left: 10px; " class="divFundo" >
                             <h:outputLabel value="PESQUISAR: " styleClass="fontePadrao" for="idPesquisar"/>
-                            <h:inputText id="idPesquisar" value="#{simplesBean.pesquisaLista}"  title="Pesquisar" >
+                            <h:inputText id="idPesquisar" value="#{simplesBean.pesquisaLista}"  title="Pesquisar">
                                 <a4j:ajax event="blur" render="this, tbl" listener="#{simplesBean.limpaLista}"/>
                             </h:inputText>
                             <h:graphicImage value="/Imagens/pesquisar.png" alt="Pesquisar" title="Pesquisar" style="width: 25px; height: 25px; cursor: pointer">
-                                <a4j:ajax event="click" render="idPesquisar" execute="@none" />
+                                <a4j:ajax event="click" render="idPesquisar" execute="@none" status="i_status"/>
                             </h:graphicImage>
-                            <a4j:status>
-                                <f:facet name="start">
-                                    <h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/>
-                                </f:facet>
-                            </a4j:status>
                         </div>
                        <div style="clear: both;"></div>
                         <rich:panel style="overflow-x:auto; height: 250px; width: 280px; border-left: #d4d5d7 dashed 1px; border: 0">
@@ -87,7 +82,7 @@
                                     <f:facet name="header">
                                         <h:outputText value="Excluir"/>
                                     </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" oncomplete="modalMensagem()" value="#{linha.id}" action="#{simplesBean.excluir()}" render="outConfirma,tbl">
+                                    <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{simplesBean.excluir()}" render="i_painel_mensagem, tbl" oncomplete="#{rich:component('form_cadastro_simples:i_painel_mensagem')}.show(); return false;" status="i_status">
                                         <a4j:param value="#{it.index}" assignTo="#{simplesBean.idIndex}"/>
                                     </a4j:commandButton>
                                 </rich:column>
@@ -95,21 +90,22 @@
                         </rich:panel>
                     </div>
                 </div>
-
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{simplesBean.mensagem}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
+                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('form_cadastro_simples:i_painel_mensagem')}.hide(); return false;">
+                            <a4j:ajax event="click" render="i_painel_mensagem" />
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{simplesBean.mensagem}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Ok" oncomplete="#{rich:component('form_cadastro_simples:i_painel_mensagem')}.hide();" immediate="true"/>
+                    </center>
+                </rich:popupPanel>                
             </h:form>
         </f:view>
     </h:body>
