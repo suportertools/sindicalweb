@@ -1,6 +1,7 @@
 package br.com.rtools.seguranca;
 
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.utilitarios.GenericaSessao;
 import javax.persistence.*;
 
 @Entity
@@ -76,5 +77,13 @@ public class MacFilial implements java.io.Serializable {
 
     public void setMesa(int mesa) {
         this.mesa = mesa;
+    }
+        
+    public static MacFilial getAcessoFilial() {
+        MacFilial macFilial = new MacFilial();
+        if (GenericaSessao.exists("acessoFilial")) {
+            macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
+        }
+        return macFilial;
     }
 }
