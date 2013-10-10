@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Feriádos</title>
     </h:head>
@@ -16,7 +16,7 @@
         </f:subview>
         <f:view>
             <h:form id="formFeriados">
-            
+
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Cadastro Feriados" styleClass="fontePanel" style="width: 100%;"/>
@@ -51,7 +51,7 @@
                                             </f:facet>
                                             <a4j:commandButton image="/Imagens/excluirp.png" action="#{feriadosBean.excluir(linha)}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}" />
                                         </rich:column>
-                                        
+
                                         <rich:column>
                                             <f:facet name="header">
                                                 <h:outputText value="Nome"/>

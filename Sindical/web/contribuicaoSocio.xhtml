@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Gerar contribuição para Associados</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -17,7 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formContribuicao">
-            
+
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Geração de Contribuição" styleClass="fontePanel" style="width: 100%;"/>
@@ -43,25 +43,25 @@
                                         <f:selectItem itemValue="12"/>
                                     </h:selectOneMenu>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:outputLabel value="Ano: " style="margin-left: 15px"/>
                                     <h:inputText id="ano" value="" maxlength="4" size="5"/>
                                 </h:column>
                             </h:panelGrid>
                         </rich:panel>
-                        
+
                         <br />
-                        
+
                         <h:panelGrid>
                             <h:column>
                                 <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gerar Contribuições" style="width: 150px;" title="Gerar Contribuições"/>
                             </h:column>
                         </h:panelGrid>
-                        
+
                     </div>
                 </center>
-                
+
             </h:form>
         </f:view>
     </h:body>

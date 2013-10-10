@@ -5,7 +5,7 @@
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich"
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+
     <h:head>
         <title>Pesquisa Endereço</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -14,39 +14,43 @@
         <ui:include src="template.xhtml"/>
         <ui:include src="templateLinks.xhtml"/>
     </f:subview>
-        <f:view>
-            <h:form id="formPesquisaEndereco">
-                
-            <h:body style="margin-left: 0px; margin-top: 0px" onload="if ( #{enderecoBean.blDetalhada} ) modalMensagem(); #{rich:element('formPesquisaEndereco:idCEP')}.focus();">
+    <f:view>
+        <h:form id="formPesquisaEndereco">
+
+            <h:body style="margin-left: 0px; margin-top: 0px" onload="if (#{enderecoBean.blDetalhada})
+                        modalMensagem();
+                    #{rich:element('formPesquisaEndereco:idCEP')}.focus();">
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Pesquisa Endereço" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br />
                     <h:panelGrid style="text-align: left">
-                        
+
                         <h:panelGrid columns="4">
                             <h:outputText value="CEP: " styleClass="fontePadraoNegrito"/>
-                            <h:inputText id="idCEP" value="#{enderecoBean.endereco.cep}" size="10" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaEndereco:btnPesquisar')}.onclick();}"/>
+                            <h:inputText id="idCEP" value="#{enderecoBean.endereco.cep}" size="10" onkeypress="if (event.keyCode === 13) {#{rich:element('formPesquisaEndereco:btnPesquisar')}.onclick();
+                    }"/>
                             <a4j:commandLink id="btnPesquisar" action="#{enderecoBean.pesquisaCep}" value="Pesquisar" styleClass="idPesquisar iLink" render="tbl"/>
                             <h:commandLink style="margin-left: 20px;" styleClass="idPesquisar iLink" value="Cadastrar" action="#{enderecoBean.endereco()}"/>
                         </h:panelGrid>
                         <hr />
-                        
+
                         <h:outputText value="Descrição do Endereço: " styleClass="fontePadraoNegrito"/>
-                            
+
                         <h:panelGrid columns="8">
                             <h:selectOneMenu value="#{enderecoBean.idLogradouro}">
                                 <f:selectItems value="#{enderecoBean.listaLogradouro}" />
                             </h:selectOneMenu>
                             <h:inputText value="#{enderecoBean.endereco.descricaoEndereco.descricao}" size="25" 
-                                         onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaEndereco:btnInicial')}.onclick();}"/>
-                            
+                                         onkeypress="if (event.keyCode === 13) {#{rich:element('formPesquisaEndereco:btnInicial')}.onclick();
+                    }"/>
+
                             <h:selectOneMenu id="idListaCidades" value="#{enderecoBean.idCidade}">
                                 <a4j:ajax event="change" render="idListaCidades"/>
                                 <f:selectItems value="#{enderecoBean.listaCidade}" />
                             </h:selectOneMenu>                            
-                            
+
                             <h:selectOneMenu id="idUF" value="#{enderecoBean.cidadeBase.uf}" >
                                 <a4j:ajax event="change" render="idUF,idListaCidades"/>
                                 <f:selectItem itemValue="AC" itemLabel="AC"/>
@@ -77,13 +81,13 @@
                                 <f:selectItem itemValue="SE" itemLabel="SE"/>
                                 <f:selectItem itemValue="TO" itemLabel="TO"/>
                             </h:selectOneMenu>
-                            
+
                             <h:outputText id="tese" />
                             <a4j:commandLink id="btnInicial" action="#{enderecoBean.pesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl"/>
                             <a4j:commandLink id="btnParcial" action="#{enderecoBean.pesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl"/>
                             <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
                         </h:panelGrid>
-                            
+
                     </h:panelGrid>
                     <div style="width: 90%; margin-left: 5%; margin-right: 5%; height:260px; overflow:auto;">
                         <br />
@@ -94,7 +98,7 @@
                                 </f:facet>
                                 <h:outputText value="#{it.index}"/>
                             </rich:column>
-                            
+
                             <rich:column styleClass="colunaPesquisa">
                                 <f:facet name="header">
                                     <h:outputText value="ID"/>
@@ -103,7 +107,7 @@
                                     <a4j:param value="#{it.index}" assignTo="#{enderecoBean.idIndex}" />
                                 </a4j:commandLink>
                             </rich:column>                            
-                            
+
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="Cidade"/>
@@ -148,7 +152,7 @@
                         </rich:dataTable>
                     </div>
                 </center>
-                
+
                 <div id="boxes">
                     <div id="divMensagem" class="window">
                         <a4j:commandLink styleClass="close closeModal" value="Fechar" title="Fechar"/>
@@ -161,7 +165,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>
-                
+
             </h:body>
         </h:form>
     </f:view>

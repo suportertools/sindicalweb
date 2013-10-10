@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Relatório de Sócios</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -26,7 +26,7 @@
                     <rich:panel styleClass="headerPanel" style="width: 1024px; text-align: center; margin: 0 auto">
                         <h:outputText value="Relatórios Sócios" styleClass="fontePanel"/>
                     </rich:panel>
-                    
+
                     <br />
                     <rich:panel style="width: 1024px;  margin: 0 auto; border: 0">
                         <rich:panel style="border: 0">
@@ -36,7 +36,7 @@
                                 <f:selectItems value="#{relatorioSociosBean.listaTipoRelatorios}"/>
                             </h:selectOneMenu>
                         </rich:panel>
-                        
+
                         <rich:panel style="float: left; border: 0">
                             <rich:accordion switchType="client" width="250" activeItem="#{relatorioSociosBean.selectAccordion}">
                                 <rich:accordionItem header="Simples" name="simples">
@@ -46,7 +46,7 @@
                                 </rich:accordionItem>
                                 <rich:accordionItem header="Personalizado" name="personalizado">
                                     <h:outputLabel value="Pesquisando por " styleClass="fontePadraoNegrito"/>
-                                    
+
                                     <rich:list value="#{relatorioSociosBean.listaMenuRSocial}" var="linha" rowKeyVar="it" style="list-style: none; padding: 0px">
                                         <h:outputLabel value="#{linha.argumento0}" /><a4j:commandLink value="#{linha.argumento1}" action="#{relatorioSociosBean.editarOpcao(it)}"/>
                                         <br /><br />
@@ -54,7 +54,7 @@
                                 </rich:accordionItem>
                             </rich:accordion>
                         </rich:panel>
-                        
+
                         <rich:panel style="float: right; width: 650px; border: 0" styleClass="divFundo"> 
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booMatricula}" style="float: left; margin: 10px ">
                                 <h:column>
@@ -66,7 +66,7 @@
                                     <h:inputText value="#{relatorioSociosBean.matriculaFinal}" size="8"/>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booIdade}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Idade " styleClass="fontePadrao"/>
@@ -77,7 +77,7 @@
                                     <h:inputText value="#{relatorioSociosBean.idadeFinal}" size="8"/>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booGrupoCategoria}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Lista Grupos " styleClass="fontePadrao"/>
@@ -101,7 +101,7 @@
                                         </rich:dataTable>
                                     </div>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:outputLabel value="Lista Categorias " styleClass="fontePadrao" style="margin-left: 20px;" />
                                     <div style="height: 150px; overflow: auto">
@@ -125,7 +125,7 @@
                                     </div>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booTipoCobranca}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Tipos de Pagamento" styleClass="fontePadrao"/>
@@ -148,7 +148,7 @@
                                     </div>
                                 </h:column>
                             </h:panelGrid>   
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booCidadeSocio}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Cidade dos Sócios" styleClass="fontePadrao"/>
@@ -171,7 +171,7 @@
                                     </div>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booCidadeEmpresa}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Cidade das Empresas" styleClass="fontePadrao"/>
@@ -194,7 +194,7 @@
                                     </div>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booAniversario}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Data de Aniversário" styleClass="fontePadrao"/>
@@ -219,7 +219,7 @@
                                     <h:inputText value="#{relatorioSociosBean.diaFinal}" size="2"/>
                                 </h:column>
                             </h:panelGrid>   
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booGrau}" style="float: left; margin: 10px">
                                 <h:column>
                                     <h:outputLabel value="Parentescos" styleClass="fontePadrao"/>
@@ -242,8 +242,8 @@
                                     </div>
                                 </h:column>
                             </h:panelGrid>
-                            
-                            
+
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booSexo}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Sexo: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
@@ -253,7 +253,7 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booFotos}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Fotos: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
@@ -263,7 +263,7 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booCarteirinha}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Carteirinha: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
@@ -273,7 +273,7 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
 
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booVotante}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Votante: " styleClass="fontePadrao"/></h:column>
@@ -284,7 +284,7 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmail}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Email: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
@@ -294,7 +294,7 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booTelefone}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Telefone: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
@@ -304,7 +304,7 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="10" rendered="#{relatorioSociosBean.booData}" style="float: left; margin: 10px ">
                                 <h:column>
                                     <h:panelGrid style="margin-right: 20px">
@@ -314,7 +314,7 @@
                                         <h:inputText value="#{relatorioSociosBean.dataCadastroFim}" size="8" class="data"/>
                                     </h:panelGrid>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:panelGrid style="margin-right: 20px">
                                         <h:outputLabel value="Recadastro" styleClass="fontePadrao"/>
@@ -323,7 +323,7 @@
                                         <h:inputText value="#{relatorioSociosBean.dataRecadastroFim}" size="8" class="data"/>
                                     </h:panelGrid>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:panelGrid style="margin-right: 20px">
                                         <h:outputLabel value="Demissão" styleClass="fontePadrao"/>
@@ -332,7 +332,7 @@
                                         <h:inputText value="#{relatorioSociosBean.dataDemissaoFim}" size="8" class="data"/>
                                     </h:panelGrid>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:panelGrid style="margin-right: 20px">
                                         <h:outputLabel value="Filiação" styleClass="fontePadrao"/>
@@ -341,7 +341,7 @@
                                         <h:inputText value="#{relatorioSociosBean.dataAdmissaoSocioFim}" size="8" class="data"/>
                                     </h:panelGrid>
                                 </h:column>
-                                
+
                                 <h:column>
                                     <h:panelGrid style="margin-right: 20px">
                                         <h:outputLabel value="Admissão Empresa" styleClass="fontePadrao"/>
@@ -351,7 +351,7 @@
                                     </h:panelGrid>
                                 </h:column>
                             </h:panelGrid>  
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEstadoCivil}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Estado Civil: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
@@ -367,11 +367,11 @@
                                     </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
-                            
+
                             <h:panelGrid columns="2" rendered="#{relatorioSociosBean.booEmpresa}" style="float: left; margin: 10px">
                                 <h:column><h:outputLabel value="Empresas: " styleClass="fontePadrao"/></h:column>
                                 <h:column>
-                                    
+
                                     <h:selectOneMenu id="idEmpresas" value="#{relatorioSociosBean.idEmpresas}">
                                         <f:selectItems value="#{relatorioSociosBean.listaEmpresas}"/>
                                     </h:selectOneMenu>
@@ -383,7 +383,7 @@
                                     </h:selectOneRadio>
                                 </h:column>
                             </h:panelGrid>                            
-                            
+
                             <h:panelGrid  style="float: left">
                                 <rich:panel>
                                     <h:outputLabel value="Ordenar por " styleClass="fonteFranklinNegrito"/>
@@ -395,7 +395,7 @@
                                     </h:selectOneRadio>
                                 </rich:panel>
                             </h:panelGrid>
-                            
+
                         </rich:panel>
                         <h:commandLink styleClass="idPesquisar iLink" action="#{relatorioSociosBean.visualizarRelatorio()}" value="Visualizar" target="_blank" title="Visualizar Relatório" style="margin-left: 20px"/>
                     </rich:panel>

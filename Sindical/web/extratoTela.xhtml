@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Extrato de Tela</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -17,14 +17,14 @@
         </f:subview>
         <f:view>
             <h:form id="formExtratoTela">
-            
+
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Extrato de Tela" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
                     <div class="divMae divFundo" align="left" style="width: auto">
-                        
+
                         <h:panelGrid columns="4">
                             <h:column>
                                 <h:outputText value="Filtrar Por:" styleClass="fonteExtratoTela"/>
@@ -51,7 +51,7 @@
                                     <f:selectItem itemValue="naoVerificar"      itemLabel="Não Verificar"/>
                                 </h:selectOneMenu>
                             </h:column>
-                            
+
                             <h:column>
                                 <h:outputText value="Ordenação: " styleClass="fonteExtratoTela" style="margin-left: 15px"/>
                                 <h:selectOneMenu value="#{extratoTelaBean.ordenacao}">
@@ -62,14 +62,14 @@
                                     <f:selectItem itemValue="importacao"        itemLabel="Importação"/>
                                 </h:selectOneMenu>
                             </h:column>
-                        
+
                             <a4j:commandButton value="Filtrar" style="margin-left: 15px" action="#{extratoTelaBean.filtrar}" render="tbl, idQntBoletos, idSomarVlRecebido, idSomarVlTotal, idSomarTaxa, idSomarVlLiquido, idSomarVlLiquidoRepasse, idValorExtenso" 
                                                onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)"/>
-                        
+
                         </h:panelGrid>
-                        
+
                         <br />
-                        
+
                         <h:panelGrid columns="5">
                             <h:column>
                                 <rich:panel style="height: 120px">
@@ -77,7 +77,7 @@
                                         <h:selectBooleanCheckbox value="#{extratoTelaBean.chkData}">
                                             <a4j:ajax event="change" render="idDtInicial,idDtFinal,idDtMAInicial,idDtMAFinal,idFiltroData"/>
                                         </h:selectBooleanCheckbox>
-                                            
+
                                         <h:selectOneMenu id="idFiltroData" value="#{extratoTelaBean.tipoDataPesquisa}" disabled="#{!extratoTelaBean.chkData}" onchange="submit();">
                                             <f:selectItem itemValue="importacao"  itemLabel="Faixa de Importação"/>
                                             <f:selectItem itemValue="recebimento" itemLabel="Faixa de Recebimento"/>
@@ -89,21 +89,21 @@
                                     <h:panelGrid id="ipdata" columns="2" rendered="#{extratoTelaBean.tipoDataPesquisa != 'referencia'}">
                                         <h:outputLabel value="Data Inicial: " styleClass="fonteExtratoTela" for="idDtInicial"/>
                                         <h:inputText id="idDtInicial" size="7" class="data" value="#{extratoTelaBean.dataInicial}" disabled="#{!extratoTelaBean.chkData}"/>
-                                        
+
                                         <h:outputLabel value="Data Final: " styleClass="fonteExtratoTela" for="idDtFinal"/>
                                         <h:inputText id="idDtFinal" size="7" class="data" value="#{extratoTelaBean.dataFinal}" disabled="#{!extratoTelaBean.chkData}"/>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid id="ipref" columns="2" rendered="#{extratoTelaBean.tipoDataPesquisa == 'referencia'}">
                                         <h:outputLabel value="Data Mês/Ano Inicial: " styleClass="fonteExtratoTela" for="idDtMAInicial"/>
                                         <h:inputText id="idDtMAInicial" size="5" class="referencia" value="#{extratoTelaBean.dataRefInicial}" disabled="#{!extratoTelaBean.chkData}"/>
-                                        
+
                                         <h:outputLabel value="Data Mês/Ano Final: " styleClass="fonteExtratoTela" for="idDtMAFinal"/>
                                         <h:inputText id="idDtMAFinal" size="5" class="referencia" value="#{extratoTelaBean.dataRefFinal}" disabled="#{!extratoTelaBean.chkData}"/>
                                     </h:panelGrid>
                                 </rich:panel>
                             </h:column>
-                            
+
                             <h:column>
                                 <rich:panel style="height: 120px; margin-left: 8px">
                                     <h:panelGrid>
@@ -115,14 +115,14 @@
                                         </h:panelGrid>
                                         <h:inputText id="idBoletoInicial" size="20" value="#{extratoTelaBean.boletoInicial}" disabled="#{!extratoTelaBean.chkNrBoletos}"/>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid>
                                         <h:outputLabel value="Boleto Final: " styleClass="fonteExtratoTela" for="idBoletoFinal"/>
                                         <h:inputText id="idBoletoFinal" size="20" value="#{extratoTelaBean.boletoFinal}" disabled="#{!extratoTelaBean.chkNrBoletos}"/>
                                     </h:panelGrid>
                                 </rich:panel>
                             </h:column>
-                            
+
                             <h:column>
                                 <rich:panel style="height:120px; margin-left: 8px">
                                     <h:panelGrid columns="10">
@@ -136,7 +136,7 @@
                                                 <f:selectItems value="#{extratoTelaBean.listaServico}"/>
                                             </h:selectOneMenu>
                                         </h:column>
-                                        
+
                                         <h:column>
                                             <h:selectBooleanCheckbox value="#{extratoTelaBean.chkTipo}">
                                                 <a4j:ajax event="change" render="idTipoContri"/>
@@ -148,7 +148,7 @@
                                             </h:selectOneMenu>
                                         </h:column>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid columns="1">
                                         <h:column>
                                             <h:selectBooleanCheckbox value="#{extratoTelaBean.chkEmpresa}">
@@ -158,7 +158,7 @@
                                             <h:outputText id="lbtipoDocumento" value="#{extratoTelaBean.pessoa.tipoDocumento.descricao}" styleClass="fonteExtratoTela"/>
                                         </h:column>
                                     </h:panelGrid>
-                                    
+
                                     <h:panelGrid columns="10">
                                         <h:column>
                                             <h:inputText id="idEmpresa" size="40" value="#{extratoTelaBean.pessoa.nome}" disabled="true"/>
@@ -169,14 +169,14 @@
                                 </rich:panel>
                             </h:column>
                         </h:panelGrid>
-                        
+
                         <br />
-                        
+
                         <rich:panel style="width: 965px">
                             <h:panelGroup style="overflow:auto; height:200px; width:950px;" layout="block">
                                 <rich:dataTable value="#{extratoTelaBean.listaMovimentos}" var="linha" id="tbl" iterationStatusVar="it" rows="500" style="width: 700px"
                                                 rowClasses="#{linha.argumento26}">
-                                    
+
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header">
                                             <h:outputText value="#"/>
@@ -237,7 +237,7 @@
                                             <h:outputText value="#{linha.argumento9}"/>
                                         </h:column>
                                     </rich:column>
-                                    
+
                                     <rich:column>
                                         <f:facet name="header"><h:outputText value="Valor"/></f:facet>
                                         <h:outputText value="#{linha.argumento11}"/>
@@ -291,15 +291,15 @@
                                 </rich:dataTable>
                             </h:panelGroup>
                         </rich:panel>
-                        
+
                         <h:panelGrid columns="1">
                             <f:facet name="footer">
                                 <rich:dataScroller id="datascroller2" render="datascroller1" for="tbl"/>
                             </f:facet>
                         </h:panelGrid>                        
-                        
+
                         <br />
-                        
+
                         <rich:panel style="width: 1024px">
                             <h:panelGrid columns="7">
                                 <h:column>
@@ -338,7 +338,7 @@
                                 </h:column>
                             </h:panelGrid>
                         </rich:panel>
-                        
+
                         <br />
                         <h:panelGrid columns="6">
                             <h:selectBooleanCheckbox value="#{extratoTelaBean.imprimirVerso}">
@@ -360,7 +360,7 @@
                                     <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
                                     <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
                                 </h:selectOneMenu>
-                                
+
                                 <a4j:commandLink styleClass="idExcluir iLink" value="Excluir Acordo" style="width: 140px; margin-left: 10px" title="Excluir Acordo" onclick="modalOpcao('divAcordo');" disabled="#{controleAcessoBean.botaoExcluirAcordo}"/>
                                 <h:commandLink styleClass="idNovo iLink" action="#{extratoTelaBean.imprimirPlanilha}" value="Planilha Acordo" style="width: 150px; margin-left: 7px" title="Planilha Acordo" target="_blank"/>
                                 <h:commandLink styleClass="idNovo iLink" value="Promissória Acordo" style="width: 200px; margin-left: 7px" title="Promissória Acordo" action="#{extratoTelaBean.imprimirPromissoria}" target="_blank"/>
@@ -368,7 +368,7 @@
                         </h:panelGrid>
                     </div>
                 </center>
-                
+
                 <div id="boxes">
                     <div id="divAlterarVencimento" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -397,7 +397,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>                
-                
+
                 <div id="boxes">
                     <div id="divExcluir" class="window" style="height: 250px;">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -422,7 +422,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>                
-                
+
                 <div id="boxes">
                     <div id="divEstornar" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -441,7 +441,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>
-                
+
                 <div id="boxes">
                     <div id="divAcordo" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -460,7 +460,7 @@
                     </div>
                     <div id="mask"></div>
                 </div>                
-                
+
                 <div id="boxes">
                     <div id="divProcesso" class="window">
                         <br />
@@ -469,7 +469,7 @@
                         </center>
                     </div>
                 </div>                
-                
+
                 <div id="boxes">
                     <div id="divMensagem" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">

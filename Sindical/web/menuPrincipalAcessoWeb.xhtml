@@ -18,77 +18,77 @@
         </style>
     </h:head>
     <h:body styleClass="divMenu"><div align="center">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-              <h:form id="formMenuPrincipal" style="border: 0; width: 980px; border-bottom: 1px dashed #888; ">
-              <h:panelGrid cellpadding="0" cellspacing="0">
-                    <rich:toolbar styleClass="divMenuPrincipal" style="background: #e0e0e0; border: 0">
-                        <rich:dropDownMenu>
-                            <f:facet name="label">
-                                <h:panelGroup>
-                                    <h:panelGrid columns="2">
-                                        <h:graphicImage value="/Imagens/seguranca.png" styleClass="pic"/>
-                                        <h:outputText value="Serviços" styleClass="fontePadraoNegrito"/>
-                                    </h:panelGrid>
-                                </h:panelGroup>
-                            </f:facet>
-                            <rich:menuGroup label="Contabilidade" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaPatronal == null}">
-                                <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContabilidade}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.boletoWeb}"/>
-                                <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContabilidade}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.agendamentoWeb}"/>
-                                <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.repisWeb}" />
-                            </rich:menuGroup>
-                            <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContabilidade}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.boletoWeb}"/>
-                            <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContabilidade}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.agendamentoWeb}"/>
-                            <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao"  rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.repisWeb}"/>
+            <f:subview id="header">
+                <ui:include src="template.xhtml"/>
+                <ui:include src="templateLinks.xhtml"/>
+            </f:subview>
+            <f:view>
+                <h:form id="formMenuPrincipal" style="border: 0; width: 980px; border-bottom: 1px dashed #888; ">
+                    <h:panelGrid cellpadding="0" cellspacing="0">
+                        <rich:toolbar styleClass="divMenuPrincipal" style="background: #e0e0e0; border: 0">
+                            <rich:dropDownMenu>
+                                <f:facet name="label">
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2">
+                                            <h:graphicImage value="/Imagens/seguranca.png" styleClass="pic"/>
+                                            <h:outputText value="Serviços" styleClass="fontePadraoNegrito"/>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </f:facet>
+                                <rich:menuGroup label="Contabilidade" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaPatronal == null}">
+                                    <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContabilidade}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.boletoWeb}"/>
+                                    <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContabilidade}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.agendamentoWeb}"/>
+                                    <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.repisWeb}" />
+                                </rich:menuGroup>
+                                <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContabilidade}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.boletoWeb}"/>
+                                <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContabilidade}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.agendamentoWeb}"/>
+                                <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao"  rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.repisWeb}"/>
 
-                            <rich:menuGroup label="Contribuintes" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaPatronal == null}">
-                                <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" styleClass="divBotao" disabled="#{controleAcessoWeb.registro.boletoWeb}"/>
-                                <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" styleClass="divBotao" disabled="#{controleAcessoWeb.registro.agendamentoWeb}"/>
-                                <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.repisWeb}"/>
-                            </rich:menuGroup>
-                            <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaContabilidade == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.boletoWeb}" />
-                            <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaContabilidade == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.agendamentoWeb}" />
-                            <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao"  rendered="#{controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaContabilidade == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.repisWeb}"/>
-                            <!-- <rich:menuItem label="Configurações" action="# {chamadaPaginaBean.webConfiguracoes}" styleClass="divBotao" rendered="false"/>  -->
-                            <rich:menuItem label="Liberação de REPIS" action="#{chamadaPaginaBean.webLiberacaoREPIS}" styleClass="divBotao"  rendered="#{controleAcessoWeb.pessoaPatronal != null}" /> 
-                        </rich:dropDownMenu>
+                                <rich:menuGroup label="Contribuintes" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContabilidade != null and controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaPatronal == null}">
+                                    <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" styleClass="divBotao" disabled="#{controleAcessoWeb.registro.boletoWeb}"/>
+                                    <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" styleClass="divBotao" disabled="#{controleAcessoWeb.registro.agendamentoWeb}"/>
+                                    <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao" disabled="#{!controleAcessoWeb.registro.repisWeb}"/>
+                                </rich:menuGroup>
+                                <rich:menuItem label="Impressão de Boletos" action="#{chamadaPaginaBean.webContribuinte}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaContabilidade == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.boletoWeb}" />
+                                <rich:menuItem label="Agendamento" action="#{chamadaPaginaBean.webAgendamentoContribuinte}" styleClass="divBotao" rendered="#{controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaContabilidade == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.agendamentoWeb}" />
+                                <rich:menuItem label="Solicitar REPIS" action="#{chamadaPaginaBean.webSolicitaREPIS}" styleClass="divBotao"  rendered="#{controleAcessoWeb.pessoaContribuinte != null and controleAcessoWeb.pessoaContabilidade == null and controleAcessoWeb.pessoaPatronal == null}" disabled="#{!controleAcessoWeb.registro.repisWeb}"/>
+                                <!-- <rich:menuItem label="Configurações" action="# {chamadaPaginaBean.webConfiguracoes}" styleClass="divBotao" rendered="false"/>  -->
+                                <rich:menuItem label="Liberação de REPIS" action="#{chamadaPaginaBean.webLiberacaoREPIS}" styleClass="divBotao"  rendered="#{controleAcessoWeb.pessoaPatronal != null}" /> 
+                            </rich:dropDownMenu>
 
-                        <rich:dropDownMenu>
-                            <f:facet name="label">
-                                <h:panelGroup>
-                                    <h:panelGrid columns="2" rendered="#{!controleAcessoWeb.tipoLink}">
-                                        <h:commandButton image="/Imagens/iconSair.png" action="#{controleAcessoWeb.sairSistemaWeb}" alt="Sair" title="Sair"/>
-                                        <h:outputText value="Sair" styleClass="fontePadraoNegrito" title="Sair"/>
-                                    </h:panelGrid>
-                                    <h:panelGrid columns="2" rendered="#{controleAcessoWeb.tipoLink}">
-                                        <h:graphicImage value="/Imagens/iconSair.png" id="idImageSair"/>
-                                        <h:outputLink value="#{controleAcessoWeb.link}" styleClass="fontePadraoNegrito">
-                                            <a4j:ajax event="click" listener="#{controleAcessoWeb.limparSessaoAcessoWeb}" render="@this" immediate="true" />
-                                            <f:verbatim>Sair</f:verbatim>
-                                        </h:outputLink>
-                                    </h:panelGrid>
-                                </h:panelGroup>
-                            </f:facet>
-                        </rich:dropDownMenu>
-                    </rich:toolbar>
-                  <h:panelGrid columns="2">
-                      <h:column>
-                          <h:outputText  value="Usuário: " styleClass="fonteNegritoPequeno"/>
-                          <h:outputText styleClass="fontePadraoNegritoMedio" value="#{controleAcessoWeb.login}"/>
-                      </h:column>
-                  </h:panelGrid>
-                  <rich:panel style="width: 980px; height: 500px; text-align: right; border: 0px; background: #f6f6f6;">
-                      
-                  </rich:panel>
-              </h:panelGrid>
-           </h:form>
-      </f:view>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>
-      </div>
+                            <rich:dropDownMenu>
+                                <f:facet name="label">
+                                    <h:panelGroup>
+                                        <h:panelGrid columns="2" rendered="#{!controleAcessoWeb.tipoLink}">
+                                            <h:commandButton image="/Imagens/iconSair.png" action="#{controleAcessoWeb.sairSistemaWeb}" alt="Sair" title="Sair"/>
+                                            <h:outputText value="Sair" styleClass="fontePadraoNegrito" title="Sair"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2" rendered="#{controleAcessoWeb.tipoLink}">
+                                            <h:graphicImage value="/Imagens/iconSair.png" id="idImageSair"/>
+                                            <h:outputLink value="#{controleAcessoWeb.link}" styleClass="fontePadraoNegrito">
+                                                <a4j:ajax event="click" listener="#{controleAcessoWeb.limparSessaoAcessoWeb}" render="@this" immediate="true" />
+                                                <f:verbatim>Sair</f:verbatim>
+                                            </h:outputLink>
+                                        </h:panelGrid>
+                                    </h:panelGroup>
+                                </f:facet>
+                            </rich:dropDownMenu>
+                        </rich:toolbar>
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <h:outputText  value="Usuário: " styleClass="fonteNegritoPequeno"/>
+                                <h:outputText styleClass="fontePadraoNegritoMedio" value="#{controleAcessoWeb.login}"/>
+                            </h:column>
+                        </h:panelGrid>
+                        <rich:panel style="width: 980px; height: 500px; text-align: right; border: 0px; background: #f6f6f6;">
+
+                        </rich:panel>
+                    </h:panelGrid>
+                </h:form>
+            </f:view>
+            <p style="text-align: center">
+                R'Tools Desenvolvimento de Sistemas LTDA ®
+            </p>
+        </div>
     </h:body>
 </html>

@@ -15,57 +15,50 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaRotina">
-            
+            <h:form id="form_pesquisa_rotina">
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Pesquisa Rotina" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <div class="divMae" align="center">
-                        <h:panelGroup style="overflow:auto; height:500px; border: 0px ; border-top: 0px; border-spacing: 0px" layout="block">        
-                            <rich:dataTable value="#{rotinaBean.listaRotina}" var="linha" iterationStatusVar="it" style="width: 100%;">
-
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header">
-                                        <h:outputText value="#"/>
-                                    </f:facet>
-                                    <h:outputText value="#{it.index}"/>
-                                </rich:column>                                    
-
-                                <rich:column styleClass="colunaPesquisa">
+                    <rich:panel styleClass="divMae no-margin border-radius">
+                        <h:panelGrid columns="3" styleClass="margin">
+                            <h:outputText value="Pesquisar: " />
+                            <h:inputText value="#{rotinaBean.descricaoPesquisa}" />
+                            <a4j:commandLink styleClass="iLink idPesquisar" value="Pesquisar" actionListener="#{rotinaBean.listaRotina.clear()}" render="tbl" status="i_status"/>
+                        </h:panelGrid>
+                        <h:panelGroup style="overflow:auto; height:500px; border: 0px ; border-top: 0px; border-spacing: 0px" layout="block" >
+                            <rich:dataTable value="#{rotinaBean.listaRotina}" var="rotina" style="width: 100%;" id="tbl" >
+                                <rich:column style="width: 30px;">
                                     <f:facet name="header">
                                         <h:outputText value="ID"/>
                                     </f:facet>
-                                    <h:commandLink action="#{rotinaBean.editar}" value="#{linha.id}">
-                                        <a4j:param value="#{it.index}" assignTo="#{rotinaBean.idIndex}"/>
-                                    </h:commandLink>
+                                    <h:commandLink action="#{rotinaBean.editar(rotina)}" value="#{rotina.id}" styleClass="underline-hover"/>
                                 </rich:column>
 
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Rotina"/>
                                     </f:facet>
-                                    <h:outputText value="#{linha.rotina}"/>
+                                    <h:commandLink action="#{rotinaBean.editar(rotina)}" value="#{rotina.rotina}" styleClass="underline-hover"/>
                                 </rich:column>
 
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Classe"/>
                                     </f:facet>
-                                    <h:outputText value="#{linha.classe}"/>
+                                    <h:commandLink action="#{rotinaBean.editar(rotina)}" value="#{rotina.classe}" styleClass="underline-hover"/>
                                 </rich:column>
-                                <rich:column>
+                                <rich:column style="width: 25px;">
                                     <f:facet name="header">
-                                        <h:outputText value="..."/>
+                                        <h:outputText value=""/>
                                     </f:facet>
-                                    <h:outputText value="#{rotinaBean.rotinaAtiva(linha.ativo)}"/>
+                                    <h:selectBooleanCheckbox title="#{rotinaBean.rotinaAtiva(rotina.ativo)}" value="#{rotina.ativo}" disabled="true" />
                                 </rich:column>
                             </rich:dataTable>
                         </h:panelGroup>
-                    </div>
+                    </rich:panel>
                 </center>
-                
             </h:form>
         </f:view>
     </h:body>
