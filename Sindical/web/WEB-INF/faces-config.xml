@@ -56,13 +56,7 @@
         <managed-bean-class>br.com.rtools.pessoa.beans.PessoaEnderecoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <!-- <managed-bean>
-        <managed-bean-name>fisicaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.FisicaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean> -->
-
+    
     <managed-bean>
         <managed-bean-name>pessoaProfissaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.PessoaProfissaoJSFBean</managed-bean-class>
@@ -163,12 +157,6 @@
     <managed-bean>
         <managed-bean-name>contaBancoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.ContaBancoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>rotinaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.seguranca.beans.RotinaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
@@ -582,12 +570,6 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <!-- <managed-bean>
-        <managed-bean-name>matriculaEscolaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.MatriculaEscolaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean> -->
-
     <managed-bean>
         <managed-bean-name>relatorioSociosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioSociosJSFBean</managed-bean-class>
@@ -641,12 +623,6 @@
         <managed-bean-class>br.com.rtools.pessoa.beans.CentroComercialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <!-- <managed-bean>
-        <managed-bean-name>simplesBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.seguranca.beans.SimplesJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>catalogoBean</managed-bean-name>
