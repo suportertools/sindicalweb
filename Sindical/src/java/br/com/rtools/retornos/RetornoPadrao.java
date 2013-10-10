@@ -14,6 +14,8 @@ import br.com.rtools.utilitarios.ArquivoRetorno;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaRetorno;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -58,8 +60,8 @@ public class RetornoPadrao extends ArquivoRetorno {
         File fl = new File(caminho);
         File listFile[] = fl.listFiles();
         List<GenericaRetorno> listaRetorno = new ArrayList();
-        RotinaDB dbRot = new RotinaDBToplink();
-        Rotina rotina = dbRot.pesquisaCodigo(4);
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Rotina rotina = (Rotina) salvarAcumuladoDB.pesquisaObjeto(4, "Rotina");
         if (listFile != null) {
             int qntRetornos = listFile.length;
             for (int u = 0; u < qntRetornos; u++) {

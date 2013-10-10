@@ -122,6 +122,8 @@ public class SimplesJSFBean {
                     sv.desfazerTransacao();
                 }
             }
+        } else {
+            mensagem = "Não há tipo de cadastro definido!";
         }
         return null;
     }

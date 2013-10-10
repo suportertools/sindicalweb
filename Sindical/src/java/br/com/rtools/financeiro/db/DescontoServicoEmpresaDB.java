@@ -12,4 +12,6 @@ public interface DescontoServicoEmpresaDB {
     public List<DescontoServicoEmpresa> listaTodosPorEmpresa(int idJuridica);
 
     public List<DescontoServicoEmpresa> pesquisaDescontoServicoEmpresas(String pesquisaPor, String descricao, String comoPesquisa);
+    
+    public DescontoServicoEmpresa pesquisaDescontoServicoEmpresa(DescontoServicoEmpresa descontoServicoEmpresa);
 }

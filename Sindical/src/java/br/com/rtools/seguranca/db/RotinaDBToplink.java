@@ -9,82 +9,43 @@ import javax.persistence.Query;
 public class RotinaDBToplink extends DB implements RotinaDB {
 
     @Override
-    public boolean insert(Rotina rotina) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(rotina);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Rotina rotina) {
-        try {
-            getEntityManager().merge(rotina);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Rotina rotina) {
-        try {
-            getEntityManager().remove(rotina);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
-    public Rotina pesquisaCodigo(int id) {
-        Rotina result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Rotina.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Rotina) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
     public List pesquisaTodos() {
         try {
-            Query qry = getEntityManager().createQuery("select rot from Rotina rot ");
-            return (qry.getResultList());
+            Query qry = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
-            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
     public List pesquisaTodosOrdenado() {
         try {
-            Query qry = getEntityManager().createQuery("select rot from Rotina rot order by rot.rotina asc ");
+            Query qry = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT ORDER BY ROT.rotina ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
             return (qry.getResultList());
         } catch (Exception e) {
-            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
     public List pesquisaTodosOrdenadoAtivo() {
         try {
             Query qry = getEntityManager().createQuery(" SELECT rot FROM Rotina rot WHERE rot.ativo = true ORDER BY rot.rotina ASC ");
-            return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
-            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
@@ -112,16 +73,17 @@ public class RotinaDBToplink extends DB implements RotinaDB {
     }
 
     @Override
-    public Rotina idRotina(Rotina des_rotina) {
-        Rotina result = null;
-        String descricao = des_rotina.getRotina().toLowerCase().toUpperCase();
+    public boolean existeRotina(Rotina rotina) {
         try {
-            Query qry = getEntityManager().createQuery("select rot from Rotina rot where UPPER(rot.rotina) = :d_rotina");
-            qry.setParameter("d_rotina", descricao);
-            result = (Rotina) qry.getSingleResult();
+            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE UPPER(ROT.rotina) = :descricaoRotina");
+            query.setParameter("descricaoRotina", rotina.getRotina().toUpperCase());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true; 
+            }
         } catch (Exception e) {
         }
-        return result;
+        return false; 
     }
 
     @Override
@@ -158,7 +120,7 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         }
         return lista;
     }
-
+    
     @Override
     public List<Rotina> pesquisaAcessosOrdem() {
         List<Rotina> lista = new ArrayList();
@@ -183,4 +145,17 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         }
         return rotina;
     }
+    
+    @Override
+    public List<Rotina> pesquisaRotinaPorDescricao(String descricaoRotina) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT ROT FROM Rotina AS ROT WHERE UPPER(ROT.rotina) LIKE '%" + descricaoRotina.toUpperCase() + "%' OR UPPER(ROT.pagina) LIKE '%" + descricaoRotina.toUpperCase() + "%' ORDER BY ROT.rotina ASC, ROT.pagina ASC ");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }    
 }

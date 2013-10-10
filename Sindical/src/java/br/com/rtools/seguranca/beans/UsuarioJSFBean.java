@@ -102,7 +102,7 @@ public class UsuarioJSFBean {
                 return null;
             }
         } else {
-            Usuario user = (Usuario) db.pesquisaCodigo(usuario.getId());
+            Usuario user = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
             if (disNovaSenha) {
                 if (user.getSenha().equals(getSenhaAntiga()) && !usuario.getSenha().equals("")) {
                 } else {
@@ -763,15 +763,14 @@ public class UsuarioJSFBean {
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
                 return;
             }
-            UsuarioDB usuarioDB = new UsuarioDBToplink();
-            Usuario user = (Usuario) usuarioDB.pesquisaCodigo(usuario.getId());
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            Usuario user = (Usuario) salvarAcumuladoDB.pesquisaCodigo(usuario.getId(), "Usuario");
             if (!user.getSenha().equals(senhaAntiga)) {
                 msgConfirma = "Senha antiga incompativel!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                 return;
             }
             usuario.setSenha(senhaNova);
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(usuario)) {
                 salvarAcumuladoDB.comitarTransacao();
