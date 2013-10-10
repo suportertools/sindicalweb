@@ -15,8 +15,6 @@ public interface SimplesDB {
 
     public Usuario ValidaUsuarioSuporteWeb(String login, String senha);
 
-    public Usuario pesquisaCodigo(int id);
-
     public List pesquisaTodos();
 
     public Usuario pesquisaLogin(String login, int idPessoa);

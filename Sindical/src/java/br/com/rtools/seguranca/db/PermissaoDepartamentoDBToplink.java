@@ -6,58 +6,8 @@ import br.com.rtools.seguranca.PermissaoDepartamento;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
-import javax.persistence.TemporalType;
 
 public class PermissaoDepartamentoDBToplink extends DB implements PermissaoDepartamentoDB {
-
-    @Override
-    public boolean insert(PermissaoDepartamento permissaoDepartamento) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(permissaoDepartamento);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(PermissaoDepartamento permissaoDepartamento) {
-        try {
-            getEntityManager().merge(permissaoDepartamento);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(PermissaoDepartamento permissaoDepartamento) {
-        try {
-            getEntityManager().remove(permissaoDepartamento);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
-
-    @Override
-    public PermissaoDepartamento pesquisaCodigo(int id) {
-        PermissaoDepartamento result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("PermissaoDepartamento.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (PermissaoDepartamento) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
 
     @Override
     public List pesquisaTodos() {

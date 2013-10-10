@@ -10,42 +10,6 @@ import oracle.toplink.essentials.exceptions.EJBQLException;
 public class PermissaoUsuarioDBToplink extends DB implements PermissaoUsuarioDB {
 
     @Override
-    public boolean insert(PermissaoUsuario permissaoUsuario) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(permissaoUsuario);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(PermissaoUsuario permissaoUsuario) {
-        try {
-            getEntityManager().merge(permissaoUsuario);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(PermissaoUsuario permissaoUsuario) {
-        try {
-            getEntityManager().remove(permissaoUsuario);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
     public List pesquisaListaPermissaoPorUsuario(int idUsuario) {
         try {
             Query qry = getEntityManager().createQuery("select pu "

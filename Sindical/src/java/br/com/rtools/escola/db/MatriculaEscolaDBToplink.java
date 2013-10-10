@@ -108,12 +108,14 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         try {
             Query query = getEntityManager().createQuery(" SELECT mi FROM MatriculaIndividual mi WHERE mi.matriculaEscola.id = :matriculaEscola ");
             query.setParameter("matriculaEscola", matriculaEscola);
-            MatriculaIndividual individual = (MatriculaIndividual) query.getSingleResult();
-            return individual;
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (MatriculaIndividual) query.getSingleResult();
+            }
         } catch (Exception e) {
-            e.getMessage();
-            return null;
+            return new MatriculaIndividual();
         }
+        return new MatriculaIndividual();
     }
 
     @Override
@@ -121,11 +123,14 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         try {
             Query query = getEntityManager().createQuery(" SELECT mt FROM MatriculaTurma mt WHERE mt.matriculaEscola.id = :matriculaEscola ");
             query.setParameter("matriculaEscola", matriculaEscola);
-            return (MatriculaTurma) query.getSingleResult();
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (MatriculaTurma) query.getSingleResult();
+            }
         } catch (Exception e) {
-            e.getMessage();
-            return null;
+            return new MatriculaTurma();
         }
+        return new MatriculaTurma();
     }
 
     @Override
@@ -261,20 +266,4 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         return false;
     }
-//    public ServicoValor pesquisaServicoPorPessoa(int idPessoa){
-//        ServicoValor servicoValor = new ServicoValor();
-//        try{
-//            Query query = getEntityManager().createNativeQuery(""
-//                    + "     SELECT fin.*
-//                    + "       FROM fin_servico_valor fin 
-//                    + " INNER JOIN pes_fisica vw ON( vw.id_pessoa = :idPessoa)
-//"where func_idade(dt_nascimento, current_date) >= nr_idade_ini and func_idade(dt_nascimento, current_date) <= nr_idade_fim and id_servico = 102"
-//                    + "");
-//        }catch(Exception e){
-//            e.getMessage();
-//        }
-//        
-//    
-//        return
-//    }
 }

@@ -6,19 +6,11 @@ import javax.persistence.EntityManager;
 
 public interface RotinaDB {
 
-    public boolean insert(Rotina rotina);
-
-    public boolean update(Rotina rotina);
-
-    public boolean delete(Rotina rotina);
-
     public EntityManager getEntityManager();
-
-    public Rotina pesquisaCodigo(int id);
 
     public List pesquisaTodos();
 
-    public Rotina idRotina(Rotina des_rotina);
+    public boolean existeRotina(Rotina rotina);
 
     public List pesquisaTodosOrdenado();
 
@@ -37,4 +29,6 @@ public interface RotinaDB {
     public List pesquisaRotinasDisponiveisModulo(int idModulo);
 
     public Rotina pesquisaRotinaPorPagina(String pagina);
+    
+    public List<Rotina> pesquisaRotinaPorDescricao(String descricaoRotina);
 }

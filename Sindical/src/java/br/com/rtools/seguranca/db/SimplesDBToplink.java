@@ -9,18 +9,6 @@ import javax.persistence.Query;
 public class SimplesDBToplink extends DB implements SimplesDB {
 
     @Override
-    public Usuario pesquisaCodigo(int id) {
-        Usuario result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Usuario.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Usuario) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
     public List pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery("select usu from Usuario usu ");

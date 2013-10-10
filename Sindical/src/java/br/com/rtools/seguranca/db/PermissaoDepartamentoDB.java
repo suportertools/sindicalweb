@@ -7,15 +7,7 @@ import javax.persistence.EntityManager;
 
 public interface PermissaoDepartamentoDB {
 
-    public boolean insert(PermissaoDepartamento permissaoDepartamento);
-
-    public boolean update(PermissaoDepartamento permissaoDepartamento);
-
-    public boolean delete(PermissaoDepartamento permissaoDepartamento);
-
     public EntityManager getEntityManager();
-
-    public PermissaoDepartamento pesquisaCodigo(int id);
 
     public List pesquisaTodos();
 

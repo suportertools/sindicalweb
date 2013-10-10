@@ -79,4 +79,20 @@ public class DescontoServicoEmpresaDBTopLink extends DB implements DescontoServi
         }
         return new ArrayList();
     }
+    
+    @Override
+    public DescontoServicoEmpresa pesquisaDescontoServicoEmpresa(DescontoServicoEmpresa descontoServicoEmpresa) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT DSE FROM DescontoServicoEmpresa AS DSE WHERE DSE.juridica.id = :idJuridica AND DSE.servicos.id = :idServicos ");
+            query.setParameter("idJuridica", descontoServicoEmpresa.getJuridica().getId());
+            query.setParameter("idServicos", descontoServicoEmpresa.getServicos().getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                descontoServicoEmpresa = (DescontoServicoEmpresa) query.getSingleResult();
+            }
+        } catch (Exception e) {
+            return descontoServicoEmpresa;
+        }
+        return descontoServicoEmpresa;
+    } 
 }

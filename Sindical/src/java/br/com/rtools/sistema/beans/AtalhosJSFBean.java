@@ -24,15 +24,11 @@ public class AtalhosJSFBean implements java.io.Serializable {
     public String adicionar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         AtalhoDB db = new AtalhoDBToplink();
-        RotinaDB dbr = new RotinaDBToplink();
-
-        atalhos.setRotina(dbr.pesquisaCodigo(Integer.parseInt(listaRotina.get(idRotina).getDescription())));
+        atalhos.setRotina( (Rotina) sv.pesquisaObjeto(Integer.parseInt(listaRotina.get(idRotina).getDescription()), "Rotina"));
         if (atalhos.getSigla().isEmpty() || db.pesquisaPorSigla(atalhos.getSigla()) != null || db.pesquisaPorRotina(atalhos.getRotina().getId()) != null) {
             return null;
         }
-
         atalhos.setPessoa(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa());
-
         sv.abrirTransacao();
         if (sv.inserirObjeto(atalhos)) {
             sv.comitarTransacao();
@@ -40,7 +36,6 @@ public class AtalhosJSFBean implements java.io.Serializable {
         } else {
             sv.desfazerTransacao();
         }
-
         atalhos = new Atalhos();
         idRotina = 0;
         return "menuPrincipal";

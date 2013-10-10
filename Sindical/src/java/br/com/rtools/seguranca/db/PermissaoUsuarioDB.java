@@ -8,12 +8,6 @@ public interface PermissaoUsuarioDB {
 
     public EntityManager getEntityManager();
 
-    public boolean insert(PermissaoUsuario permissaoUsuario);
-
-    public boolean update(PermissaoUsuario permissaoUsuario);
-
-    public boolean delete(PermissaoUsuario permissaoUsuario);
-
     public List pesquisaListaPermissaoPorUsuario(int idUsuario);
 
     public PermissaoUsuario pesquisaPermissaoUsuario(int idUsuario, int idDepartamento, int idNivel);

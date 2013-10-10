@@ -55,10 +55,9 @@ public class PermissaoJSFBean {
             return null;
         }
         PermissaoDB db = new PermissaoDBToplink();
-        RotinaDB rotinaDB = new RotinaDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         modulo = (Modulo) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaModulos.get(idModulo).getDescription()), "Modulo");
-        rotina = rotinaDB.pesquisaCodigo(Integer.valueOf(listaRotinas.get(idRotina).getDescription()));
+        rotina = (Rotina) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaRotinas.get(idRotina).getDescription()), "Rotina");
         boolean sucesso = false;
         if (db.pesquisaPermissaoModRot(modulo.getId(), rotina.getId()).isEmpty()) {
             salvarAcumuladoDB.abrirTransacao();
