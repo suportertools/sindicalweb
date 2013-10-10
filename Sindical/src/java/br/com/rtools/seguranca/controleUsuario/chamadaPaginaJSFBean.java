@@ -914,7 +914,7 @@ public class chamadaPaginaJSFBean implements Serializable {
     }
 
     public synchronized String movimentosReceberSocial() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosReceberSocialBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosSocialBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
