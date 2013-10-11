@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Movimentos a Receber Social</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -17,87 +17,114 @@
         </f:subview>
         <f:view>
             <h:form id="formMovimentosReceberSocial">
-            
+
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Movimentos Social" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
                     <div class="divMae divFundo">
-                        <h:panelGrid style="float: left">
-                            
+                        <h:panelGrid style="float: left" columns="5">
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                            <h:outputLabel value="Pesquisa Pessoa: " styleClass="fontePadrao" />
+                            <h:outputText id="i_nome" value="#{movimentosSocialBean.pessoa.nome}" title="#{movimentosSocialBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
+                            <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="#{movimentosSocialBean.removerPesquisa}" style="margin-left: 10px" rendered="#{movimentosSocialBean.pessoa.id != -1}" render="i_nome" />
+                            <a4j:commandButton id="b_adicionar" action="#{movimentosSocialBean.adicionarPesquisa}" value="Adicionar" style="margin-left: 10px; cursor: pointer" rendered="#{movimentosSocialBean.pessoa.id != -1}" render="i_nome tbl i_totais" />
                         </h:panelGrid>
-                        <h:panelGrid style="float: left">
+
+                        <h:panelGrid style="clear: both; float: left; margin-top: 10px">
+                            <rich:list value="#{movimentosSocialBean.listaPessoa}" var="linha" id="tbl_list" iterationStatusVar="it" style="list-style: none; padding: 0; cursor: pointer">
+                                <div style="margin-bottom: 5px;">
+                                    <h:commandLink value="#{linha.nome}" class="listaAcessoLine" />
+                                    <a4j:commandButton id="b_remover_lista" image="/Imagens/excluirp.png" action="#{movimentosSocialBean.removerPessoaLista(it.index)}" render="i_nome tbl i_totais" style="margin-left: 5px; width: 12px"/>
+                                </div>
+                            </rich:list>
+                        </h:panelGrid>
+
+                        <h:panelGrid style="float: left; clear: both">
                             <h:selectOneMenu value="#{movimentosSocialBean.porPesquisa}" style="padding: 5px">
-                                <a4j:ajax event="change" render="this" />
+                                <a4j:ajax event="change" render="tbl i_totais" listener="#{movimentosSocialBean.atualizarStatus}"/>
                                 <f:selectItem itemValue="todos"    itemLabel="Todos"/>
                                 <f:selectItem itemValue="abertos"  itemLabel="Abertos"/>
                                 <f:selectItem itemValue="quitados" itemLabel="Quitados"/>
                             </h:selectOneMenu>
                         </h:panelGrid>
-                        <h:panelGrid>
+
+                        <h:panelGrid style="float: left; clear: both; margin-top: 20px;" columns="2">
+                            <h:selectBooleanCheckbox id="i_chk_seleciona" value="#{movimentosSocialBean.chkSeleciona}">
+                                <a4j:ajax event="change" render="tbl i_totais" listener="#{movimentosSocialBean.marcarTodos}"/>
+                            </h:selectBooleanCheckbox>
+                            <h:outputLabel value="Selecionar Todos" styleClass="fontePadraoNegrito" for="i_chk_seleciona" style="cursor: pointer"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid id="i_tbl">
                             <rich:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma pendência foi encontrada" rows="13">
                                 <rich:column style="text-align: center;">
                                     <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                        <a4j:ajax event="change" render="tbl soma_total soma_acrescimo soma_total_calculado"/>
+                                        <a4j:ajax event="change" render="tbl i_totais"/>
                                     </h:selectBooleanCheckbox>
                                 </rich:column>
-                                
+
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="ID"/></f:facet>
                                     <a4j:commandLink value="#{linha.argumento1}" action="#{movimentosSocialBean.complementoPessoa(linha)}" oncomplete="#{rich:component('popup')}.show(); return false;" render="popup"/>
                                 </rich:column>
-                                
+
                                 <rich:column>
                                     <f:facet name="header"><h:outputText value="Serviço"/></f:facet>
                                     <h:outputText value="#{linha.argumento2}" />
                                 </rich:column>
-                                
+
                                 <rich:column>
                                     <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
                                     <h:outputText value="#{linha.argumento3}" />
                                 </rich:column>
-                                
+
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="Referência"/></f:facet>
                                     <h:outputText value="#{linha.argumento4}" />
                                 </rich:column>
-                                
+
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
                                     <h:outputText value="#{linha.argumento5}" />
                                 </rich:column>
-                                
+
                                 <rich:column>
-                                    <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                    <h:outputText value="#{linha.argumento6}" />
+                                    <f:facet name="header"><h:outputText value="Valor Base"/></f:facet>
+                                    <div style="float: left"><h:outputText value="R$ " /></div>
+                                    <div style="float: right"><h:outputText value="#{linha.argumento6}" /></div>
                                 </rich:column>
-                                
-                                <rich:column style="text-align: center;">
+
+                                <rich:column>
                                     <f:facet name="header"><h:outputText value="Acréscimo"/></f:facet>
-                                    <h:outputText value="#{linha.argumento7}" />
+                                    <div style="float: left"><h:outputText value="R$ " /></div>
+                                    <div style="float: right"><h:outputText value="#{linha.argumento7}" /></div>
                                 </rich:column>
-                                
-                                <rich:column style="text-align: center;">
+
+                                <rich:column>
                                     <f:facet name="header"><h:outputText value="Desconto"/></f:facet>
-                                    <h:outputText value="#{linha.argumento8}" />
+                                    <div style="float: left"><h:outputText value="R$ " /></div>
+                                    <div style="float: right"><h:outputText value="#{linha.argumento8}" /></div>
                                 </rich:column>
-                                
-                                <rich:column style="text-align: center;">
+
+                                <rich:column>
                                     <f:facet name="header"><h:outputText value="Vl. Calculado"/></f:facet>
-                                    <h:outputText value="#{linha.argumento9}" />
+                                    <div style="float: left"><h:outputText value="R$ " /></div>
+                                    <div style="float: right"><h:outputText value="#{linha.argumento9}" /></div>
                                 </rich:column>
-                                
+
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="Data Baixa"/></f:facet>
                                     <h:outputText value="#{linha.argumento10}" />
                                 </rich:column>
-                                
-                                <rich:column style="text-align: center;">
+
+                                <rich:column>
                                     <f:facet name="header"><h:outputText value="Valor Pago"/></f:facet>
-                                    <h:outputText value="#{linha.argumento11}" />
+                                    <div style="float: left"><h:outputText value="R$ "/></div>
+                                    <div style="float: right"><h:outputText value="#{linha.argumento11}" /></div>
                                 </rich:column>
-                                
+
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header"><h:outputText value="E/S"/></f:facet>
                                     <h:outputText value="#{linha.argumento12}" />
@@ -108,88 +135,130 @@
                             </rich:dataTable>
                         </h:panelGrid>
                     </div>
-                    
+
                 </center>
-                <h:panelGrid styleClass="divMae" columns="10">
+                <h:panelGrid id="i_totais" styleClass="divMae" columns="4">
                     <h:column>
-                        <h:outputText value="Total: " styleClass="fontePadraoPequeno"/>
+                        <h:outputText value="Total em Aberto: " styleClass="fontePadraoPequeno"/>
                         <h:outputText id="soma_total" value="#{movimentosSocialBean.total}" styleClass="fontePadraoNegrito" />
                     </h:column>
-                    
+
                     <h:column>
                         <h:outputText value="Acréscimo: " styleClass="fontePadraoPequeno"/>
                         <h:outputText id="soma_acrescimo" value="#{movimentosSocialBean.acrescimo}" styleClass="fontePadraoNegrito" />
                     </h:column>
-                    
+
+
+                    <h:column>
+                        <h:outputText value="Total Calculado em Aberto: " styleClass="fontePadraoPequeno"/>
+                        <h:outputText id="soma_total_calculado" value="#{movimentosSocialBean.totalCalculado}" styleClass="fontePadraoNegrito" />
+                    </h:column>
+
                     <h:column>
                         <h:outputText value="Desconto: " styleClass="fontePadraoPequeno"/>
                         <h:inputText id="soma_desconto" size="10" value="#{movimentosSocialBean.desconto}" styleClass="fontePadrao">
-                            <a4j:ajax event="change" render="soma_desconto soma_total_calculado" />
+                            <a4j:ajax event="change" render="soma_desconto soma_total_calculado i_tbl" listener="#{movimentosSocialBean.calculoDesconto()}" />
                         </h:inputText>
                     </h:column>
-                    
+
+                </h:panelGrid>
+                <br />
+                <h:panelGrid styleClass="divMae" style="clear: both" columns="1">
                     <h:column>
-                        <h:outputText value="Total Calculado: " styleClass="fontePadraoPequeno"/>
-                        <h:outputText id="soma_total_calculado" value="#{movimentosSocialBean.totalCalculado}" styleClass="fontePadraoNegrito" />
+                        <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" oncomplete="modalMensagem()" render="outConfirma"/>
+                        <a4j:commandLink onclick="modalOpcao('divEstornar');" styleClass="idNovo iLink" value="Estornar" title="Estornar Boletos"/>
+                        <h:commandLink styleClass="idNovo iLink" value="Recibo" title="Imprimir Recibo" />
+
+                        <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" oncomplete="modalMensagem()" render="outConfirma"/>
                     </h:column>
                 </h:panelGrid>
-                
-                <h:panelGrid styleClass="divMae" style="clear: both" columns="3">
-                    <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar este movimento" oncomplete="modalMensagem()" render="outConfirma"/>
-                    <a4j:commandLink styleClass="idNovo iLink" value="Estornar" title="Estornar este movimento" oncomplete="modalMensagem()" render="outConfirma"/>
-                    <h:commandLink styleClass="idNovo iLink" value="Recibo" title="Imprimir Recibo" />
-                    
-                    <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer um acordo" oncomplete="modalMensagem()" render="outConfirma"/>
-                </h:panelGrid>
-                
+
                 <rich:popupPanel id="popup" modal="true" resizeable="false" height="360" width="500">
                     <f:facet name="controls">
-                        <a4j:commandButton image="/Imagens/excluirp.png" onclick="#{rich:component('popup')}.hide(); return false;" title="Fechar"/>
+                        <a4j:commandButton image="/Imagens/excluirp.png" onclick="#{rich:component('popup')}.hide();
+                                return false;" title="Fechar"/>
                     </f:facet>
-                    
+
                     <br />
                     <h:panelGrid>
                         <h:outputLabel value="Data / Boleto" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.data} - #{movimentosSocialBean.boleto}" styleClass="fontePadrao"/>
                     </h:panelGrid>
-                    
+
                     <br />
                     <h:panelGrid>
                         <h:outputLabel value="Titular" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.titular}" styleClass="fontePadrao"/>
                     </h:panelGrid>
-                    
+
                     <br />
                     <h:panelGrid>
                         <h:outputLabel value="Beneficiário" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.beneficiario}" styleClass="fontePadrao"/>
                     </h:panelGrid>
-                    
+
                     <br />
                     <h:panelGrid columns="4" style="background: #e2e2e2;">
                         <h:column>
-                            <h:outputLabel value="Dias em Atraso" styleClass="fontePadraoNegrito"/><br />
-                            <h:outputLabel value="#{movimentosSocialBean.diasAtraso}" styleClass="fontePadrao" />
+                            <h:outputLabel value="Dias em Atraso" styleClass="fontePadraoNegrito" style="float: left"/>
+                            <h:outputLabel value="#{movimentosSocialBean.diasAtraso}" styleClass="fontePadrao" style="float: left"/>
                         </h:column>
-                        
+
                         <h:column>
-                            <h:outputLabel value="Multa / Juros / Correção" styleClass="fontePadraoNegrito" style="float: right"/>
-                            <h:outputLabel value="#{movimentosSocialBean.multa} - #{movimentosSocialBean.juros} - #{movimentosSocialBean.correcao}" styleClass="fontePadrao" style="float: right"/>
+                            <div>
+                                <h:outputLabel value="Multa / Juros / Correção" styleClass="fontePadraoNegrito" style="float: right"/>
+                                <h:outputLabel value="#{movimentosSocialBean.multa} - #{movimentosSocialBean.juros} - #{movimentosSocialBean.correcao}" styleClass="fontePadrao" style="float: right;"/>
+                            </div>
                         </h:column>
                     </h:panelGrid>
-                    
+
                     <br />
                     <h:panelGrid>
                         <h:outputLabel value="Caixa" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.caixa}" styleClass="fontePadrao"/>
                     </h:panelGrid>
-                    
+
                     <br />
                     <h:panelGrid>
                         <h:outputLabel value="Documento" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.documento}" styleClass="fontePadrao"/>
                     </h:panelGrid>
-                </rich:popupPanel>                
+                </rich:popupPanel>     
+
+                <div id="boxes">
+                    <div id="divEstornar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja estornar esses boletos?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            </h:panelGrid>
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Estornar" action="#{movimentosSocialBean.estornarBaixa}" oncomplete="modalMensagem()" render="outConfirma tbl i_totais"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+
+
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{movimentosSocialBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
             </h:form>
         </f:view>
     </h:body>
