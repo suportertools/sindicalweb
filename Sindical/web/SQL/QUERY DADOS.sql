@@ -188,30 +188,38 @@ declare idservico     int        := (select id_servicos   from fin_movimento whe
 declare vencto        date       := (select dt_vencimento from fin_movimento where id=idMov);
 declare valor         float      := (select nr_valor      from fin_movimento where id=idMov);
 declare es            varchar(1) := (select ds_es    from fin_movimento where id=idMov);
+
+
+
 BEGIN
 
-    if (CURRENT_DATE>vencto and idBaixa is null and es='E') then
-       qDias         := (CURRENT_DATE-vencto);
-       qMeses        := (func_intervalo_meses(CURRENT_DATE,vencto));
- 
-       mPrimeiroMes := (select cr.nr_multa_primeiro_mes from fin_movimento as m 
-       left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
-       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
-       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
-       where m.id=idMov);
+    
+	if (CURRENT_DATE>vencto and idBaixa is null and es='E') then
+		qDias         := (CURRENT_DATE-vencto);
+		qMeses        := (func_intervalo_meses(CURRENT_DATE,vencto));
+		
+		mPrimeiroMes := (select cr.nr_multa_primeiro_mes from fin_movimento as m 
+		left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
+		(substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+		(substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+		where m.id=idMov);
 
-       mSegundoMes := (select cr.nr_multa_apartir_2mes from fin_movimento as m 
-       left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
-       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
-       (substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
-        where m.id=idMov);
+		mSegundoMes := (select cr.nr_multa_apartir_2mes from fin_movimento as m 
+		left join fin_correcao                  as cr on cr.id_servicos=m.id_servicos and 
+		(substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) >= (substring(cr.ds_ref_inicial,4,4)||substring(cr.ds_ref_inicial,1,2)) and 
+		(substring(m.ds_referencia,4,4)||substring(m.ds_referencia,1,2)) <= (substring(cr.ds_ref_final,4,4)||substring(cr.ds_ref_final,1,2))
+		where m.id=idMov);
 
-       if (mPrimeiroMes is null) then mPrimeiroMes :=0; end if;
-       if (mSegundoMes  is null) then mSegundoMes  :=0; end if;
+		if (mPrimeiroMes is null) then mPrimeiroMes :=0; end if;
+		if (mSegundoMes  is null) then mSegundoMes  :=0; end if;
+	
+		multa := multa + ((mPrimeiroMes * valor)/100);
+		multa := multa + (qMeses*((mSegundoMes  * valor)/100));
+	end if;
 
-       multa := multa + ((mPrimeiroMes * valor)/100);
-       multa := multa + (qMeses*((mSegundoMes  * valor)/100));
-    end if;
+       if (idBaixa > 0) then
+	    multa = (select nr_multa from fin_movimento where id = idMov);
+       end if;
    
     RETURN round(cast( multa as decimal) , 2);
 END;
@@ -285,6 +293,11 @@ BEGIN
 	juros := juros + ((jPrimeiroMes * valor)/100);
 	juros := juros + (qMeses*((jSegundoMes  * valor)/100));
     end if;
+
+    if (idBaixa > 0) then
+	    juros = (select nr_juros from fin_movimento where id = idMov);
+    end if;
+    
     RETURN round(cast(juros as decimal), 2);
 END;
 $BODY$
@@ -323,6 +336,7 @@ declare valor         float := (select nr_valor      from fin_movimento where id
 declare valorBase     float := valor;
 declare ref           varchar(7) :=(select ds_referencia from fin_movimento where id=idMov );
 declare es            varchar(1) := (select ds_es    from fin_movimento where id=idMov);
+declare correcao      double precision := 0;
 
 
 DECLARE lista CURSOR FOR 
@@ -352,7 +366,11 @@ open lista;
           end loop;
    end if;------ se data vencida
    close lista;
-   RETURN round(cast( (valor-valorBase)*100 as decimal) / 100, 2);
+   correcao =  round(cast( (valor-valorBase)*100 as decimal) / 100, 2);
+   if (idBaixa > 0) then
+      correcao = (select nr_correcao from fin_movimento where id=idmov);
+   end if;
+   RETURN correcao;
 end;
 $BODY$
   LANGUAGE plpgsql VOLATILE
@@ -360,7 +378,7 @@ $BODY$
 ALTER FUNCTION func_correcao_ass(integer)
   OWNER TO postgres;
 
----------------------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------------------
 
 -- Function: func_intervalo_dias(date, date)
 

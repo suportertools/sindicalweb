@@ -75,59 +75,64 @@ public class BaixaBoletoJSFBean {
 
     public synchronized String baixarBoletos() {
         if (!listBoletos.isEmpty()) {
-            //SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             Movimento mov = null;
             List<Movimento> lista = new ArrayList();
 
-            // NECESSÁRIO BLOQUEAR PORQ NA BAIXA POR RETORNO ELE FAZ VINCULO COM O DOCUMENTO DA PESSOA NA PESQUISA DO BOLETO
-            if (pessoa.getDocumento().isEmpty() || pessoa.getDocumento().equals("0")) {
-                msgConfirma = "Pessoa não possui documento!";
+            // NECESSÁRIO BLOQUEAR PORQ NA BAIXA POR RETORNO ELE FAZ VINCULO COM O DOCUMENTO DA PESSOA NA PESQUISA DO BOLETO CASO SEJA SINDICAL
+//            if (pessoa.getDocumento().isEmpty() || pessoa.getDocumento().equals("0")) {
+//                msgConfirma = "Pessoa não possui documento!";
+//                return null;
+//            }
+
+            // ROGERIO PEDIU PARA DEIXAR CAIXA IGUAL AO BANCO, PORQ pois o campo ds_documento_baixa da tabela fin_baixa está gravando o número do boleto -- EMAIL RECEBIDO
+//            if (caixaBanco.equals("caixa")) {
+//                for (int i = 0; i < listBoletos.size(); i++) {
+//                    if ((Boolean) listBoletos.get(i).getArgumento8() == true) {
+//                        mov = (Movimento) listBoletos.get(i).getArgumento1();
+//                        mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento7()))));
+//
+//                        mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento3()))));
+//                        mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento4()))));
+//                        mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento5()))));
+//                        mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento6()))));
+//
+//                        if (mov.getValorBaixa() <= 0) {
+//                            msgConfirma = "Valor não pode ser zerado";
+//                            return null;
+//                        }
+//                        lista.add(mov);
+//                    }
+//                }
+//            } else {
+//                mov = (Movimento) listBoletos.get(index).getArgumento1();
+//                mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
+//
+//                mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
+//                mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
+//                mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
+//                mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
+//
+//                if (mov.getValorBaixa() <= 0) {
+//                    msgConfirma = "Valor não pode ser zerado";
+//                    return null;
+//                }
+//                lista.add(mov);
+//            }
+            
+            mov = (Movimento) listBoletos.get(index).getArgumento1();
+            mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
+
+            mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
+            mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
+            mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
+            mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
+
+            if (mov.getValorBaixa() <= 0) {
+                msgConfirma = "Valor não pode ser zerado";
                 return null;
             }
-
-            if (caixaBanco.equals("caixa")) {
-                for (int i = 0; i < listBoletos.size(); i++) {
-                    if ((Boolean) listBoletos.get(i).getArgumento8() == true) {
-                        mov = (Movimento) listBoletos.get(i).getArgumento1();
-                        mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento7()))));
-
-                        mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento3()))));
-                        mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento4()))));
-                        mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento5()))));
-                        mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento6()))));
-
-                        if (mov.getValorBaixa() <= 0) {
-                            msgConfirma = "Valor não pode ser zerado";
-                            return null;
-                        }
-
-//                        if (GerarMovimento.baixarMovimento(mov, null)){
-//                             msgConfirma = "Erro ao atualizar Boleto!";
-//                             return null;
-//                        }
-                        lista.add(mov);
-                    }
-                }
-            } else {
-                mov = (Movimento) listBoletos.get(index).getArgumento1();
-                mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
-
-                mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
-                mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
-                mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
-                mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
-
-                if (mov.getValorBaixa() <= 0) {
-                    msgConfirma = "Valor não pode ser zerado";
-                    return null;
-                }
-//                if (GerarMovimento.baixarMovimento(mov, null)){
-//                     msgConfirma = "Erro ao atualizar Boleto!";
-//                     return null;
-//                }
-                lista.add(mov);
-            }
-
+            lista.add(mov);
+            
             if (!lista.isEmpty()) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
             } else {

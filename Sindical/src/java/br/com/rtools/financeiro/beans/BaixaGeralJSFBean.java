@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean;
+import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.ChequeRec;
 import br.com.rtools.financeiro.FormaPagamento;
@@ -71,7 +72,15 @@ public class BaixaGeralJSFBean {
 
     public String retorno() {
         if (retorna) {
-            return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
+            String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            if (url.equals("baixaBoleto")) {
+                return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
+            } else if (url.equals("movimentosReceberSocial")){
+                return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).movimentosReceberSocial();
+            }else{
+                return null;
+            }
+            
         } else {
             return null;
         }
@@ -252,7 +261,9 @@ public class BaixaGeralJSFBean {
             if (url.equals("baixaBoleto")) {
                 ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
                 ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
-            } else {
+            } else if (url.equals("movimentosReceberSocial")){
+                ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+            }else{
                 ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
             }
             retorna = true;

@@ -51,6 +51,7 @@
                             <h:selectOneRadio value="#{baixaBoletoBean.caixaBanco}" styleClass="fontePadrao" onchange="submit();">
                                 <f:selectItem itemValue="caixa" itemLabel="Caixa"/>
                                 <f:selectItem itemValue="banco" itemLabel="Banco"/>
+
                             </h:selectOneRadio>
                         </h:panelGrid>
                         
@@ -68,12 +69,20 @@
                                                 <a4j:ajax event="change" render="tbl" listener="#{baixaBoletoBean.marcar()}"/>                                            
                                             </h:selectBooleanCheckbox>
                                         </f:facet>
-                                        <h:column rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
-                                            <h:selectBooleanCheckbox value="#{linha.argumento8}">
+                                        <!-- <h:column rendered="# {baixaBoletoBean.caixaBanco == 'caixa'}">
+                                            <h:selectBooleanCheckbox value="# {linha.argumento8}">
                                                 <a4j:ajax event="change" render="this" />
                                             </h:selectBooleanCheckbox>
-                                        </h:column>
+                                        </h:column> -->
 
+                                        <h:column rendered="#{baixaBoletoBean.caixaBanco == 'caixa'}">
+                                            <div style="width: 80px">
+                                                <a4j:commandLink value="( Baixar )" action="#{baixaBoletoBean.baixarBoletos}" styleClass="#{linha.argumento0}" render="tbl outConfirma outConfirmaTela">
+                                                    <a4j:param value="#{it.index}" assignTo="#{baixaBoletoBean.index}"/>
+                                                </a4j:commandLink>
+                                            </div>
+                                        </h:column>
+                                        
                                         <h:column rendered="#{baixaBoletoBean.caixaBanco == 'banco'}">
                                             <div style="width: 80px">
                                                 <a4j:commandLink value="( Baixar )" action="#{baixaBoletoBean.baixarBoletos}" styleClass="#{linha.argumento0}" render="tbl outConfirma outConfirmaTela">

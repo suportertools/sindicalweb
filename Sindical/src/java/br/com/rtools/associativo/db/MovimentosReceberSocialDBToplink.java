@@ -8,7 +8,7 @@ import javax.persistence.Query;
 public class MovimentosReceberSocialDBToplink extends DB implements MovimentosReceberSocialDB {
 
     @Override
-    public List pesquisaListaMovimentos() {
+    public List pesquisaListaMovimentos(String ids, String por_status) {
         try{
         String textqry = " select  "
                         + "     se.ds_descricao as servico,  "
@@ -45,10 +45,20 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                         + "inner join fin_tipo_servico as tp on tp.id=m.id_tipo_servico  "
                         + " left join fin_baixa as bx on bx.id=m.id_baixa "
                         + " left join seg_usuario as u on u.id=bx.id_usuario "
-                        + " left join pes_pessoa as us on us.id=u.id_pessoa "
-                        + "where m.id_pessoa in (11835)  "
-                        + "  and id_baixa is null and m.is_ativo=true "
-                        + "order by m.dt_vencimento, se.ds_descricao, p.ds_nome, t.ds_nome, b.ds_nome";
+                        + " left join pes_pessoa as us on us.id=u.id_pessoa";
+                        
+            String order_by = " order by m.dt_vencimento, se.ds_descricao, p.ds_nome, t.ds_nome, b.ds_nome ";
+            String ands = "";
+
+            if (por_status.equals("todos")){
+                ands = " where m.id_pessoa in ("+ids+") and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+            }else if (por_status.equals("abertos")){
+                ands = " where m.id_pessoa in ("+ids+") and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+            }else{
+                ands = " where m.id_pessoa in ("+ids+") and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+            }
+        
+            textqry += ands + order_by;
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();

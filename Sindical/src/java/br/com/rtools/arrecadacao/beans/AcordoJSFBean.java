@@ -3,6 +3,7 @@ package br.com.rtools.arrecadacao.beans;
 import br.com.rtools.arrecadacao.Acordo;
 import br.com.rtools.arrecadacao.db.AcordoDB;
 import br.com.rtools.arrecadacao.db.AcordoDBToplink;
+import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Movimento;
@@ -365,9 +366,13 @@ public class AcordoJSFBean {
 
             imprimir = false;
 
-            ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
-            ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
-
+            String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            if (url.equals("movimentosReceber")) {
+                ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
+                ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).setDesconto("0");
+            } else if (url.equals("movimentosReceberSocial")){
+                ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+            }
         } catch (Exception e) {
             mensagem = "Acordo não foi gerado";
         }

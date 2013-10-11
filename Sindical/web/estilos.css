@@ -550,6 +550,8 @@ a.iLinkSimples:hover {color: #888; text-decoration:none; }
 .rf-cp-lbl {font-size: 12px;}
 
 .listaAcesso:hover{font-weight: bold;}
+.listaAcessoLine{margin-bottom: 2px; text-decoration: none; color: black;}
+.listaAcessoLine:hover{text-decoration: underline}
 
 .divBrancoTotal{backgroundp: white; border-radius: 15px; -moz-border-radius: 15px; -webkit-border-radius: 15px; width: 1150px; height: 400px; overflow: no-display; position: absolute}
 .destaqueBoleto{font-size: 11pt; font-weight: bold}
