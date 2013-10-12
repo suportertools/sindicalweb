@@ -12,7 +12,6 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.model.SelectItem;
 
 public class CorrecaoJSFBean {
@@ -28,19 +27,13 @@ public class CorrecaoJSFBean {
         CorrecaoDB db = new CorrecaoDBToplink();
         ServicosDB dbSer = new ServicosDBToplink();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Indice indice = new Indice();
-        Servicos servico = new Servicos();
-
-        indice = (Indice) sv.pesquisaCodigo(Integer.valueOf(getListaIndices().get(idIndices).getDescription()), "Indice");
-        servico = dbSer.pesquisaCodigo(Integer.valueOf(getListaServico().get(idServicos).getDescription()));
-        List dd = new ArrayList();
-
+        Indice indice = (Indice) sv.pesquisaCodigo(Integer.valueOf(getListaIndices().get(idIndices).getDescription()), "Indice");
+        Servicos servico = dbSer.pesquisaCodigo(Integer.valueOf(getListaServico().get(idServicos).getDescription()));
         correcao.setIndice(indice);
         correcao.setServicos(servico);
-
         if (correcao.getId() == -1) {
             if (DataHoje.validaReferencias(correcao.getReferenciaInicial(), correcao.getReferenciaFinal())) {
-                dd = db.pesquisaRefValida(servico, correcao.getReferenciaInicial(), correcao.getReferenciaFinal());
+                List dd = db.pesquisaRefValida(servico, correcao.getReferenciaInicial(), correcao.getReferenciaFinal());
                 if (Integer.parseInt(String.valueOf((Long) dd.get(0))) == 0) {
                     if (db.insert(correcao)) {
                         msgConfirma = "Adicionado!";
@@ -83,9 +76,8 @@ public class CorrecaoJSFBean {
 
     public String btnExcluir() {
         CorrecaoDB db = new CorrecaoDBToplink();
-        Correcao cor = new Correcao();
         correcao = (Correcao) listaCorrecao.get(idIndex);
-        cor = db.pesquisaCodigo(correcao.getId());
+        Correcao cor = db.pesquisaCodigo(correcao.getId());
         if (db.delete(cor)) {
             msgConfirma = "Correção Excluida!";
         } else {
@@ -122,7 +114,7 @@ public class CorrecaoJSFBean {
     }
 
     public List<SelectItem> getListaServico() {
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
         ServicosDB db = new ServicosDBToplink();
         List select = db.pesquisaTodos();
@@ -136,9 +128,9 @@ public class CorrecaoJSFBean {
     }
 
     public List<SelectItem> getListaIndices() {
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        List select = sv.listaObjetoGenericoOrdem("Indice");
+        List select = sv.listaObjeto("Indice", true);
         for (int i = 0; i < select.size(); i++) {
             result.add(new SelectItem(new Integer(i),
                     ((Indice) select.get(i)).getDescricao(),

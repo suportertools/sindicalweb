@@ -113,12 +113,58 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
+    
+    @Override
+    public List listaObjeto(String tabela, boolean order) {
+        try {
+            Query query = getEntityManager().createNamedQuery(tabela + ".findAll");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List pesquisaObjetoPorDescricao(String tabela, String descricao) {
+        return pesquisaObjetoPorDescricao(tabela, descricao, "");
+    }    
+    
+    @Override
+    public List pesquisaObjetoPorDescricao(String tabela, String descricao, String tipoPesquisa) {
+        try {
+            Query query = getEntityManager().createNamedQuery(tabela + ".findName");
+            if (tipoPesquisa.equals("i")) {
+                query.setParameter("pdescricao", ""+descricao.toUpperCase()+"%");                
+            } else if (tipoPesquisa.equals("p")) {
+                query.setParameter("pdescricao", "%"+descricao.toUpperCase()+"%");                
+            } else if (tipoPesquisa.equals("all")) {
+                query.setParameter("pdescricao", "%"+descricao.toUpperCase()+"%");                
+                query.setParameter("pdescricao", ""+descricao.toUpperCase()+"%");
+            } else {
+                query.setParameter("pdescricao", descricao.toUpperCase());
+            }
+            if (descricao.length() <= 1) {
+                query.setMaxResults(1000);
+            }
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }    
 
     @Override
-    public List listaObjetoGenericoOrdem(String tabela) {
+    public List listaObjetoGenericoOrdem(String tabela, String descricao) {
         List result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select ob from " + tabela + " ob order by ob.descricao");
+            Query qry = getEntityManager().createQuery("SELECT ob FROM " + tabela + " ob WHERE UPPER(ob.descricao) LIKE '%" + descricao.toUpperCase() + "%' ORDER BY ob.descricao ASC");
             qry.setMaxResults(100);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
@@ -127,15 +173,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
-
-    @Override
+    
     public List listaObjetoGenericoOrdemDesc(String tabela, String descricao) {
         List result = new ArrayList();
-        if (tabela.isEmpty()) {
-            return result;
-        }
         try {
-            Query qry = getEntityManager().createQuery("SELECT ob FROM " + tabela + " ob WHERE UPPER(ob.descricao) LIKE '%" + descricao.toUpperCase() + "%' ORDER BY ob.descricao");
+            Query qry = getEntityManager().createQuery("SELECT ob FROM " + tabela + " ob WHERE UPPER(ob.descricao) LIKE '%" + descricao.toUpperCase() + "%' ORDER BY ob.descricao DESC");
             qry.setMaxResults(100);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();

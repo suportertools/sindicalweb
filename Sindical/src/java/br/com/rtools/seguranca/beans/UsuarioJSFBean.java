@@ -18,36 +18,32 @@ public class UsuarioJSFBean {
 
     private Usuario usuario = new Usuario();
     private List<PermissaoUsuario> listaPermissaoUsuario = new ArrayList();
+    private List<Usuario> listaUsuario = new ArrayList();
+    private List<UsuarioAcesso> listaUsuarioAcesso = new ArrayList();
     private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
     private List<SelectItem> listaRotinas = new ArrayList<SelectItem>();
     private List<SelectItem> listaEventos = new ArrayList<SelectItem>();
     private List<SelectItem> listaDepartamentos = new ArrayList<SelectItem>();
     private List<SelectItem> listaNiveis = new ArrayList<SelectItem>();
-    private List<Usuario> listaUsuario = new ArrayList();
-    private List<UsuarioAcesso> listaUsuarioAcesso = new ArrayList();
-    private String userLogado;
-    private String msgConfirma;
-    private String msgPermissao;
-    private String msgUsuarioAcesso = "";
+    private String confirmaSenha = "";
+    private String descricaoPesquisa = "";
+    private String mensagem;
     private String senhaNova = "";
     private String senhaAntiga = "";
-    private String confirmaSenha = "";
+    private String userLogado;
+    private boolean adicionado = false;
     private boolean disSenha = false;
     private boolean disNovaSenha = false;
     private boolean disStrSenha = true;
-    private boolean adicionado = false;
-    private int idIndex = -1;
-    private int idIndexPermissao = -1;
-    private int idIndexUsuarioAcesso = -1;
-    private int idDepartamento;
-    private int idNivel;
-    private int idModulo = 0;
-    private int idRotina = 0;
-    private int idEvento = 0;
     private boolean filtrarPorModulo = false;
     private boolean filtrarPorRotina = false;
     private boolean filtrarPorEvento = false;
-    private String descricaoPesquisa = "";
+    private boolean filtrarUsuarioAtivo = true;
+    private int idDepartamento;
+    private int idEvento = 0;
+    private int idModulo = 0;
+    private int idNivel;
+    private int idRotina = 0;
 
     public UsuarioJSFBean() {
         listaUsuario = new ArrayList<Usuario>();
@@ -60,45 +56,45 @@ public class UsuarioJSFBean {
         UsuarioDB db = new UsuarioDBToplink();
 
         if (usuario.getLogin().equals("")) {
-            msgConfirma = "Campo login não pode ser nulo!";
+            mensagem = "Campo login não pode ser nulo!";
             return null;
         }
 
         if (usuario.getSenha().equals("")) {
-            msgConfirma = "Campo senha não pode ser nulo!";
+            mensagem = "Campo senha não pode ser nulo!";
             return null;
         }
         if (usuario.getSenha().length() > 6) {
-            msgConfirma = "A senha deve ter no máximo 6 Caracteres!";
+            mensagem = "A senha deve ter no máximo 6 Caracteres!";
             return null;
         }
 
         if (usuario.getId() == -1) {
             if (usuario.getPessoa().getId() == -1) {
-                msgConfirma = "Pesquise um nome de Usuário disponível!";
+                mensagem = "Pesquise um nome de Usuário disponível!";
                 return null;
             }
 
             if (!usuario.getSenha().equals(confirmaSenha)) {
-                msgConfirma = "Senhas não correspondem!";
+                mensagem = "Senhas não correspondem!";
                 return null;
             }
 
             if (db.pesquisaLogin(usuario.getLogin(), usuario.getPessoa().getId()).isEmpty()) {
                 if (sv.inserirObjeto(usuario)) {
                     sv.comitarTransacao();
-                    msgConfirma = "Login e senha salvos com Sucesso!";
+                    mensagem = "Login e senha salvos com Sucesso!";
                     NovoLog novoLog = new NovoLog();
                     novoLog.novo("Salvar Usuário", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
                     return null;
                 } else {
                     sv.desfazerTransacao();
-                    msgConfirma = "Erro ao Salvar Login e Senha!";
+                    mensagem = "Erro ao Salvar Login e Senha!";
                     return null;
                 }
             } else {
                 sv.desfazerTransacao();
-                msgConfirma = "Este login já existe no Sistema.";
+                mensagem = "Este login já existe no Sistema.";
                 return null;
             }
         } else {
@@ -107,14 +103,14 @@ public class UsuarioJSFBean {
                 if (user.getSenha().equals(getSenhaAntiga()) && !usuario.getSenha().equals("")) {
                 } else {
                     usuario.setSenha(user.getSenha());
-                    msgConfirma = "Senha Incompativel!";
+                    mensagem = "Senha Incompativel!";
                 }
             } else {
                 usuario.setSenha(user.getSenha());
             }
             if (sv.alterarObjeto(usuario)) {
                 sv.comitarTransacao();
-                msgConfirma = "Login e senha salvos com Sucesso!";
+                mensagem = "Login e senha salvos com Sucesso!";
                 Usuario usu = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
                 String novoLogString = " de ID: " + usu.getId() + " - Pessoa: " + usu.getPessoa().getId() + " - " + usu.getPessoa().getNome() + " - Login: " + usu.getLogin() + " - Ativo: " + usu.getAtivo()
                         + " para Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo();
@@ -123,7 +119,7 @@ public class UsuarioJSFBean {
                 return null;
             } else {
                 sv.desfazerTransacao();
-                msgConfirma = "Erro ao atualizar Usuario!";
+                mensagem = "Erro ao atualizar Usuario!";
                 return null;
             }
         }
@@ -157,18 +153,15 @@ public class UsuarioJSFBean {
     }
 
     public String removerPermissaoUsuario(PermissaoUsuario pu) {
-        msgPermissao = "";
         if (pu.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             pu = (PermissaoUsuario) salvarAcumuladoDB.pesquisaCodigo(pu.getId(), "PermissaoUsuario");
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(pu)) {
                 salvarAcumuladoDB.comitarTransacao();
-                // msgPermissao = "Permissão removida com sucesso.";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão removida"));
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                // msgPermissao = "Erro ao Excluír permissão!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao Excluír permissão!"));
                 return null;
             }
@@ -203,11 +196,8 @@ public class UsuarioJSFBean {
     public String novo() {
         usuario = new Usuario();
         disNovaSenha = false;
-        msgPermissao = "";
         idDepartamento = 0;
         idNivel = 0;
-        idIndex = -1;
-        idIndexPermissao = -1;
         adicionado = false;
         confirmaSenha = "";
         listaUsuario.clear();
@@ -220,11 +210,8 @@ public class UsuarioJSFBean {
     public void novoGenerico() {
         usuario = new Usuario();
         disNovaSenha = false;
-        msgPermissao = "";
         idDepartamento = 0;
         idNivel = 0;
-        idIndex = -1;
-        idIndexPermissao = -1;
         adicionado = false;
         confirmaSenha = "";
         listaUsuarioAcesso.clear();
@@ -238,17 +225,17 @@ public class UsuarioJSFBean {
         sv.abrirTransacao();
         if (usuario.getId() != -1) {
             if (!excluirPermissoes(sv)) {
-                msgConfirma = "Erro ao excluir Permissões!";
+                mensagem = "Erro ao excluir Permissões!";
                 return null;
             }
 
             usuario = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
             if (!sv.deletarObjeto(usuario)) {
                 sv.desfazerTransacao();
-                msgConfirma = "Login não pode ser  Excluido!";
+                mensagem = "Login não pode ser  Excluido!";
             } else {
                 sv.comitarTransacao();
-                msgConfirma = "Login excluido com Sucesso!";
+                mensagem = "Login excluido com Sucesso!";
                 NovoLog novoLog = new NovoLog();
                 novoLog.novo("Excluir Usuário", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin());
             }
@@ -266,11 +253,22 @@ public class UsuarioJSFBean {
 
     public List<Usuario> getListaUsuario() {
         if (listaUsuario.isEmpty()) {
-            UsuarioDB db = new UsuarioDBToplink();
             if (descricaoPesquisa.isEmpty()) {
-                listaUsuario = db.pesquisaTodos();
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                listaUsuario = salvarAcumuladoDB.listaObjeto("Usuario", true);
             } else {
+                UsuarioDB db = new UsuarioDBToplink();
                 listaUsuario = db.pesquisaTodosPorDescricao(descricaoPesquisa);
+            }
+            List<Usuario> list = new ArrayList<Usuario>();
+            if (filtrarUsuarioAtivo) {
+                for (int i = 0; i < listaUsuario.size(); i++) {
+                    if (listaUsuario.get(i).getAtivo()) {
+                        list.add(listaUsuario.get(i));
+                    }
+                }
+                listaUsuario.clear();                
+                listaUsuario = list;                
             }
         }
         return listaUsuario;
@@ -282,8 +280,8 @@ public class UsuarioJSFBean {
 
     public List<SelectItem> getListaNiveis() {
         if (listaNiveis.isEmpty()) {
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            List niveis = db.pesquisaTodosNiveis();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List niveis = salvarAcumuladoDB.listaObjeto("Nivel", true);
             if (!niveis.isEmpty()) {
                 for (int i = 0; i < niveis.size(); i++) {
                     listaNiveis.add(new SelectItem(new Integer(i),
@@ -297,8 +295,8 @@ public class UsuarioJSFBean {
 
     public List<SelectItem> getListaDepartamentos() {
         if (listaDepartamentos.isEmpty()) {
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            List departamentos = db.pesquisaTodosDepOrdenado();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List departamentos = salvarAcumuladoDB.listaObjeto("Departamento", true);
             for (int i = 0; i < departamentos.size(); i++) {
                 listaDepartamentos.add(new SelectItem(new Integer(i),
                         ((Departamento) departamentos.get(i)).getDescricao(),
@@ -440,20 +438,12 @@ public class UsuarioJSFBean {
         this.userLogado = userLogado;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public String getMsgPermissao() {
-        return msgPermissao;
-    }
-
-    public void setMsgPermissao(String msgPermissao) {
-        this.msgPermissao = msgPermissao;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public String getConfirmaSenha() {
@@ -462,14 +452,6 @@ public class UsuarioJSFBean {
 
     public void setConfirmaSenha(String confirmaSenha) {
         this.confirmaSenha = confirmaSenha;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 
     public List<PermissaoUsuario> getListaPermissaoUsuario() {
@@ -482,14 +464,6 @@ public class UsuarioJSFBean {
 
     public void setListaPermissaoUsuario(List<PermissaoUsuario> listaPermissaoUsuario) {
         this.listaPermissaoUsuario = listaPermissaoUsuario;
-    }
-
-    public int getIdIndexPermissao() {
-        return idIndexPermissao;
-    }
-
-    public void setIdIndexPermissao(int idIndexPermissao) {
-        this.idIndexPermissao = idIndexPermissao;
     }
 
     public int getIdModulo() {
@@ -579,7 +553,6 @@ public class UsuarioJSFBean {
     }
 
     public void adicionarUsuarioAcesso() {
-        msgUsuarioAcesso = "";
         PermissaoDB db = new PermissaoDBToplink();
         int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
         int idR = Integer.parseInt(listaRotinas.get(idRotina).getDescription());
@@ -646,26 +619,10 @@ public class UsuarioJSFBean {
         this.listaUsuarioAcesso = listaUsuarioAcesso;
     }
 
-    public int getIdIndexUsuarioAcesso() {
-        return idIndexUsuarioAcesso;
-    }
-
-    public int getIdIndexUsuarioAcessoToId() {
-        if (!listaUsuarioAcesso.isEmpty()) {
-            return listaUsuarioAcesso.get(idIndex).getId();
-        }
-        return -1;
-    }
-
-    public void setIdIndexUsuarioAcesso(int idIndexUsuarioAcesso) {
-        this.idIndexUsuarioAcesso = idIndexUsuarioAcesso;
-    }
-
     public String permiteUsuarioAcesso(UsuarioAcesso ua) {
         if (ua.getId() == -1) {
             return null;
         }
-        msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.alterarObjeto(ua)) {
@@ -683,7 +640,6 @@ public class UsuarioJSFBean {
         if (ua.getId() == -1) {
             return null;
         }
-        msgUsuarioAcesso = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         UsuarioAcesso usuarioAcesso = (UsuarioAcesso) salvarAcumuladoDB.pesquisaCodigo(ua.getId(), "UsuarioAcesso");
         salvarAcumuladoDB.abrirTransacao();
@@ -723,14 +679,6 @@ public class UsuarioJSFBean {
         this.filtrarPorEvento = filtrarPorEvento;
     }
 
-    public String getMsgUsuarioAcesso() {
-        return msgUsuarioAcesso;
-    }
-
-    public void setMsgUsuarioAcesso(String msgUsuarioAcesso) {
-        this.msgUsuarioAcesso = msgUsuarioAcesso;
-    }
-
     public String getDescricaoPesquisa() {
         return descricaoPesquisa;
     }
@@ -749,25 +697,25 @@ public class UsuarioJSFBean {
     public void salvarSenhaUsuarioPerfil() {
         if (usuario.getId() != -1) {
             if (usuario.getPessoa().getId() == 1) {
-                msgConfirma = "Não é possível alterar a senha do administrador!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
+                mensagem = "Não é possível alterar a senha do administrador!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
                 return;
             }
             if (getSenhaNova().equals("")) {
-                msgConfirma = "Campo senha não pode ser nulo!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
+                mensagem = "Campo senha não pode ser nulo!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
                 return;
             }
             if (getSenhaNova().length() > 6) {
-                msgConfirma = "A senha deve ter no máximo 6 Caracteres!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgConfirma));
+                mensagem = "A senha deve ter no máximo 6 Caracteres!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
                 return;
             }
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             Usuario user = (Usuario) salvarAcumuladoDB.pesquisaCodigo(usuario.getId(), "Usuario");
             if (!user.getSenha().equals(senhaAntiga)) {
-                msgConfirma = "Senha antiga incompativel!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                mensagem = "Senha antiga incompativel!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
                 return;
             }
             usuario.setSenha(senhaNova);
@@ -776,11 +724,11 @@ public class UsuarioJSFBean {
                 salvarAcumuladoDB.comitarTransacao();
                 setSenhaNova("");
                 setSenhaAntiga("");
-                msgConfirma = "Senha alterada";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+                mensagem = "Senha alterada";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Não foi possível atualizar essa senha!";
+                mensagem = "Não foi possível atualizar essa senha!";
             }
         }
     }
@@ -791,5 +739,13 @@ public class UsuarioJSFBean {
 
     public void setSenhaNova(String senhaNova) {
         this.senhaNova = senhaNova;
+    }
+
+    public boolean isFiltrarUsuarioAtivo() {
+        return filtrarUsuarioAtivo;
+    }
+
+    public void setFiltrarUsuarioAtivo(boolean filtrarUsuarioAtivo) {
+        this.filtrarUsuarioAtivo = filtrarUsuarioAtivo;
     }
 }

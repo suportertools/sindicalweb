@@ -174,10 +174,10 @@ public class AgendaTarefaJSFBean {
     }
 
     public List<SelectItem> getListaUsuarioCombo() {
-        int i = 0;
-        UsuarioDB db = new UsuarioDBToplink();
         if (listaUsuarioCombo.isEmpty()) {
-            listaUsuario = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            int i = 0;
+            listaUsuario = salvarAcumuladoDB.listaObjeto("Usuario", true);
             while (i < getListaUsuario().size()) {
                 listaUsuarioCombo.add(new SelectItem(
                         new Integer(i),

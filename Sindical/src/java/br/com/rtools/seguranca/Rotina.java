@@ -4,7 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "SEG_ROTINA")
-@NamedQuery(name = "Rotina.pesquisaID", query = "select rot from Rotina rot where rot.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Rotina.pesquisaID",    query = "SELECT ROT FROM Rotina AS ROT WHERE ROT.id = :pid"),
+    @NamedQuery(name = "Rotina.findAll",       query = "SELECT ROT FROM Rotina AS ROT ORDER BY ROT.rotina ASC, ROT.pagina ASC ")
+})
 public class Rotina implements java.io.Serializable {
 
     @Id

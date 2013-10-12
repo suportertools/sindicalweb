@@ -124,7 +124,7 @@ public class ConvencaoPeriodoJSFBean {
     public List<SelectItem> getListaConvencao() {
         if (listaConvencao.isEmpty()) {
             SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
-            List<Convencao> list = db.listaObjetoGenericoOrdem("Convencao");
+            List<Convencao> list = db.listaObjeto("Convencao", true);
             for (int i = 0; i < list.size(); i++) {
                 listaConvencao.add(new SelectItem(new Integer(i),
                         list.get(i).getDescricao().toUpperCase(),

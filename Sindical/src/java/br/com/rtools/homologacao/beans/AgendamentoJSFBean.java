@@ -1012,6 +1012,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
             // SEM PESSOA FISICA E SEM OPOSICAO
             if (listFisica.isEmpty() && listao.isEmpty()) {
                 //FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/agendamento.jsf");
+                msgConfirma = "CPF verificado com sucesso";
                 // SEM PESSOA FISICA E COM OPOSICAO    
             } else if (listFisica.isEmpty() && !listao.isEmpty()) {
                 msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();

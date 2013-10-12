@@ -4,7 +4,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "PES_FILIAL")
-@NamedQuery(name = "Filial.pesquisaID", query = "select fil from Filial fil where fil.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Filial.pesquisaID",    query = "SELECT FIL FROM Filial AS FIL WHERE FIL.id = :pid"),
+    @NamedQuery(name = "Filial.findAll",       query = "SELECT FIL FROM Filial AS FIL ORDER BY FIL.filial.pessoa.nome ASC ")
+})
 public class Filial implements java.io.Serializable {
 
     @Id

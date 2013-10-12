@@ -4,7 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "FIN_INDICE")
-@NamedQuery(name = "Indice.pesquisaID", query = "select i from Indice i where i.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Indice.pesquisaID", query = "SELECT I FROM Indice AS I WHERE I.id = :pid"),
+    @NamedQuery(name = "Indice.findAll",    query = "SELECT I FROM Indice AS I ORDER BY I.descricao ASC "),
+    @NamedQuery(name = "Indice.findName",   query = "SELECT I FROM Indice AS I WHERE I.descricao = :pdescricao ORDER BY I.descricao ASC ")
+})
 public class Indice implements java.io.Serializable {
 
     @Id

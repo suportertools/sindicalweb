@@ -5,7 +5,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ESC_PROFESSOR")
-@NamedQuery(name = "Professor.pesquisaID", query = "select p from Professor p where p.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Professor.pesquisaID",    query = "SELECT P FROM Professor AS P WHERE P.id = :pid"),
+    @NamedQuery(name = "Professor.findAll",       query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC")
+})
 public class Professor implements java.io.Serializable {
 
     @Id
