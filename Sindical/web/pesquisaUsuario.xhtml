@@ -15,41 +15,49 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaUsuario">                
+            <h:form id="form_pesquisa_usuario">                
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Pesquisa Usuários" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <rich:dataTable value="#{usuarioBean.listaUsuario}" var="linha" iterationStatusVar="it" style="width: 95%;" id="tbl">
-                        <rich:column style="text-align: center;">
-                            <f:facet name="header">
-                                <h:outputText value="#"/>
-                            </f:facet>
-                            <h:outputText value="#{it.index}"/>
-                        </rich:column>
-                        
-                        <rich:column styleClass="colunaPesquisa">
-                            <f:facet name="header">
-                                <h:outputText value="ID"/>
-                            </f:facet>
-                            <h:commandLink action="#{usuarioBean.editar(linha)}" value="#{linha.id}"/>
-                        </rich:column>
-
-                        <rich:column>
-                            <f:facet name="header">
-                                <h:outputText value="Nome"/>
-                            </f:facet>
-                            <h:outputText value="#{linha.pessoa.nome}"/>
-                        </rich:column>
-
-                        <rich:column>
-                            <f:facet name="header">
-                                <h:outputText value="Login"/>
-                            </f:facet>
-                            <h:outputText value="#{linha.login}"/>
-                        </rich:column>  
-                    </rich:dataTable>
+                    <rich:panel styleClass="divMae no-margin border-radius no-border">
+                        <h:panelGrid columns="5" styleClass="margin">
+                            <h:outputText value="Pesquisar: " />
+                            <h:inputText value="#{usuarioBean.descricaoPesquisa}" />
+                            <a4j:commandLink styleClass="iLink idPesquisar" value="Pesquisar" actionListener="#{usuarioBean.listaUsuario.clear()}" render="tbl" status="i_status"/>
+                            <h:outputText value="Usuários ativos: " styleClass="margin-left-max"/>
+                            <h:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}" title="Trazer somente usuários ativos" valueChangeListener="#{usuarioBean.listaUsuario.clear()}">
+                                <a4j:ajax event="change" render="@this, tbl" status="i_status" />
+                            </h:selectBooleanCheckbox>
+                        </h:panelGrid>                    
+                        <rich:dataTable value="#{usuarioBean.listaUsuario}" var="usuario" style="width: 800px;" id="tbl" rowClasses="text-center">
+                            <rich:column style="width: 25px;">
+                                <f:facet name="header">
+                                    <h:outputLabel value="ID"/>
+                                </f:facet>
+                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.id}" styleClass="underline-hover" />
+                            </rich:column>
+                            <rich:column styleClass="textoEsquerda">
+                                <f:facet name="header">
+                                    <h:outputLabel value="Nome"/>
+                                </f:facet>
+                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.pessoa.nome}" styleClass="underline-hover"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputLabel value="Login"/>
+                                </f:facet>
+                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.login}" styleClass="underline-hover"/>
+                            </rich:column>  
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputLabel value="Status" title="Ativo / Inátivo"/>
+                                </f:facet>
+                                <h:selectBooleanCheckbox value="#{usuario.ativo}" disabled="true"/>
+                            </rich:column>  
+                        </rich:dataTable>
+                    </rich:panel>
                 </center>
             </h:form>
         </f:view>
