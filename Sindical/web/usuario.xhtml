@@ -79,7 +79,6 @@
                         <h:column rendered="#{usuarioBean.usuario.id != -1}">
                             <rich:panel styleClass="border-radius bg-white padding" style="width: 500px; border: 0;">
                                 <h:outputText value="PERMISSÃO: " styleClass="fontePadraoNegrito"></h:outputText>
-                                <h:outputText id="idMsgPermissao" value="#{usuarioBean.msgPermissao}" styleClass="corErro"/>
                                 <h:panelGrid columns="2" styleClass="margin-top-maior" >
                                     <h:outputLabel value="DEPARTAMENTO " styleClass="fontePadrao"/>
                                     <h:outputLabel value="NÍVEL" styleClass="fontePadrao"/>
@@ -90,7 +89,7 @@
                                         <h:selectOneMenu value="#{usuarioBean.idNivel}" id="idSelNivel">
                                             <f:selectItems value="#{usuarioBean.listaNiveis}"/>
                                         </h:selectOneMenu>
-                                        <a4j:commandButton image="/Imagens/novo.png" action="#{usuarioBean.adicionarUsuarioPermissao}" render="tbl,idMsgPermissao,idSelDepto,idSelNivel" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar novo departamento a esse usuário" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status"/>
+                                        <a4j:commandButton image="/Imagens/novo.png" action="#{usuarioBean.adicionarUsuarioPermissao}" render="tbl,idSelDepto,idSelNivel" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar novo departamento a esse usuário" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status"/>
                                     </h:column>
                                 </h:panelGrid>                                                    
                                 <h:panelGrid>
@@ -108,7 +107,7 @@
                                                     <f:facet name="header">
                                                         <h:outputText value="..."/>
                                                     </f:facet>
-                                                    <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir" action="#{usuarioBean.removerPermissaoUsuario(linha)}" render="tbl,idMsgPermissao" status="i_status"/>
+                                                    <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir" action="#{usuarioBean.removerPermissaoUsuario(linha)}" render="tbl" status="i_status"/>
                                                 </rich:column>
 
                                                 <rich:column>
@@ -139,8 +138,7 @@
                         <div class="clear"></div>
                         <h:column rendered="#{usuarioBean.usuario.id != -1}">
                             <div class="divMae divFundo margin-top-maior" style="width: 550px;">
-                                <h:outputText value="PERMISSÕES PERSONALIZADAS: " styleClass="fontePadraoNegrito"></h:outputText>
-                                <h:outputText value="#{usuarioBean.msgUsuarioAcesso}" id="msgUsuarioAcesso" styleClass="fontePadraoVermelho"></h:outputText><br />
+                                <h:outputText value="PERMISSÕES PERSONALIZADAS: " styleClass="fontePadraoNegrito"></h:outputText><br />
                                 <div class="clear margin-top-maior" ></div>
                                 <h:outputText value="Atalho: " styleClass="margin-top-maior"/>
                                 <a4j:commandLink value="Módulo/Rotina" styleClass="margin-top-maior" action="#{chamadaPaginaBean.permissao()}" />
@@ -161,7 +159,7 @@
                                         <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
                                         <f:selectItems value="#{usuarioBean.listaEventos}"/>
                                     </h:selectOneMenu>
-                                    <a4j:commandButton image="/Imagens/novo.png" action="#{usuarioBean.adicionarUsuarioAcesso()}" render="idRenderTabela tblUsuarioAcesso msgUsuarioAcesso" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar permissão personalizada" rendered="#{usuarioBean.usuario.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status" />
+                                    <a4j:commandButton image="/Imagens/novo.png" action="#{usuarioBean.adicionarUsuarioAcesso()}" render="idRenderTabela tblUsuarioAcesso" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar permissão personalizada" rendered="#{usuarioBean.usuario.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status" />
                                     <h:column>
                                         <h:selectBooleanCheckbox id="idFiltroModulo"  value="#{usuarioBean.filtrarPorModulo}" title="Filtrar por Módulo">
                                             <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
@@ -197,7 +195,7 @@
                                                     <f:facet name="header">
                                                         <h:outputText value="..."/>
                                                     </f:facet>
-                                                    <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir#{its.index}" action="#{usuarioBean.btnExcluirUsuarioAcesso(linha)}" render="tblUsuarioAcesso msgUsuarioAcesso" status="i_status"/>
+                                                    <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir#{its.index}" action="#{usuarioBean.btnExcluirUsuarioAcesso(linha)}" render="tblUsuarioAcesso" status="i_status"/>
                                                 </rich:column>
 
                                                 <rich:column>
@@ -226,7 +224,7 @@
                                                         <h:outputText value="Permite"/>
                                                     </f:facet>
                                                     <h:selectBooleanCheckbox value="#{linha.permite}" title="Permite / Não Permite">
-                                                        <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(linha)}" render="@this, tblUsuarioAcesso, msgUsuarioAcesso" />
+                                                        <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(linha)}" render="@this, tblUsuarioAcesso" />
                                                     </h:selectBooleanCheckbox>
                                                 </rich:column>
                                             </rich:dataTable>
@@ -277,7 +275,7 @@
                         <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide(); return false;"></h:outputLink>
                     </f:facet>
                     <center>
-                        <h:outputText value="#{usuarioBean.msgConfirma}" styleClass="fontePadrao"/>                            
+                        <h:outputText value="#{usuarioBean.mensagem}" styleClass="fontePadrao"/>                            
                         <br /><br />
                         <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_usuario:i_panel_mensagem')}.hide(); return false;" render="id_panel_usuario"/>
                     </center>
