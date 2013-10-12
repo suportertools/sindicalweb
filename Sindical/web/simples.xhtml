@@ -45,8 +45,8 @@
                    <div style="overflow:auto; height:330px;">
                        <div style=" margin-bottom: 10px; margin-left: 10px; " class="divFundo" >
                             <h:outputLabel value="PESQUISAR: " styleClass="fontePadrao" for="idPesquisar"/>
-                            <h:inputText id="idPesquisar" value="#{simplesBean.pesquisaLista}"  title="Pesquisar">
-                                <a4j:ajax event="blur" render="this, tbl" listener="#{simplesBean.limpaLista}"/>
+                            <h:inputText id="idPesquisar" value="#{simplesBean.pesquisaLista}"  title="Pesquisar" valueChangeListener="#{simplesBean.lista.clear()}">
+                                <a4j:ajax event="blur" render="this, tbl"/>
                             </h:inputText>
                             <h:graphicImage value="/Imagens/pesquisar.png" alt="Pesquisar" title="Pesquisar" style="width: 25px; height: 25px; cursor: pointer">
                                 <a4j:ajax event="click" render="idPesquisar" execute="@none" status="i_status"/>
@@ -54,37 +54,24 @@
                         </div>
                        <div style="clear: both;"></div>
                         <rich:panel style="overflow-x:auto; height: 250px; width: 280px; border-left: #d4d5d7 dashed 1px; border: 0">
-                            <rich:dataTable value="#{simplesBean.lista}" id="tbl" var="linha" iterationStatusVar="it">
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header">
-                                        <h:outputText value="#"/>
-                                    </f:facet>
-                                    <h:outputText value="#{it.index}"/>
-                                </rich:column>
-
+                            <rich:dataTable value="#{simplesBean.lista}" id="tbl" var="linha" style="width: 100%;">
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header">
                                         <h:outputText value="ID"/>
                                     </f:facet>
-                                    <h:commandLink value="#{linha.id}" action="#{simplesBean.editar}">
-                                        <a4j:param value="#{it.index}" assignTo="#{simplesBean.idIndex}"/>
-                                    </h:commandLink>
+                                    <h:commandLink value="#{linha.id}" action="#{simplesBean.editar(linha)}" styleClass="underline-hover"/>
                                 </rich:column>
-
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Valores"/>
                                     </f:facet>
-                                    <h:outputText value="#{linha.descricao}"/>
+                                    <h:commandLink value="#{linha.descricao}" action="#{simplesBean.editar(linha)}" styleClass="underline-hover"/>
                                 </rich:column>
-
                                 <rich:column style="text-align: center;">
                                     <f:facet name="header">
                                         <h:outputText value="Excluir"/>
                                     </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{simplesBean.excluir()}" render="i_painel_mensagem, tbl" oncomplete="#{rich:component('form_cadastro_simples:i_painel_mensagem')}.show(); return false;" status="i_status">
-                                        <a4j:param value="#{it.index}" assignTo="#{simplesBean.idIndex}"/>
-                                    </a4j:commandButton>
+                                    <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{simplesBean.excluir(linha)}" render="i_painel_mensagem, tbl" oncomplete="#{rich:component('form_cadastro_simples:i_painel_mensagem')}.show(); return false;" status="i_status" />
                                 </rich:column>
                             </rich:dataTable>
                         </rich:panel>
