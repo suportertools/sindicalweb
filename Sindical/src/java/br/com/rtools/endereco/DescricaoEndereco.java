@@ -4,7 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "END_DESCRICAO_ENDERECO")
-@NamedQuery(name = "DescricaoEndereco.pesquisaID", query = "select dece from DescricaoEndereco dece where dece.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "DescricaoEndereco.pesquisaID",  query = "SELECT DECE FROM DescricaoEndereco AS DECE WHERE DECE.id = :pid"),
+    @NamedQuery(name = "DescricaoEndereco.findAll",     query = "SELECT DECE FROM DescricaoEndereco AS DECE ORDER BY DECE.descricao ASC "),
+    @NamedQuery(name = "DescricaoEndereco.findName",    query = "SELECT DECE FROM DescricaoEndereco AS DECE WHERE UPPER(DECE.descricao) LIKE :pdescricao ORDER BY DECE.descricao ASC ")
+})
 public class DescricaoEndereco implements java.io.Serializable {
 
     @Id

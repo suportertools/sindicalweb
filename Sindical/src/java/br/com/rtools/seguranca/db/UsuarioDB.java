@@ -15,8 +15,6 @@ public interface UsuarioDB {
 
     public Usuario ValidaUsuarioSuporteWeb(String login, String senha);
 
-    public List pesquisaTodos();
-
     public List pesquisaLogin(String login, int idPessoa);
 
     public Usuario ValidaUsuarioContribuinte(int idUsuario);

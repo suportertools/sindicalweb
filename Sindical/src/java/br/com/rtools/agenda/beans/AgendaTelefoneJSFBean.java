@@ -13,6 +13,7 @@ import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -242,7 +243,7 @@ public class AgendaTelefoneJSFBean implements Serializable {
     public List<SelectItem> getListaTipoEnderecos() {
         if (listaTipoEnderecos.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<TipoEndereco> list = (List<TipoEndereco>) salvarAcumuladoDB.listaObjetoGenericoOrdem("TipoEndereco");
+            List<TipoEndereco> list = (List<TipoEndereco>) salvarAcumuladoDB.listaObjeto("TipoEndereco", true);
             for (int i = 0; i < list.size(); i++) {
                 listaTipoEnderecos.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
@@ -257,7 +258,7 @@ public class AgendaTelefoneJSFBean implements Serializable {
     public List<SelectItem> getListaTipoTelefones() {
         if (listaTipoTelefones.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<TipoTelefone> list = (List<TipoTelefone>) salvarAcumuladoDB.listaObjetoGenericoOrdem("TipoTelefone");
+            List<TipoTelefone> list = (List<TipoTelefone>) salvarAcumuladoDB.listaObjeto("TipoTelefone", true);
             for (int i = 0; i < list.size(); i++) {
                 listaTipoTelefones.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
@@ -272,7 +273,7 @@ public class AgendaTelefoneJSFBean implements Serializable {
     public List<SelectItem> getListaGrupoAgendas() {
         if (listaGrupoAgendas.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<GrupoAgenda> list = (List<GrupoAgenda>) salvarAcumuladoDB.listaObjetoGenericoOrdem("GrupoAgenda");
+            List<GrupoAgenda> list = (List<GrupoAgenda>) salvarAcumuladoDB.listaObjeto("GrupoAgenda", true);
             for (int i = 0; i < list.size(); i++) {
                 listaGrupoAgendas.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
@@ -524,12 +525,12 @@ public class AgendaTelefoneJSFBean implements Serializable {
     public String adicionarAgendaTelefone() {
         msgAgendaTelefone = "";
         if (agendaTelefone.getTelefone().equals("")) {
-            msgConfirma = "Informar o número de telefone!";
-            return "agendaTelefone";
+            GenericaMensagem.warn("Validação", "Informar o número de telefone!");
+            return null;
         }
         if (listaTipoTelefones.isEmpty()) {
-            msgConfirma = "Informar o tipo de telefone!";
-            return "agendaTelefone";
+            GenericaMensagem.warn("Validação", "Informar o tipo de telefone!");
+            return null;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         agendaTelefone.setTipoTelefone((TipoTelefone) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoTelefones.get(idTipoTelefone).getDescription()), "TipoTelefone"));
@@ -538,33 +539,32 @@ public class AgendaTelefoneJSFBean implements Serializable {
                 AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
                 agendaTelefone.setAgenda(agenda);
                 if (((AgendaTelefone) agendaDB.agendaTelefoneExiste(agendaTelefone)).getId() != -1) {
-                    msgConfirma = "Telefone já existe!";
-                    return "agendaTelefone";
+                    GenericaMensagem.warn("Validação", "Telefone já existe!");
+                    return null;
                 }
                 salvarAcumuladoDB.abrirTransacao();
                 if (salvarAcumuladoDB.inserirObjeto(agendaTelefone)) {
-                    msgAgendaTelefone = "Telefone adicionado com sucesso";
+                    GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
                     listaAgendaTelefones.clear();
                     salvarAcumuladoDB.comitarTransacao();
                 } else {
-                    msgAgendaTelefone = "Erro ao adicionar telefone!";
+                    GenericaMensagem.warn("Erro", "Erro ao adicionar registro");
                     salvarAcumuladoDB.desfazerTransacao();
                 }
             } else {
                 salvarAcumuladoDB.abrirTransacao();
                 if (salvarAcumuladoDB.alterarObjeto(agendaTelefone)) {
-                    msgAgendaTelefone = "Telefone atualizado com sucesso";
+                    GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
                     listaAgendaTelefones.clear();
                     salvarAcumuladoDB.comitarTransacao();
                 } else {
                     salvarAcumuladoDB.desfazerTransacao();
-                    msgAgendaTelefone = "Erro ao atualizar telefone!";
+                    GenericaMensagem.warn("Erro", "Erro ao atualizar telefone");
                 }
             }
         }
         agendaTelefone = new AgendaTelefone();
         return null;
-        //return "agendaTelefone";
     }
 
     public String excluirAgendaTelefone(AgendaTelefone at) {
@@ -574,14 +574,13 @@ public class AgendaTelefoneJSFBean implements Serializable {
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.deletarObjeto(at)) {
             salvarAcumuladoDB.comitarTransacao();
-            msgAgendaTelefone = "Telefone excluído com sucesso";
+            GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
             listaAgendaTelefones.clear();
         } else {
             salvarAcumuladoDB.comitarTransacao();
-            msgAgendaTelefone = "Falha ao excluír esse telefone!";
+            GenericaMensagem.warn("Erro", "Falha ao excluír esse registro!");
         }
         return null;
-        //return "agendaTelefone";
     }
 
     public String editarAgendaTelefone(AgendaTelefone at) {
@@ -593,7 +592,6 @@ public class AgendaTelefoneJSFBean implements Serializable {
             }
         }
         return null;
-        //return "agendaTelefone";
     }
 
     public int getIdGrupoAgenda() {

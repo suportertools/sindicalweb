@@ -5,7 +5,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "SEG_USUARIO")
-@NamedQuery(name = "Usuario.pesquisaID", query = "select u from Usuario u where u.id=:pid")
+@NamedQueries({ 
+    @NamedQuery(name = "Usuario.pesquisaID",    query = "SELECT U FROM Usuario U WHERE U.id = :pid "), 
+    @NamedQuery(name = "Usuario.findAll",       query = "SELECT U FROM Usuario U ORDER BY U.pessoa.nome ASC, U.login ASC ")
+})
 public class Usuario implements java.io.Serializable {
 
     @Id

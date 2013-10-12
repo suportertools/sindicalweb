@@ -4,7 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "SEG_NIVEL")
-@NamedQuery(name = "Nivel.pesquisaID", query = "select niv from Nivel niv where niv.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Nivel.pesquisaID",    query = "SELECT NIV FROM Nivel NIV WHERE NIV.id = :pid"),
+    @NamedQuery(name = "Nivel.findAll",       query = "SELECT NIV FROM Nivel NIV ORDER BY NIV.descricao ASC "),
+    @NamedQuery(name = "Nivel.findName",      query = "SELECT NIV FROM Nivel NIV WHERE UPPER(NIV.descricao) LIKE :pdescricao ORDER BY NIV.descricao ASC ")
+})
 public class Nivel implements java.io.Serializable {
 
     @Id

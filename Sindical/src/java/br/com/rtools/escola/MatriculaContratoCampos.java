@@ -5,7 +5,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "MATR_CONTRATO_CAMPOS")
-@NamedQuery(name = "MatriculaContratoCampos.pesquisaID", query = "SELECT MCC FROM MatriculaContratoCampos AS MCC WHERE MCC.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "MatriculaContratoCampos.pesquisaID",    query = "SELECT MCC FROM MatriculaContratoCampos AS MCC WHERE MCC.id = :pid"),
+    @NamedQuery(name = "MatriculaContratoCampos.findAll",       query = "SELECT MCC FROM MatriculaContratoCampos AS MCC ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ASC")
+})
 public class MatriculaContratoCampos implements java.io.Serializable {
 
     @Id

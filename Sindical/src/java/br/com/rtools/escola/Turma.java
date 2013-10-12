@@ -8,7 +8,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ESC_TURMA")
-@NamedQuery(name = "Turma.pesquisaID", query = "select t from Turma t where t.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Turma.pesquisaID",    query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
+    @NamedQuery(name = "Turma.findAll",       query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC")
+})
 public class Turma implements java.io.Serializable {
 
     @Id

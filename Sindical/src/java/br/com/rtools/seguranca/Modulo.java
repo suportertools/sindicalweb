@@ -4,7 +4,11 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "SEG_MODULO")
-@NamedQuery(name = "Modulo.pesquisaID", query = "select modu from Modulo modu where modu.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Modulo.pesquisaID",    query = "SELECT MODU FROM Modulo AS MODU WHERE MODU.id = :pid"),
+    @NamedQuery(name = "Modulo.findAll",       query = "SELECT MODU FROM Modulo AS MODU ORDER BY MODU.descricao ASC"),
+    @NamedQuery(name = "Modulo.findName",      query = "SELECT MODU FROM Modulo AS MODU WHERE UPPER(MODU.descricao) LIKE :pdescricao ORDER BY MODU.descricao ASC ")
+})
 public class Modulo implements java.io.Serializable {
 
     @Id

@@ -10,16 +10,6 @@ import javax.persistence.Query;
 public class UsuarioDBToplink extends DB implements UsuarioDB {
 
     @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU ORDER BY USU.pessoa.nome ASC ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Override
     public List<Usuario> pesquisaTodosPorDescricao(String descricaoPesquisa) {
         try {
             Query qry = getEntityManager().createQuery("SELECT usu FROM Usuario AS USU WHERE UPPER(USU.pessoa.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' OR UPPER(USU.login) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' ORDER BY USU.pessoa.nome ASC ");

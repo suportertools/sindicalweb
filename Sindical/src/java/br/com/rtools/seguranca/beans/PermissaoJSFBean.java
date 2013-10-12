@@ -444,8 +444,8 @@ public class PermissaoJSFBean {
 
     public List<SelectItem> getListaModulos() {
         if (listaModulos.isEmpty()) {
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            List modulos = db.pesquisaTodosModuloOrdenado();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List modulos = salvarAcumuladoDB.listaObjeto("Modulo", true);
             for (int i = 0; i < modulos.size(); i++) {
                 listaModulos.add(new SelectItem(new Integer(i),
                         ((Modulo) modulos.get(i)).getDescricao(),
@@ -479,8 +479,8 @@ public class PermissaoJSFBean {
 
     public List<SelectItem> getListaEventos() {
         if (listaEventos.isEmpty()) {
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            List eventos = db.pesquisaTodosEventoOrdenado();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List eventos = salvarAcumuladoDB.listaObjeto("Evento", true);
             for (int i = 0; i < eventos.size(); i++) {
                 listaEventos.add(new SelectItem(new Integer(i),
                         ((Evento) eventos.get(i)).getDescricao(),
@@ -496,8 +496,8 @@ public class PermissaoJSFBean {
 
     public List<SelectItem> getListaNiveis() {
         if (listaNiveis.isEmpty()) {
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            List niveis = db.pesquisaTodosNiveis();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List niveis = salvarAcumuladoDB.listaObjeto("Nivel", true);
             for (int i = 0; i < niveis.size(); i++) {
                 listaNiveis.add(new SelectItem(new Integer(i),
                         ((Nivel) niveis.get(i)).getDescricao(),
@@ -514,8 +514,8 @@ public class PermissaoJSFBean {
 
     public List<SelectItem> getListaDepartamentos() {
         if (listaDepartamentos.isEmpty()) {
-            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
-            List departamentos = db.pesquisaTodosDepOrdenado();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List departamentos = salvarAcumuladoDB.listaObjeto("Departamento", true);
             for (int i = 0; i < departamentos.size(); i++) {
                 listaDepartamentos.add(new SelectItem(new Integer(i),
                         ((Departamento) departamentos.get(i)).getDescricao(),
