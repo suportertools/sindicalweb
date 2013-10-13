@@ -78,19 +78,19 @@ public class SimplesBean {
         return listaRotinaCombo;
     }
 
-    public String salvar() {
+    public void salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         NovoLog log = new NovoLog();
         if (sessoes != null) {
             if (descricao.equals("")) {
                 mensagem = "Campo não pode ser vázio!";
-                return null;
+                return;
             }
             if (id == -1) {
                 converteObjeto(sessoes[0]);
                 if (sv.descricaoExiste(descricao, "descricao", objeto.getClass().getSimpleName())) {
                     mensagem = "Essa descrição já existe " + nomeRotina + " !";
-                    return null;
+                    return;
 
                 }
                 sv.abrirTransacao();
@@ -99,6 +99,7 @@ public class SimplesBean {
                     log.novo("Registro de " + objeto.getClass().getSimpleName() + " inserido", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro salvo com sucesso";
                     descricao = "";
+                    objeto = null;
                     lista.clear();
                     id = -1;
                 } else {
@@ -114,6 +115,7 @@ public class SimplesBean {
                     mensagem = "Registro atualizado com sucesso";
                     descricao = "";
                     lista.clear();
+                    objeto = null;
                     id = -1;
                 } else {
                     mensagem = "Erro ao atualizar " + nomeRotina + " ";
@@ -123,7 +125,6 @@ public class SimplesBean {
         } else {
             mensagem = "Não há tipo de cadastro definido!";
         }
-        return null;
     }
 
     public String editar(Object o) {
@@ -135,10 +136,10 @@ public class SimplesBean {
                 && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
             return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
-        return "simples";
+        return null;
     }
 
-    public String excluir(Object o) {
+    public void excluir(Object o) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         NovoLog log = new NovoLog();
         sv.abrirTransacao();
@@ -146,8 +147,8 @@ public class SimplesBean {
         editaObjeto(objeto);
         objeto = sv.pesquisaObjeto(id, objeto.getClass().getSimpleName());
         if (!sv.deletarObjeto(objeto)) {
-            mensagem = "Erro ao excluir registro";
             sv.desfazerTransacao();
+            mensagem = "Erro ao excluir registro";
         } else {
             sv.comitarTransacao();
             log.novo("Registro de " + objeto.getClass().getSimpleName() + " excluido", "ID: " + id + " DESCRICAO: " + descricao);
@@ -157,13 +158,14 @@ public class SimplesBean {
             id = -1;
             descricao = "";
         }
-        return null;
     }
 
-    public String novo() {
+    public void novo() {
         rotina = new Rotina();
         mensagem = "";
-        return "simples";
+        id = -1;
+        objeto = null;
+        descricao = "";
     }
 
     public String limpar() {
