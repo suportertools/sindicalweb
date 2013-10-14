@@ -380,18 +380,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>feriadosBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.homologacao.beans.FeriadosJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>horariosBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.homologacao.beans.HorariosJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>grupoConvenioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.GrupoConvenioJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -550,12 +538,6 @@
     <managed-bean>
         <managed-bean-name>cartaoSocialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.CartaoSocialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>cancelarHorarioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.homologacao.beans.CancelarHorarioJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
