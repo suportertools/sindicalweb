@@ -23,12 +23,13 @@
                         <h:outputText value="Geração de Contribuição" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <div class="divMae divFundo" align="left" style="width: 200px">
+                    <div class="divMae divFundo" align="left">
+                        
                         <rich:panel style="width: 200px">
                             <h:panelGrid columns="2">
                                 <h:column>
                                     <h:outputLabel value="Mês: "/>
-                                    <h:selectOneMenu id="idMes" value="">
+                                    <h:selectOneMenu id="idMes" value="#{contribuicaoSocioBean.mes}">
                                         <f:selectItem itemValue="01"/>
                                         <f:selectItem itemValue="02"/>
                                         <f:selectItem itemValue="03"/>
@@ -46,16 +47,33 @@
 
                                 <h:column>
                                     <h:outputLabel value="Ano: " style="margin-left: 15px"/>
-                                    <h:inputText id="ano" value="" maxlength="4" size="5"/>
+                                    <h:inputText id="ano" value="#{contribuicaoSocioBean.ano}" maxlength="4" size="5"/>
                                 </h:column>
                             </h:panelGrid>
                         </rich:panel>
-
-                        <br />
-
-                        <h:panelGrid>
+                        
+                        <h:panelGrid style="float: left" columns="5">
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                            <h:outputLabel value="Pesquisa Pessoa: " styleClass="fontePadrao" />
+                            <h:outputText id="i_nome" value="#{contribuicaoSocioBean.pessoa.nome}" title="#{contribuicaoSocioBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
+                            <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="#{contribuicaoSocioBean.removerPesquisa}" style="margin-left: 10px" rendered="#{contribuicaoSocioBean.pessoa.id != -1}" render="i_nome" />
+                            <a4j:commandButton id="b_adicionar" action="#{contribuicaoSocioBean.adicionarPesquisa}" value="Adicionar" style="margin-left: 10px; cursor: pointer" rendered="#{contribuicaoSocioBean.pessoa.id != -1}" render="i_nome tbl i_totais" />
+                        </h:panelGrid>
+                        
+                        <h:panelGrid style="clear: both; float: left; margin-top: 10px">
+                            <rich:list value="#{contribuicaoSocioBean.listaPessoa}" var="linha" id="tbl_list" iterationStatusVar="it" style="list-style: none; padding: 0; cursor: pointer">
+                                <div style="margin-bottom: 5px;">
+                                    <h:commandLink value="#{linha.nome}" class="listaAcessoLine" />
+                                    <a4j:commandButton id="b_remover_lista" image="/Imagens/excluirp.png" action="#{contribuicaoSocioBean.removerPessoaLista(it.index)}" render="i_nome tbl i_totais" style="margin-left: 5px; width: 12px"/>
+                                    <br />
+                                </div>
+                            </rich:list>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid style="clear: both">
                             <h:column>
-                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gerar Contribuições" style="width: 150px;" title="Gerar Contribuições"/>
+                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gerar para Todos" rendered="#{contribuicaoSocioBean.listaPessoa.size() == 0}" style="width: 200px;" title="Gerar Contribuições"/>
+                                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gerar para Lista" rendered="#{contribuicaoSocioBean.listaPessoa.size() != 0}" style="width: 200px;" title="Gerar Contribuições"/>
                             </h:column>
                         </h:panelGrid>
 
