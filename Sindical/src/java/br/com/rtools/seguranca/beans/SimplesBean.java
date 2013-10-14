@@ -83,13 +83,13 @@ public class SimplesBean {
         NovoLog log = new NovoLog();
         if (sessoes != null) {
             if (descricao.equals("")) {
-                mensagem = "Campo não pode ser vázio!";
+                mensagem = "Informar descrição!";
                 return;
             }
             if (id == -1) {
                 converteObjeto(sessoes[0]);
                 if (sv.descricaoExiste(descricao, "descricao", objeto.getClass().getSimpleName())) {
-                    mensagem = "Essa descrição já existe " + nomeRotina + " !";
+                    mensagem = "Descrição já existe " + nomeRotina + " !";
                     return;
 
                 }
@@ -113,10 +113,10 @@ public class SimplesBean {
                     sv.comitarTransacao();
                     log.novo("Registro de " + objeto.getClass().getSimpleName() + " alterado", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro atualizado com sucesso";
-                    descricao = "";
                     lista.clear();
-                    objeto = null;
-                    id = -1;
+                    // descricao = "";
+                    // objeto = null;
+                    // id = -1;
                 } else {
                     mensagem = "Erro ao atualizar " + nomeRotina + " ";
                     sv.desfazerTransacao();
@@ -284,17 +284,13 @@ public class SimplesBean {
             objeto = (Banda) new Banda(id, descricao);
         } else if (tipo.equals("Midia")) {
             objeto = (Midia) new Midia(id, descricao);
-        }
-        if (tipo.equals("Nivel")) {
+        } else if (tipo.equals("Nivel")) {
             objeto = (Nivel) new Nivel(id, descricao);
-        }
-        if (tipo.equals("MotivoInativacao")) {
+        } else if (tipo.equals("MotivoInativacao")) {
             objeto = (MotivoInativacao) new MotivoInativacao(id, descricao);
-        }
-        if (tipo.equals("TipoServico")) {
+        } else if (tipo.equals("TipoServico")) {
             objeto = (TipoServico) new TipoServico(id, descricao);
-        }
-        if (tipo.equals("AteOperacao")) {
+        } else if (tipo.equals("AteOperacao")) {
             objeto = (AteOperacao) new AteOperacao(id, descricao);
         }
     }

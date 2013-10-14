@@ -19,10 +19,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class AgendaTelefoneJSFBean implements Serializable {
+@ManagedBean
+@SessionScoped
+public class AgendaTelefoneBean implements Serializable {
 
     private Agenda agenda = new Agenda();
     private AgendaTelefone agendaTelefone = new AgendaTelefone();
@@ -494,12 +498,12 @@ public class AgendaTelefoneJSFBean implements Serializable {
         //return "agendaTelefone";
     }
 
-    public String visualizar(int index) {
+    public String visualizar(DataObject object) {
         agendaTelefone = new AgendaTelefone();
         pessoa = new Pessoa();
         endereco = new Endereco();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agendaTelefone = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((DataObject) listaAgendaTelefone.get(index)).getArgumento1().toString()), "AgendaTelefone");
+        agendaTelefone = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(object.getArgumento1().toString()), "AgendaTelefone");
         if (agendaTelefone.getAgenda().getEndereco() != null) {
             endereco = agendaTelefone.getAgenda().getEndereco();
         }

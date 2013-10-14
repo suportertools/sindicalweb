@@ -24,7 +24,7 @@
                 </f:facet>
                 <f:facet name="controls">
                     <h:outputLink value="#" onclick="#{rich:component('popup')}.hide(); return false;">
-                        X
+                        <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                     </h:outputLink>
                 </f:facet>
                     <h:panelGrid id="idDetalhesContato">
@@ -124,108 +124,46 @@
                     </div>
                     <div class="clear"></div>
                     <div style="overflow:auto; height: 530px; margin: 20px;">
-                        <rich:dataTable value="#{agendaTelefoneBean.listaAgendaTelefone}" var="linha" iterationStatusVar="it" style="width:100%; margin-top: 10px;" id="tbl" >
+                        <rich:dataTable value="#{agendaTelefoneBean.listaAgendaTelefone}" var="linha" style="width:100%; margin-top: 10px;" id="tbl" >
                             <rich:column style="text-align: center;">
                                 <f:facet name="header">
                                     <h:outputText value="Grupo Agenda"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento2}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();">
-                                    <a4j:ajax event="click" render="idNomeContato idDetalhesContato" />
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(linha)}" value="#{linha.argumento2}" styleClass="underline-hover" style="text-transform: uppercase; ">
+                                    <a4j:ajax event="click" render="idNomeContato idDetalhesContato" oncomplete="#{rich:component('formPesquisaAgendaTelefone:popup')}.show(); return false;"/>
                                 </a4j:commandLink>                                
                             </rich:column>
                             <rich:column style="text-align: center;">
                                 <f:facet name="header">
                                     <h:outputText value="Nome"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento3}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();">
-                                    <a4j:ajax event="click" render="idNomeContato idDetalhesContato" />
-                                </a4j:commandLink>                                
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(linha)}" value="#{linha.argumento3}" styleClass="underline-hover" style="text-transform: uppercase; " render="idNomeContato idDetalhesContato" oncomplete="#{rich:component('formPesquisaAgendaTelefone:popup')}.show(); return false;" status="i_status"/>
                             </rich:column>
                             <rich:column style="text-align: center;">
                                 <f:facet name="header">
                                     <h:outputText value="Cidade / UF"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento4}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();" title="#{linha.argumento9}">
-                                    <a4j:ajax event="click" render="idNomeContato idDetalhesContato" />
-                                </a4j:commandLink>                                
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(linha)}" value="#{linha.argumento4}" oncomplete="#{rich:component('formPesquisaAgendaTelefone:popup')}.show(); return false;" styleClass="underline-hover" style="text-transform: uppercase; " render="idNomeContato idDetalhesContato" status="i_status"/>
                             </rich:column>
                             <rich:column style="text-align: center;">
                                 <f:facet name="header">
                                     <h:outputText value="Tipo Telefone"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento6}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();">
-                                    <a4j:ajax event="click" render="idNomeContato idDetalhesContato" />
-                                </a4j:commandLink>                                
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(linha)}" value="#{linha.argumento6}" styleClass="underline-hover" style="text-transform: uppercase; " oncomplete="#{rich:component('formPesquisaAgendaTelefone:popup')}.show(); return false;" render="idNomeContato idDetalhesContato" title="#{linha.argumento9}" status="i_status"/>
                             </rich:column>
                             <rich:column style="text-align: center;">
                                 <f:facet name="header">
                                     <h:outputText value="Telefone"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento7}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="#{rich:component('popup')}.show();">
-                                    <a4j:ajax event="click" render=" idNomeContato idDetalhesContato" />
-                                </a4j:commandLink>
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(linha)}" value="#{linha.argumento7}" styleClass="underline-hover" style="text-transform: uppercase; " oncomplete="#{rich:component('formPesquisaAgendaTelefone:popup')}.show(); return false;" render="idNomeContato idDetalhesContato" status="i_status"/>
                             </rich:column>
                             <rich:column style="text-align: center;">
                                 <f:facet name="header">
                                     <h:outputText value="Contato"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(it.index)}" value="#{linha.argumento8}" styleClass="underline-hover" style="text-transform: uppercase;" onclick="#{rich:component('popup')}.show();">
-                                    <a4j:ajax event="click" render="idNomeContato idDetalhesContato" />
-                                </a4j:commandLink>                                
+                                <a4j:commandLink action="#{agendaTelefoneBean.visualizar(linha)}" value="#{linha.argumento8}" styleClass="underline-hover" style="text-transform: uppercase;" oncomplete="#{rich:component('formPesquisaAgendaTelefone:popup')}.show(); return false;" render="idNomeContato idDetalhesContato" status="i_status"/>
                             </rich:column>
                         </rich:dataTable>
-                    </div>
-                    <div id="boxes">
-                        <div id="divSalvar" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja salvar este Registro?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><span class="loading-status"></span></f:facet></a4j:status>
-                                </h:panelGrid>
-
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{agendaTelefoneBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma idAgendaTelefone tblAgendaTelefone tbl" />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
-                    <div id="boxes">
-                        <div id="divExcluir" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja excluir este Registro?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                                </h:panelGrid>
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{agendaTelefoneBean.excluir()}" oncomplete="modalMensagem()" render="outConfirma idAgendaTelefone tblAgendaTelefone tbl"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            </center>
-                        </div>
-
-                        <div id="mask"></div>
-                    </div>
-                    <div id="boxes">
-                        <div id="divMensagem" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:outputText id="outConfirma" value="#{agendaTelefoneBean.msgConfirma}" styleClass="fontePadrao"/>
-                                <br /><br />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="tbl" action="#{agendaTelefoneBean.novo()}" />
-                            </center>
-                        </div>
-                        <div id="mask"></div>
                     </div>                    
                 </center>
 
