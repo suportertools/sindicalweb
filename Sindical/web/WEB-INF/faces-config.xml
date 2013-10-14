@@ -542,36 +542,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>vendedorBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.VendedorJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>eFinanceiroBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.EFinanceiroJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>professorBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.ProfessorJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>componenteCurricularBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.ComponenteCurricularJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>turmaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.TurmaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>relatorioSociosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioSociosJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -700,12 +670,6 @@
     <managed-bean>
         <managed-bean-name>recepcaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.homologacao.beans.RecepcaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>matriculaContratoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.escola.beans.MatriculaContratoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
