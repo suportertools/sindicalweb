@@ -9,9 +9,13 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class ProfessorJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class ProfessorBean implements java.io.Serializable {
 
     private Professor professor = new Professor();
     private Pessoa pessoa = new Pessoa();

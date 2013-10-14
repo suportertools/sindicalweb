@@ -16,10 +16,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class MatriculaContratoJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class MatriculaContratoBean implements java.io.Serializable {
 
     private MatriculaContrato matriculaContrato = new MatriculaContrato();
     private MatriculaContratoCampos matriculaContratoCampos = new MatriculaContratoCampos();
