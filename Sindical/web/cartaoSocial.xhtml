@@ -9,11 +9,6 @@
     <h:head>
         <title>Cartão Social</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <script type="text/javascript">
-            function atualizar(){
-                fecharModal('divProcesso');
-            }
-        </script>
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
@@ -36,8 +31,8 @@
                                  </h:column>
                                 
                                   <h:column>
-                                      <h:selectOneMenu value="#{cartaoSocialBean.indexFiltro}" onchange="modalOpcao('divProcesso');">
-                                        <a4j:ajax event="change" listener="#{cartaoSocialBean.pesquisar()}" render="tbl total id_panel" oncomplete="atualizar()"/>
+                                      <h:selectOneMenu value="#{cartaoSocialBean.indexFiltro}">
+                                          <a4j:ajax event="change" listener="#{cartaoSocialBean.pesquisar()}" render="tbl total id_panel" status="i_status"/>
                                         <f:selectItem itemLabel="Não Impressos (Todos)" itemValue="0"/>
                                         <f:selectItem itemLabel="Não Impressos (Empresa Especifica)" itemValue="1"/>
                                         <f:selectItem itemLabel="Não Impressos (CNPJ Especifico)" itemValue="2"/>
@@ -62,8 +57,8 @@
                                  </h:column>
                                 
                                   <h:column>
-                                      <h:selectOneMenu value="#{cartaoSocialBean.indexOrdem}"  onchange="modalOpcao('divProcesso');">
-                                        <a4j:ajax event="change" listener="#{cartaoSocialBean.pesquisar()}" render="tbl total" oncomplete="fecharModal('divProcesso');"/>
+                                      <h:selectOneMenu value="#{cartaoSocialBean.indexOrdem}">
+                                        <a4j:ajax event="change" listener="#{cartaoSocialBean.pesquisar()}" render="tbl total" status="i_status"/>
                                         <f:selectItem itemLabel="Nome" itemValue="0"/>
                                         <f:selectItem itemLabel="Empresa" itemValue="1"/>
                                         <f:selectItem itemLabel="CNPJ" itemValue="2"/>
@@ -142,23 +137,25 @@
                              </div>
                              <br/><br/>
 
-                             <a4j:poll id="poll" interval="1000" enabled="#{cartaoSocialBean.updateGrid}" render="poll2" action="#{cartaoSocialBean.testex()}" oncomplete="#{rich:element('formCartaoSocial:imprimirEtiqueta')}.onclick()"/>
+                             <a4j:poll id="poll" interval="1000" enabled="#{cartaoSocialBean.updateGrid}" render="poll2" action="#{cartaoSocialBean.testex()}" oncomplete="#{rich:element('formCartaoSocial:imprimirEtiqueta')}.onclick();"/>
                              <a4j:poll id="poll2" interval="1000" enabled="#{cartaoSocialBean.updateGridx}" render="tbl" action="#{cartaoSocialBean.pesquisar()}" />                            
                              <h:outputLabel value="TOTAL: " styleClass="fontePadrao"/>
                              <h:outputLabel id="total" style="font-weight: bold" value="#{cartaoSocialBean.total}" />
-                             <h:outputLabel value="MARCADOS: " styleClass="fontePadrao"/>
+                             <h:outputLabel value=" - MARCADOS: " styleClass="fontePadrao"/>
                              <h:outputLabel id="marcados" value="#{cartaoSocialBean.qnt}" styleClass="fontePadrao"/>                     
                              <h:panelGrid id="id_panel" columns="4" style="text-align: left; margin-top: 10px;">
-                                 <a4j:commandLink styleClass="idSalvar iLink" style="width: 100px" value="Visualizar" id="idVisualizar" render="poll" action="#{cartaoSocialBean.teste()}" onclick="modalOpcao('divProcesso');" oncomplete="#{rich:element('formCartaoSocial:abrir')}.onclick();atualizar();" />
+                                 <a4j:commandLink styleClass="idSalvar iLink" style="width: 100px" value="Visualizar" id="idVisualizar" render="poll" action="#{cartaoSocialBean.teste()}" oncomplete="#{rich:element('formCartaoSocial:abrir')}.onclick();" status="i_status"/>
                                  <h:commandLink id="abrir" action="#{cartaoSocialBean.imprimirCartao()}"/>
                                  
-                                 <h:commandButton style="margin-left: 20px" rendered="#{!cartaoSocialBean.disabledReimpressao}" value="Reimprimir (Gerar Via)" action="#{cartaoSocialBean.reImprimirCartao()}"/>
+                                 <h:commandButton style="margin-left: 20px" rendered="#{!cartaoSocialBean.disabledReimpressao}" value="Reimprimir (Gerar Via)" action="#{cartaoSocialBean.reImprimirCartao()}" >
+                                     <a4j:ajax event="click" status="i_status" />
+                                 </h:commandButton>
                                  <rich:panel style="margin-left: 20px">
                                      <h:outputLabel value="Etiquetas " styleClass="fonteExtratoTela"/>
                                      <h:commandLink id="imprimirEtiqueta" action="#{cartaoSocialBean.visualizarEtiqueta()}"/>
                                      <br />
                                      <h:selectOneRadio id="idRadioEtiquetas" value="#{cartaoSocialBean.tipoEtiquetas}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="idRadioEtiquetas idVisualizar"/>
+                                        <a4j:ajax event="change" render="idRadioEtiquetas idVisualizar" status="i_status"/>
                                         <f:selectItem itemValue="nenhuma" itemLabel="Nenhuma"/>
                                         <f:selectItem itemValue="termica" itemLabel="Térmica"/>
                                         <f:selectItem itemValue="colunas" itemLabel="2 Colunas"/>
@@ -168,16 +165,6 @@
                         </div> 
                     </div>
                 </center>
-
-                <div id="boxes">
-                    <div id="divProcesso" class="window">
-                        <br />
-                        <center>
-                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
             </h:form>
         </f:view>
     </h:body>
