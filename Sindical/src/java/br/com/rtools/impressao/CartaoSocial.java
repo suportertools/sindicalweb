@@ -36,60 +36,30 @@ public class CartaoSocial {
         this.rg = rg;
     }
 
-    public String getNome() {
-        return nome;
+    public CartaoSocial() {
+        this.matricula = "";
+        this.barras = "";
+        this.nome = "";
+        this.empresa = "";
+        this.cnpj = "";
+        this.admissao = "";
+        this.validade = "";
+        this.e_cidade = "";
+        this.e_uf = "";
+        this.logo = "";
+        this.imagem = "";
+        this.filiacao = "";
+        this.profissao = "";
+        this.cpf = "";
+        this.rg = "";
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getMatricula() {
+        return matricula;
     }
 
-    public String getCnpj() {
-        return cnpj;
-    }
-
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
-    public String getEmpresa() {
-        return empresa;
-    }
-
-    public void setEmpresa(String empresa) {
-        this.empresa = empresa;
-    }
-
-    public String getCidade() {
-        return e_cidade;
-    }
-
-    public void setCidade(String cidade) {
-        this.e_cidade = cidade;
-    }
-
-    public String getValidade() {
-        return validade;
-    }
-
-    public void setValidade(String validade) {
-        this.validade = validade;
-    }
-
-    public String getUf() {
-        return e_uf;
-    }
-
-    public void setUf(String uf) {
-        this.e_uf = uf;
-    }
-
-    public String getAdmissao() {
-        return admissao;
-    }
-
-    public void setAdmissao(String admissao) {
-        this.admissao = admissao;
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
     }
 
     public String getBarras() {
@@ -100,12 +70,44 @@ public class CartaoSocial {
         this.barras = barras;
     }
 
-    public String getMatricula() {
-        return matricula;
+    public String getNome() {
+        return nome;
     }
 
-    public void setMatricula(String matricula) {
-        this.matricula = matricula;
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmpresa() {
+        return empresa;
+    }
+
+    public void setEmpresa(String empresa) {
+        this.empresa = empresa;
+    }
+
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
+    }
+
+    public String getAdmissao() {
+        return admissao;
+    }
+
+    public void setAdmissao(String admissao) {
+        this.admissao = admissao;
+    }
+
+    public String getValidade() {
+        return validade;
+    }
+
+    public void setValidade(String validade) {
+        this.validade = validade;
     }
 
     public String getE_cidade() {
@@ -156,19 +158,19 @@ public class CartaoSocial {
         this.profissao = profissao;
     }
 
-    public String getCPF() {
+    public String getCpf() {
         return cpf;
     }
 
-    public void setCPF(String cpf) {
+    public void setCpf(String cpf) {
         this.cpf = cpf;
     }
 
-    public String getRG() {
+    public String getRg() {
         return rg;
     }
 
-    public void setRG(String rg) {
+    public void setRg(String rg) {
         this.rg = rg;
     }
 }
