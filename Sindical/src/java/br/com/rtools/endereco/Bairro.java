@@ -1,5 +1,6 @@
 package br.com.rtools.endereco;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +10,7 @@ import javax.persistence.*;
     @NamedQuery(name = "Bairro.findAll", query = "SELECT BAI FROM Bairro AS BAI ORDER BY BAI.descricao ASC "),
     @NamedQuery(name = "Bairro.findName", query = "SELECT BAI FROM Bairro AS BAI WHERE UPPER(BAI.descricao) LIKE :pdescricao ORDER BY BAI.descricao ASC ")
 })
-public class Bairro implements java.io.Serializable {
+public class Bairro implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
