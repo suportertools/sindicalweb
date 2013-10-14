@@ -16,11 +16,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-// import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class CancelarHorarioJSFBean {
+@ManagedBean
+@SessionScoped
+public class CancelarHorarioBean {
 
     private CancelarHorario cancelarHorario = new CancelarHorario();
     private Horarios horarios = new Horarios();
@@ -255,8 +258,8 @@ public class CancelarHorarioJSFBean {
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
             getFilial();
-            FilialDB db = new FilialDBToplink();
-            List<Filial> select = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Filial> select = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             for (int i = 0; i < select.size(); i++) {
                 if (filial.getId() != -1) {
                     if (filial.getId() == select.get(i).getFilial().getId()) {

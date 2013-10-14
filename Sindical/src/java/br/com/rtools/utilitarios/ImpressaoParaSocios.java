@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -58,7 +59,6 @@ public class ImpressaoParaSocios {
 
             String bc = ((List) (listaCartao.get(i))).get(0).toString() + via;
             String barras = "0000000000".substring(0, 10 - bc.length()) + bc;
-
             listax.add(
                     new CartaoSocial(
                     matr, // CODIGO
@@ -96,10 +96,7 @@ public class ImpressaoParaSocios {
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
             JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Relatorios/CARTAO.jasper"));
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-
-            byte[] arquivo;
-            arquivo = JasperExportManager.exportReportToPdf(print);
-
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
             String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
 
@@ -109,7 +106,7 @@ public class ImpressaoParaSocios {
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
 
-        } catch (Exception e) {
+        } catch (JRException e) {
             return false;
         }
         return true;
