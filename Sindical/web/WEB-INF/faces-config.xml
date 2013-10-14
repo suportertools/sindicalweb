@@ -104,20 +104,21 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuintesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!--
     <managed-bean>
         <managed-bean-name>agendaTelefoneBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.agenda.beans.AgendaTelefoneJSFBean</managed-bean-class>
     
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
+        <!--
     <managed-bean>
         <managed-bean-name>grupoAgendaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.agenda.beans.GrupoAgendaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
+        <managed-bean-class>br.com.rtools.agenda.beans.GrupoAgendaBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean>
+-->
     <managed-bean>
         <managed-bean-name>motivoInativacaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.MotivoInativacaoJSFBean</managed-bean-class>
@@ -975,25 +976,25 @@
 
         <navigation-case>
             <from-outcome>agendaTelefone</from-outcome>
-            <to-view-id>/agendaTelefone.jsp</to-view-id>
+            <to-view-id>/agendaTelefone.jsf</to-view-id>
             <redirect/>
         </navigation-case>
-
+        
         <navigation-case>
             <from-outcome>pesquisaAgendaTelefone</from-outcome>
-            <to-view-id>/pesquisaAgendaTelefone.jsp</to-view-id>
+            <to-view-id>/pesquisaAgendaTelefone.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
         <navigation-case>
             <from-outcome>grupoAgenda</from-outcome>
-            <to-view-id>/grupoAgenda.jsp</to-view-id>
+            <to-view-id>/grupoAgenda.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
         <navigation-case>
             <from-outcome>pesquisaGrupoAgenda</from-outcome>
-            <to-view-id>/pesquisaGrupoAgenda.jsp</to-view-id>
+            <to-view-id>/pesquisaGrupoAgenda.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
