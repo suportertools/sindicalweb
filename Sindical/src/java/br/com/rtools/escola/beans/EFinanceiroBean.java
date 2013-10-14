@@ -10,9 +10,13 @@ import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class EFinanceiroJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class EFinanceiroBean implements java.io.Serializable {
 
     private EFinanceiro eFinanceiro = new EFinanceiro();
     private String msgConfirma = "";

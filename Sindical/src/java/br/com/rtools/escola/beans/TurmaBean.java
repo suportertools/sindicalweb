@@ -15,10 +15,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class TurmaJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class TurmaBean implements java.io.Serializable {
 
     private Turma turma = new Turma();
     private String msgConfirma = "";
@@ -226,12 +230,12 @@ public class TurmaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaProfessor() {
         if (listaProfessores.isEmpty()) {
-            ProfessorDB db = new ProfessorDBToplink();
-            List list = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Professor> list = (List<Professor>) salvarAcumuladoDB.listaObjeto("Professor", true);
             for (int i = 0; i < list.size(); i++) {
                 listaProfessores.add(new SelectItem(new Integer(i),
-                        (String) ((Professor) list.get(i)).getProfessor().getNome(),
-                        Integer.toString(((Professor) list.get(i)).getId())));
+                        (String) (list.get(i).getProfessor().getNome()),
+                        Integer.toString(list.get(i).getId())));
 
             }
         }
@@ -244,12 +248,12 @@ public class TurmaJSFBean implements java.io.Serializable {
 
     public List<SelectItem> getListaComponenteCurricular() {
         if (listaComponenteCurricular.isEmpty()) {
-            ComponenteCurricularDB db = new ComponenteCurricularDBToplink();
-            List list = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<ComponenteCurricular> list = (List<ComponenteCurricular>) salvarAcumuladoDB.listaObjeto("ComponenteCurricular", true);
             for (int i = 0; i < list.size(); i++) {
                 listaComponenteCurricular.add(new SelectItem(new Integer(i),
-                        (String) ((ComponenteCurricular) list.get(i)).getDescricao(),
-                        Integer.toString(((ComponenteCurricular) list.get(i)).getId())));
+                        (String) (list.get(i).getDescricao()),
+                        Integer.toString(list.get(i).getId())));
             }
         }
         return listaComponenteCurricular;
@@ -380,8 +384,12 @@ public class TurmaJSFBean implements java.io.Serializable {
     }
 
     public String validaHoraInicio() {
-        String novaHora = "";
-        novaHora = DataHoje.validaHora(turma.getHoraInicio());
+        String novaHora;
+        if (!turma.getHoraInicio().equals("__:__")) {
+            novaHora = DataHoje.validaHora(turma.getHoraInicio());
+        } else {
+            novaHora = turma.getHoraInicio();
+        }
         if (novaHora.equals("")) {
             turma.setHoraInicio("__:__");
         } else {
@@ -392,27 +400,27 @@ public class TurmaJSFBean implements java.io.Serializable {
     }
 
     public String validaHoraTermino() {
-        String novaHora = "";
-        novaHora = DataHoje.validaHora(turma.getHoraTermino());
+        String novaHora;
+        if (!turma.getHoraTermino().equals("__:__")) {
+            novaHora = DataHoje.validaHora(turma.getHoraTermino());
+        } else {
+            novaHora = turma.getHoraTermino();
+        }
         if (novaHora.equals("")) {
             turma.setHoraTermino("__:__");
         } else {
             turma.setHoraTermino(novaHora);
         }
-        validaHorarios();
+        validaHorarios();            
         return "turma";
     }
 
     public String validaHorarios() {
-        int n1a = 0;
-        int n1b = 0;
-        int n2a = 0;
-        int n2b = 0;
         if (!turma.getHoraInicio().equals("__:__") && !turma.getHoraTermino().equals("__:__")) {
-            n1a = Integer.parseInt(turma.getHoraInicio().substring(0, 2));
-            n1b = Integer.parseInt(turma.getHoraInicio().substring(3, 4));
-            n2a = Integer.parseInt(turma.getHoraTermino().substring(0, 2));
-            n2b = Integer.parseInt(turma.getHoraTermino().substring(3, 4));
+            int n1a = Integer.parseInt(turma.getHoraInicio().substring(0, 2));
+            int n1b = Integer.parseInt(turma.getHoraInicio().substring(3, 4));
+            int n2a = Integer.parseInt(turma.getHoraTermino().substring(0, 2));
+            int n2b = Integer.parseInt(turma.getHoraTermino().substring(3, 4));
             if (n1a >= n2a) {
                 turma.setHoraTermino("__:__");
             }

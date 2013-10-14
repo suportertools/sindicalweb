@@ -65,9 +65,9 @@ import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletResponse;
 
-@ManagedBean(name = "matriculaEscolaBean")
+@ManagedBean
 @SessionScoped
-public class MatriculaEscolaJSFBean implements Serializable {
+public class MatriculaEscolaBean implements Serializable {
 
     private Filial filial = new Filial();
     private Fisica aluno = new Fisica();
@@ -207,7 +207,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
             String contratoCurso;
             String contratoDiaSemana = "";
             MatriculaContratoDB dB = new MatriculaContratoDBToplink();
-            if (porPesquisa.equals("matriculaIndividual")) {
+            if (tipoMatricula.equals("Individual")) {
                 matriculaContrato = dB.pesquisaCodigoServico(matriculaIndividual.getCurso().getId());
             } else {
                 matriculaContrato = dB.pesquisaCodigoServico(matriculaTurma.getTurma().getCursos().getId());
@@ -221,7 +221,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
             FisicaDB fisicaDB = new FisicaDBToplink();
             Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
             List listaDiaSemana = new ArrayList();
-            if (porPesquisa.equals("matriculaIndividual")) {
+            if (tipoMatricula.equals("Individual")) {
                 contratoCurso = matriculaIndividual.getCurso().getDescricao();
                 if (matriculaIndividual.isSegunda()) {
                     listaDiaSemana.add("Seg");
@@ -461,7 +461,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
             getMacFilial();
             String tipoMatriculaLog;
             if (sv.inserirObjeto(matriculaEscola)) {
-                if (porPesquisa.equals("matriculaTurma")) {
+                if (tipoMatricula.equals("Turma")) {
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
                     if (matriculaEscolaDB.existeMatriculaTurma(matriculaTurma)) {
                         sv.desfazerTransacao();
@@ -541,7 +541,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 return null;
             }
             if (sv.alterarObjeto(matriculaEscola)) {
-                if (porPesquisa.equals("matriculaTurma")) {
+                if (tipoMatricula.equals("Turma")) {
                     setDesabilitaIndividual(true);
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
                     if (!sv.alterarObjeto(matriculaTurma)) {
@@ -601,7 +601,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 listaMovimentos.clear();
                 desabilitaCamposMovimento = false;
                 db.abrirTransacao();
-                if (porPesquisa.equals("matriculaIndividual")) {
+                if (tipoMatricula.equals("Individual")) {
                     if (!db.deletarObjeto((MatriculaIndividual) db.pesquisaCodigo(matriculaIndividual.getId(), "MatriculaIndividual"))) {
                         db.desfazerTransacao();
                         msgConfirma = "Falha ao excluir essa matrícula!";
@@ -634,7 +634,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 String stringLogMatricula = "  ID Matricula: " + matriculaEscola.getId()
                         + " - Responsável: " + matriculaEscola.getResponsavel().getId() + " - " + matriculaEscola.getResponsavel().getNome()
                         + "       - Aluno: " + matriculaEscola.getAluno().getId() + " - " + matriculaEscola.getAluno().getNome() + " - ";
-                if (porPesquisa.equals("matriculaIndividual")) {
+                if (tipoMatricula.equals("Individual")) {
                     if (!db.deletarObjeto((MatriculaIndividual) db.pesquisaCodigo(matriculaIndividual.getId(), "MatriculaIndividual"))) {
                         db.desfazerTransacao();
                         msgConfirma = "Falha ao excluir essa matrícula!";
@@ -657,7 +657,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 matriculaEscola = (MatriculaEscola) db.pesquisaCodigo(matriculaEscola.getId(), "MatriculaEscola");
                 if (db.deletarObjeto(matriculaEscola)) {
                     db.comitarTransacao();
-                    if (porPesquisa.equals("matriculaIndividual")) {
+                    if (tipoMatricula.equals("Individual")) {
                         novoLog.novo("Excluir Matrícula Individual", stringLogMatricula);
                     } else {
                         novoLog.novo("Excluir Matrícula Turma", stringLogMatricula);
@@ -736,7 +736,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
                 } else {
                     idCondicaoPagto = 2;
                 }
-                if (porPesquisa.equals("matriculaTurma")) {
+                if (tipoMatricula.equals("Turma")) {
                     plano5 = matriculaTurma.getTurma().getCursos().getPlano5();
                     servicos = matriculaTurma.getTurma().getCursos();
                 } else {
@@ -1115,7 +1115,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
     public List<SelectItem> getListaVendedor() {
         if (listaVendedor.isEmpty()) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List list = sv.listaObjeto("Vendedor");
+            List list = sv.listaObjeto("Vendedor", true);
             for (int i = 0; i < list.size(); i++) {
                 listaVendedor.add(new SelectItem(new Integer(i),
                         (String) ((Vendedor) list.get(i)).getPessoa().getNome(),
@@ -1132,11 +1132,11 @@ public class MatriculaEscolaJSFBean implements Serializable {
     public List<SelectItem> getListaProfessor() {
         if (listaProfessor.isEmpty()) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List list = sv.listaObjeto("Professor");
+            List<Professor> list = (List<Professor>) sv.listaObjeto("Professor", true);
             for (int i = 0; i < list.size(); i++) {
                 listaProfessor.add(new SelectItem(new Integer(i),
-                        (String) ((Professor) list.get(i)).getProfessor().getNome(),
-                        Integer.toString(((Professor) list.get(i)).getId())));
+                        (String) (list.get(i).getProfessor().getNome()),
+                        Integer.toString(list.get(i).getId())));
             }
         }
         return listaProfessor;
@@ -1149,11 +1149,11 @@ public class MatriculaEscolaJSFBean implements Serializable {
     public List<SelectItem> getListaMidia() {
         if (listaMidia.isEmpty()) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List list = sv.listaObjeto("Midia");
+            List<Midia> list = (List<Midia>) sv.listaObjeto("Midia", true);
             for (int i = 0; i < list.size(); i++) {
                 listaMidia.add(new SelectItem(new Integer(i),
-                        (String) ((Midia) list.get(i)).getDescricao(),
-                        Integer.toString(((Midia) list.get(i)).getId())));
+                        (String) (list.get(i).getDescricao()),
+                        Integer.toString(list.get(i).getId())));
             }
         }
         return listaMidia;
@@ -1482,10 +1482,12 @@ public class MatriculaEscolaJSFBean implements Serializable {
             }
             setValorString(matriculaEscola.getValorTotalString());
             if (porPesquisa.equals("matriculaIndividual")) {
+                tipoMatricula = "Individual";
                 matriculaIndividual = matriculaEscolaDB.pesquisaCodigoMIndividual(matriculaEscola.getId());
                 desabilitaTurma = true;
                 desabilitaIndividual = false;
             } else {
+                tipoMatricula = "Turma";
                 matriculaTurma = matriculaEscolaDB.pesquisaCodigoMTurma(matriculaEscola.getId());
                 desabilitaTurma = false;
                 desabilitaIndividual = true;
@@ -1559,7 +1561,7 @@ public class MatriculaEscolaJSFBean implements Serializable {
     }
 
     public void pegarIdServico() {
-        if (porPesquisa.equals("matriculaIndividual")) {
+        if (tipoMatricula.equals("Individual")) {
             if (listaIndividual.isEmpty()) {
                 getListaIndividual();
             }
