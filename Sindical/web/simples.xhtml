@@ -17,7 +17,7 @@
             <h:form id="form_cadastro_simples">
                 <center>
                     <div class="headerPanel">
-                        <h:outputText value="Cadastro #{simplesBean.sessoes[2]}" styleClass="fontePanel" style="width: 100%;"/>
+                        <h:outputText value="Cadastro #{simplesBean.sessoes[1]}" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <h:panelGrid columns="5">
                         <h:outputLabel value="Pesquisar: " styleClass="fontePadrao" for="idPesquisar"/>
@@ -54,7 +54,8 @@
                 </center>
                 <rich:popupPanel id="i_painel_novo" modal="true" resizeable="true" domElementAttachment="form">
                     <f:facet name="header">
-                        <h:outputText value="Novo cadastro"/>
+                        <h:outputText value="Novo cadastro - Rotina: #{simplesBean.sessoes[1]}"/>
+                            <h:column><h:outputLabel value="" styleClass="fontePadrao"/></h:column>
                     </f:facet>
                     <f:facet name="controls">
                         <a4j:commandLink oncomplete="#{rich:component('form_cadastro_simples:i_painel_novo')}.hide(); return false;" action="#{simplesBean.novo}" status="i_status" render="i_painel_novo_cadastro, tbl">
@@ -63,8 +64,6 @@
                     </f:facet>
                     <center>
                         <h:panelGrid id="id_painel_novo_cadastro" columns="2">
-                            <h:column><h:outputLabel value="Rotina: " styleClass="fontePadrao"/></h:column>
-                            <h:column><h:outputLabel value="#{simplesBean.sessoes[1]}" styleClass="fontePadraoNegrito"/></h:column>
                             <h:column><h:outputLabel value="Descrição: " styleClass="fontePadrao" for="iDescricao"/></h:column>
                             <h:column>
                                 <h:panelGrid columns="3">
