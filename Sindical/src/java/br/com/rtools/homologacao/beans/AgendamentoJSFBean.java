@@ -803,8 +803,8 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
             }
         }
         // -------------------------------------------------------------
-
-        switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
+        int idStatusI = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        switch (idStatusI) {
             case 1: {
                 pessoaEmpresa.setFisica(fisica);
                 pessoaEmpresa.setJuridica(juridica);
@@ -851,14 +851,15 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
                 return null;
             }
         }
-
         if (agendamento.getId() == -1) {
-            if (!dba.existeHorarioDisponivel(agendamento.getDtData(), agendamento.getHorarios())) {
-                sv.desfazerTransacao();
-                listaHorarioTransferencia.clear();
-                msgConfirma = "Não existe mais disponibilidade para o horário agendado!";
-                ocultarHorarioAlternativo = false;
-                return null;
+            if (idStatusI == 1) {
+                if (!dba.existeHorarioDisponivel(agendamento.getDtData(), agendamento.getHorarios())) {
+                    sv.desfazerTransacao();
+                    listaHorarioTransferencia.clear();
+                    msgConfirma = "Não existe mais disponibilidade para o horário agendado!";
+                    ocultarHorarioAlternativo = false;
+                    return null;
+                }
             }
             agendamento.setFilial(macFilial.getFilial());
             agendamento.setAgendador((Usuario) GenericaSessao.getObject("sessaoUsuario")); // USUARIO SESSAO
