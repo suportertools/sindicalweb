@@ -4,8 +4,6 @@ import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.db.HorariosDB;
 import br.com.rtools.homologacao.db.HorariosDBToplink;
 import br.com.rtools.pessoa.Filial;
-//import br.com.rtools.pessoa.db.FilialDB;
-//import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -21,6 +19,7 @@ import javax.faces.model.SelectItem;
 public class HorariosBean {
 
     private Horarios horarios = new Horarios();
+    private Horarios h = new Horarios();
     private String msgConfirma = "";
     private String horaInicial = "";
     private String horaFinal = "";
@@ -169,6 +168,7 @@ public class HorariosBean {
                 }
             }
             listaH.clear();
+            h = new Horarios();
         }
         return null;
     }
@@ -181,19 +181,26 @@ public class HorariosBean {
         }
         return null;
     }
-
-    public String editar(Horarios h) {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        h.setAtivo(true);
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.alterarObjeto(h)) {
-            salvarAcumuladoDB.comitarTransacao();
-        } else {
-            salvarAcumuladoDB.desfazerTransacao();
+    
+    public void reativar() {
+        if (h.getId() != -1) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            h.setAtivo(true);
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.alterarObjeto(h)) {
+                salvarAcumuladoDB.comitarTransacao();
+                msgConfirma = "Horário reativado";
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
+                msgConfirma = "Erro ao reátiva esse horário!";
+            }
+            listaH.clear();
         }
-        listaH.clear();
-        msgConfirma = "Horário reativado!";
-        return null;
+        h = new Horarios();
+    }
+
+    public void editar(Horarios h1) {
+        h = h1;
     }
 
     public String editarQuantidade(Horarios h) {
@@ -233,6 +240,7 @@ public class HorariosBean {
             }
             listaH.clear();
         }
+        h = new Horarios();
         return null;
     }
 
@@ -521,5 +529,13 @@ public class HorariosBean {
 
     public void setCor7(String cor7) {
         this.cor7 = cor7;
+    }
+
+    public Horarios getH() {
+        return h;
+    }
+
+    public void setH(Horarios h) {
+        this.h = h;
     }
 }
