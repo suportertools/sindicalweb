@@ -38,6 +38,7 @@ public class SimplesBean {
     private Rotina rotina;
     private Object objeto;
     private List<SelectItem> listaRotinaCombo;
+    private List listImports = new ArrayList();
     private List<Rotina> listaRotina;
     private List lista;
     private String nomeRotina;
@@ -247,7 +248,28 @@ public class SimplesBean {
         this.sessoes = sessoes;
     }
 
-    public void converteObjeto(String tipo) {
+    public void converteObjeto(String tipo)  {
+//        for (int i = 0; i < getListImports().size(); i++) {
+//           try {
+//                String o = getListImports().get(i).toString()+"."+sessoes[0];
+//                Class cls = Class.forName(o);
+//                Class partypes[] = new Class[2];
+//                Method m[] = cls.getDeclaredMethods();
+//                partypes[0] = (Class) m[0].getGenericReturnType();
+//                partypes[1] = (Class) m[2].getGenericReturnType();
+//                Constructor ct = cls.getConstructor(partypes);
+//                Object arglist[] = new Object[2];
+//                arglist[0] = -1;
+//                arglist[1] = descricao;
+//                objeto = ct.newInstance(arglist);
+//                if (objeto != null) {
+//                    break;
+//                }
+//            } catch (Exception e) {
+//                 return null;
+//            }
+//        }
+        
         if (tipo.equals("Bairro")) {
             objeto = (Bairro) new Bairro(id, descricao);
         } else if (tipo.equals("Logradouro")) {
@@ -343,7 +365,7 @@ public class SimplesBean {
         }
     }
 
-    public void editaObjeto(Object obj) {
+    public void editaObjeto(Object obj) {    
         if (obj.getClass().getSimpleName().equals("Bairro")) {
             descricao = ((Bairro) obj).getDescricao();
             id = ((Bairro) objeto).getId();
@@ -531,7 +553,7 @@ public class SimplesBean {
     public void setPesquisaLista(String pesquisaLista) {
         this.pesquisaLista = pesquisaLista;
     }
-}
+    }
 //                Class cls = Class.forName(sessoes[0]);
 //
 //                Class partypes[] = new Class[2];

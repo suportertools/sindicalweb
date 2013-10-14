@@ -4,18 +4,21 @@ import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.db.HorariosDB;
 import br.com.rtools.homologacao.db.HorariosDBToplink;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+//import br.com.rtools.pessoa.db.FilialDB;
+//import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-// import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class HorariosJSFBean {
+@ManagedBean
+@SessionScoped
+public class HorariosBean {
 
     private Horarios horarios = new Horarios();
     private String msgConfirma = "";
@@ -264,8 +267,8 @@ public class HorariosJSFBean {
 
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
-            FilialDB db = new FilialDBToplink();
-            List<Filial> select = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Filial> select = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             for (int i = 0; i < select.size(); i++) {
                 listaFiliais.add(new SelectItem(new Integer(i),
                         select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),

@@ -177,8 +177,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             qry.setParameter("data", data);
             qry.setParameter("idEmpresa", idEmpresa);
             qry.setParameter("idFilial", id_filial);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
