@@ -2,21 +2,34 @@
 
 -- Módulo Escola (9)
 
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 1,  'Nome do aluno',         '$aluno',       '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 1);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 2,  'CPF do Aluno',          '$cpfAluno',    '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 2);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 3,  'RG do aluno',           '$rgAluno',     '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 3);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 4,  'Nome do tesponsável',   '$responsavel', '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 4);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 5,  'CPF do responsável',    '$cpfResponsavel', '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 5);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 6,  'RG do tesponsável',     '$rgResponsavel',  '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 6);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 7,  'Curso',                 '$curso',          '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 7);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 8,  'Dia da semana',         '$diaSemana',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 8);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 9,  'Data inicial',          '$dataInicial', '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 9);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 10, 'Data final',            '$dataFinal',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 10);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 11, 'Data por extenso',      '$dataExtenso', '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 11);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 12, 'Valor da parcela',      '$valorParcela','', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 12);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 13, 'Número de Parcelas',    '$parcelas',    '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 13);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 14, 'Dia Vencimento',        '$diaVencimento',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 14);
-INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, ds_observacao, id_modulo) SELECT 15, 'Valor até o vencimento',' $valorAteVencimento',   '', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 15);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 1,  'Nome do aluno',         '$aluno',               8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 1);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 2,  'CPF do Aluno',          '$cpfAluno',            8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 2);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 3,  'RG do aluno',           '$rgAluno',             8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 3);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 4,  'Nome do responsável',   '$responsavel',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 4);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 5,  'CPF do responsável',    '$cpfResponsavel',      8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 5);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 6,  'RG do responsável',     '$rgResponsavel',       8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 6);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 7,  'Curso',                 '$curso',               8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 7);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 8,  'Dia da semana',         '$diaSemana',           8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 8);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 9,  'Data inicial',          '$dataInicial',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 9);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 10, 'Data final',            '$dataFinal',           8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 10);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 11, 'Data por extenso',      '$dataExtenso',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 11);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 12, 'Valor da parcela',      '$valorParcela',        8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 12);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 13, 'Número de Parcelas',    '$parcelas',            8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 13);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 14, 'Dia Vencimento',        '$diaVencimento',       8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 14);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 15, 'Valor até o vencimento','$valorAteVencimento',  8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 15);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 16, 'Hora inicial',          '$horaInicial',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 16);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 17, 'Hora final',            '$horaFinal',           8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 17);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 18, 'Valor total',           '$valorTotal',          8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 18);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 19, 'Taxa',                  '$taxa',                8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 19);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 20, 'Matrícula',             '$matricula',           8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 20);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 21, 'Ano',                   '$ano',                 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 21);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 22, 'Endereço Aluno',        '$enderecoAluno',       8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 22);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 23, 'Bairro Aluno',          '$bairroAluno',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 23);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 24, 'Cidade Aluno',          '$cidadeAluno',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 24);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 25, 'Estado Aluno',          '$estadoAluno',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 25);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 26, 'CEP Aluno',             '$cepAluno',            8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 26);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 27, 'E-mail 01 Aluno',       '$email1Aluno',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 27);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 28, 'Nascimento Aluno',      '$alunoDataNascimento', 8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 28);
 SELECT setval('matr_contrato_campos_id_seq', max(id)) FROM matr_contrato_campos;
 
 -- age_tipo_telefone;

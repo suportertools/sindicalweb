@@ -154,7 +154,7 @@ ALTER TABLE fin_servico_valor ALTER COLUMN nr_taxa SET NOT NULL;
 -- *****************************************************************************
 
 -- ESC_TURMA 
--- update: 2013-09-16
+-- update: 2013-10-15
 -- edited by: Bruno Vieira da Silva
 
 ALTER TABLE esc_turma ADD COLUMN id_filial integer;
@@ -163,6 +163,10 @@ ALTER TABLE esc_turma
      REFERENCES pes_filial (id) MATCH SIMPLE      
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
+
+ALTER TABLE esc_turma ADD COLUMN nr_sala character varying(2);
+ALTER TABLE esc_turma ADD COLUMN nr_quantidade integer;
+ALTER TABLE esc_turma ADD COLUMN ds_descricao character varying(255);
 
 -- MATR_ESCOLA
 -- update: 2013-09-17
