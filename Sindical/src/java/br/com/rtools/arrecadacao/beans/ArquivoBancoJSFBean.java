@@ -22,7 +22,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.retornos.*;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.*;
 import java.util.*;
@@ -160,7 +160,7 @@ public class ArquivoBancoJSFBean {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         Boleto boleto = new Boleto();
         try {
-            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos");
+            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
             File fileA = new File(patch + "/downloads");
             if (!fileA.exists()) {
                 fileA.mkdir();
@@ -171,7 +171,7 @@ public class ArquivoBancoJSFBean {
             }
             RemessaBanco rb = new RemessaBanco();
             FacesContext context = FacesContext.getCurrentInstance();
-            String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/remessa/");
+            String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/remessa/");
             String destino = caminho + "/" + DataHoje.ArrayDataHoje()[2] + "-" + DataHoje.ArrayDataHoje()[1] + "-" + DataHoje.ArrayDataHoje()[0];
             File flDes = new File(destino); // 0 DIA, 1 MES, 2 ANO
             flDes.mkdir();
@@ -490,7 +490,7 @@ public class ArquivoBancoJSFBean {
     public boolean baixarArquivosGerados() {
         try {
 
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/remessa/");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/remessa/");
             caminho += "/" + DataHoje.ArrayDataHoje()[2] + "-" + DataHoje.ArrayDataHoje()[1] + "-" + DataHoje.ArrayDataHoje()[0];
 
             Zip zip = new Zip();
@@ -524,7 +524,7 @@ public class ArquivoBancoJSFBean {
     public boolean limparDiretorio(String caminho) {
         try {
             if (caminho.isEmpty()) {
-                caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/remessa/");
+                caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/remessa/");
                 caminho += "/" + DataHoje.ArrayDataHoje()[2] + "-" + DataHoje.ArrayDataHoje()[1] + "-" + DataHoje.ArrayDataHoje()[0];
             }
             File fl = new File(caminho);
@@ -642,7 +642,7 @@ public class ArquivoBancoJSFBean {
     public List getListaArquivoRemessa() {
         GenericaQuery generica = new GenericaQuery();
         FacesContext context = FacesContext.getCurrentInstance();
-        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/remessas/"));
+        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/remessas/"));
         File listFile[] = files.listFiles();
         String[] parametros = new String[6];
         listaArquivoRemessa.clear();
@@ -1169,7 +1169,7 @@ public class ArquivoBancoJSFBean {
         String caminho = (String) objeto[0];
         ContaCobranca scc = (ContaCobranca) objeto[1];
 
-        String caminhoValida = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/pendentes");
+        String caminhoValida = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes");
         if (!outros) {
             try {
                 File fl = new File(caminhoValida);
@@ -1208,11 +1208,11 @@ public class ArquivoBancoJSFBean {
             return true;
         } else {
             try {
-                File flCriado = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/"));
+                File flCriado = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/"));
                 flCriado.mkdir();
 
-                File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/ret.ret"));
-                File fl2 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/padrao/ARQUIVOBAIXA.ret"));
+                File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/ret.ret"));
+                File fl2 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/padrao/ARQUIVOBAIXA.ret"));
 
                 FileInputStream in = new FileInputStream(fl);
                 FileOutputStream out = new FileOutputStream(fl2.getPath());
@@ -1237,7 +1237,7 @@ public class ArquivoBancoJSFBean {
 
     public Object[] caminhoPendente() {
         Object obj[] = new Object[2];
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/pendentes");
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes");
         obj[0] = caminho;
         obj[1] = null;
         return obj;
@@ -1246,7 +1246,7 @@ public class ArquivoBancoJSFBean {
     public Object[] caminhoServico() {
         Object obj[] = new Object[2];
         if (contaCobranca.getId() != -1) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
             // LAYOUT 2 SINDICAL
             if (contaCobranca.getLayout().getId() == 2) {
                 //caminho = caminho +"/"+ contaCobranca.getApelido()+"_"+contaCobranca.getSicasSindical();
@@ -1264,7 +1264,7 @@ public class ArquivoBancoJSFBean {
     public Object[] caminhoServicoPendente() {
         Object obj[] = new Object[2];
         if (contaCobranca.getId() != -1) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
             // LAYOUT 2 SINDICAL
             if (contaCobranca.getLayout().getId() == 2) {
                 //caminho = caminho +"/"+ contaCobranca.getApelido()+"_"+contaCobranca.getSicasSindical();

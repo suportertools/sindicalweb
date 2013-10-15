@@ -14,12 +14,13 @@ import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
-import br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -28,9 +29,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 
-@ManagedBean(name = "fisicaBean")
+@ManagedBean
 @SessionScoped
-public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
+public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializable {
 
     private Fisica fisica;
     private PessoaEndereco pessoaEndereco;
@@ -76,7 +77,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     private int idIndexFisica;
     private int idIndexPessoaEmp;
 
-    public FisicaJSFBean() {
+    public FisicaBean() {
         fisica = new Fisica();
         pessoaEndereco = new PessoaEndereco();
         pessoaProfissao = new PessoaProfissao();
@@ -331,33 +332,37 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
 
     public void limpaFoto() {
         FacesContext context = FacesContext.getCurrentInstance();
-        File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
+        File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
         if (fExiste.exists()) {
             fExiste.delete();
         }
     }
 
     public String novo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
         return "pessoaFisica";
     }
 
     public String novoOK() {
         if (fisica.getId() == -1) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
         }
         return "pessoaFisica";
     }
 
     public void salvarEndereco() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         List endPorPessoa = getPesquisaEndPorPessoa();
         int i = 0;
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (fisica.getId() != -1) {
             if (endPorPessoa.isEmpty()) {
                 while (i < listaEnd.size()) {
                     pessoaEndereco = (PessoaEndereco) listaEnd.get(i);
-                    if (!db.insert(pessoaEndereco)) {
+                    salvarAcumuladoDB.abrirTransacao();
+                    if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
+                        salvarAcumuladoDB.comitarTransacao();
+                    } else {
+                        salvarAcumuladoDB.desfazerTransacao();
                         msgConfirma = "Erro ao Salvar Endereço!";
                     }
                     pessoaEndereco = new PessoaEndereco();
@@ -366,21 +371,21 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             } else {
                 if (endResidencial) {
                     for (int o = 0; o < listaEnd.size(); o++) {
-                        db.getEntityManager().getTransaction().begin();
-                        if (db.update((PessoaEndereco) listaEnd.get(o))) {
-                            db.getEntityManager().getTransaction().commit();
+                        salvarAcumuladoDB.abrirTransacao();
+                        if (salvarAcumuladoDB.alterarObjeto((PessoaEndereco) listaEnd.get(o))) {
+                            salvarAcumuladoDB.comitarTransacao();
                         } else {
-                            db.getEntityManager().getTransaction().rollback();
+                            salvarAcumuladoDB.desfazerTransacao();
                         }
                     }
                     endResidencial = false;
                 } else {
                     if (pessoaEndereco.getId() != -1) {
-                        db.getEntityManager().getTransaction().begin();
-                        if (db.update(pessoaEndereco)) {
-                            db.getEntityManager().getTransaction().commit();
+                        salvarAcumuladoDB.abrirTransacao();
+                        if (salvarAcumuladoDB.alterarObjeto(pessoaEndereco)) {
+                            salvarAcumuladoDB.comitarTransacao();
                         } else {
-                            db.getEntityManager().getTransaction().rollback();
+                            salvarAcumuladoDB.desfazerTransacao();
                         }
                     }
                 }
@@ -479,9 +484,9 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             msgConfirma = "Cadastro Excluido com sucesso!";
             sv.comitarTransacao();
             logs.novo("Excluido", "ID: " + fisica.getId() + " - Pessoa: " + fisica.getPessoa().getId() + " - Nascimento: " + fisica.getNascimento() + " - Nome: " + fisica.getPessoa().getNome() + " - CPF: " + fisica.getPessoa().getDocumento() + " - RG: " + fisica.getRg());
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
             //((FisicaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).fisica = new Fisica();
-            ((FisicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setMsgConfirma("Cadastro Excluido com sucesso!");
+            ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setMsgConfirma("Cadastro Excluido com sucesso!");
             //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaBean");
         } else {
             msgConfirma = "Pesquise uma pessoa física para ser excluída!";
@@ -708,11 +713,8 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     }
 
     public List getListaPessoaEndereco() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        List list = db.pesquisaTodos();
-        if (list == null) {
-            return new ArrayList();
-        }
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List list = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
         return list;
     }
 
@@ -760,15 +762,14 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
         }
     }
 
-    public String excluirPessoaEndereco() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+    public String excluirPessoaEndereco() {        
         if (pessoaEndereco.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            pessoaEndereco = db.pesquisaCodigo(pessoaEndereco.getId());
-            if (db.delete(pessoaEndereco)) {
-                db.getEntityManager().getTransaction().commit();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaCodigo(pessoaEndereco.getId(), "PessoaEndereco");
+            if (salvarAcumuladoDB.deletarObjeto(pessoaEndereco)) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         pessoaEndereco = new PessoaEndereco();
@@ -1022,8 +1023,8 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
 
     public String getPessoaImagem() {
         FacesContext context = FacesContext.getCurrentInstance();
-        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/"));
-        File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
+        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
+        File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
         File listFile[] = files.listFiles();
         String nome = "";
         String caminho;
@@ -1052,7 +1053,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
                         nome = n;
                         fotoTemp = false;
                         temFoto = true;
-                        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+                        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
                         File fl = new File(caminho);
                         fl.delete();
                         break;
@@ -1071,8 +1072,8 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
     public void salvarImagem() {
         FacesContext context = FacesContext.getCurrentInstance();
         if (fisica.getId() != -1) {
-            String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
-            String caminho2 = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+            String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
+            String caminho2 = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
             try {
                 File fl = new File(caminho);
                 File item = new File(caminho2);
@@ -1123,13 +1124,13 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
 //    }
     public void excluirImagemSozinha() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
         try {
             File fl = new File(caminho);
             if (fl.exists()) {
                 fl.delete();
             } else if (fisica.getId() != -1) {
-                caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
+                caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
                 fl = new File(caminho);
                 fl.delete();
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -1145,7 +1146,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
 
     public void excluirImagem() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
         try {
             File fl = new File(caminho);
             if (fl.exists()) {
@@ -1204,7 +1205,7 @@ public class FisicaJSFBean extends PesquisarProfissaoJSFBean {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaEmpresaPesquisa", pessoaEmpresa);
 
         }
-        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
     }
 
     public String hojeRecadastro() {

@@ -221,7 +221,10 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            s.matricula as matricula,                                  " + // 10 MATRICULA
                 "            s.nr_via as via,                                           " + // 11 VIA
                 "            s.id_socio as codsocio,                                    " + // 12 CÓDIGO SÓCIO
-                "            to_char(s.filiacao, 'DD/MM/YYYY') as filiacao              " + // 13 FILIAÇÃO
+                "            to_char(s.filiacao, 'DD/MM/YYYY') as filiacao,             " + // 13 FILIAÇÃO
+                "            p.profissao AS cargo,                                      " + // 14 PROFISSÃO
+                "            p.cpf,                                                     " + // 15 CPF
+                "            p.ds_rg AS rg                                              " + // 16 RG                   
                 "       FROM pes_pessoa_vw AS p                                         "
                 + " INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo                "
                 + "  LEFT JOIN soc_carteirinha AS c on c.id_socio = s.id_socio            "
@@ -253,7 +256,10 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            s.matricula AS matricula,                                  " + // 10 MATRICULA
                 "            s.nr_via AS via,                                           " + // 11 VIA
                 "            s.id_socio AS codsocio,                                    " + // 12 CÓDIGO SÓCIO
-                "            to_char(s.filiacao, 'DD/MM/YYYY') as filiacao              " + // 13 FILIAÇÃO
+                "            to_char(s.filiacao, 'DD/MM/YYYY') as filiacao,             " + // 13 FILIAÇÃO
+                "            p.profissao AS cargo,                                      " + // 14 PROFISSÃO
+                "            p.cpf,                                                     " + // 15 CPF
+                "            p.ds_rg AS rg                                              " + // 16 RG                   
                 "       FROM pes_pessoa_vw AS p                                         "
                 + " INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo                "
                 + " INNER JOIN soc_carteirinha as c on c.id_socio = s.id_socio            "

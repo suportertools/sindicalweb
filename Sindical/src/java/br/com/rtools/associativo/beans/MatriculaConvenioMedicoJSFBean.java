@@ -13,7 +13,7 @@ import javax.faces.context.FacesContext;
 public class MatriculaConvenioMedicoJSFBean {
 
     private MatriculaConvenioMedico matriculaConvenioMedico;
-    private ServicoPessoaJSFBean servicoPessoaJSFBean = null;
+    private ServicoPessoaBean servicoPessoaJSFBean = null;
     private String msgConfirma;
     private String descPesquisa;
     private String porPesquisa;
@@ -22,8 +22,8 @@ public class MatriculaConvenioMedicoJSFBean {
     private List<MatriculaConvenioMedico> listaConvenio;
 
     public MatriculaConvenioMedicoJSFBean() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaJSFBean());
-        servicoPessoaJSFBean = ((ServicoPessoaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaBean());
+        servicoPessoaJSFBean = ((ServicoPessoaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
         servicoPessoaJSFBean.setRenderServicos(true);
         matriculaConvenioMedico = new MatriculaConvenioMedico();
         msgConfirma = "";

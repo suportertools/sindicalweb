@@ -1,6 +1,7 @@
 package br.com.rtools.principal;
 
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -47,8 +48,8 @@ public class DB {
 
     public EntityManager getEntityManager() {
         if (entidade == null) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("conexao") == null) {
-                String cliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
+            if (!GenericaSessao.exists("conexao")) {
+                String cliente = (String) GenericaSessao.getString("sessaoCliente");
                 DataObject config = servidor(cliente);
                 try {
                     Map properties = new HashMap();
@@ -62,13 +63,12 @@ public class DB {
                     EntityManagerFactory emf = Persistence.createEntityManagerFactory(config.getArgumento1().toString(), properties);
                     //emf = Persistence.createEntityManagerFactory(persist, properties);
                     entidade = emf.createEntityManager();
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("conexao", emf);
+                    GenericaSessao.put("conexao", emf);
                 } catch (Exception e) {
                     return null;
                 }
             } else {
-                EntityManagerFactory emf = null;
-                emf = (EntityManagerFactory) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("conexao");
+                EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
                 entidade = emf.createEntityManager();
             }
         }

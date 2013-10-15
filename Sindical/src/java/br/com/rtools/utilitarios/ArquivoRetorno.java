@@ -10,7 +10,7 @@ import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +60,7 @@ public abstract class ArquivoRetorno {
         if (this.pendentes) {
             path = caminho + "/pendentes";
         } else {
-            path = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/pendentes/");
+            path = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes/");
         }
 
         boolean moverArquivo = true;

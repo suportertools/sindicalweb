@@ -27,7 +27,7 @@ import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
@@ -177,7 +177,7 @@ public class AcordoJSFBean {
             for (int i = 0; i < listaImp.size(); i++) {
                 ImprimirBoleto imp = new ImprimirBoleto();
                 imp.imprimirBoleto(listaImp, listaValores, listaVencimentos, imprimeVerso);
-                String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos");
+                String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
                 if (!new File(patch + "/downloads").exists()) {
                     File file = new File(patch + "/downloads");
                     file.mkdir();
@@ -186,7 +186,7 @@ public class AcordoJSFBean {
                     File file = new File(patch + "/downloads/boletos");
                     file.mkdir();
                 }
-                String nome = imp.criarLink(listaImp.get(i).getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+                String nome = imp.criarLink(listaImp.get(i).getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
 
                 reg = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
                 List<Pessoa> p = new ArrayList();
@@ -197,7 +197,7 @@ public class AcordoJSFBean {
                     ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                             p,
                             " <h5>Visualize seu boleto clicando no link abaixo</5><br /><br />"
-                            + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
+                            + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
                             new ArrayList(),
                             "Envio de Boleto");
                 } else {

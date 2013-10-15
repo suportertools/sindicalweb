@@ -1,6 +1,7 @@
 package br.com.rtools.seguranca;
 
 import br.com.rtools.pessoa.Pessoa;
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +10,7 @@ import javax.persistence.*;
     @NamedQuery(name = "Usuario.pesquisaID",    query = "SELECT U FROM Usuario U WHERE U.id = :pid "), 
     @NamedQuery(name = "Usuario.findAll",       query = "SELECT U FROM Usuario U ORDER BY U.pessoa.nome ASC, U.login ASC ")
 })
-public class Usuario implements java.io.Serializable {
+public class Usuario implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

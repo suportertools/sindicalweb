@@ -23,7 +23,7 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioSociosDB;
 import br.com.rtools.relatorios.db.RelatorioSociosDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -464,7 +464,7 @@ public class RelatorioSociosJSFBean {
             String nomeDownload = relatorios.getNome() + "_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
 
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
             sa.salvaNaPasta(pathPasta);
 
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());

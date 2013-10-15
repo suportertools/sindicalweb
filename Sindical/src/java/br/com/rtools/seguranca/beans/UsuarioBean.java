@@ -7,14 +7,19 @@ import br.com.rtools.seguranca.db.*;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
-public class UsuarioJSFBean {
+@ManagedBean
+@SessionScoped
+public class UsuarioBean implements Serializable {
 
     private Usuario usuario = new Usuario();
     private List<PermissaoUsuario> listaPermissaoUsuario = new ArrayList();
@@ -45,7 +50,7 @@ public class UsuarioJSFBean {
     private int idNivel;
     private int idRotina = 0;
 
-    public UsuarioJSFBean() {
+    public UsuarioBean() {
         listaUsuario = new ArrayList<Usuario>();
     }
 

@@ -8,7 +8,7 @@ import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
 import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Moeda;
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ public class BaixaBoletoJSFBean {
             msgConfirma = "Lista vazia";
             return null;
         }
-        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
     }
 
     public List getListaBoletos() {

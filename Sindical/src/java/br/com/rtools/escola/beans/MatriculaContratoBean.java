@@ -11,6 +11,8 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -46,7 +48,7 @@ public class MatriculaContratoBean implements java.io.Serializable {
     private boolean desabilitaObservacao = false;
 
     public boolean isDesabilitaObservacao() {
-        if (((Usuario) (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"))).getId() == 1) {
+        if (((Usuario) (GenericaSessao.getObject("sessaoUsuario"))).getId() == 1) {
             desabilitaObservacao = true;
         } else {
             desabilitaObservacao = false;
@@ -84,8 +86,8 @@ public class MatriculaContratoBean implements java.io.Serializable {
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (matriculaContrato.getId() == -1) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
-                int idMod = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
+            if (GenericaSessao.exists("idModulo")) {
+                int idMod = (Integer) GenericaSessao.getInteger("idModulo");
                 if (idMod != 0) {
                     modulo = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
                 }
@@ -146,12 +148,12 @@ public class MatriculaContratoBean implements java.io.Serializable {
     public String editar(MatriculaContrato mc) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         setMatriculaContrato((MatriculaContrato) dB.pesquisaCodigo(mc.getId(), "MatriculaContrato"));
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaContratoPesquisa", matriculaContrato);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
-            return "matriculaContrato";
+        GenericaSessao.put("matriculaContratoPesquisa", matriculaContrato);
+        GenericaSessao.put("linkClicado", true);
+        if (GenericaSessao.exists("urlRetorno")) {
+            return (String) GenericaSessao.getString("urlRetorno");
         } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            return "matriculaContrato";
         }
     }
 
@@ -241,9 +243,8 @@ public class MatriculaContratoBean implements java.io.Serializable {
     }
 
     public MatriculaContrato getMatriculaContrato() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaContratoPesquisa") != null) {
-            matriculaContrato = (MatriculaContrato) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaContratoPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("matriculaContratoPesquisa");
+        if (GenericaSessao.exists("matriculaContratoPesquisa")) {
+            matriculaContrato = (MatriculaContrato) GenericaSessao.getObject("matriculaContratoPesquisa", true);
         }
         return matriculaContrato;
     }
@@ -267,7 +268,7 @@ public class MatriculaContratoBean implements java.io.Serializable {
             int idServico = Integer.parseInt(getListaServicos().get(idServicos).getDescription());
             MatriculaContratoDB contratoDB = new MatriculaContratoDBToplink();
             if (contratoDB.validaMatriculaContratoServico(matriculaContrato.getId(), idServico)) {
-                msgServico = "Contrato já possui esse serviço.";
+                GenericaMensagem.warn("Validação", "Contrato já possui esse serviço!");
                 return;
             }
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -276,11 +277,11 @@ public class MatriculaContratoBean implements java.io.Serializable {
             matriculaContratoServico.setContrato(matriculaContrato);
             if (salvarAcumuladoDB.inserirObjeto(matriculaContratoServico)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msgServico = "Serviço adicionado com sucesso.";
+                GenericaMensagem.info("Sucesso", "Serviço adicionado");
                 matriculaContratoServico = new MatriculaContratoServico();
                 listaMatriculaContratoServico.clear();
             } else {
-                msgServico = "Erro ao adicionar este serviço!";
+                GenericaMensagem.warn("Erro", "Ao adicionar este serviço!");
                 salvarAcumuladoDB.desfazerTransacao();
             }
         }
@@ -297,12 +298,12 @@ public class MatriculaContratoBean implements java.io.Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(matriculaContratoServico)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msgServico = "Serviço removido com sucesso.";
+                GenericaMensagem.info("Sucesso", "Serviço removido");
                 listaMatriculaContratoServico.clear();
                 matriculaContratoServico = new MatriculaContratoServico();
             } else {
-                msgServico = "Erro ao remover este serviço!";
                 salvarAcumuladoDB.desfazerTransacao();
+                GenericaMensagem.warn("Erro", "Ao remover!");
             }
         }
     }
@@ -388,8 +389,8 @@ public class MatriculaContratoBean implements java.io.Serializable {
     }
 
     public Modulo getModulo() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
-            int idMod = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
+        if (GenericaSessao.exists("idModulo")) {
+            int idMod = (Integer) GenericaSessao.getInteger("idModulo");
             if (idMod != 0) {
                 SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
                 modulo = (Modulo) acumuladoDB.pesquisaCodigo(idMod, "Modulo");
@@ -422,8 +423,8 @@ public class MatriculaContratoBean implements java.io.Serializable {
         if (listaMatriculaContratoCampos.isEmpty()) {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             if (tipoLista.equals("this")) {
-                if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
-                    int idMod = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo");
+                if (GenericaSessao.exists("idModulo")) {
+                    int idMod = (Integer) GenericaSessao.getInteger("idModulo");
                     if (idMod != 0) {
                         listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod);
                     }

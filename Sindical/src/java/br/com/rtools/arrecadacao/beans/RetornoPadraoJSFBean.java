@@ -8,7 +8,7 @@ import br.com.rtools.retornos.CaixaFederal;
 import br.com.rtools.retornos.Itau;
 import br.com.rtools.retornos.Real;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.ArquivoRetorno;
 import br.com.rtools.utilitarios.DataObject;
 import java.io.BufferedWriter;
@@ -49,11 +49,11 @@ public class RetornoPadraoJSFBean {
             ArquivoRetorno arquivoRetorno = null;
 
             msgConfirma = "";
-            String caminhoPendente = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/pendentes/");
+            String caminhoPendente = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes/");
 
             for (int i = 0; i < listaCaminho.size(); i++) {
                 if ((Boolean) listaCaminho.get(i).getArgumento3()) {
-                    String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno");
+                    String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
                     cc = ((ContaCobranca) listaCaminho.get(i).getArgumento2());
                     if (cc.getLayout().getId() == 2) {
                         caminho = caminho + "/" + cc.getSicasSindical() + "/";
@@ -154,7 +154,7 @@ public class RetornoPadraoJSFBean {
     public Object[] caminhoServico() {
         Object obj[] = new Object[2];
         if (contaCobranca.getId() != -1) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
             // LAYOUT 2 SINDICAL
             if (contaCobranca.getLayout().getId() == 2) {
                 //caminho = caminho +"/"+ contaCobranca.getApelido()+"_"+contaCobranca.getSicasSindical();

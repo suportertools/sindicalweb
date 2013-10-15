@@ -18,10 +18,14 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class controleAcessoJSFBean implements Serializable {
+@ManagedBean
+@SessionScoped
+public class ControleAcessoBean implements Serializable {
 
     // static final long serialVersionUID = 7220145288109489651L;
     private String login = "";

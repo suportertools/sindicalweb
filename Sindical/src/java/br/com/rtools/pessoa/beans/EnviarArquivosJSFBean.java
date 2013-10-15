@@ -10,7 +10,7 @@ import br.com.rtools.pessoa.db.EnviarArquivosDB;
 import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
 import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Mensagem;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
@@ -107,7 +107,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
     }
 
     public void excluirArquivosContabilidade(int index) {
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContabilidade/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1());
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContabilidade/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1());
         File fl = new File(caminho);
         fl.delete();
         listaArquivos.remove(index);
@@ -115,7 +115,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
     }
 
     public void excluirArquivosContribuinte(int index) {
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContribuinte/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1());
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContribuinte/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1());
         File fl = new File(caminho);
         fl.delete();
         listaArquivos.remove(index);
@@ -126,7 +126,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
         this.itens.add(event.getUploadedFile());
         UploadedFile uploadedFile = event.getUploadedFile();
         String nomeArq = event.getUploadedFile().getName();
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Anexos/");
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/");
         try {
             File fl = new File(caminho);
             fl.mkdir();
@@ -195,7 +195,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
 
     public List getListaArquivosContabilidade() {
         if (listaArquivos.isEmpty()) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContabilidade");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContabilidade");
             try {
                 File files = new File(caminho);
                 File listFile[] = files.listFiles();
@@ -220,7 +220,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
 
     public List getListaArquivosContribuinte() {
         if (listaArquivos.isEmpty()) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContribuinte");
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContribuinte");
             try {
                 File files = new File(caminho);
                 File listFile[] = files.listFiles();

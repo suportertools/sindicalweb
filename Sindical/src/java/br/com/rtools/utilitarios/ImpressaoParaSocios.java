@@ -12,7 +12,7 @@ import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class ImpressaoParaSocios {
         List<CartaoSocial> listax = new ArrayList();
         FacesContext context = FacesContext.getCurrentInstance();
 
-        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/"));
+        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
         File listFile[] = files.listFiles();
 
         for (int i = 0; i < listaCartao.size(); i++) {
@@ -70,8 +70,8 @@ public class ImpressaoParaSocios {
                     getConverteNullString(((List) (listaCartao.get(i))).get(6)), // DATA VALIDADE
                     getConverteNullString(((List) (listaCartao.get(i))).get(5)), // CIDADE
                     getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
-                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/cartao.jpg"), // CAMINHO FUNDO
-                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
+                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg"), // CAMINHO FUNDO
+                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
                     getConverteNullString(((List) (listaCartao.get(i))).get(13).toString()), // FILIAÇÃO
                     getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
                     getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
@@ -84,7 +84,7 @@ public class ImpressaoParaSocios {
         }
 
         try {
-            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos");
+            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
             File fileA = new File(patch + "/downloads");
             if (!fileA.exists()) {
                 fileA.mkdir();
@@ -94,13 +94,13 @@ public class ImpressaoParaSocios {
                 fileB.mkdir();
             }
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Relatorios/CARTAO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CARTAO.jasper"));
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);
             String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
 
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/carteirinhas");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carteirinhas");
             sa.salvaNaPasta(pathPasta);
 
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
@@ -278,7 +278,7 @@ public class ImpressaoParaSocios {
                         dados[23],
                         dados[24],
                         dados[25],
-                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                         registro.getFichaSocial(), // obs
                         socios.getParentesco().getParentesco(),
                         sindicato.getPessoa().getNome(),
@@ -291,7 +291,7 @@ public class ImpressaoParaSocios {
                         AnaliseString.mascaraCep(pesEndSindicato.getEndereco().getCep()),
                         sindicato.getPessoa().getDocumento(),
                         "",
-                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                         fotoSocio,
                         sindicato.getPessoa().getEmail1(),
                         sindicato.getPessoa().getSite(),
@@ -358,7 +358,7 @@ public class ImpressaoParaSocios {
                             "",
                             "",
                             "",
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             registro.getFichaSocial(), // obs
                             deps.get(n).getParentesco().getParentesco(),
                             "",
@@ -371,7 +371,7 @@ public class ImpressaoParaSocios {
                             "",
                             "",
                             "",
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/Fotos/semFoto.jpg"),
                             "",
                             "",
@@ -578,7 +578,7 @@ public class ImpressaoParaSocios {
                             dados[23],
                             dados[24],
                             dados[25],
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             "", // obs
                             listaSocs.get(i).getParentesco().getParentesco(),
                             sindicato.getPessoa().getNome(),
@@ -591,7 +591,7 @@ public class ImpressaoParaSocios {
                             AnaliseString.mascaraCep(pesEndSindicato.getEndereco().getCep()),
                             sindicato.getPessoa().getDocumento(),
                             "",
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             getFotoSocio(listaSocs.get(i)),
                             sindicato.getPessoa().getEmail1(),
                             sindicato.getPessoa().getSite(),
@@ -640,7 +640,7 @@ public class ImpressaoParaSocios {
         FacesContext context = FacesContext.getCurrentInstance();
         File files;
         //if (socios.getId() != -1){
-        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".jpg"));
+        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".jpg"));
         if (files.exists()) {
             return files.getPath();
         } else {

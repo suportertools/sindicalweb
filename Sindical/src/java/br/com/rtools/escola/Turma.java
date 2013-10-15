@@ -3,16 +3,17 @@ package br.com.rtools.escola;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ESC_TURMA")
 @NamedQueries({
-    @NamedQuery(name = "Turma.pesquisaID",    query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
-    @NamedQuery(name = "Turma.findAll",       query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC")
+    @NamedQuery(name = "Turma.pesquisaID", query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
+    @NamedQuery(name = "Turma.findAll", query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC")
 })
-public class Turma implements java.io.Serializable {
+public class Turma implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,9 +48,16 @@ public class Turma implements java.io.Serializable {
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @ManyToOne
     private Filial filial;
+    @Column(name = "NR_QUANTIDADE")
+    private int quantidade;
+    @Column(name = "NR_SALA", length = 2)
+    private String sala;
+    @Column(name = "DS_DESCRICAO", length = 255)
+    private String descricao;
 
     public Turma(int id, Servicos cursos, String dataInicio, String dataTermino, String horaInicio, String horaTermino,
-            boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado, boolean domingo, Filial filial) {
+            boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado, boolean domingo, Filial filial,
+            int quantidade, String sala, String descricao) {
         this.id = id;
         this.cursos = cursos;
         setDataInicio(dataInicio);
@@ -64,6 +72,9 @@ public class Turma implements java.io.Serializable {
         this.sabado = sabado;
         this.domingo = domingo;
         this.filial = filial;
+        this.quantidade = quantidade;
+        this.sala = sala;
+        this.descricao = descricao;
     }
 
     public Turma() {
@@ -81,6 +92,9 @@ public class Turma implements java.io.Serializable {
         this.sabado = false;
         this.domingo = false;
         this.filial = new Filial();
+        this.quantidade = 0;
+        this.sala = "";
+        this.descricao = "";
     }
 
     public int getId() {
@@ -221,5 +235,29 @@ public class Turma implements java.io.Serializable {
 
     public void setFilial(Filial filial) {
         this.filial = filial;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public String getSala() {
+        return sala;
+    }
+
+    public void setSala(String sala) {
+        this.sala = sala;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 }

@@ -7,6 +7,8 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.List;
 import java.util.Vector;
 import javax.faces.context.FacesContext;
@@ -35,18 +37,22 @@ public class PessoaEnderecoJSFBean {
     }
 
     public String salvar() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
-        PessoaDB db_pessoa = new PessoaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (pessoaEndereco.getId() == -1) {
+            TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
             pessoaEndereco.setTipoEndereco(db_tipoEndereco.idTipoEndereco(pessoaEndereco.getTipoEndereco()));
-            db.insert(pessoaEndereco);
-        } else {
-            db.getEntityManager().getTransaction().begin();
-            if (db.update(pessoaEndereco)) {
-                db.getEntityManager().getTransaction().commit();
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
+            }
+        } else {
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.alterarObjeto(pessoaEndereco)) {
+                salvarAcumuladoDB.comitarTransacao();
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         return null;
@@ -58,14 +64,14 @@ public class PessoaEnderecoJSFBean {
     }
 
     public String excluir() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (pessoaEndereco.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            pessoaEndereco = db.pesquisaCodigo(pessoaEndereco.getId());
-            if (db.delete(pessoaEndereco)) {
-                db.getEntityManager().getTransaction().commit();
+            salvarAcumuladoDB.abrirTransacao();
+            pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaCodigo(pessoaEndereco.getId(), "PessoaEndereco");
+            if (salvarAcumuladoDB.deletarObjeto(pessoaEndereco)) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         pessoaEndereco = new PessoaEndereco();
@@ -79,9 +85,8 @@ public class PessoaEnderecoJSFBean {
     }
 
     public List getListaPessoaEndereco() {
-        List result = null;
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        result = db.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List result = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
         return result;
     }
 

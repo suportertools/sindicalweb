@@ -14,7 +14,7 @@ import br.com.rtools.relatorios.db.RelatorioContabilidadesDB;
 import br.com.rtools.relatorios.db.RelatorioContabilidadesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -170,7 +170,7 @@ public class RelatorioContabilidadesJSFBean {
                         dados[6] = "";
                         dados[7] = "";
                     }
-                    listaEsc.add(new ParametroEscritorios(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                    listaEsc.add(new ParametroEscritorios(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             sindicato.getPessoa().getNome(),
                             endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
                             endSindicato.getEndereco().getLogradouro().getDescricao(),
@@ -211,7 +211,7 @@ public class RelatorioContabilidadesJSFBean {
                 String nomeDownload = "relatorio_escritorios_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
 
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
 
                 sa.salvaNaPasta(pathPasta);
 

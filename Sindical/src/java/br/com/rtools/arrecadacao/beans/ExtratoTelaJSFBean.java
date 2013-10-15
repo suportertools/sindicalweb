@@ -12,8 +12,8 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleAcessoJSFBean;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.math.BigDecimal;
@@ -65,7 +65,7 @@ public class ExtratoTelaJSFBean {
     private String valorExtenso = "";
 
     public ExtratoTelaJSFBean() {
-        controleAcessoJSFBean controx = new controleAcessoJSFBean();
+        ControleAcessoBean controx = new ControleAcessoBean();
         if (!controx.getListaExtratoTela()) {
             porPesquisa = "naoRecebidas";
         } else {
@@ -1339,7 +1339,7 @@ public class ExtratoTelaJSFBean {
 
             ImprimirBoleto imp = new ImprimirBoleto();
             imp.imprimirBoleto(mov, listaValores, listaVencimentos, false);
-            String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
 
             p.add(jur.getPessoa());
@@ -1350,7 +1350,7 @@ public class ExtratoTelaJSFBean {
                         p,
                         " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                         + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
-                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir boleto</a><br />",
+                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir boleto</a><br />",
                         new ArrayList(),
                         "Envio de Boleto");
             } else {

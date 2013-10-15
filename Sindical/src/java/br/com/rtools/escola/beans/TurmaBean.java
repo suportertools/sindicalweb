@@ -13,6 +13,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -22,7 +23,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class TurmaBean implements java.io.Serializable {
+public class TurmaBean implements Serializable {
 
     private Turma turma = new Turma();
     private String msgConfirma = "";
@@ -45,6 +46,10 @@ public class TurmaBean implements java.io.Serializable {
             msgConfirma = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
             return null;
         }
+        if (turma.getQuantidade() == 0) {
+            msgConfirma = "Informar a quantidade de vagas!";
+            return null;
+        }
         if (turma.getDataInicio().equals("__:__") || turma.getDataInicio().equals("") || turma.getDataInicio().isEmpty()) {
             msgConfirma = "Informar a data inicial da turma!";
             return null;
@@ -53,20 +58,22 @@ public class TurmaBean implements java.io.Serializable {
             msgConfirma = "Informar a data de termino da turma!";
             return null;
         }
-        int dataInicioInteger = DataHoje.converteDataParaInteger(turma.getDataInicio());
-        int dataFinalInteger = DataHoje.converteDataParaInteger(turma.getDataTermino());
-        int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
-        if (dataInicioInteger < dataHojeInteger) {
-            msgConfirma = "A data inicial do curso deve ser maior ou igual a data de hoje!";
-            return null;
-        }
-        if (dataFinalInteger < dataHojeInteger) {
-            msgConfirma = "A data final do curso deve ser maior ou igual a data de hoje!";
-            return null;
-        }
-        if (dataFinalInteger < dataInicioInteger) {
-            msgConfirma = "A data final deve ser maior ou igual a data inicial!";
-            return null;
+        if (turma.getId() == -1) {
+            int dataInicioInteger = DataHoje.converteDataParaInteger(turma.getDataInicio());
+            int dataFinalInteger = DataHoje.converteDataParaInteger(turma.getDataTermino());
+            int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
+            if (dataInicioInteger < dataHojeInteger) {
+                msgConfirma = "A data inicial do curso deve ser maior ou igual a data de hoje!";
+                return null;
+            }
+            if (dataFinalInteger < dataHojeInteger) {
+                msgConfirma = "A data final do curso deve ser maior ou igual a data de hoje!";
+                return null;
+            }
+            if (dataFinalInteger < dataInicioInteger) {
+                msgConfirma = "A data final deve ser maior ou igual a data inicial!";
+                return null;
+            }
         }
         if (DataHoje.validaHora(turma.getHoraInicio()).isEmpty()) {
             msgConfirma = "Hora inicial invalida!";

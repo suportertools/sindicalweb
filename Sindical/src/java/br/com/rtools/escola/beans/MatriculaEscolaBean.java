@@ -32,16 +32,19 @@ import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
+import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEmpresaDB;
 import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -217,6 +220,8 @@ public class MatriculaEscolaBean implements Serializable {
                 GenericaMensagem.warn("Sistema", msgConfirma);
                 return;
             }
+            String horaInicial; 
+            String horaFinal; 
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$aluno", matriculaEscola.getAluno().getNome()));
             FisicaDB fisicaDB = new FisicaDBToplink();
             Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
@@ -244,6 +249,8 @@ public class MatriculaEscolaBean implements Serializable {
                 if (matriculaIndividual.isDomingo()) {
                     listaDiaSemana.add("Dom");
                 }
+                horaInicial = matriculaIndividual.getInicio();
+                horaFinal = matriculaIndividual.getTermino();
             } else {
                 turma = (Turma) salvarAcumuladoDB.pesquisaCodigo(matriculaTurma.getTurma().getId(), "Turma");
                 contratoCurso = matriculaTurma.getTurma().getCursos().getDescricao();
@@ -268,6 +275,8 @@ public class MatriculaEscolaBean implements Serializable {
                 if (turma.isDomingo()) {
                     listaDiaSemana.add("Dom");
                 }
+                horaInicial = matriculaTurma.getTurma().getHoraInicio();
+                horaFinal = matriculaTurma.getTurma().getHoraTermino();
             }
             for (int i = 0; i < listaDiaSemana.size(); i++) {
                 if (i == 0) {
@@ -276,6 +285,13 @@ public class MatriculaEscolaBean implements Serializable {
                     contratoDiaSemana += " , " + listaDiaSemana.get(i).toString();
                 }
             }
+            PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+            PessoaEndereco pessoaEnderecoAluno =        (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getAluno().getId());
+            if (pessoaEnderecoAluno != null) {
+                
+            }
+            PessoaEndereco pessoaEnderecoResponsavel =  (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getResponsavel().getId());
+            
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cpfAluno", matriculaEscola.getAluno().getDocumento()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$rgAluno", aluno.getRg()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$responsavel", getResponsavel().getNome()));
@@ -290,8 +306,26 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$parcelas", Integer.toString(matriculaEscola.getNumeroParcelas())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaVencimento", Integer.toString(matriculaEscola.getDiaVencimento())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorAteVencimento", Moeda.converteR$Float((matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas())));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaInicial", horaInicial));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaFinal", horaFinal));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", Moeda.converteR$Float((matriculaEscola.getValorTotal()))));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$taxa", Moeda.converteR$Float(Float.parseFloat(valorTaxa))));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$matricula", Integer.toString(matriculaEscola.getId())));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$ano", "definir ano"));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoAluno", pessoaEnderecoAluno.getEndereco().getEnderecoSimplesToString())+", "+pessoaEnderecoAluno.getNumero());
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroAluno", pessoaEnderecoAluno.getEndereco().getBairro().getDescricao()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeAluno", pessoaEnderecoAluno.getEndereco().getCidade().getCidade()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoAluno", pessoaEnderecoAluno.getEndereco().getCidade().getUf()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepAluno", pessoaEnderecoAluno.getEndereco().getCep()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailAluno", matriculaEscola.getAluno().getEmail1()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoResponsavel", pessoaEnderecoResponsavel.getEndereco().getEnderecoSimplesToString())+", "+pessoaEnderecoAluno.getNumero());
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroResponsavel", pessoaEnderecoResponsavel.getEndereco().getBairro().getDescricao()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeResponsavel", pessoaEnderecoResponsavel.getEndereco().getCidade().getCidade()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoResponsavel", pessoaEnderecoResponsavel.getEndereco().getCidade().getUf()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepResponsavel", pessoaEnderecoResponsavel.getEndereco().getCep()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailResponsavel", matriculaEscola.getResponsavel().getEmail1()));
             try {
-                File dirFile = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/contrato/"));
+                File dirFile = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"));
                 if (!dirFile.exists()) {
                     boolean success = dirFile.mkdir();
                     if (!success) {
@@ -299,7 +333,7 @@ public class MatriculaEscolaBean implements Serializable {
                     }
                 }
                 String fileName = "contrato" + DataHoje.hora().hashCode() + ".pdf";
-                String filePDF = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/contrato/" + fileName);
+                String filePDF = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName);
                 File file = new File(filePDF);
                 boolean success = file.createNewFile();
                 if (success) {
@@ -307,7 +341,7 @@ public class MatriculaEscolaBean implements Serializable {
                     HtmlToPDF.convert(matriculaContrato.getDescricao(), os);
                     os.close();
                     Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
-                    String linha = reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/contrato/" + fileName;
+                    String linha = reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName;
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                     response.sendRedirect(linha);
                 }
@@ -462,6 +496,12 @@ public class MatriculaEscolaBean implements Serializable {
             String tipoMatriculaLog;
             if (sv.inserirObjeto(matriculaEscola)) {
                 if (tipoMatricula.equals("Turma")) {
+                    if (matriculaEscolaDB.existeVagasDisponivel(matriculaTurma)) {
+                        sv.desfazerTransacao();
+                        msgConfirma = "Não existem mais vagas disponíveis para essa turma!";
+                        GenericaMensagem.warn("Validação", msgConfirma);
+                        return null;
+                    }
                     matriculaTurma.setMatriculaEscola(matriculaEscola);
                     if (matriculaEscolaDB.existeMatriculaTurma(matriculaTurma)) {
                         sv.desfazerTransacao();
@@ -581,7 +621,7 @@ public class MatriculaEscolaBean implements Serializable {
         GenericaSessao.put("matriculaEscolaPesquisa", matriculaEscola);
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
-            return (String) GenericaSessao.getString("urlRetorno");
+            return (String) GenericaSessao.getString("urlRetorno", true);
         } else {
             return "matriculaEscola";
         }
@@ -1265,13 +1305,15 @@ public class MatriculaEscolaBean implements Serializable {
     public List<SelectItem> getListaTurma() {
         if (listaTurma.isEmpty()) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List list = sv.listaObjeto("Turma");
+            List<Turma> list = (List<Turma>) sv.listaObjeto("Turma", true);
             for (int i = 0; i < list.size(); i++) {
                 listaTurma.add(new SelectItem(new Integer(i),
-                        (String) ((Turma) list.get(i)).getCursos().getDescricao() + " - "
-                        + ((Turma) list.get(i)).getDataInicio() + " - "
-                        + ((Turma) list.get(i)).getHoraInicio() + " h ",
-                        Integer.toString(((Turma) list.get(i)).getId())));
+                        (String) list.get(i).getCursos().getDescricao() + " - "
+                        + list.get(i).getDataInicio() + " - "
+                        + list.get(i).getHoraInicio() + " h - Sala: "
+                        + list.get(i).getSala() + " - Descrição: "
+                        + list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
             }
         }
         return listaTurma;

@@ -2,7 +2,7 @@ package br.com.rtools.retornos;
 
 import br.com.rtools.financeiro.ContaCobranca;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.ArquivoRetorno;
 import br.com.rtools.utilitarios.GenericaRetorno;
 import java.io.BufferedReader;
@@ -36,7 +36,7 @@ public class Real extends ArquivoRetorno {
         String caminho = "";
 
         if (super.isPendentes()) {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno");
+            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno");
             if (baixar) {
                 caminho += "/" + super.getContaCobranca().getApelido() + "_" + super.getContaCobranca().getCodCedente();
                 caminho += "/pendentes";
@@ -47,7 +47,7 @@ public class Real extends ArquivoRetorno {
                 //            pasta = "/"+super.getServicoContaCobranca().getServicos().getDescricao()+"_"+super.getServicoContaCobranca().getContaCobranca().getCodCedente()+"/"+host;
             }
         } else {
-            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/retorno/pendentes");
+            caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/retorno/pendentes");
         }
 
         File fl = new File(caminho);

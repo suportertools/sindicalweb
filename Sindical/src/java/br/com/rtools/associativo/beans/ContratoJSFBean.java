@@ -1,6 +1,6 @@
 package br.com.rtools.associativo.beans;
 
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaQuery;
 import java.io.BufferedReader;
@@ -63,7 +63,7 @@ public class ContratoJSFBean {
     public String download() {
         //GenericaQuery genericaQuery = (GenericaQuery) htmlDataTable.getRowData();
         String arquivoDownload = "Imprimir_Contrato.xml";
-        String diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoContrato/");
+        String diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/ArquivoContrato/");
 
         listaAtributo.add("@criatura@");
         listaAtributo.add("@característica@");
@@ -104,7 +104,7 @@ public class ContratoJSFBean {
         listaArquivo.clear();
         GenericaQuery generica = new GenericaQuery();
         FacesContext context = FacesContext.getCurrentInstance();
-        setFiles(new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoContrato/")));
+        setFiles(new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/ArquivoContrato/")));
         File listFile[] = getFiles().listFiles();
         int i = 0;
         while (i < listFile.length) {

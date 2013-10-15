@@ -35,7 +35,7 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Links;
 import br.com.rtools.utilitarios.*;
 import java.io.ByteArrayOutputStream;
@@ -478,7 +478,7 @@ public class ImprimirBoleto {
                         swap[27],//CODBAR
                         swap[25],//mensagem_boleto
                         ((ServletContext) faces.getExternalContext().getContext()).getRealPath(boletox.getContaCobranca().getContaBanco().getBanco().getLogo().trim()),
-                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),//logoEmpresa
+                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),//logoEmpresa
                         ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Imagens/serrilha.GIF"),//serrilha
                         jurDB.pesquisaJuridicaPorPessoa(lista.get(i).getPessoa().getId()).getCnae().getNumero().substring(0, 3),//cnae
                         boletox.getContaCobranca().getCategoriaSindical(),//categoria
@@ -496,7 +496,7 @@ public class ImprimirBoleto {
                     null,
                     dtSource);
             arquivo = JasperExportManager.exportReportToPdf(print);
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
 
         } catch (Exception erro) {
             int x = i;
@@ -641,7 +641,7 @@ public class ImprimirBoleto {
                         lista.get(i).getDocumento(), // boleto
                         lista.get(i).getVencimento(), // vencto
                         new BigDecimal(lista.get(i).getValor()), // vlrpagar
-                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
+                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                         swap[9], // sinNome
                         swap[11], // sinEndereco
                         swap[12], // sinLogradouro
@@ -696,7 +696,7 @@ public class ImprimirBoleto {
 
             arquivo = retorno.toByteArray();
 
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
@@ -860,7 +860,7 @@ public class ImprimirBoleto {
 
             arquivo = retorno.toByteArray();
 
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
@@ -1030,7 +1030,7 @@ public class ImprimirBoleto {
                         lista.get(i).getDocumento(), // boleto
                         lista.get(i).getVencimento(), // vencto
                         valor, // vlrpagar
-                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
+                        ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                         swap[9], // sinNome
                         swap[11], // sinEndereco
                         swap[12], // sinLogradouro
@@ -1086,7 +1086,7 @@ public class ImprimirBoleto {
 
             arquivo = retorno.toByteArray();
 
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
@@ -1256,7 +1256,7 @@ public class ImprimirBoleto {
                             lista.get(i).getVencimento(), // vencto
                             //new BigDecimal(lista.get(i).getValor()), // vlrpagar
                             valor_calculado, // vlrpagar
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                             swap[9], // sinNome
                             swap[11], // sinEndereco
                             swap[12], // sinLogradouro
@@ -1311,7 +1311,7 @@ public class ImprimirBoleto {
                             lista.get(i).getVencimento(), // vencto
                             //new BigDecimal(lista.get(i).getValor()), // vlrpagar
                             valor_calculado, // vlrpagar
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                             swap[9], // sinNome
                             swap[11], // sinEndereco
                             swap[12], // sinLogradouro
@@ -1375,7 +1375,7 @@ public class ImprimirBoleto {
 
             arquivo = retorno.toByteArray();
 
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
@@ -1537,7 +1537,7 @@ public class ImprimirBoleto {
                             lista.get(i).getDocumento(), // boleto
                             lista.get(i).getVencimento(), // vencto
                             valor_calculado, // vlrpagar
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                             swap[9], // sinNome
                             swap[11], // sinEndereco
                             swap[12], // sinLogradouro
@@ -1616,7 +1616,7 @@ public class ImprimirBoleto {
                             lista.get(i).getVencimento(), // vencto
                             //new BigDecimal(lista.get(i).getValor()), // vlrpagar
                             valor_calculado, // vlrpagar
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // sinLogo
                             swap[9], // sinNome
                             swap[11], // sinEndereco
                             swap[12], // sinLogradouro
@@ -1691,7 +1691,7 @@ public class ImprimirBoleto {
 
             arquivo = retorno.toByteArray();
 
-            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }

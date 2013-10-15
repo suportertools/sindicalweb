@@ -4,7 +4,7 @@ import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoCidade;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.db.*;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -156,7 +156,7 @@ public class ConvencaoJSFBean {
     public List getListaGpCidadeParaConvencao() {
         FacesContext context = FacesContext.getCurrentInstance();
         String caminho = "";
-        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
+        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
         File fl = new File(caminho);
         if (convencao.getId() != -1 && idIndex != -1 && !listaGpCidade.isEmpty()) {
             ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
@@ -174,7 +174,7 @@ public class ConvencaoJSFBean {
                     }
 
                     File item = new File(caminho);
-                    caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + String.valueOf(gc.getId()) + "_" + convencao.getId() + ".pdf");
+                    caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + String.valueOf(gc.getId()) + "_" + convencao.getId() + ".pdf");
                     fl = new File(caminho);
                     FileInputStream in = new FileInputStream(item);
                     FileOutputStream out = new FileOutputStream(fl.getPath());
@@ -189,7 +189,7 @@ public class ConvencaoJSFBean {
                     out.close();
 
 
-                    caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
+                    caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
                     fl = new File(caminho);
                     fl.delete();
                     db.getEntityManager().getTransaction().commit();
@@ -206,7 +206,7 @@ public class ConvencaoJSFBean {
 
     public String excluirPDF(String nome) {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + nome + ".pdf");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + nome + ".pdf");
         File fl = new File(caminho);
 
         if (fl.exists()) {

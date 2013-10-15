@@ -14,20 +14,25 @@ import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
-import br.com.rtools.pessoa.beans.FisicaJSFBean;
+import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.db.*;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 
-public class SociosJSFBean {
+@ManagedBean
+@SessionScoped
+public class SociosBean implements Serializable {
 
     private ServicoPessoa servicoPessoa;
     private ServicoCategoria servicoCategoria;
@@ -63,7 +68,7 @@ public class SociosJSFBean {
     private String statusSocio;
     private List<Fisica> listaFisica;
 
-    public SociosJSFBean() {
+    public SociosBean() {
         servicoPessoa = new ServicoPessoa();
         servicoCategoria = new ServicoCategoria();
         socios = new Socios();
@@ -383,16 +388,16 @@ public class SociosJSFBean {
         }
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("socioPesquisa",socios);
         //((FisicaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setLblSocio("CADASTRO");
-        ((FisicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
         sv.comitarTransacao();
         return null;
     }
 
     public String editarTitular() {
         FisicaDB db = new FisicaDBToplink();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
-        ((FisicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
-        ((FisicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return "pessoaFisica";
     }
@@ -606,8 +611,8 @@ public class SociosJSFBean {
     }
 
     public void novoVoid() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sociosBean", new SociosJSFBean());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sociosBean", new SociosBean());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
     }
 
     public String excluir() {
@@ -667,7 +672,7 @@ public class SociosJSFBean {
         //FisicaJSFBean fizx = (FisicaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
         //fizx.setSocios(new Socios());
 
-        ((FisicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(new Socios());
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(new Socios());
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("socioPesquisa",socios);
         return "pessoaFisica";
     }
@@ -825,13 +830,13 @@ public class SociosJSFBean {
     public void excluirImagemDependente() {
         FacesContext context = FacesContext.getCurrentInstance();
         String caminho = "";
-        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
         try {
             File fl = new File(caminho);
             if (fl.exists()) {
                 fl.delete();
             } else if (dependente.getId() != -1) {
-                caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(dependente.getPessoa().getId()) + ".jpg");
+                caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(dependente.getPessoa().getId()) + ".jpg");
                 fl = new File(caminho);
                 fl.delete();
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -974,7 +979,7 @@ public class SociosJSFBean {
         String foto = getFotoSocio();
         String path = "/Relatorios/FICHACADASTRO.jasper";
         String pathVerso = "/Relatorios/FICHACADASTROVERSO.jasper";
-        String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/fichas");
+        String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
         ImpressaoParaSocios.comDependente(
                 caminhoDiretorio,
                 "ficha_" + socios.getId() + "_" + socios.getServicoPessoa().getPessoa().getId() + ".pdf",
@@ -992,7 +997,7 @@ public class SociosJSFBean {
         FacesContext context = FacesContext.getCurrentInstance();
         File files;
         if (socios.getId() != -1) {
-            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".jpg"));
+            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".jpg"));
             if (files.exists()) {
                 return files.getPath();
             } else {
@@ -1230,8 +1235,8 @@ public class SociosJSFBean {
 
     public String getPessoaImagem() {
         FacesContext context = FacesContext.getCurrentInstance();
-        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/"));
-        File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
+        File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
+        File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
         File listFile[] = files.listFiles();
         String nome = "";
         String caminho = "";
@@ -1257,7 +1262,7 @@ public class SociosJSFBean {
                     if (Integer.parseInt(n) == dependente.getPessoa().getId()) {
                         nome = n;
                         fotoTemp = false;
-                        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+                        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
                         File fl = new File(caminho);
                         fl.delete();
                         break;

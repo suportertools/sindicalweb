@@ -12,11 +12,16 @@ import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class MacFilialJSFBean {
+@ManagedBean
+@SessionScoped
+public class MacFilialBean implements Serializable {
 
     private MacFilial macFilial;
     private int idFilial;
@@ -26,7 +31,7 @@ public class MacFilialJSFBean {
     public List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
     public List<SelectItem> listaDepartamentos = new ArrayList<SelectItem>();
 
-    public MacFilialJSFBean() {
+    public MacFilialBean() {
         macFilial = new MacFilial();
         idFilial = 0;
         idDepartamento = 0;

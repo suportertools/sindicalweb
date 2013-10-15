@@ -6,14 +6,15 @@ import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
-@ManagedBean(name = "rotinaBean", eager = true)
+@ManagedBean
 @SessionScoped
-public class RotinaJSFBean {
+public class RotinaBean implements Serializable {
 
     private Rotina rotina = new Rotina();
     private String mensagem = "";

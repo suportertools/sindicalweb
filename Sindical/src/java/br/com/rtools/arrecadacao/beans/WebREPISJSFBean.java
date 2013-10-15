@@ -18,7 +18,7 @@ import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
@@ -271,7 +271,7 @@ public class WebREPISJSFBean {
                         valor = null;
                     }
                     String logoPatronal = "";
-                    String logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoPatronal/" + patronal.getId());
+                    String logoCaminho = (String) ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoPatronal/" + patronal.getId());
                     if (new File(logoCaminho + ".jpg").exists()) {
                         logoCaminho = logoCaminho + ".jpg";
                     } else if (new File(logoCaminho + ".JPG").exists()) {
@@ -283,7 +283,7 @@ public class WebREPISJSFBean {
                     } else if (new File(logoCaminho + ".gif").exists()) {
                         logoCaminho = logoCaminho + ".gif";
                     } else {
-                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png");
+                        logoCaminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
                     }
                     vetor.add(
                             new ParametroCertificado(
@@ -291,7 +291,7 @@ public class WebREPISJSFBean {
                             logoCaminho,
                             patronal.getBaseTerritorial(),
                             sindicato.getPessoa().getNome(),
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             repisMovimento.getPessoa().getNome(),
                             repisMovimento.getPessoa().getDocumento(),
                             jur.getPorte().getDescricao(),
@@ -317,7 +317,7 @@ public class WebREPISJSFBean {
                 arquivo = JasperExportManager.exportReportToPdf(print);
 
                 String nomeDownload = "repis_" + repisMovimento.getId() + "_" + repisMovimento.getPessoa().getId() + ".pdf";
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/repis");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
                 SalvaArquivos sa = new SalvaArquivos(arquivo,
                         nomeDownload,
                         false);
@@ -583,11 +583,11 @@ public class WebREPISJSFBean {
 
     public List getListaArquivosEnviados() {
 
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/repis/" + pessoa.getId() + "/");
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis/" + pessoa.getId() + "/");
         File file = new File(caminho);
         file.mkdir();
 
-        File file2 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/repis/"));
+        File file2 = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis/"));
         File listFile[] = file2.listFiles();
         for (int i = 0; i < listFile.length; i++) {
             if (listFile[i].isFile()) {

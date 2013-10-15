@@ -9,8 +9,8 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -1097,30 +1097,32 @@ public class JuridicaJSFBean {
     }
 
     public void salvarEndereco() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         //VERIFICAR ENDERECO CONTABILIDADE
         verificarEndContabilidade();
-
-        int i = 0;
         if (juridica.getId() != -1) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             if (getPesquisaEndPorPessoa().isEmpty()) {
-                while (i < listaEnd.size()) {
+                for (int i = 0; i < listaEnd.size(); i++) {
                     pessoaEndereco = (PessoaEndereco) listaEnd.get(i);
-                    if (!db.insert(pessoaEndereco)) {
+                    salvarAcumuladoDB.abrirTransacao();
+                    if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
+                        salvarAcumuladoDB.comitarTransacao();
+                    } else {
+                        salvarAcumuladoDB.desfazerTransacao();
                         msgConfirma = "Erro ao Salvar Endereço!";
+                        
                     }
                     pessoaEndereco = new PessoaEndereco();
-                    i++;
                 }
             } else {
                 if (endComercial) {
                     atualizarEndJuridicaComContabil();
                     for (int o = 0; o < listaEnd.size(); o++) {
-                        db.getEntityManager().getTransaction().begin();
-                        if (db.update((PessoaEndereco) listaEnd.get(o))) {
-                            db.getEntityManager().getTransaction().commit();
+                        salvarAcumuladoDB.abrirTransacao();
+                        if (salvarAcumuladoDB.alterarObjeto((PessoaEndereco) listaEnd.get(o))) {
+                            salvarAcumuladoDB.comitarTransacao();
                         } else {
-                            db.getEntityManager().getTransaction().rollback();
+                            salvarAcumuladoDB.desfazerTransacao();
                         }
                     }
                     endComercial = false;
@@ -1129,11 +1131,11 @@ public class JuridicaJSFBean {
                         atualizarEndJuridicaComContabil();
                     }
                     for (int o = 0; o < listaEnd.size(); o++) {
-                        db.getEntityManager().getTransaction().begin();
-                        if (db.update((PessoaEndereco) listaEnd.get(o))) {
-                            db.getEntityManager().getTransaction().commit();
+                        salvarAcumuladoDB.abrirTransacao();
+                        if (salvarAcumuladoDB.alterarObjeto((PessoaEndereco) listaEnd.get(o))) {
+                            salvarAcumuladoDB.comitarTransacao();
                         } else {
-                            db.getEntityManager().getTransaction().rollback();
+                            salvarAcumuladoDB.desfazerTransacao();
                         }
                     }
                 }
@@ -1191,29 +1193,26 @@ public class JuridicaJSFBean {
     }
 
     public String atualizarEndJuridicaComContabil() {
-        JuridicaDB db = new JuridicaDBToplink();
-        PessoaEnderecoDB pesEndDB = new PessoaEnderecoDBToplink();
-        PessoaEndereco endeEmp = new PessoaEndereco();
-        PessoaEndereco endeEmp2 = new PessoaEndereco();
-        List listaPesEndEmpPertencente = new ArrayList();
         if (juridica.getId() != -1) {
-            listaPesEndEmpPertencente = db.pesquisaPesEndEmpresaComContabil(juridica.getId());
-            endeEmp2 = pesEndDB.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
+            JuridicaDB db = new JuridicaDBToplink();
+            PessoaEnderecoDB pesEndDB = new PessoaEnderecoDBToplink();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List listaPesEndEmpPertencente = db.pesquisaPesEndEmpresaComContabil(juridica.getId());
+            PessoaEndereco endeEmp2 = pesEndDB.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
             if (!listaPesEndEmpPertencente.isEmpty()) {
                 pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
                 for (int i = 0; i < listaPesEndEmpPertencente.size(); i++) {
                     if (comparaEndereco(endeEmp2, (PessoaEndereco) listaPesEndEmpPertencente.get(i))) {
-                        endeEmp = (PessoaEndereco) listaPesEndEmpPertencente.get(i);
+                        PessoaEndereco endeEmp = (PessoaEndereco) listaPesEndEmpPertencente.get(i);
                         endeEmp.setComplemento(pessoaEndereco.getComplemento());
                         endeEmp.setNumero(pessoaEndereco.getNumero());
                         endeEmp.setEndereco(pessoaEndereco.getEndereco());
-
-                        pesEndDB.getEntityManager().getTransaction().begin();
-                        if (pesEndDB.update(endeEmp)) {
-                            pesEndDB.getEntityManager().getTransaction().commit();
+                        salvarAcumuladoDB.abrirTransacao();
+                        if (salvarAcumuladoDB.alterarObjeto(endeEmp)) {
+                            salvarAcumuladoDB.comitarTransacao();
                             endeEmp = new PessoaEndereco();
                         } else {
-                            pesEndDB.getEntityManager().getTransaction().rollback();
+                            salvarAcumuladoDB.desfazerTransacao();
                         }
                     }
                 }
@@ -1238,9 +1237,8 @@ public class JuridicaJSFBean {
     }
 
     public List getListaPessoaEndereco() {
-        List result = null;
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        result = db.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List result = salvarAcumuladoDB.listaObjeto("PessoaEndereco");        
         return result;
     }
 
@@ -1308,22 +1306,21 @@ public class JuridicaJSFBean {
             return true;
         }
     }
-
-    public String excluirPessoaEndereco() {
-        PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+    
+    public String excluirPessoaEndereco() {        
         if (pessoaEndereco.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            pessoaEndereco = db.pesquisaCodigo(pessoaEndereco.getId());
-            if (db.delete(pessoaEndereco)) {
-                db.getEntityManager().getTransaction().commit();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaCodigo(pessoaEndereco.getId(), "PessoaEndereco");
+            if (salvarAcumuladoDB.deletarObjeto(pessoaEndereco)) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         pessoaEndereco = new PessoaEndereco();
         setEnderecoCompleto("");
         return "pessoaJuridica";
-    }
+    }    
 
     public void refreshForm() {
     }
@@ -1660,7 +1657,7 @@ public class JuridicaJSFBean {
 
     public String extratoTela() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", juridica.getPessoa());
-        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
     }
 
     public String retornaDaInativacao() {
@@ -1869,12 +1866,12 @@ public class JuridicaJSFBean {
             if (conv != null) {
                 if (conv.getCaminho() != null || !conv.getCaminho().isEmpty()) {
                     FacesContext context = FacesContext.getCurrentInstance();
-                    String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
+                    String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
                     File fl = new File(caminho);
                     if (fl.exists()) {
 
                         HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-                        response.sendRedirect("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
+                        response.sendRedirect("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
                         //imp.visualizar(fl);
                     }
                 }
@@ -2118,7 +2115,7 @@ public class JuridicaJSFBean {
         if (!strGrupoCidade.isEmpty()) {
             if (conv != null) {
                 FacesContext context = FacesContext.getCurrentInstance();
-                String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
+                String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + conv.getCaminho() + ".pdf");
                 File fl = new File(caminho);
                 if (fl.exists()) {
                     strArquivo = "true";

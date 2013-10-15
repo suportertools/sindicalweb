@@ -20,7 +20,7 @@ import br.com.rtools.relatorios.db.RelatorioContribuintesDB;
 import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -233,7 +233,7 @@ public class RelatorioContribuintesJSFBean {
                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             try {
                 for (int i = 0; i < result.size(); i++) {
-                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             sindicato.getPessoa().getNome(),
                             endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
                             endSindicato.getEndereco().getLogradouro().getDescricao(),
@@ -289,7 +289,7 @@ public class RelatorioContribuintesJSFBean {
                 String nomeDownload = "relatorio_contribuintes_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
 
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
 
                 sa.salvaNaPasta(pathPasta);
 

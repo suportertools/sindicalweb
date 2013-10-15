@@ -11,7 +11,7 @@ import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1095,7 +1095,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
             }
             Registro r = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                     sindicato.getPessoa().getNome(),
                     sindicato.getPessoa().getSite(),
                     sindicato.getPessoa().getTipoDocumento().getDescricao(),
@@ -1131,7 +1131,7 @@ public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
 
             String nomeDownload = "imp_protocolo_" + proto + ".pdf";
 
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/protocolo");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
 
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
             sa.salvaNaPasta(pathPasta);
