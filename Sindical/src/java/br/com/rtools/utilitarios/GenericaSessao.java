@@ -28,34 +28,29 @@ public class GenericaSessao {
     }
 
     public static String getString(String sessionName) {
-        String string = "";
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName) != null) {
-            string = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
-        }
-        return string;
+        return getString(sessionName, false);
     }
 
     public static String getString(String sessionName, boolean remove) {
         String string = GenericaSessao.getString(sessionName);
-        if (remove) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
+        if (exists(sessionName)) {
+            if (remove) {
+                remove(sessionName);
+            }
         }
         return string;
     }
 
     public static Object getObject(String sessionName) {
-        Object object = new Object();
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName) != null) {
-            object = (Object) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
-        }
-        return object;
+        return getObject(sessionName, false);
     }
 
     public static Object getObject(String sessionName, boolean remove) {
         Object object = GenericaSessao.getObject(sessionName);
-        if (remove) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
+        if (exists(sessionName)) {
+            if (remove) {
+                remove(sessionName);
+            }
         }
         return object;
     }
