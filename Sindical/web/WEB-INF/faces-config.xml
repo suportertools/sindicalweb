@@ -39,11 +39,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>usuarioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.beans.UsuarioJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>pessoaBean</managed-bean-name>
@@ -74,12 +74,12 @@
         <managed-bean-class>br.com.rtools.pessoa.beans.JuridicaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!-- 
     <managed-bean>
         <managed-bean-name>controleUsuarioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>planoBean</managed-bean-name>
@@ -160,19 +160,19 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.ContaBancoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!--
     <managed-bean>
         <managed-bean-name>pesquisaLogBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.beans.PesquisaLogJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    
     <managed-bean>
         <managed-bean-name>permissaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.beans.PermissaoJSFBean</managed-bean-class>
 
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>grupoCidadeBean</managed-bean-name>
@@ -257,12 +257,12 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.DescontoEmpregadoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!--
     <managed-bean>
         <managed-bean-name>controleAcessoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleAcessoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>controleAcessoSuporteWebBean</managed-bean-name>
@@ -300,12 +300,12 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContabilidadeJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!-- 
     <managed-bean>
         <managed-bean-name>chamadaPaginaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>indiceMensalBean</managed-bean-name>
@@ -342,7 +342,7 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.IndiceJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!--
     <managed-bean>
         <managed-bean-name>registroEmpresarialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.beans.RegistroEmpresarialJSFBean</managed-bean-class>
@@ -353,7 +353,7 @@
         <managed-bean-name>registroPatronalBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.beans.RegistroPatronalJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <!-- <managed-bean>
         <managed-bean-name>agendamentoBean</managed-bean-name>
@@ -420,18 +420,18 @@
         <managed-bean-class>br.com.rtools.associativo.beans.CategoriaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!-- 
     <managed-bean>
         <managed-bean-name>servicoPessoaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.ServicoPessoaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.associativo.beans.ServicoPessoaBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean> -->
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>sociosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.SociosJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>contribuicaoSocioBean</managed-bean-name>
@@ -552,12 +552,12 @@
         <managed-bean-class>br.com.rtools.locadoraFilme.beans.TituloJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!--
     <managed-bean>
         <managed-bean-name>macFilialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.seguranca.beans.MacFilialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>agendaTarefaBean</managed-bean-name>

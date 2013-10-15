@@ -1,18 +1,18 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Contrato Modelo</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
-        <div style="z-index: 5000; position: absolute; top: 100px; margin-left: 25px;">
-            <h:form id="formContrato1">
+        <div style="z-index: 50; position: absolute; top: 100px; margin-left: 25px;">
+            <h:form id="form_contrato">
                 <rich:panel id="idFormContrato1">
                     <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
                         <rich:column>
@@ -37,7 +37,7 @@
                     <br /><br />
                     <rich:column>
                         <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
-                            <rich:dataTable value="#{matriculaContratoBean.getListaMatriculaContratoCampos('this')}" var="linha" iterationStatusVar="it" >
+                            <rich:dataTable value="#{matriculaContratoBean.getListaMatriculaContratoCampos('this')}" var="linha" >
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Campo"/>
@@ -77,13 +77,11 @@
                     <br /><br />
                     <rich:panel rendered="#{matriculaContratoBean.matriculaContrato.id != -1}">
                         <h:outputLabel value="Vincular serviços a esse contrato: " style="text-decoration: underline;" styleClass="fontePadraoNegrito"/>
-                        <h:outputText value="#{matriculaContratoBean.msgServico}" styleClass="fontePadraoVermelho" />
-                        <br /><br />
                         <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
                             <h:selectOneMenu id="idServicos" value="#{matriculaContratoBean.idServicos}">
                                 <f:selectItems value="#{matriculaContratoBean.listaServicos}" />
                             </h:selectOneMenu>
-                            <a4j:commandButton image="/Imagens/novo.png" action="#{matriculaContratoBean.adicionarServicos}" disabled="#{controleAcessoBean.botaoSalvar}" render="formContratoEscola, tblServicos"/>
+                            <a4j:commandButton image="/Imagens/novo.png" action="#{matriculaContratoBean.adicionarServicos}" disabled="#{controleAcessoBean.botaoSalvar}" render="form_contrato_escola, tblServicos"/>
                         </h:panelGrid>
                         <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
                             <rich:dataTable value="#{matriculaContratoBean.listaMatriculaContratoServico}" var="linha" iterationStatusVar="it" id="tblServicos">
@@ -95,7 +93,7 @@
                                 </rich:column>                                
                                 <rich:column>
                                     <f:facet name="header">
-                                            <h:outputText value="Serviço"/>
+                                        <h:outputText value="Serviço"/>
                                     </f:facet>
                                     <h:outputText value="#{linha.servicos.descricao}"/>
                                 </rich:column>
@@ -104,61 +102,58 @@
                     </rich:panel>
                 </rich:panel>
                 <br />
-                <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Adicionar Contrato" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaContratoBean.novo}" render="formContratoEscola, idFormContrato1"  />
-                <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idSalvar iLink" value="Excluir" title="Exluir Contrato" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Adicionar Contrato" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.show(); return false;" />
+                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaContratoBean.novo}" render="form_contrato_escola, idFormContrato1"  />
+                <a4j:commandLink styleClass="idSalvar iLink" value="Excluir" title="Exluir Contrato" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.show(); return false;"/>
                 <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaContrato()}" title="Pesquisar Contrato Escola" />
-                <div id="boxes">
-                    <div id="divSalvar" class="window">
-                        <a4j:commandLink  styleClass="close closeModal" title="Fechar">
+                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja salvar este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide();
+                                return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja salvar este Registro?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{matriculaContratoBean.salvar}" oncomplete="modalMensagem()" render="formContratoEscola, idFormContrato1, outConfirma, idForm" />
-                            <a4j:commandLink  styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                <div id="boxes">
-                    <div id="divExcluir" class="window">
-                        <a4j:commandLink  styleClass="close closeModal" title="Fechar">
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{matriculaContratoBean.salvar}" render="form_contrato_escola, idFormContrato1, idForm, i_panel_mensagem" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.hide(); #{rich:component('form_contrato:i_panel_mensagem')}.show(); return false;" />
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja excluir este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide();
+                                return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir este Registro?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{matriculaContratoBean.excluir}" title="Excluir" oncomplete="modalMensagem()" render="formContratoEscola, outConfirma, idFormContrato1"/>
-                            <a4j:commandLink  styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink  styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{matriculaContratoBean.msg}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink  styleClass="idNovo iLink closeModal" value="OK" action="matriculaContrato" title="OK" render="idFormContrato1, formContratoEscola" />
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                    
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Excluir" action="#{matriculaContratoBean.excluir}" render="form_contrato_escola, idFormContrato1, i_panel_mensagem" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.hide(); #{rich:component('form_contrato:i_panel_mensagem')}.show();" />
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide();
+                                return false;"></h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{matriculaContratoBean.msg}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_contrato:i_panel_mensagem')}.hide(); return false;" render="idFormContrato1, form_contrato_escola" action="matriculaContrato" />
+                    </center>
+                </rich:popupPanel>
             </h:form>
         </div>
         <f:subview id="header">
@@ -167,7 +162,7 @@
         </f:subview>
         <f:view>
             <c:set scope="request" var="object" value="${matriculaContratoBean.matriculaContrato}"/>
-            <h:form id="formContratoEscola">
+            <h:form id="form_contrato_escola">
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Contrato Escola" styleClass="fontePanel" style="width: 100%;"/>
