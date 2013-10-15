@@ -1,12 +1,8 @@
 package br.com.rtools.utilitarios;
 
 import java.util.List;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-@ManagedBean(name = "genericaSessao")
-@SessionScoped
 public class GenericaSessao {
 
     public static void put(String sessionName, String sessionValue) {
@@ -15,7 +11,7 @@ public class GenericaSessao {
         }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(sessionName, sessionValue);
     }
-    
+
     public void putString(String sessionName, String sessionValue) {
         if (GenericaSessao.exists(sessionName)) {
             GenericaSessao.remove(sessionName);
@@ -32,8 +28,9 @@ public class GenericaSessao {
     }
 
     public static String getString(String sessionName, boolean remove) {
-        String string = GenericaSessao.getString(sessionName);
+        String string = "";
         if (exists(sessionName)) {
+            string = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
             if (remove) {
                 remove(sessionName);
             }
@@ -46,14 +43,30 @@ public class GenericaSessao {
     }
 
     public static Object getObject(String sessionName, boolean remove) {
-        Object object = GenericaSessao.getObject(sessionName);
+        Object object = null;
         if (exists(sessionName)) {
+            object = (Object) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
             if (remove) {
                 remove(sessionName);
             }
         }
         return object;
     }
+    
+    public static Integer getInteger(String sessionName) {
+        return getInteger(sessionName, false);
+    }
+
+    public static Integer getInteger(String sessionName, boolean remove) {
+        Integer integer = -1;
+        if (exists(sessionName)) {
+            integer = (Integer) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
+            if (remove) {
+                remove(sessionName);
+            }
+        }
+        return integer;
+    }    
 
     public static void remove(String sessionName) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(sessionName);
