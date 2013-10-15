@@ -1,6 +1,6 @@
 package br.com.rtools.logSistema;
 
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import java.io.BufferedWriter;
@@ -17,7 +17,7 @@ public class salvaLogs {
     private File arquivo = null;
 
     protected String criarArquivoData() {
-        String logDir = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/");
+        String logDir = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
         if (!new File(logDir).exists()) {
             File file = new File(logDir);
             file.mkdir();
@@ -26,14 +26,14 @@ public class salvaLogs {
         String mes = (DataHoje.data()).substring(3, 5);
         String ano = (DataHoje.data()).substring(6, 10);
         dataHoje = ano + "-" + mes + "-" + dia;
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/" + dataHoje);
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/" + dataHoje);
         HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String urlAtual = converteURL(paginaRequerida.getRequestURI());
         File fileData = new File(caminho);
         if (!fileData.exists()) {
             fileData.mkdir();
         }
-        String caminho2 = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/" + dataHoje + "/log_" + urlAtual + "_" + dataHoje + ".txt");
+        String caminho2 = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/" + dataHoje + "/log_" + urlAtual + "_" + dataHoje + ".txt");
         try {
             arquivo = new File(caminho2);
             if (!arquivo.exists()) {

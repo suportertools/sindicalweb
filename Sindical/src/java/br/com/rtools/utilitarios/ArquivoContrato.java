@@ -1,6 +1,6 @@
 package br.com.rtools.utilitarios;
 
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
@@ -20,7 +20,7 @@ public class ArquivoContrato {
 
     public static void lerContrato() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoContrato/");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/ArquivoContrato/");
         File fl = new File(caminho + "/contrato01.odt");
         try {
             FileInputStream fileInput = new FileInputStream(fl);

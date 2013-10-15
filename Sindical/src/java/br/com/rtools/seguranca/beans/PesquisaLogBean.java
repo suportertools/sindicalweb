@@ -2,7 +2,7 @@ package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.PesquisaLogDB;
 import br.com.rtools.seguranca.db.PesquisaLogDBTopLink;
 import br.com.rtools.seguranca.db.RotinaDB;
@@ -12,15 +12,20 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.swing.JOptionPane;
 
-public class PesquisaLogJSFBean {
+@ManagedBean
+@SessionScoped
+public class PesquisaLogBean implements Serializable {
 
     private String dataInicioString = "";
     private String dataFinalString = "";
@@ -35,9 +40,9 @@ public class PesquisaLogJSFBean {
     private boolean desabilitaRotinas = true;
     private boolean desabilitaDescricao = true;
 
-    public PesquisaLogJSFBean() {
+    public PesquisaLogBean() {
         actTipoPesquisa();
-        diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/");
+        diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
     }
 
     public String atualizar() {
@@ -205,7 +210,7 @@ public class PesquisaLogJSFBean {
 
     public String link(String dirName, String filename) {
         Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-        String url = reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/" + dirName + "/" + filename;
+        String url = reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/" + dirName + "/" + filename;
         return url;
     }
 
@@ -246,7 +251,7 @@ public class PesquisaLogJSFBean {
     }
 
     public String pesquisarx() {
-        buscarArquivoPorNome(getDescricao(), "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/");
+        buscarArquivoPorNome(getDescricao(), "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
         return null;
     }
 
@@ -337,7 +342,7 @@ public class PesquisaLogJSFBean {
             desabilitaDescricao = true;
             desabilitaRotinas = true;
             descricao = "";
-            diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/logs/");
+            diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
         } else if (porPesquisa.equals("nomeArquivo")) {
             desabilitaDescricao = false;
             desabilitaRotinas = true;

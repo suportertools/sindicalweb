@@ -248,6 +248,26 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         return false;
     }
+    
+    @Override
+    public boolean existeVagasDisponivel(MatriculaTurma mt) {
+        int quantidadeVagas = mt.getTurma().getQuantidade();
+        try {
+            Query query = getEntityManager().createQuery(" SELECT COUNT(MT) FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma");
+            query.setParameter("idTurma", mt.getTurma().getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                Long nrVagas = (Long) query.getSingleResult();
+                if (quantidadeVagas == nrVagas) {
+                    return true;
+                }
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
 
     @Override
     public boolean existeMatriculaIndividual(MatriculaIndividual mi) {

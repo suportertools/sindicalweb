@@ -7,7 +7,7 @@ import br.com.rtools.pessoa.db.EnvioEmailsDB;
 import br.com.rtools.pessoa.db.EnvioEmailsDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
@@ -42,7 +42,7 @@ public class EnviarEmail {
 
         String erroTeste = "";
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         if (!sindicato.getEmail().isEmpty()) {
             Properties props = new Properties();
             Session session = null;
@@ -123,7 +123,7 @@ public class EnviarEmail {
     //-------------------------------------------------------------------------------------------------------------------------
     public synchronized static String EnviarEmail(Registro sindicato, Juridica empresa) {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         if (!sindicato.getEmail().isEmpty()) {
             if (!empresa.getPessoa().getEmail1().isEmpty()) {
                 if (empresa.getPessoa().getLogin() != null && empresa.getPessoa().getSenha() != null) {
@@ -176,7 +176,7 @@ public class EnviarEmail {
 
     public static String EnviarEmailAutomatico(Registro sindicato, List<Juridica> empresas) {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         String msg = "";
         if (!sindicato.getEmail().isEmpty()) {
             Properties props = new Properties();
@@ -300,7 +300,7 @@ public class EnviarEmail {
     //-------------------------------------------------------------------------------------------------------------------------
     public synchronized static String EnviarEmailComAnexo(Registro sindicato, Juridica empresa, String nomePdf, File arquivoAnexo) {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         if (!sindicato.getEmail().isEmpty()) {
             if (!empresa.getPessoa().getEmail1().isEmpty()) {
                 try {

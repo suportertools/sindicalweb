@@ -14,7 +14,7 @@ import javax.faces.context.FacesContext;
 public class MatriculaAcademiaJSFBean {
 
     private MatriculaAcademia matriculaAcademia;
-    private ServicoPessoaJSFBean servicoPessoaJSFBean;
+    private ServicoPessoaBean servicoPessoaJSFBean;
     private String descPesquisa;
     private String porPesquisa;
     private String comoPesquisa;
@@ -23,8 +23,8 @@ public class MatriculaAcademiaJSFBean {
     private List<MatriculaAcademia> listaAcademia;
 
     public MatriculaAcademiaJSFBean() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaJSFBean());
-        servicoPessoaJSFBean = ((ServicoPessoaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaBean());
+        servicoPessoaJSFBean = ((ServicoPessoaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
         servicoPessoaJSFBean.setRenderServicos(true);
         matriculaAcademia = new MatriculaAcademia();
         descPesquisa = "";

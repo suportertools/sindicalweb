@@ -21,8 +21,8 @@ import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Links;
 import br.com.rtools.sistema.db.LinksDB;
 import br.com.rtools.sistema.db.LinksDBToplink;
@@ -198,7 +198,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
                 pessoa = juridica.getPessoa();
             }
 
-            String nome = imp.criarLink(pessoa, reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            String nome = imp.criarLink(pessoa, reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
 
             p.add(pessoa);
@@ -209,7 +209,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
                         p,
                         " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + pessoa.getNome() + " </b></div><br />"
                         + " <h5>Visualize sua planilha de débitos clicando no link abaixo</h5><br /><br />"
-                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir Planilha de Débitos</a><br />",
+                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir Planilha de Débitos</a><br />",
                         new ArrayList(),
                         "Envio de Débitos");
             } else {
@@ -1113,7 +1113,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
             }
             Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                     sindicato.getPessoa().getNome(),
                     sindicato.getPessoa().getSite(),
                     sindicato.getPessoa().getTipoDocumento().getDescricao(),
@@ -1150,7 +1150,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
 
             String nomeDownload = "imp_protocolo_" + proto + ".pdf";
 
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/protocolo");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
 
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
             sa.salvaNaPasta(pathPasta);
@@ -1232,7 +1232,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
             Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 
             Collection lista = new ArrayList<ParametroProtocolo>();
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                     sindicato.getPessoa().getNome(),
                     sindicato.getPessoa().getSite(),
                     sindicato.getPessoa().getTipoDocumento().getDescricao(),
@@ -1269,7 +1269,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);
 
             String nomeDownload = "envio_protocolo_" + agendamento.getId() + ".pdf";
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/protocolo");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
             if (!new File(pathPasta).exists()) {
                 File fNew = new File(pathPasta);
                 fNew.mkdir();
@@ -1283,7 +1283,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
 
             if (link == null) {
                 link = new Links();
-                link.setCaminho("/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/protocolo");
+                link.setCaminho("/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
                 link.setNomeArquivo(nomeDownload);
                 link.setPessoa(agendamento.getPessoaEmpresa().getFisica().getPessoa());
 
@@ -1314,7 +1314,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
                 ret = EnviarEmail.EnviarEmailPersonalizado(registro,
                         p,
                         " <h5>Visualize seu protocolo clicando no link abaixo</5><br /><br />"
-                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir seu protocolo</a><br />",
+                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir seu protocolo</a><br />",
                         //" <a href='"+registro.getUrlPath()+"/Sindical/Arquivos/downloads/protocolo/"+nomeDownload+".pdf' target='_blank'>Clique aqui para abrir seu protocolo</a><br />", 
                         new ArrayList(),
                         "Envio de protocolo de homologação");
@@ -1614,7 +1614,7 @@ public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Ser
 
     public String extratoTela() {
         GenericaSessao.put("pessoaPesquisa", juridica.getPessoa());
-        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
         // return ((chamadaPaginaJSFBean) GenericaSessao.getObject("chamadaPaginaBean")).extratoTela();
     }
 

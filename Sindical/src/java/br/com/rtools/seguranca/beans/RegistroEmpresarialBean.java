@@ -10,12 +10,17 @@ import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class RegistroEmpresarialJSFBean {
+@ManagedBean
+@SessionScoped
+public class RegistroEmpresarialBean implements Serializable {
 
     private Registro registro = new Registro();
     private String senha = "";

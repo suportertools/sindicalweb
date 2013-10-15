@@ -3,7 +3,7 @@ package br.com.rtools.arrecadacao.beans;
 import br.com.rtools.arrecadacao.db.AcordoComissaoDB;
 import br.com.rtools.arrecadacao.db.AcordoComissaoDBToplink;
 import br.com.rtools.impressao.ParametroAcordoAnalitico;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
@@ -102,7 +102,7 @@ public class FechamentoComissaoAcordoJSFBean {
                         (Date) ((Vector) result.get(i)).get(8),
                         comissao));
             }
-            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos");
+            String patch = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos");
             File fileA = new File(patch + "/downloads");
             if (!fileA.exists()) {
                 fileA.mkdir();
@@ -112,9 +112,9 @@ public class FechamentoComissaoAcordoJSFBean {
                 fileB.mkdir();
             }
             try {
-                String patchRelatorio = "/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Relatorios/ACORDO_ANALITICO.jasper";
+                String patchRelatorio = "/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ACORDO_ANALITICO.jasper";
                 byte[] arquivo = new byte[0];
-                if (!new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Relatorios/ACORDO_ANALITICO.jasper")).exists()) {
+                if (!new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/ACORDO_ANALITICO.jasper")).exists()) {
                     patchRelatorio = "/Relatorios/ACORDO_ANALITICO.jasper";
                 }
                 jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(patchRelatorio));
@@ -128,7 +128,7 @@ public class FechamentoComissaoAcordoJSFBean {
                 String nomeDownload = "acordo_analitico_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
 
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
 
                 sa.salvaNaPasta(pathPasta);
 

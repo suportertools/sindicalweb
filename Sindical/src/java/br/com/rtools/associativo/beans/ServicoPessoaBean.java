@@ -9,18 +9,23 @@ import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 
-public class ServicoPessoaJSFBean {
+@ManagedBean
+@SessionScoped
+public class ServicoPessoaBean implements Serializable {
 
     protected String indexTab;
     protected String strEndereco;
@@ -35,7 +40,7 @@ public class ServicoPessoaJSFBean {
     protected List<SelectItem> listaServicos;
     //protected FisicaJSFBean fisicaJSFBean;
 
-    public ServicoPessoaJSFBean() {
+    public ServicoPessoaBean() {
         indexTab = "socios";
         strEndereco = "";
         titular = new Fisica();
@@ -61,7 +66,7 @@ public class ServicoPessoaJSFBean {
     }
 
     public String chamadaPesquisa() {
-        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
     }
 
     public void editar(ServicoPessoa servicoPessoa) {

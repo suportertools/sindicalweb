@@ -5,14 +5,19 @@ import br.com.rtools.seguranca.db.*;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 // import java.util.Vector;
 import javax.faces.model.SelectItem;
 
-public class PermissaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class PermissaoBean implements Serializable {
 
     private Permissao permissao = new Permissao();
     private Modulo modulo;

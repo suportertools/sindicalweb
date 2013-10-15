@@ -7,7 +7,7 @@ import br.com.rtools.financeiro.db.*;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.ArquivoRetorno;
@@ -44,7 +44,7 @@ public class RetornoPadrao extends ArquivoRetorno {
         String valorPago = "";
         String dataPagamento = "";
         String dataVencimento = "";
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoRetorno/Padrao");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/ArquivoRetorno/Padrao");
         //String idContaCobranca = "";
         //Servicos servico = new Servicos();
         ServicosDB dbS = new ServicosDBToplink();
@@ -120,7 +120,7 @@ public class RetornoPadrao extends ArquivoRetorno {
                 for (int i = 0; i < listFile.length; i++) {
                     try {
                         if (!listFile[i].getName().toLowerCase().startsWith(DataHoje.ArrayDataHoje()[2] + "-" + DataHoje.ArrayDataHoje()[1])) {
-                            File fileDel = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/ArquivoRetorno/Padrao/ARQUIVOBAIXA.ret"));
+                            File fileDel = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/ArquivoRetorno/Padrao/ARQUIVOBAIXA.ret"));
                             if (fileDel.exists()) {
                                 fileDel.delete();
                             }

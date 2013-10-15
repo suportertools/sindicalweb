@@ -16,10 +16,14 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
-public class chamadaPaginaJSFBean implements Serializable {
+@ManagedBean
+@SessionScoped
+public class ChamadaPaginaBean implements Serializable {
 
     private HttpServletRequest paginaRequerida = null;
     private boolean carregaPg = true;

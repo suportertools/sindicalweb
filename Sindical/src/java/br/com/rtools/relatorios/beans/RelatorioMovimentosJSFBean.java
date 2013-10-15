@@ -19,7 +19,7 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDB;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDBToplink;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.math.BigDecimal;
@@ -210,7 +210,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
 
                     valorLiquido = Moeda.subtracaoValores(Moeda.subtracaoValores(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(47))), Float.valueOf(Float.parseFloat(getConverteNullString(((Vector) result.get(i)).get(43))))), repasse);
 
-                    listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                    listaMovs.add(new ParametroMovimentos(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             sindicato.getPessoa().getNome(),
                             endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
                             endSindicato.getEndereco().getLogradouro().getDescricao(),
@@ -290,7 +290,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
                 String nomeDownload = "relatorio_movimentos_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
 
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
                 sa.salvaNaPasta(pathPasta);
 
                 Download download = new Download(nomeDownload,
@@ -581,7 +581,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
                 nomeDownload = "relatorio_movimentos_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
 
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios");
+                pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
 
                 sa.salvaNaPasta(pathPasta);
 
@@ -606,7 +606,7 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
                         ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                                 p,
                                 " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
-                                + " <a href='" + reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
+                                + " <a href='" + reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
                                 new ArrayList(),
                                 "Envio de Relatório");
                     } else {

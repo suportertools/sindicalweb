@@ -31,7 +31,7 @@ import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -811,7 +811,7 @@ public class ImpressaoBoletosJSFBean {
                 String nomeDownload = "etiquetas_empresa_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
 
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/etiquetas");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
 
                 sa.salvaNaPasta(pathPasta);
 
@@ -996,7 +996,7 @@ public class ImpressaoBoletosJSFBean {
                         dados[19] = "";
                         dados[20] = "";
                     }
-                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Imagens/LogoCliente.png"),
+                    listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                             sindicato.getPessoa().getNome(),
                             endSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
                             endSindicato.getEndereco().getLogradouro().getDescricao(),
@@ -1054,7 +1054,7 @@ public class ImpressaoBoletosJSFBean {
                 String nomeDownload = "etiquetas_contabil_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
 
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/etiquetas");
+                String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
 
                 sa.salvaNaPasta(pathPasta);
 
@@ -1176,7 +1176,7 @@ public class ImpressaoBoletosJSFBean {
 
             ImprimirBoleto imp = new ImprimirBoleto();
             imp.imprimirBoleto(mov, listaValores, listaVencimentos, false);
-            String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
 
             p.add(jur.getPessoa());
@@ -1188,7 +1188,7 @@ public class ImpressaoBoletosJSFBean {
                         p,
                         " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
                         + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
-                        + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />",
+                        + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />",
                         new ArrayList(),
                         "Envio de Boleto");
             } else {

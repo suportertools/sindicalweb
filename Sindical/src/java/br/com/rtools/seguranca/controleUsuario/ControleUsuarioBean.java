@@ -7,16 +7,21 @@ import br.com.rtools.seguranca.db.*;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-public class controleUsuarioJSFBean implements Serializable {
+@ManagedBean
+@SessionScoped
+public class ControleUsuarioBean implements Serializable {
 
     private Usuario usuario = new Usuario();
     private String login = "";
@@ -267,16 +272,16 @@ public class controleUsuarioJSFBean implements Serializable {
     }
 
     public static String getCliente() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-            cliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
+        if (GenericaSessao.exists("sessaoCliente")) {
+            cliente = GenericaSessao.getString("sessaoCliente");
         }
         return cliente;
     }
 
     public String getClienteString() {
         String novoCliente = "";
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-            novoCliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");
+       if (GenericaSessao.exists("sessaoCliente")) {
+            novoCliente = GenericaSessao.getString("sessaoCliente");
         }
         return novoCliente;
     }
@@ -295,6 +300,7 @@ public class controleUsuarioJSFBean implements Serializable {
 
     public void removeSessaoModuloMenuPrincipal() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
+            GenericaSessao.remove("idModulo");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo");
         }
     }

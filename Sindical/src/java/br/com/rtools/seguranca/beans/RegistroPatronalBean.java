@@ -15,11 +15,16 @@ import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class RegistroPatronalJSFBean {
+@ManagedBean
+@SessionScoped
+public class RegistroPatronalBean implements Serializable {
 
     private Patronal patronal = new Patronal();
     private String msg = "";

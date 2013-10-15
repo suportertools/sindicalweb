@@ -14,7 +14,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Links;
 import br.com.rtools.sistema.db.LinksDB;
 import br.com.rtools.sistema.db.LinksDBToplink;
@@ -26,6 +26,7 @@ import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +42,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class NotificacaoJSFBean {
+public class NotificacaoJSFBean implements Serializable {
 
     private int idLista = 0;
     private int idTipoEnvio = 0;
@@ -205,7 +206,7 @@ public class NotificacaoJSFBean {
 
         LinksDB db = new LinksDBToplink();
         try {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             File files = new File(caminho);
             File listFile[] = files.listFiles();
 
@@ -505,7 +506,7 @@ public class NotificacaoJSFBean {
                             String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
                             Thread.sleep(2000);
                             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+                            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
 
                             File create = new File(pathPasta);
                             if (!create.exists()) {
@@ -515,7 +516,7 @@ public class NotificacaoJSFBean {
                             sa.salvaNaPasta(pathPasta);
 
                             Links link = new Links();
-                            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+                            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
                             link.setNomeArquivo(nomeDownload);
                             link.setPessoa(pes);
                             link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
@@ -633,7 +634,7 @@ public class NotificacaoJSFBean {
                         String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
                         Thread.sleep(2000);
                         SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-                        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+                        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
 
                         File create = new File(pathPasta);
                         if (!create.exists()) {
@@ -643,7 +644,7 @@ public class NotificacaoJSFBean {
                         sa.salvaNaPasta(pathPasta);
 
                         Links link = new Links();
-                        link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+                        link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
                         link.setNomeArquivo(nomeDownload);
                         link.setPessoa(null);
                         link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
@@ -725,13 +726,13 @@ public class NotificacaoJSFBean {
             }
             List<Pessoa> pes_add = new ArrayList();
             pes_add.add(link.getPessoa());
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             String[] ret = new String[2];
             if (!registro.isEnviarEmailAnexo()) {
                 ret = EnviarEmail.EnviarEmailPersonalizado(registro,
                         pes_add,
                         " <h5>Visualize sua notificação clicando no link abaixo</5><br /><br />"
-                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + link.getNomeArquivo() + "' target='_blank'>Clique aqui para abrir a Notificação</a><br />",
+                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + link.getNomeArquivo() + "' target='_blank'>Clique aqui para abrir a Notificação</a><br />",
                         new ArrayList(),
                         "Envio de Notificação");
             } else {
@@ -769,11 +770,11 @@ public class NotificacaoJSFBean {
 
             String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             sa.salvaNaPasta(pathPasta);
 
             Links link = new Links();
-            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+            link.setCaminho(registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
             link.setNomeArquivo(nomeDownload);
             link.setPessoa(pessoa);
             link.setDescricao(listaTipoEnvio.get(idTipoEnvio).getLabel());
@@ -792,7 +793,7 @@ public class NotificacaoJSFBean {
                 ret = EnviarEmail.EnviarEmailPersonalizado(registro,
                         pes_add,
                         " <h5>Visualize sua notificação clicando no link abaixo</5><br /><br />"
-                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir a Notificação</a><br />",
+                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir a Notificação</a><br />",
                         new ArrayList(),
                         "Envio de Notificação");
             } else {
@@ -1070,7 +1071,7 @@ public class NotificacaoJSFBean {
         if (listaArquivo.isEmpty()) {
             LinksDB db = new LinksDBToplink();
             try {
-                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
                 File files = new File(caminho);
                 File listFile[] = files.listFiles();
 
@@ -1080,7 +1081,7 @@ public class NotificacaoJSFBean {
                         continue;
                     }
 
-                    listaArquivo.add(new DataObject(registro.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/notificacao/" + lote.getId() + "/" + listFile[i].getName(), i + 1 + " - " + link.getDescricao()));
+                    listaArquivo.add(new DataObject(registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId() + "/" + listFile[i].getName(), i + 1 + " - " + link.getDescricao()));
                 }
             } catch (Exception e) {
                 return new ArrayList();

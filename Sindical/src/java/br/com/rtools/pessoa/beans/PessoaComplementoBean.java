@@ -6,15 +6,16 @@ import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-@ManagedBean(name = "pessoaComplementoBean")
+@ManagedBean
 @SessionScoped
-public class PessoaComplementoJSFBean extends PesquisarProfissaoJSFBean {
+public class PessoaComplementoBean extends PesquisarProfissaoJSFBean implements Serializable {
 
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private Pessoa pessoa = new Pessoa();

@@ -16,8 +16,8 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.beans.JuridicaJSFBean;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.chamadaPaginaJSFBean;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Links;
 import br.com.rtools.sistema.db.LinksDB;
 import br.com.rtools.sistema.db.LinksDBToplink;
@@ -356,7 +356,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         mensagemConvencao.setServicos(servicos);
                         mensagemConvencao.setReferencia(strReferencia);
                         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("mensagemPesquisa", mensagemConvencao);
-                        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).mensagem();
+                        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).mensagem();
                     }
                 }
             }
@@ -570,7 +570,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
                     ImprimirBoleto imp = new ImprimirBoleto();
                     imp.imprimirBoleto(movs, listaValores, listaVencimentos, imprimeVerso);
-                    String nome = imp.criarLink(movs.get(i).getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+                    String nome = imp.criarLink(movs.get(i).getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
                     List<Pessoa> p = new ArrayList();
 
                     p.add(movs.get(i).getPessoa());
@@ -579,7 +579,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                                 p,
                                 " <h5>Visualize seu boleto clicando no link abaixo</5><br /><br />"
-                                + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
+                                + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
                                 new ArrayList(),
                                 "Envio de Boleto");
                     } else {
@@ -633,7 +633,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
                         ImprimirBoleto imp = new ImprimirBoleto();
                         imp.imprimirBoleto(m, listaValores, listaVencimentos, imprimeVerso);
-                        String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+                        String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
                         List<Pessoa> p = new ArrayList();
                         p.add(jur.getPessoa());
 
@@ -642,7 +642,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                             ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                                     p,
                                     " <h5>Visualize seu boleto clicando no link abaixo</5><br /><br />"
-                                    + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
+                                    + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
                                     new ArrayList(),
                                     "Envio de Boleto");
                         } else {
@@ -682,7 +682,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
                         ImprimirBoleto imp = new ImprimirBoleto();
                         imp.imprimirBoleto(m, listaValores, listaVencimentos, imprimeVerso);
-                        String nome = imp.criarLink(jur.getContabilidade().getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+                        String nome = imp.criarLink(jur.getContabilidade().getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
                         List<Pessoa> p = new ArrayList();
                         p.add(jur.getContabilidade().getPessoa());
 
@@ -692,7 +692,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                             ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                                     p,
                                     " <h5>Visualize seu boleto clicando no link abaixo</5><br /><br />"
-                                    + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
+                                    + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
                                     new ArrayList(),
                                     "Envio de Boleto");
                         } else {
@@ -747,7 +747,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
             ImprimirBoleto imp = new ImprimirBoleto();
             imp.imprimirBoleto(movs, listaValores, listaVencimentos, imprimeVerso);
-            String nome = imp.criarLink(juridica.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/boletos");
+            String nome = imp.criarLink(juridica.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
             p.add(juridica.getPessoa());
 
@@ -757,7 +757,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                 ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                         p,
                         " <h5>Visualize seu boleto clicando no link abaixo</5><br /><br />"
-                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + controleUsuarioJSFBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
+                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "' target='_blank'>Clique aqui para abrir boleto</a><br />",
                         new ArrayList(),
                         "Envio de Boleto");
             } else {
@@ -814,7 +814,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         Juridica jur = new Juridica();
         jur = db.pesquisaJuridicaPorPessoa(((Movimento) listMovimentos.get(idIndex).getArgumento1()).getPessoa().getId());
         ((JuridicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(jur);
-        return ((chamadaPaginaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
     }
 
     public List<SelectItem> getListaServico() {

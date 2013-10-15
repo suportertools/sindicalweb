@@ -1,6 +1,6 @@
 package br.com.rtools.pessoa.beans;
 
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.GenericaQuery;
 import java.io.*;
 import java.net.InetAddress;
@@ -19,7 +19,7 @@ public class TirarFotoJSFBean {
 
     public String capturarImagem() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) facesContext.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/");
+        String caminho = ((ServletContext) facesContext.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/");
         criarCaminhoPath(caminho);
         ziparArquivos(caminho);
         downloadFile("Webcam.zip", caminho, "zip", FacesContext.getCurrentInstance());
@@ -62,7 +62,7 @@ public class TirarFotoJSFBean {
         GenericaQuery generica = new GenericaQuery();
         FacesContext context = FacesContext.getCurrentInstance();
         File files;
-        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/Fotos/"));
+        files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Fotos/"));
         File listFile[] = files.listFiles();
         String[] parametros = new String[6];
         listaFotos.clear();

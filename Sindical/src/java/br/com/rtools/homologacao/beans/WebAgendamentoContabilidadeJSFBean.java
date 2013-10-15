@@ -20,7 +20,7 @@ import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -169,7 +169,7 @@ public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBea
 
             String nomeDownload = "imp_protocolo_" + proto + ".pdf";
 
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + controleUsuarioJSFBean.getCliente() + "/Arquivos/downloads/protocolo");
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
 
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
             sa.salvaNaPasta(pathPasta);

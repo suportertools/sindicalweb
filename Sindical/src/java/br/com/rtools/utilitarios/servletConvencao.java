@@ -1,6 +1,6 @@
 package br.com.rtools.utilitarios;
 
-import br.com.rtools.seguranca.controleUsuario.controleUsuarioJSFBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
