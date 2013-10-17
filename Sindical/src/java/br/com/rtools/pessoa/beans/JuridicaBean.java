@@ -16,9 +16,12 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+//import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -26,7 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import knu.ReceitaCNPJ;
 import knu.knu;
 
-public class JuridicaJSFBean {
+@ManagedBean
+@SessionScoped
+public class JuridicaBean implements Serializable {
 
     private Juridica juridica = new Juridica();
     private Juridica contabilidade = new Juridica();
@@ -349,10 +354,10 @@ public class JuridicaJSFBean {
     public String getContribuinte() {
         JuridicaDB db = new JuridicaDBToplink();
         if (juridica.getId() != -1) {
-            List<Vector> listax = db.listaJuridicaContribuinte(juridica.getId());
+            List listax = db.listaJuridicaContribuinte(juridica.getId());
 
             for (int i = 0; i < listax.size(); i++) {
-                if (listax.get(0).get(11) != null) {
+                if (((List) listax.get(0)).get(11) != null) {
                     // CONTRIBUINTE INATIVO
                     //cnaeContribuinte = " cnae contribuinte porém empresa inativa!";
                     cnaeContribuinte = " ";
@@ -406,7 +411,7 @@ public class JuridicaJSFBean {
 
     public String getEnderecoCobranca() {
         PessoaEndereco ende = null;
-        String strCompl = "";
+        String strCompl;
         if (!listaEnd.isEmpty()) {
             ende = (PessoaEndereco) listaEnd.get(0);
         }
@@ -517,7 +522,7 @@ public class JuridicaJSFBean {
 
         TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
         Pessoa pessoa = juridica.getPessoa();
-        List listDocumento = new ArrayList();
+        List listDocumento;
         if (listaEnd.isEmpty() || pessoa.getId() == -1) {
             adicionarEnderecos();
         }
@@ -698,7 +703,7 @@ public class JuridicaJSFBean {
 
         sv.abrirTransacao();
         if (!listaEndereco.isEmpty()) {
-            PessoaEndereco pe = new PessoaEndereco();
+            PessoaEndereco pe;
             for (int i = 0; i < listaEndereco.size(); i++) {
                 pe = (PessoaEndereco) sv.pesquisaCodigo(listaEndereco.get(i).getId(), "PessoaEndereco");
                 if (!sv.deletarObjeto(pe)) {
@@ -713,7 +718,7 @@ public class JuridicaJSFBean {
         List<ContribuintesInativos> listaCI = dbCI.listaContribuintesInativos(juridica.getId());
 
         if (!listaCI.isEmpty()) {
-            ContribuintesInativos ci = new ContribuintesInativos();
+            ContribuintesInativos ci;
             for (int i = 0; i < listaCI.size(); i++) {
                 ci = (ContribuintesInativos) sv.pesquisaCodigo(listaCI.get(i).getId(), "ContribuintesInativos");
                 if (!sv.deletarObjeto(ci)) {
@@ -802,9 +807,9 @@ public class JuridicaJSFBean {
             if (contabilidade != null) {
                 if (contabilidade.getId() != -1) {
                     PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                    PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
-                    pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
-                    pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
+                    // PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
+                    PessoaEndereco pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
+                    PessoaEndereco pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
                     if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
                         chkEndContabilidade = true;
                     } else {
@@ -911,8 +916,10 @@ public class JuridicaJSFBean {
     }
 
     public String editarEmpresaContabilidade() {
-        JuridicaDB db = new JuridicaDBToplink();
-        juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
+        // JuridicaDB db = new JuridicaDBToplink();
+        //juridica = db.pesquisaCodigo(juridica.getContabilidade().getId());
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        juridica = (Juridica) salvarAcumuladoDB.pesquisaObjeto(juridica.getContabilidade().getId(), "Juridica");
         if (juridica.getContabilidade() == null) {
             contabilidade = new Juridica();
         } else {
@@ -964,7 +971,7 @@ public class JuridicaJSFBean {
 //       return result;
 //   }
     public String adicionarEnderecos() {
-        List tiposE = new ArrayList();
+        // List tiposE = new ArrayList();
         TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
         PessoaEnderecoDB db_pesEnd = new PessoaEnderecoDBToplink();
         endereco = new Endereco();
@@ -973,7 +980,7 @@ public class JuridicaJSFBean {
         int i = 0;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoNum", pessoaEndereco.getNumero());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoComp", pessoaEndereco.getComplemento());
-        tiposE = db_tipoEndereco.listaTipoEnderecoParaJuridica();
+        List tiposE = db_tipoEndereco.listaTipoEnderecoParaJuridica();
         endereco = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
         if (endereco != null) {
             if (!alterarEnd) {
@@ -995,8 +1002,8 @@ public class JuridicaJSFBean {
                 if (!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 2) {
 
                     if (pessoaEndereco.getId() != -1) {
-                        PessoaEndereco pessoaEndeAnt = new PessoaEndereco();
-                        pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 2);
+                        // PessoaEndereco pessoaEndeAnt = new PessoaEndereco();
+                        PessoaEndereco pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 2);
                         ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tiposE.get(0));
                         ((PessoaEndereco) listaEnd.get(0)).setEndereco(endereco);
                         ((PessoaEndereco) listaEnd.get(0)).setComplemento(pessoaEndereco.getComplemento());
@@ -1045,7 +1052,7 @@ public class JuridicaJSFBean {
     }
 
     public boolean comparaEndereco(PessoaEndereco pessoaEnde1, PessoaEndereco pessoaEnde2) {
-        boolean compara = false;
+        boolean compara;
         if (pessoaEnde1 != null && pessoaEnde2 != null) {
             if (pessoaEnde1.getComplemento() == null || pessoaEnde2.getComplemento() == null) {
                 pessoaEnde1.setComplemento("");
@@ -1065,11 +1072,11 @@ public class JuridicaJSFBean {
     }
 
     public List<PessoaEndereco> getListaEnderecos() {
-        PessoaEndereco pesEn = new PessoaEndereco();
-        String strCompl = "";
+        // PessoaEndereco pesEn = new PessoaEndereco();
+        String strCompl;
         if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
             listaEnd = getPesquisaEndPorPessoa();
-            pesEn = (PessoaEndereco) (listaEnd.get(1));
+            PessoaEndereco pesEn = (PessoaEndereco) (listaEnd.get(1));
             if (pesEn.getComplemento() == null || pesEn.getComplemento().isEmpty()) {
                 strCompl = " ";
             } else {
@@ -1147,10 +1154,9 @@ public class JuridicaJSFBean {
 
     public void verificarEndContabilidade() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        PessoaEndereco pesEndCon = new PessoaEndereco();
         if (juridica.getId() != -1) {
             if (chkEndContabilidade && contabilidade.getId() != -1) {
-                pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
+                PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
                 if ((!listaEnd.isEmpty()) && pesEndCon != null) {
                     pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
                     pessoaEndereco.setComplemento(pesEndCon.getComplemento());
@@ -1162,7 +1168,7 @@ public class JuridicaJSFBean {
             } else if (juridica != null) {
                 if (juridica.getContabilidade() != null) {
                     if (comparaEndereco((PessoaEndereco) listaEnd.get(1), db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3))) {
-                        pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
+                        PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 2);
                         if ((!listaEnd.isEmpty()) && pesEndCon != null && !endComercial) {
                             pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
                             pessoaEndereco.setComplemento(pesEndCon.getComplemento());
@@ -1179,15 +1185,15 @@ public class JuridicaJSFBean {
     }
 
     public void pesquisaContabilidadeI() {
-        JuridicaDB db = new JuridicaDBToplink();
         if (!contabilidade.getPessoa().getNome().isEmpty()) {
+            JuridicaDB db = new JuridicaDBToplink();
             listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "I");
         }
     }
 
     public void pesquisaContabilidadeP() {
-        JuridicaDB db = new JuridicaDBToplink();
         if (!contabilidade.getPessoa().getNome().isEmpty()) {
+            JuridicaDB db = new JuridicaDBToplink();
             listaContabilidade = db.pesquisaPessoa(contabilidade.getPessoa().getNome(), "nome", "P");
         }
     }
@@ -1251,25 +1257,24 @@ public class JuridicaJSFBean {
     }
 
     public List<String> BuscaTipoEndereco(Object event) {
-        List<String> result = new Vector<String>();
+        //List<String> result = new Vector<String>();
         String txtDigitado = event.toString().toLowerCase().toUpperCase();
         TipoEnderecoDB db = new TipoEnderecoDBToplink();
-        result = db.pesquisaTipoEnderecoParaJuridica('%' + txtDigitado + '%');
+        List<String> result = db.pesquisaTipoEnderecoParaJuridica('%' + txtDigitado + '%');
         return (result);
     }
 
     public List<String> BuscaTipoDocumento(Object event) {
-        List<String> result = new Vector<String>();
+        //List<String> result = new Vector<String>();
         String txtDigitado = event.toString().toLowerCase().toUpperCase();
         TipoDocumentoDB db = new TipoDocumentoDBToplink();
-        result = db.pesquisaTipoDocumento('%' + txtDigitado + '%');
+        List<String> result = db.pesquisaTipoDocumento('%' + txtDigitado + '%');
         return (result);
     }
 
     public List getPesquisaEndPorPessoa() {
-        List result = null;
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        result = db.pesquisaEndPorPessoa(juridica.getPessoa().getId());
+        List result = db.pesquisaEndPorPessoa(juridica.getPessoa().getId());
         return result;
     }
 
@@ -1372,8 +1377,8 @@ public class JuridicaJSFBean {
     }
 
     public String retornaCnae() {
-        Cnae tcnae = null;
-        tcnae = (Cnae) listaCnae.get(idIndexCnae);
+        //Cnae tcnae = null;
+        Cnae tcnae = (Cnae) listaCnae.get(idIndexCnae);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cnaePesquisado", tcnae);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         descPesquisaCnae = "";
@@ -1406,9 +1411,9 @@ public class JuridicaJSFBean {
     }
 
     public List getPesquisaJuridicaFilial() {
-        List result = null;
+        //List result = null;
         FilialDB db = new FilialDBToplink();
-        result = db.pesquisaJuridicaFilial(juridica.getId());
+        List result = db.pesquisaJuridicaFilial(juridica.getId());
         return result;
     }
 
@@ -1425,9 +1430,9 @@ public class JuridicaJSFBean {
     }
 
     public List getPesquisaFilial() {
-        List result = null;
+        //List result = null;
         FilialDB db = new FilialDBToplink();
-        result = db.pesquisaFilial(descPesquisa, porPesquisa, comoPesquisa, juridica.getId());
+        List result = db.pesquisaFilial(descPesquisa, porPesquisa, comoPesquisa, juridica.getId());
         return result;
     }
 
@@ -1505,7 +1510,7 @@ public class JuridicaJSFBean {
     }
 
     public List<SelectItem> getListaMotivoInativacao() {
-        List<SelectItem> motIna = new Vector<SelectItem>();
+        List<SelectItem> motIna = new ArrayList<SelectItem>();
         int i = 0;
         JuridicaDB db = new JuridicaDBToplink();
         List select = db.listaMotivoInativacao();
@@ -1525,8 +1530,8 @@ public class JuridicaJSFBean {
 
     public boolean validaTipoDocumento(int idDoc, String docS) {
         // 1 cpf, 2 cnpj, 3 cei, 4 nenhum
-        String documento = "";
-        documento = docS.replace(".", "").replace("/", "").replace("-", "");
+        //String documento = "";
+        String documento = docS.replace(".", "").replace("/", "").replace("-", "");
 
         boolean ye = false;
         if (idDoc == 1) {
@@ -1574,8 +1579,7 @@ public class JuridicaJSFBean {
     public List getListaEmpresasPertencentes() {
         JuridicaDB db = new JuridicaDBToplink();
         PessoaEnderecoDB dbPe = new PessoaEnderecoDBToplink();
-        PessoaEndereco pe = new PessoaEndereco();
-
+        PessoaEndereco pe;
         if (juridica.getId() != -1) {
             listaEmpresasPertencentes.clear();
             List listaX = db.listaContabilidadePertencente(juridica.getId());
@@ -1603,10 +1607,8 @@ public class JuridicaJSFBean {
     public String enviarEmailParaTodos() {
         FilialDB db = new FilialDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
-        Registro reg = new Registro();
-        List<Juridica> jur = new ArrayList<Juridica>();
-        jur = dbJur.pesquisaJuridicaComEmail();
-        reg = db.pesquisaCodigoRegistro(1);
+        List<Juridica> jur = dbJur.pesquisaJuridicaComEmail();
+        Registro reg = db.pesquisaCodigoRegistro(1);
         msgConfirma = EnviarEmail.EnviarEmailAutomatico(reg, jur);
         return null;
     }
@@ -1859,9 +1861,9 @@ public class JuridicaJSFBean {
 
     public String abrirPDFConvencao() {
 //        ImprimirBoleto imp = new ImprimirBoleto();
-        ConvencaoCidade conv = new ConvencaoCidade();
+//        ConvencaoCidade conv = new ConvencaoCidade();
         ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-        conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());
+        ConvencaoCidade conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());
         try {
             if (conv != null) {
                 if (conv.getCaminho() != null || !conv.getCaminho().isEmpty()) {
@@ -1882,8 +1884,8 @@ public class JuridicaJSFBean {
     }
 
     public String getStrCnaeConvencao() {
-        CnaeConvencao cc = new CnaeConvencao();
-        cc = retornarCnaeConvencao();
+        //CnaeConvencao cc = new CnaeConvencao();
+        CnaeConvencao cc = retornarCnaeConvencao();
         if (cc != null) {
             strCnaeConvencao = cc.getConvencao().getDescricao();
             convencao = cc.getConvencao();
@@ -2010,16 +2012,16 @@ public class JuridicaJSFBean {
     public List<DataObject> getListaJuridica() {
         if (listaJuridica.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
-            List<Juridica> lista = new ArrayList();
-            lista = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
+            //List<Juridica> lista = new ArrayList();
+            List<Juridica> lista = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
 
             for (int i = 0; i < lista.size(); i++) {
-                List<Vector> listax = db.listaJuridicaContribuinte(lista.get(i).getId());
-                String status = "";
+                List listax = db.listaJuridicaContribuinte(lista.get(i).getId());
+                String status;
                 if (listax.isEmpty()) {
                     status = "NÃO CONTRIBUINTE";
                 } else {
-                    if (listax.get(0).get(11) != null) {
+                    if (((List)listax.get(0)).get(11) != null) {
                         status = "CONTRIBUINTE INATIVO";
                     } else {
                         status = "ATIVO";
@@ -2109,9 +2111,9 @@ public class JuridicaJSFBean {
     }
 
     public String getStrArquivo() {
-        ConvencaoCidade conv = new ConvencaoCidade();
+        //ConvencaoCidade conv = new ConvencaoCidade();
         ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-        conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());
+        ConvencaoCidade conv = db.pesquisarConvencao(convencao.getId(), gruCids.getId());
         if (!strGrupoCidade.isEmpty()) {
             if (conv != null) {
                 FacesContext context = FacesContext.getCurrentInstance();

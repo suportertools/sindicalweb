@@ -71,8 +71,8 @@ public class VendedorBean implements java.io.Serializable {
 
     public List<Vendedor> getListaVendedores() {
         if (listaVendedores.isEmpty()) {
-            VendedorDB vendedorDB = new VendedorDBToplink();
-            listaVendedores = vendedorDB.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            listaVendedores = (List<Vendedor>) salvarAcumuladoDB.listaObjeto("Vendedor", true);
         }
         return listaVendedores;
     }

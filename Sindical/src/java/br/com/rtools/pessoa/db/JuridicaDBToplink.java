@@ -14,41 +14,41 @@ import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class JuridicaDBToplink extends DB implements JuridicaDB {
 
-    @Override
-    public boolean insert(Juridica juridica) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(juridica);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Juridica juridica) {
-        try {
-            getEntityManager().merge(juridica);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Juridica juridica) {
-        try {
-            getEntityManager().remove(juridica);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+//    @Override
+//    public boolean insert(Juridica juridica) {
+//        try {
+//            getEntityManager().getTransaction().begin();
+//            getEntityManager().persist(juridica);
+//            getEntityManager().flush();
+//            getEntityManager().getTransaction().commit();
+//            return true;
+//        } catch (Exception e) {
+//            getEntityManager().getTransaction().rollback();
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean update(Juridica juridica) {
+//        try {
+//            getEntityManager().merge(juridica);
+//            getEntityManager().flush();
+//            return true;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
+//
+//    @Override
+//    public boolean delete(Juridica juridica) {
+//        try {
+//            getEntityManager().remove(juridica);
+//            getEntityManager().flush();
+//            return true;
+//        } catch (Exception e) {
+//            return false;
+//        }
+//    }
 
     @Override
     public Juridica pesquisaCodigo(int id) {
@@ -62,15 +62,15 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         return result;
     }
 
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select jur from Juridica jur ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
+//    @Override
+//    public List pesquisaTodos() {
+//        try {
+//            Query qry = getEntityManager().createQuery("select jur from Juridica jur ");
+//            return (qry.getResultList());
+//        } catch (Exception e) {
+//            return null;
+//        }
+//    }
 
     @Override
     public PessoaEndereco pesquisarPessoaEnderecoJuridica(int id) {

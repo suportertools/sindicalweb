@@ -25,7 +25,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class MatriculaContratoBean implements java.io.Serializable {
+public class ModeloContratoBean implements java.io.Serializable {
 
     private MatriculaContrato matriculaContrato = new MatriculaContrato();
     private MatriculaContratoCampos matriculaContratoCampos = new MatriculaContratoCampos();
@@ -41,6 +41,7 @@ public class MatriculaContratoBean implements java.io.Serializable {
     private int idServicos = 0;
     private Servicos servicos = new Servicos();
     private String msg = "";
+    private String descricaoPesquisa = "";
     private String msgServico = "";
     List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
@@ -426,7 +427,11 @@ public class MatriculaContratoBean implements java.io.Serializable {
                 if (GenericaSessao.exists("idModulo")) {
                     int idMod = (Integer) GenericaSessao.getInteger("idModulo");
                     if (idMod != 0) {
-                        listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod);
+                        if (descricaoPesquisa.equals("")) {
+                            listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod);
+                        } else {
+                            listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod, descricaoPesquisa);
+                        }
                     }
                 }
             } else {
@@ -484,5 +489,13 @@ public class MatriculaContratoBean implements java.io.Serializable {
 
     public void setListaModulos2(List<SelectItem> listaModulos2) {
         this.listaModulos2 = listaModulos2;
+    }
+
+    public String getDescricaoPesquisa() {
+        return descricaoPesquisa;
+    }
+
+    public void setDescricaoPesquisa(String descricaoPesquisa) {
+        this.descricaoPesquisa = descricaoPesquisa;
     }
 }

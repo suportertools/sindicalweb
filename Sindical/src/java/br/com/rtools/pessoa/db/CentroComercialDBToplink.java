@@ -8,19 +8,6 @@ import javax.persistence.Query;
 public class CentroComercialDBToplink extends DB implements CentroComercialDB {
 
     @Override
-    public List pesquisaTodosOrdernado() {
-        try {
-            Query qry = getEntityManager().createQuery(" SELECT cc FROM CentroComercial AS CC ORDER BY CC.tipoCentroComercial.descricao ASC, CC.juridica.pessoa.nome ASC ");
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
-        } catch (Exception e) {
-        }
-        return new ArrayList();
-    }
-
-    @Override
     public List listaCentroComercial(int idTipoCentroComercial, int idJuridica) {
         try {
             Query qry = getEntityManager().createQuery(""

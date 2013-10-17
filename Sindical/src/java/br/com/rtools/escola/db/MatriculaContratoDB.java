@@ -13,8 +13,6 @@ public interface MatriculaContratoDB {
 
     public List pesquisaTodosPorModulo(int idModulo);
 
-    public List pesquisaTodos();
-
     public List<MatriculaContratoServico> pesquisaMatriculaContratoServico(int idMatriculaContrato);
 
     public boolean validaMatriculaContratoServico(int idMatriculaContrato, int idServico);
@@ -22,6 +20,8 @@ public interface MatriculaContratoDB {
     public boolean existeMatriculaContratoCampo(MatriculaContratoCampos mcc, String tipoVerificacao);
 
     public List listaMatriculaContratoCampo(int idModulo);
+    
+    public List listaMatriculaContratoCampo(int idModulo, String descricaoPesquisa);
 
     public List listaModulosMatriculaContratoCampos();
 }

@@ -10,8 +10,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "ESC_TURMA")
 @NamedQueries({
-    @NamedQuery(name = "Turma.pesquisaID", query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
-    @NamedQuery(name = "Turma.findAll", query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC")
+    @NamedQuery(name = "Turma.pesquisaID",      query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
+    @NamedQuery(name = "Turma.findAll",         query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC "),
+    @NamedQuery(name = "Turma.findName",        query = "SELECT T FROM Turma AS T WHERE UPPER(T.cursos.descricao) LIKE :pdescricao ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ")
 })
 public class Turma implements Serializable {
 

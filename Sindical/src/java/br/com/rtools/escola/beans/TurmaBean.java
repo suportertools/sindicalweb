@@ -70,7 +70,7 @@ public class TurmaBean implements Serializable {
                 msgConfirma = "A data final do curso deve ser maior ou igual a data de hoje!";
                 return null;
             }
-            if (dataFinalInteger < dataInicioInteger) {
+            if (dataFinalInteger >= dataInicioInteger) {
                 msgConfirma = "A data final deve ser maior ou igual a data inicial!";
                 return null;
             }
@@ -105,6 +105,7 @@ public class TurmaBean implements Serializable {
             }
             salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Turma salva com sucesso!";
+            listaTurma.clear();
         } else {
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.alterarObjeto(turma)) {
@@ -114,6 +115,7 @@ public class TurmaBean implements Serializable {
             }
             salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Turma atualizada com sucesso!";
+            listaTurma.clear();
         }
         return null;
     }
@@ -332,8 +334,10 @@ public class TurmaBean implements Serializable {
     }
 
     public List<Turma> getListaTurma() {
-        TurmaDB db = new TurmaDBToplink();
-        listaTurma = db.pesquisaTodos();
+        if (listaTurma.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            listaTurma = salvarAcumuladoDB.listaObjeto("Turma", true);            
+        }
         return listaTurma;
     }
 

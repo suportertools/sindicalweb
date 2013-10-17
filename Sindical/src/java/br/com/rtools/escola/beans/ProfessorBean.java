@@ -137,8 +137,8 @@ public class ProfessorBean implements java.io.Serializable {
 
     public List<Professor> getListaProfessores() {
         if (listaProfessores.isEmpty()) {
-            ProfessorDB professorDB = new ProfessorDBToplink();
-            listaProfessores = professorDB.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            listaProfessores = (List<Professor>) salvarAcumuladoDB.listaObjeto("Professor", true);
         }
         return listaProfessores;
     }

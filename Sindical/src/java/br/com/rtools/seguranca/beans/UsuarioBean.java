@@ -731,6 +731,8 @@ public class UsuarioBean implements Serializable {
                 setSenhaAntiga("");
                 mensagem = "Senha alterada";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                NovoLog novoLog = new NovoLog();
+                novoLog.novo("Alteração de Senha Usuário Perfil", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Não foi possível atualizar essa senha!";

@@ -6,8 +6,6 @@ import java.util.List;
 
 public interface TurmaDB {
 
-    public List pesquisaTodos();
-
     public List<TurmaProfessor> listaTurmaProfessor(int idTurma);
 
     public boolean existeTurmaProfessor(TurmaProfessor turmaProfessor);

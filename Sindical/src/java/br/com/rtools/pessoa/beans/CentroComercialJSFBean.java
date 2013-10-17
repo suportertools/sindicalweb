@@ -134,8 +134,8 @@ public class CentroComercialJSFBean {
 
     public List<CentroComercial> getListaCentroComercial() {
         if (listaCentroComercial.isEmpty()) {
-            CentroComercialDB db = new CentroComercialDBToplink();
-            listaCentroComercial = db.pesquisaTodosOrdernado();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            listaCentroComercial = (List<CentroComercial>) salvarAcumuladoDB.listaObjeto("CentroComercial", true);
         }
         return listaCentroComercial;
     }

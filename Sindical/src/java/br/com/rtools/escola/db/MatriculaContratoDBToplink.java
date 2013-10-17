@@ -38,19 +38,6 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
     }
 
     @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery(" SELECT MC FROM MatriculaContrato AS MC ORDER BY MC.dataCadastro DESC, MC.dataAtualizado DESC, MC.titulo ASC  ");
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
-        } catch (Exception e) {
-        }
-        return new ArrayList();
-    }
-
-    @Override
     public List pesquisaTodosPorModulo(int idModulo) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT mc FROM MatriculaContrato mc WHERE mc.modulo.id = :idModulo ");
@@ -119,13 +106,22 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
 
     @Override
     public List listaMatriculaContratoCampo(int idModulo) {
+        return listaMatriculaContratoCampo(idModulo, "");
+    }
+    
+    @Override
+    public List listaMatriculaContratoCampo(int idModulo, String descricaoPesquisa) {
+        String filtroString = "";
+        if (!descricaoPesquisa.equals("")) {
+            filtroString  = " AND UPPER(MCC.campo) LIKE '%"+descricaoPesquisa.toLowerCase().toUpperCase()+"%' ";
+        }
         List list = new ArrayList();
         String tipoPesquisaModulo = "";
         if (idModulo > 0) {
-            tipoPesquisaModulo = " WHERE MCC.modulo.id = :idModulo ";
+            tipoPesquisaModulo = " WHERE MCC.modulo.id = :idModulo " + filtroString;
         }
         try {
-            Query query = getEntityManager().createQuery(" SELECT MCC FROM MatriculaContratoCampos AS MCC " + tipoPesquisaModulo + " ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ");
+            Query query = getEntityManager().createQuery(" SELECT MCC FROM MatriculaContratoCampos AS MCC " + tipoPesquisaModulo + " ORDER BY MCC.modulo.descricao ASC, MCC.campo ASC, MCC.variavel ASC ");
             if (idModulo > 0) {
                 query.setParameter("idModulo", idModulo);
             }
