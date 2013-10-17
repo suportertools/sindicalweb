@@ -13,7 +13,7 @@ import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
-import br.com.rtools.pessoa.beans.JuridicaJSFBean;
+import br.com.rtools.pessoa.beans.JuridicaBean;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
@@ -813,7 +813,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         JuridicaDB db = new JuridicaDBToplink();
         Juridica jur = new Juridica();
         jur = db.pesquisaJuridicaPorPessoa(((Movimento) listMovimentos.get(idIndex).getArgumento1()).getPessoa().getId());
-        ((JuridicaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(jur);
+        ((JuridicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(jur);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
     }
 

@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ESC_STATUS")
-@NamedQuery(name = "EscStatus.pesquisaID", query = "select es from EscStatus es where es.id=:pid")
+@NamedQuery(name = "EscStatus.pesquisaID", query = "SELECT ES FROM EscStatus AS ES WHERE ES.id = :pid")
 public class EscStatus implements java.io.Serializable {
 
     @Id

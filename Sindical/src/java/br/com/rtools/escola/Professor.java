@@ -7,7 +7,8 @@ import javax.persistence.*;
 @Table(name = "ESC_PROFESSOR")
 @NamedQueries({
     @NamedQuery(name = "Professor.pesquisaID",    query = "SELECT P FROM Professor AS P WHERE P.id = :pid"),
-    @NamedQuery(name = "Professor.findAll",       query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC")
+    @NamedQuery(name = "Professor.findAll",       query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC"),
+    @NamedQuery(name = "Professor.findName",      query = "SELECT P FROM Professor AS P WHERE UPPER(P.professor.nome) LIKE :pdescricao ORDER BY P.professor.nome ASC ")
 })
 public class Professor implements java.io.Serializable {
 

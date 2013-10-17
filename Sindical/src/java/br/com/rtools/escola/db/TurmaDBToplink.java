@@ -10,19 +10,6 @@ import javax.persistence.Query;
 public class TurmaDBToplink extends DB implements TurmaDB {
 
     @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("SELECT T FROM Turma T ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ");
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
-        } catch (Exception e) {
-        }
-        return new ArrayList();
-    }
-
-    @Override
     public List<TurmaProfessor> listaTurmaProfessor(int idTurma) {
         try {
             Query qry = getEntityManager().createQuery(" SELECT TP FROM TurmaProfessor TP WHERE TP.turma.id = " + idTurma + " ORDER BY TP.componenteCurricular.descricao ASC, TP.professor.professor.nome ASC ");

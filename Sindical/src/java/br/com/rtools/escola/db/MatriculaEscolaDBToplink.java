@@ -1,5 +1,6 @@
 package br.com.rtools.escola.db;
 
+import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
@@ -18,51 +19,6 @@ import java.util.List;
 import javax.persistence.Query;
 
 public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
-
-    @Override
-    public MatriculaEscola pesquisaCodigo(int id) {
-        MatriculaEscola result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("MatriculaEscola.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (MatriculaEscola) qry.getSingleResult();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select v from MatriculaEscola v");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList();
-        }
-    }
-
-    @Override
-    public List pesquisaTodosEscStatus() {
-        try {
-            Query qry = getEntityManager().createQuery("select e from EscStatus e");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList();
-        }
-    }
-
-    public List pesquisaTodosProfessores() {
-        try {
-            Query qry = getEntityManager().createQuery("select p from EscProfessor p");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList();
-        }
-    }
 
     @Override
     public List<MatriculaEscola> pesquisaMatriculaEscola(String porPesquisa, String descricaoCurso, String descricaoAluno, String comoPesquisa) {

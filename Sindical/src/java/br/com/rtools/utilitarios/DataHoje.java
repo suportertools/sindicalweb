@@ -651,6 +651,13 @@ public class DataHoje {
         }
         return idade;
     }
+    
+    public static int quantidadeMeses(Date dataInicial, Date dataFinal) {     
+        final double MES_EM_MILISEGUNDOS = 30.0 * 24.0 * 60.0 * 60.0 * 1000.0;  
+        //final double MES_EM_MILISEGUNDOS = 2592000000.0;            
+        int numeroDeMeses = (int) (double)((dataFinal.getTime() - dataInicial.getTime())/MES_EM_MILISEGUNDOS);
+        return numeroDeMeses;
+    }
 
     public static String validaHora(String hora) {
         int n1 = 0;

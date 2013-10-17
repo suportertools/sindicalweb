@@ -25,6 +25,8 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -601,10 +603,10 @@ public class RelatorioContribuintesJSFBean {
 
     public List<DataObject> getListaCentroComercial() {
         if (listaCentroComercial.isEmpty() && !radioCentroComercial.equals("nenhum")) {
-            CentroComercialDB db = new CentroComercialDBToplink();
-            List lista = db.pesquisaTodosOrdernado();
-            for (int i = 0; i < lista.size(); i++) {
-                listaCentroComercial.add(new DataObject(false, lista.get(i)));
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List list = (List<CentroComercial>) salvarAcumuladoDB.listaObjeto("CentroComercial", true);
+            for (int i = 0; i < list.size(); i++) {
+                listaCentroComercial.add(new DataObject(false, list.get(i)));
             }
         } else if (radioCentroComercial.equals("nenhum")) {
             listaCentroComercial.clear();

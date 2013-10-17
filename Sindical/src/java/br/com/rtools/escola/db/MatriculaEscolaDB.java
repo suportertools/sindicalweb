@@ -9,12 +9,6 @@ import javax.persistence.EntityManager;
 
 public interface MatriculaEscolaDB {
 
-    public MatriculaEscola pesquisaCodigo(int id);
-
-    public List pesquisaTodos();
-
-    public List pesquisaTodosEscStatus();
-
     public EntityManager getEntityManager();
 
     public List<MatriculaEscola> pesquisaMatriculaEscola(String porPesquisa, String descricaoCurso, String descricaoAluno, String comoPesquisa);

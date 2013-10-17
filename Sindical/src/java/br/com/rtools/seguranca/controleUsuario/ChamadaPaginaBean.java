@@ -718,9 +718,9 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "recepcao");
     }
 
-    public synchronized String matriculaContrato() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("matriculaContratoBean");
-        return metodoGenerico(2, "matriculaContrato");
+    public synchronized String modeloContrato() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("modeloContratoBean");
+        return metodoGenerico(2, "modeloContrato");
     }
 
     public synchronized String bloqueioServicos() {
@@ -733,9 +733,9 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "configuracao");
     }
 
-    public synchronized String matriculaContratoCampos() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("matriculaContratoBean");
-        return metodoGenerico(2, "matriculaContratoCampos");
+    public synchronized String modeloContratoCampos() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("modeloContratoCamposBean");
+        return metodoGenerico(2, "modeloContratoCampos");
     }
 
     public synchronized String descontoServicoEmpresa() {
@@ -1102,8 +1102,8 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(1, "pesquisaPisoSalarial");
     }
 
-    public synchronized String pesquisaMatriculaContrato() {
-        return metodoGenerico(1, "pesquisaMatriculaContrato");
+    public synchronized String pesquisaModeloContrato() {
+        return metodoGenerico(1, "pesquisaModeloContrato");
     }
 
     public synchronized String pesquisaAgendaTelefone() {

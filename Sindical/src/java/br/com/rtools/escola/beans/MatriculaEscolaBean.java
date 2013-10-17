@@ -53,6 +53,7 @@ import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.ValorExtenso;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -226,6 +227,8 @@ public class MatriculaEscolaBean implements Serializable {
             FisicaDB fisicaDB = new FisicaDBToplink();
             Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
             List listaDiaSemana = new ArrayList();
+            int periodoMeses = 0;
+            String periodoMesesExtenso = "";
             if (tipoMatricula.equals("Individual")) {
                 contratoCurso = matriculaIndividual.getCurso().getDescricao();
                 if (matriculaIndividual.isSegunda()) {
@@ -251,9 +254,11 @@ public class MatriculaEscolaBean implements Serializable {
                 }
                 horaInicial = matriculaIndividual.getInicio();
                 horaFinal = matriculaIndividual.getTermino();
+                periodoMeses = DataHoje.quantidadeMeses(matriculaIndividual.getDataInicio(), matriculaIndividual.getDataTermino());
             } else {
                 turma = (Turma) salvarAcumuladoDB.pesquisaCodigo(matriculaTurma.getTurma().getId(), "Turma");
                 contratoCurso = matriculaTurma.getTurma().getCursos().getDescricao();
+                periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino());
                 if (turma.isSegunda()) {
                     listaDiaSemana.add("Seg");
                 }
@@ -277,6 +282,14 @@ public class MatriculaEscolaBean implements Serializable {
                 }
                 horaInicial = matriculaTurma.getTurma().getHoraInicio();
                 horaFinal = matriculaTurma.getTurma().getHoraTermino();
+                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$descricao", turma.getDescricao()));
+            }
+            if (periodoMeses == 0) {
+                periodoMesesExtenso = "mês atual";
+            } else {
+                ValorExtenso valorExtenso = new ValorExtenso();
+                valorExtenso.setNumber((double) periodoMeses);
+                periodoMesesExtenso = (valorExtenso.toString()).replace("reais", "");
             }
             for (int i = 0; i < listaDiaSemana.size(); i++) {
                 if (i == 0) {
@@ -285,13 +298,51 @@ public class MatriculaEscolaBean implements Serializable {
                     contratoDiaSemana += " , " + listaDiaSemana.get(i).toString();
                 }
             }
+            String enderecoAlunoString = "";
+            String bairroAlunoString = "";
+            String cidadeAlunoString = "";
+            String estadoAlunoString = "";
+            String cepAlunoString = "";
+            String enderecoResponsavelString = "";
+            String bairroResponsavelString = "";
+            String cidadeResponsavelString = "";
+            String estadoResponsavelString = "";
+            String cepResponsavelString = "";
             PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
-            PessoaEndereco pessoaEnderecoAluno =        (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getAluno().getId());
-            if (pessoaEnderecoAluno != null) {
-                
-            }
-            PessoaEndereco pessoaEnderecoResponsavel =  (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getResponsavel().getId());
+            PessoaEndereco pessoaEnderecoAluno = (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getAluno().getId(), 1);
+
             
+            int idTipoEndereco = -1;
+            if (pessoaEnderecoAluno != null) { 
+                enderecoAlunoString = pessoaEnderecoAluno.getEndereco().getEnderecoSimplesToString()+", "+pessoaEnderecoAluno.getNumero();
+                bairroAlunoString = pessoaEnderecoAluno.getEndereco().getBairro().getDescricao();
+                cidadeAlunoString = pessoaEnderecoAluno.getEndereco().getCidade().getCidade();
+                estadoAlunoString = pessoaEnderecoAluno.getEndereco().getCidade().getUf();
+                cepAlunoString = pessoaEnderecoAluno.getEndereco().getCep();
+            }
+            if (matriculaEscola.getResponsavel().getId() != matriculaEscola.getAluno().getId()) {
+                // Tipo Documento - CPF
+                if (matriculaEscola.getResponsavel().getTipoDocumento().getId() == 1) {
+                    idTipoEndereco = 1;
+                // Tipo Documento - CNPJ
+                } else if (matriculaEscola.getResponsavel().getTipoDocumento().getId() == 2) {
+                    idTipoEndereco = 3;
+                }
+            } else {
+                enderecoResponsavelString = enderecoAlunoString;
+                bairroResponsavelString = bairroAlunoString;
+                cidadeResponsavelString = cidadeAlunoString;
+                estadoResponsavelString = estadoAlunoString;
+                cepResponsavelString = cepAlunoString;
+            }
+            PessoaEndereco pessoaEnderecoResponsavel =  (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getResponsavel().getId(), idTipoEndereco);
+            if (pessoaEnderecoResponsavel != null) {
+                enderecoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getEnderecoSimplesToString()+", "+pessoaEnderecoResponsavel.getNumero();
+                bairroResponsavelString = pessoaEnderecoResponsavel.getEndereco().getBairro().getDescricao();
+                cidadeResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCidade().getCidade();
+                estadoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCidade().getUf();
+                cepResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCep();
+            }
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cpfAluno", matriculaEscola.getAluno().getDocumento()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$rgAluno", aluno.getRg()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$responsavel", getResponsavel().getNome()));
@@ -299,9 +350,11 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$rgResponsavel", contratoFisica.getRg()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$curso", contratoCurso));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaSemana", contratoDiaSemana));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataInicialExtenso", DataHoje.dataExtenso(turma.getDataInicio())));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinalExtenso", DataHoje.dataExtenso(turma.getDataTermino())));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataExtenso", DataHoje.dataExtenso(DataHoje.data())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataInicial", turma.getDataInicio()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinal", turma.getDataTermino()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataExtenso", DataHoje.dataExtenso(DataHoje.data())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", Moeda.converteR$Float(matriculaEscola.getValorTotal() / matriculaEscola.getNumeroParcelas())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$parcelas", Integer.toString(matriculaEscola.getNumeroParcelas())));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaVencimento", Integer.toString(matriculaEscola.getDiaVencimento())));
@@ -309,21 +362,48 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaInicial", horaInicial));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaFinal", horaFinal));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", Moeda.converteR$Float((matriculaEscola.getValorTotal()))));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$taxa", Moeda.converteR$Float(Float.parseFloat(valorTaxa))));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$matricula", Integer.toString(matriculaEscola.getId())));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$ano", "definir ano"));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoAluno", pessoaEnderecoAluno.getEndereco().getEnderecoSimplesToString())+", "+pessoaEnderecoAluno.getNumero());
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroAluno", pessoaEnderecoAluno.getEndereco().getBairro().getDescricao()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeAluno", pessoaEnderecoAluno.getEndereco().getCidade().getCidade()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoAluno", pessoaEnderecoAluno.getEndereco().getCidade().getUf()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepAluno", pessoaEnderecoAluno.getEndereco().getCep()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$ano", DataHoje.livre(DataHoje.dataHoje(), "yyyy")));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoAluno", enderecoAlunoString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroAluno", bairroAlunoString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeAluno", cidadeAlunoString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoAluno", estadoAlunoString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepAluno", cepAlunoString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesesExtenso", periodoMesesExtenso));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$meses", Integer.toString(periodoMeses)));
+            String alunoNascimento = "";
+            if (contratoFisica.getId() != -1) {
+                alunoNascimento = contratoFisica.getNascimento();
+            }            
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$nascimentoAluno", alunoNascimento));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailAluno", matriculaEscola.getAluno().getEmail1()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoResponsavel", pessoaEnderecoResponsavel.getEndereco().getEnderecoSimplesToString())+", "+pessoaEnderecoAluno.getNumero());
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroResponsavel", pessoaEnderecoResponsavel.getEndereco().getBairro().getDescricao()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeResponsavel", pessoaEnderecoResponsavel.getEndereco().getCidade().getCidade()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoResponsavel", pessoaEnderecoResponsavel.getEndereco().getCidade().getUf()));
-            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepResponsavel", pessoaEnderecoResponsavel.getEndereco().getCep()));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoResponsavel", enderecoResponsavelString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroResponsavel", bairroResponsavelString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeResponsavel", cidadeResponsavelString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoResponsavel", estadoResponsavelString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepResponsavel", cepResponsavelString));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailResponsavel", matriculaEscola.getResponsavel().getEmail1()));
+            String valorTaxaString = "";
+            String listaValores = "";
+            String listaValoresComData = "";
+            int z = 1;
+            for (int y = 0; y < listaMovimentos.size(); y++) {
+                if (listaMovimentos.get(y).getTipoServico().getId() == 5) {
+                    valorTaxaString = Float.toString(listaMovimentos.get(y).getTaxa());
+                } else {
+                    if (z == 1) {
+                        listaValores = "Parcela nº"+z+" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());
+                        listaValoresComData = listaMovimentos.get(y).getVencimento() +" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());                        
+                    } else {
+                        listaValores += ", " +"Parcela nº"+z+" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());
+                        listaValoresComData += ", " +listaMovimentos.get(y).getVencimento() +" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());
+                    }
+                    z++;
+                }
+            }
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$taxa", valorTaxaString));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$listaValoresComData", listaValoresComData));
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$listaValores", listaValores));
             try {
                 File dirFile = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"));
                 if (!dirFile.exists()) {

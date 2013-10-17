@@ -9,17 +9,17 @@ import javax.persistence.EntityManager;
 
 public interface JuridicaDB {
 
-    public boolean insert(Juridica juridica);
+//    public boolean insert(Juridica juridica);
 
-    public boolean update(Juridica Juridica);
+//    public boolean update(Juridica Juridica);
 
-    public boolean delete(Juridica Juridica);
+//    public boolean delete(Juridica Juridica);
 
     public EntityManager getEntityManager();
 
     public Juridica pesquisaCodigo(int id);
 
-    public List pesquisaTodos();
+//    public List pesquisaTodos();
 
     public List pesquisaPessoa(String desc, String por, String como);
 
