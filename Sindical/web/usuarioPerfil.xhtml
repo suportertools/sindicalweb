@@ -81,7 +81,7 @@
                         </h:outputLink>
                     </f:facet>
                     <center>
-                        <h:outputText value="#{usuarioBean.msgConfirma}" styleClass="fontePadrao"/>                            
+                        <h:outputText value="#{usuarioBean.mensagem}" styleClass="fontePadrao"/>                            
                         <br /><br />
                         <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Salvar" render="idPainelNovaSenha" oncomplete="#{rich:component('formUsuarioPerfil:divMensagem')}.hide(); #{rich:component('formUsuarioPerfil:divNovaSenha')}.show(); return false;" />
                     </center>

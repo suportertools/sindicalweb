@@ -158,3 +158,82 @@ function marcarTodosCheckbox() {
         }
     })
 }
+
+function insereTextoA(valorBotao, idTextarea){
+    var textarea = document.getElementById(idTextarea);
+    var descricao = valorBotao;
+    textarea.value += descricao.value+", ";
+}
+
+// Função para adicionar valores dentro do textarea
+function insereTexto(valorBotao, idTextarea) {
+    //Pega a textarea  
+    // form_contrato:idContrato1:inp
+    if (document.getElementById(idTextarea) !== null) {
+        var textarea = document.getElementById(idTextarea);
+    } else if (document.getElementsByClassName(idTextarea) !== null) {
+        var textarea = document.getElementsByClassName(idTextarea);
+    } else if (document.getElementsByName(idTextarea) !== null) {
+        var textarea = document.getElementsByName(idTextarea);
+    }
+    // form_contrato:idContrato2
+    //Texto a ser inserido  
+    //var texto = document.getElementById("txtValor").value;
+    var texto = valorBotao;
+    ////inicio da seleção  
+    var selecaoInicial = textarea.selectionStart;
+    //final da seleção  
+    var selecaoFinal = textarea.selectionEnd;
+    //tratamento para Mozilla    
+    if (!isNaN(textarea.selectionStart)) {
+        selecaoInicial = textarea.selectionStart;
+        selecaoFinal = textarea.selectionEnd;
+        mozWrap(textarea, texto, '');
+        textarea.selectionStart = selecaoInicial + texto.length;
+        textarea.selectionEnd = selecaoFinal + texto.length;
+    } else if (textarea.createTextRange && textarea.caretPos) {
+        if (baseHeight !== textarea.caretPos.boundingHeight) {
+            textarea.focus();
+            storeCaret(textarea);
+        }
+        var caret_pos = textarea.caretPos;
+        caret_pos.text = caret_pos.texto.charAt(caret_pos.texto.length - 1) === ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
+        //Para quem não é possível inserir, inserimos no final mesmo (IE...) 
+    } else {
+        textarea.value = textarea.value + texto;        
+    }
+}
+/* 
+ Essa função abre o texto em duas strings e insere o texto bem na posição do cursor, após ele une novamento o texto mas com o texto inserido 
+ Essa maravilhosa função só funciona no Mozilla... No IE não temos as propriedades selectionstart, textLength... 
+ */
+function mozWrap(txtarea, open, close) {
+    var selLength = txtarea.textLength;
+    var selecaoInicial = txtarea.selectionStart;
+    var selecaoFinal = txtarea.selectionEnd;
+    var scrollTop = txtarea.scrollTop;
+
+    if (selecaoFinal === 1 || selecaoFinal === 2) {
+        selecaoFinal = selLength;                }
+    //S1 tem o texto do começo até a posição do cursor  
+    var s1 = (txtarea.value).substring(0, selecaoInicial);    
+    //S2 tem o texto selecionado  
+    var s2 = (txtarea.value).substring(selecaoInicial, selecaoFinal);
+    //S3 tem todo o texto selecionado  
+    var s3 = (txtarea.value).substring(selecaoFinal, selLength);
+    //COloca o texto na textarea. Utiliza a string que estava no início, no meio a string de entrada, depois a seleção seguida da string  
+    //de fechamento e por fim o que sobrou após a seleção  
+    txtarea.value = s1 + open + s2 + close + s3;
+    txtarea.selectionStart = selecaoFinal + open.length + close.length;
+    txtarea.selectionEnd = txtarea.selectionStart;
+    txtarea.focus();
+    txtarea.scrollTop = scrollTop;
+    return;
+}
+
+function HighlightAll(theField) {
+    window.status = "Conteúdo selecionado e copiado para a área de transferência!";
+    theField = theField;
+//    therange = theField.createTextRange();
+//    therange.execCommand("Copy");
+}

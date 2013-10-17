@@ -51,7 +51,7 @@
                                     <h:column><h:outputLabel value="Data do cadastro: " styleClass="fontePadrao"/></h:column>
                                     <h:column>
                                         <h:inputText id="iddata" size="10" maxlength="10" value="#{juridicaBean.juridica.pessoa.criacao}" class="data"/>
-                                        <h:outputLabel value="Porte: " styleClass="fontePadrao" style="margin-left: 20px"/>
+                                        <h:outputLabel value="Porte: " styleClass="fontePadrao margin-left-max"/>
                                         <h:selectOneMenu value="#{juridicaBean.idPorte}" onchange="submit();">
                                             <f:selectItems value="#{juridicaBean.listaPorte}"/>
                                         </h:selectOneMenu>
@@ -164,20 +164,20 @@
 
                                     <h:column><h:outputLabel value="E-Mail: " styleClass="fontePadrao"/></h:column>
                                     <h:column>
-                                        <h:inputText id="idemail1" size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email1}" onblur="lowerCase(this);">
+                                        <h:inputText id="idemail1" size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email1}" onblur="lowerCase(this);" title="E-mail 1">
                                             <a4j:ajax event="blur" render="this"/>
                                         </h:inputText>
                                         <a4j:commandLink value="Enviar Login e Senha" styleClass="idNovo iLink" style="width: 200px;" action="#{juridicaBean.enviarEmail}" rendered="#{juridicaBean.renEnviarEmail}" render="outConfirma" oncomplete="modalMensagem()"/>
                                     </h:column>
 
                                     <h:column />
-                                    <h:column><h:inputText id="idemail2" size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email2}" onblur="lowerCase(this);">
+                                    <h:column><h:inputText id="idemail2" size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email2}" onblur="lowerCase(this);" title="E-mail 2">
                                                 <a4j:ajax event="blur" render="this"/>
                                               </h:inputText>
                                     </h:column>
 
                                     <h:column />
-                                    <h:column><h:inputText id="idemail3" size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email3}" onblur="lowerCase(this);">
+                                    <h:column><h:inputText id="idemail3" size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email3}" onblur="lowerCase(this);" title="E-mail 3">>
                                                 <a4j:ajax event="blur" render="this"/>
                                               </h:inputText>
                                     </h:column>
