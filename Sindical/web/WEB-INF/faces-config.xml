@@ -69,11 +69,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>juridicaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.JuridicaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
     <!-- 
     <managed-bean>
         <managed-bean-name>controleUsuarioBean</managed-bean-name>
@@ -1845,20 +1845,20 @@
         </navigation-case>
     
         <navigation-case>
-            <from-outcome>matriculaContrato</from-outcome>
-            <to-view-id>/matriculaContrato.jsf</to-view-id>
+            <from-outcome>modeloContrato</from-outcome>
+            <to-view-id>/modeloContrato.jsf</to-view-id>
             <redirect/>
         </navigation-case>
     
         <navigation-case>
-            <from-outcome>matriculaContratoCampos</from-outcome>
-            <to-view-id>/matriculaContratoCampos.jsf</to-view-id>
+            <from-outcome>modeloContratoCampos</from-outcome>
+            <to-view-id>/modeloContratoCampos.jsf</to-view-id>
             <redirect/>
         </navigation-case>
         
         <navigation-case>
-            <from-outcome>pesquisaMatriculaContrato</from-outcome>
-            <to-view-id>/pesquisaMatriculaContrato.jsf</to-view-id>
+            <from-outcome>pesquisaModeloContrato</from-outcome>
+            <to-view-id>/pesquisaModeloContrato.jsf</to-view-id>
             <redirect/>
         </navigation-case>
     

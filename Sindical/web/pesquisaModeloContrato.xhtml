@@ -7,7 +7,7 @@
       xmlns:c="http://java.sun.com/jsp/jstl/core">
     
     <h:head>
-        <title>Pesquisa Contrato Escola</title>
+        <title>Pesquisa Modelo Contrato</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
@@ -20,23 +20,23 @@
             
                 <center>
                     <div class="headerPanel">
-                        <h:outputText value="Pesquisa Contrato Escola" styleClass="fontePanel" style="width: 100%;"/>
+                        <h:outputText value="Pesquisa Modelo Contrato" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
                     <div class="divMae">
                         <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 30px;">
-                            <rich:dataTable value="#{matriculaContratoBean.matriculaContratos}" var="linha" iterationStatusVar="it" style="width: 95%;" id="tbl">
+                            <rich:dataTable value="#{modeloContratoBean.matriculaContratos}" var="linha" style="width: 95%;" id="tbl">
                                 <rich:column style="width: 80px;">
                                     <f:facet name="header">
                                             <h:outputText value="Data Cadastro"/>
                                     </f:facet>
-                                    <a4j:commandLink value="#{linha.dataCadastro}" action="#{matriculaContratoBean.editar(linha)}" styleClass="underline-hover"/>
+                                    <a4j:commandLink value="#{linha.dataCadastro}" action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                             <h:outputText value="Titulo"/>
                                     </f:facet>
-                                    <a4j:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{matriculaContratoBean.editar(linha)}" styleClass="underline-hover"/>
+                                    <a4j:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
                                 </rich:column>
                             </rich:dataTable>
                         </div>

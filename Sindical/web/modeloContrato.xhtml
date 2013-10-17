@@ -7,7 +7,7 @@
                 xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <h:head>
-        <title>Contrato Modelo</title>
+        <title>Modelo Contrato</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
@@ -19,7 +19,7 @@
                             <h:outputText value="Titulo: " />
                         </rich:column>
                         <rich:column>
-                            <h:inputText value="#{matriculaContratoBean.matriculaContrato.titulo}" size="50"/>
+                            <h:inputText value="#{modeloContratoBean.matriculaContrato.titulo}" size="50"/>
                         </rich:column>
                     </h:panelGrid>
                     <br />
@@ -28,36 +28,51 @@
                     </rich:column>
                     <br /><br />
                     <rich:column>
-                        <rich:editor toolbar="full" id="idContrato1" value="#{matriculaContratoBean.matriculaContrato.descricao}" skin="office2003"></rich:editor>                
+                        <rich:editor toolbar="full" id="idContrato1" value="#{modeloContratoBean.matriculaContrato.descricao}" skin="office2003" immediate="true" >
+                        </rich:editor>
                     </rich:column>
                     <br /><br />
                     <rich:column>
-                        <h:outputText value="Variáveis " styleClass="fontePadraoNegrito" />
+                        <h:outputLabel value="Variáveis" styleClass="fontePadraoNegrito"/>      
                     </rich:column>
                     <br /><br />
                     <rich:column>
-                        <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
-                            <rich:dataTable value="#{matriculaContratoBean.getListaMatriculaContratoCampos('this')}" var="linha" >
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Campo"/>
-                                    </f:facet>
-                                    <h:outputText value="#{linha.campo}"/>
-                                </rich:column>
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Variável"/>
-                                    </f:facet>
-                                    <h:outputText value="#{linha.variavel}" />
-                                </rich:column>
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="..."/>
-                                    </f:facet>
-                                    <a4j:commandLink value="Obs" title="#{linha.observacao}" styleClass="underline-hover" rendered="#{linha.observacao != ''}"/>
-                                </rich:column>
-                            </rich:dataTable>
-                        </div>
+                        <rich:panel style="padding-left: 15px; margin-top: 10px; width: 400px;" styleClass="no-border">
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Filtrar: " for="idFiltroVariavel"/>
+                                <h:inputText value="#{modeloContratoBean.descricaoPesquisa}" id="idFiltroVariavel" >
+                                    <a4j:ajax event="keyup" render="tbl_variavel" listener="#{modeloContratoBean.getListaMatriculaContratoCampos('this').clear()}"/>
+                                </h:inputText>
+                            </h:panelGrid>
+                            <rich:panel style="overflow-y: scroll; height:250px; width: 400px; border: 0;">
+                                <rich:dataTable value="#{modeloContratoBean.getListaMatriculaContratoCampos('this')}" var="linha" id="tbl_variavel" styleClass="margin-top-maior" style="width: 100%;">
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Campo"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.campo}" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Variável"/>
+                                        </f:facet>
+                                        <h:inputText value="#{linha.variavel}" readonly="true" title="Selecione esta variável copie e cole dentro do texto" />
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="..."/>
+                                        </f:facet>
+                                        <a4j:commandLink value="Obs" title="#{linha.observacao}" styleClass="underline-hover" rendered="#{linha.observacao != ''}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value=""/>
+                                        </f:facet>
+                                        <a4j:commandButton image="/Imagens/iconAdd.png"  value="#{linha.variavel}" oncomplete="insereTexto('#{linha.variavel}', 'form_contrato:idContrato1:inp'); return false;" title="Adicionar este campo ao texto" style="width: 10px;" disabled="true"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </rich:panel>
+                        </rich:panel>
                     </rich:column>
                     <br /><br />
                     <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
@@ -65,31 +80,31 @@
                             <h:outputText value="Cadastro:" />
                         </rich:column>
                         <rich:column>
-                            <h:inputText value="#{matriculaContratoBean.matriculaContrato.dataCadastro}" size="6" disabled="true"/>
+                            <h:inputText value="#{modeloContratoBean.matriculaContrato.dataCadastro}" size="6" disabled="true"/>
                         </rich:column>
                         <rich:column>
                             <h:outputText value="Ultima atualização:" />
                         </rich:column>
                         <rich:column>
-                            <h:inputText value="#{matriculaContratoBean.matriculaContrato.dataAtualizado}" size="6" disabled="true"/>
+                            <h:inputText value="#{modeloContratoBean.matriculaContrato.dataAtualizado}" size="6" disabled="true"/>
                         </rich:column>
                     </h:panelGrid>                    
                     <br /><br />
-                    <rich:panel rendered="#{matriculaContratoBean.matriculaContrato.id != -1}">
+                    <rich:panel rendered="#{modeloContratoBean.matriculaContrato.id != -1}">
                         <h:outputLabel value="Vincular serviços a esse contrato: " style="text-decoration: underline;" styleClass="fontePadraoNegrito"/>
                         <h:panelGrid columns="2" columnClasses="coluna1 coluna2">
-                            <h:selectOneMenu id="idServicos" value="#{matriculaContratoBean.idServicos}">
-                                <f:selectItems value="#{matriculaContratoBean.listaServicos}" />
+                            <h:selectOneMenu id="idServicos" value="#{modeloContratoBean.idServicos}">
+                                <f:selectItems value="#{modeloContratoBean.listaServicos}" />
                             </h:selectOneMenu>
-                            <a4j:commandButton image="/Imagens/novo.png" action="#{matriculaContratoBean.adicionarServicos}" disabled="#{controleAcessoBean.botaoSalvar}" render="form_contrato_escola, tblServicos"/>
+                            <a4j:commandButton image="/Imagens/novo.png" action="#{modeloContratoBean.adicionarServicos}" disabled="#{controleAcessoBean.botaoSalvar}" render="form_contrato_escola, tblServicos"/>
                         </h:panelGrid>
                         <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 10px;">
-                            <rich:dataTable value="#{matriculaContratoBean.listaMatriculaContratoServico}" var="linha" iterationStatusVar="it" id="tblServicos">
+                            <rich:dataTable value="#{modeloContratoBean.listaMatriculaContratoServico}" var="linha" iterationStatusVar="it" id="tblServicos">
                                 <rich:column styleClass="colunaPesquisa">
                                     <f:facet name="header">
                                         <h:outputText value="..."/>
                                     </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{matriculaContratoBean.removerServicos(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="idMCS tblServicos" />
+                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{modeloContratoBean.removerServicos(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="idMCS tblServicos" />
                                 </rich:column>                                
                                 <rich:column>
                                     <f:facet name="header">
@@ -103,22 +118,22 @@
                 </rich:panel>
                 <br />
                 <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Adicionar Contrato" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.show(); return false;" />
-                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaContratoBean.novo}" render="form_contrato_escola, idFormContrato1"  />
+                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{modeloContratoBean.novo}" render="form_contrato_escola, idFormContrato1"  />
                 <a4j:commandLink styleClass="idSalvar iLink" value="Excluir" title="Exluir Contrato" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.show(); return false;"/>
-                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaContrato()}" title="Pesquisar Contrato Escola" />
+                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaModeloContrato()}" title="Pesquisar Contrato Escola" />
                 <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
                     <f:facet name="header">
                         <h:outputText value="Deseja salvar este registro?"/>
                     </f:facet>
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide();
-                                return false;">
+                return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </h:outputLink>
                     </f:facet>
                     <center>
                         <h:panelGrid columns="2">
-                            <a4j:commandButton value="Sim" title="Salvar" action="#{matriculaContratoBean.salvar}" render="form_contrato_escola, idFormContrato1, idForm, i_panel_mensagem" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.hide(); #{rich:component('form_contrato:i_panel_mensagem')}.show(); return false;" />
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{modeloContratoBean.salvar}" render="form_contrato_escola, idFormContrato1, idForm, i_panel_mensagem" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.hide(); #{rich:component('form_contrato:i_panel_mensagem')}.show(); return false;" />
                             <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_contrato:i_panel_salvar')}.hide(); return false;"/>
                         </h:panelGrid>
                     </center>
@@ -129,13 +144,13 @@
                     </f:facet>
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide();
-                                return false;">
+                return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </h:outputLink>
                     </f:facet>
                     <center>
                         <h:panelGrid columns="2">
-                            <a4j:commandButton value="Sim" title="Excluir" action="#{matriculaContratoBean.excluir}" render="form_contrato_escola, idFormContrato1, i_panel_mensagem" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.hide(); #{rich:component('form_contrato:i_panel_mensagem')}.show();" />
+                            <a4j:commandButton value="Sim" title="Excluir" action="#{modeloContratoBean.excluir}" render="form_contrato_escola, idFormContrato1, i_panel_mensagem" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.hide(); #{rich:component('form_contrato:i_panel_mensagem')}.show();" />
                             <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.hide(); return false;"/>
                         </h:panelGrid>
                     </center>
@@ -146,10 +161,10 @@
                     </f:facet>
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide();
-                                return false;"></h:outputLink>
+                return false;"></h:outputLink>
                     </f:facet>
                     <center>
-                        <h:outputText value="#{matriculaContratoBean.msg}" styleClass="fontePadrao"/>                            
+                        <h:outputText value="#{modeloContratoBean.msg}" styleClass="fontePadrao"/>                            
                         <br /><br />
                         <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_contrato:i_panel_mensagem')}.hide(); return false;" render="idFormContrato1, form_contrato_escola" action="matriculaContrato" />
                     </center>
@@ -161,11 +176,11 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <c:set scope="request" var="object" value="${matriculaContratoBean.matriculaContrato}"/>
-            <h:form id="form_contrato_escola">
+            <c:set scope="request" var="object" value="${modeloContratoBean.matriculaContrato}"/>
+            <h:form id="form_modelo_contrato">
                 <center>
                     <div class="headerPanel">
-                        <h:outputText value="Contrato Escola" styleClass="fontePanel" style="width: 100%;"/>
+                        <h:outputText value="Modelo Contrato" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                 </center>
             </h:form>

@@ -23,8 +23,8 @@
                         <h:outputText value="Cadastro de Turma" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <div class="divMae divFundo" align="left" style="width: auto">
-                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                    <rich:panel styleClass="divMae divFundo" style="width: auto; border-radius: 0;">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2" styleClass="float-left">
                             <h:column>
                                 <h:outputLabel value="Filial: " styleClass="fontePadrao" />
                                 <br />
@@ -87,26 +87,66 @@
                                 </h:inputText>
                                 <h:outputLabel value=" horas " styleClass="fontePadrao"/>
                             </h:column>
+                            <h:column>
+                                <div style="height: 10px;"></div>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>                                
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Dias da semana" styleClass="fontePadraoNegrito"/>
+                            </h:column>
+                            <h:column>
+                                <div style="height: 10px;"></div>
+                            </h:column>
+                            <h:column>
+                            </h:column>                            
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.segunda}" id="idSegundaFeira"/>
+                                <h:outputLabel value=" Segunda-Feira" styleClass="fontePadrao cursor-pointer" for="idSegundaFeira"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.terca}" id="idTercaFeira"/>
+                                <h:outputLabel value=" Terça-Feira" styleClass="fontePadrao cursor-pointer" for="idTercaFeira"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.quarta}" id="idQuartaFeira"/>
+                                <h:outputLabel value=" Quarta-Feira" styleClass="fontePadrao cursor-pointer" for="idQuartaFeira"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.quinta}" id="idQuintaFeira"/>
+                                <h:outputLabel value=" Quinta-Feira" styleClass="fontePadrao cursor-pointer" for="idQuintaFeira"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.sexta}" id="idSextaFeira"/>
+                                <h:outputLabel value=" Sexta-Feira" styleClass="fontePadrao cursor-pointer" for="idSextaFeira"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.sabado}" id="idSabado"/>
+                                <h:outputLabel value=" Sábado" styleClass="fontePadrao cursor-pointer" for="idSabado"/>
+                            </h:column>
+                            <h:column>
+                            </h:column>
+                            <h:column>
+                                <h:selectBooleanCheckbox value="#{turmaBean.turma.domingo}" id="idDomingo"/>
+                                <h:outputLabel value=" Domingo" styleClass="fontePadrao cursor-pointer" for="idDomingo"/> 
+                            </h:column>
                         </h:panelGrid>
                         <br />
-                        <h:panelGrid columns="2">
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.segunda}" id="idSegundaFeira"/>
-                            <h:outputLabel value=" Segunda-Feira" styleClass="fontePadrao cursor-pointer" for="idSegundaFeira"/>
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.terca}" id="idTercaFeira"/>
-                            <h:outputLabel value=" Terça-Feira" styleClass="fontePadrao cursor-pointer" for="idTercaFeira"/>
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.quarta}" id="idQuartaFeira"/>
-                            <h:outputLabel value=" Quarta-Feira" styleClass="fontePadrao cursor-pointer" for="idQuartaFeira"/>
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.quinta}" id="idQuintaFeira"/>
-                            <h:outputLabel value=" Quinta-Feira" styleClass="fontePadrao cursor-pointer" for="idQuintaFeira"/>
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.sexta}" id="idSextaFeira"/>
-                            <h:outputLabel value=" Sexta-Feira" styleClass="fontePadrao cursor-pointer" for="idSextaFeira"/>
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.sabado}" id="idSabado"/>
-                            <h:outputLabel value=" Sábado" styleClass="fontePadrao cursor-pointer" for="idSabado"/>
-                            <h:selectBooleanCheckbox value="#{turmaBean.turma.domingo}" id="idDomingo"/>
-                            <h:outputLabel value=" Domingo" styleClass="fontePadrao cursor-pointer" for="idDomingo"/> 
-                        </h:panelGrid>
-                        <br />
-                        <h:panelGrid columns="6" rendered="#{turmaBean.turma.id != -1}">
+                        <h:panelGrid columns="6" rendered="#{turmaBean.turma.id != -1}" styleClass="float-left margin-top-maior">
                             <h:outputLabel value="Professor: " styleClass="fontePadrao"/>
                             <h:selectOneMenu id="idProfessor" value="#{turmaBean.idProfessor}">
                                 <a4j:ajax event="change"  render="this"/>
@@ -120,8 +160,8 @@
                             <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{turmaBean.adicionarTurmaProfessor}" render="outConfirma, tbl" oncomplete="modalMensagem()" />
                         </h:panelGrid>
                         <br />
-                        <h:panelGroup style="overflow:auto; height:100px; width: 600px;"  layout="block">
-                            <rich:dataTable value="#{turmaBean.listaTurmaProfessor}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl" rendered="#{turmaBean.turma.id != -1}">
+                        <h:panelGroup style="overflow:auto; height:100px; width: 600px;"  layout="block" styleClass="float-left  margin-top-maior">
+                            <rich:dataTable value="#{turmaBean.listaTurmaProfessor}" var="linha" style="width:100%" id="tbl" rendered="#{turmaBean.turma.id != -1}">
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="..."/>
@@ -142,8 +182,7 @@
                                 </rich:column>
                             </rich:dataTable>
                         </h:panelGroup>
-
-                        <h:panelGrid style="margin-top: 10px;">
+                        <h:panelGrid style="clear: both;" styleClass="float-left margin-top-maior">
                             <h:column>
                                 <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.show(); return false;" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                 <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{turmaBean.novo}"/>
@@ -151,7 +190,7 @@
                                 <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTurma}" title="Pesquisar"/>
                             </h:column>
                         </h:panelGrid>
-                    </div>    
+                    </rich:panel>    
                 </center>
                 <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
                     <f:facet name="header">
