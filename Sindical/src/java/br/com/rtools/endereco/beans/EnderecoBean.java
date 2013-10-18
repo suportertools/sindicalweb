@@ -9,19 +9,22 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class EnderecoJSFBean {
+@ManagedBean
+@SessionScoped
+public class EnderecoBean implements Serializable {
 
     private Endereco endereco;
     private Cidade cidadeBase;
@@ -38,7 +41,7 @@ public class EnderecoJSFBean {
     private String msgConfirma = "";
     private boolean limpar = false;
 
-    public EnderecoJSFBean() {
+    public EnderecoBean() {
         endereco = new Endereco();
         cidadeBase = new Cidade();
         msgDetalhada = "";
@@ -76,11 +79,10 @@ public class EnderecoJSFBean {
 
     public String salvar() throws Exception {
         msgConfirma = "";
-        EnderecoDB db = new EnderecoDBToplink();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Logradouro logradouro = new Logradouro();
+        EnderecoDB db = new EnderecoDBToplink();
         NovoLog log = new NovoLog();
-        logradouro = (Logradouro) sv.pesquisaCodigo(Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription()), "Logradouro");
+        Logradouro logradouro = (Logradouro) sv.pesquisaCodigo(Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription()), "Logradouro");
         endereco.setLogradouro(logradouro);
 
         if (endereco.getDescricaoEndereco().getId() == -1) {
@@ -110,16 +112,13 @@ public class EnderecoJSFBean {
             endereco.setCep(cep);
         }
 
-        Endereco e = new Endereco();
+        Endereco e;
         if (endereco.getId() == -1) {
             e = endereco;
         } else {
-            e = (Endereco) db.pesquisaCodigo(endereco.getId());
+            e = (Endereco) sv.pesquisaCodigo(endereco.getId(), "Endereco");
         }
-
-        List<Endereco> listend = new ArrayList();
-
-        listend = db.pesquisaEndereco(endereco.getDescricaoEndereco().getId(),
+        List<Endereco> listend = db.pesquisaEndereco(endereco.getDescricaoEndereco().getId(),
                 endereco.getCidade().getId(),
                 endereco.getBairro().getId(),
                 endereco.getLogradouro().getId());
@@ -257,9 +256,9 @@ public class EnderecoJSFBean {
 
     public List<SelectItem> getListaCidade() {
         if (listaCidade.isEmpty()) {
-            FilialDB dbFil = new FilialDBToplink();
             PessoaEnderecoDB dbPes = new PessoaEnderecoDBToplink();
-            Filial fili = dbFil.pesquisaCodigo(1);
+            SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+            Filial fili = (Filial) acumuladoDB.pesquisaCodigo(1, "Filial");
             if (fili == null) {
                 msgDetalhada = "Não existe filial, CRIE uma e "
                         + " vincule o endereço para evitar futuros erros!";

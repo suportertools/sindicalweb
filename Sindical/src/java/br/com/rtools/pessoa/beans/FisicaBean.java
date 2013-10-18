@@ -1005,9 +1005,9 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         }
 
         if (fisica.getId() == -1 || fisica.getNaturalidade().isEmpty()) {
-            FilialDB dbFil = new FilialDBToplink();
             PessoaEnderecoDB dbPes = new PessoaEnderecoDBToplink();
-            Filial fili = dbFil.pesquisaCodigo(1);
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            Filial fili = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
             if (fili != null) {
                 Pessoa pes = fili.getMatriz().getPessoa();
                 cidade = ((PessoaEndereco) dbPes.pesquisaEndPorPessoa(pes.getId()).get(0)).getEndereco().getCidade();
@@ -1165,7 +1165,7 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         for (int i = 0; i < agendas.size(); i++) {
             salvarAcumuladoDB.abrirTransacao();
-            salvarAcumuladoDB.deletarObjeto(dbAge.pesquisaCodigo(agendas.get(i).getId()));
+            salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agendas.get(i).getId(), "Agendamento"));
             salvarAcumuladoDB.comitarTransacao();
         }
         salvarAcumuladoDB.abrirTransacao();

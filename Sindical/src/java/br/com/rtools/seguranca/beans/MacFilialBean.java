@@ -92,8 +92,10 @@ public class MacFilialBean implements Serializable {
 
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
-            FilialDB db = new FilialDBToplink();
-            List<Filial> list = db.pesquisaTodos();
+//            FilialDB db = new FilialDBToplink();
+//            List<Filial> list = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Filial> list = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             for (int i = 0; i < list.size(); i++) {
                 listaFiliais.add(new SelectItem(new Integer(i),
                         list.get(i).getFilial().getPessoa().getDocumento() + " / " + list.get(i).getFilial().getPessoa().getNome(),

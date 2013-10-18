@@ -10,10 +10,13 @@ import br.com.rtools.pessoa.db.EnviarArquivosDB;
 import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
 import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Mensagem;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -49,7 +52,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
     private List<DataObject> listaCnaeObject = new ArrayList();
     private boolean marcarTodosCnaeConvencao = false;
 
-    public String novo() {
+    public String novo(String tipoNovo) {
         setItem(false);
         assunto = "";
         msgConfirma = "";
@@ -66,7 +69,7 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
         idIndexArquivos = -1;
         idIndexEmpresas = -1;
         mensagem = new Mensagem();
-        return "enviarArquivos";
+        return tipoNovo;
     }
 
     public String enviarArquivos() {
@@ -74,26 +77,29 @@ public class EnviarArquivosJSFBean implements java.io.Serializable {
             msgConfirma = "O assunto não pode ser Nulo!";
             return null;
         }
-
         if (mensagem.getMensagem().isEmpty()) {
             msgConfirma = "O conteudo HTML não pode ser Nulo!";
             return null;
         }
-        FilialDB dbf = new FilialDBToplink();
         List aux = new ArrayList();
+        boolean isEnviar = false;
         for (int i = 0; i < listaEmpresas.size(); i++) {
             if ((Boolean) listaEmpresas.get(i).getArgumento0()) {
                 Pessoa pessoa = ((Juridica) listaEmpresas.get(i).getArgumento1()).getPessoa();
                 aux.add(pessoa);
+                isEnviar = true;
             }
         }
-
+        if (!isEnviar) {
+            msgConfirma = "Selecionar destinatario(s)!";
+            return null;            
+        }
         List aux2 = new ArrayList();
         for (int i = 0; i < listaArquivos.size(); i++) {
             aux2.add((File) ((DataObject) listaArquivos.get(i)).getArgumento0());
         }
-
-        String[] retorno = EnviarEmail.EnviarEmailPersonalizado(dbf.pesquisaCodigoRegistro(1), aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        String[] retorno = EnviarEmail.EnviarEmailPersonalizado((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
         if (retorno[1].isEmpty()) {
             if (!listaArquivos.isEmpty()) {
                 msgConfirma = "Emails " + retorno[0];

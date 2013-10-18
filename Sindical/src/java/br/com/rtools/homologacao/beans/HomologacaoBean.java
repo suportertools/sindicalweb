@@ -13,10 +13,13 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -27,7 +30,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class HomologacaoJSFBean extends PesquisarProfissaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serializable {
 
     private String msgHomologacao = "";
     private String msgConfirma = "";

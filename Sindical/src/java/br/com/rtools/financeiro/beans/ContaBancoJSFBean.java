@@ -10,8 +10,6 @@ import br.com.rtools.financeiro.db.ContaBancoDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.utilitarios.ListaArgumentos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -195,9 +193,11 @@ public class ContaBancoJSFBean {
     }
 
     public List<SelectItem> getListaFilial() {
-        FilialDB filialDB = new FilialDBToplink();
+//        FilialDB filialDB = new FilialDBToplink();
+//        List<Filial> listaFilial = filialDB.pesquisaTodos();
         List<SelectItem> result = new ArrayList<SelectItem>();
-        List<Filial> listaFilial = filialDB.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List<Filial> listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);          
         int i = 0;
         while (i < listaFilial.size()) {
             result.add(new SelectItem(

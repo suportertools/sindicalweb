@@ -8,8 +8,7 @@ import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.ServicoValor;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.*;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -105,9 +104,8 @@ public class ServicosJSFBean implements java.io.Serializable {
             salvar.abrirTransacao();
             if (servicos.getId() == -1) {
                 if (db.idServicos(servicos) == null) {
-                    FilialDB filialDB = new FilialDBToplink();
                     servicos.setDepartamento((Departamento) salvar.pesquisaCodigo(14, "Departamento"));
-                    servicos.setFilial(filialDB.pesquisaCodigo(1));
+                    servicos.setFilial((Filial) salvar.pesquisaCodigo(1, "Filial"));
                     salvar.inserirObjeto(servicos);
                     msgConfirma = "Serviço salvo com Sucesso!";
                 } else {

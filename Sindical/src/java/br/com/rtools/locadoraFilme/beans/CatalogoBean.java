@@ -7,14 +7,18 @@ import br.com.rtools.locadoraFilme.db.CatalogoDBToplink;
 import br.com.rtools.locadoraFilme.db.TituloDB;
 import br.com.rtools.locadoraFilme.db.TituloDBToplink;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class CatalogoJSFBean {
+@ManagedBean
+@SessionScoped
+public class CatalogoBean {
 
     private Catalogo catalogo;
     private String comoPesquisa;
@@ -32,7 +36,7 @@ public class CatalogoJSFBean {
     private int quantidade;
     private Date data;
 
-    public CatalogoJSFBean() {
+    public CatalogoBean() {
         catalogo = new Catalogo();
         idFilial = 0;
         idTitulo = 0;
@@ -150,9 +154,11 @@ public class CatalogoJSFBean {
 
     public List<SelectItem> getListaFilialCombo() {
         int i = 0;
-        FilialDB db = new FilialDBToplink();
+        //FilialDB db = new FilialDBToplink();
         if (listaFilial.isEmpty()) {
-            setListaFilial((List<Filial>) db.pesquisaTodos());
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            setListaFilial((List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true));
+            //setListaFilial((List<Filial>) db.pesquisaTodos());
             while (i < getListaFilial().size()) {
                 listaFilialCombo.add(new SelectItem(
                         new Integer(i),

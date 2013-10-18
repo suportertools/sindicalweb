@@ -1,4 +1,4 @@
-package br.com.rtools.escola.beans;
+package br.com.rtools.escola.beans; 
 
 import br.com.rtools.escola.MatriculaContrato;
 import br.com.rtools.escola.MatriculaContratoCampos;

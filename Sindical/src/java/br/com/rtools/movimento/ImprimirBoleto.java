@@ -520,8 +520,8 @@ public class ImprimirBoleto {
             Filial filial = null;
 
             if (!lista.isEmpty()) {
-                FilialDB filialDB = new FilialDBToplink();
-                filial = filialDB.pesquisaCodigo(1);
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -718,8 +718,8 @@ public class ImprimirBoleto {
             Filial filial = null;
 
             if (!lista.isEmpty()) {
-                FilialDB filialDB = new FilialDBToplink();
-                filial = filialDB.pesquisaCodigo(1);
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -882,8 +882,8 @@ public class ImprimirBoleto {
             Filial filial = null;
 
             if (!lista.isEmpty()) {
-                FilialDB filialDB = new FilialDBToplink();
-                filial = filialDB.pesquisaCodigo(1);
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -1108,8 +1108,8 @@ public class ImprimirBoleto {
             Filial filial = null;
 
             if (!lista.isEmpty()) {
-                FilialDB filialDB = new FilialDBToplink();
-                filial = filialDB.pesquisaCodigo(1);
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 
@@ -1397,8 +1397,8 @@ public class ImprimirBoleto {
             Filial filial = null;
 
             if (!lista.isEmpty()) {
-                FilialDB filialDB = new FilialDBToplink();
-                filial = filialDB.pesquisaCodigo(1);
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
                 pessoa = lista.get(0).getPessoa();
             }
 

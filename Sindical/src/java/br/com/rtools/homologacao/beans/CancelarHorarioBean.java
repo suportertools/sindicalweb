@@ -7,12 +7,11 @@ import br.com.rtools.homologacao.db.CancelarHorarioDBToplink;
 import br.com.rtools.homologacao.db.HorariosDB;
 import br.com.rtools.homologacao.db.HorariosDBToplink;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class CancelarHorarioBean {
+public class CancelarHorarioBean implements Serializable {
 
     private CancelarHorario cancelarHorario = new CancelarHorario();
     private Horarios horarios = new Horarios();

@@ -10,7 +10,6 @@ import javax.persistence.*;
     @NamedQuery(name = "TipoTelefone.findAll",    query = "SELECT ATT FROM TipoTelefone AS ATT ORDER BY ATT.descricao ASC "),
     @NamedQuery(name = "TipoTelefone.findName",   query = "SELECT ATT FROM TipoTelefone AS ATT WHERE UPPER(ATT.descricao) LIKE :pdescricao ORDER BY ATT.descricao ASC ")
 })
-
 public class TipoTelefone implements Serializable {
 
     @Id

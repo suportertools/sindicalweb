@@ -51,10 +51,10 @@ public class CidadeDBToplink extends DB implements CidadeDB {
         try {
             Query qry = getEntityManager().createQuery("select cid.cidade "
                     + "  from Cidade cid "
-                    + " where cid.cidade like :des_cidade "
-                    + "   and cid.uf = :des_uf order by cid.cidade");
-            qry.setParameter("des_cidade", des_cidade);
-            qry.setParameter("des_uf", des_uf);
+                    + " where upper(cid.cidade) like :des_cidade "
+                    + "   and upper(cid.uf) = :des_uf order by cid.cidade");
+            qry.setParameter("des_cidade", des_cidade.toUpperCase());
+            qry.setParameter("des_uf", des_uf.toUpperCase());
             result = (List<String>) qry.getResultList();
         } catch (Exception e) {
         }

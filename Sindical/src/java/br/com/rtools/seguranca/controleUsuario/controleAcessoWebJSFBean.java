@@ -150,7 +150,7 @@ public class controleAcessoWebJSFBean implements java.io.Serializable {
     }
 
     public String enviarEmail() {
-        FilialDB db = new FilialDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         empresa = new Juridica();
         if (!strTipoPesquisa.equals("nome")) {
@@ -159,7 +159,7 @@ public class controleAcessoWebJSFBean implements java.io.Serializable {
                 empresa = (Juridica) lista.get(0);
                 if (!email.equals("")) {
                     if (validaEmail(empresa)) {
-                        msgEmail = EnviarEmail.EnviarEmail(db.pesquisaCodigoRegistro(1), empresa);
+                        msgEmail = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), empresa);
                     } else {
                         msgEmail = "E-mail digitado inválido!";
                     }
@@ -171,11 +171,11 @@ public class controleAcessoWebJSFBean implements java.io.Serializable {
             }
         } else {
             if (!getListaEmpresa().isEmpty()) {
-                empresa = dbJur.pesquisaCodigo(Integer.parseInt(getListaEmpresa().get(idJuridica).getDescription()));
+                empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(getListaEmpresa().get(idJuridica).getDescription()), "Juridica");
                 if (empresa != null) {
                     if (!email.equals("")) {
                         if (validaEmail(empresa)) {
-                            msgEmail = EnviarEmail.EnviarEmail(db.pesquisaCodigoRegistro(1), empresa);
+                            msgEmail = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), empresa);
                         } else {
                             msgEmail = "E-mail digitado inválido!";
                         }

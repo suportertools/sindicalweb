@@ -9,10 +9,6 @@ public interface FeriadosDB {
 
     public EntityManager getEntityManager();
 
-    public List pesquisaTodos();
-
-    public Feriados pesquisaCodigo(int id);
-
     public List pesquisarPorData(String data);
 
     public boolean exiteFeriadoCidade(Feriados feriados);

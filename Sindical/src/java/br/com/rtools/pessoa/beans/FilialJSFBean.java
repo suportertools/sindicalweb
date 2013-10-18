@@ -3,8 +3,6 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.endereco.Cidade;
-import br.com.rtools.endereco.db.CidadeDB;
-import br.com.rtools.endereco.db.CidadeDBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.FilialCidade;
 import br.com.rtools.pessoa.Juridica;
@@ -84,35 +82,44 @@ public class FilialJSFBean {
     }
 
     public void salvarCidadeFilial(int indexCidade, int index) {
-        int iFilial = 0, iCidade = 0;
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         FilialCidadeDB db = new FilialCidadeDBToplink();
-        FilialDB dbF = new FilialDBToplink();
-        CidadeDB dbC = new CidadeDBToplink();
-        FilialCidade filialCidade = new FilialCidade();
-        //for(int i = 0; i < listaCidade.size();i++){
-        iCidade = ((Cidade) listaCidade.get(indexCidade).getArgumento0()).getId();
-        //iFilial = Integer.parseInt(result.get((Integer)getListaCidade().get(i).getArgumento1()).getDescription());
-        iFilial = Integer.parseInt(result.get(index).getDescription());
+        FilialCidade filialCidade;
+        int iCidade = ((Cidade) listaCidade.get(indexCidade).getArgumento0()).getId();
+        int iFilial = Integer.parseInt(result.get(index).getDescription());
         if (iFilial != -1) {
             filialCidade = db.pesquisaFilialPorCidade(iCidade);
-            if (filialCidade.getId() != -1) {
-                filialCidade.setFilial(dbF.pesquisaCodigo(iFilial));
-                db.update(filialCidade);
-            } else {
+            if (filialCidade.getId() == -1) {
                 filialCidade = new FilialCidade();
-                filialCidade.setCidade(dbC.pesquisaCodigo(iCidade));
-                filialCidade.setFilial(dbF.pesquisaCodigo(iFilial));
-                db.insert(filialCidade);
+                filialCidade.setCidade((Cidade) salvarAcumuladoDB.pesquisaCodigo(iCidade, "Cidade"));
+                filialCidade.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(iFilial, "Filial"));
+                salvarAcumuladoDB.abrirTransacao();
+                if (salvarAcumuladoDB.inserirObjeto(filialCidade)) {
+                    salvarAcumuladoDB.comitarTransacao();
+                } else {
+                    salvarAcumuladoDB.desfazerTransacao();
+                }
+            } else {
+                filialCidade.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(iFilial, "Filial"));
+                salvarAcumuladoDB.abrirTransacao();
+                if (salvarAcumuladoDB.alterarObjeto(filialCidade)) {
+                    salvarAcumuladoDB.comitarTransacao();
+                } else {
+                    salvarAcumuladoDB.desfazerTransacao();
+                }
             }
         } else {
             filialCidade = db.pesquisaFilialPorCidade(iCidade);
             if (filialCidade.getId() != -1) {
-                db.delete(filialCidade);
+                salvarAcumuladoDB.abrirTransacao();
+                if (salvarAcumuladoDB.deletarObjeto(filialCidade)) {
+                    salvarAcumuladoDB.comitarTransacao();
+                } else {
+                    salvarAcumuladoDB.desfazerTransacao();
+                }
             }
         }
-        //}
         result = new ArrayList();
-
     }
 
     public String novo() {
@@ -120,11 +127,11 @@ public class FilialJSFBean {
         return "filial";
     }
 
-    public String excluir() {
-        if (listaFilial.get(idIndex).getId() != -1) {
+    public String excluir(Filial f) {
+        if (f.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             sv.abrirTransacao();
-            filial = (Filial) sv.pesquisaCodigo(listaFilial.get(idIndex).getId(), "Filial");
+            filial = (Filial) sv.pesquisaCodigo(f.getId(), "Filial");
             if (sv.deletarObjeto(filial)) {
                 msgConfirma = "Filial excluída com sucesso.";
                 listaFilial.clear();
@@ -141,16 +148,16 @@ public class FilialJSFBean {
     }
 
     public List<Filial> getListaFilial() {
-        FilialDB db = new FilialDBToplink();
-        listaFilial = db.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
         msgConfirma = "";
         return listaFilial;
     }
 
     public List<Filial> getListaFilialSemMatriz() {
         if (listaFilial.isEmpty()) {
-            FilialDB db = new FilialDBToplink();
-            listaFilial = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
         }
         return listaFilial;
     }
@@ -177,14 +184,11 @@ public class FilialJSFBean {
 
     public List<DataObject> getListaCidade() {
         if (listaCidade.isEmpty()) {
-            CidadeDB db = new CidadeDBToplink();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             GrupoCidadesDB dbCids = new GrupoCidadesDBToplink();
-            //List<GrupoCidades> lis = dbCids.pesquisaTodos();
             List<Cidade> lis = dbCids.pesquisaCidadesBase();
-
             FilialCidadeDB dbc = new FilialCidadeDBToplink();
             List<FilialCidade> fc = dbc.pesquisaTodos();
-
             if (!lis.isEmpty() && fc != null) {
                 boolean tem;
                 for (int i = 0; i < lis.size(); i++) {
@@ -193,7 +197,7 @@ public class FilialJSFBean {
                         if (lis.get(i).getId() == fc.get(w).getCidade().getId()) {
                             for (int u = 0; u < getResult().size(); u++) {
                                 if (fc.get(w).getFilial().getId() == Integer.valueOf(result.get(u).getDescription())) {
-                                    listaCidade.add(new DataObject(db.pesquisaCodigo(lis.get(i).getId()), u));
+                                    listaCidade.add(new DataObject( (Cidade) salvarAcumuladoDB.pesquisaCodigo(lis.get(i).getId(), "Cidade"), u));
                                     tem = true;
                                 }
                                 if (tem) {
@@ -209,9 +213,8 @@ public class FilialJSFBean {
                         }
                     }
                     if (!tem) {
-                        listaCidade.add(new DataObject(db.pesquisaCodigo(lis.get(i).getId()), 0));
+                        listaCidade.add(new DataObject( (Cidade) salvarAcumuladoDB.pesquisaCodigo(lis.get(i).getId(), "Cidade"), 0));
                     }
-
                 }
             }
         }
@@ -225,8 +228,8 @@ public class FilialJSFBean {
     public List<SelectItem> getResult() {
         if ((result.isEmpty()) || (this.adicionarLista)) {
             result.clear();
-            FilialDB db = new FilialDBToplink();
-            List<Filial> fi = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Filial> fi = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             result.add(new SelectItem(new Integer(0),
                     " -- NENHUM -- ",
                     "-1"));
@@ -236,34 +239,10 @@ public class FilialJSFBean {
                         Integer.toString(fi.get(i).getId())));
             }
             this.adicionarLista = false;
-//            atualizarIndexFilial();
         }
         return result;
     }
 
-//    public void atualizarIndexFilial(){
-//        FilialCidadeDB db = new FilialCidadeDBToplink();
-//        FilialDB dbF = new FilialDBToplink();
-//        List<FilialCidade> fc = db.pesquisaTodos();
-//        //List<Filial> fili = dbF.pesquisaTodos();
-//        boolean tem;
-//        for(int i = 0; i < fc.size();i++){
-//            tem = false;
-//            for(int w = 0; w < listaCidade.size(); w++){
-//                if (!tem){
-//                    if(fc.get(i).getCidade().getId() == listaCidade.get(w).getCidade().getId()){
-//                        for (int u = 0; u < result.size();u++){
-//                            if (fc.get(i).getFilial().getId() == Integer.valueOf(result.get(u).getDescription())){
-//                                listaCidade.get(w).setIndiceFilial(u);
-//                                tem = true;
-//                                break;
-//                            }
-//                        }
-//                    }
-//                }else break;
-//            }
-//        }
-//    }
     public void setResult(List<SelectItem> result) {
         this.result = result;
     }

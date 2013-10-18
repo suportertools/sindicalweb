@@ -1,11 +1,16 @@
 package br.com.rtools.homologacao;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "HOM_STATUS")
-@NamedQuery(name = "Status.pesquisaID", query = "select s from Status s where s.id=:pid")
-public class Status implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Status.pesquisaID", query = "SELECT S FROM Status AS S WHERE S.id = :pid"),
+    @NamedQuery(name = "Status.findAll",    query = "SELECT S FROM Status AS S ORDER BY S.descricao ASC "),
+    @NamedQuery(name = "Status.findName",   query = "SELECT S FROM Status AS S WHERE UPPER(S.descricao) LIKE :pdescricao ORDER BY S.descricao ASC ")
+})
+public class Status implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

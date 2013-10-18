@@ -1,6 +1,5 @@
 package br.com.rtools.endereco.beans;
 
-import br.com.rtools.arrecadacao.GrupoCidades;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
 import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.endereco.Cidade;
@@ -12,11 +11,16 @@ import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class CidadeJSFBean {
+@ManagedBean
+@SessionScoped
+public class CidadeBean implements Serializable {
 
     private Cidade cidade = new Cidade();
     private String msgConfirma;
@@ -24,7 +28,7 @@ public class CidadeJSFBean {
     private int idIndex = -1;
     private List<Cidade> listaCidade = new ArrayList();
 
-    public CidadeJSFBean() {
+    public CidadeBean() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         PessoaEndereco pe = db.pesquisaEndPorPessoaTipo(1, 3);
         cidade.setUf(pe.getEndereco().getCidade().getUf());
@@ -59,70 +63,71 @@ public class CidadeJSFBean {
             msgConfirma = "Digite uma Cidade por favor!";
             return null;
         }
-
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        CidadeDB cidadeDB = new CidadeDBToplink();
         NovoLog log = new NovoLog();
-
-        sv.abrirTransacao();
         if (cidade.getId() == -1) {
+            List list = cidadeDB.pesquisaCidade(cidade.getCidade(), cidade.getUf());
+            if (!list.isEmpty()) {
+                msgConfirma = "Registro já existe!";
+                return null;
+            }
+            sv.abrirTransacao();
             if (sv.inserirObjeto(cidade)) {
+                sv.comitarTransacao();
                 msgConfirma = "Cidade salva com Sucesso!";
                 listaCidade.clear();
                 log.novo("Novo registro", "Cidade inserida " + cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
             } else {
-                msgConfirma = "Erro ao salvar Cidade!";
                 sv.desfazerTransacao();
-                return null;
+                msgConfirma = "Erro ao salvar Cidade!";
             }
         } else {
-            Cidade c = new Cidade();
-            c = (Cidade) sv.pesquisaCodigo(cidade.getId(), "Cidade");
+            Cidade c = (Cidade) sv.pesquisaCodigo(cidade.getId(), "Cidade");
             String antes = "De: " + c.getCidade() + " / " + c.getUf();
-
+            sv.abrirTransacao();
             if (sv.alterarObjeto(cidade)) {
+                sv.comitarTransacao();
                 msgConfirma = "Registro atualizado!";
                 listaCidade.clear();
                 log.novo("Atualizado", antes + " - para: " + cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
             } else {
                 msgConfirma = "Erro ao atualizar!";
                 sv.desfazerTransacao();
-                return null;
             }
         }
-        sv.comitarTransacao();
         return null;
     }
 
     public String novo() {
         cidade = new Cidade();
-        return "cidade";
-    }
-
-    public String excluir() {
-        NovoLog log = new NovoLog();
-        cidade = (Cidade) listaCidade.get(idIndex);
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if (cidade.getId() != -1) {
-            cidade = (Cidade) sv.pesquisaCodigo(cidade.getId(), "Cidade");
-            if (sv.deletarObjeto(cidade)) {
-                msgConfirma = "Cidade Excluida com Sucesso!";
-                listaCidade.clear();
-                log.novo("Excluido", cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
-            } else {
-                msgConfirma = "Cidade não pode ser Excluida!";
-            }
-            sv.desfazerTransacao();
-            return null;
-        }
-        cidade = new Cidade();
-        sv.comitarTransacao();
         return null;
     }
 
-    public String editar() {
-        String result = "cidade";
-        cidade = (Cidade) listaCidade.get(idIndex);
+    public String excluir(Cidade c) {
+        if (c.getId() != -1) {
+            cidade = c;
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            cidade = (Cidade) sv.pesquisaCodigo(cidade.getId(), "Cidade");
+            sv.abrirTransacao();
+            if (sv.deletarObjeto(cidade)) {
+                sv.comitarTransacao();
+                msgConfirma = "Cidade Excluida com Sucesso!";
+                cidade = new Cidade();
+                listaCidade.clear();
+                NovoLog log = new NovoLog();
+                log.novo("Excluido", cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
+            } else {
+                sv.desfazerTransacao();
+                msgConfirma = "Cidade não pode ser Excluida!";
+            }
+        }
+        return null;
+    }
+
+    public String editar(Cidade c) {
+        String result = null;
+        cidade = c;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cidadePesquisa", cidade);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null
@@ -143,9 +148,7 @@ public class CidadeJSFBean {
             if (cidade.getCidade().equals("")) {
                 List lgc = dbCids.pesquisaCidadesBase();
                 if (!lgc.isEmpty()) {
-                    //for (int i = 0;i < lgc.size();i++){
                     listaCidade.addAll(lgc);
-                    //}
                 }
             } else {
                 listaCidade = db.pesquisaCidade(cidade.getUf(), cidade.getCidade(), getComoPesquisa());

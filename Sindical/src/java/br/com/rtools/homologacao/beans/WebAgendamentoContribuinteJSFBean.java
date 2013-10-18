@@ -8,7 +8,6 @@ import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.homologacao.Agendamento;
-import br.com.rtools.homologacao.CancelarHorario;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Status;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -49,7 +47,6 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     private boolean renderConcluir = false;
     private boolean renderBtnAgendar = true;
     private Date data = DataHoje.converte(new DataHoje().incrementarDias(1, DataHoje.data()));
-    //private Date dataOposicao = DataHoje.converte( new DataHoje().incrementarDias(30, DataHoje.data()) );
     private int idStatus = 0;
     private int idIndex = -1;
     private int idIndexEndereco = -1;
@@ -70,7 +67,6 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     private boolean readonlyFisica = false;
     private boolean readonlyEndereco = false;
     private String strContribuinte = "";
-    //private String abrirModal = "modalMensagem()";
     private int id_protocolo = -1;
     private Registro registro = new Registro();
 
@@ -138,14 +134,12 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                     registro.getFormaPagamentoHomologacao(),
                     age.getEmissao()));
 
-
-            byte[] arquivo = new byte[0];
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint print = JasperFillManager.fillReport(
                     jasper,
                     null,
                     dtSource);
-            arquivo = JasperExportManager.exportReportToPdf(print);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
 
             String nomeDownload = "imp_protocolo_" + proto + ".pdf";
 
@@ -165,7 +159,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     }
 
     public List<SelectItem> getListaStatus() {
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
         StatusDB db = new StatusDBToplink();
         List select = new ArrayList();
@@ -183,7 +177,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     }
 
     public List<SelectItem> getListaMotivoDemissao() {
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
         DemissaoDB db = new DemissaoDBToplink();
         List select = db.pesquisaTodos();
@@ -200,14 +194,12 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
 
     public synchronized List getListaHorarios() {
         listaGrid = new ArrayList();
-        List<Agendamento> ag = new ArrayList<Agendamento>();
-        List<Horarios> horario = new ArrayList<Horarios>();
+        List<Agendamento> ag;
+        List<Horarios> horario;
         HomologacaoDB db = new HomologacaoDBToplink();
-        List<CancelarHorario> cancelarHorario = new ArrayList<CancelarHorario>();
-        //HorariosDB dbH = new HorariosDBToplink();
-        String agendador = "";
-        String homologador = "";
-        DataObject dtObj = null;
+        String agendador;
+        String homologador;
+        DataObject dtObj;
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
             case 1: {
@@ -223,18 +215,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                         listaGrid.clear();
                         break;
                     }
-//                    int qntTotal = horario.get(i).getQuantidade() - qnt;
-//                    for(int y = 0; y < cancelarHorario.size(); y++) {
-//                        if(horario.get(i).getId() == cancelarHorario.get(y).getHorarios().getId()) {
-//                            if(cancelarHorario.get(y).getQuantidade() <= qntTotal){
-//                                qntTotal = qntTotal - cancelarHorario.get(y).getQuantidade();
-//                            }
-//                            // break;
-//                        }
-//                    }
-//                    if(qntTotal > 0){
                     if (qnt > 0) {
-//                        if (qnt < horario.get(i).getQuantidade()) {
                         dtObj = new DataObject(horario.get(i), // ARG 0 HORA
                                 null, // ARG 1 CNPJ
                                 null, //ARG 2 NOME
@@ -246,9 +227,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                                 qnt, // ARG 8 QUANTIDADE DISPONÍVEL
                                 null);
                         listaGrid.add(dtObj);
-//                        }
                     }
-//                    }
                 }
                 break;
             }
@@ -290,13 +269,13 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
 
     public String novoProtocolo() {
         imprimirPro = false;
-        FilialDB dbf = new FilialDBToplink();
         renderBtnAgendar = true;
         renderAgendamento = false;
         renderConcluir = true;
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
-        agendamento.setFilial(dbf.pesquisaCodigo(1));
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
         if (profissao.getId() == -1) {
             ProfissaoDB dbp = new ProfissaoDBToplink();
             profissao = dbp.pesquisaCodigo(0);
@@ -306,15 +285,11 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     }
 
     public String salvar() {
-        TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
-        DemissaoDB dbDem = new DemissaoDBToplink();
-        StatusDB dbSta = new StatusDBToplink();
-        FilialDB dbFil = new FilialDBToplink();
-        TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
         int ids[] = {1, 3, 4};
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Registro reg = dbFil.pesquisaCodigoRegistro(1);
+        Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
         imprimirPro = false;
         if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
             msgConfirma = "Empresa não poderá agendar em Débito. Contate seu Sindicato!";
@@ -337,7 +312,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
         }
 
         DataHoje dataH = new DataHoje();
-        Demissao demissao = dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
+        Demissao demissao = (Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -365,7 +340,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
 
         sv.abrirTransacao();
         if (fisica.getId() == -1) {
-            fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 msgConfirma = "Documento Inválido!";
                 return null;
@@ -392,7 +367,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco(dbt.pesquisaCodigo(ids[i]));
+                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(ids[i], "TipoEndereco"));
                     if (!sv.inserirObjeto(pesEnd)) {
                         msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         sv.desfazerTransacao();
@@ -449,10 +424,10 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
                 agendamento.setDtEmissao(DataHoje.dataHoje());
-                agendamento.setDemissao(dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
+                agendamento.setDemissao((Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus(dbSta.pesquisaCodigo(2));
+                agendamento.setStatus((Status) salvarAcumuladoDB.pesquisaCodigo(2, "Status"));
                 if (sv.inserirObjeto(agendamento)) {
                     msgConfirma = "Para imprimir Protocolo clique aqui!";
                     id_protocolo = agendamento.getId();
@@ -463,7 +438,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
                     return null;
                 }
             } else {
-                agendamento.setDemissao(dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
+                agendamento.setDemissao((Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
                 if (sv.alterarObjeto(agendamento)) {
                     msgConfirma = "Para imprimir Protocolo clique aqui!";
                     id_protocolo = agendamento.getId();
@@ -513,14 +488,13 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
         header = "Agendamento Web >> Concluir";
         switch (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription())) {
             case 1: {
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 if (data == null) {
                     msgAgendamento = "Selecione uma data para Agendamento!";
                     renderAgendamento = true;
                     renderConcluir = false;
                 } else {
                     renderBtnAgendar = true;
-                    FilialDB dbf = new FilialDBToplink();
-
                     if (profissao.getId() == -1) {
                         ProfissaoDB dbp = new ProfissaoDBToplink();
                         profissao = dbp.pesquisaCodigo(0);
@@ -528,7 +502,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
 
                     agendamento.setData(DataHoje.converteData(data));
                     agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
-                    agendamento.setFilial(dbf.pesquisaCodigo(1));
+                    agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
                     msgAgendamento = "";
                 }
                 break;
@@ -564,7 +538,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (int i = 0; i < listaEmDebito.size(); i++) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((Vector) listaEmDebito.get(i)).get(0), "Movimento");
+            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaEmDebito.get(i)).get(0), "Movimento");
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -575,8 +549,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
 
     public boolean pesquisarFeriado() {
         FeriadosDB db = new FeriadosDBToplink();
-        List listFeriados = new ArrayList();
-        listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
+        List listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
         if (!listFeriados.isEmpty()) {
             return true;
         }
@@ -782,7 +755,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
         if (juridica.getId() != -1) {
             enderecoEmpresa = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 5);
             if (enderecoEmpresa.getId() != -1) {
-                String strCompl = "";
+                String strCompl;
                 if (enderecoEmpresa.getComplemento().equals("")) {
                     strCompl = " ";
                 } else {
@@ -925,9 +898,9 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     public String getStrContribuinte() {
         if (juridica.getId() != -1) {
             JuridicaDB db = new JuridicaDBToplink();
-            List<Vector> listax = db.listaJuridicaContribuinte(juridica.getId());
+            List listax = db.listaJuridicaContribuinte(juridica.getId());
             for (int i = 0; i < listax.size(); i++) {
-                if (listax.get(0).get(11) != null) {
+                if (((List) listax.get(0)).get(11) != null) {
                     return strContribuinte = "Empresa Inativa";
                 } else {
                     return strContribuinte = "";

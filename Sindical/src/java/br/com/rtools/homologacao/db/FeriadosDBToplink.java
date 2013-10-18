@@ -12,31 +12,6 @@ import javax.persistence.Query;
 public class FeriadosDBToplink extends DB implements FeriadosDB {
 
     @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery(" SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC ");
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
-        } catch (Exception e) {
-        }
-        return new ArrayList();
-    }
-
-    @Override
-    public Feriados pesquisaCodigo(int id) {
-        Feriados result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Feriados.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Feriados) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
     public List pesquisarPorData(String data) {
         try {
             Query qry = getEntityManager().createQuery("SELECT F from Feriados AS F WHERE F.dtData = :data");

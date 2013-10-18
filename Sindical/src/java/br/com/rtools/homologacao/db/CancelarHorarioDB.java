@@ -10,16 +10,6 @@ public interface CancelarHorarioDB {
 
     public EntityManager getEntityManager();
 
-    public boolean insert(CancelarHorario cancelarHorario);
-
-    public boolean update(CancelarHorario cancelarHorario);
-
-    public boolean delete(CancelarHorario cancelarHorario);
-
-    public List pesquisaTodos();
-
-    public CancelarHorario pesquisaCodigo(int id);
-
     public CancelarHorario pesquisaCancelamentoHorario(Date data, int idHorario, int idFilial);
 
     public List pesquisaTodos(int idFilial);

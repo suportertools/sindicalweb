@@ -5,107 +5,9 @@ import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Registro;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.persistence.Query;
 
 public class FilialDBToplink extends DB implements FilialDB {
-
-    @Override
-    public boolean insert(Filial filial) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(filial);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Filial filial) {
-        try {
-            getEntityManager().merge(filial);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Filial filial) {
-        try {
-            getEntityManager().remove(filial);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean insertRegistro(Registro registro) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(registro);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean updateRegistro(Registro registro) {
-        try {
-            getEntityManager().merge(registro);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteRegistro(Registro registro) {
-        try {
-            getEntityManager().remove(registro);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public Filial pesquisaCodigo(int id) {
-        Filial result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Filial.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Filial) qry.getSingleResult();
-        } catch (Exception e) {
-            String a = e.getMessage();
-        }
-        return result;
-    }
-
-    @Override
-    public Registro pesquisaCodigoRegistro(int id) {
-        Registro result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Registro.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Registro) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
 
     @Override
     public Registro pesquisaRegistroPorFilial(int id) {
@@ -134,16 +36,6 @@ public class FilialDBToplink extends DB implements FilialDB {
             return qry.getResultList();
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select fil from Filial fil order by fil.filial.pessoa.nome");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return new ArrayList();
         }
     }
 
@@ -329,8 +221,8 @@ public class FilialDBToplink extends DB implements FilialDB {
 
     @Override
     public List pesquisaPessoaPatronal(String desc, String por, String como) {
-        List lista = new Vector<Object>();
-        String textQuery = null;
+        List lista = new ArrayList<Object>();
+        String textQuery;
         if (como.equals("I")) {
             desc = desc.toLowerCase().toUpperCase() + "%";
         } else {
@@ -346,7 +238,7 @@ public class FilialDBToplink extends DB implements FilialDB {
             }
             lista = qry.getResultList();
         } catch (Exception e) {
-            lista = new Vector<Object>();
+            return lista;
         }
         return lista;
     }

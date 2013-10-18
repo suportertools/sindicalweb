@@ -13,58 +13,6 @@ import javax.persistence.Query;
 public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
 
     @Override
-    public boolean insert(CancelarHorario cancelarHorario) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(cancelarHorario);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(CancelarHorario cancelarHorario) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(cancelarHorario);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(CancelarHorario cancelarHorario) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(cancelarHorario);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select ch from CancelarHorario ch order by ch.dtData desc, ch.hora asc");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return new ArrayList();
-        }
-    }
-
-    @Override
     public List pesquisaTodos(int idFilial) {
         try {
             Query qry = getEntityManager().createQuery("select ch from CancelarHorario ch where ch.filial.id = " + idFilial
@@ -73,18 +21,6 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
         } catch (Exception e) {
             return new ArrayList();
         }
-    }
-
-    @Override
-    public CancelarHorario pesquisaCodigo(int id) {
-        CancelarHorario result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("CancelarHorario.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (CancelarHorario) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
     }
 
     @Override

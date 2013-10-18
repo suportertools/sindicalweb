@@ -227,8 +227,8 @@ public class MatriculaEscolaBean implements Serializable {
             FisicaDB fisicaDB = new FisicaDBToplink();
             Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
             List listaDiaSemana = new ArrayList();
-            int periodoMeses = 0;
-            String periodoMesesExtenso = "";
+            int periodoMeses;
+            String periodoMesesExtenso;
             if (tipoMatricula.equals("Individual")) {
                 contratoCurso = matriculaIndividual.getCurso().getDescricao();
                 if (matriculaIndividual.isSegunda()) {
@@ -371,7 +371,7 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepAluno", cepAlunoString));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesesExtenso", periodoMesesExtenso));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$meses", Integer.toString(periodoMeses)));
-            String alunoNascimento = "";
+            String alunoNascimento = ""; 
             if (contratoFisica.getId() != -1) {
                 alunoNascimento = contratoFisica.getNascimento();
             }            

@@ -17,34 +17,6 @@ import javax.persistence.Query;
 public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 
     @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("SELECT C FROM Agendamento AS C");
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
-            }
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
-        return new ArrayList();
-    }
-
-    @Override
-    public Agendamento pesquisaCodigo(int id) {
-        Agendamento result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Agendamento.pesquisaID");
-            qry.setParameter("pid", id);
-            if (!qry.getResultList().isEmpty()) {
-                result = (Agendamento) qry.getSingleResult();
-            }
-        } catch (Exception e) {
-            //e.printStackTrace();
-        }
-        return result;
-    }
-
-    @Override
     public Agendamento pesquisaProtocolo(int id) {
         Agendamento result = null;
         try {

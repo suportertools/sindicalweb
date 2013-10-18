@@ -34,10 +34,13 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 //import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
@@ -49,7 +52,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class RecepcaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class RecepcaoBean implements Serializable {
 
     private Agendamento agendamento = new Agendamento();
     private int idIndex = 0;
