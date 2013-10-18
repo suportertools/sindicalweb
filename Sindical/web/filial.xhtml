@@ -40,18 +40,10 @@
                             </h:panelGrid>
                             <div class="clear"></div>
                             <h:panelGrid style="float: left; margin-top: 15px;">
-                                <rich:dataTable value="#{filialBean.listaFilialSemMatriz}" var="linha" style="width: 100%" id="tbl" iterationStatusVar="it">                                    
-                                    
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header"><h:outputText value="#"/></f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column>
-                                    
+                                <rich:dataTable value="#{filialBean.listaFilialSemMatriz}" var="linha" style="width: 100%" id="tbl">
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header"><h:outputText value="..."/></f:facet>
-                                        <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{filialBean.excluir}" render="tbl, idJuridica, outConfirma" oncomplete="modalMensagem()" >
-                                            <a4j:param value="#{it.index}" assignTo="#{filialBean.idIndex}"/>
-                                        </a4j:commandButton>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{filialBean.excluir(linha)}" render="tbl, idJuridica, outConfirma" oncomplete="modalMensagem()" />
                                     </rich:column>
                                     
                                     <rich:column>
@@ -104,7 +96,7 @@
                         <center>
                             <h:outputText id="outConfirma" value="#{filialBean.msgConfirma}" styleClass="fontePadrao"/>
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="filial" title="OK" render="tbl"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="filial" title="OK" render="tbl, tbl2"/>
                         </center>
                     </div>
                     <div id="mask"></div>
