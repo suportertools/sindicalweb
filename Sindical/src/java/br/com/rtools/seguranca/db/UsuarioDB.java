@@ -30,4 +30,6 @@ public interface UsuarioDB {
     public void updateAcordoMovimento();
 
     public List<Usuario> pesquisaTodosPorDescricao(String descricaoPesquisa);
+    
+    public Usuario pesquisaUsuarioPorPessoa(int id_pessoa);
 }

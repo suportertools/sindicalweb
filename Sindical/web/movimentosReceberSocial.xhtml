@@ -129,6 +129,11 @@
                                     <f:facet name="header"><h:outputText value="E/S"/></f:facet>
                                     <h:outputText value="#{linha.argumento12}" />
                                 </rich:column>
+                                
+                                <rich:column style="text-align: center;">
+                                    <f:facet name="header"><h:outputText value="Mais"/></f:facet>
+                                    <h:commandLink value="Alterar" action="#{movimentosSocialBean.telaMovimento(linha.argumento1)}"/>
+                                </rich:column>
                                 <f:facet name="footer">
                                     <rich:dataScroller id="datascroller2" maxPages="17" render="tbl"/>
                                 </f:facet>

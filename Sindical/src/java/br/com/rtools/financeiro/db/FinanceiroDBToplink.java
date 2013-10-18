@@ -243,4 +243,14 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         }
         return null;
     }
+    
+    @Override
+    public List<Movimento> pesquisaMovimentoPorLote(int id_lote) {
+        try {
+            Query qry = getEntityManager().createQuery("select m from Movimento m where m.lote.id = " + id_lote);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
 }

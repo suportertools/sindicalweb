@@ -264,7 +264,7 @@ public class NotificacaoJSFBean implements Serializable {
 
         sv.abrirTransacao();
         //for (int i = 0; i < listaNotificacao.size(); i++) {
-        if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " and fc.id_lote is null order by c.ds_nome, c.id_pessoa)")) {
+        if (!sv.executeQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " and fc.id_lote is null order by c.ds_nome, c.id_pessoa)")) {
 //            if ((Boolean) listaNotificacao.get(i).getArgumento0()) {
 //                if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) values (" + ((Vector) listaNotificacao.get(i).getArgumento1()).get(0) + "," + lote.getId() + ")")) {
             msgConfirma = "Erro ao inserir Cobrança";

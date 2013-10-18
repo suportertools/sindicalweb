@@ -747,7 +747,12 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioBean");
         return metodoGenerico(2, "usuarioPerfil");
     }
-
+    
+    public synchronized String alterarMovimento() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("alterarMovimentoBean");
+        return metodoGenerico(2, "alterarMovimento");
+    }
+    
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------

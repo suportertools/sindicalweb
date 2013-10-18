@@ -52,6 +52,8 @@
                                     <rich:menuItem label="Contrato Campos"              action="#{chamadaPaginaBean.modeloContratoCampos}" styleClass="divBotao"/>
                                     <rich:menuItem label="Midia"                        action="#{chamadaPaginaBean.midia}" styleClass="divBotao"/>
                                     <rich:menuItem label="Desconto Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Serviços"                 action="#{chamadaPaginaBean.servicos()}" styleClass="divBotao"/>
+                                    <rich:menuItem label="Serviço Rotina"           action="#{chamadaPaginaBean.servicoRotina()}" styleClass="divBotao"/>
                                 </rich:menuGroup>                            
 
                             </rich:dropDownMenu>
@@ -65,6 +67,7 @@
                                         </h:panelGrid>
                                     </h:panelGroup>
                                 </f:facet>
+                                <rich:menuItem label="Movimentos a Receber" action="#{chamadaPaginaBean.movimentosReceberSocial()}" styleClass="divBotao"/>
                                 <rich:menuItem label="Financeiro"                   action="#{chamadaPaginaBean.eFinanceiro}" styleClass="divBotao"/>
                             </rich:dropDownMenu>
 

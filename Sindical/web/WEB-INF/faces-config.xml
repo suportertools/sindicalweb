@@ -1925,5 +1925,11 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>alterarMovimento</from-outcome>
+            <to-view-id>/alterarMovimento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
     </navigation-rule>
 </faces-config>

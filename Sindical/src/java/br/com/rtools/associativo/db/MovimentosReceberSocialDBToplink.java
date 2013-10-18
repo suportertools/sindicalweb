@@ -10,6 +10,9 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
     @Override
     public List pesquisaListaMovimentos(String ids, String por_status) {
         try{
+            if (ids.isEmpty()){
+                return new ArrayList();
+            }
         String textqry = " select  "
                         + "     se.ds_descricao as servico,  "
                         + "     tp.ds_descricao as tipo, "
@@ -48,15 +51,23 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                         + " left join pes_pessoa as us on us.id=u.id_pessoa";
                         
             String order_by = " order by m.dt_vencimento, se.ds_descricao, p.ds_nome, t.ds_nome, b.ds_nome ";
+            String where = "";
             String ands = "";
 
             if (por_status.equals("todos")){
-                ands = " where m.id_pessoa in ("+ids+") and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+                ands = where + " where m.id_pessoa in ("+ids+") and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
             }else if (por_status.equals("abertos")){
-                ands = " where m.id_pessoa in ("+ids+") and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+                ands = where + " where m.id_pessoa in ("+ids+") and m.id_baixa is null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
             }else{
-                ands = " where m.id_pessoa in ("+ids+") and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+                ands = where + " where m.id_pessoa in ("+ids+") and m.id_baixa is not null and m.is_ativo = true and m.id_servicos not in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
             }
+//            if (por_status.equals("todos")){
+//                ands = where + " where m.id_pessoa in ("+ids+") and m.is_ativo = true and m.id_servicos in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+//            }else if (por_status.equals("abertos")){
+//                ands = where + " where m.id_pessoa in ("+ids+") and m.id_baixa is null and m.is_ativo = true and m.id_servicos in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+//            }else{
+//                ands = where + " where m.id_pessoa in ("+ids+") and m.id_baixa is not null and m.is_ativo = true and m.id_servicos in (select sr.id_servicos from fin_servico_rotina sr where id_rotina = 4) ";
+//            }
         
             textqry += ands + order_by;
             Query qry = getEntityManager().createNativeQuery(textqry);

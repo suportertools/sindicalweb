@@ -752,7 +752,7 @@ public class DataHoje {
             dia = "Quatorze";
         }
         if (dia.equals("15")) {
-            dia = "Quinhe";
+            dia = "Quinze";
         }
         if (dia.equals("16")) {
             dia = "Dezesseis";

@@ -376,16 +376,20 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     }
 
     @Override
-    public List movimentosAberto(int idPessoa) {
+    public List movimentosAberto(int idPessoa, boolean sindical) {
         String texto = "";
         try {
             Query qry;
+            String and_sindical = "";
+            if (!sindical)
+                and_sindical = " and m.servicos.id <> 1";
+            
             texto = "select m    "
                     + "  from Movimento m "
                     + " where m.baixa is null "
                     + "   and m.ativo = true "
                     + "   and m.lote.rotina.id = 4 "
-                    + "   and m.pessoa.id = " + idPessoa
+                    + "   and m.pessoa.id = " + idPessoa + and_sindical
                     + " order by m.dtVencimento";
             qry = getEntityManager().createQuery(texto);
             return qry.getResultList();
