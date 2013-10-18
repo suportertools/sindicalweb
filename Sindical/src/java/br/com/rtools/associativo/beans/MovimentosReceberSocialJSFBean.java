@@ -163,6 +163,30 @@ public class MovimentosReceberSocialJSFBean {
         return null;
     }
 
+    public String telaMovimento(int id_movimento) {
+        List lista = new ArrayList();
+        MovimentoDB db = new MovimentoDBToplink();
+        Movimento movimento = new Movimento();
+       
+        
+//                    movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
+        movimento = db.pesquisaCodigo(id_movimento);
+
+//                    movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
+//                    movimento.setJuros(Moeda.converteUS$( listaMovimento.get(i).getArgumento20().toString()));
+//                    movimento.setCorrecao(Moeda.converteUS$( listaMovimento.get(i).getArgumento21().toString()));
+//
+//                    movimento.setDesconto(Moeda.converteUS$(listaMovimento.get(i).getArgumento8().toString()));
+//
+//                    movimento.setValor(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()));
+
+                    // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
+//                    movimento.setValorBaixa(Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
+        lista.add(movimento);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).alterarMovimento();
+    }
+    
     public String telaAcordo() {
         List lista = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();

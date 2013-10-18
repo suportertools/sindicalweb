@@ -204,4 +204,15 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
             getEntityManager().getTransaction().rollback();
         }
     }
+    
+    @Override
+    public Usuario pesquisaUsuarioPorPessoa(int id_pessoa) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "select usu from Usuario usu where USU.pessoa.id = "+id_pessoa);
+            return (Usuario) qry.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

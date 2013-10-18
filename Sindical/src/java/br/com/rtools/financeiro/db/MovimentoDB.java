@@ -15,7 +15,7 @@ public interface MovimentoDB {
 
     public String pesquisaDescMensagem(int id_tipo_servico, int id_servicos, int id_convencao, int id_grupo_cidade);
 
-    public List movimentosAberto(int idPessoa);
+    public List movimentosAberto(int idPessoa, boolean sindical);
 
     public List pesquisaTodos();
 

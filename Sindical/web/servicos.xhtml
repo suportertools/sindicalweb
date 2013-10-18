@@ -120,15 +120,21 @@
                                         </p>
                                         <p>
                                             <h:outputLabel value="Valor: " styleClass="fontePadrao" for="idValor"/>
-                                            <h:inputText size="10" id="idValor" value="#{servicosBean.valor}" styleClass="real" />
+                                            <h:inputText size="10" id="idValor" value="#{servicosBean.valorf}">
+                                                <a4j:ajax event="change" render="idValor" />
+                                            </h:inputText>
                                         </p>
                                         <p>
                                             <h:outputLabel value=" Desconto até o vencimento: " styleClass="fontePadrao" for="idDesconto"/>
-                                            <h:inputText size="10" id="idDesconto" value="#{servicosBean.desconto}" style="text-align: left;" styleClass="real"/>
+                                            <h:inputText size="10" id="idDesconto" value="#{servicosBean.desconto}" style="text-align: left;" >
+                                                <a4j:ajax event="change" render="idDesconto" />
+                                            </h:inputText>
                                         </p>
                                         <p>
                                             <h:outputLabel value=" Taxa: " styleClass="fontePadrao" for="idTaxa"/>
-                                            <h:inputText size="10" id="idTaxa" value="#{servicosBean.taxaToString}" style="text-align: left;" styleClass="real"/>
+                                            <h:inputText size="10" id="idTaxa" value="#{servicosBean.taxa}" style="text-align: left;">
+                                                <a4j:ajax event="change" render="idTaxa" />
+                                            </h:inputText>
                                         </p>
                                     </div>
                                     <div>

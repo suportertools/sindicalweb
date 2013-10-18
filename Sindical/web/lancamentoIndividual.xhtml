@@ -27,7 +27,7 @@
                             <p>
                                 <label class="fontePadrao">Pessoa:</label>
                                 <h:commandButton image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true" title="Pesquisar Pessoa"/>
-                                <h:outputText value="#{suspencaoBean.suspencao.pessoa.nome}" styleClass="fontePadraoNegrito" title="Pessoa" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;"/>
+                                <h:outputText value="" styleClass="fontePadraoNegrito" title="Pessoa" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;"/>
                             </p>
                             <p>
                                 <label>Emissão:</label>
@@ -74,9 +74,9 @@
                         </div>
                         <div style="clear: both"></div>
                         <p>
-                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar"/>
+                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
                             <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
-                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
                         </p>
                     </div>
 

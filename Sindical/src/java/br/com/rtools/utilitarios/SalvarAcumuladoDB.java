@@ -49,7 +49,7 @@ public interface SalvarAcumuladoDB {
 
     public Object pesquisaObjeto(int id, String tabela);
 
-    public boolean inserirQuery(String textQuery);
+    public boolean executeQuery(String textQuery);
 
     public boolean descricaoExiste(String descricao, String campo, String objeto);
 }

@@ -20,7 +20,7 @@ public class ProfessorBean implements java.io.Serializable {
     private Professor professor = new Professor();
     private Pessoa pessoa = new Pessoa();
     private String msgConfirma = "";
-    private String valorComissao = "0";
+    private float valorComissaof = 0;
     private List<Professor> listaProfessores = new ArrayList();
     private int idIndex = -1;
 
@@ -35,7 +35,8 @@ public class ProfessorBean implements java.io.Serializable {
             msgConfirma = "Professor já cadastrado!";
             return null;
         }
-        professor.setNrComissao(Moeda.substituiVirgulaFloat(valorComissao));
+        
+        professor.setNrComissao(valorComissaof);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
         if (professor.getId() == -1) {
@@ -63,7 +64,7 @@ public class ProfessorBean implements java.io.Serializable {
     public String editar(Professor p) {
         professor = p;
         pessoa = professor.getProfessor();
-        valorComissao = Moeda.converteR$Float(professor.getNrComissao());
+        valorComissaof = professor.getNrComissao();
         return "professor";
     }
 
@@ -89,7 +90,7 @@ public class ProfessorBean implements java.io.Serializable {
         pessoa = new Pessoa();
         professor = new Professor();
         msgConfirma = "";
-        valorComissao = "0";
+        valorComissaof = 0;
         return "professor";
     }
 
@@ -121,20 +122,6 @@ public class ProfessorBean implements java.io.Serializable {
         this.msgConfirma = msgConfirma;
     }
 
-    public String getValorComissao() {
-        if (valorComissao.isEmpty()) {
-            valorComissao = "0";
-        }
-        return Moeda.converteR$(valorComissao);
-    }
-
-    public void setValorComissao(String valorComissao) {
-        if (valorComissao.isEmpty()) {
-            valorComissao = "0";
-        }
-        this.valorComissao = Moeda.substituiVirgula(valorComissao);
-    }
-
     public List<Professor> getListaProfessores() {
         if (listaProfessores.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -153,5 +140,13 @@ public class ProfessorBean implements java.io.Serializable {
 
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
+    }
+
+    public float getValorComissaof() {
+        return valorComissaof;
+    }
+
+    public void setValorComissaof(float valorComissaof) {
+        this.valorComissaof = valorComissaof;
     }
 }

@@ -33,6 +33,10 @@ public class BaixaBoletoJSFBean {
 
     public void refreshForm() {
     }
+    
+    public void atualizaCB() {
+        carregarGrid = true;
+    }
 
     public String refreshFormCaixa() {
         return "baixaBoleto";
@@ -85,53 +89,53 @@ public class BaixaBoletoJSFBean {
 //            }
 
             // ROGERIO PEDIU PARA DEIXAR CAIXA IGUAL AO BANCO, PORQ pois o campo ds_documento_baixa da tabela fin_baixa está gravando o número do boleto -- EMAIL RECEBIDO
-//            if (caixaBanco.equals("caixa")) {
-//                for (int i = 0; i < listBoletos.size(); i++) {
-//                    if ((Boolean) listBoletos.get(i).getArgumento8() == true) {
-//                        mov = (Movimento) listBoletos.get(i).getArgumento1();
-//                        mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento7()))));
-//
-//                        mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento3()))));
-//                        mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento4()))));
-//                        mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento5()))));
-//                        mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento6()))));
-//
-//                        if (mov.getValorBaixa() <= 0) {
-//                            msgConfirma = "Valor não pode ser zerado";
-//                            return null;
-//                        }
-//                        lista.add(mov);
-//                    }
-//                }
-//            } else {
-//                mov = (Movimento) listBoletos.get(index).getArgumento1();
-//                mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
-//
-//                mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
-//                mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
-//                mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
-//                mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
-//
-//                if (mov.getValorBaixa() <= 0) {
-//                    msgConfirma = "Valor não pode ser zerado";
-//                    return null;
-//                }
-//                lista.add(mov);
-//            }
-            
-            mov = (Movimento) listBoletos.get(index).getArgumento1();
-            mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
+            if (caixaBanco.equals("caixa")) {
+                for (int i = 0; i < listBoletos.size(); i++) {
+                    if ((Boolean) listBoletos.get(i).getArgumento8() == true) {
+                        mov = (Movimento) listBoletos.get(i).getArgumento1();
+                        mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento7()))));
 
-            mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
-            mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
-            mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
-            mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
+                        mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento3()))));
+                        mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento4()))));
+                        mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento5()))));
+                        mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(i).getArgumento6()))));
 
-            if (mov.getValorBaixa() <= 0) {
-                msgConfirma = "Valor não pode ser zerado";
-                return null;
+                        if (mov.getValorBaixa() <= 0) {
+                            msgConfirma = "Valor não pode ser zerado";
+                            return null;
+                        }
+                        lista.add(mov);
+                    }
+                }
+            } else {
+                mov = (Movimento) listBoletos.get(index).getArgumento1();
+                mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
+
+                mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
+                mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
+                mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
+                mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
+
+                if (mov.getValorBaixa() <= 0) {
+                    msgConfirma = "Valor não pode ser zerado";
+                    return null;
+                }
+                lista.add(mov);
             }
-            lista.add(mov);
+            
+//            mov = (Movimento) listBoletos.get(index).getArgumento1();
+//            mov.setValorBaixa(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento7()))));
+//
+//            mov.setMulta(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento3()))));
+//            mov.setJuros(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento4()))));
+//            mov.setCorrecao(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento5()))));
+//            mov.setDesconto(Float.parseFloat(Moeda.substituiVirgula(((String) listBoletos.get(index).getArgumento6()))));
+//
+//            if (mov.getValorBaixa() <= 0) {
+//                msgConfirma = "Valor não pode ser zerado";
+//                return null;
+//            }
+//            lista.add(mov);
             
             if (!lista.isEmpty()) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
@@ -153,7 +157,11 @@ public class BaixaBoletoJSFBean {
         MovimentoDB db = new MovimentoDBToplink();
         String pesquisado = "";
         if (carregarGrid) {
-            listaQuery = db.movimentosAberto(getPessoa().getId());
+            if (caixaBanco.equals("banco"))
+                listaQuery = db.movimentosAberto(getPessoa().getId(), true);
+            else
+                listaQuery = db.movimentosAberto(getPessoa().getId(), false);
+            
             for (int i = 0; i < listaQuery.size(); i++) {
                 if (listaQuery.get(i).getDocumento().equals(numBoleto)) {
                     pesquisado = "destaqueBoleto";

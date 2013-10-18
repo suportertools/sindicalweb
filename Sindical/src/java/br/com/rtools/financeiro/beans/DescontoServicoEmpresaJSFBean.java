@@ -28,7 +28,7 @@ public class DescontoServicoEmpresaJSFBean {
     private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<DescontoServicoEmpresa> listaDescontoServicoEmpresa = new ArrayList<DescontoServicoEmpresa>();
     private List<DescontoServicoEmpresa> listaDSEPorEmpresa = new ArrayList<DescontoServicoEmpresa>();
-    private String desconto = "";
+    private float desconto = 0;
     private String descricaoPesquisaNome = "";
     private String descricaoPesquisaCNPJ = "";
     private String comoPesquisa = "";
@@ -43,7 +43,7 @@ public class DescontoServicoEmpresaJSFBean {
     }
 
     public void limpar() {
-        setDesconto("");
+        desconto = 0;
         descontoServicoEmpresa = new DescontoServicoEmpresa();
         idServicos = 0;
         listaServicos.clear();
@@ -62,13 +62,13 @@ public class DescontoServicoEmpresaJSFBean {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
             return;
         }
-        if (desconto.equals("") || desconto.equals("0,00") || desconto.equals("0") || desconto.equals("0.00")) {
+        if (desconto <= 0) {
             mensagem = "Informar o valor do desconto!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
             return;
         }
         // descontoServicoEmpresa.setDesconto(Moeda.converteUS$(desconto));
-        descontoServicoEmpresa.setDesconto(Float.parseFloat(Moeda.substituiVirgula(desconto)));
+        descontoServicoEmpresa.setDesconto(desconto);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         int idServicoAntes = -1;
         if (descontoServicoEmpresa.getId() != -1) {
@@ -141,7 +141,7 @@ public class DescontoServicoEmpresaJSFBean {
                 idServicos = i;
             }
         }
-        desconto = Moeda.converteR$Float(descontoServicoEmpresa.getDesconto());
+        desconto = descontoServicoEmpresa.getDesconto();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
@@ -153,7 +153,7 @@ public class DescontoServicoEmpresaJSFBean {
                 idServicos = i;
             }
         }
-        desconto = Moeda.converteR$Float(descontoServicoEmpresa.getDesconto());
+        desconto = descontoServicoEmpresa.getDesconto();
     }
 
     public void excluir() {
@@ -260,11 +260,11 @@ public class DescontoServicoEmpresaJSFBean {
         this.listaServicos = listaServicos;
     }
 
-    public String getDesconto() {
+    public float getDesconto() {
         return desconto;
     }
 
-    public void setDesconto(String desconto) {
+    public void setDesconto(Float desconto) {
         this.desconto = desconto;
     }
 

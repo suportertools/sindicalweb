@@ -27,8 +27,8 @@ public class ServicosJSFBean implements java.io.Serializable {
     private String msgConfirma;
     private int idIndex = -1;
     private ServicoValor servicoValor = new ServicoValor();
-    private String valor = "0";
-    private String taxaToString = "0";
+    private String valorf = "0";
+    private String taxa = "0";
     private String desconto = "0";
     private String indice = "servico";
     private List<ServicoValor> listaServicoValor = new ArrayList();
@@ -149,6 +149,12 @@ public class ServicosJSFBean implements java.io.Serializable {
         servicos = (Servicos) listaServicos.get(getIdIndex());
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaServicos", servicos);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        
+        servicoValor = new ServicoValor();
+        valorf = "0";
+        desconto = "0";
+        taxa = "0";
+        
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
             return "servicos";
         } else {
@@ -233,9 +239,9 @@ public class ServicosJSFBean implements java.io.Serializable {
 
     public String salvarValor() {
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-        servicoValor.setValor(Moeda.substituiVirgulaFloat(valor));
+        servicoValor.setValor(Moeda.substituiVirgulaFloat(valorf));
         servicoValor.setDescontoAteVenc(Moeda.substituiVirgulaFloat(desconto));
-        servicoValor.setTaxa(Moeda.substituiVirgulaFloat(taxaToString));
+        servicoValor.setTaxa(Moeda.substituiVirgulaFloat(taxa));
         if (servicoValor.getValor() != 0) {
             if (servicoValor.getId() == -1) {
                 acumuladoDB.abrirTransacao();
@@ -264,9 +270,9 @@ public class ServicosJSFBean implements java.io.Serializable {
 
     public String novoValor() {
         servicoValor = new ServicoValor();
-        valor = "0";
+        valorf = "0";
         desconto = "0";
-        taxaToString = "0";
+        taxa = "0";
         setIndice("valor");
         textoBtnServico = "Adicionar";
         listaServicoValor.clear();
@@ -278,9 +284,9 @@ public class ServicosJSFBean implements java.io.Serializable {
             return null;
         }
         servicoValor = (ServicoValor) listaServicoValor.get(index);
-        setValor(Moeda.converteR$Float(servicoValor.getValor()));
-        setDesconto(Moeda.converteR$Float(servicoValor.getDescontoAteVenc()));
-        setTaxaToString(Moeda.converteR$Float(servicoValor.getTaxa()));
+        valorf = Moeda.converteR$Float(servicoValor.getValor());
+        desconto = Moeda.converteR$Float(servicoValor.getDescontoAteVenc());
+        taxa = Moeda.converteR$Float(servicoValor.getTaxa());
         textoBtnServico = "Atualizar";
         setIndice("valor");
         return null;
@@ -322,21 +328,49 @@ public class ServicosJSFBean implements java.io.Serializable {
         this.servicoValor = servicoValor;
     }
 
-    public String getValor() {
-        return Moeda.converteR$(valor);
+    public String getValorf() {
+        if (valorf.isEmpty()) {
+            valorf = "0";
+        }
+        return Moeda.converteR$(valorf);
     }
 
-    public void setValor(String valor) {
-        this.valor = valor;
+    public void setValorf(String valorf) {
+        if (valorf.isEmpty()) {
+            valorf = "0";
+        }
+        this.valorf = Moeda.substituiVirgula(valorf);
     }
-
+    
     public String getDesconto() {
+        if (desconto.isEmpty()) {
+            desconto = "0";
+        }
         return Moeda.converteR$(desconto);
     }
 
     public void setDesconto(String desconto) {
-        this.desconto = desconto;
+        if (desconto.isEmpty()) {
+            desconto = "0";
+        }
+        this.desconto = Moeda.substituiVirgula(desconto);
     }
+    
+      
+    public String getTaxa() {
+        if (taxa.isEmpty()) {
+            taxa = "0";
+        }
+        return Moeda.converteR$(taxa);
+    }
+
+    public void setTaxa(String taxa) {
+        if (taxa.isEmpty()) {
+            taxa = "0";
+        }
+        this.taxa = Moeda.substituiVirgula(taxa);
+    }
+
 
     public String getIndice() {
         return indice;
@@ -398,14 +432,6 @@ public class ServicosJSFBean implements java.io.Serializable {
 
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
-    }
-
-    public String getTaxaToString() {
-        return Moeda.converteR$(taxaToString);
-    }
-
-    public void setTaxaToString(String taxaToString) {
-        this.taxaToString = taxaToString;
     }
 
     public String getTextoBtnServico() {

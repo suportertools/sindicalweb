@@ -188,7 +188,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     }
 
     @Override
-    public boolean inserirQuery(String textQuery) {
+    public boolean executeQuery(String textQuery) {
         try {
             int valor = getEntityManager().createNativeQuery(textQuery).executeUpdate();
             if (valor > 0) {
