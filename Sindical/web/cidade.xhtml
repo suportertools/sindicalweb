@@ -16,18 +16,17 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formCidade">
+            <h:form id="form_cidade">
                 <c:set scope="request" var="object" value="${cidadeBean.cidade}"/>
                 <center>
                     <div class="headerPanel">
-                        <h:outputText value="Cadastro Cidades" styleClass="fontePanel" style="width: 100%;"/>
+                        <h:outputLabel value="Cadastro Cidades" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                     <br /><br />
-                    <div class="divMae">
-                        <h:panelGrid columns="6">
-                            <h:outputLabel value="Cidade: " styleClass="fontePadrao"/>
-                            <h:inputText size="50" value="#{cidadeBean.cidade.cidade}" onkeypress="if (event.keyCode === 13) {#{rich:element('formCidade:btnInicial')}.onclick();
-                                    }"/>
+                    <rich:panel styleClass="divMae no-border" id="id_panel_cidade">
+                        <h:panelGrid columns="7">
+                            <h:outputLabel value="Cidade: " styleClass="fontePadrao" for="idDescricaoCidade"/>
+                            <h:inputText size="50" value="#{cidadeBean.cidade.cidade}" id="idDescricaoCidade" onkeypress="if (event.keyCode === 13) {#{rich:element('form_cidade:btnInicial')}.onclick();}"/>
                             <h:outputLabel value="UF: " styleClass="fontePadrao"/>
                             <h:selectOneMenu id="idUF" value="#{cidadeBean.cidade.uf}" >
                                 <f:selectItem itemValue="AC" itemLabel="AC"/>
@@ -57,79 +56,62 @@
                                 <f:selectItem itemValue="SP" itemLabel="SP"/>
                                 <f:selectItem itemValue="SE" itemLabel="SE"/>
                                 <f:selectItem itemValue="TO" itemLabel="TO"/>
-                            </h:selectOneMenu>   
-
-                            <a4j:commandLink styleClass="idSalvar iLink" action="#{cidadeBean.salvar()}" value="Salvar" oncomplete="modalMensagem()" 
-                                             render="tbl, outConfirma" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            </h:selectOneMenu>
+                            <a4j:commandLink styleClass="idSalvar iLink margin-left" action="#{cidadeBean.salvar()}" value="Salvar" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.show(); return false;" render="id_panel_cidade, i_painel_mensagem" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            <a4j:commandLink styleClass="idSalvar iLink margin-left" action="#{cidadeBean.novo()}" value="Novo" render="id_panel_cidade" status="i_status"/>
                         </h:panelGrid>
-                        <h:panelGrid columns="3">
-                            <h:outputText value="Pesquisar " styleClass="fonteFranklinNegrito"/>
-                            <a4j:commandLink id="btnInicial" action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl"/>
-                            <a4j:commandLink action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl"/>
+                        <h:panelGrid columns="3" styleClass="margin-top">
+                            <h:outputLabel value="Pesquisar: " styleClass="fontePadrao"/>
+                            <a4j:commandLink id="btnInicial" action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl" status="i_status"/>
+                            <a4j:commandLink action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl" status="i_status"/>
                         </h:panelGrid>
-                        <div style="overflow:auto; height:380px;">
-                            <rich:panel>
-                                <rich:dataTable value="#{cidadeBean.listaCidade}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column>  
-
-                                    <rich:column styleClass="colunaPesquisa">
-                                        <f:facet name="header">
-                                            <h:outputText value="ID"/>
-                                        </f:facet>
-                                        <a4j:commandLink value="Editar [#{linha.id}]" action="#{cidadeBean.editar}">
-                                            <a4j:param value="#{it.index}" assignTo="#{cidadeBean.idIndex}"/>
-                                        </a4j:commandLink>
-                                    </rich:column>                  
-
-                                    <rich:column styleClass="colunaPesquisa">
-                                        <f:facet name="header">
-                                            <h:outputText value="EXCLUIR"/>
-                                        </f:facet>
-                                        <a4j:commandLink value="x" style="width: 25px; height: 20px;" action="#{cidadeBean.excluir()}" oncomplete="modalMensagem()" render="tbl, outConfirma" styleClass="idNovo iLink fontePadrao">
-                                            <a4j:param value="#{it.index}" assignTo="#{cidadeBean.idIndex}"/>
-                                        </a4j:commandLink>
-                                    </rich:column>                  
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Cidade"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.cidade}"/>
-                                    </rich:column>                  
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="UF"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.uf}"/>
-                                    </rich:column>                  
-                                </rich:dataTable>
-                            </rich:panel>
-                        </div>                        
-                    </div>
+                        <rich:panel style="overflow:auto; height:380px; width: 600px;" styleClass="margin-top-maior">
+                            <rich:dataTable value="#{cidadeBean.listaCidade}" var="linha" style="width:100%" id="tbl">
+                                <rich:column style="width: 100px;" styleClass="text-center">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="ID"/>
+                                    </f:facet>
+                                    <a4j:commandLink value="Editar [#{linha.id}]" action="#{cidadeBean.editar(linha)}" render="id_panel_cidade" status="i_status"/>
+                                </rich:column>
+                                <rich:column>
+                                    <f:facet name="header">
+                                        <h:outputLabel value="Cidade"/>
+                                    </f:facet>
+                                    <a4j:commandLink value="#{linha.cidade}" action="#{cidadeBean.editar(linha)}" styleClass="underline-hover" render="id_panel_cidade" status="i_status"/>
+                                </rich:column>
+                                <rich:column style="width: 25px;" styleClass="text-center">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="UF"/>
+                                    </f:facet>
+                                    <h:outputText value="#{linha.uf}"/>
+                                </rich:column>
+                                <rich:column style="width: 25px;" styleClass="text-center">
+                                    <f:facet name="header">
+                                        <h:outputLabel value="E" title="Excluir"/>
+                                    </f:facet>
+                                    <a4j:commandLink action="#{cidadeBean.excluir(linha)}" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.show(); return false;" render="id_panel_cidade, i_painel_mensagem" title="Excluir este registro">
+                                        <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                                    </a4j:commandLink>
+                                </rich:column>                                    
+                            </rich:dataTable>
+                        </rich:panel>                        
+                    </rich:panel>
                 </center>
-
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{cidadeBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="cidade" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
+                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_painel_mensagem')}.hide(); return false;">
+                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{cidadeBean.msgConfirma}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Ok" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.hide();" action="id_panel_cidade"/>
+                    </center>
+                </rich:popupPanel>
             </h:form>
         </f:view>
     </h:body>
