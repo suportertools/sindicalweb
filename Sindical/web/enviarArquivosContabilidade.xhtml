@@ -88,7 +88,7 @@
                         <div class="clear"></div>
                         <br /><br />
                         <a4j:commandLink styleClass="idNovo iLink" style="width: 150px;" value="Enviar E-mails" action="#{enviarArquivosBean.enviarArquivos}"  onclick="modalOpcao('divProcesso');" oncomplete="atualizar(); modalMensagem();" render="outConfirma" />
-                        <a4j:commandLink styleClass="idNovo iLink" style="width: 150px;" value="Novo" action="#{enviarArquivosBean.novo}"/>
+                        <a4j:commandLink styleClass="idNovo iLink" style="width: 150px;" value="Novo" action="#{enviarArquivosBean.novo('enviarArquivosContabilidade')}"/>
                     </div>               
                 <br />
                 <div id="boxes">
