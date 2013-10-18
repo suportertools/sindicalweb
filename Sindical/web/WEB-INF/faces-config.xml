@@ -3,23 +3,26 @@
               xmlns="http://xmlns.jcp.org/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
-    <managed-bean>
+    
+    <!-- <managed-bean>
         <managed-bean-name>contratoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ContratoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
+    <!--
     <managed-bean>
         <managed-bean-name>cidadeBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.endereco.beans.CidadeJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.endereco.beans.CidadeBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean>
 
     <managed-bean>
         <managed-bean-name>enderecoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.endereco.beans.EnderecoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.endereco.beans.EnderecoBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean>
+        -->
 
     <managed-bean>
         <managed-bean-name>profissaoBean</managed-bean-name>
@@ -361,11 +364,13 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean> -->
 
+    <!--
     <managed-bean>
         <managed-bean-name>homologacaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.homologacao.beans.HomologacaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
+    -->
 
     <managed-bean>
         <managed-bean-name>webAgendamentoContribuinteBean</managed-bean-name>
@@ -540,7 +545,7 @@
         <managed-bean-class>br.com.rtools.associativo.beans.CartaoSocialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!-- 
     <managed-bean>
         <managed-bean-name>generoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.locadoraFilme.beans.GeneroJSFBean</managed-bean-class>
@@ -549,9 +554,9 @@
 
     <managed-bean>
         <managed-bean-name>tituloBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.locadoraFilme.beans.TituloJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.locadoraFilme.beans.TituloBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean> -->
     <!--
     <managed-bean>
         <managed-bean-name>macFilialBean</managed-bean-name>
@@ -577,11 +582,12 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
+        <!--
     <managed-bean>
         <managed-bean-name>catalogoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.locadoraFilme.beans.CatalogoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.locadoraFilme.beans.CatalogoBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>enviarArquivosBean</managed-bean-name>
@@ -624,12 +630,13 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!--
     <managed-bean>
         <managed-bean-name>atendimentoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.atendimento.beans.AtendimentoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.atendimento.beans.AtendimentoBean</managed-bean-class>
+    
+    <managed-bean-scope>session</managed-bean-scope></managed-bean> 
+    -->
 
     <managed-bean>
         <managed-bean-name>relatorioBean</managed-bean-name>
@@ -648,12 +655,14 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.NotificacaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    
+    <!-- 
     <managed-bean>
         <managed-bean-name>recepcaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.homologacao.beans.RecepcaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
+    -->
     
     <managed-bean>
         <managed-bean-name>bloqueioServicosBean</managed-bean-name>
