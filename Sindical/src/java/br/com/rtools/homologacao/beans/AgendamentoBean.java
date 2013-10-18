@@ -46,9 +46,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-@ManagedBean(name = "agendamentoBean", eager = true)
+@ManagedBean
 @SessionScoped
-public class AgendamentoJSFBean extends PesquisarProfissaoJSFBean implements Serializable {
+public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serializable {
 
     private int idStatus = 0;
     private int idMotivoDemissao = 0;

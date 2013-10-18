@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "HOM_RECEPCAO")
-@NamedQuery(name = "Recepcao.pesquisaID", query = "select r from Recepcao r where r.id = :pid")
+@NamedQuery(name = "Recepcao.pesquisaID", query = "SELECT R FROM Recepcao AS R WHERE R.id = :pid")
 public class Recepcao implements java.io.Serializable {
 
     @Id

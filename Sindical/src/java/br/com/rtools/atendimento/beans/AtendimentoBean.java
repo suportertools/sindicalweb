@@ -8,8 +8,6 @@ import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
@@ -23,10 +21,14 @@ import br.com.rtools.utilitarios.ValidaDocumentos;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class AtendimentoJSFBean {
+@ManagedBean
+@SessionScoped
+public class AtendimentoBean {
 
     private AteOperacao ateOperacao = new AteOperacao();
     private AteMovimento ateMovimento = new AteMovimento();
@@ -371,12 +373,12 @@ public class AtendimentoJSFBean {
 
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
-            FilialDB db = new FilialDBToplink();
-            List<Filial> list = db.pesquisaTodos();
-            for (int i = 0; i < list.size(); i++) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Filial> listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);           
+            for (int i = 0; i < listaFilial.size(); i++) {
                 listaFiliais.add(new SelectItem(new Integer(i),
-                        list.get(i).getFilial().getPessoa().getDocumento() + " / " + list.get(i).getFilial().getPessoa().getNome(),
-                        Integer.toString(list.get(i).getId())));
+                        listaFilial.get(i).getFilial().getPessoa().getDocumento() + " / " + listaFilial.get(i).getFilial().getPessoa().getNome(),
+                        Integer.toString(listaFilial.get(i).getId())));
             }
         }
         return listaFiliais;
@@ -414,8 +416,8 @@ public class AtendimentoJSFBean {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
             if (filial.getId() == -1) {
                 setMacFilial((MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial"));
-                FilialDB db = new FilialDBToplink();
-                filial = (Filial) db.pesquisaCodigo(getMacFilial().getFilial().getId());
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                filial = (Filial) salvarAcumuladoDB.pesquisaCodigo(getMacFilial().getFilial().getId(), "Filial");
                 ateMovimento.setFilial(filial);
                 setMensagem("");
             } else {

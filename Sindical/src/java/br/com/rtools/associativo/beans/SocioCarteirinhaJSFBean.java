@@ -28,10 +28,13 @@ import br.com.rtools.pessoa.db.PessoaEmpresaDB;
 import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,14 +82,14 @@ public class SocioCarteirinhaJSFBean {
     }
 
     public List<SelectItem> getListaFiliais() {
-        FilialDB db = new FilialDBToplink();
-        List<Filial> lista = db.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List<Filial> listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
         List<SelectItem> result = new ArrayList();
         if (tipoPesFilial.equals("especificas")) {
-            for (int i = 0; i < lista.size(); i++) {
+            for (int i = 0; i < listaFilial.size(); i++) {
                 result.add(new SelectItem(new Integer(i),
-                        lista.get(i).getFilial().getPessoa().getDocumento() + " - " + lista.get(i).getFilial().getPessoa().getNome(),
-                        Integer.toString(lista.get(i).getFilial().getPessoa().getId())));
+                        listaFilial.get(i).getFilial().getPessoa().getDocumento() + " - " + listaFilial.get(i).getFilial().getPessoa().getNome(),
+                        Integer.toString(listaFilial.get(i).getFilial().getPessoa().getId())));
             }
         }
         return result;
@@ -94,15 +97,15 @@ public class SocioCarteirinhaJSFBean {
 
     public List<Socios> getListaSocios() {
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        FilialDB dbF = new FilialDBToplink();
         FilialCidadeDB dbC = new FilialCidadeDBToplink();
         PessoaEnderecoDB dbE = new PessoaEnderecoDBToplink();
-        PessoaEndereco pesEnde = new PessoaEndereco();
-        FilialCidade filCidade = new FilialCidade();
+        PessoaEndereco pesEnde;
+        FilialCidade filCidade;
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         DataObject dt = null;
-        List result = new ArrayList();
+        List result;
         if (listaSoc.isEmpty() && carregar) {
-            if (dbF.pesquisaCodigoRegistro(1).isCarteirinhaDependente()) {
+            if (((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro")).isCarteirinhaDependente()) {
                 result = db.pesquisaSocioSemCarteirinhaDependente();
             } else {
                 result = db.pesquisaSocioSemCarteirinha();
@@ -229,22 +232,12 @@ public class SocioCarteirinhaJSFBean {
     }
 
     public String visualizar() {
-        FilialDB dbF = new FilialDBToplink();
-        SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        SocioCarteirinha soc = new SocioCarteirinha();
-        if (dbF.pesquisaCodigoRegistro(1).isCarteirinhaDependente()) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        if (((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro")).isCarteirinhaDependente()) {
             imprimirCarteirinhaComDependente();
         } else {
             imprimirCarteirinhaSemDependente();
         }
-//        for (int i = 0; i < listaSoc.size();i++){
-//            if ( (Boolean)((DataObject)listaSoc.get(i)).getArgumento0() ){
-//                soc.setEmissao(DataHoje.data());
-//                soc.setSocios(((Socios)((DataObject)listaSoc.get(i)).getArgumento1()));
-//                db.insert(soc);
-//                soc = new SocioCarteirinha();
-//            }
-//        }
         listaSoc.clear();
         carregar = true;
         getListaSocios();
@@ -255,7 +248,7 @@ public class SocioCarteirinhaJSFBean {
         Fisica fisica = new Fisica();
         Juridica sindicato = new Juridica();
         FisicaDB db = new FisicaDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         PessoaEndereco pesEndereco, pesDestinatario, pesEndEmpresa, pesEndSindicato = new PessoaEndereco();
         PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
         PessoaEmpresa pesEmpresa = new PessoaEmpresa();
@@ -271,7 +264,7 @@ public class SocioCarteirinhaJSFBean {
             jasper = (JasperReport) JRLoader.loadObject(
                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
 
-            sindicato = dbJur.pesquisaCodigo(1);
+            sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
 
             for (int i = 0; i < listaSoc.size(); i++) {
@@ -554,11 +547,11 @@ public class SocioCarteirinhaJSFBean {
         Fisica fisica = new Fisica();
         Juridica sindicato = new Juridica();
         FisicaDB db = new FisicaDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEndereco pesEndereco, pesDestinatario, pesEndEmpresa, pesEndSindicato = new PessoaEndereco();
         PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
         PessoaEmpresa pesEmpresa = new PessoaEmpresa();
         PessoaEmpresaDB dbEmp = new PessoaEmpresaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         String dados[] = new String[32];
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
@@ -569,7 +562,7 @@ public class SocioCarteirinhaJSFBean {
             jasper = (JasperReport) JRLoader.loadObject(
                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
 
-            sindicato = dbJur.pesquisaCodigo(1);
+            sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
 
             for (int i = 0; i < listaSoc.size(); i++) {

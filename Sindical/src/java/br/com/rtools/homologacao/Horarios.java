@@ -2,6 +2,7 @@ package br.com.rtools.homologacao;
 
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.sistema.Semana;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,13 +11,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "HOM_HORARIOS")
-@NamedQuery(name = "Horarios.pesquisaID", query = "select h from Horarios h where h.id = :pid")
-public class Horarios implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Horarios.pesquisaID",    query = "SELECT H FROM Horarios AS H WHERE H.id = :pid"),
+    @NamedQuery(name = "Horarios.findAll",       query = "SELECT H FROM Horarios AS H ORDER BY H.semana.id ASC, H.hora ASC ")
+})
+public class Horarios implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

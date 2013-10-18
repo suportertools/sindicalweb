@@ -6,10 +6,14 @@ import br.com.rtools.locadoraFilme.db.TituloDB;
 import br.com.rtools.locadoraFilme.db.TituloDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class TituloJSFBean {
+@ManagedBean
+@SessionScoped
+public class TituloBean {
 
     private Titulo titulo;
     private String descPesquisa = "";
@@ -24,7 +28,7 @@ public class TituloJSFBean {
     private boolean required = false;
     private boolean limpar = false;
 
-    public TituloJSFBean() {
+    public TituloBean() {
         titulo = new Titulo();
         comoPesquisa = "";
         descPesquisa = "";

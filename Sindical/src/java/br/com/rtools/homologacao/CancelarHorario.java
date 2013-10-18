@@ -18,7 +18,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "HOM_CANCELAR_HORARIO")
-@NamedQuery(name = "CancelarHorario.pesquisaID", query = "select ch from CancelarHorario ch where ch.id = :pid")
+@NamedQuery(name = "CancelarHorario.pesquisaID", query = "SELECT CH FROM CancelarHorario AS CH WHERE CH.id = :pid")
 public class CancelarHorario implements java.io.Serializable {
 
     @Id

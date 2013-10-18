@@ -8,6 +8,7 @@ import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -16,7 +17,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class HorariosBean {
+public class HorariosBean implements Serializable {
 
     private Horarios horarios = new Horarios();
     private Horarios h = new Horarios();

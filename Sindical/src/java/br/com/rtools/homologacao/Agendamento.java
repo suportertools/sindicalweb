@@ -4,6 +4,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -20,8 +21,8 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "HOM_AGENDAMENTO")
-@NamedQuery(name = "Agendamento.pesquisaID", query = "select a from Agendamento a where a.id = :pid")
-public class Agendamento implements java.io.Serializable {
+@NamedQuery(name = "Agendamento.pesquisaID", query = "SELECT A FROM Agendamento AS A WHERE A.id = :pid")
+public class Agendamento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

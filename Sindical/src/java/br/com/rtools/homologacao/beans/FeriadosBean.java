@@ -8,6 +8,7 @@ import br.com.rtools.homologacao.db.FeriadosDB;
 import br.com.rtools.homologacao.db.FeriadosDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -16,13 +17,12 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class FeriadosBean {
+public class FeriadosBean implements Serializable {
 
     private Feriados feriados = new Feriados();
     private String msgConfirma = "";
     private List<SelectItem> listaCidade = new ArrayList<SelectItem>();
     private int idCidade = 0;
-    private int idIndex = -1;
     private boolean chkCidades = false;
     private List<Feriados> listaFeriados = new ArrayList();
 
@@ -137,21 +137,13 @@ public class FeriadosBean {
 
     public List<Feriados> getListaFeriados() {
         if (listaFeriados.isEmpty()) {
-            FeriadosDB db = new FeriadosDBToplink();
-            listaFeriados = db.pesquisaTodos();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            listaFeriados = (List<Feriados>) salvarAcumuladoDB.listaObjeto("Feriados", true);
         }
         return listaFeriados;
     }
 
     public void setListaFeriados(List<Feriados> listaFeriados) {
         this.listaFeriados = listaFeriados;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 }

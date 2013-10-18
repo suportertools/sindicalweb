@@ -1117,7 +1117,7 @@ public class JuridicaBean implements Serializable {
                     } else {
                         salvarAcumuladoDB.desfazerTransacao();
                         msgConfirma = "Erro ao Salvar Endereço!";
-                        
+
                     }
                     pessoaEndereco = new PessoaEndereco();
                 }
@@ -1244,7 +1244,7 @@ public class JuridicaBean implements Serializable {
 
     public List getListaPessoaEndereco() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        List result = salvarAcumuladoDB.listaObjeto("PessoaEndereco");        
+        List result = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
         return result;
     }
 
@@ -1292,18 +1292,23 @@ public class JuridicaBean implements Serializable {
     }
 
     public boolean getHabilitarFilial() {
-        FilialDB db = new FilialDBToplink();
         if ((juridica.getPessoa().getId() != -1) && (filialMatriz.equals("m"))) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             if (filial.getId() == -1) {
                 filial.setFilial(juridica);
                 filial.setMatriz(juridica);
-                db.insert(filial);
-            } else {
-                db.getEntityManager().getTransaction().begin();
-                if (db.update(filial)) {
-                    db.getEntityManager().getTransaction().commit();
+                salvarAcumuladoDB.abrirTransacao();
+                if (salvarAcumuladoDB.inserirObjeto(filial)) {
+                    salvarAcumuladoDB.comitarTransacao();
                 } else {
-                    db.getEntityManager().getTransaction().rollback();
+                    salvarAcumuladoDB.desfazerTransacao();
+                }
+            } else {
+                salvarAcumuladoDB.abrirTransacao();
+                if (salvarAcumuladoDB.alterarObjeto(filial)) {
+                    salvarAcumuladoDB.comitarTransacao();
+                } else {
+                    salvarAcumuladoDB.desfazerTransacao();
                 }
             }
             return false;
@@ -1311,8 +1316,8 @@ public class JuridicaBean implements Serializable {
             return true;
         }
     }
-    
-    public String excluirPessoaEndereco() {        
+
+    public String excluirPessoaEndereco() {
         if (pessoaEndereco.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaCodigo(pessoaEndereco.getId(), "PessoaEndereco");
@@ -1325,7 +1330,7 @@ public class JuridicaBean implements Serializable {
         pessoaEndereco = new PessoaEndereco();
         setEnderecoCompleto("");
         return "pessoaJuridica";
-    }    
+    }
 
     public void refreshForm() {
     }
@@ -1401,11 +1406,16 @@ public class JuridicaBean implements Serializable {
     }
 
     public String JuridicaFilialGrid() {
-        FilialDB db = new FilialDBToplink();
         filial = new Filial();
         int i = filial.getFilial().getId();
         filial.setMatriz(juridica);
-        db.insert(filial);
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.inserirObjeto(filial)) {
+            salvarAcumuladoDB.comitarTransacao();
+        } else {
+            salvarAcumuladoDB.desfazerTransacao();
+        }
         setIndicaTab("filial");
         return "pessoaJuridica";
     }
@@ -1418,13 +1428,14 @@ public class JuridicaBean implements Serializable {
     }
 
     public void excluirFilial() {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         FilialDB db = new FilialDBToplink();
-        db.getEntityManager().getTransaction().begin();
         filial = db.pesquisaFilialPertencente(juridica.getId(), filial.getFilial().getId());
-        if (db.delete(filial)) {
-            db.getEntityManager().getTransaction().commit();
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.deletarObjeto(filial)) {
+            salvarAcumuladoDB.comitarTransacao();
         } else {
-            db.getEntityManager().getTransaction().rollback();
+            salvarAcumuladoDB.desfazerTransacao();
         }
         filial = new Filial();
     }
@@ -1592,10 +1603,10 @@ public class JuridicaBean implements Serializable {
     }
 
     public void enviarEmail() {
-        FilialDB db = new FilialDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         EnvioEmailsDB dbE = new EnvioEmailsDBToplink();
         if (juridica.getId() != -1) {
-            msgConfirma = EnviarEmail.EnviarEmail(db.pesquisaCodigoRegistro(1), juridica);
+            msgConfirma = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), juridica);
             if (msgConfirma.equals("Enviado com Sucesso. Confira email cadastrado!")) {
                 dbE.insert(envioEmails);
             }
@@ -1605,11 +1616,11 @@ public class JuridicaBean implements Serializable {
     }
 
     public String enviarEmailParaTodos() {
-        FilialDB db = new FilialDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
-        List<Juridica> jur = dbJur.pesquisaJuridicaComEmail();
-        Registro reg = db.pesquisaCodigoRegistro(1);
-        msgConfirma = EnviarEmail.EnviarEmailAutomatico(reg, jur);
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        JuridicaDB juridicaDB = new JuridicaDBToplink();
+        List<Juridica> juridicas = juridicaDB.pesquisaJuridicaComEmail();
+        Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
+        msgConfirma = EnviarEmail.EnviarEmailAutomatico(reg, juridicas);
         return null;
     }
 
@@ -1622,7 +1633,6 @@ public class JuridicaBean implements Serializable {
     }
 
     public void gerarLoginSenhaPessoa(Pessoa pessoa, SalvarAcumuladoDB dbSalvar) {
-        PessoaDB db = new PessoaDBToplink();
         String login = "", senha = "", nome = "";
         senha = senha + DataHoje.hora().replace(":", "");
         senha = Integer.toString(Integer.parseInt(senha) + Integer.parseInt(senha + "43"));
@@ -1638,7 +1648,6 @@ public class JuridicaBean implements Serializable {
         nome = nome.replace("U", "M");
         nome = ("JHSRGDQ" + nome) + pessoa.getId();
         login = nome.substring(nome.length() - 6, nome.length());
-
         pessoa.setLogin(login);
         pessoa.setSenha(senha);
         dbSalvar.alterarObjeto(pessoa);
@@ -2021,7 +2030,7 @@ public class JuridicaBean implements Serializable {
                 if (listax.isEmpty()) {
                     status = "NÃO CONTRIBUINTE";
                 } else {
-                    if (((List)listax.get(0)).get(11) != null) {
+                    if (((List) listax.get(0)).get(11) != null) {
                         status = "CONTRIBUINTE INATIVO";
                     } else {
                         status = "ATIVO";

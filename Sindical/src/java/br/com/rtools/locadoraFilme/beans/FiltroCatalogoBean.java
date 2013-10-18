@@ -2,9 +2,13 @@ package br.com.rtools.locadoraFilme.beans;
 //package org.richfaces.demo.filteringFeature;
 import br.com.rtools.locadoraFilme.Catalogo;
 import java.util.ArrayList;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class FiltroCatalogoJSFBean {
+@ManagedBean
+@SessionScoped
+public class FiltroCatalogoBean {
 
     private String filtroDescricao = "5";
     private String filtroValor = "";
@@ -22,7 +26,7 @@ public class FiltroCatalogoJSFBean {
         }
     }
 
-    public FiltroCatalogoJSFBean() {
+    public FiltroCatalogoBean() {
         for (int i = 5; i < 11; i++) {
             SelectItem select = new SelectItem();
             select.setLabel("-" + i);

@@ -118,7 +118,7 @@ public class ImpressaoParaSocios {
         Fisica fisica = new Fisica();
         Juridica sindicato = new Juridica();
         FisicaDB db = new FisicaDBToplink();
-        JuridicaDB dbJur = new JuridicaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         PessoaEndereco pesEndereco, pesDestinatario, pesEndEmpresa, pesEndSindicato = new PessoaEndereco();
         PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
         //PessoaEmpresa pesEmpresa = new PessoaEmpresa();
@@ -133,7 +133,7 @@ public class ImpressaoParaSocios {
 
             fisica = db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId());
             pesEndereco = dbEnd.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
-            sindicato = dbJur.pesquisaCodigo(1);
+            sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
 
 
             if (pessoaEmpresa.getId() != -1) {
@@ -425,14 +425,14 @@ public class ImpressaoParaSocios {
         PessoaEmpresaDB dbEmp = new PessoaEmpresaDBToplink();
         String dados[] = new String[32];
         List<Socios> listaSocs = new ArrayList();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
             JasperReport jasper = (JasperReport) JRLoader.loadObject(
                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath(path));
-
-            sindicato = dbJur.pesquisaCodigo(1);
+            sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
 
             listaSocs.add(socios);

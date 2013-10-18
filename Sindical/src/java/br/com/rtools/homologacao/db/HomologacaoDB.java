@@ -13,10 +13,6 @@ public interface HomologacaoDB {
 
     public EntityManager getEntityManager();
 
-    public List pesquisaTodos();
-
-    public Agendamento pesquisaCodigo(int id);
-
     public Agendamento pesquisaProtocolo(int id);
 
     public List<Agendamento> pesquisaAgendamento(int idStatus, int idFilial, Date dataInicial, Date dataFinal, int idUsuario, int idPessoaFisica, int idPessoaJuridica);

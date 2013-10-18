@@ -2,6 +2,7 @@ package br.com.rtools.homologacao;
 
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -18,8 +20,12 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "HOM_FERIADOS")
-@NamedQuery(name = "Feriados.pesquisaID", query = "select f from Feriados f where f.id = :pid")
-public class Feriados implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Feriados.pesquisaID", query = "SELECT F FROM Feriados AS F WHERE F.id = :pid"),
+    @NamedQuery(name = "Feriados.findAll",    query = "SELECT F FROM Feriados AS F ORDER BY F.dtData DESC, F.nome ASC "),
+    @NamedQuery(name = "Feriados.findName",   query = "SELECT F FROM Feriados AS F WHERE UPPER(F.nome) LIKE :pdescricao ORDER BY F.dtData DESC, F.nome ASC ")
+})
+public class Feriados implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

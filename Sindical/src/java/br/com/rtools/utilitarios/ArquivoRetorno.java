@@ -9,6 +9,7 @@ import br.com.rtools.financeiro.db.*;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
@@ -78,8 +79,8 @@ public abstract class ArquivoRetorno {
         //DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
         FTipoDocumentoDB dbft = new FTipoDocumentoDBToplink();
         FilialDB dbFilial = new FilialDBToplink();
-
         List<Movimento> movimento = new ArrayList();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         //DocumentoInvalido docInv = new DocumentoInvalido();
         File fl = new File(path);
         File listFls[] = fl.listFiles();
@@ -106,7 +107,7 @@ public abstract class ArquivoRetorno {
 //                }
                 // VERIFICA O TIPO DA EMPRESA -------------------------------------------------------------------------------------------------
                 // ----------------------------------------------------------------------------------------------------------------------------
-                if (dbFilial.pesquisaCodigoRegistro(1).getTipoEmpresa().equals("E")) {
+                if ( ((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro")).getTipoEmpresa().equals("E")) {
                     // VERIFICA O ANO QUE VEIO NO ARQUIVO MENOR QUE ANO 2000 -------------------------------------------------------
                     // -------------------------------------------------------------------------------------------------------------
                     if (Integer.parseInt(listaParametros.get(u).getDataVencimento().substring(4, 8)) < 2000) {

@@ -2,6 +2,7 @@ package br.com.rtools.homologacao;
 
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,15 +13,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "HOM_CANCELAMENTO")
-@NamedQuery(name = "Cancelamento.pesquisaID", query = "select c from Cancelamento c where c.id = :pid")
-public class Cancelamento implements java.io.Serializable {
+@NamedQuery(name = "Cancelamento.pesquisaID", query = "SELECT C FROM Cancelamento AS C WHERE C.id = :pid")
+public class Cancelamento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

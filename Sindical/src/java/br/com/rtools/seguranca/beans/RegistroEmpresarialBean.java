@@ -1,8 +1,6 @@
 package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
@@ -92,8 +90,8 @@ public class RegistroEmpresarialBean implements Serializable {
     public Registro getRegistro() {
         if (registro != null) {
             if (registro.getId() == -1) {
-                FilialDB db = new FilialDBToplink();
-                registro = db.pesquisaCodigoRegistro(1);
+                SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+                registro = (Registro) sv.pesquisaCodigo(1, "Registro");
                 senha = registro.getSenha();
             }
         }

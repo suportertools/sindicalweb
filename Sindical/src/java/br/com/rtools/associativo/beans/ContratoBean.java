@@ -6,17 +6,20 @@ import br.com.rtools.utilitarios.GenericaQuery;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
-public class ContratoJSFBean {
+@ManagedBean
+@SessionScoped
+public class ContratoBean implements Serializable {
 
     private File files;
     private List listaArquivo;
@@ -25,7 +28,7 @@ public class ContratoJSFBean {
     private List<String> listaConteudo;
     private String nomeArquivo;
 
-    public ContratoJSFBean() {
+    public ContratoBean() {
         files = null;
         listaArquivo = new ArrayList<GenericaQuery>();
         itens = new ArrayList();
