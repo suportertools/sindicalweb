@@ -121,13 +121,9 @@
                 <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{modeloContratoBean.novo}" render="form_contrato_escola, idFormContrato1"  />
                 <a4j:commandLink styleClass="idSalvar iLink" value="Excluir" title="Exluir Contrato" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_contrato:i_panel_excluir')}.show(); return false;"/>
                 <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaModeloContrato()}" title="Pesquisar Contrato Escola" />
-                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
-                    <f:facet name="header">
-                        <h:outputText value="Deseja salvar este registro?"/>
-                    </f:facet>
+                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form" header="Deseja salvar este registro?">
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide();
-                return false;">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide(); return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </h:outputLink>
                     </f:facet>
@@ -138,13 +134,9 @@
                         </h:panelGrid>
                     </center>
                 </rich:popupPanel>
-                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form">
-                    <f:facet name="header">
-                        <h:outputText value="Deseja excluir este registro?"/>
-                    </f:facet>
+                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form" header="Deseja excluir este registro?">
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide();
-                return false;">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide(); return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </h:outputLink>
                     </f:facet>
@@ -155,13 +147,9 @@
                         </h:panelGrid>
                     </center>
                 </rich:popupPanel>
-                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true">
-                    <f:facet name="header">
-                        <h:outputText value="Mensagem"/>
-                    </f:facet>
+                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true" header="Mensagem">
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide();
-                return false;"></h:outputLink>
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide(); return false;"></h:outputLink>
                     </f:facet>
                     <center>
                         <h:outputText value="#{modeloContratoBean.msg}" styleClass="fontePadrao"/>                            

@@ -9,17 +9,7 @@ import javax.persistence.EntityManager;
 
 public interface CnaeDB {
 
-    public boolean insert(Cnae cnae);
-
-    public boolean update(Cnae cnae);
-
-    public boolean delete(Cnae cnae);
-
     public EntityManager getEntityManager();
-
-    public Cnae pesquisaCodigo(int id);
-
-    public List pesquisaTodos();
 
     public List pesquisaCnae(String desc, String por, String como);
 

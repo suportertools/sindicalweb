@@ -15,93 +15,76 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formCnae">
-                <c:set scope="request" var="object" value="${cnaeBean.cnae}"/>
+            <h:form id="form_cnae">
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Cadastro de CNAE" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
-                    <br /><br />
-                    <div class="divMae" style="float: left;">
-                        <div class="divFundo" style="width: 500px;">
-                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                                <h:column>
-                                    <h:outputLabel value="Número:"  styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText value="#{cnaeBean.cnae.numero}" styleClass="fontePadrao" class="cnae" maxlength="9" size="8" readonly="readonly"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputLabel value="Cnae:"  styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputTextarea styleClass="fontePadrao uppercase" rows="10" cols="40" value="#{cnaeBean.cnae.cnae}" title="Descrição do Cnae"/>
-                                </h:column>
-                            </h:panelGrid>
-                        </div>
-                        <div style="clear: both;"></div>
-                        <div style="float: left; margin-top: 15px;">
-                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.novo}"/>
-                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
-                            <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisar titulos"/>
-                        </div>
-                    </div>
-
-                    <div id="boxes">
-                        <div id="divSalvar" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja salvar este Cnae?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                                </h:panelGrid>
-
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{cnaeBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
-
-                    <div id="boxes">
-                        <div id="divExcluir" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:panelGrid columns="2">
-                                    <h:outputText value="Deseja excluir este Cnae?" styleClass="fontePadrao"/>
-                                    <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                                </h:panelGrid>
-                                <br />
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{cnaeBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" action="titulo"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
-
-                    <div id="boxes">
-                        <div id="divMensagem" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
-                            <br />
-                            <center>
-                                <h:outputText id="outConfirma" value="#{cnaeBean.msgConfirma}" styleClass="fontePadrao"/>
-                                <br /><br />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" render="formCnae" action="#{cnaeBean.limpar}"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
                 </center>
+                <br /><br />
+                <rich:panel styleClass="divMae no-border" style="float: left;" id="id_painel_novo_cadastro">
+                    <c:set scope="request" var="object" value="${cnaeBean.cnae}"/>
+                    <h:outputScript library="js" name="jScripts.js" />
+                    <rich:panel styleClass="divFundo no-border">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                            <h:column>
+                                <h:outputLabel value="Número:"  styleClass="fontePadrao"/>
+                            </h:column>
+                            <h:column>
+                                <h:inputText value="#{cnaeBean.cnae.numero}" styleClass="fontePadrao" class="cnae" maxlength="9" size="8" readonly="readonly"/>
+                            </h:column>
+                            <h:column>
+                                <h:outputLabel value="Cnae:"  styleClass="fontePadrao"/>
+                            </h:column>
+                            <h:column>
+                                <h:inputTextarea styleClass="fontePadrao uppercase" rows="10" cols="40" value="#{cnaeBean.cnae.cnae}" title="Descrição do Cnae"/>
+                            </h:column>
+                        </h:panelGrid>
+                    </rich:panel>
+                    <div style="clear: both;"></div>
+                    <h:panelGrid columns="4" style="float: left; margin-top: 15px;">
+                        <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_cnae:i_panel_salvar')}.show(); return false;" />
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.novo}" render="id_painel_novo_cadastro" status="i_status"/>
+                        <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" oncomplete="#{rich:component('form_cnae:i_panel_excluir')}.show(); return false;" />
+                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisar titulos"/>
+                    </h:panelGrid>
+                </rich:panel>           
+                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form" header="Deseja salvar/atualizar este registro?">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{cnaeBean.salvar()}" render="i_panel_mensagem" oncomplete="#{rich:component('form_cnae:i_panel_salvar')}.hide(); #{rich:component('form_cnae:i_panel_mensagem')}.show(); return false;" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_cnae:i_panel_salvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form" header="Deseja excluir este registro?">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{cnaeBean.excluir()}" render="i_panel_mensagem" oncomplete="#{rich:component('form_cnae:i_panel_excluir')}.hide(); #{rich:component('form_cnae:i_panel_mensagem')}.show(); return false;" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_cnae:i_panel_excluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true" header="Mensagem">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide(); return false;"></h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{cnaeBean.msgConfirma}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_cnae:i_panel_mensagem')}.hide(); return false;" action="#{cnaeBean.novo()}" render="id_painel_novo_cadastro"/>
+                    </center>
+                </rich:popupPanel>                
             </h:form>
         </f:view>
     </h:body>

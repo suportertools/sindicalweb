@@ -823,7 +823,7 @@ public class MatriculaEscolaBean implements Serializable {
         ServicoValorDB servicosValorDB = new ServicoValorDBToplink();
         valor = Float.toString(servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0));
         matriculaEscola.setDescontoAteVencimento(servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1));
-        vTaxa = servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);
+        vTaxa = servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);        
     }
 
     public String gerarMovimento() {
@@ -995,7 +995,9 @@ public class MatriculaEscolaBean implements Serializable {
                             } else {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(1, "TipoServico");
                                 valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
-                                valorDescontoAteVencimento = (matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas();
+                                // valorDescontoAteVencimento = (matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas();
+                                // valorDescontoAteVencimento = valorParcelaF - Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
+                                valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
                                 if (!vecimentoString.equals("")) {
                                     vencimento = vecimentoString;
                                     vecimentoString = "";
@@ -1132,6 +1134,8 @@ public class MatriculaEscolaBean implements Serializable {
             if (GenericaSessao.exists("pesquisaFisicaTipo")) {
                 String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
                 if (tipoFisica.equals("aluno")) {
+                    valorTaxa = "";
+                    taxa = false;
                     aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
                     if (matriculaEscola.getAluno().getId() == -1) {
                         pessoaAlunoMemoria = aluno.getPessoa();

@@ -1,8 +1,6 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.arrecadacao.GrupoCidades;
-import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
-import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.associativo.*;
 import br.com.rtools.associativo.db.*;
 import br.com.rtools.endereco.Cidade;
@@ -23,7 +21,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -129,9 +126,8 @@ public class SociosBean implements Serializable {
                 return null;
             }
             servicoPessoa = sp;
-            ServicoPessoa sp2 = new ServicoPessoa();
             for (int i = 0; i < listaDps.size(); i++) {
-                sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
+                ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
                 sp2.setAtivo(false);
                 if (!sv.alterarObjeto(sp2)) {
                     msgConfirma = "Erro ao alterar serviço pessoa do Dependente";
@@ -176,10 +172,9 @@ public class SociosBean implements Serializable {
             return null;
         }
         servicoPessoa = sp;
-        ServicoPessoa sp2 = new ServicoPessoa();
         List<Socios> listaDps = db.pesquisaDependentes(matriculaSocios.getId());
         for (int i = 0; i < listaDps.size(); i++) {
-            sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
+            ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
             sp2.setAtivo(true);
             if (!sv.alterarObjeto(sp2)) {
                 msgConfirma = "Erro ao alterar serviço pessoa do Dependente";
@@ -298,15 +293,12 @@ public class SociosBean implements Serializable {
         }
 
         if (!listaDependentes.isEmpty()) {
-            Socios socioDependente = new Socios();
             SociosDB db = new SociosDBToplink();
-
             ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
-            Parentesco parentesco = new Parentesco();
             for (int i = 0; i < listaDependentes.size(); i++) {
                 if (((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getId() != -1) {
-                    socioDependente = db.pesquisaSocioPorPessoaAtivo(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
-                    parentesco = dbPar.pesquisaCodigo(Integer.parseInt(getListaParentesco().get(Integer.parseInt((String) ((DataObject) listaDependentes.get(i)).getArgumento1())).getDescription()));
+                    Socios socioDependente = db.pesquisaSocioPorPessoaAtivo(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
+                    Parentesco parentesco = dbPar.pesquisaCodigo(Integer.parseInt(getListaParentesco().get(Integer.parseInt((String) ((DataObject) listaDependentes.get(i)).getArgumento1())).getDescription()));
                     ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(parentesco.getId(), servicoCategoria.getCategoria().getId());
 
                     if (servicoCategoriaDep == null) {
@@ -534,7 +526,6 @@ public class SociosBean implements Serializable {
                 return false;
             }
         }
-        List listDocumento = new ArrayList();
         FisicaDB db = new FisicaDBToplink();
         if (dependente.getId() == -1) {
             if (!db.pesquisaFisicaPorNomeNascRG(dependente.getPessoa().getNome(),
@@ -547,7 +538,7 @@ public class SociosBean implements Serializable {
             if (dependente.getPessoa().getDocumento().equals("") || dependente.getPessoa().getDocumento().equals("0")) {
                 dependente.getPessoa().setDocumento("0");
             } else {
-                listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
+                List listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
                 if (!listDocumento.isEmpty()) {
                     msgConfirma = "Documento já existente!";
                     return false;
@@ -558,7 +549,7 @@ public class SociosBean implements Serializable {
                 dependente.getPessoa().setDocumento("0");
             } else {
 
-                listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
+                List listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
                 for (int i = 0; i < listDocumento.size(); i++) {
                     if (!listDocumento.isEmpty() && ((Fisica) listDocumento.get(i)).getId() != dependente.getId()) {
                         msgConfirma = "Documento já existente!";
@@ -741,14 +732,11 @@ public class SociosBean implements Serializable {
 
     public void editarGenerico(Pessoa sessao) {
         CategoriaDB dbCat = new CategoriaDBToplink();
-        GrupoCategoria gpCat = new GrupoCategoria();
         SociosDB db = new SociosDBToplink();
         FisicaDB dbf = new FisicaDBToplink();
-        Socios soc = new Socios();
-        Socios socSessao = new Socios();
 
         //socSessao = db.pesquisaSocioPorPessoaAtivo(sessao.getId());
-        socSessao = db.pesquisaSocioPorPessoa(sessao.getId());
+        Socios socSessao = db.pesquisaSocioPorPessoa(sessao.getId());
         if (socSessao.getId() != -1) {
             socios = socSessao;
         } else {
@@ -759,7 +747,7 @@ public class SociosBean implements Serializable {
             return;
         }
 
-        soc = db.pesquisaSocioDoDependente(socios.getId());
+        Socios soc = db.pesquisaSocioDoDependente(socios.getId());
         if (soc != null) {
             socios = soc;
         }
@@ -768,7 +756,7 @@ public class SociosBean implements Serializable {
         servicoPessoa = socios.getServicoPessoa();
         matriculaSocios = socios.getMatriculaSocios();
 
-        gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
+        GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
         for (int i = 0; i < getListaGrupoCategoria().size(); i++) {
             if (Integer.parseInt((String) getListaGrupoCategoria().get(i).getDescription()) == gpCat.getId()) {
                 idGrupoCategoria = i;
@@ -829,8 +817,7 @@ public class SociosBean implements Serializable {
 
     public void excluirImagemDependente() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = "";
-        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
         try {
             File fl = new File(caminho);
             if (fl.exists()) {
@@ -1009,7 +996,7 @@ public class SociosBean implements Serializable {
     }
 
     public List<SelectItem> getListaGrupoCategoria() {
-        List<SelectItem> listaGrupoCategoria = new Vector<SelectItem>();;
+        List<SelectItem> listaGrupoCategoria = new ArrayList<SelectItem>();
         int i = 0;
         GrupoCategoriaDB db = new GrupoCategoriaDBToplink();
         List select = db.pesquisaTodos();
@@ -1023,7 +1010,7 @@ public class SociosBean implements Serializable {
     }
 
     public List<SelectItem> getListaCategoria() {
-        List<SelectItem> listaCategoria = new Vector<SelectItem>();
+        List<SelectItem> listaCategoria = new ArrayList<SelectItem>();
         int i = 0;
         if (!getListaGrupoCategoria().isEmpty()) {
             CategoriaDB db = new CategoriaDBToplink();
@@ -1162,12 +1149,11 @@ public class SociosBean implements Serializable {
 
     public MatriculaSocios getMatriculaSocios() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        GrupoCidadesDB dbGCids = new GrupoCidadesDBToplink();
-        List<GrupoCidades> cids = dbGCids.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List<GrupoCidades> cids = (List<GrupoCidades>) salvarAcumuladoDB.listaObjeto("GrupoCidades", true);
         if (socios.getId() == -1 && matriculaSocios.getId() == -1) {
             matriculaSocios.setEmissao(DataHoje.data());
-            PessoaEndereco ende = new PessoaEndereco();
-            ende = db.pesquisaEndPorPessoaTipo(servicoPessoa.getPessoa().getId(), 3);
+            PessoaEndereco ende = db.pesquisaEndPorPessoaTipo(servicoPessoa.getPessoa().getId(), 3);
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
                 matriculaSocios.setCidade((Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa"));
             } else if (ende != null && ende.getId() != -1) {
@@ -1238,8 +1224,7 @@ public class SociosBean implements Serializable {
         File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
         File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
         File listFile[] = files.listFiles();
-        String nome = "";
-        String caminho = "";
+        String nome;
         //temFoto = false;
         if (fExiste.exists() && dependente.getDataFoto().isEmpty()) {
             fotoTemp = true;
@@ -1262,7 +1247,7 @@ public class SociosBean implements Serializable {
                     if (Integer.parseInt(n) == dependente.getPessoa().getId()) {
                         nome = n;
                         fotoTemp = false;
-                        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+                        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
                         File fl = new File(caminho);
                         fl.delete();
                         break;
@@ -1425,7 +1410,7 @@ public class SociosBean implements Serializable {
             statusSocio = "STATUS";
         } else {
             if (matriculaSocios.getMotivoInativacao() != null) {
-                statusSocio = "INATIVO / " + matriculaSocios.getMotivoInativacao().getDescricao() + " - " + matriculaSocios.getInativo();;
+                statusSocio = "INATIVO / " + matriculaSocios.getMotivoInativacao().getDescricao() + " - " + matriculaSocios.getInativo();
             } else {
                 statusSocio = "ATIVO";
             }

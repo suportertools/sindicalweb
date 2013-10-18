@@ -18,18 +18,13 @@ import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.FilialCidadeDB;
 import br.com.rtools.pessoa.db.FilialCidadeDBToplink;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
-import br.com.rtools.pessoa.db.JuridicaDB;
-import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEmpresaDB;
 import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Registro;
-import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -39,6 +34,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -51,6 +48,8 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
+@ManagedBean (name = "socioCarteirinhaBean")
+@SessionScoped
 public class SocioCarteirinhaJSFBean {
 
     private SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
@@ -63,13 +62,12 @@ public class SocioCarteirinhaJSFBean {
     private int idListaCidades = 0;
     private int idListaFiliais = 0;
     private List listaSoc = new ArrayList();
-
-    public void refreshForm() {
-    }
+    private List<SelectItem> listaCidades = new ArrayList<SelectItem>();
+    private List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
 
     public List<SelectItem> getListaCidades() {
-        GrupoCidadesDB db = new GrupoCidadesDBToplink();
-        List<GrupoCidades> lista = db.pesquisaTodos();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        List<GrupoCidades> lista = (List<GrupoCidades>) salvarAcumuladoDB.listaObjeto("GrupoCidades", true);
         List<SelectItem> result = new ArrayList();
         if (tipoPesCidades.equals("especificas")) {
             for (int i = 0; i < lista.size(); i++) {
@@ -99,7 +97,6 @@ public class SocioCarteirinhaJSFBean {
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         FilialCidadeDB dbC = new FilialCidadeDBToplink();
         PessoaEnderecoDB dbE = new PessoaEnderecoDBToplink();
-        PessoaEndereco pesEnde;
         FilialCidade filCidade;
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         DataObject dt = null;
@@ -111,7 +108,7 @@ public class SocioCarteirinhaJSFBean {
                 result = db.pesquisaSocioSemCarteirinha();
             }
             for (int i = 0; i < result.size(); i++) {
-                pesEnde = dbE.pesquisaEndPorPessoaTipo(((Socios) result.get(i)).getServicoPessoa().getPessoa().getId(), 1);
+                PessoaEndereco pesEnde = dbE.pesquisaEndPorPessoaTipo(((Socios) result.get(i)).getServicoPessoa().getPessoa().getId(), 1);
                 if (pesEnde != null) {
                     filCidade = dbC.pesquisaFilialPorCidade(pesEnde.getEndereco().getCidade().getId());
                 } else {
@@ -124,8 +121,6 @@ public class SocioCarteirinhaJSFBean {
                         null,
                         null,
                         null));
-                pesEnde = new PessoaEndereco();
-                filCidade = new FilialCidade();
             }
         }
         return listaSoc;
@@ -140,9 +135,8 @@ public class SocioCarteirinhaJSFBean {
         }
         FilialCidadeDB dbC = new FilialCidadeDBToplink();
         PessoaEnderecoDB dbE = new PessoaEnderecoDBToplink();
-        PessoaEndereco pesEnde = new PessoaEndereco();
-        pesEnde = dbE.pesquisaEndPorPessoaTipo(socioCarteirinha.getSocios().getServicoPessoa().getPessoa().getId(), 1);
-        FilialCidade filCidade = new FilialCidade();
+        PessoaEndereco pesEnde = dbE.pesquisaEndPorPessoaTipo(socioCarteirinha.getSocios().getServicoPessoa().getPessoa().getId(), 1);
+        FilialCidade filCidade;
         if (pesEnde != null) {
             filCidade = dbC.pesquisaFilialPorCidade(pesEnde.getEndereco().getCidade().getId());
         } else {
@@ -258,11 +252,8 @@ public class SocioCarteirinhaJSFBean {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
-            byte[] arquivo = new byte[0];
-            JasperReport jasper = null;
             Collection listaSocios = new ArrayList<FichaSocial>();
-            jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject( ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
 
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
@@ -522,7 +513,7 @@ public class SocioCarteirinhaJSFBean {
                     jasper,
                     null,
                     dtSource);
-            arquivo = JasperExportManager.exportReportToPdf(print);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
             response.setContentType("application/pdf");
             response.setContentLength(arquivo.length);
             ServletOutputStream saida = response.getOutputStream();
@@ -539,7 +530,6 @@ public class SocioCarteirinhaJSFBean {
             download.baixar();
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            return;
         }
     }
 
@@ -556,11 +546,8 @@ public class SocioCarteirinhaJSFBean {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
-            byte[] arquivo = new byte[0];
-            JasperReport jasper = null;
             Collection listaSocios = new ArrayList<FichaSocial>();
-            jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject( ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTRO.jasper"));
 
             sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
@@ -742,7 +729,7 @@ public class SocioCarteirinhaJSFBean {
                     jasper,
                     null,
                     dtSource);
-            arquivo = JasperExportManager.exportReportToPdf(print);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
             response.setContentType("application/pdf");
             response.setContentLength(arquivo.length);
             ServletOutputStream saida = response.getOutputStream();
@@ -759,7 +746,6 @@ public class SocioCarteirinhaJSFBean {
             download.baixar();
         } catch (Exception erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
-            return;
         }
     }
 

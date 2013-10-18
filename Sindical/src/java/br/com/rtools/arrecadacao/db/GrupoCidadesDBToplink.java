@@ -13,64 +13,6 @@ import javax.persistence.Query;
 public class GrupoCidadesDBToplink extends DB implements GrupoCidadesDB {
 
     @Override
-    public boolean insert(GrupoCidades grupoCidade) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(grupoCidade);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(GrupoCidades grupoCidade) {
-        try {
-            getEntityManager().merge(grupoCidade);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(GrupoCidades grupoCidade) {
-        try {
-            getEntityManager().remove(grupoCidade);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    @Override
-    public GrupoCidades pesquisaCodigo(int id) {
-        GrupoCidades result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("GrupoCidades.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (GrupoCidades) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select cont from GrupoCidades cont ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Override
     public List pesquisaTodosCidadeAgrupada() {
         try {
             Query qry = getEntityManager().createQuery(" SELECT GC.cidade FROM GrupoCidades GC GROUP BY GC.cidade ORDER BY GC.cidade.uf ASC, GC.cidade.cidade ASC ");
