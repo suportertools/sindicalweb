@@ -3,6 +3,7 @@ package br.com.rtools.escola.db;
 import br.com.rtools.escola.MatriculaContrato;
 import br.com.rtools.escola.MatriculaContratoCampos;
 import br.com.rtools.escola.MatriculaContratoServico;
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,22 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         }
         return false;
     }
-
+    
+    @Override
+    public boolean existeServicoMatriculaContrato(int idServico) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MCS FROM MatriculaContratoServico AS MCS WHERE MCS.servicos.id = :idServico");
+            query.setParameter("idServico", idServico);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+           
+        }
+        return false;
+    }
+    
     @Override
     public List pesquisaTodosPorModulo(int idModulo) {
         try {
@@ -150,5 +166,19 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         } finally {
             return list;
         }
+    }
+    
+    @Override
+    public List<Servicos> listaServicosDispiniveis() {
+        List list = new ArrayList();
+        try {
+            Query query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.id NOT IN(SELECT MCS.servicos.id FROM MatriculaContratoServico AS MCS GROUP BY MCS.servicos.id )  ORDER BY S.descricao ASC ");
+            list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return list;
     }
 }

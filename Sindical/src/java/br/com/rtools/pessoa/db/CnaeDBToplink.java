@@ -5,84 +5,21 @@ import br.com.rtools.endereco.Cidade;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class CnaeDBToplink extends DB implements CnaeDB {
 
     @Override
-    public boolean insert(Cnae cnae) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(cnae);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Cnae cnae) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(cnae);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Cnae cnae) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(cnae);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public Cnae pesquisaCodigo(int id) {
-        Cnae result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Cnae.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Cnae) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    @Override
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select cnae from Cnae cnae ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    @Override
     public List pesquisaCnae(String desc, String por, String como) {
         List vetor;
         List<Cnae> lista = new ArrayList();
         try {
-            String textQry = "";
+            String textQry;
             if (desc.isEmpty()) {
                 return lista;
             }
@@ -102,9 +39,10 @@ public class CnaeDBToplink extends DB implements CnaeDB {
 
             Query qry = getEntityManager().createNativeQuery(textQry);
             vetor = qry.getResultList();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    lista.add(pesquisaCodigo((Integer) ((Vector) vetor.get(i)).get(0)));
+                    lista.add((Cnae) salvarAcumuladoDB.pesquisaCodigo((Integer) ((List) vetor.get(i)).get(0), "Cnae"));
                 }
             }
             return lista;
@@ -182,7 +120,7 @@ public class CnaeDBToplink extends DB implements CnaeDB {
     }
 
     public List pesquisaCnaeComConvencao(int numCnae, int numCnaeConvencao) {
-        List result = null;
+        List result;
         try {
             Query qry = getEntityManager().createQuery("select c from Cnae c where c.id = :numCnae and");
             qry.setParameter("numCnae", numCnae);
@@ -216,6 +154,7 @@ public class CnaeDBToplink extends DB implements CnaeDB {
         return result;
     }
 
+    @Override
     public Cnae pesquisaNumeroCnae(String nr_cnae) {
         Cnae result = null;
         try {

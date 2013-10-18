@@ -119,26 +119,28 @@ public class GrupoCidadesJSFBean {
     }
 
     public boolean salvarGrupoCidade(GrupoCidades grupoCidades) {
-        GrupoCidadesDB db = new GrupoCidadesDBToplink();
         NovoLog log = new NovoLog();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (grupoCidades.getId() == -1) {
-            if (db.insert(grupoCidades)) {
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.inserirObjeto(grupoCidades)) {
+                salvarAcumuladoDB.comitarTransacao();
                 log.novo("Novo registro", "Grupo Cidades inserido " + grupoCidades.getId() + " - Cidade: " + grupoCidades.getCidade().getCidade() + " - Grupo Cidade: " + grupoCidades.getGrupoCidade().getDescricao());
                 return true;
             } else {
+                salvarAcumuladoDB.desfazerTransacao();
                 return false;
             }
         } else {
-            db.getEntityManager().getTransaction().begin();
-            GrupoCidades gc = new GrupoCidades();
-            gc = db.pesquisaCodigo(grupoCidades.getId());
+            GrupoCidades gc = (GrupoCidades) salvarAcumuladoDB.pesquisaCodigo(grupoCidades.getId(), "GrupoCidades");
             String antes = "De -  Grupo Cidade:: " + gc.getGrupoCidade().getDescricao() + " - Grupo Cidade: " + gc.getCidade().getCidade();
-            if (db.update(grupoCidades)) {
-                db.getEntityManager().getTransaction().commit();
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.alterarObjeto(grupoCidades)) {
+                salvarAcumuladoDB.comitarTransacao();
                 log.novo("Atualizado", antes + " - para: " + grupoCidades.getId() + " - Cidade: " + grupoCidades.getCidade().getCidade() + " - Grupo Cidade: " + grupoCidades.getGrupoCidade().getDescricao());
                 return true;
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
                 return false;
             }
         }
@@ -156,8 +158,7 @@ public class GrupoCidadesJSFBean {
             }
         } else {
             db.getEntityManager().getTransaction().begin();
-            MensagemConvencao mc = new MensagemConvencao();
-            mc = db.pesquisaCodigo(mensagemConvencao.getId());
+            MensagemConvencao mc = db.pesquisaCodigo(mensagemConvencao.getId());
             String antes = "De - Referencia: " + mc.getReferencia() + " - vencimento: " + mc.getVencimento() + " - Mensagem Convencao inseridas " + mc.getId() + " - Mensagem compensacao: " + mensagemConvencao.getMensagemCompensacao() + " - Mensagem contribuinte: " + mensagemConvencao.getMensagemContribuinte() + " - Convencao: " + mensagemConvencao.getConvencao() + " - Convencao: " + mensagemConvencao.getConvencao().getDescricao() + " - Grupo Cidade: " + mensagemConvencao.getGrupoCidade().getDescricao() + " - Tipo Servico: " + mensagemConvencao.getTipoServico().getDescricao() + " - Servico: " + mc.getServicos().getDescricao();
             if (db.update(mensagemConvencao)) {
                 db.getEntityManager().getTransaction().commit();

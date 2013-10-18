@@ -151,6 +151,7 @@ public class ModeloContratoBean implements java.io.Serializable {
         setMatriculaContrato((MatriculaContrato) dB.pesquisaCodigo(mc.getId(), "MatriculaContrato"));
         GenericaSessao.put("matriculaContratoPesquisa", matriculaContrato);
         GenericaSessao.put("linkClicado", true);
+        listaMatriculaContratoServico.clear();
         if (GenericaSessao.exists("urlRetorno")) {
             return (String) GenericaSessao.getString("urlRetorno");
         } else {
@@ -252,12 +253,12 @@ public class ModeloContratoBean implements java.io.Serializable {
 
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
-            ServicosDB servicosDB = new ServicosDBToplink();
-            List list = servicosDB.pesquisaTodos();
+            MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
+            List<Servicos> list = (List<Servicos>) matriculaContratoDB.listaServicosDispiniveis();
+            // ServicosDB servicosDB = new ServicosDBToplink();
+            // List list = servicosDB.pesquisaTodos();
             for (int i = 0; i < list.size(); i++) {
-                listaServicos.add(new SelectItem(new Integer(i),
-                        (String) ((Servicos) list.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) list.get(i)).getId())));
+                listaServicos.add(new SelectItem(new Integer(i), (String) (list.get(i)).getDescricao(), Integer.toString((list.get(i)).getId())));
             }
         }
         return listaServicos;
@@ -272,10 +273,14 @@ public class ModeloContratoBean implements java.io.Serializable {
                 GenericaMensagem.warn("Validação", "Contrato já possui esse serviço!");
                 return;
             }
+            if (contratoDB.existeServicoMatriculaContrato(idServico)) {
+                GenericaMensagem.warn("Validação", "Serviço já cadastrado para contrato (s)!");
+                return;
+            }
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            salvarAcumuladoDB.abrirTransacao();
             matriculaContratoServico.setServico((Servicos) (salvarAcumuladoDB.pesquisaCodigo(idServico, "Servicos")));
             matriculaContratoServico.setContrato(matriculaContrato);
+            salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.inserirObjeto(matriculaContratoServico)) {
                 salvarAcumuladoDB.comitarTransacao();
                 GenericaMensagem.info("Sucesso", "Serviço adicionado");

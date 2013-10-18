@@ -1,7 +1,6 @@
 package br.com.rtools.atendimento;
 
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.*;

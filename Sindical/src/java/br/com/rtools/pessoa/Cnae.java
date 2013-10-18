@@ -1,11 +1,16 @@
 package br.com.rtools.pessoa;
 
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PES_CNAE")
-@NamedQuery(name = "Cnae.pesquisaID", query = "select cnae from Cnae cnae where cnae.id=:pid")
-public class Cnae implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Cnae.pesquisaID",   query = "SELECT CN FROM Cnae AS CN WHERE CN.id = :pid"),
+    @NamedQuery(name = "Cnae.findAll",      query = "SELECT CN FROM Cnae AS CN ORDER BY CN.cnae ASC, CN.numero ASC"),
+    @NamedQuery(name = "Cnae.findName",     query = "SELECT CN FROM Cnae AS CN WHERE UPPER(CN.cnae) LIKE :pdescricao ORDER BY CN.cnae ASC, CN.numero ASC ")
+})
+public class Cnae implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -44,8 +44,6 @@ public class AgendaTelefoneBean implements Serializable {
     private int idDDD = 0;
     private int idGrupoAgenda = 0;
     private int idFiltroGrupoAgenda = 0;
-    private int idIndexAgendaTelefone = 0;
-    private int idIndexAgenda = 0;
     private String descricaoPesquisa = "";
     private String descricaoDDD = "";
     private String comoPesquisa = "Inicial";
@@ -66,8 +64,6 @@ public class AgendaTelefoneBean implements Serializable {
         idTipoEndereco = 0;
         idFiltroGrupoAgenda = 0;
         idDDD = 0;
-        idIndexAgendaTelefone = 0;
-        idIndexAgenda = 0;
         descricaoPesquisa = "";
         descricaoDDD = "";
         comoPesquisa = "Inicial";
@@ -325,7 +321,6 @@ public class AgendaTelefoneBean implements Serializable {
             int nrGrupoAgenda = 0;
             if (filtraPorGrupo) {
                 nrGrupoAgenda = Integer.parseInt(getListaGrupoAgendas().get(idFiltroGrupoAgenda).getDescription());
-                //nrGrupoAgenda = idFiltroGrupoAgenda;
             }
             descricaoDDD = "";
             if (!listaDDD.isEmpty()) {
@@ -410,22 +405,6 @@ public class AgendaTelefoneBean implements Serializable {
 
     public void setListaAgendas(List<Agenda> listaAgendas) {
         this.listaAgendas = listaAgendas;
-    }
-
-    public int getIdIndexAgendaTelefone() {
-        return idIndexAgendaTelefone;
-    }
-
-    public void setIdIndexAgendaTelefone(int idIndexAgendaTelefone) {
-        this.idIndexAgendaTelefone = idIndexAgendaTelefone;
-    }
-
-    public int getIdIndexAgenda() {
-        return idIndexAgenda;
-    }
-
-    public void setIdIndexAgenda(int idIndexAgenda) {
-        this.idIndexAgenda = idIndexAgenda;
     }
 
     public String getMsgConfirma() {

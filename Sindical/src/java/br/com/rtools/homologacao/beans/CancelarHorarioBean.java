@@ -54,7 +54,6 @@ public class CancelarHorarioBean implements Serializable {
 
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
         CancelarHorarioDB db = new CancelarHorarioDBToplink();
-        CancelarHorario ch = new CancelarHorario();
         boolean erro = false;
         acumuladoDB.abrirTransacao();
         for (int i = 0; i < getListaHorariosDisponiveis().size(); i++) {
@@ -65,7 +64,7 @@ public class CancelarHorarioBean implements Serializable {
             } else {
                 cancelarHorario.setHorarios((Horarios) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaHorariosDisponiveis().get(idHorariosDisponiveis).getDescription()), "Horarios"));
             }
-            ch = db.pesquisaCancelamentoHorario(data, cancelarHorario.getHorarios().getId(), cancelarHorario.getFilial().getId());
+            CancelarHorario ch = db.pesquisaCancelamentoHorario(data, cancelarHorario.getHorarios().getId(), cancelarHorario.getFilial().getId());
             if (ch.getId() == -1) {
                 cancelarHorario.setDtData(data);
                 if (todos) {

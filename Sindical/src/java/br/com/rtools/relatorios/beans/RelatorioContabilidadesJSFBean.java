@@ -19,6 +19,8 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -321,10 +323,9 @@ public class RelatorioContabilidadesJSFBean {
     public List getListaCnaes() {
         if (carregaCnae) {
             RelatorioContabilidadesDB db = new RelatorioContabilidadesDBToplink();
-            CnaeDB dbCnae = new CnaeDBToplink();
-            List listCnae = new ArrayList();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             resultCnae = new ArrayList();
-            listCnae = db.pesquisarCnaeContabilidade();
+            List listCnae = db.pesquisarCnaeContabilidade();
             DataObject dtObject;
             boolean tem = false;
             for (int i = 0; i < listCnae.size(); i++) {
@@ -333,7 +334,7 @@ public class RelatorioContabilidadesJSFBean {
                 }
             }
             if (tem == false) {
-                dtObject = new DataObject(new Boolean(true), dbCnae.pesquisaCodigo(1));
+                dtObject = new DataObject(new Boolean(true), (Cnae) salvarAcumuladoDB.pesquisaCodigo(1, "Cnae"));
                 resultCnae.add(dtObject);
             }
             for (int i = 0; i < listCnae.size(); i++) {

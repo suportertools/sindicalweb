@@ -35,12 +35,12 @@
         <managed-bean-class>br.com.rtools.pessoa.beans.FilialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!-- 
     <managed-bean>
         <managed-bean-name>cnaeBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.CnaeJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <!-- <managed-bean>
         <managed-bean-name>usuarioBean</managed-bean-name>
@@ -479,12 +479,12 @@
         <managed-bean-class>br.com.rtools.associativo.beans.EmissaoGuiasJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    <!-- 
     <managed-bean>
         <managed-bean-name>socioCarteirinhaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.SocioCarteirinhaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>baixaBoletoBean</managed-bean-name>

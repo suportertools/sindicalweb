@@ -7,17 +7,7 @@ import javax.persistence.EntityManager;
 
 public interface GrupoCidadesDB {
 
-    public boolean insert(GrupoCidades grupoCidades);
-
-    public boolean update(GrupoCidades grupoCidades);
-
-    public boolean delete(GrupoCidades grupoCidades);
-
     public EntityManager getEntityManager();
-
-    public GrupoCidades pesquisaCodigo(int id);
-
-    public List pesquisaTodos();
 
     public List pesquisaTodosCidadeAgrupada();
 
