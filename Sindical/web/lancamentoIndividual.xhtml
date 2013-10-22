@@ -21,100 +21,129 @@
                         <h:outputText value="Lançamento Individual" styleClass="fontePanel" style="width: 100%;"/>
                     </div>
                 </center>
-                <div class="divMae">
-                    <div style="float: left">
-                        <div class="alinhaFormulario fontePadrao alinhaFormularioLeft divFundo" style="width: 500px; height: 400px;">
-                            <p>
-                                <label class="fontePadrao">Pessoa:</label>
-                                <h:commandButton image="/Imagens/pesquisar.png" style="float: right; " action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true" title="Pesquisar Pessoa"/>
-                                <h:outputText value="" styleClass="fontePadraoNegrito" title="Pessoa" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;"/>
-                            </p>
-                            <p>
-                                <label>Emissão:</label>
-                                <h:outputLabel value="" styleClass="fontePadrao"/>
-                            </p>
-                            <p>
-                                <label>Titular: </label>
-                                <h:outputLabel value="" styleClass="fontePadrao"/>
-                            </p>
-                            <p>
-                                <label>Conta Cobrança:</label>
-                                <h:selectOneMenu value="a" >
-                                    <f:selectItems itemValue="" itemLabel="" />
-                                </h:selectOneMenu>
-                            </p>
-                            <p>
-                                <label>Tipo do Documento: </label>
-                                <h:selectOneMenu value="" >
-                                    <f:selectItems itemValue="" itemLabel="" />
-                                </h:selectOneMenu>
-                            </p>
-                            <p>
-                                <label>Número de Parcelas:</label>
-                                <h:inputText value="" size="5" style="text-align: right" maxlength="12"/>
-                            </p>
-                            <p>
-                                <label>Total a Pagar:</label>
-                                <h:inputText value="" size="10" style="text-align: right" maxlength="10"/>
-                            </p>
-                            <p>
-                                <label>Desconto em Folha: </label>
-                                <h:selectOneRadio value="" styleClass="fonteRederencia itemValueConfirma">
-                                        <f:selectItem itemValue="true" itemLabel="sim"/>
-                                        <f:selectItem itemValue="false" itemLabel="não"/>
+                <h:panelGrid styleClass="divMae" style="width: 1024px; margin: 0 auto;">
+                    
+                    <h:panelGrid id="i_panel_pessoa" styleClass="divFundo" columns="2" columnClasses="coluna1, coluna2" style="width: 100%">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2" >
+                            <h:column><h:commandButton value="Adicionar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoaFisica()}" immediate="true" title="Pesquisar Pessoa Física"/></h:column>
+                            <h:column><h:outputText value="#{lancamentoIndividualBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" title="Pessoa" /></h:column>
+
+                            <h:column><h:commandButton value="Responsável" action="#{chamadaPaginaBean.pesquisaPessoa()}" immediate="true" title="Pesquisar Pessoa Física"/></h:column>
+                            <h:column><h:outputText value="#{lancamentoIndividualBean.responsavel.nome}" styleClass="fontePadraoNegrito" title="Pessoa que é responsável" /></h:column>
+                            
+                            <h:column><h:outputLabel value="Desconto Folha" styleClass="fontePadraoNegrito"/></h:column>
+                            <h:column>
+                                <h:selectOneRadio value="#{lancamentoIndividualBean.descontoFolha}">
+                                    <a4j:ajax event="change" listener="#{lancamentoIndividualBean.pesquisaDescontoFolha()}" render="i_panel_pessoa"/>
+                                    <f:selectItem itemLabel="Sim" itemValue="sim" />
+                                    <f:selectItem itemLabel="Não" itemValue="nao" />
                                 </h:selectOneRadio>
-                            </p>
-                            <p>
-                                <label> Histórico: </label>
-                                <h:column>
-                                    <h:inputTextarea value="" styleClass="uppercase" style="width: 330px; height: 100px;">
-                                    </h:inputTextarea>
-                                </h:column>
-                            </p>
-                        </div>
-                        <div style="clear: both"></div>
-                        <p>
-                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
-                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
-                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
-                        </p>
-                    </div>
-
-                    <div style="float: left; border-left: 1px solid #efefef; padding-left: 15px;">
-                        <p> GERENCIAR </p>
-                        <h:panelGroup style="overflow:auto; height:200px; width :300px; margin-top: 20px;" layout="block">
-                            <rich:dataTable value="" var="linha" id="tbl" iterationStatusVar="it" style="width: 100%;">
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header">
-                                        <h:outputText value=""/>
-                                    </f:facet>
-                                    <h:outputText value=""/>
-                                </rich:column>
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header">
-                                        <h:outputText value="ID"/>
-                                    </f:facet>
-                                    <h:outputText value=""/>
-                                </rich:column>
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="lançamento"/>
-                                    </f:facet>
-                                    <h:outputText value="" />
-                                </rich:column>
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header">
-                                        <h:outputText value="A" title="Alterar"/>
-                                    </f:facet>
-                                    <a4j:commandButton image="/Imagens/iconEdit.png" value="" title="Editar registro nº" >
-                                        <a4j:param value="" />
-                                    </a4j:commandButton>
-                                </rich:column>
-                            </rich:dataTable>
-                        </h:panelGroup>
-                    </div>
-                </div>
-
+                            </h:column>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    
+                    <br />
+                    
+                    <h:panelGrid id="i_panel_serv_conv" columns="2" columnClasses="coluna1, coluna2" >
+                        <h:column>
+                            <h:outputLabel value="Serviços" />
+                            <br />
+                            <h:selectOneMenu id="idServico" value="#{lancamentoIndividualBean.idServico}">
+                                <a4j:ajax event="change" listener="#{lancamentoIndividualBean.limpaEmpresaConvenio()}" render="i_panel_serv_conv"/>
+                                <f:selectItems value="#{lancamentoIndividualBean.listaServicos}" />
+                            </h:selectOneMenu>
+                        </h:column>
+                        
+                        <h:column>
+                            <h:outputLabel value="Empresas Conveniadas" style="margin-left: 20px"/>
+                            <br />
+                            <h:selectOneMenu id="idEmpresasConv" value="#{lancamentoIndividualBean.idJuridica}" style="margin-left: 20px">
+                                <a4j:ajax event="change"  />
+                                <f:selectItems value="#{lancamentoIndividualBean.listaJuridica}" />
+                            </h:selectOneMenu>
+                        </h:column>
+                    </h:panelGrid>
+                    
+                    <br />
+                    
+                    <h:outputLabel value="Histórico" />
+                    <h:inputTextarea value="" style="width: 100%" rows="3"/>
+                    
+                    <br />
+                    
+                    <h:panelGrid styleClass="divFundo" columns="5" style="width: 100%; padding: 10px">
+                        <h:column>
+                            <h:outputLabel value="Total Pagar" styleClass="fontePadraoNegrito"/>
+                            <br />
+                            <h:inputText value="#{lancamentoIndividualBean.totalPagar}" size="8">
+                                <a4j:ajax event="change" render="@this" />
+                            </h:inputText>
+                       </h:column>
+                        
+                        <h:column>
+                            <h:outputLabel value="Parcelas" styleClass="fontePadraoNegrito"/>
+                            <br />
+                            <h:inputText value="#{lancamentoIndividualBean.parcelas}" size="5"/>
+                        </h:column>
+                        
+                        <h:column>
+                            <h:outputLabel value="Entrada" styleClass="fontePadraoNegrito"/>
+                            <br />
+                            <h:selectOneRadio value="#{lancamentoIndividualBean.entrada}">
+                                <f:selectItem itemLabel="Sim" itemValue="sim" />
+                                <f:selectItem itemLabel="Não" itemValue="nao" />
+                            </h:selectOneRadio>
+                        </h:column>
+                        
+                        <h:column>
+                            <h:outputLabel value="Cobrança Bancária" styleClass="fontePadraoNegrito"/>
+                            <br />
+                            <h:selectOneRadio value="#{lancamentoIndividualBean.cobrancaBancaria}">
+                                <f:selectItem itemLabel="Sim" itemValue="sim" />
+                                <f:selectItem itemLabel="Não" itemValue="nao" />
+                            </h:selectOneRadio>
+                        </h:column>
+                        
+                        <h:column>
+                            <h:outputLabel value="Dia do Vencimento para Cobrança Bancária" styleClass="fontePadraoNegrito"/>
+                            <br />
+                            <h:selectOneMenu id="idDiaVencto" value="#{lancamentoIndividualBean.idDia}">
+                                <a4j:ajax event="change"  />
+                                <f:selectItems value="#{lancamentoIndividualBean.listaDiaVencimento}" />
+                            </h:selectOneMenu>
+                        </h:column>
+                    </h:panelGrid>
+                    
+                    <br />
+                    <br />
+                    
+                    <h:outputLabel value="Parcelas" styleClass="fonteFranklinNegrito" style="font-size: 15pt"/>
+                    
+                    <rich:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma parcela foi criada" rows="13">
+                        <rich:column style="text-align: center;">
+                            <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
+                            <h:outputText value="" />
+                        </rich:column>
+                        
+                        <rich:column>
+                            <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                            <h:outputText value="" />
+                        </rich:column>
+                        
+                        <rich:column style="text-align: center;">
+                            <f:facet name="header"><h:outputText value="Pago"/></f:facet>
+                            <h:outputText value="" />
+                        </rich:column>
+                    </rich:dataTable>
+                    <br />
+                    
+                    <h:panelGrid columns="3">
+                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
+                    </h:panelGrid>
+                </h:panelGrid>
+                
                 <div id="boxes">
                     <div id="divSalvar" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -163,7 +192,7 @@
                         <center>
                             <h:outputText id="outConfirma" styleClass="fontePadrao"/>
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="lancamentoIndividual" value="OK" title="OK" render="formParentesco" onclick="window.location.reload();"/>
+                            <h:commandLink styleClass="idNovo iLink closeModal" action="lancamentoIndividual" value="OK" title="OK" />
                         </center>
                     </div>
                     <div id="mask"></div>
@@ -171,7 +200,9 @@
 
             </h:form>
         </f:view>
+        
         <div style="clear: both;"></div>
+        
         <p style="text-align: center;">
             R'Tools Desenvolvimento de Sistemas LTDA ®
         </p>

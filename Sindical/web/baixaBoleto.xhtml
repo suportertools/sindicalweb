@@ -49,7 +49,7 @@
                         
                         <h:panelGrid>
                             <h:selectOneRadio value="#{baixaBoletoBean.caixaBanco}" styleClass="fontePadrao">
-                                <a4j:ajax event="change" render="i_panel" listener="#{baixaBoletoBean.atualizaCB()}"/>
+                                <a4j:ajax event="change" render="i_panel i_btn" listener="#{baixaBoletoBean.atualizaCB()}"/>
                                 <f:selectItem itemValue="caixa" itemLabel="Caixa"/>
                                 <f:selectItem itemValue="banco" itemLabel="Banco"/>
                             </h:selectOneRadio>
@@ -164,11 +164,12 @@
                             </div>
                         </h:panelGroup>
                     </div>
+                    
                     <div style="clear: both;"></div>
-                    <div style="float: left; margin-top: 15px;">
-                        <a4j:commandLink styleClass="idNovo iLink" value="Baixar Boleto" title="Baixar Boleto" oncomplete="modalMensagem()" id="i_btn"
-                                         action="#{baixaBoletoBean.baixarBoletos}" render="tbl outConfirma outConfirmaTela" style="width: 150px;" rendered="#{!baixaBoletoBean.disBtnBaixar}"/>
-                    </div>
+                    
+                    <h:panelGrid id="i_btn" style="float: left; margin-top: 15px;">
+                        <a4j:commandLink styleClass="idNovo iLink" value="Baixar Boleto" title="Baixar Boleto" oncomplete="modalMensagem()" action="#{baixaBoletoBean.baixarBoletos}" render="tbl outConfirma outConfirmaTela" style="width: 150px;" rendered="#{!baixaBoletoBean.disBtnBaixar}"/>
+                    </h:panelGrid>
                 </div>
                 <div id="boxes">
                     <div id="divMensagem" class="window">

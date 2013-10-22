@@ -467,13 +467,13 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.ServicoRotinaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+<!--
     <managed-bean>
         <managed-bean-name>lancamentoIndividualBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.LancamentoIndividualJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+-->
     <managed-bean>
         <managed-bean-name>emissaoGuiasBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.EmissaoGuiasJSFBean</managed-bean-class>
