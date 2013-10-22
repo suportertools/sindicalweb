@@ -25,10 +25,10 @@
                     <br /><br />
                     <rich:panel styleClass="divMae no-border" id="id_panel_cidade">
                         <h:panelGrid columns="7">
-                            <h:outputLabel value="Cidade: " styleClass="fontePadrao" for="idDescricaoCidade"/>
-                            <h:inputText size="50" value="#{cidadeBean.cidade.cidade}" id="idDescricaoCidade" onkeypress="if (event.keyCode === 13) {#{rich:element('form_cidade:btnInicial')}.onclick();}"/>
+                            <h:outputLabel value="Pesquisar: " styleClass="fontePadrao" for="idDescricaoCidade"/>
+                            <h:inputText size="50" value="#{cidadeBean.descricaoCidadePesquisa}" id="idDescricaoCidade" onkeypress="if (event.keyCode === 13) {#{rich:element('form_cidade:btnInicial')}.onclick();}" title="Descrição da cidade"/>
                             <h:outputLabel value="UF: " styleClass="fontePadrao"/>
-                            <h:selectOneMenu id="idUF" value="#{cidadeBean.cidade.uf}" >
+                            <h:selectOneMenu value="#{cidadeBean.descricaoUFPesquisa}" >
                                 <f:selectItem itemValue="AC" itemLabel="AC"/>
                                 <f:selectItem itemValue="AL" itemLabel="AL"/>
                                 <f:selectItem itemValue="AP" itemLabel="AP"/>
@@ -57,8 +57,7 @@
                                 <f:selectItem itemValue="SE" itemLabel="SE"/>
                                 <f:selectItem itemValue="TO" itemLabel="TO"/>
                             </h:selectOneMenu>
-                            <a4j:commandLink styleClass="idSalvar iLink margin-left" action="#{cidadeBean.salvar()}" value="Salvar" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.show(); return false;" render="id_panel_cidade, i_painel_mensagem" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                            <a4j:commandLink styleClass="idSalvar iLink margin-left" action="#{cidadeBean.novo()}" value="Novo" render="id_panel_cidade" status="i_status"/>
+                            <a4j:commandLink styleClass="idSalvar iLink margin-left" action="#{cidadeBean.novo()}" value="Novo" oncomplete="#{rich:component('form_cidade:i_painel_novo')}.show(); return false;" render="id_painel_novo_cadastro" status="i_status" disabled="#{controleAcessoBean.botaoSalvar}" title="Novo cadastro"/>
                         </h:panelGrid>
                         <h:panelGrid columns="3" styleClass="margin-top">
                             <h:outputLabel value="Pesquisar: " styleClass="fontePadrao"/>
@@ -71,13 +70,13 @@
                                     <f:facet name="header">
                                         <h:outputLabel value="ID"/>
                                     </f:facet>
-                                    <a4j:commandLink value="Editar [#{linha.id}]" action="#{cidadeBean.editar(linha)}" render="id_panel_cidade" status="i_status"/>
+                                    <a4j:commandLink value="Editar [#{linha.id}]" action="#{cidadeBean.editar(linha)}" oncomplete="#{rich:component('form_cidade:i_painel_novo')}.show(); return false;" render="id_painel_novo_cadastro" status="i_status"/>
                                 </rich:column>
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputLabel value="Cidade"/>
                                     </f:facet>
-                                    <a4j:commandLink value="#{linha.cidade}" action="#{cidadeBean.editar(linha)}" styleClass="underline-hover" render="id_panel_cidade" status="i_status"/>
+                                    <a4j:commandLink value="#{linha.cidade}" action="#{cidadeBean.editar(linha)}" styleClass="underline-hover" oncomplete="#{rich:component('form_cidade:i_painel_novo')}.show(); return false;" render="id_painel_novo_cadastro" status="i_status"/>
                                 </rich:column>
                                 <rich:column style="width: 25px;" styleClass="text-center">
                                     <f:facet name="header">
@@ -97,6 +96,53 @@
                         </rich:panel>                        
                     </rich:panel>
                 </center>
+                <rich:popupPanel id="i_painel_novo" modal="true" resizeable="true" domElementAttachment="form" header="Novo">
+                    <f:facet name="controls">
+                        <a4j:commandLink oncomplete="#{rich:component('form_cidade:i_painel_novo')}.hide(); return false;" action="#{simplesBean.novo}" status="i_status" render="i_painel_novo_cadastro, tbl">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </a4j:commandLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid id="id_painel_novo_cadastro" columns="2">
+                            <h:outputLabel value="Descrição: " styleClass="fontePadrao" for="iDescricao"/>
+                            <h:inputText id="iDescricao" value="#{cidadeBean.cidade.cidade}" size="20" autocomplete="off" title="Descrição" />
+                            <h:outputLabel value="UF: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu value="#{cidadeBean.cidade.uf}" >
+                                <f:selectItem itemValue="AC" itemLabel="AC"/>
+                                <f:selectItem itemValue="AL" itemLabel="AL"/>
+                                <f:selectItem itemValue="AP" itemLabel="AP"/>
+                                <f:selectItem itemValue="AM" itemLabel="AM"/>
+                                <f:selectItem itemValue="BA" itemLabel="BA"/>
+                                <f:selectItem itemValue="CE" itemLabel="CE"/>
+                                <f:selectItem itemValue="DF" itemLabel="DF"/>
+                                <f:selectItem itemValue="ES" itemLabel="ES"/>
+                                <f:selectItem itemValue="GO" itemLabel="GO"/>
+                                <f:selectItem itemValue="MA" itemLabel="MA"/>
+                                <f:selectItem itemValue="MT" itemLabel="MT"/>
+                                <f:selectItem itemValue="MS" itemLabel="MS"/>
+                                <f:selectItem itemValue="MG" itemLabel="MG"/>
+                                <f:selectItem itemValue="PA" itemLabel="PA"/>
+                                <f:selectItem itemValue="PB" itemLabel="PB"/>
+                                <f:selectItem itemValue="PR" itemLabel="PR"/>
+                                <f:selectItem itemValue="PE" itemLabel="PE"/>
+                                <f:selectItem itemValue="PI" itemLabel="PI"/>
+                                <f:selectItem itemValue="RJ" itemLabel="RJ"/>
+                                <f:selectItem itemValue="RN" itemLabel="RN"/>
+                                <f:selectItem itemValue="RS" itemLabel="RS"/>
+                                <f:selectItem itemValue="RO" itemLabel="RO"/>
+                                <f:selectItem itemValue="RR" itemLabel="RR"/>
+                                <f:selectItem itemValue="SC" itemLabel="SC"/>
+                                <f:selectItem itemValue="SP" itemLabel="SP"/>
+                                <f:selectItem itemValue="SE" itemLabel="SE"/>
+                                <f:selectItem itemValue="TO" itemLabel="TO"/>
+                            </h:selectOneMenu>                             
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" styleClass="margin-left-max margin-top">
+                            <a4j:commandButton action="#{cidadeBean.salvar}"   value="Salvar" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.show(); return false;" render="tbl, id_painel_novo_cadastro, i_painel_mensagem" status="i_status" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <a4j:commandButton action="#{cidadeBean.novo}"     value="Novo" status="i_status" render="id_painel_novo_cadastro" />
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>                
                 <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true">
                     <f:facet name="header">
                         <h:outputText value="Mensagem"/>
@@ -109,7 +155,7 @@
                     <center>
                         <h:outputText value="#{cidadeBean.msgConfirma}" styleClass="fontePadrao"/>                            
                         <br /><br />
-                        <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Ok" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.hide();" action="id_panel_cidade"/>
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.hide();" action="id_panel_cidade"/>
                     </center>
                 </rich:popupPanel>
             </h:form>

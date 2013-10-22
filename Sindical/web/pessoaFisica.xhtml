@@ -16,7 +16,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPessoaFisica">   
+            <h:form id="form_pessoa_fisica">   
                 <c:set scope="request" var="object" value="${fisicaBean.fisica}"/>
                 
                 <center>
@@ -39,7 +39,7 @@
 
                                         <h:column><h:outputLabel value="CPF: " styleClass="fontePadrao"/></h:column>
                                         <h:column>
-                                            <h:inputText id="idCPF" class="cpf" size="12" value="#{fisicaBean.fisica.pessoa.documento}" onblur="#{rich:element('formPessoaFisica:i_pesquisa')}.click();" />
+                                            <h:inputText id="idCPF" class="cpf" size="12" value="#{fisicaBean.fisica.pessoa.documento}" onblur="#{rich:element('form_pessoa_fisica:i_pesquisa')}.click();" />
                                             <a4j:commandButton id="i_pesquisa" value="pesquisa" action="#{fisicaBean.editarFisicaCPF()}" render="@form" style="visibility: hidden"/>
                                         </h:column>
 
@@ -62,7 +62,7 @@
                                                     <f:selectItem itemValue="F" itemLabel="F"/>
                                                     <f:selectItem itemValue="M" itemLabel="M"/>
                                                 </h:selectOneRadio>
-                                                <h:outputLabel value="Estado Civil: " styleClass="fontePadrao"/>
+                                                <h:outputLabel value="Estado Civil: " styleClass="fontePadrao margin-left"/>
                                                 <h:selectOneMenu id="i_estado" value="#{fisicaBean.fisica.estadoCivil}">
                                                     <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
                                                     <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
@@ -95,7 +95,7 @@
                                             <h:inputText id="i_teledone1" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone1}" class="telefone">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
-                                            <h:outputLabel value="Celular: " styleClass="fontePadrao"/>
+                                            <h:outputLabel value="Celular: " styleClass="fontePadrao margin-left"/>
                                             <h:inputText id="i_celular" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone3}" class="telefone">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
@@ -103,14 +103,14 @@
 
                                         <h:column><h:outputLabel value="RG: " styleClass="fontePadrao"/></h:column>
                                         <h:column>
-                                            <h:inputText id="i_rg" size="12" maxlength="10" value="#{fisicaBean.fisica.rg}">
+                                            <h:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
-                                            <h:outputLabel value="Orgão Emissão RG: " styleClass="fontePadrao"/>
+                                            <h:outputLabel value="Órgão Emissor: " styleClass="fontePadrao margin-left" title="Órgão emissor do RG"/>
                                             <h:inputText id="i_oer" size="10" maxlength="30" value="#{fisicaBean.fisica.orgaoEmissaoRG}">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
-                                            <h:outputLabel value="UF Emissão RG: " styleClass="fontePadrao"/>
+                                            <h:outputLabel value="UF Emissão: " styleClass="fontePadrao margin-left" title="Emissão do RG"/>
                                             <h:inputText id="i_er" size="2" maxlength="2" value="#{fisicaBean.fisica.ufEmissaoRG}">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
@@ -121,11 +121,11 @@
                                             <h:inputText id="i_carteira" size="8" maxlength="9" value="#{fisicaBean.fisica.carteira}">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
-                                            <h:outputLabel value="Série: " styleClass="fontePadrao"/>
+                                            <h:outputLabel value="Série: " styleClass="fontePadrao margin-left"/>
                                             <h:inputText id="idserie" size="3" maxlength="15" value="#{fisicaBean.fisica.serie}">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
-                                            <h:outputLabel value="Recadastro: " styleClass="fontePadrao"/>
+                                            <h:outputLabel value="Recadastro: " styleClass="fontePadrao margin-left"/>
                                             <h:inputText id="idRecadastro" class="data" size="10" value="#{fisicaBean.fisica.recadastro}" styleClass="fontePadraoNegrito">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
@@ -137,7 +137,7 @@
                                             <h:selectOneMenu id="i_pais" value="#{fisicaBean.idPais}">
                                                 <f:selectItems value="#{fisicaBean.listaPaises}"/>
                                             </h:selectOneMenu>
-                                            <h:outputLabel value="Naturalidade:" styleClass="fontePadrao"/>
+                                            <h:outputLabel value="Naturalidade:" styleClass="fontePadrao margin-left"/>
                                             <h:commandLink id="i_natu" value="#{fisicaBean.cidadeNaturalidade}" action="#{chamadaPaginaBean.cidade}" styleClass="fontePadrao"/>
                                         </h:column>
 
@@ -177,7 +177,7 @@
                                         </center>
                                     </label>
                                     
-                                    <div style="float: left; width: 900px; height: 50px; padding: 5px;" class="divArredondada">
+                                    <div style="float: left; width: 900px; height: 50px; padding: 5px; margin: 10px" class="divArredondada">
                                         <a4j:commandLink id="i_lbl_socio" value="#{fisicaBean.lblSocio}" styleClass="idPesquisar iLink" action="#{fisicaBean.associarFisica}" style="margin-left: 30px; width: 150px;"/>
                                         
                                         <h:outputLabel id="i_msg_socio" value="#{fisicaBean.msgSocio}" styleClass="corErro" />
@@ -205,64 +205,55 @@
 
                             <rich:tab name="localTrabalho" header="Local de Trabalho" style="text-align: left">
                                 <a4j:ajax event="headerclick" render="this"/>
-                                <h:panelGrid columns="4">
-                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true"/>
-                                    <h:outputLabel value="Empresa: " styleClass="fontePadrao"/>
-                                    <h:outputText value="#{fisicaBean.pessoaEmpresa.juridica.pessoa.documento} - #{fisicaBean.pessoaEmpresa.juridica.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                                    <h:commandButton image="/Imagens/excluir.png" action="#{fisicaBean.removerJuridicaPesquisada}" immediate="true" rendered="#{fisicaBean.renderJuridicaPesquisa}"/>
-                                </h:panelGrid>
-                                
-                                <h:panelGrid columns="2">
+                                <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
+                                    <h:column>
+                                        <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true"/>
+                                    </h:column>
+                                    <h:column>
+                                        <h:outputLabel value="PESQUISAR EMPRESA " styleClass="fontePadrao" rendered="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id == -1}" style="border-bottom: 1px dashed gray; color: gray;"/>
+                                        <h:outputLabel value="#{fisicaBean.pessoaEmpresa.juridica.pessoa.documento} - #{fisicaBean.pessoaEmpresa.juridica.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{fisicaBean.pessoaEmpresa.juridica.pessoa.id != -1}" />
+                                        <h:commandButton image="/Imagens/excluir.png" action="#{fisicaBean.removerJuridicaPesquisada}" immediate="true" rendered="#{fisicaBean.renderJuridicaPesquisa}" />
+                                    </h:column>
                                     <h:outputLabel value="Nome Fantasia: " styleClass="fontePadrao"/>
                                     <h:outputLabel value="#{fisicaBean.pessoaEmpresa.juridica.fantasia}" styleClass="fontePadraoNegrito"/>
-                                </h:panelGrid>                                
-                                
-                                <h:panelGrid columns="1">
-                                    <h:panelGrid columns="4">
-                                        <h:outputLabel value="Data de Admissão: " styleClass="fontePadrao"/>
+                                    <h:outputLabel value="Data de Admissão: " styleClass="fontePadrao"/>
+                                    <h:column>                                    
                                         <h:inputText class="data" value="#{fisicaBean.pessoaEmpresa.admissao}" size="10" id="idDataAdm">
                                             <a4j:ajax event="blur" render="@this" immediate="true" />
                                         </h:inputText>
-                                        <h:outputLabel value="Data de Demissão: " styleClass="fontePadrao"/>
-                                        <h:inputText class="data" value="#{fisicaBean.pessoaEmpresa.demissao}" size="10" id="idDataDem">
+                                        <h:outputLabel value="Data de Demissão: " styleClass="fontePadrao margin-left"/>
+                                        <h:inputText class="data" value="#{fisicaBean.pessoaEmpresa.demissao}" size="10" id="idDataDem" >
                                             <a4j:ajax event="blur" render="@this" immediate="true" />
                                         </h:inputText>
-                                    </h:panelGrid>
-                                    <h:panelGrid columns="4">
-                                        <h:outputLabel value="Data de Aposentadoria: " styleClass="fontePadrao"/>
-                                        <h:inputText value="#{fisicaBean.fisica.aposentadoria}" class="data" size="10">
-                                            <a4j:ajax event="blur" render="this"/>
+                                    </h:column>
+                                    <h:outputLabel value="Data de Aposentadoria: " styleClass="fontePadrao"/>
+                                    <h:inputText value="#{fisicaBean.fisica.aposentadoria}" class="data" size="10">
+                                        <a4j:ajax event="blur" render="this"/>
+                                    </h:inputText>
+                                    <h:column>
+                                        <a4j:commandLink styleClass="idNovo iLink" value="Função" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_profissao')}.show(); return false;"/>
+                                        <!-- <a4j:commandLink onclick="modalOpcao('divProfissao');" styleClass="idNovo iLink" value="Função: "/> -->
+                                    </h:column>
+                                    <h:column>
+                                        <h:inputText id="idFuncao" size="40" value="#{fisicaBean.profissao.cbo} - #{fisicaBean.profissao.profissao}" styleClass="fontePadraoNegrito" readonly="true">
+                                            <a4j:ajax event="blur" render="idFuncao" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_profissao')}.show(); return false;" />
                                         </h:inputText>
-                                    </h:panelGrid>
-                                    <h:panelGrid columns="4">
-                                        <a4j:commandLink onclick="modalOpcao('divProfissao');" styleClass="idNovo iLink" value="Função: "/>
-                                        <h:inputText id="idFuncao" size="40" value="#{fisicaBean.profissao.cbo} - #{fisicaBean.profissao.profissao}" onclick="modalOpcao('divProfissao');" styleClass="fontePadraoNegrito" readonly="true">
-                                            <a4j:ajax event="blur" render="this"/>
-                                        </h:inputText>
-                                        <h:outputText value="Setor: " styleClass="fontePadrao"/>
+                                        <h:outputText value="Setor: " styleClass="fontePadrao margin-left"/>
                                         <h:inputText size="20" value="#{fisicaBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
                                             <a4j:ajax event="blur" render="this"/>
                                         </h:inputText>
-                                    </h:panelGrid>
+                                    </h:column>
+                                </h:panelGrid>                                
+                                
+                                <h:panelGrid columns="1" styleClass="margin-top-maior">
                                     <rich:panel header="Empresas Anteriores">
                                         <h:panelGroup style="overflow:auto; height:100px;" layout="block">
-                                            <rich:dataTable value="#{fisicaBean.listaPessoaEmpresa}" var="linha" iterationStatusVar="it" style="width:100%" id="tblEmpresa" >
-                                                
-                                                <rich:column style="text-align: center;">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="#"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{it.index}"/>
-                                                </rich:column>   
-                                                
+                                            <rich:dataTable value="#{fisicaBean.listaPessoaEmpresa}" var="linha" style="width:100%" id="tblEmpresa" >
                                                 <rich:column>
                                                     <f:facet name="header">
                                                         <h:outputText value="..."/>
                                                     </f:facet>
-                                                     
-                                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{fisicaBean.excluirEmpresaAnterior}" render="tblEmpresa">
-                                                        <a4j:param value="#{it.index}" assignTo="#{fisicaBean.idIndexPessoaEmp}" />
-                                                    </a4j:commandButton>
+                                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{fisicaBean.excluirEmpresaAnterior(linha)}" render="tblEmpresa" status="i_status" />
                                                 </rich:column>
                                                 
                                                 <rich:column>
@@ -302,7 +293,7 @@
 
                                                 <rich:column>
                                                     <f:facet name="header">
-                                                        <h:outputText value="CBO/Função"/>
+                                                        <h:outputText value="CBO / Função"/>
                                                     </f:facet>
                                                     <h:outputText value="#{linha.funcao.cbo} - #{linha.funcao.profissao}"/>
                                                 </rich:column>
@@ -442,7 +433,7 @@
                     </rich:panel>
                     </div>
                 </center>
-
+                <!--
                 <div id="boxes">
                     <div id="divSalvar" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -456,7 +447,7 @@
                             </h:panelGrid>
                             
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{fisicaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma, idTabProf, idDataAdm idDataDem" />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action=" # {fisicaBean.salvar}" oncomplete="modalMensagem()" render="outConfirma, idTabProf, idDataAdm idDataDem" />
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar" />
                         </center>
                     </div>
@@ -475,28 +466,76 @@
                                 <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
                             </h:panelGrid>
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{fisicaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action=" # {fisicaBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
                     <div id="mask"></div>
-                </div>
+                </div> -->
                 
-                <!-- PESQUISAR PROFISSAO -->                                
-                <div id="boxes">
+                <!-- PESQUISAR PROFISSAO -->
+                <rich:popupPanel id="i_painel_profissao" modal="true" resizeable="true" domElementAttachment="form" width="600" height="400">
+                    <f:facet name="header">
+                        <h:outputText value="Profissão"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('form_pessoa_fisica:i_painel_profissao')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="6">
+                            <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
+                            <h:inputText id="idProf" size="20" value="#{fisicaBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Inicial" action="#{fisicaBean.inicial}" render="i_tbl_prof" status="i_status"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Parcial" action="#{fisicaBean.parcial}" render="i_tbl_prof" status="i_status"/>
+                            <h:outputText value="Por: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idPor" value="#{fisicaBean.combo}" >
+                                <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
+                                <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
+                            </h:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" class="margin-top-maior">
+                            <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
+                                <rich:dataTable var="linha" value="#{fisicaBean.listaProfissao}" style="width:100%" id="i_tbl_prof">
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Id"/>
+                                        </f:facet>
+                                        <a4j:commandLink id="linkPro" action="#{fisicaBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
+                                    </rich:column>
+                                    <rich:column style="text-align: center;">
+                                        <f:facet name="header">
+                                            <h:outputText value="Cbo"/>
+                                        </f:facet>
+                                        <a4j:commandLink action="#{fisicaBean.editar(linha)}" value="#{linha.cbo}" render="idProf, idFuncao" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Profissão"/>
+                                        </f:facet>
+                                        <a4j:commandLink action="#{fisicaBean.editar(linha)}" value="#{linha.profissao}" render="idProf, idFuncao" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                
+                <!-- <div id="boxes">
                     <div id="divProfissao" class="window">
                         <a4j:commandLink styleClass="close closeModal" value="Fechar" title="Fechar"/>
                         <br />
                         <center>
                             <h:panelGrid columns="6">
                                 <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
-                                <h:inputText id="idProf" size="20" value="#{fisicaBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
+                                <h:inputText id="idProf" size="20" value="# {fisicaBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
 
-                                <a4j:commandLink styleClass="idNovo iLink" value="Inicial" action="#{fisicaBean.inicial}" render="tblProf"/>
-                                <a4j:commandLink styleClass="idNovo iLink" value="Parcial" action="#{fisicaBean.parcial}" render="tblProf"/>
+                                <a4j:commandLink styleClass="idNovo iLink" value="Inicial" action="# {fisicaBean.inicial}" render="tblProf"/>
+                                <a4j:commandLink styleClass="idNovo iLink" value="Parcial" action="# {fisicaBean.parcial}" render="tblProf"/>
                                 
                                 <h:outputText value="Por: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu id="idPor" value="#{fisicaBean.combo}" >
+                                <h:selectOneMenu id="idPor" value="# {fisicaBean.combo}" >
                                     <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
                                     <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
                                 </h:selectOneMenu>
@@ -504,12 +543,12 @@
                             
                             <h:panelGrid columns="1">
                                 <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
-                                    <rich:dataTable var="linha" value="#{fisicaBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="tblProf">
+                                    <rich:dataTable var="linha" value="# {fisicaBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="tblProf">
                                         <rich:column style="text-align: center;">
                                             <f:facet name="header">
                                                 <h:outputText value="#"/>
                                             </f:facet>
-                                            <h:outputText value="#{it.index}"/>
+                                            <h:outputText value="# {it.index}"/>
                                         </rich:column>
 
                                         <rich:column style="text-align: center;">
@@ -517,8 +556,8 @@
                                                 <h:outputText value="Id"/>
                                             </f:facet>
 
-                                            <a4j:commandLink id="linkPro" action="#{fisicaBean.editar}" value="#{linha.id}" render="idProf,idFuncao" oncomplete="fecharModal()">
-                                                <a4j:param value="#{it.index}" assignTo="#{fisicaBean.idIndexProf}" />
+                                            <a4j:commandLink id="linkPro" action="# {fisicaBean.editar}" value="# {linha.id}" render="idProf,idFuncao" oncomplete="fecharModal()">
+                                                <a4j:param value="# {it.index}" assignTo="# {fisicaBean.idIndexProf}" />
                                             </a4j:commandLink>
                                         </rich:column>
 
@@ -526,14 +565,14 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Cbo"/>
                                             </f:facet>
-                                            <h:outputText  value="#{linha.cbo}"/>
+                                            <h:outputText  value="# {linha.cbo}"/>
                                         </rich:column>
 
                                         <rich:column style="text-align: center;">>
                                             <f:facet name="header">
                                                 <h:outputText value="Profissão"/>
                                             </f:facet>
-                                            <h:outputText  value="#{linha.profissao}"/>
+                                            <h:outputText  value="# {linha.profissao}"/>
                                         </rich:column>
                                     </rich:dataTable>
                                 </h:panelGroup>
@@ -542,32 +581,84 @@
                         </center>
                     </div>
                     <div id="mask"></div>
-                </div>                
+                </div>    -->            
                 
-                <div id="boxes">
+                <!-- <div id="boxes">
                     <div id="divMensagem" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <h:outputText id="outConfirma" value="#{fisicaBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <h:outputText id="outConfirma" value="# {fisicaBean.msgConfirma}" styleClass="fontePadrao"/>
                             <br /><br />
-                            <h:commandLink id="oknovo" styleClass="idNovo iLink" value="OK" title="OK" action="#{fisicaBean.novoOK}"/>
+                            <h:commandLink id="oknovo" styleClass="idNovo iLink" value="OK" title="OK" action="# {fisicaBean.novoOK}"/>
                         </center>
                     </div>
                     <div id="mask"></div>
-                </div>                                        
+                </div> -->
                 
-                <h:panelGrid columns="1" style="width: 95%; text-align: left; margin-left: 5%;">
-                    <h:column>
-                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{fisicaBean.novo}"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}"/>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Extrato" style="width: 70px;"/>
-                    </h:column>
+                <rich:popupPanel id="i_painel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_salvar')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja salvar/atualizar este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_painel_salvar')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{fisicaBean.salvar}" render="i_painel_mensagem" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_salvar')}.hide(); #{rich:component('form_pessoa_fisica:i_painel_mensagem')}.show(); return false;" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_salvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                
+                <rich:popupPanel id="i_painel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_excluir')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja excluir este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_painel_excluir')}.hide();
+                                return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Excluir" action="#{fisicaBean.excluir()}" render="i_painel_mensagem" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_excluir')}.hide(); #{rich:component('form_pessoa_fisica:i_painel_mensagem')}.show();" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_excluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>                
+                
+                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('form_pessoa_fisica:i_painel_mensagem')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{fisicaBean.msgConfirma}" styleClass="fontePadrao" />
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_mensagem')}.hide(); return false;" action="#{fisicaBean.novoOK()}" />
+                        <br /><br />
+                    </center>
+                </rich:popupPanel>                
+                
+                <h:panelGrid columns="5" style="margin-left: 65px;" styleClass="margin-top-maior">
+                    <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_salvar')}.show(); return false;"/>
+                    <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{fisicaBean.novo}"/>
+                    <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_pessoa_fisica:i_painel_excluir')}.show(); return false;"/>
+                    <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica}"/>
+                    <a4j:commandLink styleClass="idNovo iLink" value="Extrato" style="width: 70px;"/>
                 </h:panelGrid>
+                <!-- <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled=" # {controleAcessoBean.botaoSalvar}"/> -->
+                <!-- <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="# {controleAcessoBean.botaoExcluir}"/> -->
             </h:form>
             
             <form action="servletUpload" name="formFoto" enctype="multipart/form-data" method="post">  

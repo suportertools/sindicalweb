@@ -365,17 +365,9 @@
                                 <rich:dataTable var="linha" value="#{agendamentoBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="i_tbl_prof">
                                     <rich:column style="text-align: center;">
                                         <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column>
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
                                             <h:outputText value="Id"/>
                                         </f:facet>
-                                        <a4j:commandLink id="linkPro" action="#{agendamentoBean.editar}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status">
-                                            <a4j:param value="#{it.index}" assignTo="#{agendamentoBean.idIndexProf}" />
-                                        </a4j:commandLink>
+                                        <a4j:commandLink id="linkPro" action="#{agendamentoBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" />
                                     </rich:column>
                                     <rich:column style="text-align: center;">
                                         <f:facet name="header">
