@@ -118,6 +118,7 @@ jQuery(function($) {
 
 jQuery(function($) {
     $(".realSemSimbolo").maskMoney({showSymbol: false, decimal: ",", thousands: "."});
+    $(".percentual").maskMoney();
 });
     
 
