@@ -73,19 +73,18 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
 //    }
 
     @Override
-    public PessoaEndereco pesquisarPessoaEnderecoJuridica(int id) {
-        PessoaEndereco result;
+    public List<PessoaEndereco> pesquisarPessoaEnderecoJuridica(int id) {
+        List<PessoaEndereco> result = new ArrayList();
         try {
             Query qry = getEntityManager().createQuery(
                     "select pe "
                     + "  from  PessoaEndereco pe"
                     + " where pe.pessoa.id = :id");
             qry.setParameter("id", id);
-            result = (PessoaEndereco) qry.getSingleResult();
+            return qry.getResultList();
         } catch (Exception e) {
-            result = null;
+            return new ArrayList();
         }
-        return null;
     }
 
     @Override
