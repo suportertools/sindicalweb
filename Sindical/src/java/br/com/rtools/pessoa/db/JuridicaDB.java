@@ -23,7 +23,7 @@ public interface JuridicaDB {
 
     public List pesquisaPessoa(String desc, String por, String como);
 
-    public PessoaEndereco pesquisarPessoaEnderecoJuridica(int id);
+    public List<PessoaEndereco> pesquisarPessoaEnderecoJuridica(int id);
 
     public CnaeConvencao pesquisaCnaeParaContribuicao(int id);
 

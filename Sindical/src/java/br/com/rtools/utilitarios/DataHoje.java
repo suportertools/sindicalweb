@@ -43,8 +43,12 @@ public class DataHoje {
     }
 
     public static String converteData(String data) {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        return dateFormat.format(data);
+        if (!data.isEmpty()){
+            DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            return dateFormat.format(data);
+        }else{
+            return "";
+        }
     }
 
     public static Date converte(String data) {

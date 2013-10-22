@@ -512,6 +512,9 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String lancamentoIndividual() {
         paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("lancamentoIndividualBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         return metodoGenerico(2, "lancamentoIndividual");
     }
 

@@ -73,195 +73,6 @@ public class ExtratoTelaJSFBean {
         }
     }
 
-    public String getTipoPesquisa() {
-        return tipoPesquisa;
-    }
-
-    public void setTipoPesquisa(String tipoPesquisa) {
-        this.tipoPesquisa = tipoPesquisa;
-    }
-
-    public void refreshForm() {
-    }
-
-    public String refreshTela() {
-        return "extratoTela";
-    }
-
-    public String getPorPesquisa() {
-        return porPesquisa;
-    }
-
-    public void setPorPesquisa(String porPesquisa) {
-        this.porPesquisa = porPesquisa;
-    }
-
-    public String getGeraPesquisa() {
-        return geraPesquisa;
-    }
-
-    public void setGeraPesquisa(String geraPesquisa) {
-        this.geraPesquisa = geraPesquisa;
-    }
-
-    public String getTipoDataPesquisa() {
-        return tipoDataPesquisa;
-    }
-
-    public void setTipoDataPesquisa(String tipoDataPesquisa) {
-        this.tipoDataPesquisa = tipoDataPesquisa;
-    }
-
-    public int getIdContribuicao() {
-        return idContribuicao;
-    }
-
-    public void setIdContribuicao(int idContribuicao) {
-        this.idContribuicao = idContribuicao;
-    }
-
-    private Pessoa getPesquisaPessoa() {
-        Pessoa p = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-        if (p == null) {
-            p = new Pessoa();
-        } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-            recarregaPag = true;
-        }
-        return p;
-    }
-
-    public boolean isChkData() {
-        return chkData;
-    }
-
-    public void setChkData(boolean chkData) {
-        this.chkData = chkData;
-    }
-
-    public boolean isChkContribuicao() {
-        return chkContribuicao;
-    }
-
-    public void setChkContribuicao(boolean chkContribuicao) {
-        this.chkContribuicao = chkContribuicao;
-    }
-
-    public boolean isChkNrBoletos() {
-        return chkNrBoletos;
-    }
-
-    public void setChkNrBoletos(boolean chkNrBoletos) {
-        this.chkNrBoletos = chkNrBoletos;
-    }
-
-    public boolean isChkEmpresa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            chkEmpresa = true;
-        }
-        return chkEmpresa;
-    }
-
-    public void setChkEmpresa(boolean chkEmpresa) {
-        this.chkEmpresa = chkEmpresa;
-    }
-
-    public String getDataInicial() {
-        return dataInicial;
-    }
-
-    public void setDataInicial(String dataInicial) {
-        this.dataInicial = dataInicial;
-    }
-
-    public String getDataFinal() {
-        return dataFinal;
-    }
-
-    public void setDataFinal(String dataFinal) {
-        this.dataFinal = dataFinal;
-    }
-
-    public Movimento getMov() {
-        return mov;
-    }
-
-    public void setMov(Movimento mov) {
-        this.mov = mov;
-    }
-
-    public int getIdTipoServico() {
-        return idTipoServico;
-    }
-
-    public void setIdTipoServico(int idTipoServico) {
-        this.idTipoServico = idTipoServico;
-    }
-
-    public String getBoletoInicial() {
-        return boletoInicial;
-    }
-
-    public void setBoletoInicial(String boletoInicial) {
-        this.boletoInicial = boletoInicial;
-    }
-
-    public String getBoletoFinal() {
-        return boletoFinal;
-    }
-
-    public void setBoletoFinal(String boletoFinal) {
-        this.boletoFinal = boletoFinal;
-    }
-
-    public String getDataRefInicial() {
-        return dataRefInicial;
-    }
-
-    public void setDataRefInicial(String dataRefInicial) {
-        this.dataRefInicial = dataRefInicial;
-    }
-
-    public String getDataRefFinal() {
-        return dataRefFinal;
-    }
-
-    public void setDataRefFinal(String dataRefFinal) {
-        this.dataRefFinal = dataRefFinal;
-    }
-
-    public boolean isChkTipo() {
-        return chkTipo;
-    }
-
-    public void setChkTipo(boolean chkTipo) {
-        this.chkTipo = chkTipo;
-    }
-
-    public boolean isChkExcluirBol() {
-        return chkExcluirBol;
-    }
-
-    public void setChkExcluirBol(boolean chkExcluirBol) {
-        this.chkExcluirBol = chkExcluirBol;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public String getValorSomado() {
-        valorSomado = getValorTotal();
-        return valorSomado;
-    }
-
-    public void setValorSomado(String valorSomado) {
-        this.valorSomado = valorSomado;
-    }
 
     public List<SelectItem> getListaServico() {
         List<SelectItem> servicos = new Vector<SelectItem>();
@@ -1595,4 +1406,196 @@ public class ExtratoTelaJSFBean {
     public void setValorExtenso(String valorExtenso) {
         this.valorExtenso = valorExtenso;
     }
+    
+
+    public String getTipoPesquisa() {
+        return tipoPesquisa;
+    }
+
+    public void setTipoPesquisa(String tipoPesquisa) {
+        this.tipoPesquisa = tipoPesquisa;
+    }
+
+    public void refreshForm() {
+    }
+
+    public String refreshTela() {
+        return "extratoTela";
+    }
+
+    public String getPorPesquisa() {
+        return porPesquisa;
+    }
+
+    public void setPorPesquisa(String porPesquisa) {
+        this.porPesquisa = porPesquisa;
+    }
+
+    public String getGeraPesquisa() {
+        return geraPesquisa;
+    }
+
+    public void setGeraPesquisa(String geraPesquisa) {
+        this.geraPesquisa = geraPesquisa;
+    }
+
+    public String getTipoDataPesquisa() {
+        return tipoDataPesquisa;
+    }
+
+    public void setTipoDataPesquisa(String tipoDataPesquisa) {
+        this.tipoDataPesquisa = tipoDataPesquisa;
+    }
+
+    public int getIdContribuicao() {
+        return idContribuicao;
+    }
+
+    public void setIdContribuicao(int idContribuicao) {
+        this.idContribuicao = idContribuicao;
+    }
+
+    private Pessoa getPesquisaPessoa() {
+        Pessoa p = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
+        if (p == null) {
+            p = new Pessoa();
+        } else {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+            recarregaPag = true;
+        }
+        return p;
+    }
+
+    public boolean isChkData() {
+        return chkData;
+    }
+
+    public void setChkData(boolean chkData) {
+        this.chkData = chkData;
+    }
+
+    public boolean isChkContribuicao() {
+        return chkContribuicao;
+    }
+
+    public void setChkContribuicao(boolean chkContribuicao) {
+        this.chkContribuicao = chkContribuicao;
+    }
+
+    public boolean isChkNrBoletos() {
+        return chkNrBoletos;
+    }
+
+    public void setChkNrBoletos(boolean chkNrBoletos) {
+        this.chkNrBoletos = chkNrBoletos;
+    }
+
+    public boolean isChkEmpresa() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+            chkEmpresa = true;
+        }
+        return chkEmpresa;
+    }
+
+    public void setChkEmpresa(boolean chkEmpresa) {
+        this.chkEmpresa = chkEmpresa;
+    }
+
+    public String getDataInicial() {
+        return dataInicial;
+    }
+
+    public void setDataInicial(String dataInicial) {
+        this.dataInicial = dataInicial;
+    }
+
+    public String getDataFinal() {
+        return dataFinal;
+    }
+
+    public void setDataFinal(String dataFinal) {
+        this.dataFinal = dataFinal;
+    }
+
+    public Movimento getMov() {
+        return mov;
+    }
+
+    public void setMov(Movimento mov) {
+        this.mov = mov;
+    }
+
+    public int getIdTipoServico() {
+        return idTipoServico;
+    }
+
+    public void setIdTipoServico(int idTipoServico) {
+        this.idTipoServico = idTipoServico;
+    }
+
+    public String getBoletoInicial() {
+        return boletoInicial;
+    }
+
+    public void setBoletoInicial(String boletoInicial) {
+        this.boletoInicial = boletoInicial;
+    }
+
+    public String getBoletoFinal() {
+        return boletoFinal;
+    }
+
+    public void setBoletoFinal(String boletoFinal) {
+        this.boletoFinal = boletoFinal;
+    }
+
+    public String getDataRefInicial() {
+        return dataRefInicial;
+    }
+
+    public void setDataRefInicial(String dataRefInicial) {
+        this.dataRefInicial = dataRefInicial;
+    }
+
+    public String getDataRefFinal() {
+        return dataRefFinal;
+    }
+
+    public void setDataRefFinal(String dataRefFinal) {
+        this.dataRefFinal = dataRefFinal;
+    }
+
+    public boolean isChkTipo() {
+        return chkTipo;
+    }
+
+    public void setChkTipo(boolean chkTipo) {
+        this.chkTipo = chkTipo;
+    }
+
+    public boolean isChkExcluirBol() {
+        return chkExcluirBol;
+    }
+
+    public void setChkExcluirBol(boolean chkExcluirBol) {
+        this.chkExcluirBol = chkExcluirBol;
+    }
+
+    public String getMsgConfirma() {
+        return msgConfirma;
+    }
+
+    public void setMsgConfirma(String msgConfirma) {
+        this.msgConfirma = msgConfirma;
+    }
+
+    public String getValorSomado() {
+        valorSomado = getValorTotal();
+        return valorSomado;
+    }
+
+    public void setValorSomado(String valorSomado) {
+        this.valorSomado = valorSomado;
+    }    
+    
 }
