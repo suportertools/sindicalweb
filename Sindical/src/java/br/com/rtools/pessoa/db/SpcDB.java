@@ -7,6 +7,8 @@ public interface SpcDB {
 
     public List<Spc> lista (Spc spc, boolean filtro, boolean fitroPorPessoa);
     
+    public List<Spc> lista (Spc spc, boolean filtro, boolean fitroPorPessoa, String descricaoPesquisa, String porPesquisa, String comoPesquisa);
+    
     public boolean existeCadastroSPC(Spc spc);
     
 }
