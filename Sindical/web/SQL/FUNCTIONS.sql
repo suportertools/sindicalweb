@@ -785,3 +785,110 @@ ALTER FUNCTION func_intervalo_dias(date, date)
   OWNER TO postgres;
 
 --------------------------------------------------------------------------------
+
+
+CREATE OR REPLACE FUNCTION func_responsavel(pessoa integer, decontofolha boolean) RETURNS integer AS
+
+$BODY$
+
+     declare titular int;
+
+     declare responsavel int;
+
+     declare idade int;
+
+BEGIN
+
+      idade = (select func_idade(dt_nascimento,current_date) from pes_fisica where id_pessoa=pessoa);
+
+---  Responsável default:
+
+---  Sócio e desconto sem folha  falso: Pegar o titular
+
+     titular =  (select titular from soc_socios_vw where inativacao is null and codsocio=pessoa);
+
+     if (titular is not null and descontofolha=false) then
+
+        responsavel = titular;
+
+     end if;
+
+---  Sócio e desconto em folha  verdadeiro: Pegar o a Empresa do Titular.
+
+     if (titular is not null and descontofolha=true) then
+
+         responsavel =
+
+                 (
+
+                   select j.id_pessoa  from pes_pessoa_vw as p
+
+                    inner join pes_juridica as j  on  j.id=p.e_id
+
+                    where p.codigo=titular
+
+                );
+
+                if (responsavel is null) then
+
+            responsavel = titular;
+
+         end if;
+
+     end if;
+
+---- Não Sócio Desconto em Folha
+
+     if (titular is null and idade >= 18 and descontofolha=true) then
+
+          responsavel =
+
+                 (
+
+                   select j.id_pessoa  from pes_pessoa_vw as p
+
+                    inner join pes_juridica as j  on  j.id=p.e_id
+
+                    where p.codigo=pessoa
+
+                );
+
+                if (responsavel is null) then
+
+            responsavel=0;
+
+         end if;
+
+     end if;
+
+---  Não Sócio Maior Sem Desconto em Folha.
+
+     if (titular is null and idade >= 18 and descontofolha=true) then
+
+          responsavel = pessoa;
+
+     end if;
+
+---  Não Sócio menor: exigir uma PF maior de idade ou uma PJ
+
+     if (titular is null and idade < 18) then
+
+        responsavel=0;
+
+     end if;
+
+     
+
+   RETURN responsavel;
+
+END;
+
+$BODY$
+
+  LANGUAGE plpgsql VOLATILE
+
+  COST 100;
+
+ALTER FUNCTION func_responsavel(integer, boolean)
+
+  OWNER TO postgres;
