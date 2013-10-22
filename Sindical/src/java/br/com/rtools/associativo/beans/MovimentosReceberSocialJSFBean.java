@@ -363,35 +363,53 @@ public class MovimentosReceberSocialJSFBean {
             }
             List<Vector> lista = db.pesquisaListaMovimentos(ids, porPesquisa);
             //float soma = 0;
+            boolean chk = false, disabled = false;
+            
             for (int i = 0; i < lista.size(); i++) {
                 //soma = Moeda.somaValores(Moeda.converteR$(lista.get(i).get(5).toString()), Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
+                // DATA DE HOJE MENOR OU IGUAL A DATA DE VENCIMENTO
+                if ( DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) <= DataHoje.converteDataParaInteger(DataHoje.data()) ){
+                    chk = true;
+                }else{
+                    chk = false;
+                }
+                
+                // DATA DE HOJE MENOR QUE DATA DE VENCIMENTO
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) < DataHoje.converteDataParaInteger(DataHoje.data()) ){
+                   disabled = true; 
+                }else{
+                   disabled = false;
+                }
+                
                 listaMovimento.add(new DataObject(
-                        false, // ARG 0
-                        lista.get(i).get(14), // ARG 1 ID_MOVIMENTO
-                        lista.get(i).get(0), // ARG 2 SERVICO
-                        lista.get(i).get(1), // ARG 3 TIPO_SERVICO
-                        lista.get(i).get(2), // ARG 4 REFERENCIA
-                        DataHoje.converteData((Date)lista.get(i).get(3)), // ARG 5 VENCIMENTO
-                        Moeda.converteR$(lista.get(i).get(4).toString()), // ARG 6 VALOR
-                        Moeda.converteR$(lista.get(i).get(5).toString()), // ARG 7 ACRESCIMO
-                        Moeda.converteR$(lista.get(i).get(6).toString()), // ARG 8 DESCONTO
-                        Moeda.converteR$(lista.get(i).get(7).toString()), // ARG 9 VALOR CALCULADO
-                        DataHoje.converteData((Date)lista.get(i).get(8)), // ARG 10 DATA BAIXA
-                        Moeda.converteR$(lista.get(i).get(9).toString()), // ARG 11 VALOR_BAIXA
-                        lista.get(i).get(10), // ARG 12 ES
-                        lista.get(i).get(11), // ARG 13 RESPONSAVEL
-                        lista.get(i).get(12), // ARG 14 BENEFICIARIO
-                        lista.get(i).get(13), // ARG 15 TITULAR
-                        DataHoje.converteData((Date)lista.get(i).get(16)), // ARG 16 CRIACAO
-                        lista.get(i).get(17), // ARG 17 BOLETO
-                        lista.get(i).get(18), // ARG 18 DIAS DE ATRASO
-                        Moeda.converteR$(lista.get(i).get(19).toString()), // ARG 29 MULTA
-                        Moeda.converteR$(lista.get(i).get(20).toString()), // ARG 20 JUROS
-                        Moeda.converteR$(lista.get(i).get(21).toString()), // ARG 21 CORRECAO
-                        lista.get(i).get(22), // ARG 22 CAIXA
-                        lista.get(i).get(24), // ARG 23 DOCUMENTO
-                        Moeda.converteR$(lista.get(i).get(7).toString()) // ARG 24 VALOR CALCULADO ORIGINAL
-                        ));
+                            chk, // ARG 0
+                            lista.get(i).get(14), // ARG 1 ID_MOVIMENTO
+                            lista.get(i).get(0), // ARG 2 SERVICO
+                            lista.get(i).get(1), // ARG 3 TIPO_SERVICO
+                            lista.get(i).get(2), // ARG 4 REFERENCIA
+                            DataHoje.converteData((Date)lista.get(i).get(3)), // ARG 5 VENCIMENTO
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(4))), // ARG 6 VALOR
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(5))), // ARG 7 ACRESCIMO
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(6))), // ARG 8 DESCONTO
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 9 VALOR CALCULADO
+                            DataHoje.converteData(getConverteNullString((Date)lista.get(i).get(8))), // ARG 10 DATA BAIXA
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(9))), // ARG 11 VALOR_BAIXA
+                            lista.get(i).get(10), // ARG 12 ES
+                            lista.get(i).get(11), // ARG 13 RESPONSAVEL
+                            lista.get(i).get(12), // ARG 14 BENEFICIARIO
+                            lista.get(i).get(13), // ARG 15 TITULAR
+                            DataHoje.converteData((Date)lista.get(i).get(16)), // ARG 16 CRIACAO
+                            lista.get(i).get(17), // ARG 17 BOLETO
+                            lista.get(i).get(18), // ARG 18 DIAS DE ATRASO
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(19))), // ARG 29 MULTA
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(20))), // ARG 20 JUROS
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(21))), // ARG 21 CORRECAO
+                            getConverteNullString(lista.get(i).get(22)), // ARG 22 CAIXA
+                            lista.get(i).get(24), // ARG 23 DOCUMENTO
+                            Moeda.converteR$(getConverteNullString(lista.get(i).get(7))),  // ARG 24 VALOR CALCULADO ORIGINAL
+                            disabled
+                            )
+                        );
             }
         }
         return listaMovimento;
@@ -531,5 +549,13 @@ public class MovimentosReceberSocialJSFBean {
 
     public void setListaPessoa(List<Pessoa> listaPessoa) {
         this.listaPessoa = listaPessoa;
+    }
+    
+    public String getConverteNullString(Object object) {
+        if (object == null) {
+            return "";
+        } else {
+            return String.valueOf(object);
+        }
     }
 }
