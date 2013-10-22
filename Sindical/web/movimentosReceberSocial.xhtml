@@ -60,7 +60,7 @@
                         <h:panelGrid id="i_tbl">
                             <rich:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma pendência foi encontrada" rows="13">
                                 <rich:column style="text-align: center;">
-                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
+                                    <h:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
                                         <a4j:ajax event="change" render="tbl i_totais"/>
                                     </h:selectBooleanCheckbox>
                                 </rich:column>
