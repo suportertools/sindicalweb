@@ -34,7 +34,7 @@ public class Spc implements Serializable {
         this.id = -1;
         this.pessoa = new Pessoa();
         this.dtEntrada = new DataHoje().dataHoje();
-        this.dtSaida = new DataHoje().dataHoje();
+        this.dtSaida = null;
         this.observacao = "";
     }
 

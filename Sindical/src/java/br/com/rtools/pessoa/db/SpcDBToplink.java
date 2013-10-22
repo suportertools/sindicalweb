@@ -11,38 +11,69 @@ public class SpcDBToplink extends DB implements SpcDB {
 
     @Override
     public List<Spc> lista (Spc spc, boolean filtro, boolean fitroPorPessoa) {
+        return lista(spc, filtro, fitroPorPessoa, "", "", "");
+    }
+    
+    @Override
+    public List<Spc> lista (Spc spc, boolean filtro, boolean fitroPorPessoa, String descricaoPesquisa, String porPesquisa, String comoPesquisa) {
         List list = new ArrayList();
         Query query;
         String filtroQueryPessoa = "";
-        if (fitroPorPessoa) {
-            if (filtro) {
-                filtroQueryPessoa = " AND S.pessoa.id = "+spc.getPessoa().getId();
+        String filtroQueryA;
+        if (!descricaoPesquisa.equals("")) {
+            if (comoPesquisa.equals("I")) {
+               filtroQueryA = "'"+descricaoPesquisa+"%'";
             } else {
-                filtroQueryPessoa = " WHERE S.pessoa.id = "+spc.getPessoa().getId();                
+               filtroQueryA = "'%"+descricaoPesquisa+"%'";
+            }
+            try {
+                if (porPesquisa.equals("nome")) {
+                    query = getEntityManager().createQuery( " SELECT S FROM Spc AS S WHERE UPPER(S.pessoa.nome) LIKE "+filtroQueryA.toUpperCase() +" ORDER BY S.pessoa.nome ASC, S.dtEntrada DESC ");
+                } else {
+                    query = getEntityManager().createQuery( " SELECT S FROM Spc AS S WHERE S.pessoa.documento = '"+descricaoPesquisa+"' ORDER BY S.pessoa.nome ASC, S.dtEntrada DESC  ");
+                }
+                list = query.getResultList();
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            } catch (Exception e) { 
+                return list;            
+            }
+        } else {
+            if (fitroPorPessoa) {
+                if (filtro) {
+                    filtroQueryPessoa = " WHERE S.pessoa.id = "+spc.getPessoa().getId();
+                } else {
+                    filtroQueryPessoa = " AND S.pessoa.id = "+spc.getPessoa().getId();
+                }
+            }
+            try {
+                if (!filtro) {
+                    query = getEntityManager().createQuery( " SELECT S FROM Spc AS S "+filtroQueryPessoa+" ORDER BY S.pessoa.nome ASC, S.dtEntrada DESC " );
+                } else {
+                    if (fitroPorPessoa) {
+                        query = getEntityManager().createQuery( " SELECT S FROM Spc AS S "+filtroQueryPessoa+" ORDER BY S.pessoa.nome ASC, S.dtEntrada DESC " );
+                    } else {
+                        query = getEntityManager().createQuery( " SELECT S FROM Spc AS S WHERE S.dtSaida IS NULL "+filtroQueryPessoa+" ORDER BY S.pessoa.nome ASC, S.dtEntrada DESC " );                    
+                    }
+                }
+                list = query.getResultList();
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            } catch (Exception e) { 
+                return list;            
             }
         }
-        try {
-            if (filtro) {
-                query = getEntityManager().createQuery( " SELECT S FROM SPC AS S "+filtroQueryPessoa+" ORDER BY S.pessoa.nome ASC, DESC, S.dtSaida DESC " );
-            } else {
-                query = getEntityManager().createQuery( " SELECT S FROM SPC AS S WHERE S.dtSaida IS NULL "+filtroQueryPessoa+" ORDER BY S.pessoa.nome ASC, S.dtEntrada DESC " );
-            }
-            list = query.getResultList();
-            if (!list.isEmpty()) {
-                return list;
-            }
-        } catch (Exception e) {
-            
-        } 
         return list;
     }
     
     @Override
     public boolean existeCadastroSPC(Spc spc) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT S FROM SCP AS S WHERE S.pessoa.id = :idPessoa AND S.dtEntrada = :dataEntrada");
+            Query query = getEntityManager().createQuery(" SELECT S FROM Spc AS S WHERE S.pessoa.id = :idPessoa AND S.dtEntrada = :dataEntrada");
             query.setParameter("idPessoa", spc.getPessoa().getId());
-            query.setParameter("dataEntrada", spc.getDataEntrada());
+            query.setParameter("dataEntrada", spc.getDtEntrada());
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 if (list.size() == 1) {
@@ -51,7 +82,9 @@ public class SpcDBToplink extends DB implements SpcDB {
                     return false;
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            return true;
+        }
         return false;
     }
     

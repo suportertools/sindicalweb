@@ -754,7 +754,7 @@ public class ChamadaPaginaBean implements Serializable {
     }
     
     public synchronized String spc() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sPCBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("spcBean");
         return metodoGenerico(2, "spc");
     }
     
