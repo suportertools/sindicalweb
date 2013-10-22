@@ -1931,5 +1931,11 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>spc</from-outcome>
+            <to-view-id>/spc.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
     </navigation-rule>
 </faces-config>
