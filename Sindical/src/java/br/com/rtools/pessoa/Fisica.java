@@ -15,7 +15,7 @@ public class Fisica implements java.io.Serializable {
     @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)//(optional=false)   (cascade=CascadeType.ALL)
     private Pessoa pessoa;
-    @Column(name = "DS_RG", length = 12, nullable = false)
+    @Column(name = "DS_RG", length = 20, nullable = false)
     private String rg;
     @Column(name = "DS_CARTEIRA", length = 30, nullable = false)
     private String carteira;

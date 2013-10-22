@@ -1158,21 +1158,25 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         }
     }
 
-    public String excluirEmpresaAnterior() {
+    public String excluirEmpresaAnterior(PessoaEmpresa pe) {
         HomologacaoDB dbAge = new HomologacaoDBToplink();
-        PessoaEmpresa pe = listaPessoaEmpresa.get(idIndexPessoaEmp);
         List<Agendamento> agendas = dbAge.pesquisaAgendamentoPorPessoaEmpresa(pe.getId());
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         for (int i = 0; i < agendas.size(); i++) {
             salvarAcumuladoDB.abrirTransacao();
-            salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agendas.get(i).getId(), "Agendamento"));
-            salvarAcumuladoDB.comitarTransacao();
+            if(salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agendas.get(i).getId(), "Agendamento"))) {
+                salvarAcumuladoDB.comitarTransacao();                
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
+            }
         }
         salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.deletarObjeto(salvarAcumuladoDB.pesquisaCodigo(pe.getId(), "PessoaEmpresa"))) {
+        if (salvarAcumuladoDB.deletarObjeto((PessoaEmpresa) salvarAcumuladoDB.pesquisaCodigo(pe.getId(), "PessoaEmpresa"))) {
             salvarAcumuladoDB.comitarTransacao();
+            GenericaMensagem.info("Sucesso", "Empresa removida com sucesso");
         } else {
             salvarAcumuladoDB.desfazerTransacao();
+            GenericaMensagem.warn("Erro", "Não foi possível remover esta empresa!");
         }
         listaPessoaEmpresa.clear();
         return null;

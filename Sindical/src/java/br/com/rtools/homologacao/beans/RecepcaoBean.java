@@ -31,6 +31,7 @@ import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -213,6 +214,7 @@ public class RecepcaoBean implements Serializable {
                 Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
                 download.baixar();
             } catch (Exception e) {
+                GenericaMensagem.warn("Erro", "Erro ao imprimir senha");
                 NovoLog log = new NovoLog();
                 log.novo("Erro ao imprimir senha:", "Mensagem: " + e.getMessage() + " - Causa: " + e.getCause() + " - Caminho: " + e.getStackTrace().toString());
                 return null;
