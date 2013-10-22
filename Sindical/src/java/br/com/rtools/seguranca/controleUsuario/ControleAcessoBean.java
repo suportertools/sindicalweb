@@ -87,31 +87,6 @@ public class ControleAcessoBean implements Serializable {
         return null;
     }
 
-//    public String getValidacao() throws IOException {
-//        paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-//        urlDestino = paginaRequerida.getRequestURI();
-//        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
-//            redirectAcessoNegado();
-//            return null;
-//        }
-//        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
-//            if ((!verificarUsuario()) || !verificarPermissaoUsuario()) {
-//                redirectAcessoNegado();
-//                return null;
-//            } else {
-//                controleInterno(urlDestino);
-//                return null;
-//            }
-//        } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("web")) {
-//            if ((!verificarUsuarioAcessoWeb()) || !verificarTipoPagina()) {
-//                redirectAcessoNegado();
-//            } else {
-//                controleInterno(urlDestino);
-//                return null;
-//            }
-//        }
-//        return null;
-//    }
     public String controleInterno(String urlCaminho) throws IOException {
         String retorno = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlControleInterno");
         if (retorno == null) {
