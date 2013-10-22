@@ -1,0 +1,36 @@
+package br.com.rtools.utilitarios.db;
+
+import java.util.Date;
+
+public interface FunctionsDB {
+
+    /**
+     * Trazer o responsável
+     *
+     * @param idPessoa
+     * @param decontoFolha
+     * @return
+     */
+    public int responsavel(int idPessoa, boolean decontoFolha);
+
+    /**
+     *
+     * @param idPessoa
+     * @param idServico
+     * @param date
+     * @param tipo (0 -> Valor (já calculado) - ), (1 -> Valor até o vencimento
+     * (já calculado)), (2 -> Taxa até o vencimento (já calculado))
+     * @return float valor
+     */
+    public float valorServico(int idPessoa, int idServico, Date date, int tipo);
+
+    /**
+     * Retorna a idade da pessoa
+     *
+     * @param campoData --> Nome do campo
+     * @param dataString --> Default current_date
+     * @param idPessoa
+     * @return
+     */
+    public int idade(String campoData, String dataString, int idPessoa);
+}
