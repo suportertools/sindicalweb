@@ -220,3 +220,10 @@ ALTER TABLE fin_cobranca_lote ADD COLUMN ds_hora character varying(5);
 ALTER TABLE sis_links ADD COLUMN ds_descricao character varying(200);
 
 ALTER TABLE sis_links ALTER COLUMN id_pessoa DROP NOT NULL;
+
+-- pes_fisica -- 
+-- update: 2013-10-21
+-- edited by: Bruno Vieira da Silva
+
+ALTER TABLE pes_fisica ALTER COLUMN ds_rg TYPE character varying(20);;
+
