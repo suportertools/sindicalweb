@@ -753,6 +753,11 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "alterarMovimento");
     }
     
+    public synchronized String spc() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sPCBean");
+        return metodoGenerico(2, "spc");
+    }
+    
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
