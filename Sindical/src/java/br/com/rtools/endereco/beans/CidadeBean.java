@@ -25,7 +25,8 @@ public class CidadeBean implements Serializable {
     private Cidade cidade = new Cidade();
     private String msgConfirma;
     private String comoPesquisa = "";
-    private int idIndex = -1;
+    private String descricaoCidadePesquisa = "";
+    private String descricaoUFPesquisa = "";
     private List<Cidade> listaCidade = new ArrayList();
 
     public CidadeBean() {
@@ -145,19 +146,16 @@ public class CidadeBean implements Serializable {
         if (listaCidade.isEmpty()) {
             CidadeDB db = new CidadeDBToplink();
             GrupoCidadesDB dbCids = new GrupoCidadesDBToplink();
-            if (cidade.getCidade().equals("")) {
+            if (descricaoCidadePesquisa.equals("")) {
                 List lgc = dbCids.pesquisaCidadesBase();
                 if (!lgc.isEmpty()) {
                     listaCidade.addAll(lgc);
                 }
             } else {
-                listaCidade = db.pesquisaCidade(cidade.getUf(), cidade.getCidade(), getComoPesquisa());
+                listaCidade = db.pesquisaCidade(descricaoUFPesquisa, descricaoCidadePesquisa, getComoPesquisa());
             }
         }
         return listaCidade;
-    }
-
-    public void refreshForm() {
     }
 
     public void acaoPesquisaInicial() {
@@ -170,11 +168,19 @@ public class CidadeBean implements Serializable {
         comoPesquisa = "P";
     }
 
-    public int getIdIndex() {
-        return idIndex;
+    public String getDescricaoCidadePesquisa() {
+        return descricaoCidadePesquisa;
     }
 
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
+    public void setDescricaoCidadePesquisa(String descricaoCidadePesquisa) {
+        this.descricaoCidadePesquisa = descricaoCidadePesquisa;
+    }
+
+    public String getDescricaoUFPesquisa() {
+        return descricaoUFPesquisa;
+    }
+
+    public void setDescricaoUFPesquisa(String descricaoUFPesquisa) {
+        this.descricaoUFPesquisa = descricaoUFPesquisa;
     }
 }

@@ -22,8 +22,6 @@ import br.com.rtools.financeiro.db.LoteDB;
 import br.com.rtools.financeiro.db.LoteDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
-import br.com.rtools.financeiro.db.ServicoValorDB;
-import br.com.rtools.financeiro.db.ServicoValorDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
@@ -37,8 +35,6 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
-import br.com.rtools.pessoa.db.PessoaEmpresaDB;
-import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.MacFilial;
@@ -54,6 +50,8 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.ValorExtenso;
+import br.com.rtools.utilitarios.db.FunctionsDB;
+import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -221,8 +219,8 @@ public class MatriculaEscolaBean implements Serializable {
                 GenericaMensagem.warn("Sistema", msgConfirma);
                 return;
             }
-            String horaInicial; 
-            String horaFinal; 
+            String horaInicial;
+            String horaFinal;
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$aluno", matriculaEscola.getAluno().getNome()));
             FisicaDB fisicaDB = new FisicaDBToplink();
             Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(getResponsavel().getId());
@@ -311,10 +309,10 @@ public class MatriculaEscolaBean implements Serializable {
             PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
             PessoaEndereco pessoaEnderecoAluno = (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getAluno().getId(), 1);
 
-            
+
             int idTipoEndereco = -1;
-            if (pessoaEnderecoAluno != null) { 
-                enderecoAlunoString = pessoaEnderecoAluno.getEndereco().getEnderecoSimplesToString()+", "+pessoaEnderecoAluno.getNumero();
+            if (pessoaEnderecoAluno != null) {
+                enderecoAlunoString = pessoaEnderecoAluno.getEndereco().getEnderecoSimplesToString() + ", " + pessoaEnderecoAluno.getNumero();
                 bairroAlunoString = pessoaEnderecoAluno.getEndereco().getBairro().getDescricao();
                 cidadeAlunoString = pessoaEnderecoAluno.getEndereco().getCidade().getCidade();
                 estadoAlunoString = pessoaEnderecoAluno.getEndereco().getCidade().getUf();
@@ -324,7 +322,7 @@ public class MatriculaEscolaBean implements Serializable {
                 // Tipo Documento - CPF
                 if (matriculaEscola.getResponsavel().getTipoDocumento().getId() == 1) {
                     idTipoEndereco = 1;
-                // Tipo Documento - CNPJ
+                    // Tipo Documento - CNPJ
                 } else if (matriculaEscola.getResponsavel().getTipoDocumento().getId() == 2) {
                     idTipoEndereco = 3;
                 }
@@ -335,9 +333,9 @@ public class MatriculaEscolaBean implements Serializable {
                 estadoResponsavelString = estadoAlunoString;
                 cepResponsavelString = cepAlunoString;
             }
-            PessoaEndereco pessoaEnderecoResponsavel =  (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getResponsavel().getId(), idTipoEndereco);
+            PessoaEndereco pessoaEnderecoResponsavel = (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getResponsavel().getId(), idTipoEndereco);
             if (pessoaEnderecoResponsavel != null) {
-                enderecoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getEnderecoSimplesToString()+", "+pessoaEnderecoResponsavel.getNumero();
+                enderecoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getEnderecoSimplesToString() + ", " + pessoaEnderecoResponsavel.getNumero();
                 bairroResponsavelString = pessoaEnderecoResponsavel.getEndereco().getBairro().getDescricao();
                 cidadeResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCidade().getCidade();
                 estadoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCidade().getUf();
@@ -371,10 +369,10 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepAluno", cepAlunoString));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesesExtenso", periodoMesesExtenso));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$meses", Integer.toString(periodoMeses)));
-            String alunoNascimento = ""; 
+            String alunoNascimento = "";
             if (contratoFisica.getId() != -1) {
                 alunoNascimento = contratoFisica.getNascimento();
-            }            
+            }
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$nascimentoAluno", alunoNascimento));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailAluno", matriculaEscola.getAluno().getEmail1()));
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoResponsavel", enderecoResponsavelString));
@@ -392,11 +390,11 @@ public class MatriculaEscolaBean implements Serializable {
                     valorTaxaString = Float.toString(listaMovimentos.get(y).getTaxa());
                 } else {
                     if (z == 1) {
-                        listaValores = "Parcela nº"+z+" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());
-                        listaValoresComData = listaMovimentos.get(y).getVencimento() +" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());                        
+                        listaValores = "Parcela nº" + z + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
+                        listaValoresComData = listaMovimentos.get(y).getVencimento() + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
                     } else {
-                        listaValores += ", " +"Parcela nº"+z+" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());
-                        listaValoresComData += ", " +listaMovimentos.get(y).getVencimento() +" - Valor: R$ "+ Float.toString(listaMovimentos.get(y).getValor());
+                        listaValores += ", " + "Parcela nº" + z + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
+                        listaValoresComData += ", " + listaMovimentos.get(y).getVencimento() + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
                     }
                     z++;
                 }
@@ -629,6 +627,8 @@ public class MatriculaEscolaBean implements Serializable {
                             + " - Professor: " + matriculaIndividual.getProfessor().getId() + " - " + matriculaIndividual.getProfessor().getProfessor()
                             + " - Período: " + matriculaIndividual.getDataInicioString() + " até " + matriculaIndividual.getDataTerminoString();
                 }
+                pessoaResponsavelMemoria = matriculaEscola.getResponsavel();
+                pessoaAlunoMemoria = matriculaEscola.getAluno();
                 sv.comitarTransacao();
                 desabilitaCampo = true;
                 msgConfirma = "Matrícula efetuada com sucesso.";
@@ -820,10 +820,10 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public void atualizaValor() {
-        ServicoValorDB servicosValorDB = new ServicoValorDBToplink();
-        valor = Float.toString(servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0));
-        matriculaEscola.setDescontoAteVencimento(servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1));
-        vTaxa = servicosValorDB.funcaoValorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);        
+        FunctionsDB functionsDB = new FunctionsDBTopLink();
+        valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0));
+        matriculaEscola.setDescontoAteVencimento(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1));
+        vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);
     }
 
     public String gerarMovimento() {
@@ -932,55 +932,36 @@ public class MatriculaEscolaBean implements Serializable {
                             loop = matriculaEscola.getNumeroParcelas();
                         }
                         String vecimentoString = "";
-                        Pessoa pessoaTitularResponsavel = matriculaEscola.getResponsavel();
+                        Pessoa pessoaAluno = matriculaEscola.getAluno();
+                        Pessoa pessoaResponsavelTitular = matriculaEscola.getResponsavel();
                         Pessoa pessoaResponsavel;
-                        ServicoValorDB servico = new ServicoValorDBToplink();
-                        SociosDB socioDB = new SociosDBToplink();
-                        boolean isSocioMenor = false;
-                        boolean isResponsavelOutraEmpresa = false;
-                        if (aluno.getId() != -1) {
-                            if (servico.pesquisaMaiorResponsavel(aluno.getPessoa().getId()) == 0) {
-                                Socios socios = socioDB.pesquisaSocioDoDependente(aluno.getPessoa());
-                                if (socios != null) {
-                                    if (servico.pesquisaMaiorResponsavel(socios.getServicoPessoa().getPessoa().getId()) == 0) {
-                                        pessoaTitularResponsavel = aluno.getPessoa();
-                                    } else {
-                                        isSocioMenor = true;
-                                        pessoaTitularResponsavel = socios.getServicoPessoa().getPessoa();
-                                    }
-                                } else {
-                                    if (pessoaTitularResponsavel.getId() == -1) {
-                                        pessoaTitularResponsavel = aluno.getPessoa();
-                                    }
-                                }
-                            } else {
-                                pessoaTitularResponsavel = aluno.getPessoa();
-                            }
-                        }
-                        PessoaEmpresaDB pessoaEmpresaDB = new PessoaEmpresaDBToplink();
-                        Pessoa pe = (pessoaEmpresaDB.pesquisaPessoaEmpresaPorPessoa(matriculaEscola.getResponsavel().getId())).getJuridica().getPessoa();
-                        if (pe.getId() == -1) {
-                            isResponsavelOutraEmpresa = true;
-                            pessoaTitularResponsavel = matriculaEscola.getResponsavel();
-                        }
+                        FunctionsDB functionsDB = new FunctionsDBTopLink();
                         if (matriculaEscola.isDescontoFolha()) {
-                            pessoaResponsavel = matriculaEscola.getResponsavel();
+                            int idResponsavel = functionsDB.responsavel(pessoaAluno.getId(), matriculaEscola.isDescontoFolha());
+                            if (idResponsavel != -1) {
+                                pessoaResponsavel = (Pessoa) salvarAcumuladoDB.pesquisaCodigo(idResponsavel, "Pessoa");
+                            } else {
+                                pessoaResponsavel = matriculaEscola.getResponsavel();
+                            }
                         } else {
-                            if (!isResponsavelOutraEmpresa) {
-                                if (isSocioMenor) {
-                                    pessoaResponsavel = (pessoaEmpresaDB.pesquisaPessoaEmpresaPorPessoa(pessoaTitularResponsavel.getId())).getJuridica().getPessoa();
-                                    if (pessoaResponsavel.getId() == -1) {
-                                        pessoaResponsavel = matriculaEscola.getResponsavel();
-                                    }
+                            int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
+                            if (idResponsavelEmpresa != -1) {
+                                JuridicaDB juridicaDB = new JuridicaDBToplink();
+                                Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
+                                if (juridicaB.getId() != -1) {
+                                    pessoaResponsavel = (Pessoa) salvarAcumuladoDB.pesquisaCodigo(idResponsavelEmpresa, "Pessoa");
                                 } else {
-                                    pessoaResponsavel = pessoaTitularResponsavel;
+                                    pessoaResponsavel = pessoaResponsavelTitular;
                                 }
                             } else {
-                                pessoaResponsavel = pessoaTitularResponsavel;
-                                pessoaTitularResponsavel = matriculaEscola.getAluno();
+                                pessoaResponsavel = pessoaResponsavelTitular;
                             }
                         }
-                        Pessoa pessoaBeneficiario = matriculaEscola.getAluno();
+
+                        if (pessoaResponsavel.getId() == -1) {
+                            salvarAcumuladoDB.desfazerTransacao();
+                            return null;
+                        }
                         for (int i = 0; i < loop; i++) {
                             float valorParcelaF;
                             float valorDescontoAteVencimento;
@@ -995,8 +976,6 @@ public class MatriculaEscolaBean implements Serializable {
                             } else {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(1, "TipoServico");
                                 valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
-                                // valorDescontoAteVencimento = (matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas();
-                                // valorDescontoAteVencimento = valorParcelaF - Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
                                 valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
                                 if (!vecimentoString.equals("")) {
                                     vencimento = vecimentoString;
@@ -1025,8 +1004,8 @@ public class MatriculaEscolaBean implements Serializable {
                                         true,
                                         "E",
                                         false,
-                                        pessoaTitularResponsavel, // TITULAR / RESPONSÁVEL
-                                        pessoaBeneficiario, // BENEFICIÁRIO
+                                        pessoaResponsavelTitular, // TITULAR / RESPONSÁVEL
+                                        pessoaAluno, // BENEFICIÁRIO
                                         "",
                                         nrCtrBoleto,
                                         vencimento,
@@ -1163,8 +1142,14 @@ public class MatriculaEscolaBean implements Serializable {
                     calculaValorLiquido();
                 } else if (tipoFisica.equals("responsavel")) {
                     Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
-                    if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
-                        matriculaEscola.setResponsavel(resp);
+                    FunctionsDB functionsDB = new FunctionsDBTopLink();
+                    int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
+                    if (idade >= 18) {
+                        if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
+                            matriculaEscola.setResponsavel(resp);
+                        }
+                    } else {
+                        GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
                     }
                     GenericaSessao.remove("juridicaPesquisa");
                 }
@@ -1185,34 +1170,21 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public Pessoa getResponsavel() {
-        ServicoValorDB servico = new ServicoValorDBToplink();
-        SociosDB socioDB = new SociosDBToplink();
         if (aluno.getId() != -1) {
-            if (servico.pesquisaMaiorResponsavel(aluno.getPessoa().getId()) == 0) {
-                Socios socios = socioDB.pesquisaSocioDoDependente(aluno.getPessoa());
-                if (socios != null) {
-                    if (servico.pesquisaMaiorResponsavel(socios.getServicoPessoa().getPessoa().getId()) == 0) {
-                        responsavelNaoSocio = true;
-                        responsavel = aluno.getPessoa();
-                    } else {
-                        responsavelNaoSocio = false;
-                        responsavel = socios.getServicoPessoa().getPessoa();
-                    }
-                } else {
-                    if (responsavel.getId() == -1) {
-                        responsavelNaoSocio = false;
-                        responsavel = aluno.getPessoa();
-                    }
-                }
-            } else {
-                responsavelNaoSocio = false;
-                responsavel = aluno.getPessoa();
-                desabilitaDescontoFolha = true;
+            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            int idResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), matriculaEscola.isDescontoFolha());
+            if (idResponsavel != -1) {
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                responsavel = (Pessoa) salvarAcumuladoDB.pesquisaCodigo(idResponsavel, "Pessoa");
             }
         } else {
             responsavel = new Pessoa();
         }
         return responsavel;
+    }
+
+    public void descontoFolhaResponsavel() {
+        getResponsavel();
     }
 
     public void setResponsavel(Pessoa responsavel) {

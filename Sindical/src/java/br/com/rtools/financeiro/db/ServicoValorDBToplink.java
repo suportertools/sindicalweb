@@ -2,11 +2,9 @@ package br.com.rtools.financeiro.db;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.financeiro.ServicoValor;
-import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -92,29 +90,5 @@ public class ServicoValorDBToplink extends DB implements ServicoValorDB {
         }
         return 0;
     }
-    
-    /**
-     * 
-     * @param idPessoa
-     * @param idServico
-     * @param date
-     * @param tipo (0 -> Valor (já calculado) - ), (1 -> Valor até o vencimento (já calculado)), (2 -> Taxa até o vencimento (já calculado))
-     * @return float valor
-     */
-    @Override
-    public float funcaoValorServico(int idPessoa, int idServico, Date date, int tipo) {        
-        String dataString = DataHoje.converteData(date);
-        try {
-            Query qry = getEntityManager().createNativeQuery( "SELECT func_valor_servico("+idPessoa+", "+idServico+", '"+dataString+"', "+tipo+") ");
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                list = (List) qry.getSingleResult();
-                float valor = Float.parseFloat(list.get(0).toString());
-                return valor;
-            }
-        } catch (Exception e) {
-            return 0;
-        }
-        return 0;
-    }
+
 }

@@ -2,6 +2,7 @@ package br.com.rtools.pessoa.db;
 
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
@@ -69,15 +70,17 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
 
     @Override
     public List listaPessoaEmpresaPorFisica(int id) {
-        List list = null;
         try {
-            Query qry = getEntityManager().createQuery(" SELECT pesEmp FROM PessoaEmpresa pesEmp WHERE pesEmp.fisica.id = :id AND pesEmp.dtDemissao IS NOT NULL ");
+            Query qry = getEntityManager().createQuery(" SELECT PE FROM PessoaEmpresa AS PE WHERE PE.fisica.id = :id AND PE.dtDemissao IS NOT NULL ORDER BY PE.dtAdmissao DESC ");
             qry.setParameter("id", id);
-            list = qry.getResultList();
-            return list;
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;                
+            }
         } catch (Exception e) {
-            return null;
+            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
@@ -94,17 +97,21 @@ public class PessoaEmpresaDBToplink extends DB implements PessoaEmpresaDB {
 
     @Override
     public PessoaEmpresa pesquisaPessoaEmpresaPorFisica(int id) {
-        PessoaEmpresa pesEmp = new PessoaEmpresa();
         try {
-            Query qry = getEntityManager().createQuery("select pesEmp "
-                    + "  from PessoaEmpresa pesEmp"
-                    + " where pesEmp.fisica.id = " + id
-                    + "   and pesEmp.dtDemissao is null");
-            pesEmp = ((PessoaEmpresa) qry.getSingleResult());
-            return pesEmp;
+            Query qry = getEntityManager().createQuery(
+                    "    SELECT PE                          "
+                    + "    FROM PessoaEmpresa AS PE         "
+                    + "   WHERE PE.fisica.id = " + id
+                    + "     AND PE.dtDemissao is null       ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                PessoaEmpresa pessoaEmpresa = ((PessoaEmpresa) qry.getSingleResult());                
+                return pessoaEmpresa;
+            }
         } catch (Exception e) {
-            return pesEmp;
+            return new PessoaEmpresa();
         }
+        return new PessoaEmpresa();
     }
 
     @Override

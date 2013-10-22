@@ -2,7 +2,6 @@ package br.com.rtools.logSistema;
 
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.DataObject;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;

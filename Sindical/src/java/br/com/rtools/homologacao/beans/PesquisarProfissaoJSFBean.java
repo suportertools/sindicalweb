@@ -49,6 +49,10 @@ public class PesquisarProfissaoJSFBean {
     public void editar() {
         profissao = (Profissao) listaProfissao.get(idIndexProf);
     }
+    
+    public void editar(Profissao p) {
+        profissao = p;
+    }
 
     public Profissao getProfissao() {
         if (profissao.getId() == -1) {
