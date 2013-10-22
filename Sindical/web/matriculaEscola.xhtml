@@ -70,8 +70,8 @@
                         </h:column>
                         <h:column>
                             <h:column rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
-                                <h:selectBooleanCheckbox id="idDescontoFolha" title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}"/>
-                                <h:selectBooleanCheckbox title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                                <h:selectBooleanCheckbox id="idDescontoFolha" title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" />
+                                <h:selectBooleanCheckbox title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
                                 <h:outputLabel value=" Desconto em folha?" styleClass="fontePadrao" />
                             </h:column>
                         </h:column>

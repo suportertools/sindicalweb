@@ -16,7 +16,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formRecepcao">
+            <h:form id="form_recepcao">
                 <c:set scope="request" var="object" value="${recepcaoBean.agendamento}"/>
                 <center>
                     <div class="headerPanel">
@@ -131,13 +131,10 @@
                                 </h:panelGrid> -->
                                 <br />
                                 <h:panelGrid columns="4">
-                                    <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="modalMensagem()" value="Atualizar" action="#{recepcaoBean.salvar}" 
-                                                     disabled="#{controleAcessoBean.botaoSalvar}" render="outConfirma"/>
-                                    <a4j:commandLink styleClass="idPesquisar iLink" style="width: 120px" onclick="modalOpcao('divSalvar');" value="Gerar Senha" rendered="#{recepcaoBean.idStatus == 0 and recepcaoBean.registro.senhaHomologacao}"
-                                                     disabled="#{controleAcessoBean.botaoSalvar}" render="outConfirma"/>
-                                    <a4j:commandLink styleClass="idPesquisar iLink" onclick="modalOpcao('divExcluir');" value="Cancelar" rendered="#{recepcaoBean.idStatus == 0}"
-                                                     disabled="#{controleAcessoBean.botaoExcluir}" render="outConfirma"/>
-                                    <h:commandLink styleClass="idExcluir iLink" value="Voltar" action="#{recepcaoBean.voltar()}" />
+                                    <a4j:commandLink styleClass="idPesquisar iLink"  value="Atualizar" action="#{recepcaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="i_painel_mensagem" oncomplete="#{rich:component('form_recepcao:i_painel_mensagem')}.show(); return false;"/>
+                                    <a4j:commandLink styleClass="idPesquisar iLink" style="width: 120px" value="Gerar Senha" rendered="#{recepcaoBean.idStatus == 0 and recepcaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_recepcao:i_painel_salvar')}.show(); return false;" />
+                                    <a4j:commandLink styleClass="idPesquisar iLink" value="Cancelar" rendered="#{recepcaoBean.idStatus == 0}" disabled="#{controleAcessoBean.botaoExcluir}"  oncomplete="#{rich:component('form_recepcao:i_painel_excluir')}.show(); return false;" />
+                                    <h:commandLink styleClass="idExcluir iLink" value="Voltar" action="#{recepcaoBean.voltar()}"/>
                                 </h:panelGrid>
                         </div>
                     </h:column>
@@ -337,7 +334,7 @@
                         </h:column>                        
                     </div>
                 </center>
-
+                <!-- 
                 <div id="boxes">
                     <div id="divSalvar" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -350,7 +347,7 @@
                                 <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
                             </h:panelGrid>
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{recepcaoBean.gerarSenha()}" title="Gerar uma Senha" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="# {recepcaoBean.gerarSenha()}" title="Gerar uma Senha" oncomplete="modalMensagem()" render="outConfirma"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
@@ -368,20 +365,19 @@
                                 <h:outputText value="Deseja cancelar essa Homologação?" styleClass="fontePadrao"/>
                                 <div style="float: left">
                                     <h:outputLabel value="Digite o motivo para Exclusão: " style="font-weight: bold"/>
-                                    <h:inputTextarea value="#{recepcaoBean.cancelamento.motivo}" cols="30" rows="5"> 
+                                    <h:inputTextarea value="# {recepcaoBean.cancelamento.motivo}" cols="30" rows="5"> 
 
                                     </h:inputTextarea>
                                 </div>
                             </h:panelGrid>
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="#{recepcaoBean.cancelarHorario()}" title="Cancelar essa Homologação" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="# {recepcaoBean.cancelarHorario()}" title="Cancelar essa Homologação" oncomplete="modalMensagem()" render="outConfirma"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                             <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
                         </center>
                     </div>
                     <div id="mask"></div>
-                </div>                
-                
+                </div>  
                 <div id="boxes">
                     <div id="divMensagem" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">
@@ -389,14 +385,62 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <h:outputText id="outConfirma" value="#{recepcaoBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <h:outputText id="outConfirma" value=" # {recepcaoBean.msgConfirma}" styleClass="fontePadrao"/>
                             <br /><br />
-                            <h:commandLink styleClass="idNovo iLink" style="width: 160px;" value="Voltar para Lista" title="Voltar para Lista" action="#{recepcaoBean.voltar()}"/>
-                            <h:commandLink styleClass="idNovo iLink" style="width: 120px;" value="Permanecer" title="Permanecer" action="#{recepcaoBean.imprimirSenha()}"/>
+                            <h:commandLink styleClass="idNovo iLink" style="width: 160px;" value="Voltar para Lista" title="Voltar para Lista" action="# {recepcaoBean.voltar()}"/>
+                            <h:commandLink styleClass="idNovo iLink" style="width: 120px;" value="Permanecer" title="Permanecer" action="# {recepcaoBean.imprimirSenha()}"/>
                         </center>
                     </div>
                     <div id="mask"></div>
-                </div>
+                </div> -->
+                
+                <rich:popupPanel id="i_painel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_salvar')}.hide();" domElementAttachment="form" header="Deseja gerar senha?">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_painel_salvar')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Gerar uma Senha" action="#{recepcaoBean.gerarSenha()}" render="i_painel_mensagem" oncomplete="#{rich:component('form_recepcao:i_painel_salvar')}.hide(); #{rich:component('form_recepcao:i_painel_mensagem')}.show(); return false;" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Desfazer" oncomplete="#{rich:component('form_recepcao:i_painel_salvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                
+                <rich:popupPanel id="i_painel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_excluir')}.hide();" domElementAttachment="form" header="Deseja cancelar essa homologação?" width="500" height="300">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_painel_excluir')}.hide();
+                                return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputLabel value="Digite o motivo para o cancelamento" />
+                        <br /><br />
+                        <h:inputTextarea value="#{recepcaoBean.cancelamento.motivo}" cols="50" rows="10" style="resize: none;"/>
+                        <h:panelGrid columns="2" styleClass="margin-top">
+                            <a4j:commandButton value="Sim" title="Cancelar essa Homologação" action="#{recepcaoBean.cancelarHorario()}" render="i_painel_mensagem" oncomplete="#{rich:component('form_recepcao:i_painel_excluir')}.hide(); #{rich:component('form_recepcao:i_painel_mensagem')}.show();" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Desfazer" oncomplete="#{rich:component('form_recepcao:i_painel_excluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>                
+                
+                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" domElementAttachment="form" header="Mensagem">
+                    <f:facet name="controls">
+                        <h:outputLink>
+                            <a4j:ajax event="click" listener="#{recepcaoBean.imprimirSenha()}" oncomplete="#{rich:component('form_recepcao:i_painel_mensagem')}.hide(); return false;"/>
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputLabel value="#{recepcaoBean.msgConfirma}" />
+                        <h:panelGrid columns="2" styleClass="margin-top-maior">
+                            <a4j:commandButton value="Voltar para Lista" title="Voltar para Lista" action="#{recepcaoBean.voltar()}" immediate="true" />
+                            <a4j:commandButton value="Permanecer" title="Permanecer" action="#{recepcaoBean.imprimirSenha()}" immediate="true"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>                
             </h:form>            
         </f:view>
     </h:body>

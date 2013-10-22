@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Cadastro - SPC</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="form_spc">            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro - SPC" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                </center>
+                <rich:panel id="id_panel_spc" styleClass="divMae divFundo no-border" style="width: 1000px;">
+                    <h:panelGrid columnClasses="coluna1, coluna2" columns="2" id="id_panel_novo">
+                        <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar pessoa" action="#{chamadaPaginaBean.pesquisaPessoa()}" id="idPesquisarPessoa" immediate="true"/>
+                        <h:column>
+                            <h:outputLabel value="PESQUISAR PESSOA" rendered="false" style="border-bottom: 1px dashed gray; color: gray;" for="idPesquisarPessoa"/>
+                            <h:outputLabel value="#{sPCBean.spc.pessoa.nome} - CNPJ/CPF: #{sPCBean.spc.pessoa.documento}" rendered="true" for="idPesquisarPessoa" />
+                        </h:column>
+                        <h:outputLabel value="Data entrada" for="idDataEntrada"/>
+                            <h:inputText value="#{sPCBean.spc.dataEntrada}" id="idDataEntrada" />
+                        <h:outputLabel value="Data saída" for="idDataSaida" />
+                        <h:inputText value="#{sPCBean.spc.dataSaida}" id="idDataSaida" />
+                        <h:outputLabel value="Obs.:" title="Observação (es)" />
+                        <h:inputTextarea value="#{sPCBean.spc.observacao}" style="resize: none;" cols="50" rows="5"></h:inputTextarea>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2" id="id_acao">
+                        <a4j:commandButton id="idBotaoSalvar" value="#{sPCBean.botaoSalvar}" oncomplete="#{rich:component('form_spc:i_painel_salvar')}.show(); return false;" disabled="#{controleAcessoBean.botaoSalvar}" />
+                    </h:panelGrid>                    
+                </rich:panel>
+                <rich:panel style="clear: both; border: 0;"></rich:panel>
+                <rich:panel styleClass="divMae" style="overflow-y: auto; height: 300px; width: 1024px;">
+                    <h:panelGrid columns="5">
+                        <h:outputLabel value="Filtros: " />
+                        <h:selectManyCheckbox value="#{sPCBean.filtro}" valueChangeListener="#{sPCBean.listaSPC.clear()}" label="Todos">
+                            <a4j:ajax event="change" render="i_grid_spc" />
+                        </h:selectManyCheckbox>
+                        <h:outputLabel value="Todos" />
+                        <h:selectManyCheckbox value="#{sPCBean.filtroPorPessoa}" valueChangeListener="#{sPCBean.listaSPC.clear()}" label="Pessoa">
+                            <a4j:ajax event="change" render="i_grid_spc" />
+                        </h:selectManyCheckbox>
+                        <h:outputLabel value="Pessoa" />
+                    </h:panelGrid>
+                    <rich:dataGrid id="i_grid_spc" value="#{sPCBean.listaSPC}" var="spc" style="width: 100%;">
+                        <h:column>
+                            <f:facet name="header">ID</f:facet>
+                            <a4j:commandLink styleClass="underline-hover" value="#{spc.id}" actionListener="#{sPCBean.editar(spc)}" render="id_panel_novo, id_acao" />
+                        </h:column>  
+                        <h:column>
+                            <f:facet name="header">Pessoa</f:facet>
+                            <a4j:commandLink styleClass="underline-hover" value="#{spc.pessoa.nome}" actionListener="#{sPCBean.editar(spc)}" render="id_panel_novo, id_acao" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Documento</f:facet>
+                            <a4j:commandLink styleClass="underline-hover" value="#{spc.pessoa.documento}" actionListener="#{sPCBean.editar(spc)}" render="id_panel_novo, id_acao" />
+                        </h:column>
+                        <h:column>
+                            <f:facet name="header">Data entrada</f:facet>
+                            <a4j:commandLink styleClass="underline-hover" value="#{spc.dataEntrada}" actionListener="#{sPCBean.editar(spc)}" render="id_panel_novo, id_acao" />
+                        </h:column>  
+                        <h:column>
+                            <f:facet name="header">Data saída</f:facet>
+                            <a4j:commandLink styleClass="underline-hover" value="#{spc.dataSaida}" actionListener="#{sPCBean.editar(spc)}" render="id_panel_novo, id_acao" />
+                        </h:column>
+                    </rich:dataGrid>
+                </rich:panel>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>
