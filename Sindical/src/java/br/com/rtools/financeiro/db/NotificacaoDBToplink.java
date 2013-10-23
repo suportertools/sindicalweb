@@ -200,24 +200,24 @@ public class NotificacaoDBToplink extends DB implements NotificacaoDB {
                     + " where m.id_baixa is null and is_ativo = true and l.id = " + id_lote;
 
             // 1 "ESCRITÓRIO"
-            if (tipo_envio == 1) {
-                textQry += " and pj.escNome is not null "
-                        + " order by pj.escCidade, pj.escCep, pj.escNumero, pj.escNome, pj.jurNome, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2) ";
+             if (tipo_envio == 1) {
+                 textQry += " and pj.escNome is not null "
+                        + " order by pj.escNome,pj.escid, pj.jurNome, pj.jurid, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2) ";
                 // 2 "EMPRESA COM ESCRITÓRIO"
             } else if (tipo_envio == 2) {
                 textQry += " and pj.escNome is not null "
-                        + " order by pj.jurCidade, pj.jurCep, pj.jurBairro, pj.jurEndereco, pj.jurNumero, pj.jurComplemento, pj.jurNome ";
+                        + " order by pj.jurNome, pj.jurid, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2) "; 
                 // 3 "EMPRESA SEM ESCRITÓRIO"    
             } else if (tipo_envio == 3) {
                 textQry += " and pj.escNome is null "
-                        + " order by pj.jurCidade, pj.jurCep, pj.jurBairro, pj.jurEndereco, pj.jurNumero, pj.jurComplemento, pj.jurNome ";
+                        + " order by pj.jurNome, pj.jurid, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2) ";
                 // 4 "EMAIL PARA OS ESCRITÓRIO"    AGRUPAR POR pj.escid -- id_escritorio
             } else if (tipo_envio == 4) {
                 textQry += " and pj.escNome is not null "
-                        + " order by pj.escNome, pj.escid, pj.jurNome, pj.jurDocumento, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2)";
+                        + " order by pj.escNome, pj.escid, pj.jurNome, pj.jurid, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2)";
                 // 5 "EMAIL PARA AS EMPRESAS" -- AGRUPAR POR pj.id_pessoa -- id_pessoa
             } else if (tipo_envio == 5) {
-                textQry += " order by pj.jurNome, pj.jurDocumento, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2)";
+                textQry += " order by pj.jurNome, pj.jurid, substring(m.ds_referencia,4,4) || substring(m.ds_referencia,1,2)";
             }
 
             Query qry = getEntityManager().createNativeQuery(textQry);
