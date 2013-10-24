@@ -79,9 +79,9 @@ public class DataHoje {
     }
 
     public static String dataReferencia(String data) {
-        String referencia = "";
+        //String referencia = "";
         DataHoje dt = new DataHoje();
-        referencia = dt.decrementarMeses(1, data);
+        String referencia = dt.decrementarMeses(1, data);
         return referencia.substring(3);
     }
 
@@ -254,11 +254,11 @@ public class DataHoje {
 
     public String incrementarMeses(int qtd, String data) {
         try {
-            int tmp = 0;
+            //int tmp = 0;
             int c = 0;
             int[] d = DataHoje.DataToArrayInt(data);
             if ((d[1] + qtd) > 12) {
-                tmp = (d[1] + qtd);
+                int tmp = (d[1] + qtd);
                 while (tmp > 12) {
                     tmp -= 12;
                     c++;
@@ -281,11 +281,11 @@ public class DataHoje {
 
     public String decrementarMeses(int qtd, String data) {
         try {
-            int tmp = 0;
+            //int tmp = 0;
             int c = 0;
             int[] d = DataHoje.DataToArrayInt(data);
             if ((d[1] - qtd) < 1) {
-                tmp = (d[1] - qtd);
+                int tmp = (d[1] - qtd);
                 while (tmp < 1) {
                     tmp += 12;
                     c++;
@@ -308,12 +308,11 @@ public class DataHoje {
 
     public String decrementarSemanas(int qtd, String data) {
         try {
-            int tmp = 0;
             int[] d = DataHoje.DataToArrayInt(data);
             int[] mesA = DataToArrayInt(decrementarMeses(1, data));
             int diasMesA = qtdeDiasDoMes(mesA[1], mesA[2]);
             if ((d[0] - (qtd * 7)) < 1) {
-                tmp = (qtd * 7);
+                int tmp = (qtd * 7);
                 diasMesA += d[0];
                 tmp = diasMesA - tmp;
                 d[1]--;
@@ -344,12 +343,12 @@ public class DataHoje {
 
     public String incrementarSemanas(int qtd, String data) {
         try {
-            int tmp = 0;
+            //int tmp = 0;
             int[] d = DataHoje.DataToArrayInt(data);
             int dias = qtdeDiasDoMes(d[1], d[2]);
 
             if ((d[0] + (qtd * 7)) > dias) {
-                tmp = (qtd * 7) + d[0];
+                int tmp = (qtd * 7) + d[0];
                 while (tmp >= dias) {
                     tmp -= dias;
                     d[1]++;
@@ -442,11 +441,11 @@ public class DataHoje {
 
     public String incrementarMesesUltimoDia(int qtd, String data) {
         try {
-            int tmp = 0;
+            //int tmp = 0;
             int c = 0;
             int[] d = DataHoje.DataToArrayInt("32/" + data.substring(3, 10));
             if ((d[1] + qtd) > 12) {
-                tmp = (d[1] + qtd);
+                int tmp = (d[1] + qtd);
                 while (tmp > 12) {
                     tmp -= 12;
                     c++;
@@ -525,13 +524,11 @@ public class DataHoje {
     }
 
     public static String incrementarHoraAtual(int minutos) {
-        String result = "";
+        //String result = "";
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(new Date());
-
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-
-
+        String result;
         if (minutos > 0) {
             gc.add(Calendar.MINUTE, minutos);
             result = sdf.format(gc.getTime());
@@ -622,11 +619,11 @@ public class DataHoje {
     }
 
     public int calcularIdade(String dataNascimento) {
-        int idade = -1;
+        // int idade = -1;
         String dataHoje = DataHoje.data();
         int[] dataH = DataHoje.DataToArrayInt(dataHoje);
         int[] dataN = DataHoje.DataToArrayInt(dataNascimento);
-        idade = dataN[2] - dataH[2];
+        int idade = dataN[2] - dataH[2];
         int[] novaData = DataHoje.DataToArrayInt(incrementarAnos(idade, dataNascimento));
         if (dataH[1] < novaData[1]) {
             idade--;
@@ -640,11 +637,11 @@ public class DataHoje {
 
     public int calcularIdade(Date data) {
         String dataNascimento = DataHoje.converteData(data);
-        int idade = -1;
+        // int idade = -1;
         String dataHoje = DataHoje.data();
         int[] dataH = DataHoje.DataToArrayInt(dataHoje);
         int[] dataN = DataHoje.DataToArrayInt(dataNascimento);
-        idade = dataH[2] - dataN[2];
+        int idade = dataH[2] - dataN[2];
         int[] novaData = DataHoje.DataToArrayInt(incrementarAnos(idade, dataNascimento));
         if (dataH[1] < novaData[1]) {
             idade--;
@@ -659,13 +656,18 @@ public class DataHoje {
     public static int quantidadeMeses(Date dataInicial, Date dataFinal) {     
         final double MES_EM_MILISEGUNDOS = 30.0 * 24.0 * 60.0 * 60.0 * 1000.0;  
         //final double MES_EM_MILISEGUNDOS = 2592000000.0;            
-        int numeroDeMeses = (int) (double)((dataFinal.getTime() - dataInicial.getTime())/MES_EM_MILISEGUNDOS);
+        int numeroDeMeses = (int) (double)((dataFinal.getTime() - dataInicial.getTime()) / MES_EM_MILISEGUNDOS);
+        if (numeroDeMeses <= 0) {
+            return 0;
+        }
         return numeroDeMeses;
     }
 
     public static String validaHora(String hora) {
-        int n1 = 0;
-        int n2 = 0;
+//        int n1 = 0;
+//        int n2 = 0;
+        int n1;
+        int n2;
         if (hora.length() == 1) {
             hora = "0" + hora + ":00";
         }
@@ -708,144 +710,149 @@ public class DataHoje {
     }
 
     public static String dataExtenso(String data) {
-        String extenso = "";
-        String dia = data.substring(0, 2);
-        String mes = data.substring(3, 5);
-        String ano = data.substring(6, 10);
-
-        if (dia.equals("01")) {
-            dia = "Primeiro";
+        String extenso;
+        try {
+            String dia = data.substring(0, 2);
+            String mes = data.substring(3, 5);
+            String ano = data.substring(6, 10);        
+            switch (Integer.parseInt(dia)) {
+                case 1:
+                    dia = "Primeiro";
+                    break;
+                case 2:
+                    dia = "Dois";
+                    break;
+                case 3:
+                    dia = "Três";
+                    break;
+                case 4:
+                    dia = "Quatro";
+                    break;
+                case 5:
+                    dia = "Cinco";
+                    break;
+                case 6:
+                    dia = "Seis";
+                    break;
+                case 7:
+                    dia = "Sete";
+                    break;
+                case 8:
+                    dia = "Oito";
+                    break;
+                case 9:
+                    dia = "Nove";
+                    break;
+                case 10:
+                    dia = "Dez";
+                    break;
+                case 11:
+                    dia = "Onze";
+                    break;
+                case 12:
+                    dia = "Doze";
+                    break;
+                case 13:
+                    dia = "Treze";
+                    break;
+                case 14:
+                    dia = "Quatorze";
+                    break;
+                case 15:
+                    dia = "Quinze";
+                    break;
+                case 16:
+                    dia = "Dezesseis";
+                    break;
+                case 17:
+                    dia = "Dezessete";
+                    break;
+                case 18:
+                    dia = "Dezoito";
+                    break;
+                case 19:
+                    dia = "Dezenove";
+                    break;
+                case 20:
+                    dia = "Vinte";
+                    break;
+                case 21:
+                    dia = "Vinte e Um";
+                    break;
+                case 22:
+                    dia = "Vinte e Dois";
+                    break;
+                case 23:
+                    dia = "Vinte e Três";
+                    break;
+                case 24:
+                    dia = "Vinte e Quatro";
+                    break;
+                case 25:
+                    dia = "Vinte e Cinco";
+                    break;
+                case 26:
+                    dia = "Vinte e Seis";
+                    break;
+                case 27:
+                    dia = "Vinte e Sete";
+                    break;
+                case 28:
+                    dia = "Vinte e Oito";
+                    break;
+                case 29:
+                    dia = "Vinte e Nove";
+                    break;
+                case 30:
+                    dia = "Trinta";
+                    break;
+                case 31:
+                    dia = "Trinta e Um";
+                    break;
+            }
+            switch (Integer.parseInt(mes)) {
+                case 1:
+                    mes = "Janeiro";
+                    break;
+                case 2:
+                    mes = "Fevereiro";
+                    break;
+                case 3:
+                    mes = "Março";
+                    break;
+                case 4:
+                    mes = "Abril";
+                    break;
+                case 5:
+                    mes = "Maio";
+                    break;
+                case 6:
+                    mes = "Junho";
+                    break;
+                case 7:
+                    mes = "Julho";
+                    break;
+                case 8:
+                    mes = "Agosto";
+                    break;
+                case 9:
+                    mes = "Setembro";
+                    break;
+                case 10:
+                    mes = "Outubro";
+                    break;
+                case 11:
+                    mes = "Novembro";
+                    break;
+                case 12:
+                    mes = "Dezembro";
+                    break;
+            }
+             extenso = dia + " de " + mes + " de " + ano;
+        } catch (Exception e) {
+             extenso = data;
+            
         }
-        if (dia.equals("02")) {
-            dia = "Dois";
-        }
-        if (dia.equals("03")) {
-            dia = "Três";
-        }
-        if (dia.equals("04")) {
-            dia = "Quatro";
-        }
-        if (dia.equals("05")) {
-            dia = "Cinco";
-        }
-        if (dia.equals("06")) {
-            dia = "Seis";
-        }
-        if (dia.equals("07")) {
-            dia = "Sete";
-        }
-        if (dia.equals("08")) {
-            dia = "Oito";
-        }
-        if (dia.equals("09")) {
-            dia = "Nove";
-        }
-        if (dia.equals("10")) {
-            dia = "Dez";
-        }
-        if (dia.equals("11")) {
-            dia = "Onze";
-        }
-        if (dia.equals("12")) {
-            dia = "Doze";
-        }
-        if (dia.equals("13")) {
-            dia = "Treze";
-        }
-        if (dia.equals("14")) {
-            dia = "Quatorze";
-        }
-        if (dia.equals("15")) {
-            dia = "Quinze";
-        }
-        if (dia.equals("16")) {
-            dia = "Dezesseis";
-        }
-        if (dia.equals("17")) {
-            dia = "Dezessete";
-        }
-        if (dia.equals("18")) {
-            dia = "Dezoito";
-        }
-        if (dia.equals("19")) {
-            dia = "Dezenove";
-        }
-        if (dia.equals("20")) {
-            dia = "Vinte";
-        }
-        if (dia.equals("21")) {
-            dia = "Vinte e Um";
-        }
-        if (dia.equals("22")) {
-            dia = "Vinte e Dois";
-        }
-        if (dia.equals("23")) {
-            dia = "Vinte e Três";
-        }
-        if (dia.equals("24")) {
-            dia = "Vinte e Quatro";
-        }
-        if (dia.equals("25")) {
-            dia = "Vinte e Cinco";
-        }
-        if (dia.equals("26")) {
-            dia = "Vinte e Seis";
-        }
-        if (dia.equals("27")) {
-            dia = "Vinte e Sete";
-        }
-        if (dia.equals("28")) {
-            dia = "Vinte e Oito";
-        }
-        if (dia.equals("29")) {
-            dia = "Vinte e Nove";
-        }
-        if (dia.equals("30")) {
-            dia = "Trinta";
-        }
-        if (dia.equals("31")) {
-            dia = "Trinta e Um";
-        }
-
-
-        if (mes.equals("01")) {
-            mes = "Janeiro";
-        }
-        if (mes.equals("02")) {
-            mes = "Fevereiro";
-        }
-        if (mes.equals("03")) {
-            mes = "Março";
-        }
-        if (mes.equals("04")) {
-            mes = "Abril";
-        }
-        if (mes.equals("05")) {
-            mes = "Maio";
-        }
-        if (mes.equals("06")) {
-            mes = "Junho";
-        }
-        if (mes.equals("07")) {
-            mes = "Julho";
-        }
-        if (mes.equals("08")) {
-            mes = "Agosto";
-        }
-        if (mes.equals("09")) {
-            mes = "Setembro";
-        }
-        if (mes.equals("10")) {
-            mes = "Outubro";
-        }
-        if (mes.equals("11")) {
-            mes = "Novembro";
-        }
-        if (mes.equals("12")) {
-            mes = "Dezembro";
-        }
-
-        extenso = dia + " de " + mes + " de " + ano;
         return extenso;
 
     }
@@ -853,7 +860,7 @@ public class DataHoje {
     public static int diaDaSemana(Date date) {
         GregorianCalendar calendar = new GregorianCalendar();
         calendar.setTime(date);
-        int dia = calendar.get(calendar.DAY_OF_WEEK);
+        int dia = calendar.get(GregorianCalendar.DAY_OF_WEEK);
         return dia;
     }
 }
