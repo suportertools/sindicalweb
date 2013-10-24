@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
@@ -34,7 +35,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean {
+public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoBean {
 
     private String header = "Agendamento Web";
     private String msgAgendamento = "";
@@ -591,13 +592,11 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoJSFBean
     public void pesquisarFuncionarioCPF() throws IOException {
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
             String documento = fisica.getPessoa().getDocumento();
-
-            TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
             FisicaDB dbFis = new FisicaDBToplink();
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
             HomologacaoDB db = new HomologacaoDBToplink();
-
-            fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != juridica.getId()) {

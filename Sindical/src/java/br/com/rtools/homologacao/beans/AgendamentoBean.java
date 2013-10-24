@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
@@ -48,7 +49,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
-public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serializable {
+public class AgendamentoBean extends PesquisarProfissaoBean implements Serializable {
 
     private int idStatus = 0;
     private int idMotivoDemissao = 0;
@@ -644,15 +645,11 @@ public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serial
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
-        TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
-        DemissaoDB dbDem = new DemissaoDBToplink();
         List listDocumento;
-        StatusDB dbSta = new StatusDBToplink();
-        TipoEnderecoDB dbt = new TipoEnderecoDBToplink();
         int ids[] = {1, 3, 4};
         imprimirPro = false;
         DataHoje dataH = new DataHoje();
-        Demissao demissao = dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
+        Demissao demissao = (Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -691,7 +688,7 @@ public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serial
 
         // SALVAR FISICA -----------------------------------------------
         sv.abrirTransacao();
-        fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
             sv.desfazerTransacao();
             msgConfirma = "Documento Inválido!";
@@ -775,7 +772,7 @@ public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serial
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco(dbt.pesquisaCodigo(ids[i]));
+                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaCodigo(ids[i], "TipoEndereco"));
                     if (!sv.inserirObjeto(pesEnd)) {
                         sv.desfazerTransacao();
                         msgConfirma = "Erro ao Inserir endereço da pessoa!";
@@ -813,7 +810,7 @@ public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serial
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus(dbSta.pesquisaCodigo(2));
+                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
                 break;
             }
             case 2: {
@@ -833,7 +830,7 @@ public class AgendamentoBean extends PesquisarProfissaoJSFBean implements Serial
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus(dbSta.pesquisaCodigo(2));
+                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
                 break;
             }
         }
