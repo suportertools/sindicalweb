@@ -22,13 +22,13 @@
         <managed-bean-class>br.com.rtools.endereco.beans.EnderecoBean</managed-bean-class>
     
         <managed-bean-scope>session</managed-bean-scope></managed-bean>
-        -->
+       
 
     <managed-bean>
         <managed-bean-name>profissaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.ProfissaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean>  -->
 
     <managed-bean>
         <managed-bean-name>filialBean</managed-bean-name>
