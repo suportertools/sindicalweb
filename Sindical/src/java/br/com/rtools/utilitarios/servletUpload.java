@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.FileItemFactory;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
@@ -24,19 +25,20 @@ public class servletUpload extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         try {
-            DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
-            fileItemFactory.setSizeThreshold(1 * 3072 * 3072); //1 MB  
+            //DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
+            FileItemFactory fileItemFactory = new DiskFileItemFactory();
+            //fileItemFactory.setSizeThreshold(1 * 3072 * 3072); //1 MB  
 
             ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
             uploadHandler.setSizeMax(3072 * 3072);
             try {
-                List items = uploadHandler.parseRequest(request);
-                Iterator itr = items.iterator();
-                int i = 0;
-                while (itr.hasNext()) {
-                    FileItem item = (FileItem) itr.next();
-                    upload(item, request);
-                    i++;
+                List<FileItem> items = uploadHandler.parseRequest(request);
+                //List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
+                
+                
+                for (int i = 0; i < items.size(); i++){
+                    //FileItem item = (FileItem) itr.next();
+                    upload(items.get(i), request);
                     //if (!item.isFormField()) {  
                     //    int size = item.getInputStream().available();  
                     //    bs = new byte[size];  
