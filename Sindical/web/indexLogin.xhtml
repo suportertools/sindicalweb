@@ -1,131 +1,84 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich">
-
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    
     <h:head>
-        <title>Sindical - Login 2.2</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>
+        <title>Sindical - Login beta</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
-        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/resources/js/jQuery.js" charset="iso-8859-1"/>
-        <script language="javascript" type="text/javascript" src="#{facesContext.externalContext.requestContextPath}/resources/js/jMarcaDagua.js" charset="iso-8859-1"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/reset.css" rel="stylesheet" type="text/css"/>
         <script type="text/javascript">
-            if (navigator.appName.indexOf('Microsoft') !== -1) {
-                alert('Este navegador não é compátivel com o Sistema Sindical.\n\nPodendo apresentar erros durante o processamento e transações.\n\nUtilize navegadores compátiveis. \n\nDúvidas contate o administrador.');
+            if (navigator.appName.indexOf('Microsoft') !== -1){
+                alert('Este navegador não é 100% compatível com nosso sistema '+
+                      'podendo apresentar erros durante o processamento e transações.'+
+                      '\n\ \n\Utilize navegadores compatíveis como Firefox ou Chrome. '+
+                      'Dúvidas contate o administrador ou ligue para (16) 3964-6117.');
             }
-            jQuery(function($) {
-                $(".idSuarioLogin").Watermark("Usuario");
-                $(".idSenha").Watermark("Senha");
-            });
-            function setOpacity(id, valor) {
-                document.getElementById(id).style.opacity = valor / 10;
-                document.getElementById(id).style.filter = 'alpha(opacity=' + valor * 10 + ')';
-            }
-        </script>      
-
+        </script>
     </h:head>
     <!--[if Opera]> 
         <style type="text/css">
             #idEntrar, .idNovo {visibility: visible;}
         </style>
     <![endif]-->
-    <h:body onload="#{rich:element('formLogin:login')}.focus();">
-        <f:view>
-            <rich:notifyMessages stayTime="3500" showDetail="true" showCloseButton="true" showShadow="false" globalOnly="false"/>
-            <center>
-                <rich:panel style="border: 0; border-bottom: 1px dashed #888; width: 600px; background: #f6f6f6;">
-                    <h:graphicImage url="/Imagens/loginSindical.png" style="width: 400px; height: 150px; margin-bottom: 15px; margin-top: 15px;" alt="sindical" title="Sistema Sindical"/>
-                    <rich:panel style="width: 400px; -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
-                        <div class="headerPanel">
-                            <h:outputText value="Acesso Sindical 3.0" styleClass="fontePanel"/>
-                        </div>                
-                        <h:form id="formLoginValida">
-                            <h:inputHidden value="#{controleUsuarioBean.validaIndex}" />
-                        </h:form>
+    <h:body>
+        <h:form id="formLoginValidacao">
+            <h:inputHidden value="#{controleUsuarioBean.validacaoIndex}"/>
+        </h:form>
+        
+        <p:panel styleClass="wrapper sb" style="border: 0px; background: #dbeaeb" rendered="#{controleUsuarioBean.filialDep != null}">
+            <h:outputLabel value="Filial Cadastrada: " style="font-weight: bold"/>
+            <h:outputLabel value="#{controleUsuarioBean.filialDep}"/>
+        </p:panel>
 
-                        <h:form id="formLogin">
-                            <h:panelGrid columns="2">
-                                <h:column>
-                                    <div style="padding: 1px; ">
-                                        <p style="text-align: left">
-                                            <h:outputLabel value="Login: " styleClass="fontePadrao" style="text-align: right; float: left; width: 80px; height: 25px; padding-right: 5px;"/>
-                                            <h:inputText id="login" size="20" value="#{controleUsuarioBean.usuario.login}" autocomplete="off" styleClass="boxArredondado idSuarioLogin" maxlength="25" />
-                                        </p>
-                                        <p style="text-align: left">
-                                            <h:outputLabel value="Senha: " styleClass="fontePadrao" style="text-align: right; float: left; width: 80px; height: 25px; padding-right: 5px;"/>
-                                            <h:inputSecret size="20" value="#{controleUsuarioBean.usuario.senha}" autocomplete="off" onkeypress="if (event.keyCode === 13) {#{rich:element('formLogin:idEntrar')}.onclick();}" styleClass="boxArredondado idSenha" maxlength="6"/>
-                                        </p>
-                                    </div>
-                                </h:column>
-                                <h:column>
-                                    <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" height="55"></h:graphicImage>
-                                    <!-- <h:graphicImage url="/Cliente/# {controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" height="55"/> -->
-                                </h:column>
-                            </h:panelGrid>
-                            <h:panelGrid columns="1">
-                                <h:outputLabel id="outErro" value="#{controleUsuarioBean.msgErro}" styleClass="fontePadraoVermelho"/>
-                            </h:panelGrid>
-                            <h:panelGrid columns="1">
-                                <a4j:commandLink id="idEntrar" styleClass="idNovo iLink" value="Entrar" action="#{controleUsuarioBean.validacao}" render="outErro"/>
-                            </h:panelGrid>
-                            <a4j:status>
-                                <f:facet name="start">
-                                    <h:graphicImage value="/Imagens/carregando.gif" alt="Entrando"/>
-                                </f:facet>
-                            </a4j:status>
-                            <h:panelGrid columns="1">
-                                <h:outputLabel value="#{controleUsuarioBean.filialDep}" rendered="#{controleUsuarioBean.filialDep != null}" styleClass="fontePadraoNegrito"/>
-                                <h:panelGrid columns="2" rendered="#{controleUsuarioBean.filialDep == null}">
-                                    <h:graphicImage value="/Imagens/vRegistro.png" alt="vRegistro" style="margin-right: 15px;"/>
-                                    <a4j:commandLink styleClass="iLink fontePadrao" style="text-decoration: underline;" value="Verificar registro do Computador"/>
-                                </h:panelGrid>
-                            </h:panelGrid>
-                        </h:form>
-                    </rich:panel>   
-                    <br /><br />
-                    <p style="color: red; font-weight: bold;" class="fontePadrao">
-                        Importante
-                    </p>                    
-                    <p class="fontePadrao">
-                        Para visualizar as guias, é necessário ter instalado em seu computador um Software que possa ler arquivo de formato PDF.
-                    </p>
-                    <p class="fontePadrao">
-                        Caso não tenha, instale o Adobe Reader que pode ser baixado por este link abaixo:
-                    </p>
-                    <p style="text-align: center;" class="fontePadrao">
-                        <h:outputLink value="http://get.adobe.com/br/reader/" target="_blank">
-                            <h:graphicImage url="/Imagens/iconPDF.png" alt="Adobe Reader" style="width: 80px; height: 80px;" title="Baixar - Adobe Reader"/>
-                        </h:outputLink>
-                    </p>
-                    <p style="text-decoration: underline;" class="fontePadrao">
-                        Compatibilidade
-                    </p>
-                    <div style="margin-left: 215px;">
-                        <p style="text-align: center;"  class="fontePadrao">
-                            <a href="http://br.mozdev.org" target="_blank" title="Firefox">
-                                <h:graphicImage url="/Imagens/iconFirefox.gif" alt="Firefox" style="float: left;"/>
-                            </a>
-                            <a href="http://www.apple.com/br/safari/" target="_blank" title="Firefox">
-                                <h:graphicImage url="/Imagens/iconSafari.gif" alt="Safari" style="float: left;" title="Safari"/>
-                            </a>
-                            <a href="http://www.opera.com/" target="_blank" title="Opera">
-                                <h:graphicImage url="/Imagens/iconOpera.gif" alt="Opera" style="float: left;" title="Opera"/>
-                            </a>
-                            <a href="http://www.google.com/chrome" target="_blank" title="Chrome">
-                                <h:graphicImage url="/Imagens/iconChrome.gif" alt="Chrome" style="float: left;"/>
-                            </a>
-                            <a href="http://windows.microsoft.com/pt-BR/internet-explorer/products/ie/home" target="_blank" title="Internet Explorer">
-                                <h:graphicImage url="/Imagens/iconOffIE.gif" alt="Internet Explorer" style="float: left;"/>
-                            </a>
-                        </p>
-                    </div>
-                    <div style="clear: both;"></div>
-                </rich:panel>
-            </center>
+        <f:view>
+            <p:panelGrid columns="1" styleClass="wrapper sbb" style="z-index: 50">
+                <h:form id="formLogin">
+                    
+                    <h:panelGrid style="width: 1024px">
+                        <p:panel id="i_panel_login" style="border: 0px; float: left;">
+                            <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 35pt!important; margin-top: 10px; font-family: 'Cordia New'"/>
+
+                            <p:imageSwitch effect="fade" style="float: left;" speed="2500" slideshowSpeed="2000">  
+                                <ui:repeat value="#{controleUsuarioBean.images}" var="image" >  
+                                    <p:graphicImage value="/Imagens/index/#{image}" width="700" height="420"/>  
+                                </ui:repeat>  
+                            </p:imageSwitch>  
+                        
+                            <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="250" style="margin-bottom: 20px; float: right"/>
+                        
+                            <p:focus context="i_panel_login"/>
+                            <br />
+
+                            <p:panelGrid columns="1" styleClass="removeBorder" style="width: 250px">
+                                <p:messages id="m_panel" closable="true" />
+                                <h:outputLabel value="Login" for="i_sis_login" />
+                                <p:inputText id="i_sis_login" style="width: 100%" value="#{controleUsuarioBean.usuario.login}" required="true" requiredMessage="Digite um Login" autocomplete="off" maxlength="20" />
+
+                                <h:outputLabel value="Senha " style="margin-bottom: 15px" for="i_sis_senha"/>
+                                <p:password id="i_sis_senha" style="width: 100%" value="#{controleUsuarioBean.usuario.senha}" required="true" requiredMessage="Digite uma Senha" autocomplete="off" maxlength="20" />
+                                <p:commandButton value="Entrar" action="#{controleUsuarioBean.validacao}" update="i_panel_login" style="float: right" />
+                            </p:panelGrid>
+
+                            <p:watermark for="i_sis_login" value="Nome do Usuário" />
+                            <p:watermark for="i_sis_senha" value="Senha" />
+                            
+                            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        </p:panel>
+                    </h:panelGrid>
+                    
+                    <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                        <h:outputLabel value="Verificando Login e Senha de acesso ... Aguarde" />
+                    </p:dialog> 
+                </h:form>
+                
+            </p:panelGrid>
         </f:view>
-        <p style="text-align: center">R'Tools Desenvolvimento de Sistemas LTDA ® - 2013</p>
+        
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
     </h:body>
 </html>

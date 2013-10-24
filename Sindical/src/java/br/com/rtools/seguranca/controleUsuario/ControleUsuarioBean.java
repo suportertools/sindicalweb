@@ -37,6 +37,8 @@ public class ControleUsuarioBean implements Serializable {
     private String msgErro = "";
     private MacFilial macFilial = null;
     private List<ContadorAcessos> listaContador = new ArrayList();
+    private List<String> images = new ArrayList<String>(); 
+    
 
     public String validacao() throws Exception {
 //        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) { 
@@ -122,6 +124,37 @@ public class ControleUsuarioBean implements Serializable {
         }
         return pagina;
     }
+    
+
+    public String getValidacaoIndex() throws IOException {
+        if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null){
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conexao");
+        }
+        HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String requestCliente;        
+        if(request.getParameter("cliente") != null && request.getParameter("cliente") != FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente")){
+            requestCliente = request.getParameter("cliente");
+        }else{
+            requestCliente = "Sindical";            
+        }
+        if(!requestCliente.equals("")){
+            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null){
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
+            }
+            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null){
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
+            }            
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoCliente", requestCliente);
+        }else{
+            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null){
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
+            }          
+            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null){
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
+            }
+        }
+        return null;
+    }    
 
     public String getValidaIndex() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
@@ -304,4 +337,20 @@ public class ControleUsuarioBean implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo");
         }
     }
+    
+    public List<String> getImages() {  
+        if (images.isEmpty()){
+            images = new ArrayList<String>();  
+            images.add("1.jpg");  
+            images.add("2.jpg");  
+            images.add("3.jpg");  
+            images.add("4.jpg");  
+            images.add("5.jpg");  
+        }
+        return images;  
+    } 
+    
+    public void setImages(List<String> images) {
+        this.images = images;
+    }    
 }
