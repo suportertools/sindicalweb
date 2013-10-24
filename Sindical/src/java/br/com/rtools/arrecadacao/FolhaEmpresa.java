@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "ARR_FATURAMENTO_FOLHA_EMPRESA")
 @NamedQuery(name = "FolhaEmpresa.pesquisaID", query = "select c from FolhaEmpresa c where c.id = :pid")
 public class FolhaEmpresa implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
