@@ -15,10 +15,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
 @SessionScoped
@@ -32,7 +34,6 @@ public class CancelarHorarioBean implements Serializable {
     private List<CancelarHorario> listaHorariosCancelados = new ArrayList();
     private List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
     private int idFilial = 0;
-    private int index = -1;
     private int nrQuantidadeDisponivel = 0;
     private int nrQuantidadeCancelado = 0;
     private int nrQuantidadeCancelar = 0;
@@ -41,19 +42,21 @@ public class CancelarHorarioBean implements Serializable {
     private int idHorariosDisponiveis = 0;
     private boolean desabilitaBotoes = false;
     private boolean desabilitaFilial = false;
-    private boolean renderedPeriodo = true;
+    private String tipoCancelamento = "Dia";
 
     public String cancelarHorario(boolean todos) {
 
         if (!todos) {
             if (nrQuantidadeCancelar == 0) {
                 msgConfirma = "Digite uma quantidade!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
                 return null;
             }
         }
 
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
         CancelarHorarioDB db = new CancelarHorarioDBToplink();
+        CancelarHorario ch;
         boolean erro = false;
         acumuladoDB.abrirTransacao();
         for (int i = 0; i < getListaHorariosDisponiveis().size(); i++) {
@@ -64,7 +67,7 @@ public class CancelarHorarioBean implements Serializable {
             } else {
                 cancelarHorario.setHorarios((Horarios) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaHorariosDisponiveis().get(idHorariosDisponiveis).getDescription()), "Horarios"));
             }
-            CancelarHorario ch = db.pesquisaCancelamentoHorario(data, cancelarHorario.getHorarios().getId(), cancelarHorario.getFilial().getId());
+            ch = db.pesquisaCancelamentoHorario(data, cancelarHorario.getHorarios().getId(), cancelarHorario.getFilial().getId());
             if (ch.getId() == -1) {
                 cancelarHorario.setDtData(data);
                 if (todos) {
@@ -113,9 +116,11 @@ public class CancelarHorarioBean implements Serializable {
         if (erro) {
             acumuladoDB.desfazerTransacao();
             msgConfirma = "Erro ao cancelar horário(s)!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         } else {
             msgConfirma = "Horário cancelado com sucesso.";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
             getListaHorariosDisponiveis().clear();
             acumuladoDB.comitarTransacao();
         }
@@ -136,16 +141,19 @@ public class CancelarHorarioBean implements Serializable {
 
         if (intDataInicial < intDataHoje) {
             msgConfirma = "A data inicial tem que ser maior ou igual a data de hoje!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
 
         if (intDataFinal < intDataHoje) {
             msgConfirma = "A data final tem que ser maior ou igual a data de hoje!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
 
         if (intDataFinal < intDataInicial) {
             msgConfirma = "A data final tem que ser maior ou igual que a data inicial!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
             return null;
         }
 
@@ -221,6 +229,7 @@ public class CancelarHorarioBean implements Serializable {
 
         if (erro) {
             msgConfirma = "Erro ao cancelar horário(s) do período!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));             
             acumuladoDB.desfazerTransacao();
             return null;
         }
@@ -228,35 +237,36 @@ public class CancelarHorarioBean implements Serializable {
         listaHorariosCancelados.clear();
         cancelarHorario = new CancelarHorario();
         msgConfirma = "Horários cancelados com sucesso";
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));  
         return null;
     }
 
-    public String excluir() {
+    public void excluir(CancelarHorario ch) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        CancelarHorario ch = (CancelarHorario) dB.pesquisaCodigo(listaHorariosCancelados.get(index).getId(), "CancelarHorario");
+        ch = (CancelarHorario) dB.pesquisaCodigo(ch.getId(), "CancelarHorario");
         if (ch != null) {
             if (ch.getId() != -1) {
                 dB.abrirTransacao();
                 if (dB.deletarObjeto(ch)) {
                     dB.comitarTransacao();
                     msgConfirma = "Registro excluído com sucesso.";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                 } else {
                     dB.desfazerTransacao();
                     msgConfirma = "Erro ao excluir horário cancelado!";
-                    return null;
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));                    
+                    return;
                 }
             }
         }
-        index = -1;
         calculaQuantidadeDisponivel();
         getListaHorariosCancelados().clear();
-        return "cancelarHorario";
     }
 
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
             getFilial();
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();            
             List<Filial> select = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             for (int i = 0; i < select.size(); i++) {
                 if (filial.getId() != -1) {
@@ -279,41 +289,26 @@ public class CancelarHorarioBean implements Serializable {
         return listaFiliais;
     }
 
+    public void setListaFiliais(List<SelectItem> listaFiliais) {
+        this.listaFiliais = listaFiliais;
+    }
+    
     public List<SelectItem> getListaHorariosDisponiveis() {
         getListaHorariosCancelados();
         List<SelectItem> result = new ArrayList<SelectItem>();
-        if (!listaFiliais.isEmpty()) {
-            CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-            List<Horarios> select = cancelarHorarioDB.listaTodosHorariosDisponiveisPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), data, false);
-            if (select.isEmpty()) {
-                desabilitaBotoes = true;
-                idHorariosDisponiveis = 0;
-            } else {
-                desabilitaBotoes = false;
-//                int y = 0;
-                for (int i = 0; i < select.size(); i++) {
-//                    boolean cont = true;
-//                    for (int x = 0; x < listaHorariosCancelados.size(); x++) {
-//                        if(listaHorariosCancelados.get(x).getHorarios().getId() == select.get(i).getId()) {
-//                            if(listaHorariosCancelados.get(x).getQuantidade() == select.get(i).getQuantidade()) {
-//                                cont = false;                            
-//                            }
-//                        }
-//                    }
-                    //if(cont) {
-                    result.add(
-                            new SelectItem(
-                            new Integer(i),
-                            select.get(i).getHora(),
-                            Integer.toString(select.get(i).getId())));
-                    //y++;
-                    //}
-                }
-//                if(y > 0){
-//                    desabilitaBotoes = false;
-//                } else {
-//                    desabilitaBotoes = true;
-//                }
+        CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
+        List<Horarios> select = cancelarHorarioDB.listaTodosHorariosDisponiveisPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), data, false);
+        if (select.isEmpty()) {
+            desabilitaBotoes = true;
+            idHorariosDisponiveis = 0;
+        } else {
+            desabilitaBotoes = false;
+            for (int i = 0; i < select.size(); i++) {
+                result.add(
+                        new SelectItem(
+                        new Integer(i),
+                        select.get(i).getHora(),
+                        Integer.toString(select.get(i).getId())));
             }
         }
         return result;
@@ -345,10 +340,11 @@ public class CancelarHorarioBean implements Serializable {
 
     public List<CancelarHorario> getListaHorariosCancelados() {
         listaHorariosCancelados.clear();
-        CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-        if (renderedPeriodo) {
+        if (getTipoCancelamento().equals("Dia")) {
+            CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
             listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), data, null);
-        } else {
+        } else if (getTipoCancelamento().equals("Período")) {
+            CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
             listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), data, dataFinal);
         }
         return listaHorariosCancelados;
@@ -378,7 +374,7 @@ public class CancelarHorarioBean implements Serializable {
         nrQuantidadeCancelar = 0;
         nrQuantidadeCancelado = 0;
         nrQuantidadeDisponivel = 0;
-        if (renderedPeriodo) {
+        if (getTipoCancelamento().equals("Dia")) {
             CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
             int idHorario = -1;
             if (!getListaHorariosDisponiveis().isEmpty()) {
@@ -393,10 +389,10 @@ public class CancelarHorarioBean implements Serializable {
                 CancelarHorario cancelarHorarioA = cancelarHorarioDB.pesquisaCancelamentoHorario(data, idHorario, Integer.parseInt(getListaFiliais().get(idFilial).getDescription()));
                 if (cancelarHorarioA != null) {
                     if (horarios.getQuantidade() > 0) {
-                        if (cancelarHorarioA.getQuantidade() > horarios.getQuantidade()) {
+                        if(cancelarHorarioA.getQuantidade() > horarios.getQuantidade()) {
                             nrQuantidadeDisponivel = 0;
                         } else {
-                            nrQuantidadeDisponivel = horarios.getQuantidade() - cancelarHorarioA.getQuantidade();
+                            nrQuantidadeDisponivel = horarios.getQuantidade() - cancelarHorarioA.getQuantidade();                            
                         }
                     }
                     nrQuantidadeCancelado = cancelarHorarioA.getQuantidade();
@@ -410,7 +406,7 @@ public class CancelarHorarioBean implements Serializable {
     public int calculaQuantidadeDisponivel(int quantidadeDisponivel, int quantidadeCancelada) {
         int quantidadeRestante = 0;
         if (quantidadeDisponivel > 0) {
-            if (quantidadeCancelada > quantidadeDisponivel) {
+            if(quantidadeCancelada > quantidadeDisponivel) {
                 quantidadeRestante = 0;
             } else {
                 quantidadeRestante = quantidadeDisponivel - quantidadeCancelada;
@@ -495,14 +491,6 @@ public class CancelarHorarioBean implements Serializable {
         this.desabilitaFilial = desabilitaFilial;
     }
 
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
     public Date getDataFinal() {
         return dataFinal;
     }
@@ -511,33 +499,28 @@ public class CancelarHorarioBean implements Serializable {
         this.dataFinal = dataFinal;
     }
 
-    public boolean isRenderedPeriodo() {
-        return renderedPeriodo;
-    }
-
-    public void setRenderedPeriodo(boolean renderedPeriodo) {
-        this.renderedPeriodo = renderedPeriodo;
-    }
-
-    public String cancelamentoPor() {
+    public void cancelamentoPor(TabChangeEvent event) {
+        if (event.getTab().getTitle().equals("Dia")) {
+            setTipoCancelamento("Dia");
+        } else if (event.getTab().getTitle().equals("Período")) {
+            setTipoCancelamento("Período");            
+        } else {
+            setTipoCancelamento("");
+        }
         data = DataHoje.dataHoje();
         dataFinal = DataHoje.dataHoje();
-        if (renderedPeriodo) {
-            renderedPeriodo = false;
-        } else {
-            renderedPeriodo = true;
-        }
         calculaQuantidadeDisponivel();
-        return "cancelarHorario";
     }
 
-    public String excluirCancelamentos() {
+    public void excluirCancelamentos() {
         CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
         List<CancelarHorario> list;
-        if (renderedPeriodo) {
+        if (getTipoCancelamento().equals("Dia")) {
             list = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), data, null);
-        } else {
+        } else if (getTipoCancelamento().equals("Período")) {
             list = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), data, dataFinal);
+        } else {
+            return;
         }
         if (!list.isEmpty()) {
             boolean erro = false;
@@ -546,7 +529,7 @@ public class CancelarHorarioBean implements Serializable {
                 dB.abrirTransacao();
                 for (int i = 0; i < list.size(); i++) {
                     CancelarHorario ch = (CancelarHorario) dB.pesquisaObjeto(list.get(i).getId(), "CancelarHorario");
-                    if (ch != null) {
+                    if(ch != null) {
                         if (!dB.deletarObjeto(ch)) {
                             erro = true;
                             break;
@@ -554,25 +537,33 @@ public class CancelarHorarioBean implements Serializable {
                     }
                 }
                 if (erro) {
-                    msgConfirma = "Erro ao excluir horários!";
                     dB.desfazerTransacao();
-                    return null;
+                    msgConfirma = "Erro ao excluir horários!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                 } else {
                     dB.comitarTransacao();
-                    index = -1;
                     calculaQuantidadeDisponivel();
                     getListaHorariosCancelados().clear();
                     msgConfirma = "Horarios excluídos com sucesso.";
-                    return null;
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                 }
             } catch (Exception e) {
-                msgConfirma = "Erro ao excluir horários!";
                 dB.desfazerTransacao();
-                return null;
+                msgConfirma = "Erro ao excluir horários!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             }
         } else {
             msgConfirma = "Não existem horários a serem excluídos para data / período!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", msgConfirma));
         }
-        return null;
+    }
+
+    
+    public String getTipoCancelamento() {
+        return tipoCancelamento;
+    }
+
+    public void setTipoCancelamento(String tipoCancelamento) {
+        this.tipoCancelamento = tipoCancelamento;
     }
 }
