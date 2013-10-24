@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,6 +16,7 @@ import org.apache.tomcat.util.http.fileupload.FileItemFactory;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 
 public class servletUpload extends HttpServlet {
 
@@ -32,9 +32,10 @@ public class servletUpload extends HttpServlet {
             ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
             uploadHandler.setSizeMax(3072 * 3072);
             try {
-                List<FileItem> items = uploadHandler.parseRequest(request);
+                //List<FileItem> items = uploadHandler.parseRequest(request. );
                 //List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
                 
+                List<FileItem> items = uploadHandler.parseRequest(new ServletRequestContext(request));
                 
                 for (int i = 0; i < items.size(); i++){
                     //FileItem item = (FileItem) itr.next();
