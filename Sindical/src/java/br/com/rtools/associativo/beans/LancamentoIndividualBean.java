@@ -3,17 +3,25 @@ package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
 import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
+import br.com.rtools.financeiro.CondicaoPagamento;
+import br.com.rtools.financeiro.FTipoDocumento;
+import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.financeiro.db.ServicoRotinaDB;
 import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaDB;
+import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -30,20 +38,113 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class LancamentoIndividualBean {
     private Fisica fisica = new Fisica();
+    private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<SelectItem> listaJuridica = new ArrayList<SelectItem>();
     private List<SelectItem> listaDiaVencimento = new ArrayList<SelectItem>();
+    private List<SelectItem> listaParcelas = new ArrayList<SelectItem>();
     private int idServico = 0;
     private int idJuridica = 0;
-    private int idDia = 0;
+    private int idDia = 1;
+    private int idParcela = 0;
     private List<Movimento> listaMovimento = new ArrayList();
-    private String cobrancaBancaria = "sim";
+    private String cobrancaBancaria = "nao";
     private String entrada = "sim";
     private String descontoFolha = "nao";
     private String totalPagar = "";
     private String msgConfirma = "";
-    private int parcelas = 0;
     private Pessoa responsavel = new Pessoa();
+    private Lote lote = new Lote();
+    
+    public void adicionarParcelas(){
+        String vencto_ini = "";
+        DataHoje dh = new DataHoje();
+        listaMovimento.clear();
+        
+        if (entrada.equals("sim")){
+            vencto_ini = dh.data();
+        }else{
+            vencto_ini = dh.incrementarMeses(1, dh.data());
+        }
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        if (pessoaComplemento.getId() == -1){
+            pessoaComplemento.setCobrancaBancaria(true);
+            pessoaComplemento.setNrDiaVencimento(idDia);
+            pessoaComplemento.setPessoa(fisica.getPessoa());
+        }
+        
+        int parcelas = idParcela;
+        
+        FTipoDocumento td = new FTipoDocumento();
+        if (descontoFolha.equals("sim")){
+            td = (FTipoDocumento)sv.pesquisaCodigo(13, "FTipoDocumento");
+        }else{
+            td = (FTipoDocumento)sv.pesquisaCodigo(2, "FTipoDocumento");
+        }
+        
+        for (int i = 0; i < parcelas; i++){
+            float valor = Moeda.divisaoValores(Moeda.converteUS$(totalPagar), parcelas);
+            
+            listaMovimento.add(new Movimento(
+                    -1, 
+                    new Lote(), 
+                    new Plano5(), 
+                    fisica.getPessoa(),
+                    (Servicos)sv.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()),"Servicos"), 
+                    null, // BAIXA
+                    (TipoServico)sv.pesquisaCodigo(1, "TipoServico"), // TIPO SERVICO
+                    null, // ACORDO
+                    Moeda.converteFloatR$Float(valor), // VALOR
+                    DataHoje.data().substring(3), // REFERENCIA
+                    vencto_ini, // VENCIMENTO
+                    1, // QUANTIDADE
+                    true, // ATIVO
+                    "E", // ES
+                    false, // OBRIGACAO
+                    responsavel, // PESSOA TITULAR
+                    fisica.getPessoa(), // PESSOA BENEFICIARIO
+                    "", // DOCUMENTO
+                    "", // NR_CTR_BOLETO
+                    vencto_ini, // VENCIMENTO ORIGINAL
+                    0, // DESCONTO ATE VENCIMENTO
+                    0, // CORRECAO
+                    0, // JUROS
+                    0, // MULTA
+                    0, // DESCONTO
+                    0, // TAXA
+                    0, // VALOR BAIXA
+                    td, // FTipo_documento 13 - CARTEIRA, 2 - BOLETO
+                    0 // REPASSE AUTOMATICO
+            ));
+            if (cobrancaBancaria.equals("sim"))
+                vencto_ini = Integer.valueOf(idDia) + dh.incrementarMeses(1, vencto_ini).substring(2);
+            else
+                vencto_ini = dh.incrementarMeses(1, vencto_ini);
+        }
+        
+    }
+    
+    public String salvar(){
+        // CODICAO DE PAGAMENTO
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        CondicaoPagamento cp = new CondicaoPagamento();
+        
+        if (DataHoje.converteDataParaInteger(listaMovimento.get(0).getVencimento()) > DataHoje.converteDataParaInteger(DataHoje.data())){
+            cp = (CondicaoPagamento)sv.pesquisaCodigo(2, "CondicaoPagamento");
+        }else{
+            cp = (CondicaoPagamento)sv.pesquisaCodigo(1, "CondicaoPagamento");
+        }
+        
+        if(!sv.inserirObjeto(pessoaComplemento)){
+            msgConfirma = " Erro ao salvar Pessoa Complemento!";
+            sv.desfazerTransacao();
+            return null;
+        }
+        
+        return null;
+    }
     
     public void pesquisaDescontoFolha(){
         responsavel = new Pessoa();
@@ -72,6 +173,16 @@ public class LancamentoIndividualBean {
     public Fisica getFisica() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null){
             fisica = (Fisica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+            PessoaDB db = new PessoaDBToplink();
+            
+            pessoaComplemento = db.pesquisaPessoaComplementoPorPessoa(fisica.getPessoa().getId());
+            if (pessoaComplemento.getId() != -1){
+                if (pessoaComplemento.isCobrancaBancaria()){
+                    cobrancaBancaria = "sim";
+                    idDia = pessoaComplemento.getNrDiaVencimento();
+                }else
+                    cobrancaBancaria = "nao";
+            }
             responsavel = new Pessoa();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         }
@@ -159,20 +270,15 @@ public class LancamentoIndividualBean {
             LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
             List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), Integer.parseInt(listaServicos.get(idServico).getDescription()));
             
+            float vl = Float.valueOf( ((Double)valor.get(0).get(0)).toString() );
+            
+            totalPagar = Moeda.converteR$Float(vl);
         }
         return Moeda.converteR$(totalPagar);
     }
 
     public void setTotalPagar(String totalPagar) {
         this.totalPagar = totalPagar;
-    }
-
-    public int getParcelas() {
-        return parcelas;
-    }
-
-    public void setParcelas(int parcelas) {
-        this.parcelas = parcelas;
     }
 
     public int getIdJuridica() {
@@ -281,4 +387,34 @@ public class LancamentoIndividualBean {
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
     }
+
+    public List<SelectItem> getListaParcelas() {
+         if (listaParcelas.isEmpty()) {
+            for (int i = 1; i <= 24; i++) {
+                listaParcelas.add(new SelectItem(Integer.toString(i)));
+            }
+        }
+        return listaParcelas;
+    }
+
+    public void setListaParcelas(List<SelectItem> listaParcelas) {
+        this.listaParcelas = listaParcelas;
+    }
+
+    public int getIdParcela() {
+        return idParcela;
+    }
+
+    public void setIdParcela(int idParcela) {
+        this.idParcela = idParcela;
+    }
+
+    public Lote getLote() {
+        return lote;
+    }
+
+    public void setLote(Lote lote) {
+        this.lote = lote;
+    }
+
 }
