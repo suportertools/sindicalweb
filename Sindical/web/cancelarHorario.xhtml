@@ -6,7 +6,6 @@
                 xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Cancelar Horários</title>
-        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
         <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>        
         <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
@@ -98,7 +97,7 @@
                         <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.excluirCancelamentos}" onclick="i_dlg_s4.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":formCancelarHorarioNovo:, :formCancelarHorario:i_panel_grid_horarios"/> 
                         <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s4.hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
-                    <p:dialog widgetVar="i_dlg_s5" header="Deseja excluir todos horários cancelados desta data?" resizable="false" width="400" modal="true">
+                    <p:dialog widgetVar="i_dlg_s5" header="Deseja excluir todos horários cancelados desta data?" resizable="false" width="400" modal="true" style="font-size: 10pt;">
                         <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{cancelarHorarioBean.excluirCancelamentos}" onclick="i_dlg_s5.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":formCancelarHorarioNovo:, :formCancelarHorario:i_panel_grid_horarios"/> 
                         <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s5.hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
