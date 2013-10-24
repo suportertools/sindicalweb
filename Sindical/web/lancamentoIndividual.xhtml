@@ -49,7 +49,7 @@
                             <h:outputLabel value="Serviços" />
                             <br />
                             <h:selectOneMenu id="idServico" value="#{lancamentoIndividualBean.idServico}">
-                                <a4j:ajax event="change" listener="#{lancamentoIndividualBean.limpaEmpresaConvenio()}" render="i_panel_serv_conv"/>
+                                <a4j:ajax event="change" listener="#{lancamentoIndividualBean.limpaEmpresaConvenio()}" render="i_panel_serv_conv i_panel_valores"/>
                                 <f:selectItems value="#{lancamentoIndividualBean.listaServicos}" />
                             </h:selectOneMenu>
                         </h:column>
@@ -67,23 +67,26 @@
                     <br />
                     
                     <h:outputLabel value="Histórico" />
-                    <h:inputTextarea value="" style="width: 100%" rows="3"/>
+                    <h:inputTextarea value="#{lancamentoIndividualBean.lote.historico}" style="width: 100%" rows="3"/>
                     
                     <br />
                     
-                    <h:panelGrid styleClass="divFundo" columns="5" style="width: 100%; padding: 10px">
+                    <h:panelGrid id="i_panel_valores" styleClass="divFundo" columns="6" style="width: 100%; padding: 10px">
                         <h:column>
                             <h:outputLabel value="Total Pagar" styleClass="fontePadraoNegrito"/>
                             <br />
                             <h:inputText value="#{lancamentoIndividualBean.totalPagar}" size="8">
-                                <a4j:ajax event="change" render="@this" />
+                                <a4j:ajax event="change" render="i_panel_valores" />
                             </h:inputText>
                        </h:column>
                         
                         <h:column>
                             <h:outputLabel value="Parcelas" styleClass="fontePadraoNegrito"/>
                             <br />
-                            <h:inputText value="#{lancamentoIndividualBean.parcelas}" size="5"/>
+                            <h:selectOneMenu id="idParcelas" value="#{lancamentoIndividualBean.idParcela}">
+                                <a4j:ajax event="change"  />
+                                <f:selectItems value="#{lancamentoIndividualBean.listaParcelas}" />
+                            </h:selectOneMenu>
                         </h:column>
                         
                         <h:column>
@@ -99,6 +102,7 @@
                             <h:outputLabel value="Cobrança Bancária" styleClass="fontePadraoNegrito"/>
                             <br />
                             <h:selectOneRadio value="#{lancamentoIndividualBean.cobrancaBancaria}">
+                                <a4j:ajax event="change" render="i_panel_valores" />
                                 <f:selectItem itemLabel="Sim" itemValue="sim" />
                                 <f:selectItem itemLabel="Não" itemValue="nao" />
                             </h:selectOneRadio>
@@ -112,6 +116,10 @@
                                 <f:selectItems value="#{lancamentoIndividualBean.listaDiaVencimento}" />
                             </h:selectOneMenu>
                         </h:column>
+                        
+                        <h:column>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Gerar Parcelas" action="#{lancamentoIndividualBean.adicionarParcelas}" render="i_panel_grid" title="Gerar parcelas para Pessoa"/>
+                        </h:column>
                     </h:panelGrid>
                     
                     <br />
@@ -119,25 +127,27 @@
                     
                     <h:outputLabel value="Parcelas" styleClass="fonteFranklinNegrito" style="font-size: 15pt"/>
                     
-                    <rich:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma parcela foi criada" rows="13">
-                        <rich:column style="text-align: center;">
-                            <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
-                            <h:outputText value="" />
-                        </rich:column>
-                        
-                        <rich:column>
-                            <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                            <h:outputText value="" />
-                        </rich:column>
-                        
-                        <rich:column style="text-align: center;">
-                            <f:facet name="header"><h:outputText value="Pago"/></f:facet>
-                            <h:outputText value="" />
-                        </rich:column>
-                    </rich:dataTable>
+                    <h:panelGrid id="i_panel_grid">
+                        <rich:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma parcela foi criada" rows="13">
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
+                                <h:outputText value="#{linha.vencimento}" />
+                            </rich:column>
+
+                            <rich:column>
+                                <f:facet name="header"><h:outputText value="Valor"/></f:facet>
+                                <h:outputText value="#{linha.valor}" />
+                            </rich:column>
+
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header"><h:outputText value="Pago"/></f:facet>
+                                <h:outputText value="#{linha.valorBaixa}" />
+                            </rich:column>
+                        </rich:dataTable>
+                    </h:panelGrid>
                     <br />
                     
-                    <h:panelGrid columns="3">
+                    <h:panelGrid columns="3" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}">
                         <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
                         <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
                         <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
