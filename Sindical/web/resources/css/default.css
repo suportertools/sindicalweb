@@ -1,8 +1,10 @@
 body {  
-     margin: 0px;  
      padding: 0;  
      color: #616161;  
+     
  }  
+ 
+ body, div:first-of-type { margin: 0 auto}
  h1, h2, h3 {  
      margin-top: 0;  
  }  
@@ -25,6 +27,10 @@ body {
  a:hover {  
      text-decoration: underline;  
  }  
+ 
+//a {text-decoration: none; color: #000;}
+//a:hover {color: #6f758f;text-decoration: underline}
+ 
  a img {  
      border: none;  
  }  
@@ -206,3 +212,28 @@ body {
  .ui-widget {  
    font-size: 12px !important;  
  }  
+
+.google-footer-bar {
+    //position: absolute;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+    border-top: 1px solid #ebebeb;
+    background: white;
+    clear: both;
+}
+
+.sb tr, .sb td {  
+    border: none !important;  
+    padding: 0.0em 0.0em;
+}  
+
+.sbb tr, .sbb td {  
+    border: none !important;  
+}  
+
+div.wrapper { width: 1024px; }
+
+.fundoCinza{ background: #f6f6f6;}
+
+.fonteHeader{float: left; font-size: 35pt!important; margin-bottom: 15px; font-family: 'Cordia New'}

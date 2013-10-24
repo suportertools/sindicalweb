@@ -1,122 +1,76 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:a4j="http://richfaces.org/a4j">
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <!-- <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/> -->
-        <style type="text/css">
-            .divBotao {background: #e0e0e0;}
-            .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
-            .divBotao:hover {background: #abc4eb;}            
-            .menuLinksClass li {float: left!important;}            
-            .menuLinksClass li a {color: white; text-decoration: none;}            
-        </style>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
     <f:view>
-        <a4j:status name="i_status" onstart="#{rich:component('i_panel_status')}.show(); return false;" onstop="#{rich:component('i_panel_status')}.hide();" />
-        <rich:popupPanel id="i_panel_status" modal="true" resizeable="false" height="50" width="200">
-            <center>
-                <h:outputLabel value="Aguarde ... " styleClass="fontePadrao" />
-            </center> 
-        </rich:popupPanel>
-        <a4j:status name="i_status_icon" onstart="#{rich:component('i_panel_status_icon')}.show(); return false;" onstop="#{rich:component('i_panel_status_icon')}.hide();" />
-        <rich:popupPanel id="i_panel_status_icon" modal="true" resizeable="false" height="150" width="70">
-            <center>
-                <h:graphicImage value="/Imagens/carregandox.gif" height="150" width="70" />
-            </center> 
-        </rich:popupPanel>
-        <rich:notifyMessages stayTime="3500" showDetail="true" showCloseButton="true" showShadow="false" globalOnly="false"/>
-        <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}" style="-moz-box-shadow: 0px 0px 10px #888; -webkit-box-shadow: 0px 0px 10px #888; box-shadow: 0px 0px 10px #888;">
-            <table style="width: 100%; height: 5px; background-color: dodgerblue; border: 2px;">
-                <tr>
-                    <!-- ESQUERDA -->
-                    <td align="left" width="25%">
-                        <h:graphicImage value="/Imagens/logoSindical.png" class="logotipo"/>
-                    </td>
+        <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}">
+            <p:panel style="height: 70px; border: 0px">
+                <p:panel styleClass="wrapper" style="border: 0px; background: transparent; padding: 0px">
+                    <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="90px" height="50" style="float: left"/>
 
-                    <!-- CENTRO -->
-                    <td align="center" width="40%">
-                        <!-- <h:panelGrid columns="6" rendered="true">
-                            <rich:list styleClass="menuLinksClass" var="menuLinks" value="# {chamadaPaginaBean.menuLinks}" iterationStatusVar="it">
-                                <h:graphicImage url="/Imagens/iconBack.png" styleClass="separadorLinks" title="Voltar um nível" rendered="# {menuLinks.descricao != 'Menu Principal'}"/>
-                                <h:commandLink value="# {menuLinks.descricao}" title="# {menuLinks.descricao}" action="# {chamadaPaginaBean.cliqueMenuLinks(it.index)}" rendered="# {menuLinks.ativo}" immediate="true" styleClass="fonteLinksSuporte" /> 
-                            </rich:list>
-                        </h:panelGrid>                         -->
-                        <h:panelGrid columns="6">
-                            <h:column>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento0} " action="#{chamadaPaginaBean.clickNivelLink0}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                    <h:outputLabel value="Bem vindo " style="float: left; font-size: 10pt; margin-left: 50px"/>
+                    <h:outputLabel value="#{controleUsuarioBean.login}" style="float: left; margin-left: 5px; font-size: 10pt; font-weight: bold;"/>
+                    <p:commandLink value="Sair" action="#{usuarioBean.sairSistema}" title="Desejo mesmo sair do Sistema?" style="float: right; font-weight: bold; margin-left: 20px" immediate="true"/>
+                    <br /><br />
+                    <h:outputText  value="#{controleUsuarioBean.filial}" style="color: #bc4763; font-size: 10pt;  margin-left: 50px; "/>
+                </p:panel>
+            </p:panel>
+            
+            <p:panel styleClass="wrapper sb" style="border: 0px; background: #dbeaeb">
+                <h:column>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" style="font-weight: bold;" title="Ir ao Menu Principal" immediate="true"/>
+                </h:column>
+                
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render1}" value=" / "/>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento1}" action="#{chamadaPaginaBean.clickNivelLink1}" title="Atualiza Página" immediate="true" />
+                </h:column>
+                
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render2}" value=" / "/>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento2}" action="#{chamadaPaginaBean.clickNivelLink2}" title="Atualiza Página" immediate="true"/>
+                </h:column>
+                
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render3}" value=" / "/>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento3} " action="#{chamadaPaginaBean.clickNivelLink3}" title="Atualiza Página" immediate="true"/>
+                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render1}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento1}" action="#{chamadaPaginaBean.clickNivelLink1}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render4}" value=" / "/>
+                    <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento4} " action="#{chamadaPaginaBean.clickNivelLink4}" title="Atualiza Página" immediate="true"/>
+                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render2}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento2}" action="#{chamadaPaginaBean.clickNivelLink2}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render5}" value=" / "/>
+                    <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento5}" action="#{chamadaPaginaBean.clickNivelLink5}" title="Atualiza Página" immediate="true"/>
+                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render3}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento3} " action="#{chamadaPaginaBean.clickNivelLink3}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render6}" value=" / "/>
+                    <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento6}" action="#{chamadaPaginaBean.clickNivelLink6}" title="Atualiza Página" immediate="true"/>
+                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render4}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento4} " action="#{chamadaPaginaBean.clickNivelLink4}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render7}" value=" / "/>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento7}" action="#{chamadaPaginaBean.clickNivelLink7}" title="Atualiza Página" immediate="true"/>
+                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render5}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento5}" action="#{chamadaPaginaBean.clickNivelLink5}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render8}" value=" / "/>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" title="Atualiza Página" immediate="true"/>
+                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render6}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento6}" action="#{chamadaPaginaBean.clickNivelLink6}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
-
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render7}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento7}" action="#{chamadaPaginaBean.clickNivelLink7}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
-
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render8}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
-
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render9}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
-                        </h:panelGrid>
-                    </td>
-
-                    <!-- DIREITA -->
-                    <td align="center" width="25%">
-                        <h:panelGrid columns="3" rendered="#{chamadaPaginaBean.renderPesquisa}">
-                            <h:inputText class="idFazer" size="50" value="#{chamadaPaginaBean.oqFazer}" title="O que quero fazer Agora?" />
-                            <!-- <h:commandButton value="OK" action="# {chamadaPaginaBean.entrarPagina}" immediate="true"/> -->
-
-                            <rich:dropDownMenu>
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/seguranca.png"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Perfil / Meu cadastro" styleClass="divBotao" action="#{chamadaPaginaBean.usuarioPerfil}" immediate="true"/>
-                                <rich:menuItem label="Sair" action="#{usuarioBean.sairSistema}" styleClass="divBotao" immediate="true"/>
-                            </rich:dropDownMenu>
-                        </h:panelGrid>
-                    </td>
-                </tr>
-            </table>
+                <h:column>
+                    <h:outputLabel rendered="#{chamadaPaginaBean.render9}" value=" / "/>
+                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" title="Atualiza Página" immediate="true"/>
+                </h:column>
+            </p:panel>            
         </h:form>
     </f:view>
 </html>
