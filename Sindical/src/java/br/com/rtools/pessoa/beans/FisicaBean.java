@@ -8,7 +8,6 @@ import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
 import br.com.rtools.homologacao.Agendamento;
-import br.com.rtools.homologacao.beans.PesquisarProfissaoJSFBean;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
@@ -20,18 +19,24 @@ import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.validator.ValidatorException;
 import javax.servlet.ServletContext;
+import javax.servlet.http.Part;
 
 @ManagedBean
 @SessionScoped
-public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializable {
+public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     private Fisica fisica;
     private PessoaEndereco pessoaEndereco;
@@ -76,6 +81,8 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
     private int idIndexEndereco;
     private int idIndexFisica;
     private int idIndexPessoaEmp;
+    private Part file;
+    private String fileContent = "";
 
     public FisicaBean() {
         fisica = new Fisica();
@@ -160,7 +167,6 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
     public String salvar() {
         NovoLog logs = new NovoLog();
         FisicaDB db = new FisicaDBToplink();
-        TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
         Pessoa pessoa = fisica.getPessoa();
         List listDocumento;
         if (listaEnd.isEmpty() || pessoa.getId() == -1) {
@@ -174,7 +180,7 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
         if ((fisica.getPessoa().getId() == -1) && (fisica.getId() == -1)) {
-            fisica.getPessoa().setTipoDocumento(dbDoc.pesquisaCodigo(1));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
 
             if (!db.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(),
                     fisica.getDtNascimento(),
@@ -187,7 +193,6 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
                 msgConfirma = "Data de Nascimento esta inválida!";
                 return null;
             }
-
 
             if (pessoa.getDocumento().equals("") || pessoa.getDocumento().equals("0")) {
                 pessoa.setDocumento("0");
@@ -210,7 +215,6 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
                 fisica.setNacionalidade(getListaPaises().get(idPais).getLabel());
                 fisica.setPessoa(pessoa);
                 if (salvarAcumuladoDB.inserirObjeto(fisica)) {
-
 
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
                     msgConfirma = "Cadastro salvo com Sucesso!";
@@ -495,11 +499,18 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         return null;
     }
 
-    public String editarFisica() {
+    public String editarFisica(DataObject object) {
+        if (fisica.getId() != ((Fisica) object.getArgumento0()).getId()) {
+            FacesContext context = FacesContext.getCurrentInstance();
+            File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
+            if (fExiste.exists()) {
+                fExiste.delete();
+            }
+
+        }
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
-
-        fisica = (Fisica) listaPessoa.get(idIndexFisica).getArgumento0();
+        fisica = (Fisica) object.getArgumento0();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
@@ -762,7 +773,7 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         }
     }
 
-    public String excluirPessoaEndereco() {        
+    public String excluirPessoaEndereco() {
         if (pessoaEndereco.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             pessoaEndereco = (PessoaEndereco) salvarAcumuladoDB.pesquisaCodigo(pessoaEndereco.getId(), "PessoaEndereco");
@@ -1164,8 +1175,8 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         for (int i = 0; i < agendas.size(); i++) {
             salvarAcumuladoDB.abrirTransacao();
-            if(salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agendas.get(i).getId(), "Agendamento"))) {
-                salvarAcumuladoDB.comitarTransacao();                
+            if (salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agendas.get(i).getId(), "Agendamento"))) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
             }
@@ -1493,5 +1504,44 @@ public class FisicaBean extends PesquisarProfissaoJSFBean implements Serializabl
 
     public void setPessoaComplemento(PessoaComplemento pessoaComplemento) {
         this.pessoaComplemento = pessoaComplemento;
+    }
+
+    public void upload() {
+        try {
+            fileContent = new Scanner(file.getInputStream())
+                    .useDelimiter("\\A").next();
+        } catch (IOException e) {
+            // Error handling
+        }
+    }
+
+    public Part getFile() {
+        return file;
+    }
+
+    public void setFile(Part file) {
+        this.file = file;
+    }
+
+    public String getFileContent() {
+        return fileContent;
+    }
+
+    public void setFileContent(String fileContent) {
+        this.fileContent = fileContent;
+    }
+
+    public void validateFile(FacesContext ctx, UIComponent comp, Object value) {
+        List<FacesMessage> msgs = new ArrayList<FacesMessage>();
+        Part file = (Part) value;
+        if (file.getSize() > 1024) {
+            msgs.add(new FacesMessage("file too big"));
+        }
+        if (!"text/plain".equals(file.getContentType())) {
+            msgs.add(new FacesMessage("not a text file"));
+        }
+        if (!msgs.isEmpty()) {
+            throw new ValidatorException(msgs);
+        }
     }
 }

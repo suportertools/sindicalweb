@@ -514,7 +514,6 @@ public class JuridicaBean implements Serializable {
     public String salvar() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         JuridicaDB db = new JuridicaDBToplink();
-
         TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
         Pessoa pessoa = juridica.getPessoa();
         List listDocumento;
@@ -532,11 +531,7 @@ public class JuridicaBean implements Serializable {
 
         dbSalvar.abrirTransacao();
         if (juridica.getId() == -1) {
-            juridica.getPessoa().setTipoDocumento(
-                    dbDoc.pesquisaCodigo(
-                    Integer.parseInt(
-                    ((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription())));
-
+            juridica.getPessoa().setTipoDocumento((TipoDocumento) dbSalvar.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()), "TipoDocumento"));
             if (juridica.getPessoa().getNome().isEmpty()) {
                 msgConfirma = "O campo nome não pode ser nulo! ";
                 return null;
@@ -604,10 +599,7 @@ public class JuridicaBean implements Serializable {
                         return null;
                     }
                 }
-                juridica.getPessoa().setTipoDocumento(
-                        dbDoc.pesquisaCodigo(
-                        Integer.parseInt(
-                        ((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription())));
+                juridica.getPessoa().setTipoDocumento((TipoDocumento) dbSalvar.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()), "TipoDocumento"));
             }
             if (!validaTipoDocumento(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), juridica.getPessoa().getDocumento())) {
                 msgConfirma = "Documento Invalido!";
@@ -1468,14 +1460,12 @@ public class JuridicaBean implements Serializable {
         return mask;
     }
 
-    public List<SelectItem> getListaTipoDocumento() {
-        TipoDocumentoDB db = new TipoDocumentoDBToplink();
+    public List<SelectItem> getListaTipoDocumento() {        
         if (listaTipoDocumento.isEmpty()) {
-            int i = 0;
-            List select = db.pesquisaTodos();
-            while (i < select.size()) {
-                listaTipoDocumento.add(new SelectItem(new Integer(i), (String) ((TipoDocumento) select.get(i)).getDescricao(), Integer.toString(((TipoDocumento) select.get(i)).getId())));
-                i++;
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<TipoDocumento> list = (List<TipoDocumento>) salvarAcumuladoDB.listaObjeto("TipoDocumento");
+            for (int i = 0; i < list.size(); i++) {
+                listaTipoDocumento.add(new SelectItem(new Integer(i), (String) (list.get(i)).getDescricao(), Integer.toString((list.get(i)).getId())));
             }
         }
         return listaTipoDocumento;
