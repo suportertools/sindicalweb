@@ -17,37 +17,53 @@ public interface SalvarAcumuladoDB {
     public void desfazerTransacao();
 
     public Object pesquisaCodigo(int id, String tipo);
+    
+    /**
+     * 
+     * @param int id [] = {1, 2, 3};
+     * @param tipo
+     * @return 
+     */
+    public List pesquisaCodigo(int id[], String tipo);
+
+    public Object pesquisaObjeto(int id, String tabela);
+
+    /**
+     * 
+     * @param int id [] = {1, 2, 3};
+     * @param tabela
+     * @return 
+     */
+    public List pesquisaObjeto(int id[], String tabela);
 
     public List listaObjeto(String tabela);
-    
+
     /**
-     * 
+     *
      * @param tabela/Object
      * @param order (Default true)
-     * @return 
+     * @return
      */
     public List listaObjeto(String tabela, boolean order);
-    
+
     /**
-     * 
+     *
      * @param tabela
      * @param descricao
-     * @return 
+     * @return
      */
     public List pesquisaObjetoPorDescricao(String tabela, String descricao);
-            
+
     /**
-     * 
+     *
      * @param tabela
      * @param descricao
      * @param tipoPesquisa (default = null, inicial = i, parcial = p)
-     * @return 
+     * @return
      */
     public List pesquisaObjetoPorDescricao(String tabela, String descricao, String tipoPesquisa);
 
     public List listaObjetoGenericoOrdem(String tabela, String descricao);
-
-    public Object pesquisaObjeto(int id, String tabela);
 
     public boolean executeQuery(String textQuery);
 

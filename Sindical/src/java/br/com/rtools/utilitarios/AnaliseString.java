@@ -1,7 +1,5 @@
 package br.com.rtools.utilitarios;
 
-import java.util.Vector;
-
 public class AnaliseString {
 
     public static boolean conteudoNumero(String conteudo) {
@@ -215,5 +213,13 @@ public class AnaliseString {
             }
         }
         return novaDescricao;
+    }
+    
+    public static String converteNullString(Object object) {
+        if (object == null) {
+            return "";
+        } else {
+            return String.valueOf(object);
+        }
     }
 }

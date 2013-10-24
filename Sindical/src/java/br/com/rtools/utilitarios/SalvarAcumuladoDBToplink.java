@@ -86,6 +86,19 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
+    
+    @Override
+    public List pesquisaCodigo(int id[], String tipo) {
+        List<Object> list = new ArrayList<Object>(); 
+        Object object; 
+        for (int i = 0; i < id.length; i++) {
+            object = pesquisaCodigo(id[i], tipo);
+            if(object != null) {
+                list.add(object);
+            }   
+        }
+        return list;
+    }
 
     @Override
     public Object pesquisaObjeto(int id, String tabela) {
@@ -100,6 +113,19 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
+    
+    @Override
+    public List pesquisaObjeto(int id[], String tabela) {
+        List<Object> list = new ArrayList<Object>(); 
+        Object object; 
+        for (int i = 0; i < id.length; i++) {
+            object = pesquisaObjeto(id[i], null);
+            if(object != null) {
+                list.add(object);
+            }   
+        }
+        return list;
+    }    
 
     @Override
     public List listaObjeto(String tabela) {
