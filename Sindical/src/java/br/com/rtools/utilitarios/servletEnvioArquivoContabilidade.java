@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,9 +13,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.tomcat.util.http.fileupload.FileItem;
+import org.apache.tomcat.util.http.fileupload.FileItemFactory;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
 import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+import org.apache.tomcat.util.http.fileupload.servlet.ServletRequestContext;
 
 public class servletEnvioArquivoContabilidade extends HttpServlet {
 
@@ -25,29 +26,18 @@ public class servletEnvioArquivoContabilidade extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         try {
-            DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
-            // fileItemFactory.setSizeThreshold(1 * 3072 * 3072); //1 MB  
-
+            FileItemFactory fileItemFactory = new DiskFileItemFactory();
             ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
-            // uploadHandler.setSizeMax(3072 * 3072);  
+            uploadHandler.setSizeMax(3072 * 3072);
             try {
-                List items = uploadHandler.parseRequest(request);
-                Iterator itr = items.iterator();
-                int i = 0;
-                while (itr.hasNext()) {
-                    FileItem item = (FileItem) itr.next();
-                    upload(item, request);
-                    i++;
-                    //if (!item.isFormField()) {  
-                    //    int size = item.getInputStream().available();  
-                    //    bs = new byte[size];  
-                    //    item.getInputStream().read(bs);  
-                    //}  
+                List<FileItem> items = uploadHandler.parseRequest(new ServletRequestContext(request));
+                for (int i = 0; i < items.size(); i++){
+                    upload(items.get(i), request);
                 }
             } finally {
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FileUploadException e) {
+            
         }
 
         //  response.sendRedirect((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno"));
@@ -95,7 +85,7 @@ public class servletEnvioArquivoContabilidade extends HttpServlet {
             out.close();
             request.getSession().removeAttribute("enviarArquivosBean");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e);
         }
     }

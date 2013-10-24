@@ -25,31 +25,18 @@ public class servletUpload extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         try {
-            //DiskFileItemFactory fileItemFactory = new DiskFileItemFactory();
             FileItemFactory fileItemFactory = new DiskFileItemFactory();
-            //fileItemFactory.setSizeThreshold(1 * 3072 * 3072); //1 MB  
-
             ServletFileUpload uploadHandler = new ServletFileUpload(fileItemFactory);
             uploadHandler.setSizeMax(3072 * 3072);
             try {
-                //List<FileItem> items = uploadHandler.parseRequest(request. );
-                //List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
-                
                 List<FileItem> items = uploadHandler.parseRequest(new ServletRequestContext(request));
-                
                 for (int i = 0; i < items.size(); i++){
-                    //FileItem item = (FileItem) itr.next();
                     upload(items.get(i), request);
-                    //if (!item.isFormField()) {  
-                    //    int size = item.getInputStream().available();  
-                    //    bs = new byte[size];  
-                    //    item.getInputStream().read(bs);  
-                    //}  
                 }
             } finally {
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (FileUploadException e) {
+            
         }
 
         //  response.sendRedirect((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno"));
@@ -86,7 +73,7 @@ public class servletUpload extends HttpServlet {
             out.flush();
             out.close();
             temFoto = true;
-        } catch (Exception e) {
+        } catch (IOException e) {
             temFoto = false;
             System.out.println(e);
         }
