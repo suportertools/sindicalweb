@@ -1,26 +1,31 @@
-package br.com.rtools.homologacao.beans;
+package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.db.ProfissaoDB;
 import br.com.rtools.pessoa.db.ProfissaoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import org.richfaces.component.SortOrder;
 
-public class PesquisarProfissaoJSFBean {
+public class PesquisarProfissaoBean {
 
     protected Profissao profissao = new Profissao();
     private String por;
     private String combo;
     private List<Profissao> listaProfissao;
-    private int idIndexProf = -1;
     private String descricaoProfissao = "";
+    private SortOrder profissaoOrder = SortOrder.unsorted;
 
-    public PesquisarProfissaoJSFBean() {
+    public PesquisarProfissaoBean() {
         profissao = new Profissao();
         por = "";
         combo = "profissao";
         listaProfissao = new ArrayList();
     }
+    
+    public void sortByProfissao() {
+        profissaoOrder = SortOrder.unsorted;
+    }  
 
     public List<Profissao> getListaProfissao() {
         if (!descricaoProfissao.equals("")) {
@@ -36,20 +41,14 @@ public class PesquisarProfissaoJSFBean {
 
     public void inicial() {
         listaProfissao.clear();
-//        combo = "profissao";
         por = "I";
     }
 
     public void parcial() {
         listaProfissao.clear();
-//        combo = "profissao";
         por = "P";
     }
 
-    public void editar() {
-        profissao = (Profissao) listaProfissao.get(idIndexProf);
-    }
-    
     public void editar(Profissao p) {
         profissao = p;
     }
@@ -81,14 +80,6 @@ public class PesquisarProfissaoJSFBean {
         this.combo = combo;
     }
 
-    public int getIdIndexProf() {
-        return idIndexProf;
-    }
-
-    public void setIdIndexProf(int idIndexProf) {
-        this.idIndexProf = idIndexProf;
-    }
-
     public void setListaProfissao(List<Profissao> listaProfissao) {
         this.listaProfissao = listaProfissao;
     }
@@ -99,5 +90,13 @@ public class PesquisarProfissaoJSFBean {
 
     public void setDescricaoProfissao(String descricaoProfissao) {
         this.descricaoProfissao = descricaoProfissao;
+    }
+
+    public SortOrder getProfissaoOrder() {
+        return profissaoOrder;
+    }
+
+    public void setProfissaoOrder(SortOrder profissaoOrder) {
+        this.profissaoOrder = profissaoOrder;
     }
 }

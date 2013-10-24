@@ -1,6 +1,5 @@
 package br.com.rtools.pessoa.beans;
 
-import br.com.rtools.homologacao.beans.PesquisarProfissaoJSFBean;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
@@ -15,7 +14,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class PessoaComplementoBean extends PesquisarProfissaoJSFBean implements Serializable {
+public class PessoaComplementoBean extends PesquisarProfissaoBean implements Serializable {
 
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private Pessoa pessoa = new Pessoa();
