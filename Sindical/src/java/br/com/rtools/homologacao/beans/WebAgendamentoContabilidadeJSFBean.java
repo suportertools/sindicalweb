@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.db.WebContabilidadeDB;
 import br.com.rtools.arrecadacao.db.WebContabilidadeDBToplink;
@@ -36,7 +37,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoJSFBean {
+public class WebAgendamentoContabilidadeJSFBean extends PesquisarProfissaoBean {
 
     private List listaGrid = new ArrayList();
     private List listaEmDebito = new ArrayList();

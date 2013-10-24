@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao.beans;
 
+import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Senha;
@@ -32,7 +33,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
-public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serializable {
+public class HomologacaoBean extends PesquisarProfissaoBean implements Serializable {
 
     private String msgHomologacao = "";
     private String msgConfirma = "";
@@ -591,9 +592,6 @@ public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serial
     public String salvar() {
         FisicaDB dbFis = new FisicaDBToplink();
         HomologacaoDB dbAg = new HomologacaoDBToplink();
-        TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
-        DemissaoDB dbDem = new DemissaoDBToplink();
-        StatusDB dbSta = new StatusDBToplink();
         List listDocumento;
         // List listDocumento = new ArrayList();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -617,7 +615,7 @@ public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serial
 //        }
 
         // SALVAR FISICA -----------------------------------------------
-        fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
             msgConfirma = "Documento Inválido!";
             return null;
@@ -686,7 +684,7 @@ public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serial
             return null;
         }
 
-        agendamento.setDemissao(dbDem.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
+        agendamento.setDemissao((Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
         agendamento.setPessoaEmpresa(pessoaEmpresa);
         //agendamento.setHomologador(null);
 
@@ -704,18 +702,18 @@ public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serial
         }
 
         if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) == 2) {
-            agendamento.setStatus(dbSta.pesquisaCodigo(2));
+            agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
         } else if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) == 4) {
-            agendamento.setStatus(dbSta.pesquisaCodigo(4));
+            agendamento.setStatus((Status) sv.pesquisaCodigo(4, "Status"));
         } else if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) == 7) {
-            agendamento.setStatus(dbSta.pesquisaCodigo(7));
+            agendamento.setStatus((Status) sv.pesquisaCodigo(7, "Status"));
             agendamento.setHomologador(null);
         } else if (Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription()) == 5) {
             if (DataHoje.converteDataParaInteger(agendamento.getData()) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-                agendamento.setStatus(dbSta.pesquisaCodigo(2));
+                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
                 agendamento.setHomologador(null);
             } else {
-                agendamento.setStatus(dbSta.pesquisaCodigo(5));
+                agendamento.setStatus((Status) sv.pesquisaCodigo(5, "Status"));
             }
         }
 
@@ -823,9 +821,9 @@ public class HomologacaoBean extends PesquisarProfissaoJSFBean implements Serial
 
     public String pesquisarFuncionarioCPF() {
         HomologacaoDB db = new HomologacaoDBToplink();
-        TipoDocumentoDB dbTipo = new TipoDocumentoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
-        fisica.getPessoa().setTipoDocumento(dbTipo.pesquisaCodigo(1));
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
         PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(fisica.getPessoa().getDocumento());
         if (pe.getId() != -1) {
             pessoaEmpresa = pe;
