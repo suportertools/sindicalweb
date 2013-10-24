@@ -50,61 +50,44 @@
                     </h:panelGrid>
 
                     <div style="overflow:auto; height:380px;">
-                        <br />
-                        <rich:dataTable value="#{fisicaBean.listaPessoa}" var="linha" iterationStatusVar="it"  style="width: 95%" id="tbl" styleClass="stable">
-                            <rich:column style="text-align: center;">
-                                <f:facet name="header">
-                                    <h:outputText value="#"/>
-                                </f:facet>
-                                <h:outputText value="#{it.index}"/>
-                            </rich:column>
-
+                        <br />                        
+                        <rich:dataTable value="#{fisicaBean.listaPessoa}" var="linha" style="width: 95%" id="tbl" styleClass="stable">
                             <rich:column styleClass="colunaPesquisa">
                                 <f:facet name="header">
                                     <h:outputText value="ID"/>
                                 </f:facet>
-
-                                <a4j:commandLink action="#{fisicaBean.editarFisica}" value="#{linha.argumento0.pessoa.id}">
-                                    <a4j:param value="#{it.index}" assignTo="#{fisicaBean.idIndexFisica}" />
-                                </a4j:commandLink>
-
-                            </rich:column>                  
-
+                                <a4j:commandLink action="#{fisicaBean.editarFisica(linha)}" value="#{linha.argumento0.pessoa.id}" />
+                            </rich:column>
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="Nome"/>
                                 </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.nome}"/>
-                            </rich:column>                  
-
+                                <a4j:commandLink action="#{fisicaBean.editarFisica(linha)}" value="#{linha.argumento0.pessoa.nome}" styleClass="underline-hover"/>
+                            </rich:column>
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="RG"/>
                                 </f:facet>
                                 <h:outputText value="#{linha.argumento0.rg}"/>
-                            </rich:column>                  
-
+                            </rich:column>
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="CPF"/>
                                 </f:facet>
                                 <h:outputText value="#{linha.argumento0.pessoa.documento}"/>
-                            </rich:column>                  
-
+                            </rich:column>
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="Nascimento"/>
                                 </f:facet>
                                 <h:outputText value="#{linha.argumento0.nascimento}"/>
-                            </rich:column>                  
-
+                            </rich:column>
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="Telefone"/>
                                 </f:facet>
                                 <h:outputText value="#{linha.argumento0.pessoa.telefone1}"/>
-                            </rich:column>                       
-
+                            </rich:column>
                             <rich:column>
                                 <f:facet name="header">
                                     <h:outputText value="E-mail"/>
