@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro.db;
 
 import br.com.rtools.financeiro.*;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.principal.DB;
@@ -381,9 +382,10 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         try {
             Query qry;
             String and_sindical = "";
-            if (!sindical)
+            if (!sindical) {
                 and_sindical = " and m.servicos.id <> 1";
-            
+            }
+
             texto = "select m    "
                     + "  from Movimento m "
                     + " where m.baixa is null "
@@ -1109,7 +1111,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + "                                   CONCAT( SUBSTRING(d.referenciaFinal,4,8)  , "
                     + "                                           SUBSTRING(d.referenciaFinal,0,3)   )");
 
-
             Query qry2 = getEntityManager().createNativeQuery(
                     "select fol.nr_valor  as valor,                                                                     "
                     + "       nr_percentual as percentual                                                                 "
@@ -1142,7 +1143,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + "       SUBSTRING(des.ds_ref_final,4,7)   || SUBSTRING  (des.ds_ref_final,1,2)  ");
             //valor = (Object[]) qry.getSingleResult();
             List resultado = (Vector) qry2.getSingleResult();
-
 
             return new Object[]{(new BigDecimal((Double) resultado.get(0))).floatValue(), (new BigDecimal((Double) resultado.get(1))).floatValue()};
         } catch (Exception e) {
@@ -1579,8 +1579,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public List pesquisaGuia(String campo, String valor) {
         List result = null;
         try {
-            String textoQuery =
-                    "  select distinct g.id, g, m"
+            String textoQuery
+                    = "  select distinct g.id, g, m"
                     + "  from Guia g,"
                     + "       MovimentoResponsavel m"
                     + " where g.lote.id = m.movimento.lote.id"
@@ -1605,8 +1605,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public List pesquisaGuia(Guia guia) {
         List result = null;
         try {
-            String textoQuery =
-                    "  select m"
+            String textoQuery
+                    = "  select m"
                     + "  from Movimento m"
                     + " where m.lote.id = :pid"
                     + "   and m.ativo = 1";
@@ -1623,8 +1623,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public List<Movimento> pesquisaAcordoAberto(int idAcordo) {
         List<Movimento> result = new ArrayList();
         try {
-            String textoQuery =
-                    "  select m"
+            String textoQuery
+                    = "  select m"
                     + "  from Movimento m"
                     + " where m.acordo.id = :pid"
                     + "   and m.ativo = true"
@@ -1642,8 +1642,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public List<Movimento> pesquisaAcordoTodos(int idAcordo) {
         List<Movimento> result = new ArrayList();
         try {
-            String textoQuery =
-                    "  select m "
+            String textoQuery
+                    = "  select m "
                     + "    from Movimento m "
                     + "   where m.acordo.id = :pid "
                     + "   order by m.dtVencimento asc";
@@ -1665,8 +1665,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public List<Movimento> pesquisaAcordoParaExclusao(int idAcordo) {
         List<Movimento> result = new ArrayList();
         try {
-            String textoQuery =
-                    "  select m"
+            String textoQuery
+                    = "  select m"
                     + "  from Movimento m"
                     + " where m.acordo.id = :pid"
                     + "   and m.ativo = true";
@@ -1735,7 +1735,6 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
 //            
 //            lista.add("delete from Lote where id in ("+ids_lote+")");
 //            lista.add("delete from Acordo a where a.id = "+idAcordo);            
-
 //            textQuery = "delete from fin_historico where id_movimento in ( select id from fin_movimento where id in ("+ids+")); "
 //                        + "" +
 //                        "delete from fin_mensagem_cobranca where id_movimento in ( select id from fin_movimento where id in ("+ids+") and id_acordo = "+idAcordo+" and is_ativo is true );"
@@ -2035,4 +2034,62 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return null;
         }
     }
+
+    /** 
+     * @param pessoa
+     * @param vencimento ( Caso a data vencimento seja definida como null, será passado o parâmetro )
+     * @return List<Movimento> (Lista movimentos em débito da pessoa)
+     */    
+    @Override
+    public List<Movimento> listaDebitoPessoa(Pessoa pessoa, Date vencimento) {
+        String queryString;
+        if (vencimento == null) {
+            queryString = " current_date ";
+        } else {
+            queryString = "'"+vencimento+"'";
+        }        
+        try {
+            Query qry = getEntityManager().createQuery("SELECT MOV FROM Movimento AS MOV WHERE MOV.pessoa.id = :idPessoa AND MOV.dtVencimento < :vencimento AND MOV.ativo = TRUE AND MOV.baixa IS NULL");
+            qry.setParameter("idPessoa", pessoa.getId());
+            qry.setParameter("vencimento", queryString);
+            if (!qry.getResultList().isEmpty()) {
+                return qry.getResultList();
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
+    /**
+     * @param pessoa
+     * @param vencimento ( Caso a data vencimento seja definida como null, será passado o parâmetro )
+     * @return boolean (true -> se existe débito / false -> caso não exista)
+     */
+    @Override
+    public boolean existeDebitoPessoa(Pessoa pessoa, Date vencimento) {
+        String queryString;
+        if (vencimento == null) {
+            queryString = " current_date ";
+        } else {
+            queryString = "'"+vencimento+"'";
+        }
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "          SELECT id                                         "
+                    + "          FROM fin_movimento                             "
+                    + "         WHERE id_pessoa = " + pessoa.getId() + "        "
+                            + "   AND dt_vencimento < "+queryString+"           "
+                            + "   AND is_ativo = TRUE                           "
+                            + "   AND id_baixa IS NULL                          "
+                            + " LIMIT 1                                         ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
 }
