@@ -1530,7 +1530,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public String getStatusEmpresa() {
         HomologacaoDB db = new HomologacaoDBToplink();
         if (juridica.getId() != -1 && listaMovimento.isEmpty()) {
-            listaMovimento = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
+            listaMovimento = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
         }
         if (!listaMovimento.isEmpty()) {
             statusEmpresa = "EM DÉBITO";
