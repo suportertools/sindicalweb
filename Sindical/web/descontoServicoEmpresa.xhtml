@@ -38,7 +38,7 @@
                                     <f:selectItems value="#{descontoServicoEmpresaBean.listaServicos}" />
                                 </h:selectOneMenu>
                                 <h:outputLabel for="idValorDesconto" value="Valor" />
-                                <h:inputText id="idValorDesconto" value="#{descontoServicoEmpresaBean.desconto}" class="realSemSimbolo" dir="rtl" size="5"/>
+                                <h:inputText id="idValorDesconto" value="#{descontoServicoEmpresaBean.desconto}" dir="rtl" size="5"/>
                             </h:panelGrid>
                             <h:panelGrid columns="4" style="float: left; margin-top: 15px;">
                                 <a4j:commandLink styleClass="idPesquisar iLink" value="Adicionar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('formDescontoServicoEmpresa:divSalvar')}.show(); return false;" />

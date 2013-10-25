@@ -40,6 +40,7 @@
                                 </h:selectOneRadio>
                             </h:column>
                         </h:panelGrid>
+                        <rich:messages ajaxRendered="true" style="font-size: 13pt"/>
                     </h:panelGrid>
                     
                     <br />
@@ -118,12 +119,11 @@
                         </h:column>
                         
                         <h:column>
-                            <a4j:commandLink styleClass="idNovo iLink" value="Gerar Parcelas" action="#{lancamentoIndividualBean.adicionarParcelas}" render="i_panel_grid" title="Gerar parcelas para Pessoa"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Gerar Parcelas" action="#{lancamentoIndividualBean.adicionarParcelas}" render="i_panel_grid i_panel_botao" title="Gerar parcelas para Pessoa"/>
                         </h:column>
                     </h:panelGrid>
                     
-                    <br />
-                    <br />
+                    <br /><br />
                     
                     <h:outputLabel value="Parcelas" styleClass="fonteFranklinNegrito" style="font-size: 15pt"/>
                     
@@ -131,26 +131,29 @@
                         <rich:dataTable value="#{lancamentoIndividualBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma parcela foi criada" rows="13">
                             <rich:column style="text-align: center;">
                                 <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
-                                <h:outputText value="#{linha.vencimento}" />
+                                <h:outputText value="#{linha.argumento0.vencimento}" styleClass="fontePadraoNegrito"/>
                             </rich:column>
 
                             <rich:column>
                                 <f:facet name="header"><h:outputText value="Valor"/></f:facet>
-                                <h:outputText value="#{linha.valor}" />
+                                <h:inputText id="i_input_valor" value="#{linha.argumento1}" dir="RTL">
+                                    <a4j:ajax event="change" render="i_input_valor" />
+                                </h:inputText>
                             </rich:column>
 
                             <rich:column style="text-align: center;">
                                 <f:facet name="header"><h:outputText value="Pago"/></f:facet>
-                                <h:outputText value="#{linha.valorBaixa}" />
+                                <h:outputText value="#{linha.argumento0.valorBaixa}" styleClass="fontePadraoNegrito"/>
                             </rich:column>
                         </rich:dataTable>
                     </h:panelGrid>
+                    
                     <br />
                     
-                    <h:panelGrid columns="3" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}">
-                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar"/>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
+                    <h:panelGrid id="i_panel_botao" columns="3">
+                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" title="Salvar/Atualizar" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{lancamentoIndividualBean.novo()}" title="Novo" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}"/>
+                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir" rendered="#{!lancamentoIndividualBean.listaMovimento.isEmpty()}"/>
                     </h:panelGrid>
                 </h:panelGrid>
                 
@@ -167,7 +170,7 @@
                             </h:panelGrid>
 
                             <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{lancamentoIndividualBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma"/>
                             <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                         </center>
                     </div>
@@ -200,7 +203,7 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <h:outputText id="outConfirma" styleClass="fontePadrao"/>
+                            <h:outputText id="outConfirma" value="#{lancamentoIndividualBean.msgConfirma}" styleClass="fontePadrao"/>
                             <br /><br />
                             <h:commandLink styleClass="idNovo iLink closeModal" action="lancamentoIndividual" value="OK" title="OK" />
                         </center>
