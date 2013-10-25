@@ -16,6 +16,7 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
@@ -635,6 +636,156 @@ public class ImpressaoParaSocios {
         }
         //return null;
     }
+    
+    public static void branco(String pathPasta, String nomeDownload, String path, String pathVerso, Socios socios, PessoaEmpresa pessoaEmpresa, MatriculaSocios matriculaSocios, boolean imprimirVerso, List<Socios> listaDependentes) {
+        PessoaEndereco pesEndSindicato = new PessoaEndereco();
+        PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
+        String dados[] = new String[32];
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        try {
+            FacesContext faces = FacesContext.getCurrentInstance();
+            //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
+            Collection listaSocios = new ArrayList<FichaSocial>();
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(path));
+            Juridica sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
+            pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
+
+
+            
+                dados[0] = "";
+                dados[1] = "";
+                dados[2] = "";
+                dados[3] = "";
+                dados[4] = "";
+                dados[5] = "";
+                dados[6] = "";
+                dados[7] = "";
+                dados[8] = "";
+                dados[9] = "";
+                dados[10] = "";
+                dados[11] = "";
+                dados[12] = "";
+                dados[13] = "";
+                dados[14] = "";
+                dados[15] = "";
+                dados[26] = "";
+                dados[27] = "";
+                dados[16] = "";
+                dados[17] = "";
+                dados[18] = "";
+                dados[19] = "";
+                dados[20] = "";
+                dados[21] = "";
+                dados[22] = "";
+                dados[23] = "";
+                dados[24] = "";
+                dados[25] = "";
+                dados[28] = "";
+                dados[29] = "";
+                dados[30] = "";
+                dados[31] = "";
+
+                try {
+                    listaSocios.add(new FichaSocial(0,
+                            0, // ID TITULAR
+                            0, // NR MATRICULA
+                            new Date(), // DATA EMISSÃO
+                            new Date(),
+                            "", // MATR GRUPO
+                            "", // MATR SOC_CATEGORIA
+                            "", // NOME
+                            "", // SEXO
+                            new Date(), // NASCIMENTO
+                            "", // NATURALIDADE
+                            "", // NACIONALIDADE
+                            "", // RG
+                            "", // DOCUMENTO
+                            "", // CARTEIRINHA
+                            "", // SERIE
+                            "", // ESTADO CÍVIL
+                            "", // PAI
+                            "", // MÃR
+                            "", //TEL1
+                            "", //TEL2
+                            "", //EMAIL1
+                            dados[0],
+                            dados[1],
+                            dados[2],
+                            dados[3],
+                            dados[4],
+                            dados[5],
+                            dados[6],
+                            dados[7],
+                            false,
+                            dados[26],
+                            dados[27],
+                            dados[8],
+                            dados[9],
+                            dados[10],
+                            dados[11],
+                            dados[12],
+                            dados[13],
+                            dados[14],
+                            dados[15],
+                            dados[16],
+                            dados[17],
+                            "", // fax
+                            DataHoje.converte(DataHoje.data()),
+                            dados[18],
+                            dados[19],
+                            dados[20],
+                            dados[21],
+                            dados[22],
+                            dados[23],
+                            dados[24],
+                            dados[25],
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            "", // obs
+                            "",
+                            sindicato.getPessoa().getNome(),
+                            pesEndSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
+                            pesEndSindicato.getNumero(),
+                            pesEndSindicato.getComplemento(),
+                            pesEndSindicato.getEndereco().getBairro().getDescricao(),
+                            pesEndSindicato.getEndereco().getCidade().getCidade(),
+                            pesEndSindicato.getEndereco().getCidade().getUf(),
+                            AnaliseString.mascaraCep(pesEndSindicato.getEndereco().getCep()),
+                            sindicato.getPessoa().getDocumento(),
+                            "",
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                            "",
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getTelefone1(),
+                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath(pathVerso),
+                            dados[29],
+                            new Date(),
+                            dados[30],
+                            pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
+                            dados[31]));
+                } catch (Exception erro) {
+                    System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+                }
+            
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaSocios);
+            JasperPrint print = JasperFillManager.fillReport(
+                    jasper,
+                    null,
+                    dtSource);
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+            sa.salvaNaPasta(pathPasta);
+            Download download = new Download(nomeDownload,
+                    pathPasta,
+                    "application/pdf",
+                    FacesContext.getCurrentInstance());
+            download.baixar();
+        } catch (Exception erro) {
+            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+        }
+        //return null;
+    }    
 
     public static String getFotoSocio(Socios socios) {
         FacesContext context = FacesContext.getCurrentInstance();
