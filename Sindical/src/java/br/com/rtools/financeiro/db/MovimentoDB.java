@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro.db;
 
 import br.com.rtools.financeiro.*;
+import br.com.rtools.pessoa.Pessoa;
 //import br.com.rtools.listax.GGeracao;
 import java.util.Date;
 import java.util.List;
@@ -146,4 +147,18 @@ public interface MovimentoDB {
     public List movimentosBaixadosPorEvt(int idEvt);
 
     public Movimento pesquisaMovimentosAcordado(int idPessoa, String idRef, int idTipoServ, int idServicos);
+    
+    /** 
+     * @param pessoa
+     * @param vencimento ( Caso a data vencimento seja definida como null, será passado o parâmetro )
+     * @return List<Movimento> (Lista movimentos em débito da pessoa)
+     */      
+    public List<Movimento> listaDebitoPessoa(Pessoa pessoa, Date vencimento);
+    
+    /**
+     * @param pessoa
+     * @param vencimento ( Caso a data vencimento seja definida como null, será passado o parâmetro )
+     * @return boolean (true -> se existe débito / false -> caso não exista)
+     */    
+    public boolean existeDebitoPessoa(Pessoa pessoa, Date vencimento);
 }
