@@ -724,7 +724,7 @@ public class RecepcaoBean implements Serializable {
         List lista = new ArrayList();
         if (juridica.getId() != -1) {
             HomologacaoDB db = new HomologacaoDBToplink();
-            lista = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
+            lista = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
         }
         if (!lista.isEmpty()) {
             statusEmpresa = "EM DÉBITO";

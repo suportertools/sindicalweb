@@ -1031,7 +1031,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB db = new HomologacaoDBToplink();
         List lista = new ArrayList();
         if (juridica.getId() != -1) {
-            lista = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
+            lista = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
         }
         if (!lista.isEmpty()) {
             statusEmpresa = "EM DÉBITO";

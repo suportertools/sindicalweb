@@ -813,7 +813,7 @@ public class WebAgendamentoContribuinteJSFBean extends PesquisarProfissaoBean {
     public String getStatusEmpresa() {
         HomologacaoDB db = new HomologacaoDBToplink();
         if (juridica.getId() != -1) {
-            listaEmDebito = db.pesquisaEmpresaEmDebito(juridica.getPessoa().getId(), DataHoje.data());
+            listaEmDebito = db.pesquisaPessoaDebito(juridica.getPessoa().getId(), DataHoje.data());
         }
         if (!listaEmDebito.isEmpty()) {
             statusEmpresa = "EM DÉBITO";
