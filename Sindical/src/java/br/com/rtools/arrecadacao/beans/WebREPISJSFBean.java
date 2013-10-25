@@ -152,7 +152,7 @@ public class WebREPISJSFBean {
         }
         HomologacaoDB db = new HomologacaoDBToplink();
         setShowProtocolo(false);
-        if (!db.pesquisaEmpresaEmDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
+        if (!db.pesquisaPessoaDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
             msg = " PROCURAR SÍNDICATO! ";
             return null;
         } else {
