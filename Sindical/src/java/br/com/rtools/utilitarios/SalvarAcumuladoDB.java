@@ -68,4 +68,12 @@ public interface SalvarAcumuladoDB {
     public boolean executeQuery(String textQuery);
 
     public boolean descricaoExiste(String descricao, String campo, String objeto);
+    
+    public List nativeQuery(String textQuery);
+    
+    public List nativeQuery(String textQuery, boolean singleResult);
+    
+    public List objectQuery(String textQuery);
+    
+    public List objectQuery(String textQuery, boolean singleResult);
 }
