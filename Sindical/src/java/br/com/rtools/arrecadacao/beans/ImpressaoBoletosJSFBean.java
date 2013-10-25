@@ -38,6 +38,7 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.Linha;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.util.ArrayList;
@@ -615,8 +616,8 @@ public class ImpressaoBoletosJSFBean {
         RelatorioContribuintesDB dbContri = new RelatorioContribuintesDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        TipoEnderecoDB dbTipoEnd = new TipoEnderecoDBToplink();
         ConvencaoDB dbConv = new ConvencaoDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
 
         Relatorios relatorios = new Relatorios();
         Juridica sindicato = new Juridica();
@@ -626,7 +627,7 @@ public class ImpressaoBoletosJSFBean {
         List listaCnaes = new ArrayList();
         TipoEndereco tipoEndereco = new TipoEndereco();
         relatorios = db.pesquisaRelatoriosPorJasper("/Relatorios/ETCONTRIBUINTES6181.jasper");
-        tipoEndereco = dbTipoEnd.pesquisaCodigo(2);
+        tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(2, "TipoEndereco");
         // CONDICAO DO RELATORIO -----------------------------------------------------------
         condicao = "ativos";
 
@@ -845,6 +846,7 @@ public class ImpressaoBoletosJSFBean {
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
         TipoEnderecoDB dbTipoEnd = new TipoEnderecoDBToplink();
         ConvencaoDB dbConv = new ConvencaoDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
 
         Relatorios relatorios = new Relatorios();
         Juridica sindicato = new Juridica();
@@ -854,7 +856,7 @@ public class ImpressaoBoletosJSFBean {
         List listaCnaes = new ArrayList();
         TipoEndereco tipoEndereco = new TipoEndereco();
         relatorios = db.pesquisaRelatoriosPorJasper("/Relatorios/ETESCRITORIO6181.jasper");
-        tipoEndereco = dbTipoEnd.pesquisaCodigo(2);
+        tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(2, "TipoEndereco");
         // CONDICAO DO RELATORIO -----------------------------------------------------------
         condicao = "ativos";
 
