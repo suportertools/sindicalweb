@@ -267,7 +267,7 @@
                                     <rich:column styleClass="coluna">
                                         <f:facet name="header">
                                             <h:outputText value="Horarios" rendered="false"/>
-                                            <h:graphicImage value="/Imagens/horario.png" alt="Horário" title="Horário" width="20" />
+                                            <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
                                         </f:facet>
                                         <a4j:commandLink action="#{agendamentoBean.agendar(linha)}" value="#{linha.argumento0.hora}" render="id_form_agendamento_novo, id_form_agendamento" status="i_status"/>
                                     </rich:column>
@@ -339,95 +339,72 @@
                         </div>
                     </rich:panel>
                 </center>
-                <rich:popupPanel id="i_painel_profissao" modal="true" resizeable="true" domElementAttachment="form" width="600" height="400">
-                    <f:facet name="header">
-                        <h:outputText value="Profissão"/>
-                    </f:facet>
+                <rich:popupPanel id="i_painel_profissao" modal="true" resizeable="true" domElementAttachment="form" width="600" height="400" header="Profissão">
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
                         </h:outputLink>
                     </f:facet>
                     <center>
-                        <h:panelGrid columns="6">
+                        <h:panelGrid columns="7">
                             <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
                             <h:inputText id="idProf" size="20" value="#{agendamentoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Inicial" action="#{agendamentoBean.inicial}" render="i_tbl_prof" status="i_status"/>
-                            <a4j:commandLink styleClass="idNovo iLink" value="Parcial" action="#{agendamentoBean.parcial}" render="i_tbl_prof" status="i_status"/>
+                            <a4j:commandButton value="Inicial" action="#{agendamentoBean.inicial}" render="i_tbl_prof" status="i_status" />
+                            <a4j:commandButton value="Parcial" action="#{agendamentoBean.parcial}" render="i_tbl_prof" status="i_status" />
                             <h:outputText value="Por: " styleClass="fontePadrao"/>
                             <h:selectOneMenu id="idPor" value="#{agendamentoBean.combo}" >
                                 <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
                                 <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
                             </h:selectOneMenu>
+                            <a4j:commandButton value="Cadastrar" action="#{chamadaPaginaBean.profissao()}" immediate="true" />
                         </h:panelGrid>
                         <h:panelGrid columns="1" class="margin-top-maior">
-                            <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
-                                <rich:dataTable var="linha" value="#{agendamentoBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="i_tbl_prof">
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="Id"/>
-                                        </f:facet>
-                                        <a4j:commandLink id="linkPro" action="#{agendamentoBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" />
-                                    </rich:column>
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="Cbo"/>
-                                        </f:facet>
-                                        <h:outputText  value="#{linha.cbo}"/>
-                                    </rich:column>
-                                    <rich:column style="text-align: center;">>
-                                        <f:facet name="header">
-                                            <h:outputText value="Profissão"/>
-                                        </f:facet>
-                                        <h:outputText  value="#{linha.profissao}"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </h:panelGroup>
+                            <rich:extendedDataTable var="linha" value="#{agendamentoBean.listaProfissao}" id="i_tbl_prof" frozenColumns="2" style="height:300px; width: 500px" selectionMode="none" columnClasses="text-center  overflow-visible" rowClasses="overflow-visible">
+                                <f:facet name="header">Lista de profissões</f:facet>
+                                <rich:column width="30">
+                                    <f:facet name="header">Id</f:facet>
+                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
+                                </rich:column>
+                                <rich:column styleClass="text-center">
+                                    <f:facet name="header">Cbo</f:facet>
+                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.cbo}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
+                                </rich:column>
+                                <rich:column styleClass="textoEsquerda" width="350">
+                                    <f:facet name="header">Profissão</f:facet>
+                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.profissao}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                                </rich:column>
+                            </rich:extendedDataTable>
                         </h:panelGrid>
                     </center>
                 </rich:popupPanel>
-                <rich:popupPanel id="i_painel_endereco" modal="true" resizeable="true" width="600" height="400" domElementAttachment="form" >
-                    <f:facet name="header">
-                        <h:outputText value="Endereço"/>
-                    </f:facet>
+                <rich:popupPanel id="i_painel_endereco" modal="true" resizeable="true" width="600" height="400" domElementAttachment="form" header="Endereço">
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
                         </h:outputLink>
                     </f:facet>
                     <center>
-                        <h:panelGrid columns="3">
+                        <h:panelGrid columns="4">
                             <h:outputLabel value="Cep: " styleClass="fontePadrao"/>
                             <h:inputText size="10" id="id_numero_cep" maxlength="8" value="#{agendamentoBean.cepEndereco}" styleClass="fontePadrao" >
-                                <a4j:ajax event="blur" render="this" listener="#{agendamentoBean.limparPesquisaEndereco}" status="i_status"/>
+                                <a4j:ajax event="blur" render="@this" listener="#{agendamentoBean.limparPesquisaEndereco}" />
                             </h:inputText>
-                            <a4j:commandLink styleClass="iLink" value="Pesquisar" action="#{agendamentoBean.pesquisaEndereco}" render="i_tbl_endereco" status="i_status"/>
+                            <a4j:commandButton value="Pesquisar" action="#{agendamentoBean.pesquisaEndereco}" render="i_tbl_endereco" status="i_status" />
+                            <a4j:commandButton value="Cadastrar" action="#{chamadaPaginaBean.endereco()}" immediate="true" />
                         </h:panelGrid>
-                        <h:panelGrid columns="1">
-                            <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
-                                <rich:dataTable value="#{agendamentoBean.listaEnderecos}" var="linha" style="width:100%" id="i_tbl_endereco">
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Id"/>
-                                        </f:facet>
-                                        <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" />
-                                    </rich:column>
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Endereço"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.logradouro.descricao} #{linha.descricaoEndereco.descricao}, #{linha.cidade.cidade} - #{linha.cidade.uf}"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </h:panelGroup>
-                        </h:panelGrid>
+                        <rich:extendedDataTable value="#{agendamentoBean.listaEnderecos}" var="linha" id="i_tbl_endereco" frozenColumns="2" style="height:300px; width: 500px;" selectionMode="none" columnClasses="text-center  overflow-visible" rowClasses="overflow-visible" styleClass="margin-top-maior">
+                            <rich:column width="50">
+                                <f:facet name="header">ID</f:facet>
+                                <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                            </rich:column>
+                            <rich:column width="450">
+                                <f:facet name="header">Endereço</f:facet>
+                                <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.logradouro.descricao} #{linha.descricaoEndereco.descricao}, #{linha.cidade.cidade} - #{linha.cidade.uf}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                            </rich:column>
+                        </rich:extendedDataTable>
                     </center>
                 </rich:popupPanel>
-                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200">
-                    <f:facet name="header">
-                        <h:outputText value="Mensagem"/>
-                    </f:facet>
+                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" header="Mensagem">
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;">
                             <a4j:ajax event="click" render="id_form_agendamento" />
