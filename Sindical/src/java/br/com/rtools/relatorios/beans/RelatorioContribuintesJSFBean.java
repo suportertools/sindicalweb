@@ -90,8 +90,7 @@ public class RelatorioContribuintesJSFBean {
         CidadeDB dbCidade = new CidadeDBToplink();
         JuridicaDB dbJur = new JuridicaDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        TipoEnderecoDB dbTipoEnd = new TipoEnderecoDBToplink();
-
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         Relatorios relatorios = new Relatorios();
         Cidade cidade = new Cidade();
         Juridica contabilidade = new Juridica();
@@ -100,7 +99,7 @@ public class RelatorioContribuintesJSFBean {
         List listaCnaes = new ArrayList();
         TipoEndereco tipoEndereco = new TipoEndereco();
         relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorios).getDescription()));
-        tipoEndereco = dbTipoEnd.pesquisaCodigo(Integer.parseInt(getListaTipoEndereco().get(idTipoEndereco).getDescription()));
+        tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(getListaTipoEndereco().get(idTipoEndereco).getDescription()), "TipoEndereco");
         // CONDICAO DO RELATORIO -----------------------------------------------------------
         condicao = comboCondicao;
 

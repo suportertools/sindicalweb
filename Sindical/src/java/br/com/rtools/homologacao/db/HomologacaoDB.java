@@ -31,7 +31,7 @@ public interface HomologacaoDB {
 
     public List pesquisaPessoaEmpresaPertencente(String doc);
 
-    public List pesquisaEmpresaEmDebito(int id_pessoa, String vencimento);
+    public List pesquisaPessoaDebito(int id_pessoa, String vencimento);
 
     public List pesquisaAgendadoDataMaior(Date data);
 
