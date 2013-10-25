@@ -230,6 +230,48 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return false;
         }
     }
+    
+    @Override
+    public List nativeQuery(String textQuery) {
+        return nativeQuery(textQuery, false);
+    }    
+    
+    @Override
+    public List nativeQuery(String textQuery, boolean singleResult) {        
+        try {
+            Query query = getEntityManager().createNativeQuery(textQuery);
+            if (singleResult) {
+                return (List) query.getSingleResult();
+            } else {
+                return  query.getResultList();
+            }
+        } catch (Exception e) {
+            NovoLog log = new NovoLog();
+            log.novo("Novo Objeto", "Exception - Message: " + e.getMessage());
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List objectQuery(String textQuery) {
+        return objectQuery(textQuery, false);
+    }
+    
+    @Override
+    public List objectQuery(String textQuery, boolean singleResult) {        
+        try {
+            Query query = getEntityManager().createQuery(textQuery);
+            if (singleResult) {
+                return (List) query.getSingleResult();
+            } else {
+                return  query.getResultList();
+            }
+        } catch (Exception e) {
+            NovoLog log = new NovoLog();
+            log.novo("Novo Objeto", "Exception - Message: " + e.getMessage());
+        }
+        return new ArrayList();
+    }
 
     @Override
     public boolean descricaoExiste(String descricao, String campo, String objeto) {
