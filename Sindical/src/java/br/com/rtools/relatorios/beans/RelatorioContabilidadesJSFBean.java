@@ -67,18 +67,18 @@ public class RelatorioContabilidadesJSFBean {
         RelatorioContabilidadesDB dbConta = new RelatorioContabilidadesDBToplink();
         CidadeDB dbCidade = new CidadeDBToplink();
         PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
-        TipoEnderecoDB dbTipoEnd = new TipoEnderecoDBToplink();
         Juridica sindicato = new Juridica();
         PessoaEndereco endSindicato = new PessoaEndereco();
         PessoaEndereco endEscritorio = new PessoaEndereco();
         JuridicaDB dbJur = new JuridicaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
 
         Cidade cidade = new Cidade();
         List listaCnaes = new ArrayList();
         Relatorios relatorios = new Relatorios();
         TipoEndereco tipoEndereco = new TipoEndereco();
         relatorios = db.pesquisaRelatorios(Integer.parseInt(getListaTipoRelatorios().get(idRelatorios).getDescription()));
-        tipoEndereco = dbTipoEnd.pesquisaCodigo(Integer.parseInt(getListaTipoEndereco().get(idTipoEndereco).getDescription()));
+        tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(getListaTipoEndereco().get(idTipoEndereco).getDescription()), "TipoEndereco");
         int qntEmpresasPorContabel = -1;
 
         // CONTABILIDADES DO RELATORIO -----------------------------------------------------------
