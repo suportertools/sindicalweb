@@ -145,9 +145,12 @@ public class CartaoSocialJSFBean {
         if (!listaaux.isEmpty()) {
             SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
             sv.abrirTransacao();
+            DataHoje dh = new DataHoje();
             for (int i = 0; i < listaaux.size(); i++) {
                 Socios socios = (Socios) sv.pesquisaCodigo((Integer) ((List) listaaux.get(i)).get(12), "Socios");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
+                CategoriaDB dbCat = new CategoriaDBToplink();
+                GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
                 if (db.pesquisaSocioCarteirinhaSocio(socios.getId()).isEmpty()) {
 
                     carteirinha.setEmissao(DataHoje.data());
@@ -156,11 +159,7 @@ public class CartaoSocialJSFBean {
                         sv.desfazerTransacao();
                         return null;
                     }
-                    DataHoje dh = new DataHoje();
-
-                    CategoriaDB dbCat = new CategoriaDBToplink();
-                    GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-
+                    
                     socios.setNrViaCarteirinha(1);
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
@@ -177,7 +176,16 @@ public class CartaoSocialJSFBean {
                             return null;
                         }
                     }
+                    
+                    socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
+                    
                     ((List) listaaux.get(i)).set(11, socios.getNrViaCarteirinha());
+                    ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
+                    if (!sv.alterarObjeto(socios)) {
+                        sv.desfazerTransacao();
+                        return null;
+                    }
+                    
                 }
             }
 

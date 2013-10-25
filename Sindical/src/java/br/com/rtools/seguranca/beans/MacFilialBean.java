@@ -1,8 +1,6 @@
 package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
@@ -12,49 +10,53 @@ import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class MacFilialBean implements Serializable {
-
+public class MacFilialBean {
     private MacFilial macFilial;
     private int idFilial;
     private int idDepartamento;
-    private String mensagem;
+    private String msgConfirma;
     private List<MacFilial> listaMacs;
     public List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
     public List<SelectItem> listaDepartamentos = new ArrayList<SelectItem>();
-
-    public MacFilialBean() {
+    
+    public MacFilialBean(){
         macFilial = new MacFilial();
         idFilial = 0;
         idDepartamento = 0;
-        mensagem = "";
+        msgConfirma = "";
         listaMacs = new ArrayList();
     }
-
+    
     public String adicionar() {
         MacFilialDB dbm = new MacFilialDBToplink();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         Filial filial = (Filial) sv.pesquisaObjeto(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), "Filial");
         Departamento departamento = (Departamento) sv.pesquisaObjeto(Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()), "Departamento");
         if (macFilial.getMac().isEmpty()) {
-            mensagem = "Digite um mac válido!";
+            msgConfirma = "Digite um mac válido!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
         if (dbm.pesquisaMac(macFilial.getMac()) != null) {
-            mensagem = "Este computador ja está registrado!";
+            msgConfirma = "Este computador ja está registrado!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
         Registro registro = (Registro) sv.pesquisaObjeto(1, "Registro");
         if (registro.isSenhaHomologacao() && macFilial.getMesa() <= 0) {
-            mensagem = "O campo mesa é obrigatório devido Senha Homologação em Registro ser verdadeiro";
+            msgConfirma = "O campo mesa é obrigatório devido Senha Homologação em Registro ser verdadeiro";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
         macFilial.setDepartamento(departamento);
@@ -63,34 +65,37 @@ public class MacFilialBean implements Serializable {
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.inserirObjeto(macFilial)) {
             salvarAcumuladoDB.comitarTransacao();
-            mensagem = "Registro inserido com sucesso!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Salvo", "Este Computador registrado com sucesso!"));
             macFilial = new MacFilial();
             listaMacs.clear();
         } else {
             salvarAcumuladoDB.desfazerTransacao();
-            mensagem = "Erro ao inserir esse registro!";
+            msgConfirma = "Erro ao inserir esse registro!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
         }
         return null;
-    }
+    }    
+    
 
     public String excluir(MacFilial mf) {
         macFilial = mf;
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        macFilial = (MacFilial) salvarAcumuladoDB.pesquisaObjeto(macFilial.getId(), "MacFilial");
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.deletarObjeto(macFilial)) {
-            salvarAcumuladoDB.comitarTransacao();
-            mensagem = "Registro excluído com sucesso!";
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        macFilial = (MacFilial) sv.pesquisaObjeto(macFilial.getId(), "MacFilial");
+        sv.abrirTransacao();
+        if (sv.deletarObjeto(macFilial)) {
+            sv.comitarTransacao();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Este Registro excluído com sucesso!"));
             listaMacs.clear();
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
-            mensagem = "Erro ao excluir esse registro!";
+            sv.desfazerTransacao();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Erro ao excluir computador!"));
+            
         }
         macFilial = new MacFilial();
         return null;
     }
-
-    public List<SelectItem> getListaFiliais() {
+    
+    public List<SelectItem> getListaFiliais(){
         if (listaFiliais.isEmpty()) {
 //            FilialDB db = new FilialDBToplink();
 //            List<Filial> list = db.pesquisaTodos();
@@ -105,17 +110,22 @@ public class MacFilialBean implements Serializable {
         return listaFiliais;
     }
 
-    public List<SelectItem> getListaDepartamentos() {
-        if (listaDepartamentos.isEmpty()) {
-            PermissaoUsuarioDB pu = new PermissaoUsuarioDBToplink();
-            List<Departamento> list = pu.pesquisaTodosDepOrdenado();
-            for (int i = 0; i < list.size(); i++) {
-                listaDepartamentos.add(new SelectItem(new Integer(i),
-                        list.get(i).getDescricao(),
-                        Integer.toString(list.get(i).getId())));
-            }
+    public List<SelectItem> getListaDepartamentos(){
+        List<SelectItem> result = new Vector<SelectItem>();
+        List<Departamento> select = new ArrayList();
+        PermissaoUsuarioDB pu = new PermissaoUsuarioDBToplink();
+//        DepartamentoDB db = new DepartamentoDBToplink();
+        select = pu.pesquisaTodosDepOrdenado();
+        for(int i = 0; i < select.size(); i++){
+            result.add(new SelectItem(new Integer(i),
+                                      select.get(i).getDescricao(),
+                                      Integer.toString(select.get(i).getId())));
         }
-        return listaDepartamentos;
+        return result;
+    }
+
+    public void refreshForm(){
+        
     }
 
     public MacFilial getMacFilial() {
@@ -142,16 +152,16 @@ public class MacFilialBean implements Serializable {
         this.idDepartamento = idDepartamento;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMsgConfirma() {
+        return msgConfirma;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMsgConfirma(String msgConfirma) {
+        this.msgConfirma = msgConfirma;
     }
 
     public List<MacFilial> getListaMacs() {
-        if (listaMacs.isEmpty()) {
+        if (listaMacs.isEmpty()){
             MacFilialDB db = new MacFilialDBToplink();
             listaMacs = db.pesquisaTodos();
         }
