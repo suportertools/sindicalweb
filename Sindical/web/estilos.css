@@ -298,6 +298,7 @@ span.loading-status {background: url(Imagens/espere.gif) no-repeat; background-s
 .underline-hover:hover {text-decoration: underline;}
 .cursor-pointer {cursor: pointer}
 .overflow-hiddem {overflow: hidden;}
+.overflow-visible {overflow: visible;}
 .bg-white {background: white!important;}
 .bg-black {background: black!important;}
 .bg-orange {background: orange!important;}
