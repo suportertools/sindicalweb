@@ -12,6 +12,7 @@ import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -465,9 +466,6 @@ public class SociosBean implements Serializable {
             return null;
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
-        TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
-
         if (temFoto) {
             dependente.setDataFoto(DataHoje.data());
         } else {
@@ -475,7 +473,7 @@ public class SociosBean implements Serializable {
         }
 
         if (dependente.getId() == -1) {
-            dependente.getPessoa().setTipoDocumento(dbDoc.pesquisaCodigo(1));
+            dependente.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
             sv.abrirTransacao();
             if (!sv.inserirObjeto(dependente.getPessoa())) {
                 msgConfirma = "Erro ao salvar Pessoa!";
@@ -979,6 +977,27 @@ public class SociosBean implements Serializable {
                 foto);
         return null;
     }
+    
+    public String imprimirFichaSocialVazia() {
+        String foto = getFotoSocio();
+        String path = "/Relatorios/FICHACADASTROBRANCO.jasper";
+        String pathVerso = "/Relatorios/FICHACADASTROVERSO.jasper";
+        String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
+        Socios sociosB = new Socios();
+        MatriculaSocios matriculaSociosB = new MatriculaSocios();
+        PessoaEmpresa pessoaEmpresab = new PessoaEmpresa();
+        ImpressaoParaSocios.branco(
+                caminhoDiretorio,
+                "ficha_branco.pdf",
+                path,
+                pathVerso,
+                sociosB,
+                pessoaEmpresab,
+                matriculaSociosB,
+                false,
+                null);
+        return null;
+    }    
 
     public String getFotoSocio() {
         FacesContext context = FacesContext.getCurrentInstance();
