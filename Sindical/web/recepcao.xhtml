@@ -429,18 +429,17 @@
                 <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" domElementAttachment="form" header="Mensagem">
                     <f:facet name="controls">
                         <h:outputLink>
-                            <a4j:ajax event="click" listener="#{recepcaoBean.imprimirSenha()}" oncomplete="#{rich:component('form_recepcao:i_painel_mensagem')}.hide(); return false;"/>
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                            <h:commandLink value="X" title="Permanecer" actionListener="#{recepcaoBean.imprimirSenha()}" immediate="true" action="recepcao" onclick="#{rich:component('form_recepcao:i_painel_mensagem')}.hide();"/>
                         </h:outputLink>
                     </f:facet>
                     <center>
                         <h:outputLabel value="#{recepcaoBean.msgConfirma}" />
                         <h:panelGrid columns="2" styleClass="margin-top-maior">
                             <a4j:commandButton value="Voltar para Lista" title="Voltar para Lista" action="#{recepcaoBean.voltar()}" immediate="true" />
-                            <a4j:commandButton value="Permanecer" title="Permanecer" action="#{recepcaoBean.imprimirSenha()}" immediate="true"/>
+                            <h:commandButton value="Permanecer" title="Permanecer" actionListener="#{recepcaoBean.imprimirSenha()}" onclick="#{rich:component('form_recepcao:i_painel_mensagem')}.hide();"/>
                         </h:panelGrid>
                     </center>
-                </rich:popupPanel>                
+                </rich:popupPanel>                 
             </h:form>            
         </f:view>
     </h:body>
