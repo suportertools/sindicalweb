@@ -222,7 +222,9 @@ public class LancamentoIndividualBean {
         Guia guias = new Guia(
                 -1,
                 lote, 
-                responsavel        
+                responsavel, 
+                null, 
+                false
         );
         
         if (!sv.inserirObjeto(guias)){

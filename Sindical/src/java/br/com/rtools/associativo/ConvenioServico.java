@@ -1,6 +1,7 @@
 package br.com.rtools.associativo;
 
 import br.com.rtools.financeiro.Servicos;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,17 +25,21 @@ public class ConvenioServico implements java.io.Serializable {
     @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
+    @Column(name = "IS_ENCAMINHAMENTO", nullable = true)
+    private boolean encaminhamento;
 
     public ConvenioServico() {
         this.id = -1;
         this.subGrupoConvenio = new SubGrupoConvenio();
         this.servicos = new Servicos();
+        this.encaminhamento = false;
     }
 
-    public ConvenioServico(int id, SubGrupoConvenio subGrupoConvenio, Servicos servicos) {
+    public ConvenioServico(int id, SubGrupoConvenio subGrupoConvenio, Servicos servicos, boolean encaminhamento) {
         this.id = id;
         this.subGrupoConvenio = subGrupoConvenio;
         this.servicos = servicos;
+        this.encaminhamento = encaminhamento;
     }
 
     public int getId() {
@@ -59,5 +64,13 @@ public class ConvenioServico implements java.io.Serializable {
 
     public void setServicos(Servicos servicos) {
         this.servicos = servicos;
+    }
+
+    public boolean isEncaminhamento() {
+        return encaminhamento;
+    }
+
+    public void setEncaminhamento(boolean encaminhamento) {
+        this.encaminhamento = encaminhamento;
     }
 }
