@@ -132,10 +132,9 @@ public class SimplesBean implements Serializable {
     public String editar(Object o) {
         objeto = o;
         editaObjeto(objeto);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("simplesPesquisa", objeto);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null
-                && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("simplesPesquisa", objeto);
             return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
         return null;

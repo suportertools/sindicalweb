@@ -3,6 +3,7 @@ package br.com.rtools.pessoa.db;
 import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.DataHoje;
@@ -451,5 +452,21 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
         } catch (Exception e) {
             return result;
         }
+    }
+    
+    @Override
+    public boolean empresaInativa(Pessoa pessoa, String motivo) {
+        String stringMotivo = "";
+        if (!motivo.equals("")) {
+            stringMotivo = " AND motivo = '"+motivo+"' ";
+        }
+        Query query = getEntityManager().createNativeQuery(" SELECT id_pessoa FROM arr_contribuintes_vw WHERE dt_inativacao IS NOT NULL AND id_pessoa = " + pessoa.getId() + stringMotivo);
+        try {
+            List list =  query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (EJBQLException e) {}
+        return false;
     }
 }

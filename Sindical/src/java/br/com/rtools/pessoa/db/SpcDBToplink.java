@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.db;
 
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.Spc;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
@@ -84,6 +85,26 @@ public class SpcDBToplink extends DB implements SpcDB {
             }
         } catch (Exception e) {
             return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Verifica se há pessoa está cadastrada no SPC/Serasa
+     * @param pessoa
+     * @return true / false
+     */
+    @Override
+    public boolean existeRegistroPessoaSPC(Pessoa pessoa) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT S FROM Spc AS S WHERE S.pessoa.id = :idPessoa AND S.dtSaida IS NULL ");
+            query.setParameter("idPessoa", pessoa.getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
         }
         return false;
     }

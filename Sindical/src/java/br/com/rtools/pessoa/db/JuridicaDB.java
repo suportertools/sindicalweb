@@ -3,6 +3,7 @@ package br.com.rtools.pessoa.db;
 import br.com.rtools.arrecadacao.CnaeConvencao;
 import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -52,4 +53,12 @@ public interface JuridicaDB {
     public List pesquisaContabilidade();
 
     public int[] listaInadimplencia(int id_juridica);
+    
+    /**
+     * 
+     * @param pessoa
+     * @param motivo (FECHOU ...)
+     * @return 
+     */
+    public boolean empresaInativa(Pessoa pessoa, String motivo);
 }

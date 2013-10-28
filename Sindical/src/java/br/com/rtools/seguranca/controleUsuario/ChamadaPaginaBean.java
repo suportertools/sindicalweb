@@ -1270,20 +1270,28 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public String getControleLinksX() {
+        String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
+        String linkAtual = converteURL(urlDestino);
+        String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");        
+        getControleLinksX(urlDestino, linkAtual, linkTeste);
+        return null;
+    }
+    
+    public void getControleLinksX(String urlDestino, String linkAtual, String linkTeste) {
         try {
-            String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
-            String linkAtual = converteURL(urlDestino);
-            String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+//            String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
+//            String linkAtual = converteURL(urlDestino);
+//            String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (linkTeste == null) {
                 linkTeste = "";
             }
             if (linkAtual.equals("acessoNegado") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
                 carregaPg = false;
-                return null;
+                return;
             }
             if (linkAtual.equals("sessaoExpirou") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
                 carregaPg = false;
-                return null;
+                return;
             }
             if (linkAtual.equals("menuPrincipal") || linkAtual.equals("menuPrincipalAcessoWeb") || linkAtual.equals("menuPrincipalSuporteWeb")) {
                 carregaPg = true;
@@ -1305,15 +1313,15 @@ public class ChamadaPaginaBean implements Serializable {
                     case 0:
                         if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
                             limparMenuLinks(-1);
-                            menuLinks.add(new MenuLinks("menuPrincipal", "Menu Principal", true));
+                            menuLinks.add(new MenuLinks(0, "menuPrincipal", "Menu Principal", true));
                             isNivel = false;
                         } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("web")) {
                             limparMenuLinks(-1);
-                            menuLinks.add(new MenuLinks("menuPrincipalAcessoWeb", "Menu Principal", true));
+                            menuLinks.add(new MenuLinks(0, "menuPrincipalAcessoWeb", "Menu Principal", true));
                             limparMenuLinks(-1);
                             isNivel = false;
                         } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("suporteWeb")) {
-                            menuLinks.add(new MenuLinks("menuPrincipalSuporteWeb", "Menu Principal Suporte Web", true));
+                            menuLinks.add(new MenuLinks(0, "menuPrincipalSuporteWeb", "Menu Principal Suporte Web", true));
                             isNivel = false;
                             dtObject.setArgumento0("menuPrincipalSuporteWeb");
                             dtObjectLabel.setArgumento0("Menu Principal Suporte Web");
@@ -1387,7 +1395,7 @@ public class ChamadaPaginaBean implements Serializable {
                         break;
                 }
                 if (isNivel) {
-                    menuLinks.add(nivel, new MenuLinks(linkAtual, converteURLNome(linkAtual), true));
+                    menuLinks.add(nivel, new MenuLinks(nivel, linkAtual, converteURLNome(linkAtual), true));
                 }
                 if (acessoCadastro) {
 //                    int count = 0;
@@ -1433,7 +1441,7 @@ public class ChamadaPaginaBean implements Serializable {
             NovoLog novoLog = new NovoLog();
             novoLog.novo("controleLinks", e.getMessage());
         }
-        return null;
+//        return;
     }
 
     public String getControleLinks() {
@@ -1442,6 +1450,7 @@ public class ChamadaPaginaBean implements Serializable {
             String urlDestino = paginaRequerida.getRequestURI();
             String linkAtual = converteURL(urlDestino);
             String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            //getControleLinksX(urlDestino, linkAtual, linkTeste);
             if (linkTeste == null) {
                 linkTeste = "";
             }
@@ -2105,9 +2114,11 @@ public class ChamadaPaginaBean implements Serializable {
         linkClicado = true;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         if (menuLinks.get(i).getLink().equals("")) {
+            menuLinks.get(i - 1).setIndice(i);
             return menuLinks.get(i - 1).getLink();
         }
         nivelLink = i + 1;
+        menuLinks.get(i).setIndice(i);
         return menuLinks.get(i).getLink();
     }
 }
