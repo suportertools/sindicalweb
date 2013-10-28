@@ -16,7 +16,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formSubGrupoConvenio">
+            <h:form id="form_novo_subgrupo_convenio">
                 <c:set scope="request" var="object" value="${subGrupoConvenioBean.subGrupoConvenio}"/>  
                 <center>
                     <div class="headerPanel">
@@ -26,21 +26,27 @@
                     <div class="divMae divFundo" style="text-align: left; width: 830px;">
                         <h:panelGrid columns="2" >
                             <h:column>
+                                <h:panelGrid columns="4" styleClass="float-right">
+                                    <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
+                                    <h:inputText disabled="true" size="20" value="#{subGrupoConvenioBean.grupoConvenio.descricao}" />
+                                    <a4j:commandButton image="/Imagens/excluir.png" title="Limpar" action="#{subGrupoConvenioBean.novoGrupo}"/>
+                                    <a4j:commandButton image="/Imagens/pesquisar.png"  title="Pesquisar" action="#{chamadaPaginaBean.grupoConvenio}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" styleClass="float-right">
+                                    
+                                </h:panelGrid>
+                                <h:panelGrid columns="2" styleClass="float-right">
+                                    
+                                </h:panelGrid>
                                 <table>
                                     <tr>
                                         <td align="right">
-                                            <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
                                         </td>
                                         <td>
-                                            <h:inputText disabled="true" size="20" value="#{subGrupoConvenioBean.grupoConvenio.descricao}">
-                                                
-                                            </h:inputText>
                                         </td>
                                         <td>
-                                            <a4j:commandButton image="/Imagens/excluir.png" title="Limpar" action="#{subGrupoConvenioBean.novoGrupo}"/>
                                         </td>
                                         <td>
-                                            <a4j:commandButton image="/Imagens/pesquisar.png"  title="Pesquisar" action="#{chamadaPaginaBean.grupoConvenio}"/>
                                         </td>
                                     </tr>
                                     <tr>
