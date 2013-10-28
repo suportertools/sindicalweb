@@ -11,6 +11,7 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
@@ -235,9 +236,8 @@ public class SubGrupoConvenioJSFBean {
     }
 
     public GrupoConvenio getGrupoConvenio() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa") != null) {
-            grupoConvenio = (GrupoConvenio) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesPesquisa");
+        if (GenericaSessao.exists("simplesPesquisa")) {
+            grupoConvenio = (GrupoConvenio) GenericaSessao.getObject("simplesPesquisa", true);
         }
         return grupoConvenio;
     }
