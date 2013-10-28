@@ -1,13 +1,20 @@
 package br.com.rtools.associativo;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "SOC_CONVENIO_GRUPO")
 @NamedQueries({
-    @NamedQuery(name = "GrupoConvenio.pesquisaID", query = "SELECT G FROM GrupoConvenio AS G WHERE G.id = :pid"),
-    @NamedQuery(name = "GrupoConvenio.findAll",    query = "SELECT G FROM GrupoConvenio AS G ORDER BY G.descricao ASC "),
-    @NamedQuery(name = "GrupoConvenio.findName",   query = "SELECT G FROM GrupoConvenio AS G WHERE G.descricao = :pdescricao ORDER BY G.descricao ASC ")
+    @NamedQuery(name = "GrupoConvenio.pesquisaID",  query = "SELECT G FROM GrupoConvenio AS G WHERE G.id = :pid"),
+    @NamedQuery(name = "GrupoConvenio.findAll",     query = "SELECT G FROM GrupoConvenio AS G ORDER BY G.descricao ASC "),
+    @NamedQuery(name = "GrupoConvenio.findName",    query = "SELECT G FROM GrupoConvenio AS G WHERE UPPER(G.descricao) LIKE :pdescricao ORDER BY G.descricao ASC ")
 })
 public class GrupoConvenio implements java.io.Serializable {
 
