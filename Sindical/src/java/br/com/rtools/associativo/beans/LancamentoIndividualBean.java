@@ -70,6 +70,12 @@ public class LancamentoIndividualBean {
             return;
         }
         
+        if (listaServicos.isEmpty()){
+            GenericaMensagem.error("Erro", "A lista de serviços não pode estar vazia!");
+            return;
+        }
+        
+        
         String vencto_ini = "";
         DataHoje dh = new DataHoje();
         listaMovimento.clear();
@@ -306,6 +312,9 @@ public class LancamentoIndividualBean {
     public List<SelectItem> getListaJuridica() {
         if (listaJuridica.isEmpty()){
             LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
+            if (listaServicos.isEmpty())
+                return listaJuridica;
+            
             List<Juridica> result = db.listaEmpresaConveniada(Integer.parseInt(listaServicos.get(idServico).getDescription()));
             
             for (int i = 0; i < result.size(); i++){
