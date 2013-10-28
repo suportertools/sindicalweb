@@ -7,12 +7,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "SOC_CONVENIO_SUB_GRUPO")
-@NamedQuery(name = "SubGrupoConvenio.pesquisaID", query = "select g from SubGrupoConvenio g where g.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "SubGrupoConvenio.pesquisaID",   query = "SELECT SGC FROM SubGrupoConvenio AS SGC WHERE SGC.id = :pid"),
+    @NamedQuery(name = "SubGrupoConvenio.findAll",      query = "SELECT SGC FROM SubGrupoConvenio AS SGC ORDER BY SGC.grupoConvenio.descricao ASC, SGC.descricao ASC "),
+    @NamedQuery(name = "SubGrupoConvenio.findName",     query = "SELECT SGC FROM SubGrupoConvenio AS SGC WHERE upper(SGC.descricao) LIKE :pdescricao ORDER BY SGC.grupoConvenio.descricao ASC, SGC.descricao ASC ")
+})
 public class SubGrupoConvenio implements java.io.Serializable {
 
     @Id
