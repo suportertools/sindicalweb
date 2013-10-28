@@ -1351,7 +1351,7 @@
 
         <navigation-case>
             <from-outcome>grupoConvenio</from-outcome>
-            <to-view-id>/grupoConvenio.jsp</to-view-id>
+            <to-view-id>/grupoConvenio.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
