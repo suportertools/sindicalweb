@@ -1,0 +1,40 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <script language="JavaScript"> javascript: window.history.forward(1); </script>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/reset.css" rel="stylesheet" type="text/css"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+           .ui-datalist-item {float: left!important;}
+          //.ui-datalist-item a {color: white; text-decoration: none;}
+        </style>
+    </h:head>
+    <h:body>
+        <f:view>
+            <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinksX}">
+                <p:panel styleClass="wrapper" style="border: 0;">
+                    <p:panel style="height: 70px; border: 0px">
+                        <p:panel styleClass="wrapper" style="border: 0px; background: transparent; padding: 0px">
+                            <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="90px" height="50" style="float: left"/>
+                            <h:outputLabel value="Bem vindo " style="float: left; font-size: 10pt; margin-left: 50px"/>
+                            <h:outputLabel value="#{controleUsuarioBean.login}" style="float: left; margin-left: 5px; font-size: 10pt; font-weight: bold;"/>
+                            <p:commandLink value="Sair" action="#{usuarioBean.sairSistema}" title="Desejo mesmo sair do Sistema?" style="float: right; font-weight: bold; margin-left: 20px" immediate="true"/>
+                            <br /><br />
+                            <p:outputLabel value="#{controleUsuarioBean.filial}" style="color: #bc4763; font-size: 10pt;  margin-left: 50px; "/>
+                        </p:panel>
+                    </p:panel>
+                    <p:panel styleClass="wrapper sb" style="border: 0;">
+                        <p:dataList styleClass="menu-links" var="menuLinks" value="#{chamadaPaginaBean.menuLinks}" style="border: 0; margin: 0; ">
+                            <h:graphicImage url="/Imagens/iconBack.png" styleClass="separadorLinks" title="Voltar um nível" rendered="#{menuLinks.descricao != 'Menu Principal'}"/>
+                            <p:commandLink value="#{menuLinks.descricao}" title="#{menuLinks.descricao}" action="#{chamadaPaginaBean.cliqueMenuLinks(menuLinks.indice)}" rendered="#{menuLinks.ativo}" immediate="true" /> 
+                        </p:dataList>
+                    </p:panel>
+                </p:panel>
+            </h:form>
+        </f:view>
+    </h:body>
+</html>
