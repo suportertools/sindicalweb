@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>#{simplesBean.sessoes[1]}</title>
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templatePrimes.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper" style="border: 0;">
+                <h:form id="form_cadastro_simples">
+                    <p:outputLabel value="Cadastro #{simplesBean.sessoes[1]}" styleClass="fonteHeader" />                
+                    <div style="clear: both;"></div>
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="Pesquisar: " for="idPesquisar"/>
+                        <p:inputText id="idPesquisar" value="#{simplesBean.pesquisaLista}"  title="Pesquisar">
+                            <p:ajax event="blur" update=":form_cadastro_simples:i_data_table_tbl" listener="#{simplesBean.lista.clear()}"/>
+                        </p:inputText>
+                        <p:commandButton value="Pesquisar" alt="Pesquisar" title="Pesquisar">
+                            <p:ajax event="click" update="@this :form_cadastro_simples:i_data_table_tbl" listener="#{simplesBean.lista.clear()}"/>
+                        </p:commandButton>
+                        <p:commandButton styleClass="margin-left-max" value="Novo" title="Adicionar novo registro" update=":form_cadastro_simples:id_painel_novo_cadastro" oncomplete="PF('dgl_painel_novo').show();"/>
+                    </h:panelGrid>
+                    <p:panel id="i_data_table_tbl" styleClass="margin-top-max margin-bottom-max float-left">
+                        <p:dataTable value="#{simplesBean.lista}" var="linha" scrollable="true" scrollHeight="400" emptyMessage="Não existem horários" resizableColumns="true">
+                            <p:column width="50" headerText="Editar" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-pencil" action="#{simplesBean.editar(linha)}" oncomplete="PF('dgl_painel_novo').show();" update=":form_cadastro_simples:id_painel_novo_cadastro"/>
+                            </p:column>
+                            <p:column width="50" headerText="ID" styleClass="text-center">
+                                <p:commandLink value="#{linha.id}" action="#{simplesBean.editar(linha)}" />
+                            </p:column>
+                            <p:column headerText="Descrição" width="auto">
+                                <p:commandLink value="#{linha.descricao}" action="#{simplesBean.editar(linha)}" />
+                            </p:column>
+                            <p:column headerText="Excluir" width="50" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-trash" action="#{simplesBean.excluir(linha)}" update=":form_cadastro_simples:i_painel_mensagem :form_cadastro_simples:i_data_table_tbl"  styleClass="ui-button-reset text-center" oncomplete="PF('dgl_painel_mensagem').show();"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:dialog id="i_painel_novo" header="Novo cadastro - Rotina: #{simplesBean.sessoes[1]}" widgetVar="dgl_painel_novo" modal="true" height="100" width="350">
+                        <h:panelGrid id="id_painel_novo_cadastro" columns="2">
+                            <h:outputLabel value="Descrição: " styleClass="fontePadrao" for="iDescricao"/>
+                            <p:inputText label="Descrição: " id="iDescricao" size="20" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" styleClass="margin-top">
+                            <p:commandButton action="#{simplesBean.salvar}"  value="Salvar" oncomplete="PF('dgl_painel_mensagem').show();" update="i_data_table_tbl, id_painel_novo_cadastro, i_painel_mensagem, iDescricao" global="true"/>
+                            <p:commandButton action="#{simplesBean.novo}" value="Novo" update=":form_cadastro_simples:id_painel_novo_cadastro" global="true"/>
+                        </h:panelGrid>
+                    </p:dialog>                     
+                    <p:dialog id="i_painel_mensagem" header="Mensagem" widgetVar="dgl_painel_mensagem" modal="true" height="100" width="300">
+                        <center>
+                            <h:outputText value="#{simplesBean.mensagem}" styleClass="fontePadrao"/>                        
+                            <br /><br />
+                            <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="dgl_painel_mensagem.hide()" style="float: left;" icon="ui-icon-close"/>
+                        </center>
+                    </p:dialog>                     
+                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
