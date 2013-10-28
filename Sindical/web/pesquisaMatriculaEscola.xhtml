@@ -32,8 +32,8 @@
                             <f:selectItem itemValue="matriculaIndividual"     itemLabel="Matricula Individual" />
                             <f:selectItem itemValue="matriculaTurma"          itemLabel="Matricula Turma" />
                         </h:selectOneMenu>                       
-                        <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{matriculaEscolaBean.acaoPesquisaInicial}" />
-                        <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{matriculaEscolaBean.acaoPesquisaParcial}" />
+                        <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{matriculaEscolaBean.acaoPesquisaInicial}" actionListener="#{matriculaEscolaBean.listaMatriculaEscolas.clear()}" />
+                        <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{matriculaEscolaBean.acaoPesquisaParcial}" actionListener="#{matriculaEscolaBean.listaMatriculaEscolas.clear()}" />
                         <a4j:status><f:facet name="start"><span class="loading-status"></span></f:facet></a4j:status>
                     </h:panelGrid>                    
                     <div class="divMae">
