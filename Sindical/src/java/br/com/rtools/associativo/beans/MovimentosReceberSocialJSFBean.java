@@ -364,18 +364,28 @@ public class MovimentosReceberSocialJSFBean {
             List<Vector> lista = db.pesquisaListaMovimentos(ids, porPesquisa);
             //float soma = 0;
             boolean chk = false, disabled = false;
+            String dataBaixa = "";
+            
             
             for (int i = 0; i < lista.size(); i++) {
+                if (lista.get(i).get(8) != null){
+                    dataBaixa = DataHoje.converteData( (Date)lista.get(i).get(8) );
+                }else{
+                    dataBaixa = "";
+                }
                 //soma = Moeda.somaValores(Moeda.converteR$(lista.get(i).get(5).toString()), Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
                 // DATA DE HOJE MENOR OU IGUAL A DATA DE VENCIMENTO
-                if ( DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) <= DataHoje.converteDataParaInteger(DataHoje.data()) ){
+                if ( DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) <= 
+                     DataHoje.converteDataParaInteger(DataHoje.data()) &&
+                     dataBaixa.isEmpty()){
                     chk = true;
                 }else{
                     chk = false;
                 }
                 
                 // DATA DE HOJE MENOR QUE DATA DE VENCIMENTO
-                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) < DataHoje.converteDataParaInteger(DataHoje.data()) ){
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) < 
+                    DataHoje.converteDataParaInteger(DataHoje.data())){
                    disabled = true; 
                 }else{
                    disabled = false;
@@ -392,7 +402,7 @@ public class MovimentosReceberSocialJSFBean {
                             Moeda.converteR$(getConverteNullString(lista.get(i).get(5))), // ARG 7 ACRESCIMO
                             Moeda.converteR$(getConverteNullString(lista.get(i).get(6))), // ARG 8 DESCONTO
                             Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 9 VALOR CALCULADO
-                            DataHoje.converteData(getConverteNullString((Date)lista.get(i).get(8))), // ARG 10 DATA BAIXA
+                            dataBaixa, // ARG 10 DATA BAIXA
                             Moeda.converteR$(getConverteNullString(lista.get(i).get(9))), // ARG 11 VALOR_BAIXA
                             lista.get(i).get(10), // ARG 12 ES
                             lista.get(i).get(11), // ARG 13 RESPONSAVEL
