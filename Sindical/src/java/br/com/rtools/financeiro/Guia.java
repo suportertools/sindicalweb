@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.associativo.SubGrupoConvenio;
 import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
@@ -17,17 +18,26 @@ public class Guia implements java.io.Serializable {
     @JoinColumn(name = "ID_CONVENIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
+    @JoinColumn(name = "ID_CONVENIO_SUB_GRUPO", referencedColumnName = "ID")
+    @ManyToOne
+    private SubGrupoConvenio subGrupoConvenio;
+    @Column(name = "IS_ENCAMINHAMENTO", nullable = true)
+    private boolean encaminhamento;
 
-    public Guia(int id, Lote lote, Pessoa pessoa) {
+    public Guia(int id, Lote lote, Pessoa pessoa, SubGrupoConvenio subGrupoConvenio, boolean encaminhamento) {
         this.id = id;
         this.lote = lote;
         this.pessoa = pessoa;
+        this.subGrupoConvenio = subGrupoConvenio;
+        this.encaminhamento = encaminhamento;
     }
 
     public Guia() {
         this.id = -1;
         this.lote = new Lote();
         this.pessoa = new Pessoa();
+        this.subGrupoConvenio = new SubGrupoConvenio();
+        this.encaminhamento = false;
     }
 
     public int getId() {
@@ -52,5 +62,21 @@ public class Guia implements java.io.Serializable {
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
+    }
+
+    public SubGrupoConvenio getSubGrupoConvenio() {
+        return subGrupoConvenio;
+    }
+
+    public void setSubGrupoConvenio(SubGrupoConvenio subGrupoConvenio) {
+        this.subGrupoConvenio = subGrupoConvenio;
+    }
+
+    public boolean isEncaminhamento() {
+        return encaminhamento;
+    }
+
+    public void setEncaminhamento(boolean encaminhamento) {
+        this.encaminhamento = encaminhamento;
     }
 }
