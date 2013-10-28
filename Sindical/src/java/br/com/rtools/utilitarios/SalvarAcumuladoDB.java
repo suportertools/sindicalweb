@@ -20,22 +20,24 @@ public interface SalvarAcumuladoDB {
     
     /**
      * 
-     * @param int id [] = {1, 2, 3};
+     * @param id
      * @param tipo
      * @return 
      */
     public List pesquisaCodigo(int id[], String tipo);
+    
 
     public Object pesquisaObjeto(int id, String tabela);
 
     /**
      * 
-     * @param int id [] = {1, 2, 3};
+     * @param id
      * @param tabela
      * @return 
      */
     public List pesquisaObjeto(int id[], String tabela);
-
+    public List pesquisaObjeto(int id[], String tabela, String campo);
+    
     public List listaObjeto(String tabela);
 
     /**

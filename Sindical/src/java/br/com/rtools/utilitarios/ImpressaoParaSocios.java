@@ -650,42 +650,7 @@ public class ImpressaoParaSocios {
                     ((ServletContext) faces.getExternalContext().getContext()).getRealPath(path));
             Juridica sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
             pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
-
-
-            
-                dados[0] = "";
-                dados[1] = "";
-                dados[2] = "";
-                dados[3] = "";
-                dados[4] = "";
-                dados[5] = "";
-                dados[6] = "";
-                dados[7] = "";
-                dados[8] = "";
-                dados[9] = "";
-                dados[10] = "";
-                dados[11] = "";
-                dados[12] = "";
-                dados[13] = "";
-                dados[14] = "";
-                dados[15] = "";
-                dados[26] = "";
-                dados[27] = "";
-                dados[16] = "";
-                dados[17] = "";
-                dados[18] = "";
-                dados[19] = "";
-                dados[20] = "";
-                dados[21] = "";
-                dados[22] = "";
-                dados[23] = "";
-                dados[24] = "";
-                dados[25] = "";
-                dados[28] = "";
-                dados[29] = "";
-                dados[30] = "";
-                dados[31] = "";
-
+            Registro registro = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
                 try {
                     listaSocios.add(new FichaSocial(0,
                             0, // ID TITULAR
@@ -705,43 +670,43 @@ public class ImpressaoParaSocios {
                             "", // SERIE
                             "", // ESTADO CÍVIL
                             "", // PAI
-                            "", // MÃR
+                            "", // MÃE
                             "", //TEL1
                             "", //TEL2
                             "", //EMAIL1
-                            dados[0],
-                            dados[1],
-                            dados[2],
-                            dados[3],
-                            dados[4],
-                            dados[5],
-                            dados[6],
-                            dados[7],
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
                             false,
-                            dados[26],
-                            dados[27],
-                            dados[8],
-                            dados[9],
-                            dados[10],
-                            dados[11],
-                            dados[12],
-                            dados[13],
-                            dados[14],
-                            dados[15],
-                            dados[16],
-                            dados[17],
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
                             "", // fax
                             DataHoje.converte(DataHoje.data()),
-                            dados[18],
-                            dados[19],
-                            dados[20],
-                            dados[21],
-                            dados[22],
-                            dados[23],
-                            dados[24],
-                            dados[25],
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
+                            "",
                             ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                            "", // obs
+                            registro.getFichaSocial(), // obs
                             "",
                             sindicato.getPessoa().getNome(),
                             pesEndSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
@@ -759,11 +724,11 @@ public class ImpressaoParaSocios {
                             sindicato.getPessoa().getSite(),
                             sindicato.getPessoa().getTelefone1(),
                             ((ServletContext) faces.getExternalContext().getContext()).getRealPath(pathVerso),
-                            dados[29],
+                            "",
                             new Date(),
-                            dados[30],
+                            "",
                             pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
-                            dados[31]));
+                            ""));
                 } catch (Exception erro) {
                     System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 }
@@ -781,7 +746,7 @@ public class ImpressaoParaSocios {
                     "application/pdf",
                     FacesContext.getCurrentInstance());
             download.baixar();
-        } catch (Exception erro) {
+        } catch (JRException erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
         //return null;

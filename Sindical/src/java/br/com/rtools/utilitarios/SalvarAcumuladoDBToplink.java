@@ -2,6 +2,7 @@ package br.com.rtools.utilitarios;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.principal.DB;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,19 +42,30 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     public boolean alterarObjeto(Object objeto) {
         Class classe = objeto.getClass();
         int id;
+        NovoLog log = new NovoLog();
         try {
             Method metodo = classe.getMethod("getId", new Class[]{});
             id = (Integer) metodo.invoke(objeto, (Object[]) null);
             if (id == -1) {
-                NovoLog log = new NovoLog();
                 log.novo("Alterar " + objeto.getClass().getSimpleName(), "Objeto esta passando -1");
                 return false;
             }
             getEntityManager().merge(objeto);
             getEntityManager().flush();
             return true;
-        } catch (Exception e) {
-            NovoLog log = new NovoLog();
+        } catch (IllegalAccessException e) {
+            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        } catch (IllegalArgumentException e) {
+            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        } catch (NoSuchMethodException e) {
+            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        } catch (SecurityException e) {
+            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        } catch (InvocationTargetException e) {
             log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         }
@@ -116,13 +128,29 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     
     @Override
     public List pesquisaObjeto(int id[], String tabela) {
-        List<Object> list = new ArrayList<Object>(); 
-        Object object; 
+        return pesquisaObjeto(id, tabela, "");
+    }    
+    
+    public List pesquisaObjeto(int id[], String tabela, String campo) {
+        String stringCampo = "id";
+        if (campo.isEmpty()) {
+            stringCampo = campo;
+        }
+        List list = new ArrayList<Object>(); 
+        String queryPesquisaString = "";
+        // Object object;
         for (int i = 0; i < id.length; i++) {
-            object = pesquisaObjeto(id[i], null);
-            if(object != null) {
-                list.add(object);
-            }   
+            if (i == 0) {
+                queryPesquisaString = Integer.toString(id[i]);
+            } else {
+                queryPesquisaString += ", "+Integer.toString(id[i]);
+            }
+            // object = pesquisaObjeto(id[i], null);
+            Query query = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB."+stringCampo+" IN ("+queryPesquisaString+")");
+            list = query.getResultList();
+            if(list.isEmpty()) {
+                return list;
+            }
         }
         return list;
     }    
