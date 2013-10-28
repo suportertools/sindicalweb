@@ -16,7 +16,7 @@
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="form_matricula_escola">            
+            <h:form id="form_matricula_escola">
                 <c:set scope="request" var="object" value="${matriculaEscolaBean.matriculaEscola}" id="idObject"/>                
                 <center>
                     <div class="headerPanel">
@@ -71,7 +71,9 @@
                         <h:column>
                             <h:column rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
                                 <h:selectBooleanCheckbox id="idDescontoFolha" title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" />
-                                <h:selectBooleanCheckbox title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" />
+                                <h:selectBooleanCheckbox title="Desconto em folha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                    <a4j:ajax event="change" render="idEmpresaResponsavelA idEmpresaResponsavelB" />
+                                </h:selectBooleanCheckbox>
                                 <h:outputLabel value=" Desconto em folha?" styleClass="fontePadrao" />
                             </h:column>
                         </h:column>
@@ -84,6 +86,20 @@
                             </a4j:commandButton>
                             <h:outputText value=" - Pessoa Jurídica: " styleClass="fontePadrao"  rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" />
                             <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                        </h:column>
+                        <h:column>
+                            <br />
+                            <h:outputText value="Empresa: " styleClass="fontePadrao" id="idEmpresaResponsavelA" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}"/>
+                            <br />
+                            <br />
+                        </h:column>
+                        <h:column>
+                            <br />
+                            <h:outputLabel value="#{matriculaEscolaBean.empresa.pessoa.nome}" styleClass="fontePadraoNegritoMedioVermelho" rendered="#{!matriculaEscolaBean.empresa.pessoa.nome.equals(matriculaEscolaBean.matriculaEscola.responsavel.nome)}" />
+                            <h:outputLabel value=" - #{matriculaEscolaBean.msgStatusDebito}" styleClass="fontePadrao" rendered="#{!matriculaEscolaBean.msgStatusDebito}"/>
+                            <h:outputLabel value=" - #{matriculaEscolaBean.msgStatusEmpresa}" styleClass="fontePadrao" rendered="#{!matriculaEscolaBean.msgStatusEmpresa}"/>
+                            <br />
+                            <br />
                         </h:column>
                         <h:outputLabel value="Vendedor:" styleClass="fontePadrao"/>
                         <h:selectOneMenu id="cbVendedor" value="#{matriculaEscolaBean.idVendedor}" style="max-width: 350px">
@@ -255,7 +271,7 @@
                             <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
                                 <a4j:commandLink styleClass="idSalvar iLink" value="Desfazer Movimento" style="width: 200px;" title="Desfazer Movimento" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}"  oncomplete="#{rich:component('form_matricula_escola:i_panel_desfazer_movimento')}.show(); return false;" />
                             </h:column>
-                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_matricula_escola:i_panel_salvar')}.show(); return false;" />
+                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_matricula_escola:i_panel_salvar')}.show(); return false;" rendered="#{matriculaEscolaBean.ocultaBotaoSalvar}" />
                             <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}"/>
                             <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_matricula_escola:i_panel_excluir')}.show(); return false;"/>
                             <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
@@ -373,6 +389,7 @@
                         <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_matricula_escola:i_panel_mensagem')}.hide(); return false;" render="idObject, idFormMatriculaEscola"/>
                     </center>
                 </rich:popupPanel>
+                <div style="clear: both;"></div>                
             </h:form>
         </f:view>
     </h:body>
