@@ -4,106 +4,109 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:a4j="http://richfaces.org/a4j"
       xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     
     <h:head>
-        <title>Cadastro Convênio</title>
+        <title>Sub-Grupo Convênio</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>        
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/reset.css" rel="stylesheet" type="text/css"/>        
+        <script language="JavaScript">
+            javascript: window.history.forward(1);
+        </script>
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
             <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formConvenio">
-                <c:set scope="request" var="object" value="${convenioBean.convenio}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Cadastro Convênio" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" style="text-align: left; width: 500px;">
-                        <table>
-                            <tr>
-                                <td align="right">
-                                    <h:outputLabel value="Sub Grupo: " styleClass="fontePadrao"/>
-                                </td>
-                                <td>
-                                    <h:outputText id="iSub" value="#{convenioBean.subGrupoConvenio.descricao}" styleClass="fontePadraoNegrito"/>
-                                </td>
-                                <td>
-                                    <a4j:commandButton image="/Imagens/pesquisar.png"  title="Pesquisar" action="#{chamadaPaginaBean.pesquisaSubGrupoConvenio}" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td align="right">
-                                    <h:outputLabel value="Empresa: " styleClass="fontePadrao"/>
-                                </td>
-                                <td>
-                                    <h:outputText id="iEmp" value="#{convenioBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                                </td>
-                                <td>
-                                    <a4j:commandButton image="/Imagens/pesquisar.png" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" />
-                                </td>
-                            </tr>
-                        </table>
-                        
-                        <a4j:commandLink value="Salvar" styleClass="idSalvar iLink" action="#{convenioBean.salvar}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}"  render="tbl,iSub,iEmp, outConfirma"/>
-                        <a4j:commandLink value="Excluir" styleClass="idExcluir iLink" action="#{convenioBean.excluir}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoExcluir}" render="tbl,iSub,iEmp, outConfirma"/>
-                        <a4j:commandLink value="Novo" styleClass="idNovo iLink" action="#{convenioBean.novo}" render="tbl"/>
-
-                        <rich:panel>
-                            <rich:dataTable value="#{convenioBean.listaConvenio}" var="linha" iterationStatusVar="it" id="tbl">
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header">
-                                        <h:outputText value="#" />
-                                    </f:facet>
-                                    <h:outputText value="#{it.index}"/>
-                                </rich:column>  
-                                
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="ID"/>
-                                    </f:facet>
-                                    <a4j:commandLink action="#{convenioBean.editar}" value="#{linha.id}">
-                                        <a4j:param value="#{it.index}" assignTo="#{convenioBean.idIndex}"/>
-                                    </a4j:commandLink>
-                                </rich:column>
-
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Empresa"/>
-                                    </f:facet>
-                                    <h:outputText value="#{linha.juridica.pessoa.nome}"/>
-                                </rich:column>
-
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Sub Grupo do convênio"/>
-                                    </f:facet>
-                                    <h:outputText value="#{linha.subGrupoConvenio.descricao}"/>
-                                </rich:column>
-                            </rich:dataTable>
-                        </rich:panel>                        
-                    </div>
-                </center>
+            <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
+            <p:panel styleClass="wrapper no-border">
+                <p:outputLabel value="Subgrupo Convênio" styleClass="fonteHeader" />
+                <p:panel style="clear: both;" styleClass="no-border"></p:panel>
                 
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
+                <h:form id="form_novo_convenio">                    
+                    <p:growl id="growl" showDetail="true"/> 
+                    <c:set scope="request" var="object" value="${convenioBean.convenio}"/>  
+                    <p:panel>
+                        <p:panelGrid id="id_panel_grid_novo" columns="2" styleClass="margin-top sbb">
+                            <p:commandButton icon="ui-icon-circle-zoomin" value="Empresa" id="idPesquisarEmpresa" title="Pesquisar empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}"/>
+                            <p:column>
+                                <p:outputLabel value="Pesquisar empresa" for="idPesquisarEmpresa" rendered="#{convenioBean.convenio.juridica.pessoa.id == -1}" style="border-bottom: 1px solid #ECF3FE"/>
+                                <p:outputLabel value=": #{convenioBean.convenio.juridica.pessoa.nome}" for="idPesquisarEmpresa" rendered="#{convenioBean.convenio.juridica.pessoa.id != -1}"/>
+                            </p:column>
+                            <p:commandButton icon="ui-icon-circle-zoomin" value="Subgrupo" id="idPesquisarSubGrupo" title="Pesquisar subgrupo" action="#{chamadaPaginaBean.pesquisaSubGrupoConvenio()}"/>
+                            <p:column>
+                                <p:outputLabel value="Pesquisar subgrupo" for="idPesquisarSubGrupo" rendered="#{convenioBean.convenio.subGrupoConvenio.grupoConvenio.id == -1}" styleClass="bo" style="border-bottom: 1px solid #ECF3FE"/>
+                                <p:outputLabel value=": Grupo: #{convenioBean.convenio.subGrupoConvenio.grupoConvenio.descricao} - Subgrupo: #{convenioBean.convenio.subGrupoConvenio.descricao}" for="idPesquisarSubGrupo" rendered="#{convenioBean.convenio.subGrupoConvenio.grupoConvenio.id != -1}"/>
+                            </p:column>
+                        </p:panelGrid>
+                        <p:panelGrid columns="1" styleClass="sbb">
+                            <p:column>
+                                <p:commandButton icon="ui-icon-disk" value="Salvar" title="Salvar" onclick="dgl_painel_salvar.show();" type="button" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                <p:commandButton value="Novo" action="#{convenioBean.novo()}" styleClass="margin-left-max" update="id_panel_grid_novo :form_convenio:id_convenio_filtro" />
+                                <p:commandButton icon="ui-icon-close" value="Excluir" oncomplete="PF('dgl_painel_excluir).show()"  styleClass="margin-left-max" global="true" type="button" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                            </p:column>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:dialog id="i_painel_salvar" header="Deseja salvar este registro?" widgetVar="dgl_painel_salvar" modal="true" height="100" width="350">
+                        <h:panelGrid columns="2" styleClass="margin-top">
+                            <p:commandButton value="Sim" title="Confirmar" action="#{convenioBean.salvar()}" oncomplete="PF('dgl_painel_salvar').hide(); PF('dgl_painel_mensagem').show();" update=":form_convenio:id_convenio_filtro i_painel_mensagem" />
+                            <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dgl_painel_salvar').hide();" />
+                        </h:panelGrid>
+                    </p:dialog>                     
+                    <p:dialog id="i_painel_excluir" header="Deseja excluir este registro?" widgetVar="dgl_painel_excluir" modal="true" height="100" width="350">
+                        <h:panelGrid columns="2" styleClass="margin-top">
+                            <p:commandButton value="Sim" action="#{convenioBean.remover(convenioBean.convenio)}" oncomplete="PF('dgl_painel_excluir').hide(); PF('dgl_painel_mensagem').show();" styleClass="margin-left-max" update="growl id_panel_grid_novo :form_convenio:id_convenio_filtro i_painel_mensagem" />
+                            <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dgl_painel_excluir').hide();" />
+                        </h:panelGrid>
+                    </p:dialog>                     
+                    <p:dialog id="i_painel_mensagem" header="Mensagem" widgetVar="dgl_painel_mensagem" modal="true" height="100" width="350">
                         <center>
-                            <h:outputText id="outConfirma" value="#{convenioBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <p:outputLabel value="#{convenioBean.mensagem}"/>
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
+                            <p:commandButton value="Ok" type="button" oncomplete="PF('dgl_painel_mensagem').hide()" style="float: left;" icon="ui-icon-close"/>
                         </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                 
-            </h:form>
+                    </p:dialog>                    
+                </h:form>
+                <h:form id="form_convenio">
+                    <p:panel id="id_convenio_filtro" style="margin-top: 15px;">
+                        <f:facet name="header">Serviços</f:facet>
+                        <p:dataTable value="#{convenioBean.listaConvenio}" var="convenio" emptyMessage="Não existem registros" scrollHeight="300"  scrollable="true">
+                            <p:column>
+                                <f:facet name="header">
+                                    Empresa
+                                    <p:selectBooleanButton value="#{convenioBean.orderJuridica}" onLabel=" " offLabel=""  styleClass="margin-left-max" onIcon="ui-icon-triangle" offIcon="ui-icon-triangle-1-s">
+                                        <p:ajax event="change" listener="#{convenioBean.listaConvenio.clear()}" update=":form_convenio:id_convenio_filtro" />
+                                    </p:selectBooleanButton>
+                                </f:facet>
+                                <p:commandLink value="#{convenio.juridica.pessoa.nome}" action="#{convenioBean.editar(convenio)}" update=":form_novo_convenio:id_panel_grid_novo"/>
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Subgrupo
+                                    <p:selectBooleanCheckbox value="#{convenioBean.orderSubGrupo}" styleClass="margin-left-max">
+                                        <p:ajax event="change" listener="#{convenioBean.listaConvenio.clear()}" update=":form_convenio:id_convenio_filtro" />
+                                    </p:selectBooleanCheckbox>
+                                </f:facet>
+                                <p:commandLink value="#{convenio.subGrupoConvenio.descricao}" action="#{convenioBean.editar(convenio)}" update=":form_novo_convenio:id_panel_grid_novo"/>                                    
+                            </p:column>
+                            <p:column>
+                                <f:facet name="header">
+                                    Grupo
+                                    <p:selectBooleanCheckbox value="#{convenioBean.orderGrupo}" styleClass="margin-left-max">
+                                        <p:ajax event="change" listener="#{convenioBean.listaConvenio.clear()}" update=":form_convenio:id_convenio_filtro" />
+                                    </p:selectBooleanCheckbox>
+                                </f:facet>
+                                <p:commandLink value="#{convenio.subGrupoConvenio.grupoConvenio.descricao}" action="#{convenioBean.editar(convenio)}" update=":form_novo_convenio:id_panel_grid_novo"/>                                    
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </h:form>
+            </p:panel>
         </f:view>
     </h:body>
 </ui:composition>
