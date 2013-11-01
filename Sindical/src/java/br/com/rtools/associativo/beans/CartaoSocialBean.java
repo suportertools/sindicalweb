@@ -16,11 +16,16 @@ import br.com.rtools.utilitarios.ImpressaoParaSocios;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 // import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -28,7 +33,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class CartaoSocialJSFBean {
+@ManagedBean
+@SessionScoped
+public class CartaoSocialBean implements Serializable {
 
     private String indexFiltro = "0";
     private String indexOrdem = "0";
@@ -99,7 +106,7 @@ public class CartaoSocialJSFBean {
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
 
-        } catch (Exception e) {
+        } catch (JRException e) {
             return null;
         }
         return null;
@@ -108,7 +115,7 @@ public class CartaoSocialJSFBean {
     public String pesquisar() {
         listaCartao.clear();
         isDisabledReimpressao();
-        return "cartaoSocial";
+        return null;
     }
 
     public void pesquisarx() {
@@ -116,23 +123,21 @@ public class CartaoSocialJSFBean {
             listaCartao.clear();
             isDisabledReimpressao();
             FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/cartaoSocial.jsf");
-        } catch (Exception e) {
+        } catch (IOException e) {
         }
     }
 
-    public String teste() {
+    public void habilitaGridTrue() {
         updateGrid = true;
-        return null;
     }
 
-    public String testex() {
+    public void habilitaGridXTrue() {
         updateGridx = true;
         updateGrid = false;
         qnt = 0;
-        return null;
     }
 
-    public String imprimirCartao() {
+    public void imprimirCartao() {
         List listaaux = new ArrayList();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
@@ -157,7 +162,7 @@ public class CartaoSocialJSFBean {
                     carteirinha.setSocios(socios);
                     if (!sv.inserirObjeto(carteirinha)) {
                         sv.desfazerTransacao();
-                        return null;
+                        return;
                     }
                     
                     socios.setNrViaCarteirinha(1);
@@ -165,7 +170,7 @@ public class CartaoSocialJSFBean {
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
                         sv.desfazerTransacao();
-                        return null;
+                        return;
                     }
                 } else {
                     carteirinha.setEmissao(DataHoje.data());
@@ -173,7 +178,7 @@ public class CartaoSocialJSFBean {
                     if (!db.verificaSocioCarteirinhaExiste(socios.getId())) {
                         if (!sv.inserirObjeto(carteirinha)) {
                             sv.desfazerTransacao();
-                            return null;
+                            return;
                         }
                     }
                     
@@ -183,7 +188,7 @@ public class CartaoSocialJSFBean {
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
                         sv.desfazerTransacao();
-                        return null;
+                        return;
                     }
                     
                 }
@@ -200,7 +205,6 @@ public class CartaoSocialJSFBean {
                 visualizarEtiqueta();
             }
         }
-        return null;
     }
 
     public String reImprimirCartao() {
@@ -370,11 +374,7 @@ public class CartaoSocialJSFBean {
     }
 
     public boolean isDisabledReimpressao() {
-        if (Integer.valueOf(indexFiltro) > 2) {
-            disabledReimpressao = false;
-        } else {
-            disabledReimpressao = true;
-        }
+        disabledReimpressao = Integer.valueOf(indexFiltro) <= 2;
         return disabledReimpressao;
     }
 
