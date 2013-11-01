@@ -51,7 +51,7 @@ public class CancelarHorarioDBToplink extends DB implements CancelarHorarioDB {
             diaSemanaWhere = " AND h.semana.id = " + diaDaSemana;
         }
         try {
-            Query qry = getEntityManager().createQuery("SELECT h FROM Horarios h WHERE " + dataWhere + " h.filial.id = :pfilial" + diaSemanaWhere);
+            Query qry = getEntityManager().createQuery("SELECT h FROM Horarios h WHERE " + dataWhere + " h.filial.id = :pfilial" + diaSemanaWhere +" ORDER BY H.hora ASC");
             qry.setParameter("pfilial", idFilial);
             if (!qry.getResultList().isEmpty()) {
                 result = (qry.getResultList());
