@@ -2,21 +2,14 @@ package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.Convenio;
 import java.util.List;
-import javax.persistence.EntityManager;
 
 public interface ConvenioDB {
 
-    public boolean insert(Convenio convenio);
-
-    public boolean update(Convenio convenio);
-
-    public boolean delete(Convenio convenio);
-
-    public EntityManager getEntityManager();
-
-    public Convenio pesquisaCodigo(int id);
-
-    public List pesquisaTodos();
+    public List listaTodos(boolean orderPessoa, boolean orderGrupoConvenio, boolean orderSubGrupoConvenio);
+            
+    public List listaTodosPorPessoa(boolean orderPessoa, boolean orderGrupoConvenio, boolean orderSubGrupoConvenio, Convenio convenio);
+    
+    public boolean existeSubGrupoEmpresa(Convenio convenio);
 
     public List pesquisaConvenioPorGrupoPessoa(int idPessoaJuridica, int idGrupoConvenio);
 
