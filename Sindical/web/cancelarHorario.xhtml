@@ -6,18 +6,15 @@
                 xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Cancelar Horários</title>
-        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>
-        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
     </h:head>
     <h:body>
         <f:subview id="header">
-            
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
-            <p:panel styleClass="wrapper" style="border: 0px;">
-                <p:outputLabel value="Cancelar Horários" styleClass="fonteHeader" />                    
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
+                <p:outputLabel value="Cancelar Horários" styleClass="fonteHeader" />
                 <div style="clear: both;"></div>
                 <h:form id="formCancelarHorarioNovo">                     
                     <c:set scope="request" var="object" value="${cancelarHorarioBean.cancelarHorario}"/>
@@ -34,12 +31,12 @@
                             </p:column>
                         </h:panelGrid>
                         <p:accordionPanel id="id_accordion_periodo" style="margin-top: 15px;">
-                            <p:ajax event="tabChange" listener="#{cancelarHorarioBean.cancelamentoPor}" update="id_panel_grid_calcula, :formCancelarHorario:i_panel_grid_horarios"/> 
-                            <p:tab title="Dia"> 
+                            <p:ajax event="tabChange" listener="#{cancelarHorarioBean.cancelamentoPor}" update="id_panel_grid_calcula"/> 
+                            <p:tab title="Dia" id="id_tab_dia"> 
                                 <p:panelGrid columns="4" id="id_panel_grid_calcula" styleClass="sbb" style="float: left;">
                                     <p:outputLabel value="Data:"  />
                                     <p:calendar value="#{cancelarHorarioBean.data}" pattern="dd/MM/yyyy" size="8">
-                                        <p:ajax event="dateSelect" update="id_panel_grid_calcula" listener="#{cancelarHorarioBean.calculaQuantidadeDisponivel}" />
+                                        <p:ajax event="dateSelect" update="@this :formCancelarHorario:i_panel_grid_horarios id_panel_grid_calcula" listener="#{cancelarHorarioBean.calculaQuantidadeDisponivel}" />
                                     </p:calendar>                          
                                     <h:outputLabel value="Horários:" />
                                     <p:selectOneMenu id="idHorarios" value="#{cancelarHorarioBean.idHorariosDisponiveis}" disabled="#{cancelarHorarioBean.desabilitaBotoes}">
@@ -53,7 +50,7 @@
                                         <p:spinner id="idQuantidadeHorarios" value="#{cancelarHorarioBean.nrQuantidadeCancelar}" max="#{cancelarHorarioBean.nrQuantidadeDisponivel}" min="0" disabled="#{cancelarHorarioBean.desabilitaBotoes}" title="Quantidade a ser cancelada" size="1">
                                             <p:ajax update="idQuantidadeDisponivel, idQuantidadeRestante" listener="#{cancelarHorarioBean.validaQuantidadeDisponivel}" />
                                         </p:spinner>    
-                                        <p:outputLabel value="Cancelados:" style="margin-left: 15px;"/>
+                                        <p:outputLabel value="Cancelados:" styleClass="margin-left-max"/>
                                         <p:inputText id="idQuantidadeRestante" value="#{cancelarHorarioBean.nrQuantidadeCancelado}" disabled="true" size="2"  title="Quantidade de horários cancelados" style="margin-left: 15px;"/>
                                     </p:column>
                                 </p:panelGrid>
@@ -63,7 +60,7 @@
                                     <p:commandButton value="Excluir cancelamentos desta data" disabled="#{controleAcessoBean.botaoExcluir}" onclick="i_dlg_s4.show();" title="Excluir cancelamentos desta data?" />
                                 </p:panelGrid>
                             </p:tab>  
-                            <p:tab title="Período">  
+                            <p:tab title="Período" id="id_tab_periodo">  
                                 <p:panelGrid columns="2" styleClass="sbb" style="float: left;">
                                     <p:outputLabel value="Data inicial:"  />
                                     <p:calendar value="#{cancelarHorarioBean.data}" pattern="dd/MM/yyyy" size="8">
@@ -107,28 +104,22 @@
                     <p:panelGrid id="i_panel_grid_horarios" style="margin-top: 15px; width: 550px; float: left; margin-bottom: 15px;" columns="1">
                         <p:dataTable value="#{cancelarHorarioBean.listaHorariosCancelados}" var="linha" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) horário(s) cancelado(s) para essa data/período" resizableColumns="true" >
                             <f:facet name="header">Cancelamento de Horários</f:facet>
-                            
-                            <p:column width="80" headerText="Data" rendered="#{!cancelarHorarioBean.tipoCancelamento.endsWith('Dia')}">
-                                <p:outputLabel value="#{linha.data}" />
-                            </p:column>
-                            
+
+                            <p:column width="80" headerText="Data" rendered="#{!cancelarHorarioBean.tipoCancelamento.endsWith('Dia')}" >#{linha.data}</p:column>
+
                             <p:column width="50" style="text-align: center;">
-                                  <f:facet name="header">
-                                      <p:graphicImage value="/Imagens/horario.png" alt="Horários" title="Horários" width="20" />
-                                  </f:facet>
-                                  <p:outputLabel value="#{linha.horarios.hora}" /> 
+                                <f:facet name="header" class="margin">
+                                    <p:graphicImage value="/Imagens/horario.png" alt="Horários" title="Horários" width="20"  />
+                                </f:facet>
+                                #{linha.horarios.hora} 
                             </p:column>
 
-                            <p:column width="150" headerText="Qtde Disponível">
-                                <p:outputLabel  value="#{cancelarHorarioBean.calculaQuantidadeDisponivel(linha.horarios.quantidade, linha.quantidade)}" />
-                            </p:column>
-                            
-                            <p:column width="150" headerText="Qtde Cancelado">
-                                <p:outputLabel value="#{linha.quantidade}" />
-                            </p:column>
-                            
+                            <p:column width="150" headerText="Qtde Disponível">#{cancelarHorarioBean.calculaQuantidadeDisponivel(linha.horarios.quantidade, linha.quantidade)}</p:column>
+
+                            <p:column width="150" headerText="Qtde Cancelado">#{linha.quantidade} </p:column>
+
                             <p:column style="text-align: center; width: 40px;">
-                                <p:commandButton icon="ui-icon-trash" action="#{cancelarHorarioBean.excluir(linha)}" update=":formCancelarHorario:i_panel_grid_horarios :formCancelarHorarioNovo:" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <p:commandButton icon="ui-icon-trash" action="#{cancelarHorarioBean.excluir(linha)}" update=":formCancelarHorario:i_panel_grid_horarios :formCancelarHorarioNovo:" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset"/>
                             </p:column>                             
                         </p:dataTable>
                     </p:panelGrid>
