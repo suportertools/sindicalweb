@@ -20,8 +20,9 @@ import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 
-public class controleAcessoWebJSFBean implements java.io.Serializable {
+public class controleAcessoWebJSFBean implements Serializable {
 
     private Registro registro = new Registro();
     private Pessoa pessoa = new Pessoa();
