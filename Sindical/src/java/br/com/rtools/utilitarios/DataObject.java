@@ -316,6 +316,26 @@ public class DataObject {
         setArgumento1(argumento1);
     }
 
+    public DataObject(
+            Object argumento0,
+            Object argumento1,
+            Object argumento2) {
+        this.argumento0 = argumento0;
+        this.argumento1 = argumento1;
+        this.argumento2 = argumento2;
+    }
+    
+    public DataObject(
+            Object argumento0,
+            Object argumento1,
+            Object argumento2,
+            Object argumento3) {
+        this.argumento0 = argumento0;
+        this.argumento1 = argumento1;
+        this.argumento2 = argumento2;
+        this.argumento3 = argumento3;
+    }
+    
     public Object getArgumento0() {
         return argumento0;
     }
