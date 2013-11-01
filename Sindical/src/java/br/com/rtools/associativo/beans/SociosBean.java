@@ -213,7 +213,7 @@ public class SociosBean implements Serializable {
         sv.abrirTransacao();
         try {
             servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription())));
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(0).getDescription())));
         }
 
@@ -979,24 +979,8 @@ public class SociosBean implements Serializable {
     }
     
     public String imprimirFichaSocialVazia() {
-        String foto = getFotoSocio();
-        String path = "/Relatorios/FICHACADASTROBRANCO.jasper";
-        String pathVerso = "/Relatorios/FICHACADASTROVERSO.jasper";
-        String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
-        Socios sociosB = new Socios();
-        MatriculaSocios matriculaSociosB = new MatriculaSocios();
-        PessoaEmpresa pessoaEmpresab = new PessoaEmpresa();
-        ImpressaoParaSocios.branco(
-                caminhoDiretorio,
-                "ficha_branco.pdf",
-                path,
-                pathVerso,
-                sociosB,
-                pessoaEmpresab,
-                matriculaSociosB,
-                false,
-                null);
-        return null;
+        ImpressaoParaSocios.branco();
+        return "menuSocial";
     }    
 
     public String getFotoSocio() {
@@ -1275,7 +1259,7 @@ public class SociosBean implements Serializable {
                     fotoTemp = false;
                     break;
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 continue;
             }
         }
