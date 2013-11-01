@@ -6,6 +6,7 @@ import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import java.io.IOException;
 import javax.faces.context.FacesContext;
+import java.io.Serializable;
 
 public class controleAcessoSuporteWebJSFBean {
 
