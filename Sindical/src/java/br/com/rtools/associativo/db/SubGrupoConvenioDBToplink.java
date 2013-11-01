@@ -1,132 +1,89 @@
 package br.com.rtools.associativo.db;
 
-import br.com.rtools.principal.DB;
+import br.com.rtools.associativo.ConvenioServico;
 import br.com.rtools.associativo.SubGrupoConvenio;
+import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class SubGrupoConvenioDBToplink extends DB implements SubGrupoConvenioDB {
 
-    public boolean insert(SubGrupoConvenio subGrupoConvenio) {
+    @Override
+    public List listaSubGrupoConvenioPorGrupo(int idGrupoConvenio) {
         try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(subGrupoConvenio);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(SubGrupoConvenio subGrupoConvenio) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(subGrupoConvenio);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(SubGrupoConvenio subGrupoConvenio) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(subGrupoConvenio);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public SubGrupoConvenio pesquisaCodigo(int id) {
-        SubGrupoConvenio result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("SubGrupoConvenio.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (SubGrupoConvenio) qry.getSingleResult();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return result;
-    }
-
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select g from SubGrupoConvenio g ");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
-
-    public List pesquisaSubGrupoConvenioPorDescricao(String descricao) {
-        List lista = null;
-        descricao = descricao.toUpperCase().trim();
-        try {
-            Query qry = getEntityManager().createQuery(
-                    "select g"
-                    + "  from SubGrupoConvenio g"
-                    + " where UPPER(g.descricao) like :descricao");
-            qry.setParameter("descricao", descricao);
-            lista = qry.getResultList();
-            if (lista == null) {
-                lista = new ArrayList();
+            Query query = getEntityManager().createQuery(" SELECT SGC FROM SubGrupoConvenio AS SGC WHERE SGC.grupoConvenio.id = :pid ORDER BY SGC.descricao ASC ");
+            query.setParameter("pid", idGrupoConvenio);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
-            return lista;
+        } catch (Exception e) {}
+        return new ArrayList() ;
+    }
+
+    @Override
+    public boolean existeSubGrupoConvenio(SubGrupoConvenio subGrupoConvenio) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT SGC FROM SubGrupoConvenio AS SGC WHERE SGC.grupoConvenio.id = :grupoConvenio AND UPPER(SGC.descricao) = :descricao");
+            qry.setParameter("grupoConvenio", subGrupoConvenio.getGrupoConvenio().getId());
+            qry.setParameter("descricao", subGrupoConvenio.getDescricao().toUpperCase());
+            return !((List) qry.getResultList()).isEmpty();
         } catch (Exception e) {
-            e.getMessage();
-            return new ArrayList();
+            return false;
         }
     }
 
-    public List pesquisaSubGrupoConvênioPorGrupo(int idGrupoConvenio) {
+    @Override
+    public List<Servicos> listaServicosDisponiveis(int idSubGrupoConvenio) {
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select g"
-                    + "  from SubGrupoConvenio g"
-                    + " where g.grupoConvenio.id = :pid");
-            qry.setParameter("pid", idGrupoConvenio);
-            return qry.getResultList();
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
+            Query qry = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.id NOT IN( SELECT CS.servicos.id FROM ConvenioServico AS CS WHERE CS.subGrupoConvenio.id = :pid ) ORDER BY S.descricao ASC ");
+            qry.setParameter("pid", idSubGrupoConvenio);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {}
+        return new ArrayList();
     }
 
-    public List pesquisaSubGrupoConvênioComServico(int idSubGrupo) {
+    @Override
+    public List<ConvenioServico> listaServicosAdicionados(int idSubGrupoConvenio) {
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select s"
-                    + "  from Servicos s"
-                    + " where s.id not in (select cs.servicos.id from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo + ")");
-            return qry.getResultList();
-        } catch (EJBQLException e) {
-            e.getMessage();
-            return null;
-        }
+            Query qry = getEntityManager().createQuery(" SELECT CS FROM ConvenioServico AS CS WHERE CS.subGrupoConvenio.id = :pid ORDER BY CS.servicos.descricao ASC, CS.subGrupoConvenio.descricao ASC ");
+            qry.setParameter("pid", idSubGrupoConvenio);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {}
+        return new ArrayList();
     }
 
-    public List pesquisaSubGrupoConvênioSemServico(int idSubGrupo) {
-        try {
-            Query qry = getEntityManager().createQuery(
-                    "select s"
-                    + "  from Servicos s"
-                    + " where s.id in (select cs.servicos.id from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo + ")");
-            return qry.getResultList();
-        } catch (EJBQLException e) {
-            e.getMessage();
-            return null;
-        }
-    }
+//    public List pesquisaSubGrupoConvênioComServico(int idSubGrupo) {
+//        try {
+//            Query qry = getEntityManager().createQuery(
+//                    "select s"
+//                    + "  from Servicos s"
+//                    + " where s.id not in (select cs.servicos.id from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo + ")");
+//            return qry.getResultList();
+//        } catch (EJBQLException e) {
+//            e.getMessage();
+//            return null;
+//        }
+//    }
+//
+//    public List pesquisaSubGrupoConvênioSemServico(int idSubGrupo) {
+//        try {
+//            Query qry = getEntityManager().createQuery(
+//                    "select s"
+//                    + "  from Servicos s"
+//                    + " where s.id in (select cs.servicos.id from ConvenioServico cs where cs.subGrupoConvenio.id = " + idSubGrupo + ")");
+//            return qry.getResultList();
+//        } catch (EJBQLException e) {
+//            e.getMessage();
+//            return null;
+//        }
+//    }
 }
