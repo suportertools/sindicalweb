@@ -37,6 +37,20 @@ public class GenericaSessao {
         }
         return string;
     }
+    
+    public static boolean getBoolean(String sessionName) {
+        return getBoolean(sessionName, false);
+    }
+
+    public static boolean getBoolean(String sessionName, boolean remove) {
+        boolean is = (Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
+        if (exists(sessionName)) {
+            if (remove) {
+                remove(sessionName);
+            }
+        }
+        return is;
+    }
 
     public static Object getObject(String sessionName) {
         return getObject(sessionName, false);
