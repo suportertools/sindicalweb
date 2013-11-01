@@ -407,10 +407,10 @@ public class ImpressaoParaSocios {
                         "application/pdf",
                         FacesContext.getCurrentInstance());
                 download.baixar();
-            } catch (Exception erro) {
+            } catch (JRException erro) {
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
-        } catch (Exception erro) {
+        } catch (JRException erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
     }
@@ -631,25 +631,22 @@ public class ImpressaoParaSocios {
                     "application/pdf",
                     FacesContext.getCurrentInstance());
             download.baixar();
-        } catch (Exception erro) {
+        } catch (JRException erro) {
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
         //return null;
     }
     
-    public static void branco(String pathPasta, String nomeDownload, String path, String pathVerso, Socios socios, PessoaEmpresa pessoaEmpresa, MatriculaSocios matriculaSocios, boolean imprimirVerso, List<Socios> listaDependentes) {
-        PessoaEndereco pesEndSindicato = new PessoaEndereco();
-        PessoaEnderecoDB dbEnd = new PessoaEnderecoDBToplink();
-        String dados[] = new String[32];
+    public static void branco() {
+        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
+        PessoaEnderecoDB enderecoDB = new PessoaEnderecoDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            //HttpServletResponse response = (HttpServletResponse) faces.getExternalContext().getResponse();
             Collection listaSocios = new ArrayList<FichaSocial>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(path));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/FICHACADASTROBRANCO.jasper"));
             Juridica sindicato = (Juridica) salvarAcumuladoDB.pesquisaCodigo(1, "Juridica");
-            pesEndSindicato = dbEnd.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
+            PessoaEndereco pessoaEndereco = enderecoDB.pesquisaEndPorPessoaTipo(sindicato.getPessoa().getId(), 2);
             Registro registro = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
                 try {
                     listaSocios.add(new FichaSocial(0,
@@ -671,9 +668,9 @@ public class ImpressaoParaSocios {
                             "", // ESTADO CÍVIL
                             "", // PAI
                             "", // MÃE
-                            "", //TEL1
-                            "", //TEL2
-                            "", //EMAIL1
+                            "", // TEL1
+                            "", // TEL2
+                            "", // EMAIL1
                             "",
                             "",
                             "",
@@ -709,13 +706,13 @@ public class ImpressaoParaSocios {
                             registro.getFichaSocial(), // obs
                             "",
                             sindicato.getPessoa().getNome(),
-                            pesEndSindicato.getEndereco().getDescricaoEndereco().getDescricao(),
-                            pesEndSindicato.getNumero(),
-                            pesEndSindicato.getComplemento(),
-                            pesEndSindicato.getEndereco().getBairro().getDescricao(),
-                            pesEndSindicato.getEndereco().getCidade().getCidade(),
-                            pesEndSindicato.getEndereco().getCidade().getUf(),
-                            AnaliseString.mascaraCep(pesEndSindicato.getEndereco().getCep()),
+                            pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao(),
+                            pessoaEndereco.getNumero(),
+                            pessoaEndereco.getComplemento(),
+                            pessoaEndereco.getEndereco().getBairro().getDescricao(),
+                            pessoaEndereco.getEndereco().getCidade().getCidade(),
+                            pessoaEndereco.getEndereco().getCidade().getUf(),
+                            AnaliseString.mascaraCep(pessoaEndereco.getEndereco().getCep()),
                             sindicato.getPessoa().getDocumento(),
                             "",
                             ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
@@ -723,11 +720,11 @@ public class ImpressaoParaSocios {
                             sindicato.getPessoa().getEmail1(),
                             sindicato.getPessoa().getSite(),
                             sindicato.getPessoa().getTelefone1(),
-                            ((ServletContext) faces.getExternalContext().getContext()).getRealPath(pathVerso),
+                            "",
                             "",
                             new Date(),
                             "",
-                            pesEndSindicato.getEndereco().getLogradouro().getDescricao(),
+                            pessoaEndereco.getEndereco().getLogradouro().getDescricao(),
                             ""));
                 } catch (Exception erro) {
                     System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
@@ -739,6 +736,7 @@ public class ImpressaoParaSocios {
                     null,
                     dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+            String nomeDownload = "ficha_branco.pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
             sa.salvaNaPasta(pathPasta);
             Download download = new Download(nomeDownload,
@@ -746,10 +744,9 @@ public class ImpressaoParaSocios {
                     "application/pdf",
                     FacesContext.getCurrentInstance());
             download.baixar();
-        } catch (JRException erro) {
-            System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
+            return;
+        } catch (JRException e) {
         }
-        //return null;
     }    
 
     public static String getFotoSocio(Socios socios) {
