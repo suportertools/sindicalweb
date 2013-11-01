@@ -27,7 +27,11 @@
     <managed-bean>
         <managed-bean-name>profissaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.ProfissaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
+        <managed-bean-scope>session</managed-
+
+
+
+bean-scope>
     </managed-bean>  -->
 
     <managed-bean>
@@ -385,18 +389,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>grupoConvenioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.GrupoConvenioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>subGrupoConvenioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.SubGrupoConvenioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>parentescoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ParentescoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -414,11 +406,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>convenioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ConvenioJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>categoriaBean</managed-bean-name>
@@ -540,11 +532,11 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>cartaoSocialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.CartaoSocialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
     <!-- 
     <managed-bean>
         <managed-bean-name>generoBean</managed-bean-name>
