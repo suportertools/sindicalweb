@@ -8,12 +8,17 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "SOC_CONVENIO")
-@NamedQuery(name = "Convenio.pesquisaID", query = "select c from Convenio c where c.id=:pid")
+@NamedQueries({
+    @NamedQuery(name = "Convenio.pesquisaID",  query = "SELECT CON FROM Convenio AS CON WHERE CON.id = :pid"),
+    @NamedQuery(name = "Convenio.findAll",     query = "SELECT CON FROM Convenio AS CON ORDER BY CON.juridica.pessoa.nome ASC, CON.subGrupoConvenio.grupoConvenio.descricao ASC, CON.subGrupoConvenio.descricao ASC "),
+    @NamedQuery(name = "Convenio.findName",    query = "SELECT CON FROM Convenio AS CON WHERE UPPER(CON.juridica.pessoa.nome) LIKE :pdescricao ORDER BY CON.juridica.pessoa.nome ASC, CON.subGrupoConvenio.grupoConvenio.descricao ASC, CON.subGrupoConvenio.descricao ASC  ")
+})
 public class Convenio implements java.io.Serializable {
 
     @Id
