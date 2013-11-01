@@ -8,6 +8,7 @@
         <title>Sindical - Login beta</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
         <link href="#{facesContext.externalContext.requestContextPath}/reset.css" rel="stylesheet" type="text/css"/>
         <script type="text/javascript">
             if (navigator.appName.indexOf('Microsoft') !== -1){
@@ -23,7 +24,13 @@
             #idEntrar, .idNovo {visibility: visible;}
         </style>
     <![endif]-->
+    
     <h:body>
+        <!-- INICIA DIV wrap e main -->
+	<div id="wrapx">
+        <div id="mainx">
+        <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
+        <!-- INICIA DIV wrap e main -->
         <h:form id="formLoginValidacao">
             <h:inputHidden value="#{controleUsuarioBean.validacaoIndex}"/>
         </h:form>
@@ -76,9 +83,16 @@
                 
             </p:panelGrid>
         </f:view>
+                
+        <!-- FINALIZA div wrap main -->
+        </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
         
-        <f:subview id="footer">
-            <ui:include src="templateFooter.xhtml"/>
-        </f:subview>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>
     </h:body>
 </html>
