@@ -6,15 +6,18 @@
                 xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Cancelar Horários</title>
+        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
     </h:head>
     <h:body>
         <f:subview id="header">
-            <ui:include src="templatePrimes.xhtml"/>
+            
+            <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
-            <p:panel styleClass="wrapper" style="border: 0;">
-                <p:outputLabel value="Cancelar Horários" styleClass="fonteHeader" />
+            <p:panel styleClass="wrapper" style="border: 0px;">
+                <p:outputLabel value="Cancelar Horários" styleClass="fonteHeader" />                    
                 <div style="clear: both;"></div>
                 <h:form id="formCancelarHorarioNovo">                     
                     <c:set scope="request" var="object" value="${cancelarHorarioBean.cancelarHorario}"/>
@@ -50,7 +53,7 @@
                                         <p:spinner id="idQuantidadeHorarios" value="#{cancelarHorarioBean.nrQuantidadeCancelar}" max="#{cancelarHorarioBean.nrQuantidadeDisponivel}" min="0" disabled="#{cancelarHorarioBean.desabilitaBotoes}" title="Quantidade a ser cancelada" size="1">
                                             <p:ajax update="idQuantidadeDisponivel, idQuantidadeRestante" listener="#{cancelarHorarioBean.validaQuantidadeDisponivel}" />
                                         </p:spinner>    
-                                        <p:outputLabel value="Cancelados:" styleClass="margin-left-max"/>
+                                        <p:outputLabel value="Cancelados:" style="margin-left: 15px;"/>
                                         <p:inputText id="idQuantidadeRestante" value="#{cancelarHorarioBean.nrQuantidadeCancelado}" disabled="true" size="2"  title="Quantidade de horários cancelados" style="margin-left: 15px;"/>
                                     </p:column>
                                 </p:panelGrid>
@@ -105,21 +108,27 @@
                         <p:dataTable value="#{cancelarHorarioBean.listaHorariosCancelados}" var="linha" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) horário(s) cancelado(s) para essa data/período" resizableColumns="true" >
                             <f:facet name="header">Cancelamento de Horários</f:facet>
                             
-                            <p:column width="80" headerText="Data" rendered="#{!cancelarHorarioBean.tipoCancelamento.endsWith('Dia')}" >#{linha.data}</p:column>
+                            <p:column width="80" headerText="Data" rendered="#{!cancelarHorarioBean.tipoCancelamento.endsWith('Dia')}">
+                                <p:outputLabel value="#{linha.data}" />
+                            </p:column>
                             
                             <p:column width="50" style="text-align: center;">
-                                <f:facet name="header" class="margin">
-                                    <p:graphicImage value="/Imagens/horario.png" alt="Horários" title="Horários" width="20"  />
-                                </f:facet>
-                                #{linha.horarios.hora} 
+                                  <f:facet name="header">
+                                      <p:graphicImage value="/Imagens/horario.png" alt="Horários" title="Horários" width="20" />
+                                  </f:facet>
+                                  <p:outputLabel value="#{linha.horarios.hora}" /> 
                             </p:column>
 
-                            <p:column width="150" headerText="Qtde Disponível">#{cancelarHorarioBean.calculaQuantidadeDisponivel(linha.horarios.quantidade, linha.quantidade)}</p:column>
+                            <p:column width="150" headerText="Qtde Disponível">
+                                <p:outputLabel  value="#{cancelarHorarioBean.calculaQuantidadeDisponivel(linha.horarios.quantidade, linha.quantidade)}" />
+                            </p:column>
                             
-                            <p:column width="150" headerText="Qtde Cancelado">#{linha.quantidade} </p:column>
+                            <p:column width="150" headerText="Qtde Cancelado">
+                                <p:outputLabel value="#{linha.quantidade}" />
+                            </p:column>
                             
                             <p:column style="text-align: center; width: 40px;">
-                                <p:commandButton icon="ui-icon-trash" action="#{cancelarHorarioBean.excluir(linha)}" update=":formCancelarHorario:i_panel_grid_horarios :formCancelarHorarioNovo:" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset"/>
+                                <p:commandButton icon="ui-icon-trash" action="#{cancelarHorarioBean.excluir(linha)}" update=":formCancelarHorario:i_panel_grid_horarios :formCancelarHorarioNovo:" disabled="#{controleAcessoBean.botaoExcluir}"/>
                             </p:column>                             
                         </p:dataTable>
                     </p:panelGrid>
