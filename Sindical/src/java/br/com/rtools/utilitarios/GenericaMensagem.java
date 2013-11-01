@@ -6,7 +6,7 @@ import javax.faces.context.FacesContext;
 public class GenericaMensagem {
 
     public static void error(String title, String description) {
-        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, title, description));        
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, title, description));
     }
 
     public static void fatal(String title, String description) {
