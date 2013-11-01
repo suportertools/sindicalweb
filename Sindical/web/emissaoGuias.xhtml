@@ -25,142 +25,152 @@
                     <br /><br />
                     <div class="divMae divFundo" align="left">
 
-                        <rich:panel style="width: 650px">
+                        <rich:panel style="width: 1024px">
                             <h:outputLabel value="-- Beneficiário -- " styleClass="fonteFranklinNegrito"/>
-                            <h:outputLabel value="Data emissão: " styleClass="fontePadrao"/>
-                            <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
-
-                            <h:panelGrid columns="5">
-                                <h:outputLabel value="Código: " styleClass="fontePadrao"/>
-                                <h:outputLabel id="idCodigoBene" value="" styleClass="fontePadraoNegrito"/>
-                                <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
-                                <h:inputText id="nomeBene" value="" size="50" onkeypress="upperCase(this);">
-                                </h:inputText>
-                                <a4j:commandButton id="btnPesquisar" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                            
+                            <h:panelGrid columns="2" style="width: 100%">
+                                <h:column>
+                                    <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                                    <h:inputText id="nomeBene" size="50" value="#{emissaoGuiasBean.pessoa.nome}" onblur="upperCase(this);" />
+                                    <h:commandButton id="btnPesquisar" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
+                                </h:column>
+                                    
+                                <h:column>
+                                    <a4j:commandLink oncomplete="modalOpcao('divSemCadastro');" styleClass="idSalvar iLink" actionListener="#{emissaoGuiasBean.novaPessoa()}" value="Cadastrar" render="i_panel_sem_cadastro" title="Nova Pessoa" rendered="#{emissaoGuiasBean.pessoa.id == -1}" style="width: 100px; float: right">
+                                        
+                                    </a4j:commandLink>
+                                </h:column>
                             </h:panelGrid>
                         </rich:panel>
 
                         <br />
 
-                        <rich:panel style="width: 650px">
-                            <h:outputLabel value="-- Dados do Titular -- " styleClass="fonteFranklinNegrito"/>
-                            <h:panelGrid columns="5">
-                                <h:outputLabel value="Código: " styleClass="fontePadrao"/>
-                                <h:outputLabel id="idTitular" value="" styleClass="fontePadraoNegrito"/>
-                                <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
-                                <h:inputText id="nomeTitular" value="" size="50" readonly="true"/>
-                            </h:panelGrid>
-                        </rich:panel>
-
-                        <br />
-
-                        <rich:panel style="width: 650px">
+                        <rich:panel id="i_panel_convenio" style="width: 1024px">
                             <h:outputLabel value="-- Empresa Convêniada -- " styleClass="fonteFranklinNegrito"/>
-                            <h:panelGrid columns="4">
+                            <h:panelGrid id="i_panel_grupos" columns="3">
                                 <h:column>
                                     <h:outputLabel value="Grupo: " styleClass="fontePadrao"/>
-                                    <h:selectOneMenu id="idGrupo" value="">
-                                        <f:selectItems/>
+                                    <h:selectOneMenu id="idGrupo" value="#{emissaoGuiasBean.idGrupo}">
+                                        <a4j:ajax event="change" render="i_panel_grupos i_panel_servicos" listener="#{emissaoGuiasBean.limpaSubGrupo()}"/>
+                                        <f:selectItems value="#{emissaoGuiasBean.listaGrupo}"/>
                                     </h:selectOneMenu>
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Sub Grupo: " styleClass="fontePadrao" style="margin-left: 8px"/>
-                                    <h:selectOneMenu id="idSubGrupo" value="">
-                                        <f:selectItems/>
+                                    <h:outputLabel value="Sub Grupo: " styleClass="fontePadrao" style="margin-left: 30px"/>
+                                    <h:selectOneMenu id="idSubGrupo" value="#{emissaoGuiasBean.idSubGrupo}">
+                                        <a4j:ajax event="change" render="i_panel_grupos i_panel_servicos" listener="#{emissaoGuiasBean.limpaSubGrupo()}"/>
+                                        <f:selectItems value="#{emissaoGuiasBean.listaSubGrupo}"/>
                                     </h:selectOneMenu>
                                 </h:column>
 
                                 <h:column>
-                                    <h:outputLabel value="Razão: " styleClass="fontePadrao" style="margin-left: 8px"/>
-                                    <h:inputText id="idRazao" value="" styleClass="fontePadraoNegrito" size="40" readonly="true"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:commandButton id="btnPesquisarRazao" action="#{chamadaPaginaBean.pesquisaJuridicaConvenio}" image="/Imagens/pesquisar.png"/>
+                                    <h:outputLabel value="Razão: " styleClass="fontePadrao" style="margin-left: 30px"/>
+                                    <h:selectOneMenu id="idEmpresasConv" value="#{emissaoGuiasBean.idJuridica}">
+                                        <a4j:ajax event="change"  />
+                                        <f:selectItems value="#{emissaoGuiasBean.listaJuridica}" />
+                                    </h:selectOneMenu>
                                 </h:column>
                             </h:panelGrid>
 
-                            <h:panelGrid columns="5">
-                                <h:column>
-                                    <h:selectOneMenu id="idServicos" value="">
-                                        <f:selectItems/>
-                                    </h:selectOneMenu>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputText value="Quantidade: " styleClass="fontePadrao" style="margin-left: 8px"/>
-                                    <h:inputText id="idQntServicos" value="" size="3"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputText value="Valor: " styleClass="fontePadrao" style="margin-left: 8px"/>
-                                    <h:outputText id="idQntValor" value="R$ " styleClass="fontePadraoNegrito"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputText value="Desconto: " styleClass="fontePadrao" style="margin-left: 8px"/>
-                                    <h:inputText id="idDesconto" size="10" value="" dir="RTL" />
-                                </h:column>
-
-                                <h:column>
-                                    <a4j:commandButton image="/Imagens/novo.png"/>
-                                </h:column>
+                            <h:panelGrid id="i_panel_servicos" columns="1" style="margin-top: 20px">
+                                <h:outputLabel value="-- Serviços -- " styleClass="fonteFranklinNegrito"/>
+                                
+                                <h:selectOneMenu id="idServicos" value="#{emissaoGuiasBean.idServicos}">
+                                    <a4j:ajax event="change" render="i_panel_servicos" />
+                                    <f:selectItems value="#{emissaoGuiasBean.listaServico}"/>
+                                </h:selectOneMenu>
+                                
+                                <h:panelGrid columns="4">
+                                    <h:column>
+                                        <h:outputText value="Quantidade: " styleClass="fontePadrao" />
+                                        <h:inputText id="i_qnt" value="#{emissaoGuiasBean.quantidade}" size="1">
+                                            <a4j:ajax event="change" render="i_qnt" />
+                                        </h:inputText>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <h:outputText value="Valor: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                        <h:outputText id="idQntValor" value="R$ #{emissaoGuiasBean.valor}" styleClass="fontePadraoNegrito" />
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <h:outputText value="Desconto: " styleClass="fontePadrao" style="margin-left: 8px"/>
+                                        <h:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}">
+                                            <a4j:ajax event="change" render="i_panel_servicos" />
+                                        </h:inputText>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <a4j:commandButton image="/Imagens/novo.png" action="#{emissaoGuiasBean.adicionarServico()}" render="i_panel_grid i_panel_total"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="1">
+                                <h:outputText value="Observação" styleClass="fontePadraoNegrito"/>
+                                <h:inputTextarea style="width: 1005px" value="#{emissaoGuiasBean.lote.historico}"/>
                             </h:panelGrid>
 
                             <br />
 
                             <h:panelGrid>
-                                <h:panelGroup style="overflow:auto; height:130px; width:450px;"  layout="block">
-                                    <rich:dataTable  var="linha" id="tbl" style="width: 100%;">
-                                        <rich:column id="colExcluir">
+                                <h:panelGroup id="i_panel_grid" style="overflow:auto; height:130px;"  layout="block">
+                                    <rich:dataTable  var="linha" id="tbl" style="width: 100%;" value="#{emissaoGuiasBean.listaMovimento}">
+                                        <rich:column>
                                             <f:facet name="header">
-                                                <h:outputText value="..." id="lbExcluir"/>
+                                                <h:outputText value="..."/>
                                             </f:facet>
                                             <h:commandButton image="/Imagens/excluirp.png"/>
                                         </rich:column>
 
-                                        <rich:column id="colServicos">
+                                        <rich:column>
                                             <f:facet name="header">
-                                                <h:outputText value="Serviços" id="lbServicos"/>
+                                                <h:outputText value="Serviços"/>
                                             </f:facet>
-                                            <h:outputText id="nomeServicos" styleClass="fontePadraoNegrito"/>
+                                            <h:outputText styleClass="fontePadraoNegrito" value="#{linha.argumento0.servicos.descricao}"/>
                                         </rich:column>
 
-                                        <rich:column id="colQnt" styleClass="coluna">
+                                        <rich:column styleClass="coluna">
                                             <f:facet name="header">
-                                                <h:outputText value="Quantidade" id="lbQnt"/>
+                                                <h:outputText value="Quantidade"/>
                                             </f:facet>
-                                            <h:outputText styleClass="fontePadrao"/>
+                                            <h:outputText styleClass="fontePadraoNegrito" value="#{linha.argumento0.quantidade}"/>
                                         </rich:column>
 
-                                        <rich:column id="colValor">
+                                        <rich:column>
                                             <f:facet name="header">
-                                                <h:outputText value="Valor" id="lbValor"/>
+                                                <h:outputText value="Valor"/>
                                             </f:facet>
-                                            <h:outputText id="nomeValor" styleClass="fontePadraoNegrito"/>
+                                            <h:outputText styleClass="fontePadrao" value="#{linha.argumento1}"/>
+                                            
+                                            <!-- COM VALOR EDITAVEL -->
+                                            <!-- <h:inputText id="i_input_valor" value="#{linha.argumento1}" dir="RTL">
+                                                <a4j:ajax event="change" render="i_input_valor" />
+                                            </h:inputText> -->
                                         </rich:column>
 
-                                        <rich:column id="colDesconto">
+                                        <rich:column>
                                             <f:facet name="header">
-                                                <h:outputText value="Desconto" id="lbDesconto"/>
+                                                <h:outputText value="Desconto"/>
                                             </f:facet>
-                                            <h:outputText id="nomeValorDesconto" styleClass="fontePadrao"/>
+                                            <h:outputText styleClass="fontePadraoNegrito" value="#{linha.argumento2}"/>
                                         </rich:column>
 
-                                        <rich:column id="colValorLiquido">
+                                        <rich:column>
                                             <f:facet name="header">
-                                                <h:outputText value="Valor Liquido" id="lbValorLiquido"/>
+                                                <h:outputText value="Valor Liquido"/>
                                             </f:facet>
-                                            <h:outputText id="nomeValorLiquido" styleClass="fontePadraoNegrito"/>
+                                            <h:outputText styleClass="fontePadraoNegrito" value="#{linha.argumento3}"/>
                                         </rich:column>
                                     </rich:dataTable>
                                 </h:panelGroup>
                             </h:panelGrid>
 
-                            <h:panelGrid columns="3">
-                                <h:column>
-                                    <h:outputLabel id="idNumeroGuia" value="Número da Guia: " styleClass="fontePadrao"/>
+                            <h:panelGrid id="i_panel_total" columns="1">
+                                
+                                <!-- <h:column>
+                                    <h:outputLabel  value="Número da Guia: " styleClass="fontePadrao"/>
                                     <h:inputText value="" readonly="true" styleClass="fontePadraoNegrito" size="10" onkeypress="somenteNumeros(this);"/>
                                 </h:column>
 
@@ -168,38 +178,106 @@
                                     <h:outputLabel id="idLoteBaixa" value="Lote baixa: " styleClass="fontePadrao"/>
                                     <h:inputText value="" readonly="true" styleClass="fontePadraoNegrito" size="10" onkeypress="somenteNumeros(this);"/>
                                 </h:column>
-
+                                -->
+                                
                                 <h:column>
-                                    <h:outputLabel id="idTotal" value="Total: " styleClass="fontePadrao"/>
-                                    <h:inputText value="" size="10" id="idTotalValor" readonly="true" styleClass="fontePadraoNegrito"/>
+                                    <h:outputLabel value="Total: " styleClass="fontePadrao"/>
+                                    <h:outputLabel value="#{emissaoGuiasBean.total}" styleClass="fontePadraoNegrito"/>
                                 </h:column>
                             </h:panelGrid>
-
-                            <!-- <h:panelGrid columns="1">
-                                        <a4j:commandLink id="idModalObs" value="<< Observações >>" styleClass="fontePadraoNegrito">
-                                            <rich:componentControl for="panelObservacoes" attachTo="idModalObs" operation="show" event="onclick"/>
-                                        </a4j:commandLink>
-                                    </h:panelGrid> -->
-
-
-                            <h:panelGrid columns="2">
-
-                            </h:panelGrid>
-
                         </rich:panel>
 
                         <br />
 
                         <h:panelGrid columns="6">
-                            <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Novo"   title="Novo"/>
-                            <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Baixar"  title="Baixar"/>
+                            <h:commandLink action="#{emissaoGuiasBean.novo()}" styleClass="idNovo iLink" value="Novo"   title="Novo Lançamento"/>
+                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" rendered="#{emissaoGuiasBean.lote.id == -1}"  title="Salvar este Lançamento"/>
                             <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Imprimir" style="width: 70px" title="Imprimir"/>
                             <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Debitar"  title="Debitar"/>
-                            <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar"  title="Pesquisar"/>
                         </h:panelGrid>
                     </div>
                 </center>
 
+                <div id="boxes">
+                    <div id="divSemCadastro" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid id="i_panel_sem_cadastro" style="float: left; margin-left: 10px">
+                                <h:outputLabel value="CPF: " styleClass="fontePadrao"/>
+                                <h:inputText styleClass="fontePadraoNegrito cpf" size="14" value="#{emissaoGuiasBean.pessoa.documento}">
+                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('documento')}"/> -->
+                                </h:inputText>
+                                
+                                <br />
+                                
+                                <h:outputLabel value="RG: " styleClass="fontePadrao"/>
+                                <h:inputText styleClass="fontePadrao" size="10" value="#{emissaoGuiasBean.fisica.rg}">
+                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('documento')}"/> -->
+                                </h:inputText>
+                                <br />
+                                
+                                <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                                <h:inputText styleClass="fontePadrao" size="50" value="#{emissaoGuiasBean.pessoa.nome}">                                    
+                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('nome')}"/> -->
+                                </h:inputText>
+                                <br />
+                                
+                                <h:outputLabel value="Data de Nascimento: " styleClass="fontePadrao"/>
+                                <h:inputText styleClass="fontePadrao data" size="10" value="#{emissaoGuiasBean.fisica.nascimento}">
+                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('nascimento')}"/> -->
+                                </h:inputText>
+                                <br />
+                                
+                                <h:outputLabel value="Telefone: " styleClass="fontePadrao"/>
+                                <h:inputText styleClass="fontePadrao" size="10" value="#{emissaoGuiasBean.pessoa.telefone1}"/>
+                                
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" action="#{emissaoGuiasBean.salvarSemCadastro()}" oncomplete="modalMensagem(), fecharModal('divSemCadastro', FALSE)" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divSalvar" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Deseja realmente gerar este lançamento?" styleClass="fontePadrao"/>
+                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
+                            </h:panelGrid>
+
+                            <br />
+                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{emissaoGuiasBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma"/>
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{emissaoGuiasBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink closeModal" action="emissaoGuias" value="OK" title="OK" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
             </h:form>
         </f:view>
     </h:body>
