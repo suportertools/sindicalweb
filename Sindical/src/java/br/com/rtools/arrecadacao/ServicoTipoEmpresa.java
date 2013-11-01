@@ -2,12 +2,13 @@ package br.com.rtools.arrecadacao;
 
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Porte;
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "ARR_FAIXA_FATURAMENTO")
 @NamedQuery(name = "ServicoTipoEmpresa.pesquisaID", query = "select c from ServicoTipoEmpresa c where c.id = :pid")
-public class ServicoTipoEmpresa implements java.io.Serializable {
+public class ServicoTipoEmpresa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

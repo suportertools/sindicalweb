@@ -2,11 +2,12 @@ package br.com.rtools.arrecadacao;
 
 import br.com.rtools.financeiro.Movimento;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_ACORDO_MOVIMENTOS")
 @NamedQuery(name = "AcordoMovimentos.pesquisaID", query = "select c from AcordoMovimentos c where c.id = :pid")
-public class AcordoMovimentos implements java.io.Serializable {
+public class AcordoMovimentos implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -4,11 +4,12 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_REPIS_MOVIMENTO")
 @NamedQuery(name = "RepisMovimento.pesquisaID", query = "select m from RepisMovimento m where m.id = :pid")
-public class RepisMovimento implements java.io.Serializable {
+public class RepisMovimento implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

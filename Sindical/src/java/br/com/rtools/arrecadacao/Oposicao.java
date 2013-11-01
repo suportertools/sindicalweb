@@ -16,11 +16,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_OPOSICAO")
 @NamedQuery(name = "Oposicao.pesquisaID", query = "select o from Oposicao o where o.id=:pid")
-public class Oposicao implements java.io.Serializable {
+public class Oposicao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

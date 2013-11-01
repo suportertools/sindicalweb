@@ -2,11 +2,12 @@ package br.com.rtools.arrecadacao;
 
 import br.com.rtools.pessoa.Cnae;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_PATRONAL_CNAE")
 @NamedQuery(name = "PatronalCnae.pesquisaID", query = "select pc from PatronalCnae pc where pc.id = :pid")
-public class PatronalCnae implements java.io.Serializable {
+public class PatronalCnae implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

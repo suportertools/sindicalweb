@@ -1,11 +1,12 @@
 package br.com.rtools.arrecadacao;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_MOTIVO_INATIVACAO")
 @NamedQuery(name = "MotivoInativacao.pesquisaID", query = "select m from MotivoInativacao m where m.id=:pid")
-public class MotivoInativacao implements java.io.Serializable {
+public class MotivoInativacao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
