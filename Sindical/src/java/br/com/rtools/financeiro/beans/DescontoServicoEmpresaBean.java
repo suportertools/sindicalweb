@@ -10,6 +10,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -17,17 +18,17 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.event.RowEditEvent;
 
 @ManagedBean
 @SessionScoped
-public class DescontoServicoEmpresaBean {
+public class DescontoServicoEmpresaBean implements Serializable {
 
     private DescontoServicoEmpresa descontoServicoEmpresa = new DescontoServicoEmpresa();
     private int idServicos = 0;
     private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<DescontoServicoEmpresa> listaDescontoServicoEmpresa = new ArrayList<DescontoServicoEmpresa>();
     private List<DescontoServicoEmpresa> listaDSEPorEmpresa = new ArrayList<DescontoServicoEmpresa>();
-    private float desconto = 0;
     private String descricaoPesquisaNome = "";
     private String descricaoPesquisaCNPJ = "";
     private String comoPesquisa = "";
@@ -36,18 +37,13 @@ public class DescontoServicoEmpresaBean {
     private boolean desabilitaPesquisaNome = false;
     private boolean desabilitaPesquisaCNPJ = false;
 
-    public String novo() {
-        limpar();
-        return "descontoServicoEmpresa";
-    }
-
-    public void limpar() {
-        desconto = 0;
+    public void novo() {
         descontoServicoEmpresa = new DescontoServicoEmpresa();
         idServicos = 0;
         listaServicos.clear();
         listaDescontoServicoEmpresa.clear();
         listaDSEPorEmpresa.clear();
+        listaServicos.clear();
     }
 
     public void salvar() {
@@ -61,13 +57,12 @@ public class DescontoServicoEmpresaBean {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
             return;
         }
-        if (desconto <= 0) {
+        if (descontoServicoEmpresa.getDesconto() <= 0) {
             mensagem = "Informar o valor do desconto!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
             return;
         }
         // descontoServicoEmpresa.setDesconto(Moeda.converteUS$(desconto));
-        descontoServicoEmpresa.setDesconto(desconto);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         int idServicoAntes = -1;
         if (descontoServicoEmpresa.getId() != -1) {
@@ -87,7 +82,7 @@ public class DescontoServicoEmpresaBean {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Registro cadastrado";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
-                limpar();
+                novo();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 descontoServicoEmpresa.setId(-1);
@@ -100,7 +95,7 @@ public class DescontoServicoEmpresaBean {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Registro atualizado";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
-                limpar();
+                novo();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Erro ao atualizar este registro!";
@@ -109,11 +104,11 @@ public class DescontoServicoEmpresaBean {
         }
         descontoServicoEmpresa.setJuridica(juridica);
     }
-
-    public void atualizarDesconto(DescontoServicoEmpresa dse) {
+    
+    public void atualizar(RowEditEvent event) {
+        DescontoServicoEmpresa dse = (DescontoServicoEmpresa) event.getObject(); 
         if (dse.getId() != -1) {
-            dse.setDesconto(Float.parseFloat(Moeda.substituiVirgula(dse.getDescontoString())));
-            if (dse.getDescontoString().equals("") || dse.getDescontoString().equals("0,00") || dse.getDescontoString().equals("0") || dse.getDescontoString().equals("0.00")) {
+            if (dse.getDesconto() <= 0) {
                 mensagem = "Informar o valor do desconto!";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
                 return;
@@ -140,7 +135,6 @@ public class DescontoServicoEmpresaBean {
                 idServicos = i;
             }
         }
-        desconto = descontoServicoEmpresa.getDesconto();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
@@ -152,7 +146,6 @@ public class DescontoServicoEmpresaBean {
                 idServicos = i;
             }
         }
-        desconto = descontoServicoEmpresa.getDesconto();
     }
 
     public void excluir() {
@@ -170,7 +163,7 @@ public class DescontoServicoEmpresaBean {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Registro excluído";
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
-                limpar();
+                novo();
 
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
@@ -183,6 +176,26 @@ public class DescontoServicoEmpresaBean {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
         }
     }
+
+    public void remover(RowEditEvent event) {
+        DescontoServicoEmpresa dse = (DescontoServicoEmpresa) event.getObject(); 
+        if (dse.getId() != -1) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            dse = (DescontoServicoEmpresa) salvarAcumuladoDB.pesquisaCodigo(dse.getId(), "DescontoServicoEmpresa");
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(dse)) {
+                salvarAcumuladoDB.comitarTransacao();
+                mensagem = "Registro excluído";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                listaDSEPorEmpresa.clear();
+                listaServicos.clear();
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao excluir registro!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+            }
+        }
+    }    
 
     public List<DescontoServicoEmpresa> getListaDescontoServicoEmpresa() {
         if (listaDescontoServicoEmpresa.isEmpty()) {
@@ -243,12 +256,14 @@ public class DescontoServicoEmpresaBean {
     }
 
     public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty()) {
-            ServicosDB servicosDB = new ServicosDBToplink();
-            List<Servicos> list = (List<Servicos>) servicosDB.pesquisaTodos();
-            if (!list.isEmpty()) {
-                for (int i = 0; i < list.size(); i++) {
-                    listaServicos.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+        if (descontoServicoEmpresa.getJuridica().getId() != -1) {
+            if (listaServicos.isEmpty()) {
+                DescontoServicoEmpresaDB dsedb = new DescontoServicoEmpresaDBTopLink();
+                List<Servicos> list = dsedb.listaTodosServicosDisponiveis(descontoServicoEmpresa);
+                if (!list.isEmpty()) {
+                    for (int i = 0; i < list.size(); i++) {
+                        listaServicos.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                    }
                 }
             }
         }
@@ -257,14 +272,6 @@ public class DescontoServicoEmpresaBean {
 
     public void setListaServicos(List<SelectItem> listaServicos) {
         this.listaServicos = listaServicos;
-    }
-
-    public float getDesconto() {
-        return desconto;
-    }
-
-    public void setDesconto(Float desconto) {
-        this.desconto = desconto;
     }
 
     public String getDescricaoPesquisaNome() {
