@@ -7,14 +7,15 @@
         <script language="JavaScript">
             javascript: window.history.forward(1);
         </script>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
+        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/reset.css" rel="stylesheet" type="text/css"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <style type="text/css">
            .ui-datalist-item {float: left!important;}
           //.ui-datalist-item a {color: white; text-decoration: none;}
         </style>
     </h:head>
-    
     <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
         <f:view>
             <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}">

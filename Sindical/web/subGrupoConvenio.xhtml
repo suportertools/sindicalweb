@@ -9,14 +9,10 @@
     
     <h:head>
         <title>Sub-Grupo Convênio</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
-        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/reset.css" rel="stylesheet" type="text/css"/>        
     </h:head>
-    <h:body class="divMenu">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
@@ -98,6 +94,7 @@
                     </p:panel>
                 </h:form>
             </p:panel>          
-        </f:view>
+            <!-- FINALIZA div wrap main -->
+        </f:view>       
     </h:body>
 </ui:composition>
