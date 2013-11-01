@@ -8,24 +8,16 @@
       xmlns:p="http://primefaces.org/ui">
     
     <h:head>
-        <title>Sub-Grupo Convênio</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
-        <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/>        
-        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
-        <link href="#{facesContext.externalContext.requestContextPath}/resources/css/reset.css" rel="stylesheet" type="text/css"/>        
-        <script language="JavaScript">
-            javascript: window.history.forward(1);
-        </script>
+        <title>Convênio</title>
     </h:head>
-    <h:body class="divMenu">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
             <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
             <p:panel styleClass="wrapper no-border">
-                <p:outputLabel value="Subgrupo Convênio" styleClass="fonteHeader" />
+                <p:outputLabel value="Convênio" styleClass="fonteHeader" />
                 <p:panel style="clear: both;" styleClass="no-border"></p:panel>
                 
                 <h:form id="form_novo_convenio">                    
@@ -48,7 +40,7 @@
                             <p:column>
                                 <p:commandButton icon="ui-icon-disk" value="Salvar" title="Salvar" onclick="dgl_painel_salvar.show();" type="button" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                 <p:commandButton value="Novo" action="#{convenioBean.novo()}" styleClass="margin-left-max" update="id_panel_grid_novo :form_convenio:id_convenio_filtro" />
-                                <p:commandButton icon="ui-icon-close" value="Excluir" oncomplete="PF('dgl_painel_excluir).show()"  styleClass="margin-left-max" global="true" type="button" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <p:commandButton icon="ui-icon-close" value="Excluir" onclick="dgl_painel_excluir.show()"  styleClass="margin-left-max" global="true" type="button" disabled="#{controleAcessoBean.botaoExcluir}"/>
                             </p:column>
                         </p:panelGrid>
                     </p:panel>
@@ -68,7 +60,7 @@
                         <center>
                             <p:outputLabel value="#{convenioBean.mensagem}"/>
                             <br /><br />
-                            <p:commandButton value="Ok" type="button" oncomplete="PF('dgl_painel_mensagem').hide()" style="float: left;" icon="ui-icon-close"/>
+                            <p:commandButton value="Ok" type="button" onclick="dgl_painel_mensagem.hide()" style="float: left;" icon="ui-icon-close"/>
                         </center>
                     </p:dialog>                    
                 </h:form>
@@ -79,9 +71,9 @@
                             <p:column>
                                 <f:facet name="header">
                                     Empresa
-                                    <p:selectBooleanButton value="#{convenioBean.orderJuridica}" onLabel=" " offLabel=""  styleClass="margin-left-max" onIcon="ui-icon-triangle" offIcon="ui-icon-triangle-1-s">
+                                    <p:selectBooleanCheckbox value="#{convenioBean.orderJuridica}" styleClass="margin-left-max" >
                                         <p:ajax event="change" listener="#{convenioBean.listaConvenio.clear()}" update=":form_convenio:id_convenio_filtro" />
-                                    </p:selectBooleanButton>
+                                    </p:selectBooleanCheckbox>
                                 </f:facet>
                                 <p:commandLink value="#{convenio.juridica.pessoa.nome}" action="#{convenioBean.editar(convenio)}" update=":form_novo_convenio:id_panel_grid_novo"/>
                             </p:column>
