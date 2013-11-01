@@ -1,9 +1,33 @@
 body {  
      padding: 0;  
      color: #616161;  
-     
+     height: 100%;
  }  
  
+/* MANTER HEAD E FOOTER */
+		html, body {height: 100%;}
+
+        #wrapx {min-height: 100%;}
+
+        #mainx {overflow:auto;
+                padding-bottom: 300px;}  /* must be same height as the footer */
+
+        #footerx {position: relative;
+                margin-top: -150px; /* negative value of footer height */
+                height: 150px;
+                background: #ECF3FE;
+                clear:both;} 
+
+        /*Opera Fix*/
+        body:before {
+                content:"";
+                height:100%;
+                float:left;
+                width:0;
+                margin-top:-32767px;
+        }
+/* FIM MANTER HEAD E FOOTER */
+
  body, div:first-of-type { margin: 0 auto}
  h1, h2, h3 {  
      margin-top: 0;  
