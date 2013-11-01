@@ -83,6 +83,36 @@ public class LancamentoIndividualDBToplink extends DB implements LancamentoIndiv
     }
     
     @Override
+    public List<Juridica> listaEmpresaConveniadaPorSubGrupo(int id_sub_grupo) {
+        try{
+            List<Vector> vetor = new ArrayList<Vector>();
+            List result = new ArrayList();
+            String textqry = "  SELECT j.id " +
+                             "    FROM pes_juridica j " +
+                             "   INNER JOIN soc_convenio c ON j.id = c.id_juridica " +
+                             "   INNER JOIN pes_pessoa p ON p.id = j.id_pessoa " +
+                             "   INNER JOIN soc_convenio_sub_grupo s ON s.id = c.id_convenio_sub_grupo " +
+                             "   INNER JOIN soc_convenio_grupo g ON g.id = s.id_grupo_convenio " +
+                             "  where s.id = "+id_sub_grupo;
+            
+            Query qry = getEntityManager().createNativeQuery(textqry);
+            
+            vetor = qry.getResultList();
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            if (!vetor.isEmpty()) {
+                for (int i = 0; i < vetor.size(); i++) {
+                    result.add((Juridica)sv.pesquisaCodigo( ((Integer) ((Vector) vetor.get(i)).get(0)), "Juridica"));
+                }
+            }
+
+            return result;
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
     public List<Spc> listaSerasa(int id_pessoa) {
         try{
             List<Spc> result = new ArrayList();

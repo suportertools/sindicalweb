@@ -735,6 +735,18 @@ public class JuridicaBean implements Serializable {
                 return null;
             }
         }
+        
+        PessoaDB dbp = new PessoaDBToplink();
+        String documento = AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento());
+        JuridicaReceita jr = dbp.pesquisaJuridicaReceita(documento);
+        
+        if (jr.getId() != -1){
+            if (!sv.deletarObjeto(sv.pesquisaCodigo(jr.getId(), "JuridicaReceita"))){
+                msgConfirma = "Erro ao excluir Pesquisa da Receita!";
+                sv.desfazerTransacao();
+                return null;
+            }
+        }
         // -------------------------------------------------------------------------------------------------
 
         if (!sv.deletarObjeto((Pessoa) sv.pesquisaCodigo(juridica.getPessoa().getId(), "Pessoa"))) {

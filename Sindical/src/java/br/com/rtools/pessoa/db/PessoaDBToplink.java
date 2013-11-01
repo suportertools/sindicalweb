@@ -5,6 +5,7 @@ import br.com.rtools.pessoa.JuridicaReceita;
 import br.com.rtools.principal.DB;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaComplemento;
+import br.com.rtools.pessoa.PessoaSemCadastro;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.List;
@@ -303,4 +304,16 @@ public class PessoaDBToplink extends DB implements PessoaDB {
         }
         return new PessoaComplemento();
     }
+    
+    @Override
+    public PessoaSemCadastro pesquisaPessoaSemCadastro(String documento) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT PC FROM PessoaSemCadastro AS PC WHERE PC.documento = '"+documento+"'");
+            return (PessoaSemCadastro) query.getSingleResult();
+        } catch (Exception e) {
+            return new PessoaSemCadastro();
+        }
+    }
+    
+    
 }

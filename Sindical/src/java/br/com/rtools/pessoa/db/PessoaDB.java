@@ -4,6 +4,7 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.JuridicaReceita;
 import br.com.rtools.pessoa.PessoaComplemento;
+import br.com.rtools.pessoa.PessoaSemCadastro;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -42,4 +43,6 @@ public interface PessoaDB {
     public JuridicaReceita pesquisaJuridicaReceita(String documento);
 
     public PessoaComplemento pesquisaPessoaComplementoPorPessoa(int idPessoa);
+    
+    public PessoaSemCadastro pesquisaPessoaSemCadastro(String documento);
 }

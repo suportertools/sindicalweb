@@ -27,7 +27,7 @@ public class JuridicaReceita implements Serializable {
     private String fantasia;
     @Column(name = "DS_CEP", length = 15)
     private String cep;
-    @Column(name = "DS_COMPLEMENTO", length = 35)
+    @Column(name = "DS_COMPLEMENTO", length = 100)
     private String complemento;
     @Column(name = "DS_DESCRICAO_END", length = 300)
     private String descricaoEndereco;

@@ -53,6 +53,7 @@ public class AtalhoDBToplink extends DB implements AtalhoDB {
         try {
             Query qry = getEntityManager().createQuery(
                     "select ca from ContadorAcessos ca where ca.usuario.id = " + id_usuario + " order by ca.acessos desc");
+            qry.setMaxResults(15);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
