@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro.db;
 
 import br.com.rtools.financeiro.DescontoServicoEmpresa;
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,5 +95,19 @@ public class DescontoServicoEmpresaDBTopLink extends DB implements DescontoServi
             return descontoServicoEmpresa;
         }
         return descontoServicoEmpresa;
-    } 
+    }
+    
+    @Override
+    public List<Servicos> listaTodosServicosDisponiveis(DescontoServicoEmpresa descontoServicoEmpresa) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT S FROM Servicos AS S WHERE S.id NOT IN (SELECT DSE.servicos.id FROM DescontoServicoEmpresa AS DSE WHERE DSE.juridica.id = :idJuridica ) ORDER BY S.descricao ASC");
+            query.setParameter("idJuridica", descontoServicoEmpresa.getJuridica().getId());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }        
+        return new ArrayList();
+    }
 }
