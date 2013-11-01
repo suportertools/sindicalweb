@@ -4,11 +4,12 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_CONTRIBUINTES_INATIVOS")
 @NamedQuery(name = "ContribuintesInativos.pesquisaID", query = "select ci from ContribuintesInativos ci where ci.id=:pid")
-public class ContribuintesInativos implements java.io.Serializable {
+public class ContribuintesInativos implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

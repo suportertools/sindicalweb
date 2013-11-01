@@ -1,15 +1,16 @@
 package br.com.rtools.arrecadacao;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_CONVENCAO")
 @NamedQueries({
-    @NamedQuery(name = "Convencao.pesquisaID",  query = "SELECT C FROM Convencao AS C WHERE C.id = :pid"),
-    @NamedQuery(name = "Convencao.findAll",     query = "SELECT C FROM Convencao AS C ORDER BY C.descricao ASC "),
-    @NamedQuery(name = "Convencao.findName",    query = "SELECT C FROM Convencao AS C WHERE UPPER(C.descricao) LIKE :pdescricao ORDER BY C.descricao ASC ")
+    @NamedQuery(name = "Convencao.pesquisaID", query = "SELECT C FROM Convencao AS C WHERE C.id = :pid"),
+    @NamedQuery(name = "Convencao.findAll", query = "SELECT C FROM Convencao AS C ORDER BY C.descricao ASC "),
+    @NamedQuery(name = "Convencao.findName", query = "SELECT C FROM Convencao AS C WHERE UPPER(C.descricao) LIKE :pdescricao ORDER BY C.descricao ASC ")
 })
-public class Convencao implements java.io.Serializable {
+public class Convencao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

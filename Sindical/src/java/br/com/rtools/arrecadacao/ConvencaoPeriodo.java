@@ -10,11 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_CONVENCAO_PERIODO")
 @NamedQuery(name = "ConvencaoPeriodo.pesquisaID", query = "select convp from ConvencaoPeriodo convp where convp.id=:pid")
-public class ConvencaoPeriodo implements java.io.Serializable {
+public class ConvencaoPeriodo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

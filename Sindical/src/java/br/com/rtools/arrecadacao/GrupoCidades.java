@@ -2,15 +2,17 @@ package br.com.rtools.arrecadacao;
 
 import br.com.rtools.endereco.Cidade;
 import javax.persistence.*;
+import java.io.Serializable;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ARR_GRUPO_CIDADES")
 @NamedQueries({
-    @NamedQuery(name = "GrupoCidades.pesquisaID",    query = "SELECT GCS FROM GrupoCidades AS GCS WHERE GCS.id = :pid"),
-    @NamedQuery(name = "GrupoCidades.findAll",       query = "SELECT GCS FROM GrupoCidades AS GCS ORDER BY GCS.grupoCidade.descricao ASC, GCS.cidade.cidade ASC, GCS.cidade.uf ASC "),
-    @NamedQuery(name = "GrupoCidades.findName",      query = "SELECT GCS FROM GrupoCidades AS GCS WHERE UPPER(GCS.grupoCidade.descricao) LIKE :pdescricao ORDER BY GCS.grupoCidade.descricao ASC, GCS.cidade.cidade ASC, GCS.cidade.uf ASC ")
+    @NamedQuery(name = "GrupoCidades.pesquisaID", query = "SELECT GCS FROM GrupoCidades AS GCS WHERE GCS.id = :pid"),
+    @NamedQuery(name = "GrupoCidades.findAll", query = "SELECT GCS FROM GrupoCidades AS GCS ORDER BY GCS.grupoCidade.descricao ASC, GCS.cidade.cidade ASC, GCS.cidade.uf ASC "),
+    @NamedQuery(name = "GrupoCidades.findName", query = "SELECT GCS FROM GrupoCidades AS GCS WHERE UPPER(GCS.grupoCidade.descricao) LIKE :pdescricao ORDER BY GCS.grupoCidade.descricao ASC, GCS.cidade.cidade ASC, GCS.cidade.uf ASC ")
 })
-public class GrupoCidades implements java.io.Serializable {
+public class GrupoCidades implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
