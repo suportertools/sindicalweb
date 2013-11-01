@@ -2,253 +2,148 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Sindical - Página Principal</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <style type="text/css">
-            .divMenuPrincipal, .divBotaoPrincipal:hover {-webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px;  border: 0;}
-            .corpoAcessos { width: 200px; height: 300px; overflow: auto}
-            .divMenuPrincipal {width: 980px;}
-            .divMenuPrincipal .divBotao {background: #e0e0e0;}
-            .divMenuPrincipal .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
-            .divMenuPrincipal .divBotao:hover {background: #abc4eb;}
-        </style>
+        <title>Sindical - Menu Principal</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body styleClass="divMenu"><div align="center">
-            <f:subview id="header">
-                <ui:include src="template.xhtml"/>
-                <ui:include src="templateLinks.xhtml"/>
-            </f:subview>
-            <f:view>
-                <h:form id="formMenuPrincipal" style="border: 0; width: 980px; border-bottom: 1px dashed #888; ">
-                    <h:panelGrid cellpadding="0" cellspacing="0">
-                        <h:panelGrid columns="2">
-                            <h:column><h:graphicImage value="/Imagens/BarraSuperior.png"/></h:column>
-                            <h:column>
-                                <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" ></h:graphicImage>
-                            </h:column>
-                        </h:panelGrid>
-                        <rich:toolbar styleClass="divMenuPrincipal" style="background: #e0e0e0; border: 0">
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/seguranca.png" styleClass="pic"/>
-                                            <h:outputText value="Segurança" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Usuários"                         action="#{chamadaPaginaBean.usuario}" styleClass="divBotao"/>
-                                <rich:menuGroup label="Permissão" styleClass="divBotao">
-                                    <rich:menuItem label="Permissão Departamento"       action="#{chamadaPaginaBean.permissaoDepartamento}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Módulo/Rotina"                action="#{chamadaPaginaBean.permissao}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Cadastro Simples"             action="#{chamadaPaginaBean.simples}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Rotina"                       action="#{chamadaPaginaBean.rotina}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Níveis"                       action="#{chamadaPaginaBean.nivel}" styleClass="divBotao"/>
-                                </rich:menuGroup>
-                                <rich:menuGroup label="Sistema" styleClass="divBotao">
-                                    <rich:menuItem label="Pesquisar Logs" title="Registro de atividades"    action="#{chamadaPaginaBean.pesquisaLog}" styleClass="divBotao"/>
-                                </rich:menuGroup>
-                                <rich:menuGroup label="Administrativo sistema" styleClass="divBotao" rendered="#{controleUsuarioBean.boqueiaMenu}">
-                                    <rich:menuItem label="Configuração" title="Configuração"                action="#{chamadaPaginaBean.configuracao}" styleClass="divBotao" />
-                                </rich:menuGroup>                            
-                            </rich:dropDownMenu>
+    
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+	<div id="wrapx">
+        <div id="mainx">
+        <!-- INICIA DIV wrap e main -->  
+         <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
 
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/departamentos.png" styleClass="pic"/>
-                                            <h:outputText value="Departamentos" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Social"      action="#{chamadaPaginaBean.menuSocial}" styleClass="divBotao" />
-                                <rich:menuItem label="Arrecadação" action="#{chamadaPaginaBean.menuArrecadacao}" styleClass="divBotao" />
-                                <rich:menuItem label="Financeiro"  action="#{chamadaPaginaBean.menuFinanceiro}" styleClass="divBotao" />
-                                <rich:menuItem label="Homologação" action="#{chamadaPaginaBean.menuHomologacao}" styleClass="divBotao" >
-                                    <a4j:ajax event="click" listener="#{agendamentoBean.verificaNaoAtendidos}" />
-                                </rich:menuItem>
-                                <rich:menuItem label="Academia"    action="#{chamadaPaginaBean.menuAcademia}" styleClass="divBotao" />
-                                <rich:menuItem label="Escola"      action="#{chamadaPaginaBean.menuEscola}" styleClass="divBotao" />
-                                <rich:menuItem label="Clube"       action="#{chamadaPaginaBean.menuClube}" styleClass="divBotao" />
-                                <rich:menuItem label="Juridico"                                             styleClass="divBotao" />
-                                <rich:menuItem label="Locadora"    action="#{chamadaPaginaBean.menuLocadora}" styleClass="divBotao" />
-                                <rich:menuItem label="Atendimento" action="#{chamadaPaginaBean.menuAtendimento}" styleClass="divBotao"/>
-                            </rich:dropDownMenu>
+        <f:view>
+            <h:form id="formMenuPrincipal">
+                <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
+                    <p:menubar>
+                        <p:submenu label="Segurança" icon="ui-icon-document" style="margin-right: 15px">  
+                             <p:menuitem value="Usuários" action="#{chamadaPaginaBean.usuario}" />  
+                            <p:submenu label="Permissão" icon="ui-icon-contact">  
+                                <p:menuitem value="Perm. Departamento"       action="#{chamadaPaginaBean.permissaoDepartamento}" />
+                                <p:menuitem value="Módulo/Rotina"                action="#{chamadaPaginaBean.permissao}" />
+                                <p:menuitem value="Cadastro Simples"             action="#{chamadaPaginaBean.simples}" />
+                                <p:menuitem value="Rotina"                       action="#{chamadaPaginaBean.rotina}" />
+                                <p:menuitem value="Níveis"                       action="#{chamadaPaginaBean.nivel}" />
+                            </p:submenu>  
+                            <p:separator />  
+                            <p:menuitem value="Pesquisar Logs"                   action="#{chamadaPaginaBean.pesquisaLog}" title="Registro de atividades"  />
+                            <p:menuitem value="Sair do Sistema" action="#{usuarioBean.sairSistema}" /> 
+                        </p:submenu>
 
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/sindicato.png" styleClass="pic"/>
-                                            <h:outputText value="Sindicato" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Registro Empresarial" action="#{chamadaPaginaBean.registroEmpresarial}"  styleClass="divBotao">
-                                    <a4j:ajax event="click" listener="#{controleUsuarioBean.removeSessaoModuloMenuPrincipal}" />
-                                </rich:menuItem>
-                                <rich:menuItem label="Registro Filial"      action="#{chamadaPaginaBean.macFilial}"  styleClass="divBotao"/>
-                                <rich:menuItem label="Registro Patronal"      action="#{chamadaPaginaBean.registroPatronal}"  styleClass="divBotao"/>
-                                <rich:menuItem label="Piso Salarial"      action="#{chamadaPaginaBean.pisoSalarial}"  styleClass="divBotao"/>
-                            </rich:dropDownMenu>
+                        <p:submenu label="Departamentos" icon="ui-icon-document" style="margin-right: 15px">  
+                            <p:menuitem value="Social"      action="#{chamadaPaginaBean.menuSocial}" />
+                            <p:menuitem value="Arrecadação" action="#{chamadaPaginaBean.menuArrecadacao}" />
+                            <p:menuitem value="Financeiro"  action="#{chamadaPaginaBean.menuFinanceiro}" />
+                            <p:menuitem value="Homologação" action="#{chamadaPaginaBean.menuHomologacao}" />
+                            <p:menuitem value="Academia"    action="#{chamadaPaginaBean.menuAcademia}" />
+                            <p:menuitem value="Escola"      action="#{chamadaPaginaBean.menuEscola}" />
+                            <p:menuitem value="Clube"       action="#{chamadaPaginaBean.menuClube}" />
+                            <p:menuitem value="Locadora"    action="#{chamadaPaginaBean.menuLocadora}" />
+                            <p:menuitem value="Atendimento" action="#{chamadaPaginaBean.menuAtendimento}" />
+                        </p:submenu>
 
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/suporte.png" styleClass="pic"/>
-                                            <h:outputText value="Suporte" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Manual do Sistema"  styleClass="divBotao"/>
-                                <rich:menuItem label="Envie sua Mensagem"  styleClass="divBotao"/>
-                            </rich:dropDownMenu>
+                        <p:submenu label="Sindicato" icon="ui-icon-document" style="margin-right: 15px">  
+                            <p:menuitem value="Registro Empresarial" action="#{chamadaPaginaBean.registroEmpresarial}" />
+                            <p:menuitem value="Registro Filial"      action="#{chamadaPaginaBean.macFilial}" />
+                            <p:menuitem value="Registro Patronal"    action="#{chamadaPaginaBean.registroPatronal}" />
+                            <p:menuitem value="Piso Salarial"        action="#{chamadaPaginaBean.pisoSalarial}" />
+                        </p:submenu>
 
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/ferramentas.png" styleClass="pic"/>
-                                            <h:outputText value="Ferramentas" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuGroup label="Pessoa" styleClass="divBotao">
-                                    <rich:menuItem label="Física"                action="#{chamadaPaginaBean.pessoaFisica}"/>
-                                    <rich:menuItem label="Juridica"              action="#{chamadaPaginaBean.pessoaJuridica}"/>
-                                    <rich:menuItem label="Filial"                action="#{chamadaPaginaBean.filial}"/>
-                                    <rich:menuItem label="Tipo Documento"        action="#{chamadaPaginaBean.tipoDocumento}"/>
-                                    <rich:menuItem label="Cnae"                  action="#{chamadaPaginaBean.cnae}"/>
-                                    <rich:menuItem label="Profissão"             action="#{chamadaPaginaBean.profissao}"/>
-                                    <rich:menuItem label="Enviar E-Mails"        action="#{chamadaPaginaBean.enviarEmail}"/>
-                                </rich:menuGroup>
-                                <rich:menuGroup label="Endereço" styleClass="divBotao">
-                                    <rich:menuItem label="Endereço"      action="#{chamadaPaginaBean.endereco}"/>
-                                    <rich:menuItem label="Bairro"        action="#{chamadaPaginaBean.bairro}"/>
-                                    <rich:menuItem label="Cidade"        action="#{chamadaPaginaBean.cidade}"/>
-                                    <rich:menuItem label="Logradouro"    action="#{chamadaPaginaBean.logradouro}"/>
-                                    <rich:menuItem label="Descrição"     action="#{chamadaPaginaBean.descricaoEndereco}"/>
-                                    <rich:menuItem label="Tipo Endereço" action="#{chamadaPaginaBean.tipoEndereco}"/>
+                        <p:submenu label="Suporte" icon="ui-icon-document" style="margin-right: 15px">
+                            <p:menuitem value="Manual do Sistema" />
+                            <p:menuitem value="Envie sua Mensagem" />
+                        </p:submenu>
 
-                                </rich:menuGroup>
-                                <rich:menuGroup label="Agenda" styleClass="divBotao">
-                                    <rich:menuItem label="Agenda Telefônica"            action="#{chamadaPaginaBean.agendaTelefone}"/>
-                                    <rich:menuItem label="Pesquisa Agenda Telefônica"   action="#{chamadaPaginaBean.pesquisaAgendaTelefone}"/>
-                                    <rich:menuItem label="Grupo Agenda"                 action="#{chamadaPaginaBean.grupoAgenda}"/>
-                                </rich:menuGroup>
+                        <p:submenu label="Ferramentas" icon="ui-icon-document" style="margin-right: 15px">  
+                            <p:submenu label="Pessoa" icon="ui-icon-contact">
+                                <p:menuitem value="Física"                action="#{chamadaPaginaBean.pessoaFisica}"/>
+                                <p:menuitem value="Juridica"              action="#{chamadaPaginaBean.pessoaJuridica}"/>
+                                <p:menuitem value="Filial"                action="#{chamadaPaginaBean.filial}"/>
+                                <p:menuitem value="Tipo Documento"        action="#{chamadaPaginaBean.tipoDocumento}"/>
+                                <p:menuitem value="Cnae"                  action="#{chamadaPaginaBean.cnae}"/>
+                                <p:menuitem value="Profissão"             action="#{chamadaPaginaBean.profissao}"/>
+                                <p:menuitem value="Enviar E-Mails"        action="#{chamadaPaginaBean.enviarEmail}"/>
+                            </p:submenu>
 
-                                <rich:menuItem label="Relatórios" styleClass="divBotao" action="#{chamadaPaginaBean.relatorio}"/>
+                            <p:submenu label="Endereço" icon="ui-icon-contact" style="margin-right: 15px">
+                                <p:menuitem value="Endereço"      action="#{chamadaPaginaBean.endereco}"/>
+                                <p:menuitem value="Bairro"        action="#{chamadaPaginaBean.bairro}"/>
+                                <p:menuitem value="Cidade"        action="#{chamadaPaginaBean.cidade}"/>
+                                <p:menuitem value="Logradouro"    action="#{chamadaPaginaBean.logradouro}"/>
+                                <p:menuitem value="Descrição"     action="#{chamadaPaginaBean.descricaoEndereco}"/>
+                                <p:menuitem value="Tipo Endereço" action="#{chamadaPaginaBean.tipoEndereco}"/>
+                            </p:submenu>
+                            
+                            <p:submenu label="Agenda" icon="ui-icon-document">  
+                                <p:menuitem value="Agenda Telefônica"            action="#{chamadaPaginaBean.agendaTelefone}"/>
+                                <p:menuitem value="Lista Agenda Telefônica"   action="#{chamadaPaginaBean.pesquisaAgendaTelefone}"/>
+                                <p:menuitem value="Grupo Agenda"                 action="#{chamadaPaginaBean.grupoAgenda}"/>
+                            </p:submenu>
+                        </p:submenu>
 
-                            </rich:dropDownMenu>
-                            <h:panelGroup>
-                                <h:panelGrid columns="2">
-                                    <h:commandButton image="/Imagens/iconSair.png" action="#{usuarioBean.sairSistema}" alt="Sair" title="Sair"/>
-                                    <h:outputText value="Sair" styleClass="fontePadraoNegrito" title="Sair"/>
-                                </h:panelGrid>
-                            </h:panelGroup>
-                        </rich:toolbar>
-                        <h:panelGrid columns="1">
-                            <h:column>
-                                <h:outputText  value="Usuário: " styleClass="fonteNegritoPequeno"/>
-                                <h:outputText styleClass="fontePadraoNegritoMedio" value="#{controleUsuarioBean.login}"/>
-                            </h:column>
-                        </h:panelGrid>
-                        <h:panelGrid columns="1">
-                            <h:column>
-                                <h:outputText  value="#{controleUsuarioBean.filial}" styleClass="fontePadraoPequeno"/>
-                            </h:column>
-                        </h:panelGrid>
-                        <rich:popupPanel id="popup" modal="true" resizeable="false" height="50" width="210">
-                            <center>
-                                <h:outputLabel value="Aguarde enviando emails ...    " styleClass="fontePadrao" />
-                            </center> 
-                        </rich:popupPanel>
-
+                        <p:menuitem value="Relatórios" action="#{chamadaPaginaBean.relatorio}"/>
+                    </p:menubar> 
+                </p:panel>
+                
+                <p:panel style="border: 0px; width: 1024px; height: 550px; margin: 0 auto">
+                    <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 25pt!important; float: left;  font-family: 'Cordia New'"/>
+                    
+                    <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px">
                         <h:panelGrid>
-                            <rich:panel style="width: 980px; height: 500px; text-align: right; border: 0px; ">
-                                <rich:panel styleClass="corpoAcessos" style="float: left;">
-                                    <h:panelGrid>
-                                        <center>
-                                            <a4j:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica">
-                                                <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" height="150" />                                        
-                                            </a4j:commandLink>   
-                                            <h:outputText  value="AGENDA TELEFÔNICA" styleClass="fontePadraoNegrito"/>
-                                        </center>
-                                    </h:panelGrid>
-                                    <br />
-                                </rich:panel>
-
-                                <center>
-                                    <div style="border: 0px; width: 500px; height: 320px; float: left; margin-left: 25px;">
-                                        <a4j:poll render="i_panel_poll" interval="5000"/>
-                                        <h:panelGrid id="i_panel_poll" style="float: left">
-                                            <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
-                                            <!-- <h:outputLabel value="Existem notificações de cobrança para serem enviadas" rendered="# {notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/> -->
-                                            <br />
-                                            <a4j:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" onbegin="#{rich:component('popup')}.show();" oncomplete="#{rich:component('popup')}.hide();" styleClass="fontePadrao"/>
-                                        </h:panelGrid>
-                                    </div>
-                                </center>                            
-
-                                <rich:panel styleClass="corpoAcessos" style="float: right; text-align: center">
-                                    <h:panelGrid>
-                                        <h:outputText styleClass="fonteFranklinNormal" value="Principais Acessos" />
-                                    </h:panelGrid>
-                                    <br />
-                                    <h:panelGrid style="text-align: left">
-                                        <rich:list value="#{controleUsuarioBean.listaContador}" var="linha" id="tbl" style="list-style: none; padding: 0; cursor: pointer" onrowmouseover="this.style.backgroundColor='#bdd0ee'" onrowmouseout="this.style.backgroundColor='#FFFFFF'; this.style.border='1'">
-                                            <div style="margin-bottom: 5px;">
-                                                <h:commandLink value="#{linha.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(linha.rotina.pagina)}" style="margin-bottom: 2px; text-decoration: none; color: black;" class="listaAcesso" />
-                                            </div>
-                                        </rich:list>
-                                    </h:panelGrid>
-                                </rich:panel>
-
-                                <div style="width: 100%; height: 140px; margin-top: 330px;">
-                                    <h:graphicImage value="/Imagens/logoRtools.png" style="width: 150px; height: 50px; margin-top: 100px; float: left"/>
-                                    <h:graphicImage value="/Imagens/logoRtools.png" style="width: 150px; height: 50px; margin-top: 100px; float: right"/>
-                                </div>
-                            </rich:panel>
+                            <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
                         </h:panelGrid>
-
-                    </h:panelGrid>
-
-                    <div id="boxes">
-                        <div id="divAtalhos" class="window">
-                            <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </a4j:commandLink>
+                        <p:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica" style="clear: both">
+                            <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" width="100" /><br />
+                        </p:commandLink>   
+                    </p:panel>
+                    
+                    <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px; margin-left: 200px; width: 540px">
+                        <p:poll interval="5" update="i_panel_poll" />  
+                        <h:panelGrid id="i_panel_poll" style="float: left">
+                            <h:outputLabel value="Sem Notificações"  styleClass="fonteExtratoTela" rendered="#{!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58"/>
+                            <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
                             <br />
-                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                                <rich:column><h:outputLabel value="Página: " styleClass="fontePadrao"/></rich:column>
-                                <rich:column><h:selectOneMenu value="#{atalhosBean.idRotina}" >
-                                        <a4j:ajax event="change" render="this"/>
-                                        <f:selectItems value="#{atalhosBean.listaRotina}"/>
-                                    </h:selectOneMenu></rich:column>
+                            <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                    </p:panel>
+                    
+                    <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">
+                        <h:panelGrid>
+                            <h:outputText style="font-weight: bold" value="Meus principais Acessos" />
+                        </h:panelGrid>
+                        
+                        <br />
+                        
+                        <h:panelGrid style="text-align: left;">
+                            <c:forEach items="#{controleUsuarioBean.listaContador}" var="linha">
+                                <h:commandLink value="#{linha.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(linha.rotina.pagina)}" style="margin-bottom: 10px; font-size: 9pt" class="listaAcesso" />
+                                <br />
+                            </c:forEach>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:panel>
 
-                                <rich:column><h:outputLabel value="Letra do atalho:" styleClass="fontePadrao"/></rich:column>
-                                <rich:column><h:inputText value="#{atalhosBean.atalhos.sigla}" maxlength="1" size="2" onblur="lowerCase(this);" onkeyup="somenteLetras(this);"/></rich:column>
-                            </h:panelGrid>
-                            <br />
-                            <center>
-                                <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{atalhosBean.adicionar}" oncomplete="fecharModal()" />
-                                <a4j:commandLink styleClass="idNovo iLink closeModal" value="Cancelar" title="Cancelar" style="width: 100px"/>
-                            </center>
-                        </div>
-                        <div id="mask"></div>
-                    </div>
+            </h:form>
+        </f:view>
 
-                </h:form>
-            </f:view>
-            <p style="text-align: center">
-                R'Tools Desenvolvimento de Sistemas LTDA ®
-            </p>
+        
+        
+        <!-- FINALIZA div wrap main -->
+        </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
         </div>
     </h:body>
 </html>
