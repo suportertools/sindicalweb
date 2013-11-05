@@ -417,7 +417,7 @@ public class EmissaoGuiasBean {
             List<SubGrupoConvenio> select = new ArrayList();
             
             if(!listaGrupo.isEmpty()){
-                select = db.pesquisaSubGrupoConvênioPorGrupo(Integer.parseInt(listaGrupo.get(idGrupo).getDescription()));
+                select = db.listaSubGrupoConvenioPorGrupo(Integer.parseInt(listaGrupo.get(idGrupo).getDescription()));
             }
             
             for (int i = 0; i < select.size(); i++){
