@@ -909,7 +909,7 @@ public class MatriculaEscolaBean implements Serializable {
                                 (CondicaoPagamento) salvarAcumuladoDB.pesquisaCodigo(idCondicaoPagto, "CondicaoPagamento"),
                                 (FStatus) salvarAcumuladoDB.pesquisaCodigo(1, "FStatus"),
                                 null,
-                                matriculaEscola.isDescontoFolha()));
+                                matriculaEscola.isDescontoFolha(), null));
                 salvarAcumuladoDB.abrirTransacao();
                 try {
 

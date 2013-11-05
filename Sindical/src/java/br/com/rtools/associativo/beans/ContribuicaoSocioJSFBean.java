@@ -77,7 +77,7 @@ public class ContribuicaoSocioJSFBean {
                 }
             }else{
                 for (int w = 0; w < listaData.size(); w++){
-                    if (sv.executeQuery("select func_geramensalidades("+listaPessoa.get(i).getId()+", '" + listaData.get(w).toString().substring(0,2) + "/" + listaData.get(w).toString().substring(3,7) + "')")) {
+                    if (sv.executeQueryVetor("select func_geramensalidades("+listaPessoa.get(i).getId()+", '" + listaData.get(w).toString().substring(0,2) + "/" + listaData.get(w).toString().substring(3,7) + "')")) {
                         //sv.comitarTransacao();
                         msgConfirma = "Mensalidades geradas com Sucesso!";
                     } else {

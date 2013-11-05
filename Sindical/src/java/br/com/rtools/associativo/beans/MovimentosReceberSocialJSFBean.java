@@ -5,17 +5,38 @@ import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
+import br.com.rtools.impressao.ParametroRecibo;
 import br.com.rtools.movimento.GerarMovimento;
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 public class MovimentosReceberSocialJSFBean {
 
@@ -34,6 +55,84 @@ public class MovimentosReceberSocialJSFBean {
     private boolean chkSeleciona = false;
     private Pessoa pessoa = new Pessoa();
     private List<Pessoa> listaPessoa = new ArrayList();
+    
+    private String matricula = "";
+    private String categoria = "";
+    private String grupo = "";
+    private String status = "";
+    
+    public String imprimirRecebo(){
+        
+        if (!listaMovimento.isEmpty()){
+            try {
+                Collection vetor = new ArrayList();
+                Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
+                PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+                MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
+                
+                PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+                for (int i = 0; i < listaMovimento.size(); i++){
+                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
+                        
+                    }
+                }
+                
+                for (int i = 0; i < listaMovimento.size(); i++){
+                    String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
+                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
+                        vetor.add(new ParametroRecibo(
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                sindicato.getPessoa().getNome(), 
+                                pe.getEndereco().getDescricaoEndereco().getDescricao(), 
+                                pe.getEndereco().getLogradouro().getDescricao(), 
+                                pe.getNumero(), 
+                                pe.getComplemento(), 
+                                pe.getEndereco().getBairro().getDescricao(), 
+                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5), 
+                                pe.getEndereco().getCidade().getCidade(), 
+                                pe.getEndereco().getCidade().getUf(), 
+                                sindicato.getPessoa().getTelefone1(), 
+                                sindicato.getPessoa().getEmail1(), 
+                                sindicato.getPessoa().getSite(), 
+                                sindicato.getPessoa().getDocumento(), 
+                                listaMovimento.get(i).getArgumento13().toString(), // RESPONSÁVEL
+                                listaMovimento.get(i).getArgumento15().toString(), // ID_RESPONSAVEL
+                                listaMovimento.get(i).getArgumento23().toString(), // ID_BAIXA
+                                listaMovimento.get(i).getArgumento14().toString(), // BENEFICIÁRIO
+                                listaMovimento.get(i).getArgumento2().toString(), // SERVICO
+                                listaMovimento.get(i).getArgumento5().toString(), // VENCIMENTO
+                                new BigDecimal(Moeda.converteUS$(valor)), // VALOR BAIXA
+                                DataHoje.horaMinuto(), 
+                                "Dinheiro: ", 
+                                "Cheque: ", 
+                                "Cheque-Pré: ",
+                                "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
+                        );
+                    }
+                }
+
+                JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                
+                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                
+                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                res.setContentType("application/pdf");
+                res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
+                res.getOutputStream().write(arquivo);
+                res.getCharacterEncoding();
+                
+                FacesContext.getCurrentInstance().responseComplete();
+            } catch (JRException ex) {
+                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return null;
+    }
     
     public String removerPesquisa() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
@@ -324,7 +423,7 @@ public class MovimentosReceberSocialJSFBean {
 
     public void complementoPessoa(DataObject linha) {
         // COMENTARIO PARA ORDEM QUE VEM DA QUERY
-        titular = (String) linha.getArgumento15(); // 13 - TITULAR
+        //titular = (String) linha.getArgumento15(); // 13 - TITULAR
         beneficiario = (String) linha.getArgumento14(); // 12 - BENEFICIARIO
         data = linha.getArgumento16().toString(); // 16 - CRIACAO
         boleto = (String) linha.getArgumento17(); // 17 - BOLETO
@@ -335,6 +434,24 @@ public class MovimentosReceberSocialJSFBean {
         caixa = (linha.getArgumento22() == null) ? "Nenhum" : linha.getArgumento22().toString(); // 22 - CAIXA
         documento = (linha.getArgumento23() == null) ? "Sem Documento" : linha.getArgumento23().toString(); // 24 - DOCUMENTO
 
+        int id_lote = Integer.valueOf(linha.getArgumento18().toString());
+        
+        MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
+        List<Vector> lista = db.dadosSocio(id_lote);
+        
+        if (!lista.isEmpty()){
+            titular = lista.get(0).get(0).toString(); // TITULAR
+            matricula = lista.get(0).get(1).toString(); // MATRICULA
+            categoria = lista.get(0).get(2).toString(); // CATEGORIA
+            grupo = lista.get(0).get(3).toString(); // GRUPO
+            status = lista.get(0).get(4).toString(); // CASE
+        }else{
+            titular = "";
+            matricula = "";
+            categoria = "";
+            grupo = "";
+            status = "";
+        }
     }
 
     public String getPorPesquisa() {
@@ -567,5 +684,37 @@ public class MovimentosReceberSocialJSFBean {
         } else {
             return String.valueOf(object);
         }
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(String grupo) {
+        this.grupo = grupo;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

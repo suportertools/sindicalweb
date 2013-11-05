@@ -61,6 +61,7 @@ public class EmissaoGuiasBean {
     private String total = "";
     private List<DataObject> listaMovimento = new ArrayList();
     private String msgConfirma = "";
+    private boolean validaok = false;
     
     public void limpaGrupo(){
         listaSubGrupo.clear();
@@ -81,7 +82,52 @@ public class EmissaoGuiasBean {
     
     public void pesquisaSemCadastro(String por){
         PessoaDB db = new PessoaDBToplink();
+        FisicaDB dbf = new FisicaDBToplink();
         
+        if (por.equals("cpf")){
+            if (!pessoa.getDocumento().isEmpty()){
+                List lista = dbf.pesquisaFisicaPorDoc(pessoa.getDocumento());
+                if (!lista.isEmpty()){
+                    msgConfirma = "Este CPF já esta cadastrado!";
+                    GenericaMensagem.warn("", msgConfirma);
+                    validaok = false;
+                    return;
+                }
+            }
+        }
+        
+        if (por.equals("rg")){
+            if (!fisica.getRg().isEmpty()){
+                List lista = dbf.pesquisaFisicaPorNomeNascRG("", null, fisica.getRg());
+                if (!lista.isEmpty()){
+                    msgConfirma = "Este RG já esta cadastrado!";
+                    GenericaMensagem.warn("", msgConfirma);
+                    validaok = false;
+                    return;
+                }
+            }
+        }
+        
+        if (por.equals("nome") || por.equals("nascimento")){
+            if (!pessoa.getNome().isEmpty() && !fisica.getNascimento().isEmpty()){
+                List lista = dbf.pesquisaFisicaPorNomeNascRG(pessoa.getNome(), fisica.getDtNascimento(), fisica.getRg());
+                if (!lista.isEmpty()){
+                    msgConfirma = "Esta pessoa já esta cadastrada em nosso sistema!";
+                    GenericaMensagem.warn("", msgConfirma);
+                    validaok = false;
+                    
+                    
+                    pessoa.setNome("");
+                    fisica.setDtNascimento(null);
+                    return;
+                }
+            }else{
+                validaok = false;
+                return;
+            }
+        }
+        
+        validaok = true;
     }
     
     public void novaPessoa(){
@@ -97,6 +143,11 @@ public class EmissaoGuiasBean {
     }
     
     public void salvarSemCadastro(){
+        if (!validaok){
+            GenericaMensagem.fatal("Erro", "Verifique os dados antes de salvar!");
+            return;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         if (pessoa.getNome().isEmpty()){
             msgConfirma = "Nome não pode estar vazio!";
