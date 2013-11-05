@@ -171,8 +171,8 @@
                 <h:panelGrid styleClass="divMae" style="clear: both" columns="1">
                     <h:column>
                         <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                        <a4j:commandLink onclick="modalOpcao('divEstornar');" styleClass="idNovo iLink" value="Estornar" title="Estornar Boletos"/>
-                        <h:commandLink styleClass="idNovo iLink" value="Recibo" title="Imprimir Recibo" />
+                        
+                        <h:commandLink styleClass="idNovo iLink" value="Recibo" title="Imprimir Recibo" action="#{movimentosSocialBean.imprimirRecebo()}" target="_blank"/>
 
                         <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" oncomplete="modalMensagem()" render="outConfirma"/>
                     </h:column>
@@ -180,20 +180,13 @@
 
                 <rich:popupPanel id="popup" modal="true" resizeable="false" height="360" width="500">
                     <f:facet name="controls">
-                        <a4j:commandButton image="/Imagens/excluirp.png" onclick="#{rich:component('popup')}.hide();
-                                return false;" title="Fechar"/>
+                        <a4j:commandButton image="/Imagens/excluirp.png" onclick="#{rich:component('popup')}.hide(); return false;" title="Fechar"/>
                     </f:facet>
 
                     <br />
                     <h:panelGrid>
                         <h:outputLabel value="Data / Boleto" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.data} - #{movimentosSocialBean.boleto}" styleClass="fontePadrao"/>
-                    </h:panelGrid>
-
-                    <br />
-                    <h:panelGrid>
-                        <h:outputLabel value="Titular" styleClass="fontePadraoNegrito"/>
-                        <h:outputLabel value="#{movimentosSocialBean.titular}" styleClass="fontePadrao"/>
                     </h:panelGrid>
 
                     <br />
@@ -227,6 +220,38 @@
                     <h:panelGrid>
                         <h:outputLabel value="Documento" styleClass="fontePadraoNegrito"/>
                         <h:outputLabel value="#{movimentosSocialBean.documento}" styleClass="fontePadrao"/>
+                    </h:panelGrid>
+                    
+                    <br />
+                    
+                    <h:panelGrid rendered="#{movimentosSocialBean.titular}">
+                        <h:outputLabel value="-- Dados do Sócio -- " styleClass="fonteFranklinNegrito"/>
+                        <br />
+                        <h:panelGrid>
+                            <h:outputLabel value="Titular" styleClass="fontePadraoNegrito"/>
+                            <h:outputLabel value="#{movimentosSocialBean.titular}" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid>
+                            <h:outputLabel value="Matrícula" styleClass="fontePadraoNegrito"/>
+                            <h:outputLabel value="#{movimentosSocialBean.matricula}" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid>
+                            <h:outputLabel value="Categoria" styleClass="fontePadraoNegrito"/>
+                            <h:outputLabel value="#{movimentosSocialBean.categoria}" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid>
+                            <h:outputLabel value="Grupo" styleClass="fontePadraoNegrito"/>
+                            <h:outputLabel value="#{movimentosSocialBean.grupo}" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid>
+                            <h:outputLabel value="Status" styleClass="fontePadraoNegrito"/>
+                            <h:outputLabel value="#{movimentosSocialBean.status}" styleClass="fontePadrao"/>
+                        </h:panelGrid>
+                        
                     </h:panelGrid>
                 </rich:popupPanel>     
 

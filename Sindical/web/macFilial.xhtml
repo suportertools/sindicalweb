@@ -6,12 +6,15 @@
       xmlns:p="http://primefaces.org/ui">
     
     <h:head>
-        <title>Mac Filial</title>
+        <title>Sindical - Mac Filial</title>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
     <h:body>
+        <!-- INICIA DIV wrap e main -->
+	<div id="wrapx">
+        <div id="mainx">
+        <!-- INICIA DIV wrap e main -->  
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         
@@ -66,8 +69,8 @@
                     
                 <h:form id="formMacFilial2">
                     <p:growl id="i_msg_f2" showDetail="true" />  
-                    <p:panelGrid id="tbl" style="width:100%;" columns="1">
-                        <p:dataTable value="#{macFilialBean.listaMacs}" var="linha" emptyMessage="Nenhum Mac Filial encontrado"  resizableColumns="true">
+                    <h:panelGrid id="tbl" style="width:100%; border: 0px" columns="1">
+                        <p:dataTable value="#{macFilialBean.listaMacs}" var="linha" emptyMessage="Nenhum Mac Filial encontrado">
                             <p:column headerText="Excluir" style="text-align: center">
                                 <p:commandButton icon="ui-icon-trash" action="#{macFilialBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formMacFilial2:i_msg_f2 :formMacFilial2:tbl" />
                             </p:column>
@@ -88,14 +91,21 @@
                                 <h:outputLabel value="#{linha.mesa}" />
                             </p:column>
                         </p:dataTable>   
-                    </p:panelGrid>
+                    </h:panelGrid>
                 </h:form>
             </p:panel>
             
         </f:view>
         
-        <f:subview id="footer">
-            <ui:include src="templateFooter.xhtml"/>
-        </f:subview>
+        <!-- FINALIZA div wrap main -->
+        </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>
     </h:body>
 </ui:composition>

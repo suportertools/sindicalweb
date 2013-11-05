@@ -129,6 +129,21 @@
                     </div>
                     <div id="mask"></div>
                 </div>
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{contribuicaoSocioBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink closeModal" action="contribuicaoSocio" value="OK" title="OK" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
             </h:form>
         </f:view>
     </h:body>
