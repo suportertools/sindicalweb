@@ -4,7 +4,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Emissão de Guias</title>
@@ -36,9 +37,7 @@
                                 </h:column>
                                     
                                 <h:column>
-                                    <a4j:commandLink oncomplete="modalOpcao('divSemCadastro');" styleClass="idSalvar iLink" actionListener="#{emissaoGuiasBean.novaPessoa()}" value="Cadastrar" render="i_panel_sem_cadastro" title="Nova Pessoa" rendered="#{emissaoGuiasBean.pessoa.id == -1}" style="width: 100px; float: right">
-                                        
-                                    </a4j:commandLink>
+                                    <p:commandLink value="Cadastrar" actionListener="#{emissaoGuiasBean.novaPessoa()}" update="i_panel_sem_cadastro" oncomplete="i_dialog.show()" rendered="#{emissaoGuiasBean.pessoa.id == -1}"/>
                                 </h:column>
                             </h:panelGrid>
                         </rich:panel>
@@ -190,59 +189,63 @@
                         <br />
 
                         <h:panelGrid columns="6">
-                            <h:commandLink action="#{emissaoGuiasBean.novo()}" styleClass="idNovo iLink" value="Novo"   title="Novo Lançamento"/>
                             <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" rendered="#{emissaoGuiasBean.lote.id == -1}"  title="Salvar este Lançamento"/>
+                            <h:commandLink action="#{emissaoGuiasBean.novo()}" styleClass="idNovo iLink" value="Novo"   title="Novo Lançamento"/>
                             <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Imprimir" style="width: 70px" title="Imprimir"/>
                             <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Debitar"  title="Debitar"/>
                         </h:panelGrid>
                     </div>
                 </center>
 
-                <div id="boxes">
-                    <div id="divSemCadastro" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid id="i_panel_sem_cadastro" style="float: left; margin-left: 10px">
-                                <h:outputLabel value="CPF: " styleClass="fontePadrao"/>
-                                <h:inputText styleClass="fontePadraoNegrito cpf" size="14" value="#{emissaoGuiasBean.pessoa.documento}">
-                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('documento')}"/> -->
-                                </h:inputText>
-                                
-                                <br />
-                                
-                                <h:outputLabel value="RG: " styleClass="fontePadrao"/>
-                                <h:inputText styleClass="fontePadrao" size="10" value="#{emissaoGuiasBean.fisica.rg}">
-                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('documento')}"/> -->
-                                </h:inputText>
-                                <br />
-                                
-                                <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
-                                <h:inputText styleClass="fontePadrao" size="50" value="#{emissaoGuiasBean.pessoa.nome}">                                    
-                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('nome')}"/> -->
-                                </h:inputText>
-                                <br />
-                                
-                                <h:outputLabel value="Data de Nascimento: " styleClass="fontePadrao"/>
-                                <h:inputText styleClass="fontePadrao data" size="10" value="#{emissaoGuiasBean.fisica.nascimento}">
-                                    <!-- <a4j:ajax event="blur" render="i_panel_sem_cadastro" listener="# {emissaoGuiasBean.pesquisaSemCadastro('nascimento')}"/> -->
-                                </h:inputText>
-                                <br />
-                                
-                                <h:outputLabel value="Telefone: " styleClass="fontePadrao"/>
-                                <h:inputText styleClass="fontePadrao" size="10" value="#{emissaoGuiasBean.pessoa.telefone1}"/>
-                                
+                <p:dialog id="i_dialog" header="Cadastrar Pessoa" widgetVar="i_dialog">  
+                    <center>
+                        <h:panelGrid id="i_panel_sem_cadastro" style="float: left; ">
+                            
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            
+                            <h:panelGrid columns="3" style="display: block">
+                                <h:column>
+                                    <h:outputLabel value="CPF: " styleClass="fontePadrao"/><br />
+                                    <p:inputMask size="12" value="#{emissaoGuiasBean.pessoa.documento}" mask="***.***.***-**" >
+                                        <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('cpf')}"/>
+                                    </p:inputMask>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="RG: " styleClass="fontePadrao" style="margin-left: 20px"/><br />
+                                    <p:inputText size="12" value="#{emissaoGuiasBean.fisica.rg}" style="margin-left: 20px">
+                                        <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('rg')}"/>
+                                    </p:inputText>
+                                </h:column>
                             </h:panelGrid>
 
                             <br />
-                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" action="#{emissaoGuiasBean.salvarSemCadastro()}" oncomplete="modalMensagem(), fecharModal('divSemCadastro', FALSE)" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
+
+                            <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                            <p:inputText value="#{emissaoGuiasBean.pessoa.nome}" size="34">
+                                <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('nome')}" />
+                            </p:inputText>
+
+                            <br />
+
+                            <h:outputLabel value="Data de Nascimento: " styleClass="fontePadrao"/>
+                            <p:inputMask size="8" value="#{emissaoGuiasBean.fisica.nascimento}" mask="**/**/****">
+                                <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('nascimento')}"/>
+                            </p:inputMask>
+
+                            <br />
+
+                            <h:outputLabel value="Telefone: " styleClass="fontePadrao"/>
+                            <p:inputText size="10" value="#{emissaoGuiasBean.pessoa.telefone1}"/>
+
+                        </h:panelGrid>
+
+                        <br /><br />
+
+                    </center>
+                    <p:commandButton value="Salvar" action="#{emissaoGuiasBean.salvarSemCadastro()}" title="Salvar Cadastro" update=":forEmissaoGuias" oncomplete="i_dialog.hide()"/>
+                    <p:commandButton value="Cancelar" onclick="i_dialog.hide()"/>
+                </p:dialog>  
                 
                 <div id="boxes">
                     <div id="divSalvar" class="window">
