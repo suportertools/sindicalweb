@@ -28,7 +28,8 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                         + "     m.ds_es as es, "
                         + "     p.ds_nome as responsavel, "
                         + "     b.ds_nome as beneficiario, " //12
-                        + "     t.ds_nome as titular, " //13
+                        //+ "     t.ds_nome as titular, " //13
+                        + "     p.id as id_responsavel, " //13
                         + "     m.id as id_movimento, "
                         + "     m.id_lote as lote, "
                         + "     l.dt_lancamento as criacao,  " //16
@@ -44,14 +45,14 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
                         + "inner join fin_lote as l on l.id=m.id_lote "
                         + "inner join pes_pessoa as p on p.id=m.id_pessoa "
                         + "inner join pes_pessoa as b on b.id=m.id_beneficiario "
-                        + "inner join pes_pessoa as t on t.id=m.id_titular "
+                        //+ "inner join pes_pessoa as t on t.id=m.id_titular "
                         + "inner join fin_servicos as se on se.id=m.id_servicos "
                         + "inner join fin_tipo_servico as tp on tp.id=m.id_tipo_servico  "
                         + " left join fin_baixa as bx on bx.id=m.id_baixa "
                         + " left join seg_usuario as u on u.id=bx.id_usuario "
                         + " left join pes_pessoa as us on us.id=u.id_pessoa";
                         
-            String order_by = " order by m.dt_vencimento, se.ds_descricao, p.ds_nome, t.ds_nome, b.ds_nome ";
+            String order_by = " order by m.dt_vencimento, se.ds_descricao, p.ds_nome, b.ds_nome ";
             String where = "";
             String ands = "";
 
@@ -74,6 +75,63 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
             Query qry = getEntityManager().createNativeQuery(textqry);
 
             return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public List dadosSocio(int id_lote){
+         try{
+
+             String textqry = " select " +
+                              "     p.ds_nome as titular," +
+                              "     m.nr_matricula as matricula," +
+                              "     c.ds_categoria as categoria," +
+                              "     g.ds_grupo_categoria as grupo," +
+                              "  case " +
+                              "  when m.dt_inativo is null then 'Matricula ATIVA' " +
+                              "	 when m.dt_inativo is not null then 'Matricula INATIVA' " +
+                              "   end " +
+                              "  from fin_lote as l " +
+                              " inner join matr_socios as m on m.id=l.id_matricula_socios " +
+                              " inner join pes_pessoa as p on p.id=m.id_titular " +
+                              " inner join soc_categoria as c on c.id=m.id_categoria " +
+                              " inner join soc_grupo_categoria as g on g.id=c.id_grupo_categoria " +
+                              " where l.id = "+id_lote;
+                        
+             Query qry = getEntityManager().createNativeQuery(textqry);
+
+             return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+    
+    public List pesquisaFormaPagamento(int id_baixa){
+         try{
+
+             String textqry = " select " +
+                              "     p.ds_nome as titular," +
+                              "     m.nr_matricula as matricula," +
+                              "     c.ds_categoria as categoria," +
+                              "     g.ds_grupo_categoria as grupo," +
+                              "  case " +
+                              "  when m.dt_inativo is null then 'Matricula ATIVA' " +
+                              "	 when m.dt_inativo is not null then 'Matricula INATIVA' " +
+                              "   end " +
+                              "  from fin_lote as l " +
+                              " inner join matr_socios as m on m.id=l.id_matricula_socios " +
+                              " inner join pes_pessoa as p on p.id=m.id_titular " +
+                              " inner join soc_categoria as c on c.id=m.id_categoria " +
+                              " inner join soc_grupo_categoria as g on g.id=c.id_grupo_categoria " +
+                              " where l.id = "+id_baixa;
+                        
+             Query qry = getEntityManager().createNativeQuery(textqry);
+
+             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
         }

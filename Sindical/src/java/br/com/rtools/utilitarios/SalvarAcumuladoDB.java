@@ -68,7 +68,9 @@ public interface SalvarAcumuladoDB {
     public List listaObjetoGenericoOrdem(String tabela, String descricao);
 
     public boolean executeQuery(String textQuery);
-
+    
+    public boolean executeQueryVetor(String textQuery);
+    
     public boolean descricaoExiste(String descricao, String campo, String objeto);
     
     public List nativeQuery(String textQuery);

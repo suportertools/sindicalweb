@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaSemCadastro;
@@ -65,7 +66,10 @@ public class Lote implements java.io.Serializable {
     private PessoaSemCadastro pessoaSemCadastro;
     @Column(name = "IS_DESCONTO_FOLHA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean descontoFolha;
-
+    @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private MatriculaSocios matriculaSocios;
+    
     public Lote() {
         this.id = -1;
         this.rotina = new Rotina();
@@ -86,9 +90,10 @@ public class Lote implements java.io.Serializable {
         this.status = new FStatus();
         this.pessoaSemCadastro = new PessoaSemCadastro();
         this.descontoFolha = false;
+        this.matriculaSocios = new MatriculaSocios();
     }
 
-    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha) {
+    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha, MatriculaSocios matriculaSocios) {
         this.id = id;
         this.rotina = rotina;
         this.pagRec = pagRec;
@@ -108,6 +113,7 @@ public class Lote implements java.io.Serializable {
         this.status = status;
         this.pessoaSemCadastro = pessoaSemCadastro;
         this.descontoFolha = descontoFolha;
+        this.matriculaSocios = matriculaSocios;
     }
 
     public int getId() {
@@ -276,5 +282,13 @@ public class Lote implements java.io.Serializable {
 
     public void setDescontoFolha(boolean descontoFolha) {
         this.descontoFolha = descontoFolha;
+    }
+
+    public MatriculaSocios getMatriculaSocios() {
+        return matriculaSocios;
+    }
+
+    public void setMatriculaSocios(MatriculaSocios matriculaSocios) {
+        this.matriculaSocios = matriculaSocios;
     }
 }

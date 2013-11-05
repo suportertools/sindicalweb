@@ -2,6 +2,8 @@ package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
+import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
+import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.ChequeRec;
 import br.com.rtools.financeiro.FormaPagamento;
@@ -16,17 +18,23 @@ import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
+import br.com.rtools.impressao.ParametroRecibo;
 //import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
 //import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
@@ -34,12 +42,26 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 public class BaixaGeralJSFBean {
 
@@ -70,6 +92,79 @@ public class BaixaGeralJSFBean {
     public void refreshForm() {
     }
 
+    public String imprimirRecibo() {
+        
+//        if (!listaMovimento.isEmpty()){
+//            try {
+//                Collection vetor = new ArrayList();
+//                Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
+//                PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+//                MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
+//                
+//                PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+//                for (int i = 0; i < listaMovimento.size(); i++){
+//                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
+//                        
+//                    }
+//                }
+//                
+//                for (int i = 0; i < listaMovimento.size(); i++){
+//                    String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
+//                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
+//                        vetor.add(new ParametroRecibo(
+//                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+//                                sindicato.getPessoa().getNome(), 
+//                                pe.getEndereco().getDescricaoEndereco().getDescricao(), 
+//                                pe.getEndereco().getLogradouro().getDescricao(), 
+//                                pe.getNumero(), 
+//                                pe.getComplemento(), 
+//                                pe.getEndereco().getBairro().getDescricao(), 
+//                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5), 
+//                                pe.getEndereco().getCidade().getCidade(), 
+//                                pe.getEndereco().getCidade().getUf(), 
+//                                sindicato.getPessoa().getTelefone1(), 
+//                                sindicato.getPessoa().getEmail1(), 
+//                                sindicato.getPessoa().getSite(), 
+//                                sindicato.getPessoa().getDocumento(), 
+//                                listaMovimento.get(i).getArgumento13().toString(), // RESPONSÁVEL
+//                                listaMovimento.get(i).getArgumento15().toString(), // ID_RESPONSAVEL
+//                                listaMovimento.get(i).getArgumento23().toString(), // ID_BAIXA
+//                                listaMovimento.get(i).getArgumento14().toString(), // BENEFICIÁRIO
+//                                listaMovimento.get(i).getArgumento2().toString(), // SERVICO
+//                                listaMovimento.get(i).getArgumento5().toString(), // VENCIMENTO
+//                                new BigDecimal(Moeda.converteUS$(valor)), // VALOR BAIXA
+//                                DataHoje.horaMinuto(), 
+//                                "Dinheiro: ", 
+//                                "Cheque: ", 
+//                                "Cheque-Pré: ",
+//                                "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
+//                        );
+//                    }
+//                }
+//
+//                JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+//
+//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+//                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+//                
+//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//                
+//                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//                res.setContentType("application/pdf");
+//                res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
+//                res.getOutputStream().write(arquivo);
+//                res.getCharacterEncoding();
+//                
+//                FacesContext.getCurrentInstance().responseComplete();
+//            } catch (JRException ex) {
+//                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+//            } catch (IOException ex) {
+//                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+        return null;
+    }
+    
     public String retorno() {
         if (retorna) {
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");

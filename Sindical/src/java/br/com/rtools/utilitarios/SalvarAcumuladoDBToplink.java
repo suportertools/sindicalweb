@@ -6,6 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.Query;
 
 public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
@@ -258,6 +259,24 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return false;
         }
     }
+    
+    @Override
+    public boolean executeQueryVetor(String textQuery) {
+        try {
+            List<Vector> valor = getEntityManager().createNativeQuery(textQuery).getResultList();
+            if ((Integer)valor.get(0).get(0) > 0) {
+                return true;
+            } else {
+                NovoLog log = new NovoLog();
+                log.novo("Novo Objeto", "Exception - Message: Erro ao executar: " + textQuery);
+                return false;
+            }
+        } catch (Exception e) {
+            NovoLog log = new NovoLog();
+            log.novo("Novo Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        }
+    }    
     
     @Override
     public List nativeQuery(String textQuery) {

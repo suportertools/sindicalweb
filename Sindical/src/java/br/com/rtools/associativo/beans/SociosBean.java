@@ -220,6 +220,7 @@ public class SociosBean implements Serializable {
         // NOVO REGISTRO -----------------------
         if (servicoPessoa.getId() == -1) {
             servicoPessoa.setAtivo(true);
+            servicoPessoa.setResponsavel(servicoPessoa.getPessoa());
             if (!sv.inserirObjeto(servicoPessoa)) {
                 msgConfirma = "Erro ao salvar serviço Pessoa!";
                 return null;
@@ -320,7 +321,8 @@ public class SociosBean implements Serializable {
                                 servicoPessoa.getTipoDocumento(),
                                 servicoPessoa.getCobranca(),
                                 servicoPessoa.isAtivo(),
-                                servicoPessoa.isBanco());
+                                servicoPessoa.isBanco(), 
+                                ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa());
 
                         if (!sv.inserirObjeto(servicoPessoaDependente)) {
                             msgConfirma = "Erro ao salvar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
