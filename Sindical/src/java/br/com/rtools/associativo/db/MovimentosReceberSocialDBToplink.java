@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,31 +111,4 @@ public class MovimentosReceberSocialDBToplink extends DB implements MovimentosRe
         return new ArrayList();
     }
     
-    public List pesquisaFormaPagamento(int id_baixa){
-         try{
-
-             String textqry = " select " +
-                              "     p.ds_nome as titular," +
-                              "     m.nr_matricula as matricula," +
-                              "     c.ds_categoria as categoria," +
-                              "     g.ds_grupo_categoria as grupo," +
-                              "  case " +
-                              "  when m.dt_inativo is null then 'Matricula ATIVA' " +
-                              "	 when m.dt_inativo is not null then 'Matricula INATIVA' " +
-                              "   end " +
-                              "  from fin_lote as l " +
-                              " inner join matr_socios as m on m.id=l.id_matricula_socios " +
-                              " inner join pes_pessoa as p on p.id=m.id_titular " +
-                              " inner join soc_categoria as c on c.id=m.id_categoria " +
-                              " inner join soc_grupo_categoria as g on g.id=c.id_grupo_categoria " +
-                              " where l.id = "+id_baixa;
-                        
-             Query qry = getEntityManager().createNativeQuery(textqry);
-
-             return qry.getResultList();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return new ArrayList();
-    }
 }

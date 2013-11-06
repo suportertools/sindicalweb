@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
+import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class SociosDBToplink extends DB implements SociosDB {
 
@@ -221,7 +222,7 @@ public class SociosDBToplink extends DB implements SociosDB {
             qry.setParameter("pid", idPessoa);
             qry.setMaxResults(1);
             soc = (Socios) qry.getSingleResult();
-        } catch (Exception e) {
+        } catch (EJBQLException e) {
             e.getMessage();
         }
         return soc;

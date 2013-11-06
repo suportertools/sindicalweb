@@ -88,80 +88,76 @@ public class BaixaGeralJSFBean {
     private String banco = "";
     private String taxa = "0";
     private ChequeRec chequeRec = new ChequeRec();
+    private List<FormaPagamento> lfp = new ArrayList();
 
     public void refreshForm() {
     }
 
     public String imprimirRecibo() {
         
-//        if (!listaMovimento.isEmpty()){
-//            try {
-//                Collection vetor = new ArrayList();
-//                Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
-//                PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
-//                MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
-//                
-//                PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
-//                for (int i = 0; i < listaMovimento.size(); i++){
-//                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
-//                        
-//                    }
-//                }
-//                
-//                for (int i = 0; i < listaMovimento.size(); i++){
-//                    String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
-//                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
-//                        vetor.add(new ParametroRecibo(
-//                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-//                                sindicato.getPessoa().getNome(), 
-//                                pe.getEndereco().getDescricaoEndereco().getDescricao(), 
-//                                pe.getEndereco().getLogradouro().getDescricao(), 
-//                                pe.getNumero(), 
-//                                pe.getComplemento(), 
-//                                pe.getEndereco().getBairro().getDescricao(), 
-//                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5), 
-//                                pe.getEndereco().getCidade().getCidade(), 
-//                                pe.getEndereco().getCidade().getUf(), 
-//                                sindicato.getPessoa().getTelefone1(), 
-//                                sindicato.getPessoa().getEmail1(), 
-//                                sindicato.getPessoa().getSite(), 
-//                                sindicato.getPessoa().getDocumento(), 
-//                                listaMovimento.get(i).getArgumento13().toString(), // RESPONSÁVEL
-//                                listaMovimento.get(i).getArgumento15().toString(), // ID_RESPONSAVEL
-//                                listaMovimento.get(i).getArgumento23().toString(), // ID_BAIXA
-//                                listaMovimento.get(i).getArgumento14().toString(), // BENEFICIÁRIO
-//                                listaMovimento.get(i).getArgumento2().toString(), // SERVICO
-//                                listaMovimento.get(i).getArgumento5().toString(), // VENCIMENTO
-//                                new BigDecimal(Moeda.converteUS$(valor)), // VALOR BAIXA
-//                                DataHoje.horaMinuto(), 
-//                                "Dinheiro: ", 
-//                                "Cheque: ", 
-//                                "Cheque-Pré: ",
-//                                "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
-//                        );
-//                    }
-//                }
-//
-//                JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
-//
-//                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
-//                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-//                
-//                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//                
-//                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-//                res.setContentType("application/pdf");
-//                res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
-//                res.getOutputStream().write(arquivo);
-//                res.getCharacterEncoding();
-//                
-//                FacesContext.getCurrentInstance().responseComplete();
-//            } catch (JRException ex) {
-//                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
-//            } catch (IOException ex) {
-//                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        if (!listaMovimentos.isEmpty()){
+            try {
+                Collection vetor = new ArrayList();
+                Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
+                PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+                MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
+                
+                PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+                
+                for (int i = 0; i < listaMovimentos.size(); i++){
+                    //String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
+                    
+                        vetor.add(new ParametroRecibo(
+                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                sindicato.getPessoa().getNome(), 
+                                pe.getEndereco().getDescricaoEndereco().getDescricao(), 
+                                pe.getEndereco().getLogradouro().getDescricao(), 
+                                pe.getNumero(), 
+                                pe.getComplemento(), 
+                                pe.getEndereco().getBairro().getDescricao(), 
+                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5), 
+                                pe.getEndereco().getCidade().getCidade(), 
+                                pe.getEndereco().getCidade().getUf(), 
+                                sindicato.getPessoa().getTelefone1(), 
+                                sindicato.getPessoa().getEmail1(), 
+                                sindicato.getPessoa().getSite(), 
+                                sindicato.getPessoa().getDocumento(), 
+                                listaMovimentos.get(i).getLote().getPessoa().getNome(), // RESPONSÁVEL
+                                String.valueOf(listaMovimentos.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
+                                String.valueOf(listaMovimentos.get(i).getBaixa().getId()), // ID_BAIXA
+                                listaMovimentos.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
+                                listaMovimentos.get(i).getServicos().getDescricao(), // SERVICO
+                                listaMovimentos.get(i).getVencimento(), // VENCIMENTO
+                                new BigDecimal(listaMovimentos.get(i).getValorBaixa()), // VALOR BAIXA
+                                DataHoje.horaMinuto(), 
+                                "Dinheiro: ", 
+                                "Cheque: ", 
+                                "Cheque-Pré: ",
+                                "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
+                        );
+                    
+                }
+
+                JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                
+                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                
+                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+                res.setContentType("application/pdf");
+                res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
+                res.getOutputStream().write(arquivo);
+                res.getCharacterEncoding();
+                
+                FacesContext.getCurrentInstance().responseComplete();
+            } catch (JRException ex) {
+                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return null;
     }
     
@@ -171,7 +167,8 @@ public class BaixaGeralJSFBean {
             if (url.equals("baixaBoleto")) {
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
             } else if (url.equals("movimentosReceberSocial")){
-                return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).movimentosReceberSocial();
+                ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+                return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).movimentosReceberSocialBaixa();
             }else{
                 return null;
             }
@@ -333,7 +330,7 @@ public class BaixaGeralJSFBean {
             quitacao = DataHoje.data();
         }
 
-        List<FormaPagamento> lfp = new ArrayList();
+        
         for (int i = 0; i < lista.size(); i++) {
             if (((TipoPagamento) lista.get(i).getArgumento3()).getId() == 4 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 5) {
                 lfp.add(new FormaPagamento(-1, null, (ChequeRec) lista.get(i).getArgumento4(), null, 0, Float.parseFloat(String.valueOf(lista.get(i).getArgumento1())), filial, plano5, null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null));

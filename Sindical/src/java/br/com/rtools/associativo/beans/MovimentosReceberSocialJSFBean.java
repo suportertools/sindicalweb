@@ -2,6 +2,7 @@ package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
+import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
@@ -40,7 +41,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 public class MovimentosReceberSocialJSFBean {
 
-    private String porPesquisa = "todos";
+    private String porPesquisa = "abertos";
     private List<DataObject> listaMovimento = new ArrayList();
     private String titular = "";
     private String beneficiario = "";
@@ -50,9 +51,13 @@ public class MovimentosReceberSocialJSFBean {
     private String multa = "", juros = "", correcao = "";
     private String caixa = "";
     private String documento = "";
+    private String referencia = "";
+    private String tipo = "";
+    private String id_baixa = "";
     private String msgConfirma = "";
     private String desconto = "0";
     private boolean chkSeleciona = false;
+    private boolean addMais = false;
     private Pessoa pessoa = new Pessoa();
     private List<Pessoa> listaPessoa = new ArrayList();
     
@@ -61,25 +66,28 @@ public class MovimentosReceberSocialJSFBean {
     private String grupo = "";
     private String status = "";
     
-    public String imprimirRecebo(){
+    
+    public String recibo(int id_movimento){
         
-        if (!listaMovimento.isEmpty()){
+        MovimentoDB db = new MovimentoDBToplink();
+        Movimento movimento = new Movimento();
+       
+        movimento = db.pesquisaCodigo(id_movimento);
             try {
                 Collection vetor = new ArrayList();
                 Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
                 PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
-                MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
+                //MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
                 
                 PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
-                for (int i = 0; i < listaMovimento.size(); i++){
-                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
-                        
-                    }
-                }
                 
-                for (int i = 0; i < listaMovimento.size(); i++){
-                    String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
-                    if ((Boolean) listaMovimento.get(i).getArgumento0()) {
+                // PESQUISA FORMA DE PAGAMENTO
+                List<FormaPagamento> fp = db.pesquisaFormaPagamento(movimento.getBaixa().getId());
+                
+                List<Movimento> lista = db.movimentoIdbaixa(movimento.getBaixa().getId());
+                
+                
+                for (int i = 0; i < lista.size(); i++){
                         vetor.add(new ParametroRecibo(
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                                 sindicato.getPessoa().getNome(), 
@@ -95,20 +103,20 @@ public class MovimentosReceberSocialJSFBean {
                                 sindicato.getPessoa().getEmail1(), 
                                 sindicato.getPessoa().getSite(), 
                                 sindicato.getPessoa().getDocumento(), 
-                                listaMovimento.get(i).getArgumento13().toString(), // RESPONSÁVEL
-                                listaMovimento.get(i).getArgumento15().toString(), // ID_RESPONSAVEL
-                                listaMovimento.get(i).getArgumento23().toString(), // ID_BAIXA
-                                listaMovimento.get(i).getArgumento14().toString(), // BENEFICIÁRIO
-                                listaMovimento.get(i).getArgumento2().toString(), // SERVICO
-                                listaMovimento.get(i).getArgumento5().toString(), // VENCIMENTO
-                                new BigDecimal(Moeda.converteUS$(valor)), // VALOR BAIXA
+                                lista.get(i).getLote().getPessoa().getNome(), // RESPONSÁVEL
+                                String.valueOf(lista.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
+                                String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
+                                lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
+                                lista.get(i).getServicos().getDescricao(), // SERVICO
+                                lista.get(i).getVencimento(), // VENCIMENTO
+                                new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
                                 DataHoje.horaMinuto(), 
                                 "Dinheiro: ", 
                                 "Cheque: ", 
                                 "Cheque-Pré: ",
                                 "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
                         );
-                    }
+                    
                 }
 
                 JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
@@ -130,7 +138,7 @@ public class MovimentosReceberSocialJSFBean {
             } catch (IOException ex) {
                 Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        
         return null;
     }
     
@@ -146,12 +154,6 @@ public class MovimentosReceberSocialJSFBean {
         return "movimentosReceberSocial";
     }
 
-    public String adicionarPesquisa() {
-        listaPessoa.add(pessoa);
-        pessoa = new Pessoa();
-        listaMovimento.clear();
-        return "movimentosReceberSocial";
-    }
 
     public boolean baixado() {
         for (int i = 0; i < listaMovimento.size(); i++) {
@@ -180,33 +182,44 @@ public class MovimentosReceberSocialJSFBean {
         return false;
     }
 
-    public String estornarBaixa() {
+    public String estornarBaixa() { 
         if (listaMovimento.isEmpty()) {
             msgConfirma = "Não existem boletos para serem estornados!";
             return null;
         }
 
         if (!baixado()) {
-            msgConfirma = "Existem boletos que não foram baixados na lista para estornar!";
+            msgConfirma = "Existem boletos que não foram pagos para estornar!";
+            return null;
+        }
+        
+        MovimentoDB db = new MovimentoDBToplink();
+        int qnt = 0;
+        Movimento mov = null;
+        
+        for (int i = 0; i < listaMovimento.size(); i++) {
+            if ((Boolean) listaMovimento.get(i).getArgumento0()) {
+                qnt++;
+                mov = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
+            }
+        }
+        
+        if (qnt > 1){
+            msgConfirma = "Mais de um movimento foi selecionado!";
             return null;
         }
 
-        MovimentoDB db = new MovimentoDBToplink();
         boolean est = true;
-        Movimento movimento = null;
-        for (int i = 0; i < listaMovimento.size(); i++) {
-            if ((Boolean) listaMovimento.get(i).getArgumento0()) {
-                movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
-                if (!movimento.isAtivo()) {
-                    msgConfirma = "Boleto ID: " + movimento.getId() + " esta inativo, não é possivel concluir estorno!";
-                    return null;
-                }
-                if (!GerarMovimento.estornarMovimento(movimento)) {
-                    est = false;
-                }
-            }
+        
+        if (!mov.isAtivo()) {
+            msgConfirma = "Boleto ID: " + mov.getId() + " esta inativo, não é possivel concluir estorno!";
+            return null;
         }
-
+        
+        if (!GerarMovimento.estornarMovimento(mov)) {
+            est = false;
+        }
+        
         if (!est) {
             msgConfirma = "Ocorreu erros ao estornar boletos, verifique o log!";
         } else {
@@ -424,6 +437,10 @@ public class MovimentosReceberSocialJSFBean {
     public void complementoPessoa(DataObject linha) {
         // COMENTARIO PARA ORDEM QUE VEM DA QUERY
         //titular = (String) linha.getArgumento15(); // 13 - TITULAR
+        tipo = (String) linha.getArgumento3(); // 1 - TIPO SERVIÇO
+        referencia = (String) linha.getArgumento4(); // 2 - REFERENCIA
+        id_baixa = linha.getArgumento26().toString(); // 23 - ID_BAIXA
+        
         beneficiario = (String) linha.getArgumento14(); // 12 - BENEFICIARIO
         data = linha.getArgumento16().toString(); // 16 - CRIACAO
         boleto = (String) linha.getArgumento17(); // 17 - BOLETO
@@ -467,7 +484,7 @@ public class MovimentosReceberSocialJSFBean {
             listaMovimento.get(i).setArgumento0(chkSeleciona);
         }
     }
-
+   
     public List<DataObject> getListaMovimento() {
         if (listaMovimento.isEmpty()) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
@@ -502,7 +519,7 @@ public class MovimentosReceberSocialJSFBean {
                 
                 // DATA DE HOJE MENOR QUE DATA DE VENCIMENTO
                 if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) < 
-                    DataHoje.converteDataParaInteger(DataHoje.data())){
+                    DataHoje.converteDataParaInteger(DataHoje.data()) && dataBaixa.isEmpty()){
                    disabled = true; 
                 }else{
                    disabled = false;
@@ -534,7 +551,8 @@ public class MovimentosReceberSocialJSFBean {
                             getConverteNullString(lista.get(i).get(22)), // ARG 22 CAIXA
                             lista.get(i).get(24), // ARG 23 DOCUMENTO
                             Moeda.converteR$(getConverteNullString(lista.get(i).get(7))),  // ARG 24 VALOR CALCULADO ORIGINAL
-                            disabled
+                            disabled, 
+                            lista.get(i).get(18) // ARG 26 ID_BAIXA
                             )
                         );
             }
@@ -656,10 +674,26 @@ public class MovimentosReceberSocialJSFBean {
         this.chkSeleciona = chkSeleciona;
     }
 
+    public void adicionarPesquisa() {
+        addMais = true;
+        //return "movimentosReceberSocial";
+    }
+    
     public Pessoa getPessoa() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-            listaMovimento.clear();
+            if (!addMais){
+                pessoa = new Pessoa();
+                pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
+                
+                listaPessoa.clear();
+                
+                listaPessoa.add(pessoa);
+                listaMovimento.clear();
+            }else{
+                listaPessoa.add((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
+                listaMovimento.clear();
+                addMais = false;
+            }
             calculoDesconto();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         }
@@ -716,5 +750,29 @@ public class MovimentosReceberSocialJSFBean {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getReferencia() {
+        return referencia;
+    }
+
+    public void setReferencia(String referencia) {
+        this.referencia = referencia;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getId_baixa() {
+        return id_baixa;
+    }
+
+    public void setId_baixa(String id_baixa) {
+        this.id_baixa = id_baixa;
     }
 }

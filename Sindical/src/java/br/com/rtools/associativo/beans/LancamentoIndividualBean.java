@@ -190,6 +190,7 @@ public class LancamentoIndividualBean {
         lote.setCondicaoPagamento(cp);
         lote.setPlano5(serv.getPlano5());
         lote.setDescontoFolha( descontoFolha.equals("sim") );
+        lote.setMatriculaSocios(null);
         
         
         sv.abrirTransacao();

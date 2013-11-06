@@ -935,6 +935,12 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
+    
+    public synchronized String movimentosReceberSocialBaixa() {
+        //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosSocialBean");
+        //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        return metodoGenerico(2, "movimentosReceberSocial");
+    }
 
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------

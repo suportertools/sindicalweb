@@ -233,7 +233,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         movim = finDB.pesquisaMovimentos(juridica.getPessoa().getId(), strReferencia, tipoServico.getId(), servicos.getId());
 
         if (movim != null) {
-            if (movim.getBaixa() != null) {
+            if (movim.getBaixa() != null && movim.getBaixa().getId() != -1) {
                 msgConfirmaTela = "  Movimento já foi baixado!";
                 return null;
             }

@@ -60,7 +60,7 @@ public class DataObject {
         this.argumento24 = argumento24;
     }
 
-    public DataObject(Object argumento0, Object argumento1, Object argumento2, Object argumento3, Object argumento4, Object argumento5, Object argumento6, Object argumento7, Object argumento8, Object argumento9, Object argumento10, Object argumento11, Object argumento12, Object argumento13, Object argumento14, Object argumento15, Object argumento16, Object argumento17, Object argumento18, Object argumento19, Object argumento20, Object argumento21, Object argumento22, Object argumento23, Object argumento24, Object argumento25) {
+    public DataObject(Object argumento0, Object argumento1, Object argumento2, Object argumento3, Object argumento4, Object argumento5, Object argumento6, Object argumento7, Object argumento8, Object argumento9, Object argumento10, Object argumento11, Object argumento12, Object argumento13, Object argumento14, Object argumento15, Object argumento16, Object argumento17, Object argumento18, Object argumento19, Object argumento20, Object argumento21, Object argumento22, Object argumento23, Object argumento24, Object argumento25, Object argumento26) {
         this.argumento0 = argumento0;
         this.argumento1 = argumento1;
         this.argumento2 = argumento2;
@@ -86,6 +86,7 @@ public class DataObject {
         this.argumento22 = argumento22;
         this.argumento23 = argumento23;
         this.argumento25 = argumento25;
+        this.argumento26 = argumento26;
     }
 
     public DataObject() {
