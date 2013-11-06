@@ -178,6 +178,7 @@ public class GerarMovimento extends DB {
                     lote.setEvt(null);
                     lote.setPlano5(null);
                     lote.setDocumento("");
+                    lote.setMatriculaSocios(null);
 
                     if (cc == null) {
                         sv.desfazerTransacao();
@@ -498,6 +499,7 @@ public class GerarMovimento extends DB {
                 lote.setEvt(null);
                 lote.setPlano5(null);
                 lote.setDocumento("");
+                lote.setMatriculaSocios(null);
 
                 if (cc == null) {
                     sv.desfazerTransacao();
@@ -670,7 +672,7 @@ public class GerarMovimento extends DB {
         MovimentoInativo mi = new MovimentoInativo();
 
         try {
-            if (movimento.isAtivo() && movimento.getBaixa() == null) {
+            if (movimento.isAtivo() && movimento.getBaixa() == null || movimento.getBaixa().getId() == -1) {
                 sv.abrirTransacao();
                 movimento.setAtivo(false);
 

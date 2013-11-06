@@ -90,7 +90,7 @@ public class Lote implements java.io.Serializable {
         this.status = new FStatus();
         this.pessoaSemCadastro = new PessoaSemCadastro();
         this.descontoFolha = false;
-        this.matriculaSocios = new MatriculaSocios();
+        this.matriculaSocios = null;
     }
 
     public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha, MatriculaSocios matriculaSocios) {
