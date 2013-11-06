@@ -115,9 +115,18 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
 
     @Override
     public Object pesquisaObjeto(int id, String tabela) {
+        return pesquisaObjeto(id, tabela, "");
+    }
+    
+    @Override
+    public Object pesquisaObjeto(int id, String tabela, String campo) {
+        String stringCampo = "id";
+        if (!campo.isEmpty()) {
+            stringCampo = campo;
+        }        
         Object result = null;
         try {
-            Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB.id = " + id);
+            Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB."+stringCampo+" = " + id);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getSingleResult();
             }
@@ -132,9 +141,10 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         return pesquisaObjeto(id, tabela, "");
     }    
     
+    @Override
     public List pesquisaObjeto(int id[], String tabela, String campo) {
         String stringCampo = "id";
-        if (campo.isEmpty()) {
+        if (!campo.isEmpty()) {
             stringCampo = campo;
         }
         List list = new ArrayList<Object>(); 

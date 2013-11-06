@@ -513,17 +513,28 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public boolean pesquisarFeriado() {
-        FeriadosDB db = new FeriadosDBToplink();
-        List listFeriados = db.pesquisarPorData(DataHoje.converteData(getData()));
-        if (!listFeriados.isEmpty()) {
-            return true;
+//        FeriadosDB db = new FeriadosDBToplink();
+//
+//        listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), macFilial.getFilial());
+//        if (!listFeriados.isEmpty()) {
+//            return true;
+//        }
+        FeriadosDB feriadosDB = new FeriadosDBToplink();
+        if (macFilial.getFilial().getFilial().getId() != -1) {
+            List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
+            if (!feriados.isEmpty()) {
+                return true;
+            } else {
+                List<Feriados> listFeriados = (List<Feriados>) feriadosDB.pesquisarPorData(DataHoje.converteData(getData()));
+                if (!listFeriados.isEmpty()) {
+                    for (Feriados f : listFeriados) {
+                        if (f.getCidade() == null) {
+                            return true;
+                        }
+                    }
+                }
+            }
         }
-
-        listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), macFilial.getFilial());
-        if (!listFeriados.isEmpty()) {
-            return true;
-        }
-
         return false;
 
     }
@@ -533,13 +544,20 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             msgAgendamento = "Fins de semana não permitido!";
             return null;
         }
-        if (DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))
-                < DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-            msgAgendamento = "Data anterior ao dia de hoje!";
-            return null;
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        Registro reg = (Registro) salvarAcumuladoDB.pesquisaObjeto(1, "Registro");
+        int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(reg.getAgendamentoRetroativo()));
+        int nrData = DataHoje.converteDataParaInteger(DataHoje.converteData(getData()));
+        int nrDataHoje = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
+        if (nrAgendamentoRetroativo < nrDataHoje) {
+            if (nrData < nrDataHoje) {
+                msgAgendamento = "Data anterior ao dia de hoje!";
+                return null;
+            }
+        } else {
+            msgAgendamento = "Agendamento retroativo liberado até dia "+reg.getAgendamentoRetroativoString();
         }
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data())))
-                < DataHoje.converteDataParaInteger(DataHoje.converteData(getData()))) {
+        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data()))) < nrData) {
             msgAgendamento = "Data maior que 3 meses!";
             return null;
         }

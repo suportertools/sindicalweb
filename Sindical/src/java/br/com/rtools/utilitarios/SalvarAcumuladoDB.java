@@ -28,6 +28,7 @@ public interface SalvarAcumuladoDB {
     
 
     public Object pesquisaObjeto(int id, String tabela);
+    public Object pesquisaObjeto(int id, String tabela, String campo);
 
     /**
      * 

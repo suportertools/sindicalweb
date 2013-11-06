@@ -2,6 +2,7 @@ package br.com.rtools.homologacao.beans;
 
 import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.Cancelamento;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.homologacao.Status;
@@ -24,6 +25,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -58,6 +60,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private MacFilial macFilial = null;
     private Registro registro = new Registro();
     private PessoaEndereco enderecoFilial = new PessoaEndereco();
+    private Cancelamento cancelamento = new Cancelamento();
     private int id_protocolo = -1;
 
     public String excluirSenha() {
@@ -492,10 +495,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         return listaGrid;
     }
 
-    public String agendar() {
+    public String agendar(int idIndex) {
         HomologacaoDB db = new HomologacaoDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
+        cancelamento = new Cancelamento();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
         if (nrStatus == 3 || nrStatus == 4 || nrStatus == 5) {
             if (!desabilitaEdicao(agendamento.getDtData(), 30)) {
@@ -725,12 +729,21 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         return null;
     }
 
-    public String homologar() {
+    public void homologar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         StatusDB dbSta = new StatusDBToplink();
         agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
         agendamento.setStatus(dbSta.pesquisaCodigo(4));
+        new Cancelamento().getAgendamento().getId();
+        Cancelamento c = (Cancelamento) sv.pesquisaObjeto(agendamento.getId(), "Cancelamento", "agendamento.id");
         sv.abrirTransacao();
+        if (c != null) {
+            if(!sv.deletarObjeto(c)) {
+                msgConfirma = "Erro ao homologar!";
+                sv.desfazerTransacao();
+                return;
+            }
+        }
         if (sv.alterarObjeto(agendamento)) {
             msgConfirma = "Agendamento homologado com sucesso!";
             sv.comitarTransacao();
@@ -747,37 +760,51 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
-        return null;
     }
 
-    public String cancelarHorario() {
+    public String cancelarHomologacao() {
+        if (cancelamento.getMotivo().isEmpty() || cancelamento.getMotivo().length() <= 5) {
+            msgConfirma = "Motivo de cancelamento inválido";
+            return null;
+        }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        StatusDB dbSta = new StatusDBToplink();
-        agendamento.setStatus(dbSta.pesquisaCodigo(3));
-
+        Status s = agendamento.getStatus();
         sv.abrirTransacao();
         if (!sv.alterarObjeto(agendamento)) {
+            msgConfirma = "Erro ao cancelar homologagação!";
             sv.desfazerTransacao();
             return null;
         }
-
         pessoaEmpresa.setDtDemissao(null);
         if (!sv.alterarObjeto(pessoaEmpresa)) {
-            sv.desfazerTransacao();
+            msgConfirma = "Erro ao atualizar Pessoa Empresa";
             return null;
         }
-
+        cancelamento.setAgendamento(agendamento);
+        cancelamento.setDtData(DataHoje.dataHoje());
+        cancelamento.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
+        if (!sv.inserirObjeto(cancelamento)) {
+            msgConfirma = "Erro ao salvar cancelamento";
+            return null;
+        }
+        agendamento.setStatus((Status) sv.pesquisaCodigo(3, "Status"));
+        if (!sv.alterarObjeto(agendamento)) {
+            sv.desfazerTransacao();
+            agendamento.setStatus(s);
+            msgConfirma = "Erro ao cancelar homologação!";
+            return null;
+        }
+        cancelamento = new Cancelamento();
+        msgConfirma = "Homologação cancelada com sucesso";
         strEndereco = "";
         renderHomologacao = true;
         renderConcluir = false;
         tipoAviso = "true";
-        msgConfirma = "";
         msgHomologacao = "";
         fisica = new Fisica();
         agendamento = new Agendamento();
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
-
         sv.comitarTransacao();
         return null;
     }
@@ -793,30 +820,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         pessoaEmpresa = new PessoaEmpresa();
         agendamento = new Agendamento();
         profissao = new Profissao();
-    }
-
-    public String cancelar() {
-        HomologacaoDB dbAg = new HomologacaoDBToplink();
-        StatusDB dbSta = new StatusDBToplink();
-        agendamento.setStatus(dbSta.pesquisaCodigo(5));
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
-            salvarAcumuladoDB.comitarTransacao();
-        } else {
-            salvarAcumuladoDB.desfazerTransacao();
-        }
-        strEndereco = "";
-        renderHomologacao = true;
-        renderConcluir = false;
-        tipoAviso = "true";
-        msgConfirma = "";
-        msgHomologacao = "";
-        fisica = new Fisica();
-        agendamento = new Agendamento();
-        pessoaEmpresa = new PessoaEmpresa();
-        profissao = new Profissao();
-        return null;
     }
 
     public String pesquisarFuncionarioCPF() {
@@ -1144,7 +1147,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                     "application/pdf",
                     FacesContext.getCurrentInstance());
             download.baixar();
-        } catch (Exception e) {
+        } catch (JRException e) {
         }
         return null;
     }
@@ -1174,4 +1177,13 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         Senha senha = db.pesquisaSenhaAgendamento(id);
         return senha.getSenha();
     }
+    
+    public Cancelamento getCancelamento() {
+        return cancelamento;
+    }
+
+    public void setCancelamento(Cancelamento cancelamento) {
+        this.cancelamento = cancelamento;
+    }
+    
 }
