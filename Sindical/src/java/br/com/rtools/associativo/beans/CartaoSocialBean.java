@@ -16,7 +16,6 @@ import br.com.rtools.utilitarios.ImpressaoParaSocios;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,6 @@ import javax.faces.bean.SessionScoped;
 // import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -106,7 +104,7 @@ public class CartaoSocialBean implements Serializable {
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
 
-        } catch (JRException e) {
+        } catch (Exception e) {
             return null;
         }
         return null;
@@ -115,7 +113,7 @@ public class CartaoSocialBean implements Serializable {
     public String pesquisar() {
         listaCartao.clear();
         isDisabledReimpressao();
-        return null;
+        return "cartaoSocial";
     }
 
     public void pesquisarx() {
@@ -123,21 +121,23 @@ public class CartaoSocialBean implements Serializable {
             listaCartao.clear();
             isDisabledReimpressao();
             FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/cartaoSocial.jsf");
-        } catch (IOException e) {
+        } catch (Exception e) {
         }
     }
 
-    public void habilitaGridTrue() {
+    public String teste() {
         updateGrid = true;
+        return null;
     }
 
-    public void habilitaGridXTrue() {
+    public String testex() {
         updateGridx = true;
         updateGrid = false;
         qnt = 0;
+        return null;
     }
 
-    public void imprimirCartao() {
+    public String imprimirCartao() {
         List listaaux = new ArrayList();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
@@ -162,7 +162,7 @@ public class CartaoSocialBean implements Serializable {
                     carteirinha.setSocios(socios);
                     if (!sv.inserirObjeto(carteirinha)) {
                         sv.desfazerTransacao();
-                        return;
+                        return null;
                     }
                     
                     socios.setNrViaCarteirinha(1);
@@ -170,7 +170,7 @@ public class CartaoSocialBean implements Serializable {
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
                         sv.desfazerTransacao();
-                        return;
+                        return null;
                     }
                 } else {
                     carteirinha.setEmissao(DataHoje.data());
@@ -178,7 +178,7 @@ public class CartaoSocialBean implements Serializable {
                     if (!db.verificaSocioCarteirinhaExiste(socios.getId())) {
                         if (!sv.inserirObjeto(carteirinha)) {
                             sv.desfazerTransacao();
-                            return;
+                            return null;
                         }
                     }
                     
@@ -188,7 +188,7 @@ public class CartaoSocialBean implements Serializable {
                     ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
                         sv.desfazerTransacao();
-                        return;
+                        return null;
                     }
                     
                 }
@@ -205,6 +205,7 @@ public class CartaoSocialBean implements Serializable {
                 visualizarEtiqueta();
             }
         }
+        return null;
     }
 
     public String reImprimirCartao() {
@@ -374,7 +375,11 @@ public class CartaoSocialBean implements Serializable {
     }
 
     public boolean isDisabledReimpressao() {
-        disabledReimpressao = Integer.valueOf(indexFiltro) <= 2;
+        if (Integer.valueOf(indexFiltro) > 2) {
+            disabledReimpressao = false;
+        } else {
+            disabledReimpressao = true;
+        }
         return disabledReimpressao;
     }
 

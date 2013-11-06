@@ -6,6 +6,8 @@ import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -15,6 +17,8 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import org.primefaces.component.tabview.Tab;
+import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
 @SessionScoped
@@ -23,49 +27,61 @@ public class RegistroEmpresarialBean implements Serializable {
     private Registro registro = new Registro();
     private String senha = "";
     private String confirmaSenha = "";
-    private String msgConfirma = "";
+    private String mensagem = "";
     private int codigoModulo = 0;
 
-    public void refreshForm() {
-    }
-
-    public String salvar() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if (!senha.isEmpty()) {
-            if (!senha.equals(confirmaSenha)) {
-                msgConfirma = "Senhas não correspondem";
-                return null;
+    public void salvar() {
+//        if (!validacao()) {
+//            return;
+//        }        
+        if (codigoModulo == 0) {
+            if (!senha.isEmpty()) {
+                if (!senha.equals(confirmaSenha)) {
+                    GenericaMensagem.warn("Validação", "Senhas não correspondem");
+                    return;
+                }
+                registro.setSenha(senha);
             }
-            registro.setSenha(senha);
         }
-        sv.abrirTransacao();
-        if (sv.alterarObjeto(registro)) {
-            sv.comitarTransacao();
-            msgConfirma = "Cadastro atualizado com sucesso!";
-        } else {
-            sv.desfazerTransacao();
-            msgConfirma = "Não foi possivel atualizar Cadastro!";
-        }
-        return null;
-    }
-
-    public String salvarSemSenha() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         if (sv.alterarObjeto(registro)) {
             sv.comitarTransacao();
-            msgConfirma = "Cadastro atualizado com sucesso!";
+            GenericaMensagem.info("Sucesso", "Registro atualizado");
         } else {
             sv.desfazerTransacao();
-            msgConfirma = "Não foi possivel atualizar Cadastro!";
+            GenericaMensagem.warn("Erro", "Ao atualizar registro!");
         }
-        return null;
     }
 
-    public String criarLoginsUsuarios() {
-        List<Pessoa> listaPessoas = new ArrayList<Pessoa>();
+    public void salvarSemSenha() {
+//        if (!validacao()) {
+//            return;
+//        }
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        sv.abrirTransacao();
+        if (sv.alterarObjeto(registro)) {
+            sv.comitarTransacao();
+            GenericaMensagem.info("Sucesso", "Registro atualizado");
+        } else {
+            sv.desfazerTransacao();
+            GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+        }
+    }
+    
+    public boolean validacao() {
+        int nrDataRetroativo = DataHoje.converteDataParaInteger(registro.getAgendamentoRetroativoString());
+        int nrDataHoje = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
+        if (nrDataRetroativo <= nrDataHoje) {
+            GenericaMensagem.warn("Validação", "Data do agendamento retroativo deve ser maior ou igual a data de hoje");
+            return false;
+        }
+        return true;
+    }
+
+    public void criarLoginsUsuarios() {
         PessoaDB db = new PessoaDBToplink();
-        listaPessoas = db.pesquisaTodosSemLogin();
+        List<Pessoa> listaPessoas = db.pesquisaTodosSemLogin();
         // String login = "", senha = "";
         String senha = "";
         senha = senha + DataHoje.hora().replace(":", "");
@@ -73,18 +89,11 @@ public class RegistroEmpresarialBean implements Serializable {
             try {
                 senha = Integer.toString(Integer.parseInt(senha) + Integer.parseInt(senha + "43"));
                 senha = getGerarLoginSenhaPessoa(listaPessoas.get(i), senha);
-            } catch (Exception e) {
-                // String erros = nome+"--"+login+"--";
-                msgConfirma = "Erro ao Gerar!" + e;
-                continue;
+            } catch (NumberFormatException e) {
+                mensagem = "Erro ao Gerar!" + e;
             }
         }
-        msgConfirma = "Geração concluída!";
-        return null;
-    }
-
-    public String novo() {
-        return "registroEmpresarial";
+        mensagem = "Geração concluída!";
     }
 
     public Registro getRegistro() {
@@ -99,7 +108,6 @@ public class RegistroEmpresarialBean implements Serializable {
     }
 
     public String getGerarLoginSenhaPessoa(Pessoa pessoa, String senhaInicial) {
-        PessoaDB db = new PessoaDBToplink();
         senhaInicial = senhaInicial.substring(senhaInicial.length() - 6, senhaInicial.length());
         String nome = AnaliseString.removerAcentos(pessoa.getNome().replace(" ", "X").toUpperCase());
         nome = nome.replace("-", "Y");
@@ -114,11 +122,12 @@ public class RegistroEmpresarialBean implements Serializable {
         String login = nome.substring(nome.length() - 6, nome.length());
         pessoa.setLogin(login);
         pessoa.setSenha(senhaInicial);
-        db.getEntityManager().getTransaction().begin();
-        if (db.update(pessoa)) {
-            db.getEntityManager().getTransaction().commit();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        salvarAcumuladoDB.abrirTransacao();
+        if (salvarAcumuladoDB.alterarObjeto(pessoa)) {
+            salvarAcumuladoDB.comitarTransacao();
         } else {
-            db.getEntityManager().getTransaction().rollback();
+            salvarAcumuladoDB.desfazerTransacao();
         }
         return senhaInicial;
     }
@@ -135,12 +144,12 @@ public class RegistroEmpresarialBean implements Serializable {
         this.confirmaSenha = confirmaSenha;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public String getSenha() {
@@ -165,4 +174,13 @@ public class RegistroEmpresarialBean implements Serializable {
     public void setCodigoModulo(int codigoModulo) {
         this.codigoModulo = codigoModulo;
     }
+
+    public void limparModulo() {
+        GenericaSessao.remove("idModulo");
+    }
+
+    public void onChange(TabChangeEvent event) {
+        Tab activeTab = event.getTab();
+    }
+
 }

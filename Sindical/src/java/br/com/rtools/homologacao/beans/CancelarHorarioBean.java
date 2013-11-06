@@ -8,7 +8,9 @@ import br.com.rtools.homologacao.db.HorariosDB;
 import br.com.rtools.homologacao.db.HorariosDBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -61,9 +63,11 @@ public class CancelarHorarioBean implements Serializable {
         CancelarHorarioDB db = new CancelarHorarioDBToplink();
         CancelarHorario ch;
         boolean erro = false;
+        Usuario u = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         acumuladoDB.abrirTransacao();
         for (int i = 0; i < getListaHorariosDisponiveis().size(); i++) {
             cancelarHorario.setFilial((Filial) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), "Filial"));
+            cancelarHorario.setUsuario(u);
             if (todos) {
                 cancelarHorario.setHorarios((Horarios) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaHorariosDisponiveis().get(i).getDescription()), "Horarios"));
                 nrQuantidadeDisponivel = cancelarHorario.getHorarios().getQuantidade();
@@ -187,6 +191,7 @@ public class CancelarHorarioBean implements Serializable {
         List<Horarios> horarioses;
         CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
         CancelarHorario ch;
+        Usuario u = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         acumuladoDB.abrirTransacao();
         for (int z = 0; z < listDatas.size(); z++) {
             cancelarHorario = new CancelarHorario();
@@ -195,6 +200,7 @@ public class CancelarHorarioBean implements Serializable {
             erro = false;
             for (int x = 0; x < horarioses.size(); x++) {
                 ch = cancelarHorarioDB.pesquisaCancelamentoHorario(DataHoje.converte(strDataInicial), horarioses.get(x).getId(), f.getId());
+                cancelarHorario.setUsuario(u);
                 if (ch.getId() == -1) {
                     cancelarHorario.setFilial(f);
                     cancelarHorario.setHorarios(horarioses.get(x));

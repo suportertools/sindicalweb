@@ -71,6 +71,9 @@ public class Registro implements java.io.Serializable {
     private int limiteEnvios;
     @Column(name = "NR_INTERVALO_ENVIOS_NOTIFICACAO")
     private int intervaloEnvios;
+    @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO ")
+    @Temporal(TemporalType.DATE)
+    private Date agendamentoRetroativo;
 
     public Registro() {
         this.id = -1;
@@ -102,6 +105,7 @@ public class Registro implements java.io.Serializable {
         this.agendamentoWeb = false;
         this.limiteEnvios = 0;
         this.intervaloEnvios = 0;
+        this.agendamentoRetroativo = new Date();
     }
 
     public Registro(int id,
@@ -132,7 +136,8 @@ public class Registro implements java.io.Serializable {
             boolean repisWeb,
             boolean agendamentoWeb,
             int limiteEnvios,
-            int intervaloEnvios) {
+            int intervaloEnvios,
+            String agendamentoRetroativo) {
 
         this.id = id;
         this.filial = filial;
@@ -163,6 +168,7 @@ public class Registro implements java.io.Serializable {
         this.agendamentoWeb = agendamentoWeb;
         this.limiteEnvios = limiteEnvios;
         this.intervaloEnvios = intervaloEnvios;
+        this.agendamentoRetroativo = DataHoje.converte(agendamentoRetroativo);
     }
 
     public int getId() {
@@ -409,5 +415,21 @@ public class Registro implements java.io.Serializable {
 
     public void setIntervaloEnvios(int intervaloEnvios) {
         this.intervaloEnvios = intervaloEnvios;
+    }
+
+    public Date getAgendamentoRetroativo() {
+        return agendamentoRetroativo;
+    }
+
+    public void setAgendamentoRetroativo(Date agendamentoRetroativo) {
+        this.agendamentoRetroativo = agendamentoRetroativo;
+    }
+    
+    public String getAgendamentoRetroativoString() {
+        return DataHoje.converteData(agendamentoRetroativo);
+    }
+
+    public void setAgendamentoRetroativoString(String agendamentoRetroativoString) {
+        this.agendamentoRetroativo =  DataHoje.converte(agendamentoRetroativoString);
     }
 }

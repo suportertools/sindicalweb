@@ -1,6 +1,7 @@
 package br.com.rtools.homologacao;
 
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.Column;
@@ -35,6 +36,9 @@ public class CancelarHorario implements java.io.Serializable {
     private Date dtData;
     @Column(name = "NR_QUANTIDADE")
     private int quantidade;
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Usuario usuario;
 
     public CancelarHorario() {
         this.id = -1;
@@ -42,14 +46,16 @@ public class CancelarHorario implements java.io.Serializable {
         this.filial = new Filial();
         this.setData("");
         this.quantidade = 0;
+        this.usuario = new Usuario();
     }
 
-    public CancelarHorario(int idI, Horarios horarios1, Filial filial1, String dataString, int quantidadeI) {
+    public CancelarHorario(int idI, Horarios horarios1, Filial filial1, String dataString, int quantidadeI, Usuario usuario1) {
         this.id = idI;
         this.horarios = horarios1;
         this.filial = filial1;
         this.setData(dataString);
         this.quantidade = quantidadeI;
+        this.usuario = usuario1;
     }
 
     public int getId() {
@@ -104,5 +110,13 @@ public class CancelarHorario implements java.io.Serializable {
         if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
         }
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }
