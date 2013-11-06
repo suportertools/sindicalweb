@@ -4,7 +4,8 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:a4j="http://richfaces.org/a4j"
       xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     
     <h:head>
         <title>Impressão Individual</title>
@@ -32,18 +33,18 @@
                             <h:outputLabel value="#{processamentoIndividualBean.statusContribuinte}" styleClass="fontePadraoVermelho" style="margin-right: 30px"/>
                         </h:panelGrid>
                         
-                        <h:panelGrid  columns="6" styleClass="fontePadrao">
+                        <h:panelGrid id="i_panel_grid" columns="6" styleClass="fontePadrao">
                             <h:column>
                                 <h:outputLabel value=" Referência: " styleClass="fontePadrao" for="idDataReferencia"/>
-                                <h:inputText id="idDataReferencia" disabled="#{processamentoIndividualBean.marcarReferencia}" size="8" value="#{processamentoIndividualBean.strReferencia}" class="referencia" onblur="modalOpcao('divProcesso');" style="margin-right: 30px">
-                                    <a4j:ajax event="blur" listener="#{processamentoIndividualBean.filtrarReferencia}" render="idVencimento, cbTipoServico, idDataReferencia" oncomplete="fecharModalOpcao('divProcesso', false)"/>
+                                <h:inputText disabled="#{processamentoIndividualBean.marcarReferencia}" size="8" value="#{processamentoIndividualBean.strReferencia}" class="referencia" onblur="modalOpcao('divProcesso');" style="margin-right: 30px">
+                                    <a4j:ajax event="blur" listener="#{processamentoIndividualBean.filtrarReferencia}" render="i_panel_grid" oncomplete="fecharModalOpcao('divProcesso', false)"/>
                                 </h:inputText>
                             </h:column>
 
                             <h:column>
                                 <h:outputLabel value=" Contribuição: " styleClass="fontePadrao"/>
                                 <h:selectOneMenu style="margin-right: 30px" value="#{processamentoIndividualBean.idServicos}" onchange="modalOpcao('divProcesso');">
-                                    <a4j:ajax event="change" listener="#{processamentoIndividualBean.filtrarReferencia}" render="cbTipoServico, idDataReferencia, idVencimento" oncomplete="fecharModalOpcao('divProcesso', false)"/>
+                                    <a4j:ajax event="change" listener="#{processamentoIndividualBean.filtrarReferencia}" render="i_panel_grid" oncomplete="fecharModalOpcao('divProcesso', false)"/>
                                     <f:selectItems value="#{processamentoIndividualBean.listaServico}" />
                                 </h:selectOneMenu>
                             </h:column>
@@ -51,16 +52,16 @@
                             <h:column>
                                 <h:outputLabel value=" Tipo: " styleClass="fontePadrao"/>
                                 <h:selectOneMenu style="margin-right: 30px" value="#{processamentoIndividualBean.idTipoServico}" onchange="modalOpcao('divProcesso');">
-                                    <a4j:ajax event="change" listener="#{processamentoIndividualBean.filtrarReferencia}" render="idVencimento" oncomplete="fecharModalOpcao('divProcesso', false)"/>
+                                    <a4j:ajax event="change" listener="#{processamentoIndividualBean.filtrarReferencia}" render="i_panel_grid" oncomplete="fecharModalOpcao('divProcesso', false)"/>
                                     <f:selectItems value="#{processamentoIndividualBean.listaTipoServico}" />
                                 </h:selectOneMenu>
                             </h:column>
 
                             <h:column>
                                 <h:outputLabel value=" Vencimento: " styleClass="fontePadrao" for="idVencimento"/>
-                                <h:inputText  id="idVencimento" size="9" class="data" maxlength="10" disabled="#{processamentoIndividualBean.marcarVencimento}"  value="#{processamentoIndividualBean.vencimento}">
-                                    <a4j:ajax event="change" listener="#{processamentoIndividualBean.atualizaRef}" render="idVencimento"/>
-                                </h:inputText>
+                                <p:inputMask id="idVencimento" size="8" mask="99/99/9999" disabled="#{processamentoIndividualBean.marcarVencimento}"  value="#{processamentoIndividualBean.vencimento}">
+                                    <p:ajax event="change" listener="#{processamentoIndividualBean.atualizaRef}" update="i_panel_grid"/>
+                                </p:inputMask>
                             </h:column>
 
                             <h:column>
@@ -219,7 +220,7 @@
                             
                             <h:outputLabel id="iPara" value=" Para " styleClass="fontePadrao" rendered="#{processamentoIndividualBean.processou}"/>
                             <h:selectOneMenu id="iPEmpresa" rendered="#{processamentoIndividualBean.processou}" value="#{processamentoIndividualBean.tipoEnvio}">
-                                <a4j:ajax event="change" render="@this" />
+                                <a4j:ajax event="change" render="iPEmpresa" />
                                 <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
                                 <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
                             </h:selectOneMenu>
