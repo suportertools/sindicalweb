@@ -45,34 +45,33 @@
                         </p:submenu>
                     </p:menubar> 
                 </p:panel>
-                <p:panel style="border: 0px; width: 1024px; height: 550px; margin: 0 auto">
-                    <h:panelGrid columns="3" styleClass="margin-top-maior" cellpadding="10" style="margin: 0 auto;">
-                        <f:facet name="header">Atendimento</f:facet>
+                <p:panel style="margin: 0 auto!important; width: 1000px;" header="Atendimento - Acesso fácil">
+                    <p:panelGrid columns="3" styleClass="margin-top-max sbb" style="margin: 0 auto!important;" >
                         <p:commandLink action="#{chamadaPaginaBean.agendamento}" title="Agendamento">
-                            <h:graphicImage value="/Imagens/icone-calendario.jpg" height="150" />
+                            <p:graphicImage value="/Imagens/icone-calendario.jpg" height="150" />
                         </p:commandLink>
                         <p:commandLink action="#{chamadaPaginaBean.recepcao}" title="Recepção">
-                            <h:graphicImage value="/Imagens/icone-recepcao.jpg" height="150" />
+                            <p:graphicImage value="/Imagens/icone-recepcao.jpg" height="150" />
                         </p:commandLink>
                         <p:commandLink action="#{chamadaPaginaBean.homologacao}" title="Homologação">
-                            <h:graphicImage value="/Imagens/icone-homologacao.jpg" height="150" />
+                            <p:graphicImage value="/Imagens/icone-homologacao.jpg" height="150" />
                         </p:commandLink>
                         <h:column>
                             <center>
-                                <h:outputText value="Agendamento" styleClass="fontePadrao" />
+                                <p:outputLabel value="Agendamento" />
                             </center>
                         </h:column>
                         <h:column>
                             <center>
-                                <h:outputText value="Recepção" styleClass="fontePadrao" />
+                                <p:outputLabel value="Recepção"  />
                             </center>
                         </h:column>
                         <h:column>
                             <center>
-                                <h:outputText value="Homologação" styleClass="fontePadrao" />
+                                <p:outputLabel value="Homologação" />
                             </center>
                         </h:column>
-                    </h:panelGrid>
+                    </p:panelGrid>
                 </p:panel>
 
             </h:form>

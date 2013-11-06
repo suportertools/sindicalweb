@@ -51,7 +51,7 @@
                         </p:submenu>
 
                         <p:submenu label="Sindicato" icon="ui-icon-document" style="margin-right: 15px">  
-                            <p:menuitem value="Registro Empresarial" action="#{chamadaPaginaBean.registroEmpresarial}" />
+                            <p:menuitem value="Registro Empresarial" action="#{chamadaPaginaBean.registroEmpresarial}" actionListener="#{registroEmpresarialBean.limparModulo()}" />
                             <p:menuitem value="Registro Filial"      action="#{chamadaPaginaBean.macFilial}" />
                             <p:menuitem value="Registro Patronal"    action="#{chamadaPaginaBean.registroPatronal}" />
                             <p:menuitem value="Piso Salarial"        action="#{chamadaPaginaBean.pisoSalarial}" />
@@ -108,10 +108,10 @@
                     <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px; margin-left: 200px; width: 540px">
                         <p:poll interval="5" update="i_panel_poll" />  
                         <h:panelGrid id="i_panel_poll" style="float: left">
-                            <h:outputLabel value="Sem Notificações"  styleClass="fonteExtratoTela" rendered="#{!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58"/>
-                            <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
+                            <h:outputLabel value="Sem Notificações"  styleClass="fonteExtratoTela" rendered="# {!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58"/>
+                            <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="# {notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
                             <br />
-                            <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
+                            <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="# {notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
                         </h:panelGrid>
                     </p:panel>
                     
