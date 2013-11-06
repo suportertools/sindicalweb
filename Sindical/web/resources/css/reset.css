@@ -38,11 +38,11 @@ div.wrapper { width: 1024px; margin: 0 auto;}
 .position-relative {position: relative;}
 .position-absolute {position: absolute;}
 .position-fixed {position: fixed;}
-.text-center {text-align: center;}
-.text-left {text-align: left;}
-.text-right {text-align: right;}
-.float-right {float: right;}
-.float-left {float: left;}
+.text-center {text-align: center!important;}
+.text-left {text-align: left!important;}
+.text-right {text-align: right!important;}
+.float-right {float: right!important;}
+.float-left {float: left!important;}
 .border-solid {border: #efeeee 1px solid!important;}
 .border-dotted {border: #efeeee 1px dotted;}
 .border-min-top-solid {border-top-width: 1px; border-top-style: solid}
@@ -55,13 +55,13 @@ div.wrapper { width: 1024px; margin: 0 auto;}
 .padding {padding: 5px!important;}
 .padding-top {padding-top: 5px;}
 .margin {margin: 5px!important;}
-.margin-top {margin-top: 5px;}
+.margin-top {margin-top: 5px!important;}
 .margin-top-med {margin-top: 10px!important;}
-.margin-top-max {margin-top: 15px;}
+.margin-top-max {margin-top: 15px!important;}
 .margin-right {margin-right: 5px;}
 .margin-left {margin-left: 5px;}
 .margin-left-med {margin-left: 10px;}
-.margin-left-max {margin-left: 15px;}
+.margin-left-max {margin-left: 15px!important;}
 .margin-left-col-home {margin-left: 23px!important;}
 .margin-bottom {margin-bottom: 5px;}    
 .margin-bottom-med {margin-bottom: 10px!important;}
