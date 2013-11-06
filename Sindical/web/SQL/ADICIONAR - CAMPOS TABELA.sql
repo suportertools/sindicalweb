@@ -8,7 +8,7 @@ ALTER TABLE seg_registro ADD COLUMN dt_atualiza_homologacao date;
 
 UPDATE seg_registro SET dt_atualiza_homologacao = '1900-01-01' WHERE id = 1 AND dt_atualiza_homologacao is null;
 
--- update: 2013-07-31
+-- update: 2013-11-05
 -- edited by: Bruno Vieira da Silva
 
 ALTER TABLE seg_registro ADD COLUMN is_boleto_web boolean;
@@ -21,6 +21,8 @@ ALTER TABLE seg_registro ADD COLUMN nr_limite_envios_notificacao integer;
 -- UPDATE seg_registro SET nr_limite_envios_notificacao = 150;
 ALTER TABLE seg_registro ADD COLUMN nr_intervalo_envios_notificacao integer;
 -- UPDATE seg_registro SET nr_intervalo_envios_notificacao = 60;
+ALTER TABLE seg_registro ADD COLUMN dt_limite_agendamento_retroativo date;
+-- UPDATE seg_registro SET dt_limite_agendamento_retroativo = '1900-01-01' WHERE id = 1 AND dt_limite_agendamento_retroativo is null;
 
 -- *****************************************************************************
 
@@ -90,7 +92,7 @@ UPDATE hom_horarios SET id_semana = 2 WHERE id_semana is null
 -- *****************************************************************************
 
 -- HOM_CANCELAR_HORARIO 
--- update: 2013-07-26
+-- update: 2013-11-06
 -- edited by: Bruno Vieira da Silva
 
 ALTER TABLE hom_cancelar_horario ADD COLUMN id_horarios integer;
@@ -100,6 +102,15 @@ ALTER TABLE hom_cancelar_horario
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
 
+ALTER TABLE hom_cancelar_horario ADD COLUMN id_usuario integer;
+ALTER TABLE hom_cancelar_horario
+  ADD CONSTRAINT fk_hom_cancelar_horario_id_usuario FOREIGN KEY (id_usuario)
+     REFERENCES seg_usuario (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
+
+
+
 -- *****************************************************************************
 
 -- HOM_AGENDAMENTO
@@ -107,6 +118,7 @@ ALTER TABLE hom_cancelar_horario
 -- edited by: Bruno Vieira da Silva
 
 ALTER TABLE hom_agendamento ADD COLUMN dt_emissao date;
+
 UPDATE hom_agendamento SET dt_emissao = dt_data WHERE dt_emissao is null;
 
 -- seg_usuario_acesso  -- 
