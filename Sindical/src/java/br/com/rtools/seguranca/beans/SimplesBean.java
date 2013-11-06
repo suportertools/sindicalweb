@@ -27,6 +27,7 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -86,12 +87,14 @@ public class SimplesBean implements Serializable {
         if (sessoes != null) {
             if (descricao.equals("")) {
                 mensagem = "Informar descrição!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
                 return;
             }
             if (id == -1) {
                 converteObjeto(sessoes[0]);
                 if (sv.descricaoExiste(descricao, "descricao", objeto.getClass().getSimpleName())) {
                     mensagem = "Descrição já existe " + nomeRotina + " !";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
                     return;
 
                 }
@@ -100,12 +103,14 @@ public class SimplesBean implements Serializable {
                     sv.comitarTransacao();
                     log.novo("Registro de " + objeto.getClass().getSimpleName() + " inserido", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro salvo com sucesso";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
                     descricao = "";
                     objeto = null;
                     lista.clear();
                     id = -1;
                 } else {
                     mensagem = "Erro ao salvar " + nomeRotina + " ";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
                     sv.desfazerTransacao();
                 }
             } else {
@@ -115,12 +120,14 @@ public class SimplesBean implements Serializable {
                     sv.comitarTransacao();
                     log.novo("Registro de " + objeto.getClass().getSimpleName() + " alterado", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro atualizado com sucesso";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
                     lista.clear();
                     // descricao = "";
                     // objeto = null;
                     // id = -1;
                 } else {
                     mensagem = "Erro ao atualizar " + nomeRotina + " ";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
                     sv.desfazerTransacao();
                 }
             }
@@ -150,10 +157,12 @@ public class SimplesBean implements Serializable {
         if (!sv.deletarObjeto(objeto)) {
             sv.desfazerTransacao();
             mensagem = "Erro ao excluir registro";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
         } else {
             sv.comitarTransacao();
             log.novo("Registro de " + objeto.getClass().getSimpleName() + " excluido", "ID: " + id + " DESCRICAO: " + descricao);
             mensagem = "Registro excluído com sucesso!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
             lista.clear();
             objeto = null;
             id = -1;
