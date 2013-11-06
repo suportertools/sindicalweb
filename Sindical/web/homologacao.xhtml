@@ -2,9 +2,8 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Homologação</title>
@@ -12,426 +11,292 @@
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="form_homologacao">
-                <c:set scope="request" var="object" value="${homologacaoBean.agendamento}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Homologação" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <h:column rendered="#{homologacaoBean.renderConcluir}" >
-                        <div class="divMae divFundo" style="text-align: left; width: 900px;">
-                            <h:panelGrid columns="6">
-                                <h:outputText value="Data: " styleClass="fontePadrao"/>
-                                <h:outputText value="#{homologacaoBean.agendamento.data}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" />
-                                <h:outputText value="Horário: " styleClass="fontePadrao" />
-                                <h:outputText value="#{homologacaoBean.agendamento.horarios.hora}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding"/>
-                            </h:panelGrid>
-                            <br />
-                            <h:panelGrid id="i_panel_1" columns="2" columnClasses="coluna1, coluna2" cellspacing="3">
-                                <h:column>
-                                    <h4 class="border-radius bg-white padding">FUNCIONÁRIO</h4>
-                                </h:column>
-                                <h:column>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="MOTIVO DEMISSÃO: " styleClass="fontePadraoVermelho"/>
-                                </h:column>
-                                <h:column>
-                                    <h:selectOneMenu id="idMotivoDemissao" value="#{homologacaoBean.idMotivoDemissao}" >
-                                        <a4j:ajax event="change" render="this"/>
-                                        <f:selectItems value="#{homologacaoBean.listaMotivoDemissao}"/>
-                                    </h:selectOneMenu>
-                                    <h:outputText value="TIPO AVISO: " styleClass="fontePadraoVermelho margin-left-max"/>
-                                    <h:selectOneMenu id="idTipoAviso" value="#{homologacaoBean.tipoAviso}" >
-                                        <a4j:ajax event="change" render="this"/>
-                                        <f:selectItem itemValue="false" itemLabel="Imediato"/>
-                                        <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
-                                    </h:selectOneMenu>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="CPF: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idCPF" value="#{homologacaoBean.fisica.pessoa.documento}" size="14" maxlength="14" class="cpf">
-                                        <a4j:ajax event="blur" listener="#{homologacaoBean.pesquisarFuncionarioCPF}"/>
-                                    </h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="NOME: " styleClass="fontePadraoVermelho  margin-left-max"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText size="50" value="#{homologacaoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="blur" render="this"/>
-                                    </h:inputText>
-                                    <h:outputText value="NASCIMENTO: " styleClass="fontePadrao  margin-left-max"/>
-                                    <h:inputText size="12" maxlength="10" onkeypress="mascara(this, data);" value="#{homologacaoBean.fisica.nascimento}" styleClass="fontePadraoNegrito">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="CARTEIRA: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText size="10" value="#{homologacaoBean.fisica.carteira}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                    <h:outputText value="SÉRIE: " styleClass="fontePadrao  margin-left-max"/>
-                                    <h:inputText size="15" maxlength="15" value="#{homologacaoBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="SEXO: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:selectOneRadio id="idSexo" value="#{homologacaoBean.fisica.sexo}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="this" />
-                                        <f:selectItem itemValue="F" itemLabel="Feminino"/>
-                                        <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                    </h:selectOneRadio>                                    
-                                </h:column>
-                                <h:column>
-                                    <!-- <a4j:commandLink id="btnFuncao" value="Função" styleClass="idSalvar iLink" onclick="modalOpcao('divProfissao');" />  -->
-                                    <a4j:commandLink styleClass="idNovo iLink" value="Função" oncomplete="#{rich:component('form_homologacao:i_painel_profissao')}.show(); return false;"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText id="idFuncao" size="40" value="#{homologacaoBean.profissao.cbo} - #{homologacaoBean.profissao.profissao}" styleClass="fontePadraoNegrito" readonly="true">
-                                        <a4j:ajax event="click" oncomplete="#{rich:component('form_homologacao:i_painel_profissao')}.show(); return false;" />
-                                    </h:inputText>
-                                    <h:outputText value="SETOR: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText id="idSetor" size="20" value="#{homologacaoBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito " onblur="upperCase(this);">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="ADMISSÃO: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:inputText size="8" maxlength="10" class="data" value="#{homologacaoBean.pessoaEmpresa.admissao}" styleClass="fontePadraoNegrito">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                    <h:outputText value="DEMISSÃO: " styleClass="fontePadrao  margin-left-max"/>
-                                    <h:inputText size="8" maxlength="10" class="data" value="#{homologacaoBean.pessoaEmpresa.demissao}" styleClass="fontePadraoNegrito">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                </h:column>
-                                <h:column>
-                                    <h4 class="border-radius bg-white padding  margin-top-med">EMPRESA</h4>
-                                </h:column>
-                                <h:column>
-                                </h:column>                                
-                                <h:column>                                
-                                    <h:outputText value="EMPRESA: " styleClass="fontePadraoVermelho"/>
-                                </h:column>                                
-                                <h:column>                                
-                                    <h:outputText value="#{homologacaoBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-
-                                    <h:outputText value="Telefone: " styleClass="fontePadrao" style="margin-left: 20px;"/>
-                                    <h:outputText value="#{homologacaoBean.juridica.pessoa.telefone1} / #{homologacaoBean.juridica.pessoa.telefone2}" styleClass="fontePadraoNegrito"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="STATUS: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="#{homologacaoBean.statusEmpresa}" styleClass="fontePadraoNegrito"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="ENDEREÇO: " styleClass="fontePadrao"/>                                    
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="#{homologacaoBean.strEndereco}" styleClass="fontePadraoNegrito"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="ESCRITÓRIO: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="#{homologacaoBean.juridica.contabilidade.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="TELEFONE: " styleClass="fontePadrao"/>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="#{homologacaoBean.juridica.contabilidade.pessoa.telefone1} / #{homologacaoBean.juridica.contabilidade.pessoa.telefone2}" styleClass="fontePadraoNegrito"/>
-                                </h:column>
-                                <h:column>
-                                    <h4 class="border-radius bg-white padding margin-top-med">CONTATO</h4>
-                                </h:column>
-                                <h:column>
-                                </h:column>
-                                <h:column>
-                                    <h:outputText value="Contato: " styleClass="fontePadrao"/>
-                                </h:column>                                
-                                <h:column>
-                                    <h:inputText value="#{homologacaoBean.agendamento.contato}" size="20" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText value="#{homologacaoBean.agendamento.email}" size="20" styleClass="fontePadraoNegrito" onblur="lowerCase(this);">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                    <h:outputText value="Tel: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText value="#{homologacaoBean.agendamento.telefone}" size="12" maxlength="14" class="telefone" styleClass="fontePadraoNegrito">
-                                        <a4j:ajax event="change" render="this"/>
-                                    </h:inputText>
-                                </h:column>                                
-                                <h:column>                                
-                                    <h:outputText value="Observação " styleClass="fontePadrao" />
-                                </h:column>                                
-                                <h:column>                                
-                                    <h:inputTextarea cols="70" rows="2" value="#{homologacaoBean.agendamento.observacao}" />
-                                </h:column>                                
-                            </h:panelGrid>
-                            <h:panelGrid columns="4">
-                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('form_homologacao:i_painel_mensagem')}.show(); return false;" value="Atualizar" action="#{homologacaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="i_painel_mensagem"/>
-                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 120px;" oncomplete="#{rich:component('form_homologacao:i_painel_mensagem')}.show(); return false;" value="Homologar" action="#{homologacaoBean.homologar}" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{homologacaoBean.renderHomologar}" render="i_painel_mensagem"/>
-                                <h:commandLink styleClass="idPesquisar iLink" style="width: 220px;" value="Cancelar Homologação" action="#{homologacaoBean.cancelarHorario}" rendered="#{homologacaoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" oncomplete="#{rich:component('form_homologacao:i_painel_mensagem')}.show(); return false;" value="Excluir Senha" action="#{homologacaoBean.excluirSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoExcluir}" render="i_painel_mensagem"/>
-                            </h:panelGrid>
-                        </div>
-                    </h:column>
-                    <div style="overflow:auto; height:600px; margin-top: 15px; margin-left: 35px;">
-                        <h:column rendered="#{homologacaoBean.renderHomologacao}">
-                            <h:panelGrid columns="5">
-                                <h:outputLabel value="Data: " styleClass="fontePadrao"/>
-                                <h:column>
-                                    <a4j:outputPanel id="calendar" layout="block">
-                                        <rich:calendar value="#{homologacaoBean.data}" datePattern="dd/MM/yyyy" >
-                                            <a4j:ajax event="change" render="tbl"/>
-                                        </rich:calendar>
-                                    </a4j:outputPanel>
-                                </h:column>
-                                <h:outputLabel value="Status: " styleClass="fontePadrao" style="margin-left: 20px;"/>
-                                <h:selectOneMenu id="idStatus" value="#{homologacaoBean.idStatus}">
-                                    <a4j:ajax event="change" render="tbl"/>
-                                    <f:selectItems value="#{homologacaoBean.listaStatus}"/>
-                                </h:selectOneMenu>
-                                <h:outputLabel value="#{homologacaoBean.msgHomologacao}" styleClass="corErro"/>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
-                            <h:panelGrid columns="1">
-                                <rich:dataTable value="#{homologacaoBean.listaHorarios}" var="linha" style="width: 95%;"  id="tbl" onrowmouseover="this.style.backgroundColor='#F1F1F1'" iterationStatusVar="it"
-                                                onrowmouseout="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column> 
-
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:outputText value="Horarios" rendered="false"/>
-                                            <h:graphicImage value="/Imagens/horario.png" alt="Horário" title="Horário" width="20" />
-                                        </f:facet>
-                                        <a4j:commandLink id="linkHorario" action="#{homologacaoBean.agendar}" value="#{linha.argumento0.hora}" rendered="#{!linha.argumento15}">
-                                            <a4j:param value="#{it.index}" assignTo="#{homologacaoBean.idIndex}" />
-                                        </a4j:commandLink>
-                                        <h:outputLabel value="#{linha.argumento0.hora}" rendered="#{linha.argumento15}" />
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="CNPJ"/>
-                                        </f:facet>
-                                        <div style="width: 100px">
-                                            <h:outputText value="#{linha.argumento1}"/>
-                                        </div>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Empresa"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento2}"/>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Funcionário"/>
-                                        </f:facet>
-                                        <div style="width: 200px">
-                                            <h:outputText value="#{linha.argumento7.fisica.pessoa.nome}"/>
-                                        </div>
-                                    </rich:column>                                                 
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Homologador"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento3}"/>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Contato"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento4}"/>
-                                    </rich:column>
-
-                                    <rich:column style="width: 80px;">
-                                        <f:facet name="header">
-                                            <h:outputText value="Telefone"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento5}"/>
-                                    </rich:column>
-
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Usuario"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento6}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Senha"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento10}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column styleClass="coluna">
-                                        <f:facet name="header">
-                                            <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
-                                        </f:facet>
-                                        <h:commandLink action="#{homologacaoBean.imprimirProtocolo(linha.argumento9.id)}" target="_blank" value="#{linha.argumento9.id}" title="Imprimir Protocolo" />
-                                    </rich:column>
-
-                                </rich:dataTable>
-                                <h:commandLink styleClass="idPesquisar iLink margin-top-maior" style="width: 120px" value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}"/>
-                            </h:panelGrid>
-                        </h:column>
-                    </div>
-                </center>
-
-                <!-- PESQUISAR PROFISSAO -->                                
-                
-                <rich:popupPanel id="i_painel_profissao" modal="true" resizeable="true" domElementAttachment="form" width="600" height="400">
-                    <f:facet name="header">
-                        <h:outputText value="Pesquisar"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('form_homologacao:i_painel_profissao')}.hide(); return false;">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid columns="6">
-                            <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
-                            <h:inputText id="idProf" size="20" value="#{homologacaoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
-                            <a4j:commandButton value="Inicial" action="#{homologacaoBean.inicial}" render="i_tbl_prof" status="i_status"/>
-                            <a4j:commandButton value="Parcial" action="#{homologacaoBean.parcial}" render="i_tbl_prof" status="i_status"/>
-                            <h:outputText value="Por: " styleClass="fontePadrao"/>
-                            <h:selectOneMenu id="idPor" value="#{homologacaoBean.combo}" >
-                                <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
-                                <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
-                            </h:selectOneMenu>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
+                <h:form id="form_homologacao">
+                    <c:set scope="request" var="object" value="${homologacaoBean.agendamento}"/>
+                    <p:outputLabel value="Homologação" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel rendered="#{homologacaoBean.renderConcluir}" styleClass="no-border" header="Data: #{homologacaoBean.agendamento.data} - Horário: #{homologacaoBean.agendamento.horarios.hora}">
+                        <p:accordionPanel id="i_panel_1" styleClass="no-border no-padding no-margin">
+                            <p:tab title="Funcionário">
+                                <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                    <p:column>
+                                        <p:outputLabel value="Motivo demissão: " styleClass="font-color-red"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneMenu id="idMotivoDemissao" value="#{homologacaoBean.idMotivoDemissao}" >
+                                            <p:ajax event="change" update="@this"/>
+                                            <f:selectItems value="#{homologacaoBean.listaMotivoDemissao}"/>
+                                        </p:selectOneMenu>
+                                        <h:outputText value="Tipo aviso: " styleClass="font-color-red margin-left-max"/>
+                                        <p:selectOneMenu id="idTipoAviso" value="#{homologacaoBean.tipoAviso}" >
+                                            <p:ajax event="change" update="@this"/>
+                                            <f:selectItem itemValue="false" itemLabel="Imediato"/>
+                                            <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="CPF: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputMask id="idCPF" value="#{homologacaoBean.fisica.pessoa.documento}" size="14" maxlength="14" mask="999.999.999-99">
+                                            <p:ajax event="blur" listener="#{homologacaoBean.pesquisarFuncionarioCPF}"/>
+                                        </p:inputMask>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="Nome: " styleClass="font-color-red"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText size="50" value="#{homologacaoBean.fisica.pessoa.nome}">
+                                            <p:ajax event="blur" update="@this"/>
+                                        </p:inputText>
+                                        <p:outputLabel value="Nascimento: " styleClass="margin-left-max"/>
+                                        <p:inputMask size="12" maxlength="10" value="#{homologacaoBean.fisica.nascimento}" mask="99/99/9999">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputMask>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="Carteira: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText size="10" value="#{homologacaoBean.fisica.carteira}">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputText>
+                                        <p:outputLabel value="Série: " styleClass="margin-left-max" />
+                                        <p:inputText size="15" maxlength="15" value="#{homologacaoBean.fisica.serie}">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="Sexo: "/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectOneRadio id="idSexo" value="#{homologacaoBean.fisica.sexo}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                            <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                        </p:selectOneRadio>                                    
+                                    </p:column>
+                                    <p:column>
+                                        <p:commandButton icon="ui-icon-search" value="Função" onclick="dgl_painel_profissao.show()" type="button"/>
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputText id="idFuncao" size="40" value="#{homologacaoBean.profissao.cbo} - #{homologacaoBean.profissao.profissao}" readonly="true" onblur="dgl_painel_profissao.show();" />
+                                        <p:outputLabel value="Setor: " styleClass="margin-left-max"/>
+                                        <p:inputText id="idSetor" size="20" value="#{homologacaoBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito ">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputText>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="Admissão: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:inputMask size="10" maxlength="10" value="#{homologacaoBean.pessoaEmpresa.admissao}" mask="99/99/9999">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputMask>
+                                        <p:outputLabel value="Demissão: " styleClass="margin-left-max"/>
+                                        <p:inputMask size="10" maxlength="10" value="#{homologacaoBean.pessoaEmpresa.demissao}" mask="99/99/9999">
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputMask>
+                                    </p:column>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Empresa">
+                                <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                    <p:column>                                
+                                        <p:outputLabel value="EMPRESA: "/>
+                                    </p:column>                                
+                                    <p:column>                                
+                                        <p:outputLabel value="#{homologacaoBean.juridica.pessoa.nome}" />
+                                        <p:outputLabel value="Telefone: "  style="margin-left: 20px;"/>
+                                        <p:outputLabel value="#{homologacaoBean.juridica.pessoa.telefone1} / #{homologacaoBean.juridica.pessoa.telefone2}" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="STATUS: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{homologacaoBean.statusEmpresa}" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="ENDEREÇO: " />                                    
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{homologacaoBean.strEndereco}" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="ESCRITÓRIO: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{homologacaoBean.juridica.contabilidade.pessoa.nome}" />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="TELEFONE: " />
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="#{homologacaoBean.juridica.contabilidade.pessoa.telefone1} / #{homologacaoBean.juridica.contabilidade.pessoa.telefone2}" />
+                                    </p:column>
+                                    <p:column>
+                                        <h4 class="border-radius bg-white padding margin-top-med">CONTATO</h4>
+                                    </p:column>
+                                    <p:column>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="Contato: " />
+                                    </p:column>                                
+                                    <p:column>
+                                        <h:inputText value="#{homologacaoBean.agendamento.contato}" size="20">
+                                            <p:ajax event="change" update="@this"/>
+                                        </h:inputText>
+                                        <p:outputLabel value="E-mail: " styleClass="margin-left-max"/>
+                                        <h:inputText value="#{homologacaoBean.agendamento.email}" size="20">
+                                            <p:ajax event="change" update="@this"/>
+                                        </h:inputText>
+                                        <p:outputLabel value="Tel: " styleClass="margin-left-max"/>
+                                        <p:inputMask value="#{homologacaoBean.agendamento.telefone}" size="15" maxlength="14" mask="(99) 9999-9999?9" >
+                                            <p:ajax event="change" update="@this"/>
+                                        </p:inputMask>
+                                    </p:column>                                
+                                    <p:column>                                
+                                        <p:outputLabel value="Observação "  />
+                                    </p:column>                                
+                                    <p:column>                                
+                                        <h:inputTextarea cols="70" rows="2" value="#{homologacaoBean.agendamento.observacao}" />
+                                    </p:column>                                
+                                </p:panelGrid>
+                            </p:tab>
+                        </p:accordionPanel>
+                        <h:panelGrid columns="4">
+                            <p:commandButton oncomplete="PF('dgl_painel_mensagem').show()" value="Atualizar" actionListener="#{homologacaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" update="i_painel_mensagem" />
+                            <p:commandButton oncomplete="PF('dgl_painel_mensagem').show()" value="Homologar" actionListener="#{homologacaoBean.homologar}" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{homologacaoBean.renderHomologar}" update="i_painel_mensagem"/>
+                            <p:commandButton value="Cancelar Homologação" rendered="#{homologacaoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dgl_painel_excluir.show()" type="button" />
+                            <p:commandButton oncomplete="PF('dgl_painel_mensagem').show()" value="Excluir Senha" actionListener="#{homologacaoBean.excluirSenha()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoExcluir}" update="i_painel_mensagem"/>
                         </h:panelGrid>
-                        <h:panelGrid columns="1" class="margin-top-maior">
-                            <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
-                                <rich:dataTable var="linha" value="#{homologacaoBean.listaProfissao}" style="width:100%" id="i_tbl_prof">
-                                    <rich:column style="text-align: center; width: 30px">
-                                        <f:facet name="header">
-                                            <h:outputText value="Id"/>
-                                        </f:facet>
-                                        <a4j:commandLink id="linkPro" action="#{homologacaoBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_homologacao:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
-                                    </rich:column>
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="Cbo"/>
-                                        </f:facet>
-                                        <a4j:commandLink action="#{homologacaoBean.editar(linha)}" value="#{linha.cbo}" render="idProf, idFuncao" oncomplete="#{rich:component('form_homologacao:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Profissão"/>
-                                        </f:facet>
-                                        <a4j:commandLink action="#{homologacaoBean.editar(linha)}" value="#{linha.profissao}" render="idProf, idFuncao" oncomplete="#{rich:component('form_homologacao:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </h:panelGroup>
-                        </h:panelGrid>
-                    </center>
-                </rich:popupPanel>
-                
-                <!-- <div id="boxes">
-                    <div id="divProfissao" class="window">
-                        <a4j:commandLink styleClass="close closeModal" value="Fechar" title="Fechar"/>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="6">
-                                <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
-                                <h:inputText id="idProf" size="20" value="# {homologacaoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;"/>
-
-                                <a4j:commandLink styleClass="idNovo iLink" value="Inicial" action="# {homologacaoBean.inicial}" render="tblProf"/>
-                                <a4j:commandLink styleClass="idNovo iLink" value="Parcial" action="# {homologacaoBean.parcial}" render="tblProf"/>
-
-                                <h:outputText value="Por: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu id="idPor" value="# {homologacaoBean.combo}" >
+                    </p:panel>
+                    <!-- PESQUISAR PROFISSAO -->
+                    <p:dialog modal="true" width="600" height="400" widgetVar="dgl_painel_profissao" closable="true" header="Pesquisar">
+                        <p:panel id="i_painel_profissao" styleClass="no-border">
+                            <p:panelGrid columns="6" styleClass="sbb">
+                                <h:outputLabel value="Profissão: " />
+                                <h:inputText id="idProf" size="20" value="#{homologacaoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
+                                <p:commandButton value="Inicial" action="#{homologacaoBean.inicial}" update="i_tbl_prof" />
+                                <p:commandButton value="Parcial" action="#{homologacaoBean.parcial}" update="i_tbl_prof" />
+                                <p:outputLabel value="Por: " />
+                                <p:selectOneMenu id="idPor" value="#{homologacaoBean.combo}" >
                                     <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
                                     <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
-                                </h:selectOneMenu>
-                            </h:panelGrid>       
-
-                            <h:panelGrid columns="1">
-                                <h:panelGroup style="overflow:auto; height:280px; width: 360px;"  layout="block">
-                                    <rich:dataTable var="linha" value="# {homologacaoBean.listaProfissao}" style="width:100%" iterationStatusVar="it" id="tblProf">
-                                        <rich:column style="text-align: center;">
-                                            <f:facet name="header">
-                                                <h:outputText value="#"/>
-                                            </f:facet>
-                                            <h:outputText value="# {it.index}"/>
-                                        </rich:column>
-
-                                        <rich:column style="text-align: center;">
-                                            <f:facet name="header">
-                                                <h:outputText value="Id"/>
-                                            </f:facet>
-
-                                            <a4j:commandLink id="linkPro" action="# {homologacaoBean.editar}" value="# {linha.id}" render="idProf,idFuncao" oncomplete="fecharModal()">
-                                                <a4j:param value="# {it.index}" assignTo="# {homologacaoBean.idIndexProf}" />
-                                            </a4j:commandLink>
-                                        </rich:column>
-
-                                        <rich:column style="text-align: center;">
-                                            <f:facet name="header">
-                                                <h:outputText value="Cbo"/>
-                                            </f:facet>
-                                            <h:outputText  value="# {linha.cbo}"/>
-                                        </rich:column>
-
-                                        <rich:column style="text-align: center;">>
-                                            <f:facet name="header">
-                                                <h:outputText value="Profissão"/>
-                                            </f:facet>
-                                            <h:outputText  value="# {linha.profissao}"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </h:panelGroup>
-                            </h:panelGrid>
-
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                            <p:panel id="i_tbl_prof" styleClass="margin-top-max sbb no-border" style="width: 500px;">
+                                <p:dataTable var="linha" value="#{homologacaoBean.listaProfissao}" scrollHeight="300" scrollable="true">
+                                    <p:column headerText="ID" styleClass="text-center" width="50">
+                                        <p:commandLink action="#{homologacaoBean.editar(linha)}" value="#{linha.id}" update=":form_homologacao:i_panel_1:idFuncao" oncomplete="PF('dgl_painel_profissao').hide()" styleClass="underline-hover" />
+                                    </p:column>
+                                    <p:column headerText="Cbo" styleClass="text-center" width="50">
+                                        <p:commandLink action="#{homologacaoBean.editar(linha)}" value="#{linha.cbo}" update=":form_homologacao:i_panel_1:idFuncao"  oncomplete="PF('dgl_painel_profissao').hide()" styleClass="underline-hover" />
+                                    </p:column>
+                                    <p:column headerText="Profissão" width="300">
+                                        <p:commandLink action="#{homologacaoBean.editar(linha)}" value="#{linha.profissao}" update=":form_homologacao:i_panel_1:idFuncao"  oncomplete="PF('dgl_painel_profissao').hide()" styleClass="underline-hover" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="i_painel_excluir" modal="true" header="Deseja cancelar essa homologação?" width="500" height="300" closable="true" widgetVar="dgl_painel_excluir">
+                        <center>
+                            <p:outputLabel value="Digite o motivo para o cancelamento" />
+                            <br /><br />
+                            <p:inputTextarea value="#{homologacaoBean.cancelamento.motivo}" cols="50" rows="10" style="resize: none;" />
+                            <p:panelGrid columns="2" styleClass="margin-top sbb">
+                                <p:commandButton value="Sim" title="Cancelar essa Homologação" action="#{homologacaoBean.cancelarHomologacao()}" oncomplete="PF('dgl_painel_excluir').hide(); PF('dgl_painel_mensagem').show();" update="i_painel_mensagem" />
+                                <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dgl_painel_excluir').hide()"/>
+                            </p:panelGrid>
                         </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>   -->   
-                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" domElementAttachment="form" header="Mensagem">
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('form_homologacao:i_painel_mensagem')}.hide(); return false;">
-                            <a4j:ajax event="click"  />
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:outputLabel value="#{homologacaoBean.msgConfirma}" />
+                    </p:dialog>                    
+                    <p:dialog id="i_painel_mensagem" widgetVar="dgl_painel_mensagem" modal="true" width="300" height="100" header="Mensagem" closable="true">
+                        <p:outputLabel value="#{homologacaoBean.msgConfirma}" />
                         <br /><br />
-                        <a4j:commandButton value="OK" title="Ok" action="homologacao" />
-                    </center>
-                </rich:popupPanel>                 
-            </h:form>
+                        <p:commandButton value="OK" title="Ok" action="homologacao" />
+                    </p:dialog>
+                </h:form>
+            </p:panel>
+            <p:panel styleClass="no-border" style="margin: 0 auto;">
+                <h:form id="form_cancelar_data_table">
+                    <p:panel rendered="#{homologacaoBean.renderHomologacao}" styleClass="no-border">
+                        <p:panel style="margin: 0 auto;" styleClass="fundoCinza">
+                            <h:panelGrid columns="5" style="margin: 0 auto;">
+                                <h:outputLabel value="Data: " />
+                                <h:column>
+                                    <p:outputPanel id="calendar" layout="block">
+                                        <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" >
+                                            <p:ajax event="dateSelect" update="@this, tbl"/>
+                                        </p:calendar>
+                                    </p:outputPanel>
+                                </h:column>
+                                <h:outputLabel value="Status: "  style="margin-left: 20px;"/>
+                                <p:selectOneMenu id="idStatus" value="#{homologacaoBean.idStatus}">
+                                    <p:ajax event="change" update="tbl"/>
+                                    <f:selectItems value="#{homologacaoBean.listaStatus}"/>
+                                </p:selectOneMenu>
+                                <p:outputLabel value="#{homologacaoBean.msgHomologacao}" styleClass="font-color-red"/>
+                            </h:panelGrid>
+                        </p:panel>
+                        <br />
+                        <p:poll id="poolMonitor" interval="5000" update="poolMonitor, tbl" />
+                        <h:panelGrid columns="1" id="tbl">
+                            <p:dataTable value="#{homologacaoBean.listaHorarios}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" summary="Não existe resultados!">
+                                <f:facet name="footer">
+                                    <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}"/>
+                                </f:facet>
+                                <p:column styleClass="text-center" width="30">
+                                    <f:facet name="header">
+                                        <p:outputLabel value="Horarios" rendered="false"/>
+                                        <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
+                                    </f:facet>
+                                    <p:commandLink id="linkHorario" action="#{homologacaoBean.agendar(row)}" value="#{linha.argumento0.hora}" rendered="#{!linha.argumento15}" />
+                                    <h:outputLabel value="#{linha.argumento0.hora}" rendered="#{linha.argumento15}" />
+                                </p:column>
+                                <p:column headerText="CNPJ" styleClass="text-center" width="120">
+                                    <p:outputLabel value="#{linha.argumento1}"/>
+                                </p:column>
+                                <p:column headerText="Empresa" styleClass="text-center">
+                                    <p:outputLabel value="#{linha.argumento2}"/>
+                                </p:column>
+                                <p:column headerText="Funcionário" width="150">
+                                    <p:outputLabel value="#{linha.argumento7.fisica.pessoa.nome}"/>
+                                </p:column>
+                                <p:column headerText="Homologador">
+                                    <p:outputLabel value="#{linha.argumento3}"/>
+                                </p:column>
+                                <p:column headerText="Contato">
+                                    <p:outputLabel value="#{linha.argumento4}"/>
+                                </p:column>
+                                <p:column headerText="Telefone" styleClass="text-center" width="100">
+                                    <p:outputLabel value="#{linha.argumento5}"/>
+                                </p:column>
+                                <p:column headerText="Usuario">
+                                    <p:outputLabel value="#{linha.argumento6}"/>
+                                </p:column>                                    
+                                <p:column styleClass="text-center" width="25">
+                                    <f:facet name="header">
+                                        <h:graphicImage value="/Imagens/icon-password.png" alt="Senha" title="Senha" width="20" />                                        
+                                    </f:facet>
+                                    <p:outputLabel value="#{linha.argumento10}"/>
+                                </p:column>                                    
+                                <p:column styleClass="text-center" width="25">
+                                    <f:facet name="header">
+                                        <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
+                                    </f:facet>
+                                    <h:commandLink action="#{homologacaoBean.imprimirProtocolo(linha.argumento9.id)}" target="_blank" value="#{linha.argumento9.id}" title="Imprimir Protocolo" />
+                                </p:column>
+                            </p:dataTable>                                
+                        </h:panelGrid>
+                    </p:panel>                    
+                </h:form>            
+            </p:panel>                    
         </f:view>
     </h:body>
 </ui:composition>

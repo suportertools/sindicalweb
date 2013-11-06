@@ -2,315 +2,209 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     
     <h:head>
         <title>Registro Empresarial</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
-    <h:body style="margin-left: 0px; margin-top: 0px">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <c:set scope="request" var="object" value="${registroEmpresarialBean.registro}"/>
-            <h:form id="formRegistroEmpresarial">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Registro Empresarial" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" style="text-align: left; width: 800px;">
-                        <h:panelGrid columns="3">
-                            <h:outputLabel value="Nome Empresa: " styleClass="fontePadrao"/>
-                            <h:outputLabel value="#{registroEmpresarialBean.registro.filial.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                        </h:panelGrid>
-                        <h:panelGrid styleClass="margin-top-maior">
-                            <rich:tabPanel switchType="client" style="width: 800px;">
-                                <rich:tab header="CADASTRO E-MAIL" rendered="#{registroEmpresarialBean.codigoModulo == 0}">
-                                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
-                                        <h:outputLabel value="Email: " styleClass="fontePadrao"/>
-                                        <h:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off"/>
-                                        <h:outputLabel value="Senha: " styleClass="fontePadrao"/>
-                                        <h:inputSecret id="idSenha" size="15" value="#{registroEmpresarialBean.senha}" autocomplete="off"/>
-                                        <h:outputLabel value="Confirmar Senha: " styleClass="fontePadrao"/>
-                                        <h:inputSecret id="idConSenha" size="15" value="#{registroEmpresarialBean.confirmaSenha}" autocomplete="off"/>
-                                        <h:column>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_aut" value="#{registroEmpresarialBean.registro.emailAutenticado}" title="Necessita usuario e senha do servidor smtp">
-                                                <a4j:ajax event="click" listener="#{registroEmpresarialBean.salvar}" oncomplete="modalMensagem()" render="outConfirma" />
-                                                <a4j:ajax event="change"/>                                               
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_aut" value="Usar email autenticado" styleClass="fontePadrao"/>                                            
-                                        </h:column>
-                                        <h:outputLabel value="Servidor Smtp: " styleClass="fontePadrao"/>
-                                        <h:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}"/>
-                                        <h:outputLabel value="Url path: " styleClass="fontePadrao"/>
-                                        <h:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
-                                    </h:panelGrid> 
-                                </rich:tab>
-
-                                <rich:tab header="ARRECADAÇÃO" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">
-                                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
-                                        <h:column>
-                                            <h:outputLabel value="Imprimir Boleto de Arrecadação até: " styleClass="fontePadrao"/>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:inputText id="idMeses" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentes}" class="textoDireita"/>
-                                            <h:outputLabel value=" meses de atraso." styleClass="fontePadrao"/>                                            
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectOneMenu id="cbTipoEntidade" value="#{registroEmpresarialBean.registro.tipoEntidade}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                                <f:selectItem itemValue="S" itemLabel="Sindicato"/>
-                                                <f:selectItem itemValue="F" itemLabel="Federação"/>
-                                                <f:selectItem itemValue="C" itemLabel="Confederação"/>
-                                            </h:selectOneMenu>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_baixa_vecto" value="#{registroEmpresarialBean.registro.baixaVencimento}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_baixa_vecto" value=" Baixar por vencimento" styleClass="fontePadrao"/>
-                                        </h:column>                                        
-                                        <h:column>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_enviar_anexo" value="#{registroEmpresarialBean.registro.enviarEmailAnexo}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_enviar_anexo" value=" Enviar email por Anexo" styleClass="fontePadrao"/>                                            
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:outputText value="Limite para envio de Notificações" styleClass="fontePadrao"/>
-                                        </h:column>
-                                        <h:column>
-                                            <div class="clear"></div>
-                                            <h:inputText value="#{registroEmpresarialBean.registro.limiteEnvios}" size="5"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputText value="Intervalo para envio de Notificações" styleClass="fontePadrao"/>
-                                        </h:column>
-                                        <h:column>
-                                            <div class="clear"></div>
-                                            <h:inputText value="#{registroEmpresarialBean.registro.intervaloEnvios}" size="5"/><h:outputText value=" min." styleClass="fontePadrao"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h4 class="border-radius padding margin-top-maior" style="background: #e0dfdf">WEB Contribuinte/Contabilidade</h4>
-                                        </h:column> 
-                                        
-                                        <h:column>
-                                        </h:column>
-                                         
-                                        <h:column>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="chkbloAtras" value="#{registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma dias_atraso"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="chkbloAtras" value=" Bloqueia boletos atrasados" styleClass="fontePadrao"/>
-                                        </h:column> 
-                                        <h:column>
-                                            <h:outputText value="Qtde Dias" style="font-size: 8pt"/>
-                                        </h:column>
-                                        
-                                        <h:column>
-                                            <h:inputText id="dias_atraso" value="#{registroEmpresarialBean.registro.diasBloqueiaAtrasadosWeb}" size="2" title="Quantidades de dias permitido após o vencimento" disabled="#{!registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}"/>
-                                            <h:outputText value=" Quantidade de dias permitido após o Vencimento na geração e impressão de Boletos via Web" style="font-size: 8pt" />
-                                        </h:column>
-                                        <h:column>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_boleto_web" value="#{registroEmpresarialBean.registro.boletoWeb}" title="Disponibilizar pelo site">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_boleto_web" value="Boleto WEB" styleClass="fontePadrao" title="Disponibilizar pelo site"/>                                            
-                                        </h:column>                                        
-                                        <h:column>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_repis_web" value="#{registroEmpresarialBean.registro.repisWeb}" title="Disponibilizar pelo site">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_repis_web" value="REPIS WEB" styleClass="fontePadrao" title="Disponibilizar pelo site"/>
-                                        </h:column>                                        
-                                        <h:column>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputText value="Mensagem de Bloqueio de Boleto" styleClass="fontePadrao negrito"/>
-                                            <div class="clear"></div>
-                                            <h:inputTextarea value="#{registroEmpresarialBean.registro.mensagemBloqueioBoletoWeb}" rows="5" cols="70">
-                                                <a4j:ajax event="blur" render="this"/>
-                                            </h:inputTextarea>                                            
-                                        </h:column>
-                                    </h:panelGrid>
-                                </rich:tab>
-                                
-                                <rich:tab header="ASSOCIATIVO" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 2}">
-                                    <h:panelGrid cellpadding="3">
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_emitir_departamento_verso"  value="#{registroEmpresarialBean.registro.carteirinhaDependente}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel value=" Emitir Dependente no verso " for="i_emitir_departamento_verso" styleClass="fontePadrao"/>
-                                        </h:column>                                        
-                                        <h:column>
-                                            <h:outputLabel value="Observação da Ficha Social" styleClass="fontePadrao negrito"/>
-                                            <div class="clear"></div>
-                                            <h:inputTextarea value="#{registroEmpresarialBean.registro.fichaSocial}" cols="75" rows="7" />                                            
-                                        </h:column>                                        
-                                    </h:panelGrid>                                    
-                                </rich:tab>
-                                
-                                <rich:tab header="HOMOLOGAÇÃO" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 4}">
-                                    <h:panelGrid cellpadding="3">
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="chkSenhaHom" value="#{registroEmpresarialBean.registro.senhaHomologacao}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>                                                
-                                            <h:outputLabel for="chkSenhaHom" value=" Senha Homologação" styleClass="fontePadrao"/>
-                                        </h:column> 
-                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="chkAgendaSem" value="#{registroEmpresarialBean.registro.agendarSemHorarioWeb}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>                                                
-                                            <h:outputLabel for="chkAgendaSem" value=" Agendar Sem horário" styleClass="fontePadrao"/>                                        
-                                        </h:column>   
-                                        
-                                        <h:column>
-                                            <h:outputLabel value="Documentos Necessários Homologação" styleClass="fontePadrao negrito"/>
-                                            <div class="clear"></div>
-                                            <h:inputTextarea value="#{registroEmpresarialBean.registro.documentoHomologacao}" cols="75" rows="7" />                                            
-                                        </h:column>  
-                                        
-                                        <h:column>
-                                            <h:outputLabel value="Formas de Pagamento Homologação" styleClass="fontePadrao negrito"/>
-                                            <div class="clear"></div>
-                                            <h:inputTextarea value="#{registroEmpresarialBean.registro.formaPagamentoHomologacao}" cols="75" rows="7" />                                            
-                                        </h:column>  
-                                        
-                                        <h:column>
-                                            <h4 class="border-radius padding margin-top-maior" style="background: #e0dfdf">WEB Contribuinte/Contabilidade</h4>
-                                        </h:column>  
-                                        
-                                        <h:column>
-                                        </h:column> 
-                                        
-                                        <h:column>
-                                        </h:column>  
-                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_agendamento_web" value="#{registroEmpresarialBean.registro.agendamentoWeb}" title="Disponibilizar pelo site">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()" render="this outConfirma" />
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_agendamento_web" value="Agendamento WEB" styleClass="fontePadrao" title="Disponibilizar pelo site"/>
-                                        </h:column>  
-                                        
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="i_per" value="#{registroEmpresarialBean.registro.bloquearHomologacao}">
-                                                <a4j:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" oncomplete="modalMensagem()"  render="this outConfirma idper"/>
-                                            </h:selectBooleanCheckbox>
-                                            <h:outputLabel for="i_per" value=" Permitir agendamento para empresas em débito " styleClass="fontePadrao"/>
-                                        </h:column>
-                                                                              
-                                        
-                                        <h:column>
-                                            <h:inputText id="idper" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentesAgenda}" disabled="#{!registroEmpresarialBean.registro.bloquearHomologacao}" class="textoDireita" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
-                                            <h:outputLabel value=" meses de atraso" styleClass="fontePadrao" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
-                                            <h:outputLabel value=" ( zero para meses indefinidos )" styleClass="fontePadraoVermelho" style="font-size: 8pt" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
-                                        </h:column>    
-                                    </h:panelGrid>                                    
-                                </rich:tab>
-                            </rich:tabPanel>
-                        </h:panelGrid>
-                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink margin-top-maior" value="Salvar" />
-                        <a4j:commandLink onclick="modalOpcao('divCriar');" styleClass="idSalvar iLink margin-top-maior" value="Criar Logins Empresas" style="width: 210px;"/>
-                    </div>
-                </center>
-                
-                <div id="boxes">
-                    <div id="divSalvar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja salvar este Registro?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
+            <p:panel styleClass="wrapper no-border">
+                <h:outputText value="Você não possui permissões para efetuar operações nesta rotina!" styleClass="fonteHeader" rendered="#{controleAcessoBean.botaoSalvar}" title="salvar / alterar / excluir"/>
+                <h:form id="form_registro_empresarial" rendered="#{!controleAcessoBean.botaoSalvar}">
+                    <h:outputText value="Registro Empresarial" styleClass="fonteHeader" />
+                    <c:set scope="request" var="object" value="${registroEmpresarialBean.registro}"/>
+                    <div style="clear: both;"></div>
+                    <p:messages id="id_messages" showDetail="true" closable="true" />
+                    <p:growl id="id_messages_growl" showDetail="true"  />
+                    <div style="clear: both;"></div>
+                    <p:panel styleClass="margin-top-max">
+                        <f:facet name="header">Nome Empresa: #{registroEmpresarialBean.registro.filial.pessoa.nome}</f:facet>
+                        <p:tabView>
+                            <p:ajax event="tabChange" listener="#{registroEmpresarialBean.onChange}"/>
                             
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{registroEmpresarialBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                
-                <div id="boxes">
-                    <div id="divMenBloqueio" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Mensagem de Bloqueio de Boleto" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <h:inputTextarea value="#{registroEmpresarialBean.registro.mensagemBloqueioBoletoWeb}" rows="5" cols="45">
-                                <a4j:ajax event="blur" render="this"/>
-                            </h:inputTextarea>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Sim" title="Salvar" />
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                
-                <div id="boxes">
-                    <div id="divCriar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja criar login para todos cadastrados?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            
+                            <p:tab title="Cadastro" rendered="#{registroEmpresarialBean.codigoModulo == 0}">
+                                <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                    <p:outputLabel value="Email: "/>
+                                    <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off"/>
+                                    <p:outputLabel value="Senha: " />
+                                    <h:inputSecret id="idSenha" size="15" value="#{registroEmpresarialBean.senha}" autocomplete="off"/>
+                                    <p:outputLabel value="Confirmar Senha: " />
+                                    <h:inputSecret id="idConSenha" size="15" value="#{registroEmpresarialBean.confirmaSenha}" autocomplete="off"/>
+                                    <p:column>
+                                    </p:column>
+                                    <p:column>
+                                        <p:selectBooleanCheckbox id="i_aut" value="#{registroEmpresarialBean.registro.emailAutenticado}" itemLabel="Usar email autenticado" >
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvar}" update=":form_registro_empresarial:id_messages" global="true"/>
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>
+                                    <p:outputLabel value="Servidor Smtp: " />
+                                    <p:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}"/>
+                                    <p:outputLabel value="Url path: " />
+                                    <p:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Arrecadação" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">
+                                <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                    <p:column>
+                                        <p:outputLabel value="Imprimir Boleto de Arrecadação até: " />
+                                    </p:column>                                        
+                                    <p:column>
+                                        <p:spinner size="5" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentes}" max="24" min="0" styleClass="margin-right"/>
+                                        <p:outputLabel value=" meses de atraso." />                                            
+                                    </p:column>                                        
+                                    <p:column>
+                                        <p:selectOneMenu value="#{registroEmpresarialBean.registro.tipoEntidade}" styleClass="text-center">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                            <f:selectItem itemValue="S" itemLabel="Sindicato"/>
+                                            <f:selectItem itemValue="F" itemLabel="Federação"/>
+                                            <f:selectItem itemValue="C" itemLabel="Confederação"/>
+                                        </p:selectOneMenu>
+                                    </p:column>                                        
+                                    <p:column>
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.baixaVencimento}" itemLabel="Baixar por vencimento">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>                                        
+                                    <p:column>
+                                    </p:column>                                        
+                                    <p:column>
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.enviarEmailAnexo}" itemLabel="Enviar email por Anexo">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>                                        
+                                    <p:column>
+                                        <p:outputLabel value="Limite para envio de Notificações:" />
+                                    </p:column>
+                                    <p:column>
+                                        <div class="clear"></div>
+                                        <p:spinner value="#{registroEmpresarialBean.registro.limiteEnvios}" min="0" size="5">
+                                            <p:ajax event="blur" listener="#{registroEmpresarialBean.salvarSemSenha}" />
+                                        </p:spinner>
+                                    </p:column>
+                                    <p:column>
+                                        <p:outputLabel value="Intervalo para envio de Notificações:" />
+                                    </p:column>
+                                    <p:column>
+                                        <br />
+                                        <p:spinner value="#{registroEmpresarialBean.registro.intervaloEnvios}" size="5" min="0"/><p:outputLabel value=" min." />
+                                    </p:column>                                    
+                                </p:panelGrid>
+                                <p:panel header="WEB Contribuinte / Contabilidade" styleClass="margin-top-max">
+                                    <p:panelGrid columns="1" styleClass="sbb">
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}" itemLabel="Bloqueia boletos atrasados">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages idDiasAtraso"/>
+                                        </p:selectBooleanCheckbox>
+                                        <p:column>
+                                            <p:spinner value="#{registroEmpresarialBean.registro.diasBloqueiaAtrasadosWeb}" id="idDiasAtraso" size="2" title="Quantidades de dias permitido após o vencimento" disabled="#{!registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}" min="0" max="360" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                            <p:outputLabel value=" Quantidade de dias permitido após o Vencimento na geração e impressão de Boletos via Web" style="font-size: 8pt" />
+                                        </p:column>
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.boletoWeb}" itemLabel="Boleto WEB">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                        </p:selectBooleanCheckbox>                                      
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.repisWeb}" itemLabel="REPIS WEB">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                        </p:selectBooleanCheckbox>
+                                        <p:column>
+                                            <br />
+                                            <p:outputLabel value="Mensagem de Bloqueio de Boleto"/>
+                                            <br /><br />
+                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.mensagemBloqueioBoletoWeb}" rows="5" cols="70" styleClass="no-resize">
+                                                <p:ajax event="blur" update="@this"/>
+                                            </p:inputTextarea>                                            
+                                        </p:column>
+                                    </p:panelGrid>
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Associativo" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 2}">
+                                <p:panelGrid styleClass="sbb" columns="1">
+                                    <p:column>
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.carteirinhaDependente}" itemLabel="Emitir Dependente no verso">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                        </p:selectBooleanCheckbox>
+                                    </p:column>                                        
+                                    <p:column>
+                                        <p:outputLabel value="Observação da Ficha Social"/>
+                                        <div class="clear"></div>
+                                        <p:inputTextarea value="#{registroEmpresarialBean.registro.fichaSocial}" cols="75" rows="7" styleClass="no-resize margin-top-max" />
+                                    </p:column>                                        
+                                </p:panelGrid>
+                            </p:tab>
+                            <p:tab title="Homologação" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 4}">
+                                <p:panelGrid columns="1" styleClass="sbb">
+                                    <p:selectBooleanCheckbox id="chkSenhaHom" value="#{registroEmpresarialBean.registro.senhaHomologacao}" itemLabel="Senha Homologação">
+                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                    </p:selectBooleanCheckbox>
+                                    <p:selectBooleanCheckbox id="chkAgendaSem" value="#{registroEmpresarialBean.registro.agendarSemHorarioWeb}" itemLabel="Agendar Sem horário">
+                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                    </p:selectBooleanCheckbox>                                                
+                                    <p:column>
+                                        <p:outputLabel value="Agendamento retroativo: " />
+                                        <p:calendar value="#{registroEmpresarialBean.registro.agendamentoRetroativo}" pattern="dd/MM/yyyy" readonlyInput="true" size="10" title="Permite agendamento retroativo até">
+                                            <p:ajax event="dateSelect" update=":form_registro_empresarial:id_messages :form_registro_empresarial:id_messages_growl" listener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                        </p:calendar>
+                                    </p:column>
+                                    <div style="clear: both;"></div>
+                                    <p:accordionPanel>
+                                        <p:tab title="Documentos Necessários Homologação">
+                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.documentoHomologacao}" cols="75" rows="7" styleClass="no-resize no-border"/>
+                                        </p:tab>
+                                        <p:tab title="Formas de Pagamento Homologação">
+                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.formaPagamentoHomologacao}" cols="75" rows="7" styleClass="no-resize no-border" />                                                 
+                                        </p:tab>
+                                    </p:accordionPanel>
+                                    <p:panel header="WEB Contribuinte / Contabilidade">
+                                        <p:panelGrid columns="1">
+                                            <p:selectBooleanCheckbox id="i_agendamento_web" value="#{registroEmpresarialBean.registro.agendamentoWeb}" itemLabel="Agendamento WEB">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                            </p:selectBooleanCheckbox>
+                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.bloquearHomologacao}" itemLabel="Permitir agendamento para empresas em débito">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages i_per"/>
+                                            </p:selectBooleanCheckbox>
+                                            <p:column>
+                                                <p:spinner id="i_per" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentesAgenda}" disabled="#{!registroEmpresarialBean.registro.bloquearHomologacao}" title="Para habilitar este campo permita o agendamento para empresas em débito" min="0" max="24" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                                <p:outputLabel value=" meses de atraso"  title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                                <p:outputLabel value=" ( zero para meses indefinidos )" style="font-size: 8pt" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                            </p:column>
+                                        </p:panelGrid>
+                                    </p:panel>
+                                </p:panelGrid>
+                            </p:tab> 
+                        </p:tabView>
+                    </p:panel>
+                    <div style="clear: both;"></div>
+                    <p:panelGrid columns="1" styleClass="sbb">
+                        <p:column>
+                            <p:commandButton action="#{registroEmpresarialBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margin-top-max" value="Salvar" update="id_messages_growl id_messages"/>
+                            <p:commandButton onclick="dgl_painel_criar.show()" styleClass="margin-top-max" value="Criar Logins Empresas" type="button"/>
+                        </p:column>
+                    </p:panelGrid>
+                    <p:dialog id="i_painel_salvar" header="Deseja salvar este Registro?" widgetVar="dgl_painel_salvar" modal="true" height="100" width="300">
+                        <h:panelGrid columns="2" styleClass="margin-top">
+                            <p:commandButton action="#{registroEmpresarialBean.salvar}" value="Salvar" oncomplete="PF('dgl_painel_salvar').hide(); PF('dgl_painel_mensagem').show()" update="i_painel_mensagem" global="true" disabled="#{!controleAcessoBean.botaoSalvar}"/>
+                            <p:commandButton value="Não" onclick="dgl_painel_salvar.hide()" title="Não" />
+                        </h:panelGrid>
+                    </p:dialog>
+                    <p:dialog id="i_painel_criar" header="Deseja criar login para todos cadastrados?" widgetVar="dgl_painel_criar" modal="true" height="100" width="300">
+                        <h:panelGrid columns="2" styleClass="margin-top">
+                            <p:commandButton action="#{registroEmpresarialBean.criarLoginsUsuarios}"  value="Criar" oncomplete="PF('dgl_painel_criar').hide(); PF('dgl_painel_mensagem').show();" update="i_painel_mensagem" global="true"/>
+                            <p:commandButton value="Desfazer" oncomplete="PF('dgl_painel_criar').hide();" title="Não" />
+                        </h:panelGrid>
+                    </p:dialog>
+                    <p:dialog id="i_painel_mensagem" header="Mensagem" widgetVar="dgl_painel_mensagem" modal="true" height="100" width="300">
+                        <center>                            
+                            <h:outputLabel value="#{registroEmpresarialBean.mensagem}" />
                             <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Criar" title="Criar Logins" action="#{registroEmpresarialBean.criarLoginsUsuarios}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                            <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="dgl_painel_mensagem.hide()" style="float: left;" icon="ui-icon-close"/>
                         </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-               
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{registroEmpresarialBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-            </h:form>
+                    </p:dialog>
+                </h:form>
+            </p:panel>
         </f:view>
     </h:body>
 </ui:composition>
