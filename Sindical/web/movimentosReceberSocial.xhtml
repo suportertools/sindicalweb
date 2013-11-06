@@ -28,22 +28,21 @@
                             <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
                             <h:outputLabel value="Pesquisa Pessoa: " styleClass="fontePadrao" />
                             <h:outputText id="i_nome" value="#{movimentosSocialBean.pessoa.nome}" title="#{movimentosSocialBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
-                            <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="#{movimentosSocialBean.removerPesquisa}" style="margin-left: 10px" rendered="#{movimentosSocialBean.pessoa.id != -1}" render="i_nome" />
-                            <a4j:commandButton id="b_adicionar" action="#{movimentosSocialBean.adicionarPesquisa}" value="Adicionar" style="margin-left: 10px; cursor: pointer" rendered="#{movimentosSocialBean.pessoa.id != -1}" render="i_nome tbl i_totais" />
+                            <!-- <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="# {movimentosSocialBean.removerPesquisa}" style="margin-left: 10px" rendered="# {movimentosSocialBean.pessoa.id != -1}" render="i_nome" /> -->
                         </h:panelGrid>
 
                         <h:panelGrid style="clear: both; float: left; margin-top: 10px">
                             <rich:list value="#{movimentosSocialBean.listaPessoa}" var="linha" id="tbl_list" iterationStatusVar="it" style="list-style: none; padding: 0; cursor: pointer">
                                 <div style="margin-bottom: 5px;">
                                     <h:commandLink value="#{linha.nome}" class="listaAcessoLine" />
-                                    <a4j:commandButton id="b_remover_lista" image="/Imagens/excluirp.png" action="#{movimentosSocialBean.removerPessoaLista(it.index)}" render="i_nome tbl i_totais" style="margin-left: 5px; width: 12px"/>
+                                    <a4j:commandButton id="b_remover_lista" image="/Imagens/excluirp.png" action="#{movimentosSocialBean.removerPessoaLista(it.index)}" rendered="#{it.index != 0}" render="i_nome tbl i_totais" style="margin-left: 5px; width: 12px"/>
                                 </div>
                             </rich:list>
                         </h:panelGrid>
 
                         <h:panelGrid style="float: left; clear: both">
                             <h:selectOneMenu value="#{movimentosSocialBean.porPesquisa}" style="padding: 5px">
-                                <a4j:ajax event="change" render="tbl i_totais" listener="#{movimentosSocialBean.atualizarStatus}"/>
+                                <a4j:ajax event="change" render="tbl i_totais i_botoes" listener="#{movimentosSocialBean.atualizarStatus}"/>
                                 <f:selectItem itemValue="todos"    itemLabel="Todos"/>
                                 <f:selectItem itemValue="abertos"  itemLabel="Abertos"/>
                                 <f:selectItem itemValue="quitados" itemLabel="Quitados"/>
@@ -58,6 +57,9 @@
                         </h:panelGrid>
 
                         <h:panelGrid id="i_tbl">
+                            <!-- <a4j:commandButton id="b_adicionar" action="# {movimentosSocialBean.adicionarPesquisa}" value="Adicionar mais pessoas" style="margin-left: 10px; cursor: pointer; float: right" render="i_nome tbl i_totais" /> -->
+                            <a4j:commandButton id="b_adicionar_mais" action="#{chamadaPaginaBean.pesquisaPessoa()}" actionListener="#{movimentosSocialBean.adicionarPesquisa()}" value="Adicionar mais Pessoas" rendered="#{movimentosSocialBean.listaPessoa.size() > 0}" style="margin-left: 10px; cursor: pointer; float: right" /> 
+
                             <rich:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma pendência foi encontrada" rows="13">
                                 <rich:column style="text-align: center;">
                                     <h:selectBooleanCheckbox value="#{linha.argumento0}" disabled="#{linha.argumento25}">
@@ -71,18 +73,13 @@
                                 </rich:column>
 
                                 <rich:column>
+                                    <f:facet name="header"><h:outputText value="Titular"/></f:facet>
+                                    <h:outputText value="#{linha.argumento13}" />
+                                </rich:column>
+                                
+                                <rich:column>
                                     <f:facet name="header"><h:outputText value="Serviço"/></f:facet>
                                     <h:outputText value="#{linha.argumento2}" />
-                                </rich:column>
-
-                                <rich:column>
-                                    <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
-                                    <h:outputText value="#{linha.argumento3}" />
-                                </rich:column>
-
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header"><h:outputText value="Referência"/></f:facet>
-                                    <h:outputText value="#{linha.argumento4}" />
                                 </rich:column>
 
                                 <rich:column style="text-align: center;">
@@ -134,6 +131,12 @@
                                     <f:facet name="header"><h:outputText value="Mais"/></f:facet>
                                     <h:commandLink value="Alterar" action="#{movimentosSocialBean.telaMovimento(linha.argumento1)}"/>
                                 </rich:column>
+                                
+                                <rich:column style="text-align: center;" >
+                                    <f:facet name="header"><h:outputText value="Recibo"/></f:facet>
+                                    <h:commandLink value="Imprimir" action="#{movimentosSocialBean.recibo(linha.argumento1)}" rendered="#{!empty(linha.argumento10)}" target="_blank"/>
+                                </rich:column>
+                                
                                 <f:facet name="footer">
                                     <rich:dataScroller id="datascroller2" maxPages="17" render="tbl"/>
                                 </f:facet>
@@ -168,13 +171,11 @@
 
                 </h:panelGrid>
                 <br />
-                <h:panelGrid styleClass="divMae" style="clear: both" columns="1">
+                <h:panelGrid id="i_botoes" styleClass="divMae" style="clear: both" columns="1">
                     <h:column>
-                        <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                        
-                        <h:commandLink styleClass="idNovo iLink" value="Recibo" title="Imprimir Recibo" action="#{movimentosSocialBean.imprimirRecebo()}" target="_blank"/>
-
-                        <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" oncomplete="modalMensagem()" render="outConfirma"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" oncomplete="modalMensagem()" render="outConfirma"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" oncomplete="modalMensagem()" render="outConfirma"/>
+                        <a4j:commandLink styleClass="idNovo iLink" value="Estornar" title="Estornar Movimentos Baixados" rendered="#{movimentosSocialBean.porPesquisa != 'abertos'}" onclick="modalOpcao('divEstornar')" render="outConfirma"/>
                     </h:column>
                 </h:panelGrid>
 
@@ -184,9 +185,18 @@
                     </f:facet>
 
                     <br />
-                    <h:panelGrid>
-                        <h:outputLabel value="Data / Boleto" styleClass="fontePadraoNegrito"/>
-                        <h:outputLabel value="#{movimentosSocialBean.data} - #{movimentosSocialBean.boleto}" styleClass="fontePadrao"/>
+                    <h:panelGrid columns="4" style="width: 100%">
+                        <h:column>
+                            <h:outputLabel value="Data / Boleto" styleClass="fontePadraoNegrito"  style="float: left"/><br />
+                            <h:outputLabel value="#{movimentosSocialBean.data} - #{movimentosSocialBean.boleto}" styleClass="fontePadrao"  style="float: left"/>
+                        </h:column>
+                        
+                        <h:column>
+                            <div>
+                                <h:outputLabel value="Lote Baixa" styleClass="fontePadraoNegrito" style="float: right"/><br />
+                                <h:outputLabel value="#{movimentosSocialBean.id_baixa}" styleClass="fontePadrao"  style="float: right"/>
+                            </div>
+                        </h:column>
                     </h:panelGrid>
 
                     <br />
@@ -217,9 +227,18 @@
                     </h:panelGrid>
 
                     <br />
-                    <h:panelGrid>
-                        <h:outputLabel value="Documento" styleClass="fontePadraoNegrito"/>
-                        <h:outputLabel value="#{movimentosSocialBean.documento}" styleClass="fontePadrao"/>
+                    <h:panelGrid columns="4" style="background: #e2e2e2; width: 100%">
+                        <h:column>
+                            <h:outputLabel value="Documento" styleClass="fontePadraoNegrito" style="float: left"/><br />
+                            <h:outputLabel value="#{movimentosSocialBean.documento}" styleClass="fontePadrao" style="float: left"/>
+                        </h:column>
+
+                        <h:column>
+                            <div>
+                                <h:outputLabel value="Tipo / Referência" styleClass="fontePadraoNegrito" style="float: right"/><br />
+                                <h:outputLabel value="#{movimentosSocialBean.tipo} - #{movimentosSocialBean.referencia}" styleClass="fontePadrao" style="float: right;"/>
+                            </div>
+                        </h:column>
                     </h:panelGrid>
                     
                     <br />
