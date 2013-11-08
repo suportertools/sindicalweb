@@ -21,7 +21,7 @@ public class RotinaBean implements Serializable {
     private String descricaoPesquisa = "";
     private List<Rotina> listaRotina = new ArrayList<Rotina>();
 
-    public String salvar() {
+    public void salvar() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (rotina.getId() == -1) {
             if (rotina.getRotina().equals("")) {
@@ -53,16 +53,14 @@ public class RotinaBean implements Serializable {
                 mensagem = "Erro ao atualizar registro!";
             }
         }
-        return null;
     }
 
-    public String novo() {
+    public void novo() {
         rotina = new Rotina();
         descricaoPesquisa = "";
-        return "rotina";
     }
 
-    public String excluir() {
+    public void excluir() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (rotina.getId() != -1) {
             rotina = (Rotina) salvarAcumuladoDB.pesquisaCodigo(rotina.getId(), "Rotina");
@@ -77,7 +75,6 @@ public class RotinaBean implements Serializable {
             }
         }
         rotina = new Rotina();
-        return null;
     }
 
     public String editar(Rotina r) {
@@ -85,10 +82,13 @@ public class RotinaBean implements Serializable {
         GenericaSessao.put("rotinaPesquisa", rotina);
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
-            return (String) GenericaSessao.getString("urlRetorno");
+            if (!GenericaSessao.getString("urlRetorno").equals("menuPrincipal")) {
+                return (String) GenericaSessao.getString("urlRetorno");                
+            }
         } else {
             return "rotina";
         }
+        return null;
     }
 
     public List<Rotina> getListaRotina() {
