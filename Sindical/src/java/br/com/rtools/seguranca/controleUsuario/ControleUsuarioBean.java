@@ -18,6 +18,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.catalina.connector.Request;
 
 @ManagedBean
 @SessionScoped
@@ -37,8 +38,7 @@ public class ControleUsuarioBean implements Serializable {
     private String msgErro = "";
     private MacFilial macFilial = null;
     private List<ContadorAcessos> listaContador = new ArrayList();
-    private List<String> images = new ArrayList<String>(); 
-    
+    private List<String> images = new ArrayList<String>();
 
     public String validacao() throws Exception {
 //        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) { 
@@ -107,12 +107,13 @@ public class ControleUsuarioBean implements Serializable {
         if (usuario != null) {
             pagina = "menuPrincipal";
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoUsuario", usuario);
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioLogin", usuario.getLogin());
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("userName", usuario.getLogin());
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
             login = ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getNome() + " - "
                     + ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getTipoDocumento().getDescricao() + ": "
                     + ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getDocumento();
-
             log.novo("login de acesso", "usuario logou!");
             usuario = new Usuario();
             msgErro = "";
@@ -124,37 +125,36 @@ public class ControleUsuarioBean implements Serializable {
         }
         return pagina;
     }
-    
 
     public String getValidacaoIndex() throws IOException {
-        if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conexao");
         }
-        HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String requestCliente;        
-        if(request.getParameter("cliente") != null && request.getParameter("cliente") != FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente")){
+        HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+        String requestCliente;
+        if (request.getParameter("cliente") != null && request.getParameter("cliente") != FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente")) {
             requestCliente = request.getParameter("cliente");
-        }else{
-            requestCliente = "Sindical";            
+        } else {
+            requestCliente = "Sindical";
         }
-        if(!requestCliente.equals("")){
-            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null){
+        if (!requestCliente.equals("")) {
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
             }
-            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null){
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
-            }            
+            }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoCliente", requestCliente);
-        }else{
-            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null){
+        } else {
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
-            }          
-            if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null){
+            }
+            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
             }
         }
         return null;
-    }    
+    }
 
     public String getValidaIndex() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
@@ -313,7 +313,7 @@ public class ControleUsuarioBean implements Serializable {
 
     public String getClienteString() {
         String novoCliente = "";
-       if (GenericaSessao.exists("sessaoCliente")) {
+        if (GenericaSessao.exists("sessaoCliente")) {
             novoCliente = GenericaSessao.getString("sessaoCliente");
         }
         return novoCliente;
@@ -337,20 +337,20 @@ public class ControleUsuarioBean implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo");
         }
     }
-    
-    public List<String> getImages() {  
-        if (images.isEmpty()){
-            images = new ArrayList<String>();  
-            images.add("1.jpg");  
-            images.add("2.jpg");  
-            images.add("3.jpg");  
-            images.add("4.jpg");  
-            images.add("5.jpg");  
+
+    public List<String> getImages() {
+        if (images.isEmpty()) {
+            images = new ArrayList<String>();
+            images.add("1.jpg");
+            images.add("2.jpg");
+            images.add("3.jpg");
+            images.add("4.jpg");
+            images.add("5.jpg");
         }
-        return images;  
-    } 
-    
+        return images;
+    }
+
     public void setImages(List<String> images) {
         this.images = images;
-    }    
+    }
 }
