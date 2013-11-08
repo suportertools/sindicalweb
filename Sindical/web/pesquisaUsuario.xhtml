@@ -1,68 +1,63 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>Pesquisa Usuários</title>
+        <title>Pesquisar usuários</title>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body styleClass="divMenu">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="form_pesquisa_usuario">                
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisa Usuários" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <rich:panel styleClass="divMae no-margin border-radius no-border">
-                        <h:panelGrid columns="5" styleClass="margin">
-                            <h:outputText value="Pesquisar: " />
-                            <h:inputText value="#{usuarioBean.descricaoPesquisa}" />
-                            <a4j:commandLink styleClass="iLink idPesquisar" value="Pesquisar" actionListener="#{usuarioBean.listaUsuario.clear()}" render="tbl" status="i_status"/>
-                            <h:outputText value="Usuários ativos: " styleClass="margin-left-max"/>
-                            <h:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}" title="Trazer somente usuários ativos" valueChangeListener="#{usuarioBean.listaUsuario.clear()}">
-                                <a4j:ajax event="change" render="@this, tbl" status="i_status" />
-                            </h:selectBooleanCheckbox>
-                        </h:panelGrid>                    
-                        <rich:dataTable value="#{usuarioBean.listaUsuario}" var="usuario" style="width: 800px;" id="tbl" rowClasses="text-center">
-                            <rich:column style="width: 25px;">
-                                <f:facet name="header">
-                                    <h:outputLabel value="ID"/>
-                                </f:facet>
-                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.id}" styleClass="underline-hover" />
-                            </rich:column>
-                            <rich:column styleClass="textoEsquerda">
-                                <f:facet name="header">
-                                    <h:outputLabel value="Nome"/>
-                                </f:facet>
-                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.pessoa.nome}" styleClass="underline-hover"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputLabel value="Login"/>
-                                </f:facet>
-                                <h:commandLink action="#{usuarioBean.editar(usuario)}" value="#{usuario.login}" styleClass="underline-hover"/>
-                            </rich:column>  
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputLabel value="Status" title="Ativo / Inátivo"/>
-                                </f:facet>
-                                <h:selectBooleanCheckbox value="#{usuario.ativo}" disabled="true"/>
-                            </rich:column>  
-                        </rich:dataTable>
-                    </rich:panel>
-                </center>
-            </h:form>
+            <p:panel styleClass="wrapper" style="border: 0px;">
+                <h:outputText value="Pesquisa Usuários" styleClass="fonteHeader" />                    
+                <p:panel style="width: 1000px; height: 550px; clear: both;">
+                    <h:form id="formPesquisaUsuario">
+                        <p:panel style="border: 0; clear: both;">
+                            <p:panel id="i_panel_pesquisa" styleClass="fundoCinza" style="height: 50px">
+                                <h:panelGrid columns="4" style="float: left">
+                                    <p:inputText id="idPesquisar" value="#{usuarioBean.descricaoPesquisa}" size="50" title="Pesquisar"/>
+                                    <p:commandButton value="Pesquisar" update="i_panel_grid" style="margin-left: 10px;" actionListener="#{usuarioBean.listaUsuario.clear()}"/>
+                                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                                    <p:selectBooleanCheckbox value="#{usuarioBean.filtrarUsuarioAtivo}"  valueChangeListener="#{usuarioBean.listaUsuario.clear()}" itemLabel="Filtrar usuários">
+                                        <p:ajax event="change" update="i_panel_grid" />
+                                    </p:selectBooleanCheckbox>                                    
+                                </h:panelGrid>
+                                <p:focus for="i_panel_pesquisa" />
+                            </p:panel>
+                            <p:panel id="i_panel_grid" style="clear: both; margin-top: 15px;"> 
+                                <p:dataTable value="#{usuarioBean.listaUsuario}" id="tbl" var="linha" style="width: 100%;" scrollable="true" scrollHeight="180" emptyMessage="Nenhum registro encontrado" resizableColumns="true">
+                                    <p:column style="text-align: center; width: 20px;" headerText="ID">
+                                        <p:commandLink value="#{linha.id}" action="#{usuarioBean.editar(linha)}" />
+                                    </p:column>
+
+                                    <p:column headerText="Nome" >
+                                        <p:commandLink value="#{linha.pessoa.nome}" action="#{usuarioBean.editar(linha)}" />
+                                    </p:column>
+
+                                    <p:column headerText="Login" >
+                                        <p:commandLink value="#{linha.login}" action="#{usuarioBean.editar(linha)}" />
+                                    </p:column>
+                                    
+                                    <p:column headerText="Ativo" style="width: 40px;">
+                                        <p:commandButton icon="ui-icon-check" rendered="#{linha.ativo}" global="false"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+                        </p:panel>
+                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                            <h:outputLabel value="Pesquisando ... Aguarde" />
+                        </p:dialog>
+                    </h:form>
+                </p:panel>
+            </p:panel>
         </f:view>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
     </h:body>
 </ui:composition>
