@@ -237,5 +237,5 @@ ALTER TABLE sis_links ALTER COLUMN id_pessoa DROP NOT NULL;
 -- update: 2013-10-21
 -- edited by: Bruno Vieira da Silva
 
-ALTER TABLE pes_fisica ALTER COLUMN ds_rg TYPE character varying(20);;
+ALTER TABLE pes_fisica ALTER COLUMN ds_rg TYPE character varying(20);
 
