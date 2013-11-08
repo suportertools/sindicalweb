@@ -164,7 +164,7 @@ public class CancelarHorarioBean implements Serializable {
         }
 
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-        Filial f = (Filial) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), "Filial");
+        Filial f = (Filial) acumuladoDB.pesquisaCodigo(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), "Filial");
 
         DataHoje dataHoje = new DataHoje();
         List listDatas = new ArrayList();
@@ -274,23 +274,18 @@ public class CancelarHorarioBean implements Serializable {
         if (listaFiliais.isEmpty()) {
             getFilial();
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();            
-            List<Filial> select = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
+            List<Filial> select = new ArrayList<Filial>();
+            if (filial.getId() != -1) {
+                select.add((Filial) salvarAcumuladoDB.pesquisaObjeto(filial.getId(), "Filial"));                
+            } else {
+                select = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
+            }
             for (int i = 0; i < select.size(); i++) {
-                if (filial.getId() != -1) {
-                    if (filial.getId() == select.get(i).getFilial().getId()) {
-                        listaFiliais.add(
-                                new SelectItem(
-                                new Integer(i),
-                                select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),
-                                Integer.toString(select.get(i).getId())));
-                    }
-                } else {
-                    listaFiliais.add(
-                            new SelectItem(
-                            new Integer(i),
-                            select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),
-                            Integer.toString(select.get(i).getId())));
-                }
+                listaFiliais.add(
+                        new SelectItem(
+                        new Integer(i),
+                        select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),
+                        Integer.toString(select.get(i).getId())));
             }
         }
         return listaFiliais;
@@ -304,7 +299,7 @@ public class CancelarHorarioBean implements Serializable {
         getListaHorariosCancelados();
         List<SelectItem> result = new ArrayList<SelectItem>();
         CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-        List<Horarios> select = cancelarHorarioDB.listaTodosHorariosDisponiveisPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), data, false);
+        List<Horarios> select = cancelarHorarioDB.listaTodosHorariosDisponiveisPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, false);
         if (select.isEmpty()) {
             desabilitaBotoes = true;
             idHorariosDisponiveis = 0;
@@ -349,10 +344,10 @@ public class CancelarHorarioBean implements Serializable {
         listaHorariosCancelados.clear();
         if (getTipoCancelamento().equals("Dia")) {
             CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-            listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), data, null);
+            listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, null);
         } else if (getTipoCancelamento().equals("Período")) {
             CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
-            listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(idFilial).getDescription()), dataInicial, dataFinal);
+            listaHorariosCancelados = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal);
         }
         return listaHorariosCancelados;
     }
@@ -535,9 +530,9 @@ public class CancelarHorarioBean implements Serializable {
         CancelarHorarioDB cancelarHorarioDB = new CancelarHorarioDBToplink();
         List<CancelarHorario> list;
         if (getTipoCancelamento().equals("Dia")) {
-            list = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), data, null);
+            list = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), data, null);
         } else if (getTipoCancelamento().equals("Período")) {
-            list = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), dataInicial, dataFinal);
+            list = cancelarHorarioDB.listaTodosHorariosCanceladosPorFilial(Integer.parseInt(listaFiliais.get(this.idFilial).getDescription()), dataInicial, dataFinal);
         } else {
             return;
         }
