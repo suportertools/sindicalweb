@@ -197,7 +197,7 @@
                                     </h:selectBooleanCheckbox>
                                 </h:panelGrid>
                             </div>
-                            <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
+                            <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" action="#{polling.existeUsuarioSessao()}"/>
                             <div class="clear"></div>
                             <div style="overflow:auto; height: 550px;">
                                 <h:panelGrid columns="1">
