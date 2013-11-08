@@ -26,8 +26,8 @@ import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
-import knu.ReceitaCNPJ;
-import knu.knu;
+// import knu.ReceitaCNPJ;
+// import knu.knu;
 
 @ManagedBean
 @SessionScoped
@@ -140,7 +140,7 @@ public class JuridicaBean implements Serializable {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
             }
 
-            ReceitaCNPJ resultado = knu.receitaCNPJ(documento);
+            knu.ReceitaCNPJ resultado = knu.knu.receitaCNPJ(documento);
 
             msgDocumento = resultado.getDesc_erro();
             if (resultado.getCod_erro() != 0) {
