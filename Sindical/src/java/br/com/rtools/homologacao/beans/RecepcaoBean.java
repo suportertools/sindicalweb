@@ -46,6 +46,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -213,7 +214,7 @@ public class RecepcaoBean implements Serializable {
                 sa.salvaNaPasta(pathPasta);
                 Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
                 download.baixar();
-            } catch (Exception e) {
+            } catch (JRException e) {
                 GenericaMensagem.warn("Erro", "Erro ao imprimir senha");
                 NovoLog log = new NovoLog();
                 log.novo("Erro ao imprimir senha:", "Mensagem: " + e.getMessage() + " - Causa: " + e.getCause() + " - Caminho: " + e.getStackTrace().toString());
@@ -938,7 +939,7 @@ public class RecepcaoBean implements Serializable {
                     "application/pdf",
                     FacesContext.getCurrentInstance());
             download.baixar();
-        } catch (Exception e) {
+        } catch (JRException e) {
         }
         return null;
     }
