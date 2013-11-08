@@ -26,7 +26,7 @@
                             </p:column>
                             <p:column>
                                 <p:selectOneMenu id="iFilial" value="#{cancelarHorarioBean.idFilial}">
-                                    <p:ajax event="change" update="id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios" />
+                                    <p:ajax event="change" update="iFilial id_panel_cancelamento :form_cancelar_horario:i_panel_grid_horarios" />
                                     <f:selectItems value="#{cancelarHorarioBean.listaFiliais}"/>
                                 </p:selectOneMenu>
                             </p:column>
