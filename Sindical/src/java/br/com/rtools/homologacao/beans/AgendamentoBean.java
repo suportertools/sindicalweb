@@ -295,7 +295,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         return listaHorarioTransferencia;
     }
 
-    public synchronized List getListaHorarios() {
+    public synchronized List getListaHorarios() throws IOException {
         listaGrid = new ArrayList();
         List<Agendamento> ag;
         List<Horarios> horario;
