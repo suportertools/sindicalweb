@@ -245,7 +245,7 @@
                             </h:panelGrid>
                         </p:panel>
                         <br />
-                        <p:poll id="poolMonitor" interval="5000" update="poolMonitor, tbl" />
+                        <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="#{polling.habilita}" stop="#{!polling.stop}" />
                         <h:panelGrid columns="1" id="tbl">
                             <p:dataTable value="#{homologacaoBean.listaHorarios}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" summary="Não existe resultados!">
                                 <f:facet name="footer">
