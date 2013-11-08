@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.faces.context.FacesContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +82,6 @@ public class servletEnvioArquivoContribuinte extends HttpServlet {
             out.flush();
             out.close();
             request.getSession().removeAttribute("enviarArquivosBean");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enviarArquivosBean");
         } catch (IOException e) {
             System.out.println(e);
         }
