@@ -221,7 +221,10 @@ public class SociosDBToplink extends DB implements SociosDB {
 //                    + "   and s.servicoPessoa.ativo = true");
             qry.setParameter("pid", idPessoa);
             qry.setMaxResults(1);
-            soc = (Socios) qry.getSingleResult();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                soc = (Socios) qry.getSingleResult();                
+            }
         } catch (EJBQLException e) {
             e.getMessage();
         }
