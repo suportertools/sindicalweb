@@ -99,7 +99,7 @@ public class RecepcaoBean implements Serializable {
     private String dataPesquisa = "hoje";
     private Cancelamento cancelamento = new Cancelamento();
     private List<ParametroSenha> listax = new ArrayList();
-    private PessoaEndereco enderecoFilial = new PessoaEndereco();
+//    private PessoaEndereco enderecoFilial = new PessoaEndereco();
     private int id_protocolo = -1;
     private String numeroProtocolo = "";
 
@@ -179,7 +179,7 @@ public class RecepcaoBean implements Serializable {
             msgConfirma = "Senha existente!";
         }
 
-        listax.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
+        listax.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente()+"/Imagens/LogoCliente.png"),
                 macFilial.getFilial().getFilial().getPessoa().getNome(),
                 macFilial.getFilial().getMatriz().getPessoa().getDocumento(),
                 senha.getAgendamento().getPessoaEmpresa().getJuridica().getPessoa().getNome(),
@@ -860,101 +860,101 @@ public class RecepcaoBean implements Serializable {
         this.ocultaStatus = ocultaStatus;
     }
 
-    public String imprimirProtocolo(int proto) {
-        if (proto == -1) {
-            proto = getId_protocolo();
-        }
+//    public String imprimirProtocolo(int proto) {
+//        if (proto == -1) {
+//            proto = getId_protocolo();
+//        }
+//
+//        Collection lista = new ArrayList<ParametroProtocolo>();
+//        try {
+//            JasperReport jasper = (JasperReport) JRLoader.loadObject(
+//                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
+//
+//            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+//
+//            Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
+//            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
+//
+//            Juridica contabilidade;
+//            if (age.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
+//                contabilidade = age.getPessoaEmpresa().getJuridica().getContabilidade();
+//            } else {
+//                contabilidade = new Juridica();
+//            }
+//
+//            getEnderecoFilial();
+//
+//            String datax = "", horario = "";
+//            if (!age.getData().isEmpty()) {
+//                datax = age.getData();
+//                horario = age.getHorarios().getHora();
+//            }
+//            Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+//
+//            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+//                    sindicato.getPessoa().getNome(),
+//                    sindicato.getPessoa().getSite(),
+//                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
+//                    sindicato.getPessoa().getDocumento(),
+//                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
+//                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
+//                    enderecoFilial.getNumero(),
+//                    enderecoFilial.getComplemento(),
+//                    enderecoFilial.getEndereco().getBairro().getDescricao(),
+//                    enderecoFilial.getEndereco().getCep(),
+//                    enderecoFilial.getEndereco().getCidade().getCidade(),
+//                    enderecoFilial.getEndereco().getCidade().getUf(),
+//                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
+//                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
+//                    String.valueOf(age.getId()),
+//                    datax,
+//                    horario,
+//                    age.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
+//                    age.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
+//                    contabilidade.getPessoa().getNome(),
+//                    age.getPessoaEmpresa().getFisica().getPessoa().getNome(),
+//                    age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
+//                    reg.getDocumentoHomologacao(),
+//                    reg.getFormaPagamentoHomologacao(),
+//                    age.getEmissao()));
+//
+//
+//            //byte[] arquivo = new byte[0];
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+//            JasperPrint print = JasperFillManager.fillReport(
+//                    jasper,
+//                    null,
+//                    dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//
+//            String nomeDownload = "imp_protocolo_" + proto + ".pdf";
+//
+//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
+//
+//            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+//            sa.salvaNaPasta(pathPasta);
+//
+//            Download download = new Download(nomeDownload,
+//                    pathPasta,
+//                    "application/pdf",
+//                    FacesContext.getCurrentInstance());
+//            download.baixar();
+//        } catch (JRException e) {
+//        }
+//        return null;
+//    }
 
-        Collection lista = new ArrayList<ParametroProtocolo>();
-        try {
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
-
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
-            Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
-            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
-
-            Juridica contabilidade;
-            if (age.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
-                contabilidade = age.getPessoaEmpresa().getJuridica().getContabilidade();
-            } else {
-                contabilidade = new Juridica();
-            }
-
-            getEnderecoFilial();
-
-            String datax = "", horario = "";
-            if (!age.getData().isEmpty()) {
-                datax = age.getData();
-                horario = age.getHorarios().getHora();
-            }
-            Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    sindicato.getPessoa().getNome(),
-                    sindicato.getPessoa().getSite(),
-                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                    sindicato.getPessoa().getDocumento(),
-                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
-                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
-                    enderecoFilial.getNumero(),
-                    enderecoFilial.getComplemento(),
-                    enderecoFilial.getEndereco().getBairro().getDescricao(),
-                    enderecoFilial.getEndereco().getCep(),
-                    enderecoFilial.getEndereco().getCidade().getCidade(),
-                    enderecoFilial.getEndereco().getCidade().getUf(),
-                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
-                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
-                    String.valueOf(age.getId()),
-                    datax,
-                    horario,
-                    age.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-                    age.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
-                    contabilidade.getPessoa().getNome(),
-                    age.getPessoaEmpresa().getFisica().getPessoa().getNome(),
-                    age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
-                    reg.getDocumentoHomologacao(),
-                    reg.getFormaPagamentoHomologacao(),
-                    age.getEmissao()));
-
-
-            //byte[] arquivo = new byte[0];
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint print = JasperFillManager.fillReport(
-                    jasper,
-                    null,
-                    dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = "imp_protocolo_" + proto + ".pdf";
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload,
-                    pathPasta,
-                    "application/pdf",
-                    FacesContext.getCurrentInstance());
-            download.baixar();
-        } catch (JRException e) {
-        }
-        return null;
-    }
-
-    public PessoaEndereco getEnderecoFilial() {
-        PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
-        if (enderecoFilial.getId() == -1) {
-            enderecoFilial = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(macFilial.getFilial().getFilial().getPessoa().getId(), 2);
-        }
-        return enderecoFilial;
-    }
-
-    public void setEnderecoFilial(PessoaEndereco enderecoFilial) {
-        this.enderecoFilial = enderecoFilial;
-    }
+//    public PessoaEndereco getEnderecoFilial() {
+//        PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+//        if (enderecoFilial.getId() == -1) {
+//            enderecoFilial = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(macFilial.getFilial().getFilial().getPessoa().getId(), 2);
+//        }
+//        return enderecoFilial;
+//    }
+//
+//    public void setEnderecoFilial(PessoaEndereco enderecoFilial) {
+//        this.enderecoFilial = enderecoFilial;
+//    }
 
     public int getId_protocolo() {
         return id_protocolo;

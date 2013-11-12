@@ -4,34 +4,24 @@ import br.com.rtools.pessoa.beans.PesquisarProfissaoBean;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Cancelamento;
 import br.com.rtools.homologacao.Demissao;
+import br.com.rtools.homologacao.ListaAgendamento;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.homologacao.db.*;
-import br.com.rtools.impressao.ParametroProtocolo;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -52,6 +42,9 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private int idMotivoDemissao = 0;
     private int idIndex = -1;
     private List listaGrid = new ArrayList();
+    private List<ListaAgendamento> listaHomologacoes = new ArrayList<ListaAgendamento>();
+    private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
+    private List<SelectItem> listaDemissao = new ArrayList<SelectItem>();
     private Agendamento agendamento = new Agendamento();
     private Juridica juridica = new Juridica();
     private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
@@ -59,9 +52,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     private PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
     private MacFilial macFilial = null;
     private Registro registro = new Registro();
-    private PessoaEndereco enderecoFilial = new PessoaEndereco();
     private Cancelamento cancelamento = new Cancelamento();
-    private int id_protocolo = -1;
 
     public String excluirSenha() {
         HomologacaoDB db = new HomologacaoDBToplink();
@@ -161,24 +152,17 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public List<SelectItem> getListaStatus() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        int i = 0;
-        StatusDB db = new StatusDBToplink();
-        List select = new ArrayList();
-        select.add(db.pesquisaCodigo(2));
-        select.add(db.pesquisaCodigo(3));
-        select.add(db.pesquisaCodigo(4));
-        select.add(db.pesquisaCodigo(5));
-        select.add(db.pesquisaCodigo(7));
-        if (!select.isEmpty()) {
-            while (i < select.size()) {
-                result.add(new SelectItem(new Integer(i),
-                        (String) ((Status) select.get(i)).getDescricao(),
-                        Integer.toString(((Status) select.get(i)).getId())));
-                i++;
+        if (listaStatus.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Status> list = (List<Status>) salvarAcumuladoDB.pesquisaObjeto(new int[]{2, 3, 4, 5, 7}, "Status");
+            for (int i = 0; i < list.size(); i++) {
+                listaStatus.add(new SelectItem(new Integer(i),
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
             }
+
         }
-        return result;
+        return listaStatus;
     }
 
     public List<SelectItem> getListaMotivoDemissao() {
@@ -195,6 +179,17 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
         return result;
+    }
+
+    public List<SelectItem> getListaDemissao() {
+        if (listaDemissao.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Demissao> list = (List<Demissao>) salvarAcumuladoDB.listaObjeto("Demissao", true);
+            for (int i = 0; i < list.size(); i++) {
+                listaDemissao.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+            }
+        }
+        return listaDemissao;
     }
 
     public synchronized List getListaHorarios() {
@@ -215,7 +210,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 
         int idUsuario;
-        int idCaso = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        int idCaso = Integer.parseInt(((SelectItem) listaStatus.get(idStatus)).getDescription());
 
         if (idCaso <= 0) {
             return new ArrayList();
@@ -289,11 +284,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                     null,
                     null,
                     isHabilitaAlteracao // ARG 15 HABILITA ALTERAÇÃO DO STATUS
-                    );
+            );
 
             listaGrid.add(dtObj);
         }
-
 
         switch (idCaso) {
             // STATUS AGENDADO -----------------------------------------------------------------------------------------------
@@ -495,10 +489,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         return listaGrid;
     }
 
-    public String agendar(int idIndex) {
+    public String agendar(Agendamento a) {
         HomologacaoDB db = new HomologacaoDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
+        //agendamento = (Agendamento) ((DataObject) listaGrid.get(idIndex)).getArgumento9();
+        agendamento = a;
         cancelamento = new Cancelamento();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
         if (nrStatus == 3 || nrStatus == 4 || nrStatus == 5) {
@@ -521,10 +516,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         renderConcluir = true;
 
         if (nrStatus > 0) {
-            fisica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFisica();
-            juridica = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getJuridica();
+            fisica = agendamento.getPessoaEmpresa().getFisica();
+            juridica = agendamento.getPessoaEmpresa().getJuridica();
             pessoaEmpresa = agendamento.getPessoaEmpresa();
-            profissao = ((PessoaEmpresa) ((DataObject) listaGrid.get(idIndex)).getArgumento7()).getFuncao();
+            profissao = agendamento.getPessoaEmpresa().getFuncao();
             tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
             for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
                 if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
@@ -617,7 +612,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 //                    return null;
 //            }
 //        }
-
         // SALVAR FISICA -----------------------------------------------
         fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
@@ -738,7 +732,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         Cancelamento c = (Cancelamento) sv.pesquisaObjeto(agendamento.getId(), "Cancelamento", "agendamento.id");
         sv.abrirTransacao();
         if (c != null) {
-            if(!sv.deletarObjeto(c)) {
+            if (!sv.deletarObjeto(c)) {
                 msgConfirma = "Erro ao homologar!";
                 sv.desfazerTransacao();
                 return;
@@ -855,9 +849,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
         return "homologacao";
-    }
-
-    public void refreshForm() {
     }
 
     public boolean desabilitaEdicao(Date date, int periodoDias) {
@@ -1070,114 +1061,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         this.registro = registro;
     }
 
-    public String imprimirProtocolo(int proto) {
-        if (proto == -1) {
-            proto = getId_protocolo();
-        }
-
-        Collection lista = new ArrayList<ParametroProtocolo>();
-        try {
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
-
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
-            Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
-            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
-
-            Juridica contabilidade;
-            if (age.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
-                contabilidade = age.getPessoaEmpresa().getJuridica().getContabilidade();
-            } else {
-                contabilidade = new Juridica();
-            }
-
-            getEnderecoFilial();
-
-            String datax = "", horario = "";
-            if (!age.getData().isEmpty()) {
-                datax = age.getData();
-                horario = age.getHorarios().getHora();
-            }
-            Registro r = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    sindicato.getPessoa().getNome(),
-                    sindicato.getPessoa().getSite(),
-                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                    sindicato.getPessoa().getDocumento(),
-                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
-                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
-                    enderecoFilial.getNumero(),
-                    enderecoFilial.getComplemento(),
-                    enderecoFilial.getEndereco().getBairro().getDescricao(),
-                    enderecoFilial.getEndereco().getCep(),
-                    enderecoFilial.getEndereco().getCidade().getCidade(),
-                    enderecoFilial.getEndereco().getCidade().getUf(),
-                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
-                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
-                    String.valueOf(age.getId()),
-                    datax,
-                    horario,
-                    age.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-                    age.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
-                    contabilidade.getPessoa().getNome(),
-                    age.getPessoaEmpresa().getFisica().getPessoa().getNome(),
-                    age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
-                    r.getDocumentoHomologacao(),
-                    r.getFormaPagamentoHomologacao(),
-                    age.getEmissao()));
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint print = JasperFillManager.fillReport(
-                    jasper,
-                    null,
-                    dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = "imp_protocolo_" + proto + ".pdf";
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload,
-                    pathPasta,
-                    "application/pdf",
-                    FacesContext.getCurrentInstance());
-            download.baixar();
-        } catch (JRException e) {
-        }
-        return null;
-    }
-
-    public PessoaEndereco getEnderecoFilial() {
-        PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
-        if (enderecoFilial.getId() == -1) {
-            enderecoFilial = pessoaEnderecoDB.pesquisaEndPorPessoaTipo(macFilial.getFilial().getFilial().getPessoa().getId(), 2);
-        }
-        return enderecoFilial;
-    }
-
-    public void setEnderecoFilial(PessoaEndereco enderecoFilial) {
-        this.enderecoFilial = enderecoFilial;
-    }
-
-    public int getId_protocolo() {
-        return id_protocolo;
-    }
-
-    public void setId_protocolo(int id_protocolo) {
-        this.id_protocolo = id_protocolo;
-    }
-
     public int senhaHomologacao(int id) {
         HomologacaoDB db = new HomologacaoDBToplink();
         Senha senha = db.pesquisaSenhaAgendamento(id);
         return senha.getSenha();
     }
-    
+
     public Cancelamento getCancelamento() {
         return cancelamento;
     }
@@ -1185,5 +1074,75 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     public void setCancelamento(Cancelamento cancelamento) {
         this.cancelamento = cancelamento;
     }
-    
+
+    public List<ListaAgendamento> getListaHomologacoes() {
+        if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) > DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+            return new ArrayList();
+        }
+        if (macFilial == null) {
+            return new ArrayList();
+        }
+        listaHomologacoes.clear();
+        listaGrid.clear();
+        listaGrid = new ArrayList();
+        HomologacaoDB db = new HomologacaoDBToplink();
+        Usuario us = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+
+        int idUsuario;
+        int idCaso = Integer.parseInt(((SelectItem) listaStatus.get(idStatus)).getDescription());
+
+        if (idCaso <= 0) {
+            return new ArrayList();
+        }
+        if (idCaso == 2 || idCaso == 7) {
+            idUsuario = 0;
+        } else {
+            idUsuario = us.getId();
+        }
+
+        List<Agendamento> agendamentos = db.pesquisaAgendamento(idCaso, macFilial.getFilial().getId(), data, null, idUsuario, 0, 0);
+
+        Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+        for (int i = 0; i < agendamentos.size(); i++) {
+            ListaAgendamento listaAgendamento = new ListaAgendamento();
+            listaAgendamento.setAgendamento(agendamentos.get(i));
+            Usuario u = new Usuario();
+            if (reg.isSenhaHomologacao()) {
+                Senha senha = db.pesquisaSenhaAgendamento(agendamentos.get(i).getId());
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData(agendamentos.get(i).getDtData())) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                    if (agendamentos.get(i).getStatus().getId() == 2) {
+                        listaAgendamento.setHabilitaAlteracao(true);
+                    } else {
+                        listaAgendamento.setHabilitaAlteracao(false);
+                    }
+                }
+                if (senha.getId() == -1) {
+                    if (agendamentos.get(i).getStatus().getId() != 7 && agendamentos.get(i).getStatus().getId() != 3 && agendamentos.get(i).getStatus().getId() != 4 && agendamentos.get(i).getStatus().getId() != 5) {
+                        continue;
+                    }
+                } else {
+                    listaAgendamento.setSenha(senha);
+                }
+            } else {
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData(agendamentos.get(i).getDtData())) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+                    listaAgendamento.setHabilitaAlteracao(false);
+                }
+            }
+
+            if (DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje())) > DataHoje.converteDataParaInteger(DataHoje.converteData(agendamentos.get(i).getDtData()))) {
+                listaAgendamento.setHabilitaAlteracao(false);
+            }
+            if (agendamentos.get(i).getAgendador() == null) {
+                u.getPessoa().setNome("** Web User **");
+                agendamentos.get(i).setAgendador(u);
+            }
+            listaHomologacoes.add(listaAgendamento);
+        }
+        return listaHomologacoes;
+    }
+
+    public void setListaHomologacoes(List<ListaAgendamento> listaHomologacoes) {
+        this.listaHomologacoes = listaHomologacoes;
+    }
+
 }
