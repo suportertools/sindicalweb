@@ -15,12 +15,11 @@
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
-                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
                 <h:form id="form_homologacao">
                     <c:set scope="request" var="object" value="${homologacaoBean.agendamento}"/>
                     <p:outputLabel value="Homologação" styleClass="fonteHeader"/>
                     <div class="clear"></div>
-                    <p:panel rendered="#{homologacaoBean.renderConcluir}" styleClass="no-border" header="Data: #{homologacaoBean.agendamento.data} - Horário: #{homologacaoBean.agendamento.horarios.hora}">
+                    <p:panel rendered="#{homologacaoBean.renderConcluir}" styleClass="no-border" header="Data: #{homologacaoBean.agendamento.data} - Horário: #{homologacaoBean.agendamento.horarios.hora}" >
                         <p:accordionPanel id="i_panel_1" styleClass="no-border no-padding no-margin">
                             <p:tab title="Funcionário">
                                 <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
@@ -30,7 +29,7 @@
                                     <p:column>
                                         <p:selectOneMenu id="idMotivoDemissao" value="#{homologacaoBean.idMotivoDemissao}" >
                                             <p:ajax event="change" update="@this"/>
-                                            <f:selectItems value="#{homologacaoBean.listaMotivoDemissao}"/>
+                                            <f:selectItems value="#{homologacaoBean.listaDemissao}"/>
                                         </p:selectOneMenu>
                                         <h:outputText value="Tipo aviso: " styleClass="font-color-red margin-left-max"/>
                                         <p:selectOneMenu id="idTipoAviso" value="#{homologacaoBean.tipoAviso}" >
@@ -232,13 +231,13 @@
                                 <h:column>
                                     <p:outputPanel id="calendar" layout="block">
                                         <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" >
-                                            <p:ajax event="dateSelect" update="@this, tbl"/>
+                                            <p:ajax event="dateSelect" update="@this, tbl" />
                                         </p:calendar>
                                     </p:outputPanel>
                                 </h:column>
                                 <h:outputLabel value="Status: "  style="margin-left: 20px;"/>
                                 <p:selectOneMenu id="idStatus" value="#{homologacaoBean.idStatus}">
-                                    <p:ajax event="change" update="tbl"/>
+                                    <p:ajax event="change" update="tbl" />
                                     <f:selectItems value="#{homologacaoBean.listaStatus}"/>
                                 </p:selectOneMenu>
                                 <p:outputLabel value="#{homologacaoBean.msgHomologacao}" styleClass="font-color-red"/>
@@ -247,7 +246,7 @@
                         <br />
                         <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="#{polling.habilita}" stop="#{!polling.stop}" />
                         <h:panelGrid columns="1" id="tbl">
-                            <p:dataTable value="#{homologacaoBean.listaHorarios}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" summary="Não existe resultados!">
+                            <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" emptyMessage="Não existe resultados!">
                                 <f:facet name="footer">
                                     <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}"/>
                                 </f:facet>
@@ -256,41 +255,41 @@
                                         <p:outputLabel value="Horarios" rendered="false"/>
                                         <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
                                     </f:facet>
-                                    <p:commandLink id="linkHorario" action="#{homologacaoBean.agendar(row)}" value="#{linha.argumento0.hora}" rendered="#{!linha.argumento15}" />
-                                    <h:outputLabel value="#{linha.argumento0.hora}" rendered="#{linha.argumento15}" />
+                                    <p:commandLink id="linkHorario" action="#{homologacaoBean.agendar(linha.agendamento)}" value="#{linha.agendamento.horarios.hora}" rendered="#{!linha.habilitaAlteracao}" />
+                                    <h:outputLabel value="#{linha.agendamento.horarios.hora}" rendered="#{linha.habilitaAlteracao}" />
                                 </p:column>
                                 <p:column headerText="CNPJ" styleClass="text-center" width="120">
-                                    <p:outputLabel value="#{linha.argumento1}"/>
+                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
                                 </p:column>
                                 <p:column headerText="Empresa" styleClass="text-center">
-                                    <p:outputLabel value="#{linha.argumento2}"/>
+                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
                                 </p:column>
                                 <p:column headerText="Funcionário" width="150">
-                                    <p:outputLabel value="#{linha.argumento7.fisica.pessoa.nome}"/>
+                                    <p:outputLabel value="#{linha.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
                                 </p:column>
                                 <p:column headerText="Homologador">
-                                    <p:outputLabel value="#{linha.argumento3}"/>
+                                    <p:outputLabel value="#{linha.agendamento.homologador.pessoa.nome}"/>
                                 </p:column>
                                 <p:column headerText="Contato">
-                                    <p:outputLabel value="#{linha.argumento4}"/>
+                                    <p:outputLabel value="#{linha.agendamento.contato}"/>
                                 </p:column>
                                 <p:column headerText="Telefone" styleClass="text-center" width="100">
-                                    <p:outputLabel value="#{linha.argumento5}"/>
+                                    <p:outputLabel value="#{linha.agendamento.telefone}"/>
                                 </p:column>
                                 <p:column headerText="Usuario">
-                                    <p:outputLabel value="#{linha.argumento6}"/>
+                                    <p:outputLabel value="#{linha.agendamento.agendador.pessoa.nome}"/>
                                 </p:column>                                    
                                 <p:column styleClass="text-center" width="25">
                                     <f:facet name="header">
                                         <h:graphicImage value="/Imagens/icon-password.png" alt="Senha" title="Senha" width="20" />                                        
                                     </f:facet>
-                                    <p:outputLabel value="#{linha.argumento10}"/>
+                                    <p:outputLabel value="#{linha.senha.senha}" rendered="#{linha.senha.senha != 0}"/>
                                 </p:column>                                    
                                 <p:column styleClass="text-center" width="25">
                                     <f:facet name="header">
                                         <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
                                     </f:facet>
-                                    <h:commandLink action="#{homologacaoBean.imprimirProtocolo(linha.argumento9.id)}" target="_blank" value="#{linha.argumento9.id}" title="Imprimir Protocolo" />
+                                    <h:commandLink action="#{protocoloAgendamento.imprimir(linha.agendamento)}" target="_blank" value="#{linha.agendamento.id}" title="Imprimir Protocolo" />
                                 </p:column>
                             </p:dataTable>                                
                         </h:panelGrid>
