@@ -183,7 +183,7 @@ ALTER TABLE esc_turma ADD COLUMN ds_descricao character varying(255);
 -- MATR_ESCOLA
 -- update: 2013-09-17
 -- edited by: Bruno Vieira da Silva
-
+id_matricula_socios
 ALTER TABLE matr_escola ADD COLUMN id_tipo_documento integer;
 ALTER TABLE matr_escola
   ADD CONSTRAINT fk_matr_escola_id_tipo_documento FOREIGN KEY (id_tipo_documento)
@@ -192,6 +192,10 @@ ALTER TABLE matr_escola
 	ON DELETE NO ACTION;
 
 ALTER TABLE matr_escola ADD COLUMN is_ativo boolean;
+
+
+ALTER TABLE matr_escola ADD COLUMN is_desconto_folha boolean;
+-- UPDATE matr_escola SET is_desconto_folha = false;
 
 -- ESC_TURMA 
 -- update: 2013-09-16
