@@ -24,6 +24,7 @@ import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.impressao.CarneEscola;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
@@ -42,24 +43,30 @@ import br.com.rtools.pessoa.db.SpcDBToplink;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.HtmlToPDF;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
+import static br.com.rtools.utilitarios.ImpressaoParaSocios.getConverteNullString;
+import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.ValorExtenso;
 import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -68,7 +75,15 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AjaxBehaviorEvent;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -437,6 +452,67 @@ public class MatriculaEscolaBean implements Serializable {
                 e.getMessage();
             }
         }
+    }
+
+    public void gerarCarne() throws Exception, JRException {
+        if (matriculaEscola.getEvt() != null) {
+            if (listaMovimentos.size() > 0) {
+                PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+                PessoaEndereco pessoaEndereco = ((List<PessoaEndereco>) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getFilial().getFilial().getPessoa().getId())).get(0);
+                List<CarneEscola> list = new ArrayList<CarneEscola>();
+                int j = 1;
+                for (int i = 0; i < listaMovimentos.size(); i++) {
+                    if (listaMovimentos.get(i).getTipoServico().getId() != 5) {
+                        list.add(
+                                new CarneEscola(
+                                        matriculaEscola.getId(),
+                                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"), // LOGO CLIENTE, 
+                                        getConverteNullString(matriculaEscola.getFilial().getFilial().getPessoa().getNome()),
+                                        getConverteNullString(pessoaEndereco.getEndereco().getLogradouro().getDescricao()),
+                                        getConverteNullString(pessoaEndereco.getNumero()),
+                                        getConverteNullString(pessoaEndereco.getComplemento()),
+                                        getConverteNullString(pessoaEndereco.getEndereco().getBairro().getDescricao()),
+                                        getConverteNullString(pessoaEndereco.getEndereco().getCep()),
+                                        getConverteNullString(pessoaEndereco.getEndereco().getCidade().getCidade()),
+                                        getConverteNullString(pessoaEndereco.getEndereco().getCidade().getUf()),
+                                        getConverteNullString(matriculaEscola.getFilial().getFilial().getPessoa().getTelefone1()),
+                                        getConverteNullString(matriculaEscola.getFilial().getFilial().getPessoa().getEmail1()),
+                                        getConverteNullString(matriculaEscola.getFilial().getFilial().getPessoa().getSite()),
+                                        getConverteNullString(matriculaEscola.getFilial().getFilial().getPessoa().getDocumento()),
+                                        getConverteNullString(matriculaEscola.getResponsavel().getNome()),
+                                        getConverteNullString(Integer.toString(matriculaEscola.getResponsavel().getId())),
+                                        getConverteNullString(matriculaEscola.getAluno().getNome()),
+                                        getConverteNullString(""),
+                                        getConverteNullString(listaMovimentos.get(i).getServicos().getDescricao()),
+                                        getConverteNullString(DataHoje.converteData(listaMovimentos.get(i).getDtVencimento())),
+                                        getConverteNullString(Float.toString(matriculaEscola.getValorTotal())),
+                                        getConverteNullString(Float.toString(listaMovimentos.get(i).getValor())),
+                                        ((Usuario) (GenericaSessao.getObject("sessaoUsuario"))).getPessoa().getNome(),
+                                        j++,
+                                        ""
+                                )
+                        );
+                    }
+                }
+                if (!list.isEmpty()) {
+                    JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(list);
+                    JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE.jasper"));
+                    JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                    byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                    String nomeDownload = "carne_escola" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                    SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+                    if (!new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes")).exists()) {
+                        File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes"));
+                        file.mkdir();
+                    }
+                    String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes");
+                    sa.salvaNaPasta(pathPasta);
+                    Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+                    download.baixar();
+                }
+            }
+        }
+
     }
 
     public void limpar() {
@@ -1601,7 +1677,7 @@ public class MatriculaEscolaBean implements Serializable {
         if (!descricaoCurso.isEmpty() || !descricaoAluno.isEmpty()) {
             if (listaMatriculaEscolas.isEmpty()) {
                 MatriculaEscolaDB dB = new MatriculaEscolaDBToplink();
-                listaMatriculaEscolas = dB.pesquisaMatriculaEscola(getPorPesquisa(), getDescricaoCurso(), getDescricaoAluno(), getComoPesquisa());                
+                listaMatriculaEscolas = dB.pesquisaMatriculaEscola(getPorPesquisa(), getDescricaoCurso(), getDescricaoAluno(), getComoPesquisa());
             }
         }
         return listaMatriculaEscolas;
