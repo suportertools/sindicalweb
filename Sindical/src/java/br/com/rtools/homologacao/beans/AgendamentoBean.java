@@ -12,6 +12,7 @@ import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.Feriados;
 import br.com.rtools.homologacao.Horarios;
+import br.com.rtools.homologacao.ListaAgendamento;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.homologacao.db.*;
 import br.com.rtools.impressao.ParametroProtocolo;
@@ -65,7 +66,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private String strContribuinte = "";
     private List listaGrid = new ArrayList();
     private List listaMovimento = new ArrayList();
+    private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
+    private List<SelectItem> listaDemissao = new ArrayList<SelectItem>();
     private List<SelectItem> listaHorarioTransferencia = new ArrayList<SelectItem>();
+    private List<ListaAgendamento> listaHorarios = new ArrayList<ListaAgendamento>();
     private Juridica juridica = new Juridica();
     private Fisica fisica = new Fisica();
     private Date data = DataHoje.dataHoje();
@@ -242,35 +246,29 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public List<SelectItem> getListaStatus() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        int i = 0;
-        StatusDB db = new StatusDBToplink();
-        List select = db.pesquisaTodos();
-        if (!select.isEmpty()) {
-            while (i < select.size()) {
-                result.add(new SelectItem(new Integer(i),
-                        (String) ((Status) select.get(i)).getDescricao(),
-                        Integer.toString(((Status) select.get(i)).getId())));
-                i++;
+        if (listaStatus.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Status> list = (List<Status>) salvarAcumuladoDB.listaObjeto("Status");
+            for (int i = 0; i < list.size(); i++) {
+                listaStatus.add(new SelectItem(new Integer(i),
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
             }
         }
-        return result;
+        return listaStatus;
     }
 
-    public List<SelectItem> getListaMotivoDemissao() {
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        int i = 0;
-        DemissaoDB db = new DemissaoDBToplink();
-        List select = db.pesquisaTodos();
-        if (!select.isEmpty()) {
-            while (i < select.size()) {
-                result.add(new SelectItem(new Integer(i),
-                        (String) ((Demissao) select.get(i)).getDescricao(),
-                        Integer.toString(((Demissao) select.get(i)).getId())));
-                i++;
+    public List<SelectItem> getListaDemissao() {
+        if (listaDemissao.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            List<Demissao> list = (List<Demissao>) salvarAcumuladoDB.listaObjeto("Demissao");
+            for (int i = 0; i < list.size(); i++) {
+                listaDemissao.add(new SelectItem(new Integer(i),
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
             }
         }
-        return result;
+        return listaDemissao;
     }
 
     public List<SelectItem> getListaHorarioTransferencia() {
@@ -295,7 +293,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         return listaHorarioTransferencia;
     }
 
-    public synchronized List getListaHorarios() throws IOException {
+    public synchronized List getListaHorariosx() throws IOException {
         listaGrid = new ArrayList();
         List<Agendamento> ag;
         List<Horarios> horario;
@@ -539,7 +537,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     }
 
-    public String agendar(DataObject dataObject) {
+    public String agendar(Agendamento a) {
         if (getData().getDay() == 6 || getData().getDay() == 0) {
             msgAgendamento = "Fins de semana não permitido!";
             return null;
@@ -555,7 +553,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 return null;
             }
         } else {
-            msgAgendamento = "Agendamento retroativo liberado até dia "+reg.getAgendamentoRetroativoString();
+            msgAgendamento = "Agendamento retroativo liberado até dia " + reg.getAgendamentoRetroativoString();
         }
         if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data()))) < nrData) {
             msgAgendamento = "Data maior que 3 meses!";
@@ -586,7 +584,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         renderConcluir = false;
                     } else {
                         agendamento.setData(DataHoje.converteData(getData()));
-                        Horarios horarios = (Horarios) (dataObject.getArgumento0());
+                        Horarios horarios = a.getHorarios();
                         agendamento.setHorarios(horarios);
                         msgAgendamento = "";
                     }
@@ -595,17 +593,17 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
             case 2: {
                 PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-                agendamento = (Agendamento) dataObject.getArgumento9();
-                fisica = ((PessoaEmpresa) dataObject.getArgumento7()).getFisica();
+                agendamento = a;
+                fisica = a.getPessoaEmpresa().getFisica();
                 enderecoFisica = db.pesquisaEndPorPessoaTipo(fisica.getPessoa().getId(), 1);
-                juridica = ((PessoaEmpresa) dataObject.getArgumento7()).getJuridica();
-                profissao = ((PessoaEmpresa) dataObject.getArgumento7()).getFuncao();
+                juridica = a.getPessoaEmpresa().getJuridica();
+                profissao = a.getPessoaEmpresa().getFuncao();
                 pessoaEmpresa = agendamento.getPessoaEmpresa();
                 renderCancelarHorario = true;
                 renderCancelar = false;
-                for (int i = 0; i < getListaMotivoDemissao().size(); i++) {
-                    if (Integer.parseInt(getListaMotivoDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
-                        idMotivoDemissao = (Integer) getListaMotivoDemissao().get(i).getValue();
+                for (int i = 0; i < getListaDemissao().size(); i++) {
+                    if (Integer.parseInt(getListaDemissao().get(i).getDescription()) == agendamento.getDemissao().getId()) {
+                        idMotivoDemissao = (Integer) getListaDemissao().get(i).getValue();
                         break;
                     }
                 }
@@ -641,7 +639,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                         renderConcluir = false;
                     } else {
                         agendamento.setData(DataHoje.converteData(getData()));
-                        agendamento.setHorarios((Horarios) dataObject.getArgumento0());
+                        agendamento.setHorarios(a.getHorarios());
                         msgAgendamento = "";
                     }
                 }
@@ -667,7 +665,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         int ids[] = {1, 3, 4};
         imprimirPro = false;
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
+        Demissao demissao = (Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -891,7 +889,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! Pessoa cadastrada em oposição. ";
                 } else {
                     msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! ";
-                    
+
                 }
             }
         }
@@ -1097,88 +1095,87 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
 
-    public String imprimirProtocolo(int proto) {
-        if (proto == -1) {
-            proto = id_protocolo;
-        }
-
-        Collection lista = new ArrayList<ParametroProtocolo>();
-        try {
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
-
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
-            Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
-            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
-
-            Juridica contabilidade;
-            if (age.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
-                contabilidade = age.getPessoaEmpresa().getJuridica().getContabilidade();
-            } else {
-                contabilidade = new Juridica();
-            }
-
-            getEnderecoFilial();
-
-            String datax = "", horario = "";
-            if (!age.getData().isEmpty()) {
-                datax = age.getData();
-                horario = age.getHorarios().getHora();
-            }
-            Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-
-            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                    sindicato.getPessoa().getNome(),
-                    sindicato.getPessoa().getSite(),
-                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
-                    sindicato.getPessoa().getDocumento(),
-                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
-                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
-                    enderecoFilial.getNumero(),
-                    enderecoFilial.getComplemento(),
-                    enderecoFilial.getEndereco().getBairro().getDescricao(),
-                    enderecoFilial.getEndereco().getCep(),
-                    enderecoFilial.getEndereco().getCidade().getCidade(),
-                    enderecoFilial.getEndereco().getCidade().getUf(),
-                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
-                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
-                    String.valueOf(age.getId()),
-                    datax,
-                    horario,
-                    age.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-                    age.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
-                    contabilidade.getPessoa().getNome(),
-                    age.getPessoaEmpresa().getFisica().getPessoa().getNome(),
-                    age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
-                    registro.getDocumentoHomologacao(),
-                    registro.getFormaPagamentoHomologacao(),
-                    age.getEmissao()));
-
-
-            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-            JasperPrint print = JasperFillManager.fillReport(
-                    jasper,
-                    null,
-                    dtSource);
-            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-
-            String nomeDownload = "imp_protocolo_" + proto + ".pdf";
-
-            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-
-            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-            sa.salvaNaPasta(pathPasta);
-
-            Download download = new Download(nomeDownload,
-                    pathPasta,
-                    "application/pdf",
-                    FacesContext.getCurrentInstance());
-            download.baixar();
-        } catch (Exception e) {
-        }
-        return null;
-    }
+//    public String imprimirProtocolo(int proto) {
+//        if (proto == -1) {
+//            proto = id_protocolo;
+//        }
+//
+//        Collection lista = new ArrayList<ParametroProtocolo>();
+//        try {
+//            JasperReport jasper = (JasperReport) JRLoader.loadObject(
+//                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
+//
+//            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+//
+//            Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
+//            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
+//
+//            Juridica contabilidade;
+//            if (age.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
+//                contabilidade = age.getPessoaEmpresa().getJuridica().getContabilidade();
+//            } else {
+//                contabilidade = new Juridica();
+//            }
+//
+//            getEnderecoFilial();
+//
+//            String datax = "", horario = "";
+//            if (!age.getData().isEmpty()) {
+//                datax = age.getData();
+//                horario = age.getHorarios().getHora();
+//            }
+//            Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+//
+//            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+//                    sindicato.getPessoa().getNome(),
+//                    sindicato.getPessoa().getSite(),
+//                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
+//                    sindicato.getPessoa().getDocumento(),
+//                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
+//                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
+//                    enderecoFilial.getNumero(),
+//                    enderecoFilial.getComplemento(),
+//                    enderecoFilial.getEndereco().getBairro().getDescricao(),
+//                    enderecoFilial.getEndereco().getCep(),
+//                    enderecoFilial.getEndereco().getCidade().getCidade(),
+//                    enderecoFilial.getEndereco().getCidade().getUf(),
+//                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
+//                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
+//                    String.valueOf(age.getId()),
+//                    datax,
+//                    horario,
+//                    age.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
+//                    age.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
+//                    contabilidade.getPessoa().getNome(),
+//                    age.getPessoaEmpresa().getFisica().getPessoa().getNome(),
+//                    age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
+//                    registro.getDocumentoHomologacao(),
+//                    registro.getFormaPagamentoHomologacao(),
+//                    age.getEmissao()));
+//
+//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+//            JasperPrint print = JasperFillManager.fillReport(
+//                    jasper,
+//                    null,
+//                    dtSource);
+//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+//
+//            String nomeDownload = "imp_protocolo_" + proto + ".pdf";
+//
+//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
+//
+//            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+//            sa.salvaNaPasta(pathPasta);
+//
+//            Download download = new Download(nomeDownload,
+//                    pathPasta,
+//                    "application/pdf",
+//                    FacesContext.getCurrentInstance());
+//            download.baixar();
+//        } catch (Exception e) {
+//        }
+//        return null;
+//    }
 
     public String pesquisarProtocolo() {
         HomologacaoDB db = new HomologacaoDBToplink();
@@ -1273,7 +1270,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     registro.getDocumentoHomologacao(),
                     registro.getFormaPagamentoHomologacao(),
                     DataHoje.data()));
-
 
             //byte[] arquivo = new byte[0];
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
@@ -1719,6 +1715,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
             if (!feriados.isEmpty()) {
                 msgAgendamento = "Nesta data existem feriados/agenda: ";
+                GenericaMensagem.warn("Sistema", msgAgendamento);
                 for (int i = 0; i < feriados.size(); i++) {
                     if (i == 0) {
                         msgAgendamento += feriados.get(i).getNome();
@@ -1757,5 +1754,67 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public void verificaNaoAtendidos() {
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         homologacaoDB.verificaNaoAtendidosSegRegistroAgendamento();
+    }
+
+    /**
+     * -- STATUS 1 - DISPONIVEL; 2 - AGENDADO; 3 - CANCELADO; 4 - HOMOLOGADO; 5 -
+     * ATENDIMENTO; 6 - ENCAIXE; 7 - NÃO COMPARACEU
+     *
+     * @return
+     */
+    public List<ListaAgendamento> getListaHorarios() {
+        listaGrid = new ArrayList();
+        listaHorarios.clear();
+        if (macFilial == null) {
+            return new ArrayList();
+        }
+        int idNrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
+        int diaDaSemana = DataHoje.diaDaSemana(data);
+        disabledProtocolo = idNrStatus != 1 && idNrStatus != 6;
+        renderedDisponivel = idNrStatus != 2 && idNrStatus != 3 && idNrStatus != 4 && idNrStatus != 5 && idNrStatus != 6 && idNrStatus != 7;
+        HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
+        List<Agendamento> agendamentos;
+        List<Horarios> horarios;
+        if (idNrStatus == 1 || idNrStatus == 6) {
+            horarios = homologacaoDB.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), diaDaSemana);
+            for (int j = 0; j < horarios.size(); j++) {
+                ListaAgendamento listaAgendamento = new ListaAgendamento();
+                if (idNrStatus == 1) {
+                    int quantidade = homologacaoDB.pesquisaQntdDisponivel(macFilial.getFilial().getId(), horarios.get(j), getData());
+                    if (quantidade == -1) {
+                        msgAgendamento = "Erro ao pesquisar horários disponíveis!";
+                        listaHorarios.clear();
+                        break;
+                    }
+                    if (quantidade > 0) {
+                        listaAgendamento.setQuantidade(quantidade);
+                        listaAgendamento.getAgendamento().setHorarios(horarios.get(j));
+                        listaHorarios.add(listaAgendamento);
+                    }
+                } else {
+                    listaAgendamento.getAgendamento().setHorarios(horarios.get(j));
+                    listaHorarios.add(listaAgendamento);
+                }
+            }
+            strSalvar = "Agendar";
+        } else {
+            agendamentos = homologacaoDB.pesquisaAgendamento(idNrStatus, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
+            for (int i = 0; i < agendamentos.size(); i++) {
+                ListaAgendamento listaAgendamento = new ListaAgendamento();
+                Usuario u = new Usuario();
+                listaAgendamento.setAgendamento(agendamentos.get(i));
+                if (agendamentos.get(i).getAgendador() == null) {
+                    u.getPessoa().setNome("** Web User **");
+                    listaAgendamento.getAgendamento().setAgendador(u);
+                }
+                listaHorarios.add(listaAgendamento);
+            }
+            strSalvar = "Atualizar";
+        }
+        return listaHorarios;
+    }
+
+    public void setListaHorarios(List<ListaAgendamento> listaHorarios) {
+        this.listaHorarios = listaHorarios;
     }
 }
