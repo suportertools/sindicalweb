@@ -99,6 +99,7 @@ public class JuridicaBean implements Serializable {
     private List<SelectItem> listaTipoDocumento = new ArrayList<SelectItem>();
     private List<SelectItem> listaPorte = new ArrayList<SelectItem>();
     private List<ContribuintesInativos> listaContribuintesInativos = new ArrayList();
+    private List<SelectItem> listaMotivoInativacao = new ArrayList<SelectItem>();
     private String atualiza = "";
     private JuridicaReceita juridicaReceita = new JuridicaReceita();
 
@@ -383,25 +384,27 @@ public class JuridicaBean implements Serializable {
         return "NÃO CONTRIBUINTE";
     }
 
-    public String inativarContribuintes() {
+    public void inativarContribuintes() {
         JuridicaDB db = new JuridicaDBToplink();
-        ContribuintesInativosDB dbConIni = new ContribuintesInativosDBToplink();
-        if (!getListaMotivoInativacao().isEmpty()) {
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        if (!listaMotivoInativacao.isEmpty()) {
             contribuintesInativos.setJuridica(juridica);
             contribuintesInativos.setDtAtivacao(null);
-            contribuintesInativos.setMotivoInativacao(db.pesquisaCodigoMotivoInativacao(Integer.parseInt(
-                    ((SelectItem) getListaMotivoInativacao().get(idMotivoInativacao)).getDescription())));
-            if (dbConIni.insert(contribuintesInativos)) {
+            contribuintesInativos.setMotivoInativacao(db.pesquisaCodigoMotivoInativacao(Integer.parseInt(((SelectItem) listaMotivoInativacao.get(idMotivoInativacao)).getDescription())));
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.inserirObjeto(contribuintesInativos)) {
+                salvarAcumuladoDB.comitarTransacao();
                 msgConfirma = "Contribuinte Inativado!";
                 contribuintesInativos = new ContribuintesInativos();
                 listaContribuintesInativos.clear();
                 getListaContribuintesInativos();
                 getContribuinte();
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
             }
         } else {
             msgConfirma = "Não exsiste Motivo de Inativação";
         }
-        return null;
     }
 
     public String getEnderecoCobranca() {
@@ -761,7 +764,14 @@ public class JuridicaBean implements Serializable {
     }
 
     public String editar() {
-        juridica = (Juridica) listaJuridica.get(idIndex).getArgumento0();
+        Juridica j = (Juridica) listaJuridica.get(idIndex).getArgumento0();
+        if (juridica.getId() != -1) {
+            if (juridica.getId() != j.getId()) {
+                listaContribuintesInativos.clear();
+                contribuintesInativos = new ContribuintesInativos();
+            }
+        }
+        juridica = j;
         if (juridica.getContabilidade() == null) {
             contabilidade = new Juridica();
         } else {
@@ -1518,17 +1528,16 @@ public class JuridicaBean implements Serializable {
     }
 
     public List<SelectItem> getListaMotivoInativacao() {
-        List<SelectItem> motIna = new ArrayList<SelectItem>();
-        int i = 0;
-        JuridicaDB db = new JuridicaDBToplink();
-        List select = db.listaMotivoInativacao();
-        while (i < select.size()) {
-            motIna.add(new SelectItem(new Integer(i),
-                    (String) ((MotivoInativacao) select.get(i)).getDescricao(),
-                    Integer.toString(((MotivoInativacao) select.get(i)).getId())));
-            i++;
-        }
-        return motIna;
+        if (listaMotivoInativacao.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink() ;
+            List<MotivoInativacao> list = (List<MotivoInativacao>) salvarAcumuladoDB.listaObjeto("MotivoInativacao");
+            for (int i = 0; i < list.size(); i++) {
+                listaMotivoInativacao.add(new SelectItem(new Integer(i),
+                        list.get(i).getDescricao(),
+                        Integer.toString(list.get(i).getId())));
+            }
+        }    
+        return listaMotivoInativacao;
     }
 
     public String pesquisarPessoaJuridicaGeracaoCadastrar() {
