@@ -271,13 +271,14 @@
                             <h:column rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
                                 <a4j:commandLink styleClass="idSalvar iLink" value="Desfazer Movimento" style="width: 200px;" title="Desfazer Movimento" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}"  oncomplete="#{rich:component('form_matricula_escola:i_panel_desfazer_movimento')}.show(); return false;" />
                             </h:column>
-                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_matricula_escola:i_panel_salvar')}.show(); return false;" rendered="#{matriculaEscolaBean.ocultaBotaoSalvar}" />
+                            <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_matricula_escola:i_panel_salvar')}.show(); return false;"  />
                             <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{matriculaEscolaBean.novo}"/>
                             <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_matricula_escola:i_panel_excluir')}.show(); return false;"/>
                             <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}"/>
-                            <h:panelGrid columns="2" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
+                            <h:panelGrid columns="3" rendered="#{matriculaEscolaBean.matriculaEscola.id != -1}">
                                 <h:commandLink styleClass="idPesquisar iLink" value="Gerar Contrato" title="Gerar Contrato" action="#{matriculaEscolaBean.gerarContrato}" style="width: 150px;" target="#{matriculaEscolaBean.target}" rendered="#{matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <a4j:commandLink styleClass="idPesquisar iLink" value="Gerar Contrato" title="Gerar Contrato" action="#{matriculaEscolaBean.gerarContrato}" style="width: 150px;" rendered="#{!matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <h:commandLink styleClass="idPesquisar iLink" value="Carnê" title="Carnê" action="#{matriculaEscolaBean.gerarCarne}" target="#{matriculaEscolaBean.target}" rendered="#{matriculaEscolaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
                             </h:panelGrid>
                         </h:panelGrid>
                     </h:panelGrid>
