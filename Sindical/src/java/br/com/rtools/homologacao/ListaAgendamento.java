@@ -1,0 +1,67 @@
+package br.com.rtools.homologacao;
+
+import br.com.rtools.homologacao.db.HomologacaoDB;
+import br.com.rtools.homologacao.db.HomologacaoDBToplink;
+
+public class ListaAgendamento {
+
+    private Agendamento agendamento;
+    private Senha senha;
+    private boolean habilitaAlteracao;
+    private int quantidade;
+
+    public ListaAgendamento() {
+        this.agendamento = new Agendamento();
+        this.senha = new Senha();
+        this.habilitaAlteracao = false;
+        this.quantidade = 0;
+    }
+
+    public ListaAgendamento(Agendamento agendamento, Senha senha, boolean habilitaAlteracao, int quantidade) {
+        this.agendamento = agendamento;
+        this.senha = senha;
+        this.habilitaAlteracao = habilitaAlteracao;
+        this.quantidade = quantidade;
+    }
+
+    public Agendamento getAgendamento() {
+        return agendamento;
+    }
+
+    public void setAgendamento(Agendamento agendamento) {
+        this.agendamento = agendamento;
+    }
+
+    public Senha getSenha() {
+        return senha;
+    }
+
+    public void setSenha(Senha senha) {
+        this.senha = senha;
+    }
+    
+    public Senha mostrarSenha(){
+        Senha senha2 = null;
+        if (agendamento.getId() != -1) {
+            HomologacaoDB db = new HomologacaoDBToplink();
+            senha2 = db.pesquisaSenhaAgendamento(agendamento.getId());
+        }
+        return senha2;
+    }
+
+    public boolean isHabilitaAlteracao() {
+        return habilitaAlteracao;
+    }
+
+    public void setHabilitaAlteracao(boolean habilitaAlteracao) {
+        this.habilitaAlteracao = habilitaAlteracao;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
+    }
+}
