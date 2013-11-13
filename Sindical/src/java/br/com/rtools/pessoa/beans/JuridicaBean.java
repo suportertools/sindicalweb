@@ -1390,28 +1390,26 @@ public class JuridicaBean implements Serializable {
         }
     }
 
-    public String retornaCnae() {
+    public String retornaCnae(Cnae cn){
         //Cnae tcnae = null;
-        Cnae tcnae = (Cnae) listaCnae.get(idIndexCnae);
+        //Cnae tcnae = (Cnae) listaCnae.get(idIndexCnae);
+        Cnae tcnae = cn;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cnaePesquisado", tcnae);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
         descPesquisaCnae = "";
-        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("pessoaJuridica")) {
+        if( ((String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("pessoaJuridica") ){
             juridica.setCnae(tcnae);
             CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();
-            if (dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null) {
+            if(dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null){
                 cnaeContribuinte = " cnae contribuinte!";
                 colorContri = "blue";
-            } else {
+            }else{
                 cnaeContribuinte = " este cnae não está na convenção!";
                 colorContri = "red";
             }
-
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cnaePesquisado");
             return "pessoaJuridica";
-        } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        }
+        }else
+            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
 
     public String JuridicaFilialGrid() {

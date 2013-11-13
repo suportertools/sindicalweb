@@ -225,7 +225,7 @@ public class SociosDBToplink extends DB implements SociosDB {
             if (!list.isEmpty()) {
                 soc = (Socios) qry.getSingleResult();                
             }
-        } catch (EJBQLException e) {
+        } catch (Exception e) {
             e.getMessage();
         }
         return soc;

@@ -1,9 +1,11 @@
 package br.com.rtools.utilitarios;
 
+import java.io.Serializable;
 import java.util.List;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class GenericaSessao {
+public class GenericaSessao implements Serializable{
 
     public static void put(String sessionName, String sessionValue) {
         if (GenericaSessao.exists(sessionName)) {

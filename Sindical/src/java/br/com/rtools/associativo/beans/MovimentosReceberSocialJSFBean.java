@@ -80,13 +80,27 @@ public class MovimentosReceberSocialJSFBean {
                 //MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
                 
                 PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+                String formas[] = new String[10];
+                
                 
                 // PESQUISA FORMA DE PAGAMENTO
                 List<FormaPagamento> fp = db.pesquisaFormaPagamento(movimento.getBaixa().getId());
                 
-                List<Movimento> lista = db.movimentoIdbaixa(movimento.getBaixa().getId());
+                for (int i = 0; i < fp.size(); i++){
+                    // 4 - CHEQUE    
+                    if (fp.get(i).getTipoPagamento().getId() == 4){
+                        formas[i] = fp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(fp.get(i).getValor()) + " (B: "+fp.get(i).getChequeRec().getBanco()+" Ag: "+fp.get(i).getChequeRec().getAgencia()+ " C: "+ fp.get(i).getChequeRec().getConta()+" CH: "+fp.get(i).getChequeRec().getCheque();
+                    // 5 - CHEQUE PRÉ
+                    }else if (fp.get(i).getTipoPagamento().getId() == 5){
+                        formas[i] = fp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(fp.get(i).getValor()) + " (B: "+fp.get(i).getChequeRec().getBanco()+" Ag: "+fp.get(i).getChequeRec().getAgencia()+ " C: "+ fp.get(i).getChequeRec().getConta()+" CH: "+fp.get(i).getChequeRec().getCheque()+" P: "+fp.get(i).getChequeRec().getVencimento()+")";
+                    // QUALQUER OUTRO    
+                    }else{
+                        formas[i] = fp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(fp.get(i).getValor());
+                    }
+                }
                 
                 
+                List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
                 for (int i = 0; i < lista.size(); i++){
                         vetor.add(new ParametroRecibo(
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
@@ -110,11 +124,19 @@ public class MovimentosReceberSocialJSFBean {
                                 lista.get(i).getServicos().getDescricao(), // SERVICO
                                 lista.get(i).getVencimento(), // VENCIMENTO
                                 new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
-                                DataHoje.horaMinuto(), 
-                                "Dinheiro: ", 
-                                "Cheque: ", 
-                                "Cheque-Pré: ",
-                                "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
+                                lista.get(i).getBaixa().getUsuario().getLogin(), 
+                                lista.get(i).getBaixa().getBaixa(), 
+                                DataHoje.horaMinuto(),
+                                formas[0], 
+                                formas[1], 
+                                formas[2],
+                                formas[3],
+                                formas[4],
+                                formas[5], 
+                                formas[6], 
+                                formas[7], 
+                                formas[8], 
+                                formas[9])
                         );
                     
                 }
@@ -451,7 +473,7 @@ public class MovimentosReceberSocialJSFBean {
         caixa = (linha.getArgumento22() == null) ? "Nenhum" : linha.getArgumento22().toString(); // 22 - CAIXA
         documento = (linha.getArgumento23() == null) ? "Sem Documento" : linha.getArgumento23().toString(); // 24 - DOCUMENTO
 
-        int id_lote = Integer.valueOf(linha.getArgumento18().toString());
+        int id_lote = Integer.valueOf(linha.getArgumento27().toString());
         
         MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
         List<Vector> lista = db.dadosSocio(id_lote);
@@ -552,7 +574,8 @@ public class MovimentosReceberSocialJSFBean {
                             lista.get(i).get(24), // ARG 23 DOCUMENTO
                             Moeda.converteR$(getConverteNullString(lista.get(i).get(7))),  // ARG 24 VALOR CALCULADO ORIGINAL
                             disabled, 
-                            lista.get(i).get(18) // ARG 26 ID_BAIXA
+                            lista.get(i).get(18), // ARG 26 ID_BAIXA
+                            lista.get(i).get(15) // ARG 27 ID_LOTE
                             )
                         );
             }

@@ -103,6 +103,20 @@ public class BaixaGeralJSFBean {
                 MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
                 
                 PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+                String formas[] = new String[10];
+                
+                for (int i = 0; i < lfp.size(); i++){
+                    // 4 - CHEQUE    
+                    if (lfp.get(i).getTipoPagamento().getId() == 4){
+                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(lfp.get(i).getValor()) + " (B: "+lfp.get(i).getChequeRec().getBanco()+" Ag: "+lfp.get(i).getChequeRec().getAgencia()+ " C: "+ lfp.get(i).getChequeRec().getConta()+" CH: "+lfp.get(i).getChequeRec().getCheque();
+                    // 5 - CHEQUE PRÉ
+                    }else if (lfp.get(i).getTipoPagamento().getId() == 5){
+                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(lfp.get(i).getValor()) + " (B: "+lfp.get(i).getChequeRec().getBanco()+" Ag: "+lfp.get(i).getChequeRec().getAgencia()+ " C: "+ lfp.get(i).getChequeRec().getConta()+" CH: "+lfp.get(i).getChequeRec().getCheque()+" P: "+lfp.get(i).getChequeRec().getVencimento()+")";
+                    // QUALQUER OUTRO    
+                    }else{
+                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(lfp.get(i).getValor());
+                    }
+                }                
                 
                 for (int i = 0; i < listaMovimentos.size(); i++){
                     //String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
@@ -129,11 +143,19 @@ public class BaixaGeralJSFBean {
                                 listaMovimentos.get(i).getServicos().getDescricao(), // SERVICO
                                 listaMovimentos.get(i).getVencimento(), // VENCIMENTO
                                 new BigDecimal(listaMovimentos.get(i).getValorBaixa()), // VALOR BAIXA
+                                listaMovimentos.get(i).getBaixa().getUsuario().getLogin(), 
+                                listaMovimentos.get(i).getBaixa().getBaixa(), 
                                 DataHoje.horaMinuto(), 
-                                "Dinheiro: ", 
-                                "Cheque: ", 
-                                "Cheque-Pré: ",
-                                "Cartão de Crédito: ","Cartão de Débito: ","","","","","","","")
+                                formas[0], 
+                                formas[1], 
+                                formas[2],
+                                formas[3],
+                                formas[4],
+                                formas[5], 
+                                formas[6], 
+                                formas[7], 
+                                formas[8], 
+                                formas[9])
                         );
                     
                 }
