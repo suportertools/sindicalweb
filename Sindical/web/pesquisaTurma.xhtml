@@ -1,77 +1,49 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Pesquisa Turma</title>
+        <title>Pesquisar de Turma</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaTurma">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisar Turma" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae">
-                        <rich:dataTable value="#{turmaBean.listaTurma}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-                            
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="ID"/>
-                                </f:facet>
-                                <a4j:commandLink value="#{linha.id}" action="#{turmaBean.editar(linha)}" />
-                            </rich:column>
-                            
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Data Inicio"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.dataInicio}"/>
-                            </rich:column>
-                            
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Data Término"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.dataTermino}"/>
-                            </rich:column>
-                            
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Hora Inicio / Término"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.horaInicio} - #{linha.horaTermino}"/>
-                            </rich:column>
-
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Curso"/>
-                                </f:facet>
-                                <a4j:commandLink value="#{linha.cursos.descricao}" action="#{turmaBean.editar(linha)}"/>
-                            </rich:column>
-                            
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Filial"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.cursos.filial.filial.pessoa.nome} - CNPJ: #{linha.cursos.filial.filial.pessoa.documento}"/>
-                            </rich:column>
-                            
-                        </rich:dataTable>                        
-                    </div>
-                </center>
-             </h:form>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_turma">
+                    <p:outputLabel value="Pesquisar de Turma" styleClass="fonteHeader"/>
+                    <c:set scope="request" var="object" value="${turmaBean.turma}"/>
+                    <div class="clear"></div>
+                    <p:dataTable value="#{turmaBean.listaTurma}" var="linha" scrollHeight="400" scrollable="true" emptyMessage="Não existem turmas cadastradas">
+                        <f:facet name="footer">
+                            Selecione uma turma selecionando o id ou curso
+                        </f:facet>
+                        <p:column headerText="ID" width="25" styleClass="text-center">
+                            <p:commandLink value="#{linha.id}" action="#{turmaBean.editar(linha)}" />
+                        </p:column>
+                        <p:column headerText="Dt. Inicio" width="80" styleClass="text-center">
+                            <h:outputText value="#{linha.dataInicio}"/>
+                        </p:column>
+                        <p:column headerText="Dt. Término" width="80" styleClass="text-center">
+                            <h:outputText value="#{linha.dataTermino}"/>
+                        </p:column>
+                        <p:column headerText="Hora Inicio / Término" width="100">
+                            <h:outputText value="#{linha.horaInicio} - #{linha.horaTermino}"/>
+                        </p:column>
+                        <p:column headerText="Curso">
+                            <p:commandLink value="#{linha.cursos.descricao}" action="#{turmaBean.editar(linha)}"/>
+                        </p:column>
+                        <p:column headerText="Filial">
+                            <h:outputText value="#{linha.cursos.filial.filial.pessoa.nome} - CNPJ: #{linha.cursos.filial.filial.pessoa.documento}"/>
+                        </p:column>
+                    </p:dataTable>                     
+                </h:form>                    
+            </p:panel>                    
         </f:view>
     </h:body>
 </ui:composition>

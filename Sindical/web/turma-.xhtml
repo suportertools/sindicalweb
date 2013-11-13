@@ -4,8 +4,7 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core"
-                xmlns:p="http://primefaces.org/ui">
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <h:head>
         <title>Cadastro de Turma</title>
@@ -13,14 +12,17 @@
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="templatePrime.xhtml"/>
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
         </f:subview>
         <f:view>
-            <p:panel id="i_panel_turma" styleClass="wrapper">
-                <h:form id="form_turma">
-                    <p:outputLabel value="Cadastro de Turma" styleClass="fonteHeader"/>
-                    <div class="clear"></div>
-                    <c:set scope="request" var="object" value="${turmaBean.turma}"/>
+            <h:form id="form_turma">
+                <c:set scope="request" var="object" value="${turmaBean.turma}"/>
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Cadastro de Turma" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
                     <rich:panel styleClass="divMae divFundo" style="width: auto; border-radius: 0;">
                         <h:panelGrid columns="2" columnClasses="coluna1, coluna2" styleClass="float-left">
                             <h:column>
@@ -158,8 +160,8 @@
                             <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{turmaBean.adicionarTurmaProfessor}" render="outConfirma, tbl" oncomplete="modalMensagem()" />
                         </h:panelGrid>
                         <br />
-                        <p:panel styleClass="float-left margin-top-max">
-                            <p:dataTable value="#{turmaBean.listaTurmaProfessor}" var="linha" style="width:100%" id="tbl" rendered="#{turmaBean.turma.id != -1}">
+                        <h:panelGroup style="overflow:auto; height:100px; width: 600px;"  layout="block" styleClass="float-left  margin-top-maior">
+                            <rich:dataTable value="#{turmaBean.listaTurmaProfessor}" var="linha" style="width:100%" id="tbl" rendered="#{turmaBean.turma.id != -1}">
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="..."/>
@@ -178,64 +180,64 @@
                                     </f:facet>
                                     <h:outputLabel value="#{linha.componenteCurricular.descricao}" styleClass="fontePadrao"/>
                                 </rich:column>
-                            </p:dataTable>
-                        </p:panel>
-                        <p:panelGrid style="clear: both;" styleClass="float-left margin-top-max" styleClass="sbb">
+                            </rich:dataTable>
+                        </h:panelGroup>
+                        <h:panelGrid style="clear: both;" styleClass="float-left margin-top-maior">
                             <h:column>
-                                <p:commandButton value="Salvar" title="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
-                                <p:commandButton value="Novo" title="Novo" action="#{turmaBean.novo}"/>
-                                <p:commandButton value="Excluir" title="Excluir" onclick="dgl_panel_excluir.show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
-                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTurma}" title="Pesquisar"/>
+                                <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" title="Salvar" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.show(); return false;" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo" action="#{turmaBean.novo}"/>
+                                <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" title="Excluir" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.show(); return false;" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaTurma}" title="Pesquisar"/>
                             </h:column>
-                        </p:panelGrid>
-                    </rich:panel>
-                    <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
-                        <f:facet name="header">
-                            <h:outputText value="Deseja salvar este registro?"/>
-                        </f:facet>
-                        <f:facet name="controls">
-                            <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide(); return false;">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </h:outputLink>
-                        </f:facet>
-                        <center>
-                            <h:panelGrid columns="2">
-                                <a4j:commandButton value="Sim" title="Salvar" action="#{turmaBean.salvar()}" render="i_panel_mensagem" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.hide(); #{rich:component('form_turma:i_panel_mensagem')}.show(); return false;" status="i_status"/>
-                                <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.hide(); return false;"/>
-                            </h:panelGrid>
-                        </center>
-                    </rich:popupPanel>
-                    <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form">
-                        <f:facet name="header">
-                            <h:outputText value="Deseja excluir este registro?"/>
-                        </f:facet>
-                        <f:facet name="controls">
-                            <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide(); return false;">
-                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                            </h:outputLink>
-                        </f:facet>
-                        <center>
-                            <h:panelGrid columns="2">
-                                <a4j:commandButton value="Sim" title="Excluir" action="#{turmaBean.excluir()}" render="i_panel_mensagem" oncomplete="#{rich:component('form_turma:i_panel_excluir')}.hide(); #{rich:component('form_turma:i_panel_mensagem')}.show();" status="i_status"/>
-                                <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_turma:i_panel_excluir')}.hide(); return false;"/>
-                            </h:panelGrid>
-                        </center>
-                    </rich:popupPanel>
-                    <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true">
-                        <f:facet name="header">
-                            <h:outputText value="Mensagem"/>
-                        </f:facet>
-                        <f:facet name="controls">
-                            <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide(); return false;"></h:outputLink>
-                        </f:facet>
-                        <center>
-                            <h:outputText value="#{turmaBean.msgConfirma}" styleClass="fontePadrao"/>                            
-                            <br /><br />
-                            <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_turma:i_panel_mensagem')}.hide(); return false;" action="turma"/>
-                        </center>
-                    </rich:popupPanel>
-                </h:form>
-            </p:panel>
+                        </h:panelGrid>
+                    </rich:panel>    
+                </center>
+                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja salvar este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Salvar" action="#{turmaBean.salvar()}" render="i_panel_mensagem" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.hide(); #{rich:component('form_turma:i_panel_mensagem')}.show(); return false;" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_turma:i_panel_salvar')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form">
+                    <f:facet name="header">
+                        <h:outputText value="Deseja excluir este registro?"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="2">
+                            <a4j:commandButton value="Sim" title="Excluir" action="#{turmaBean.excluir()}" render="i_panel_mensagem" oncomplete="#{rich:component('form_turma:i_panel_excluir')}.hide(); #{rich:component('form_turma:i_panel_mensagem')}.show();" status="i_status"/>
+                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_turma:i_panel_excluir')}.hide(); return false;"/>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true">
+                    <f:facet name="header">
+                        <h:outputText value="Mensagem"/>
+                    </f:facet>
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide(); return false;"></h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{turmaBean.msgConfirma}" styleClass="fontePadrao"/>                            
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_turma:i_panel_mensagem')}.hide(); return false;" action="turma"/>
+                    </center>
+                </rich:popupPanel>
+            </h:form>
         </f:view>
     </h:body>
 </ui:composition>
