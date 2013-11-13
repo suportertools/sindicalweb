@@ -18,57 +18,49 @@ import javax.faces.context.FacesContext;
 public class ProfessorBean implements java.io.Serializable {
 
     private Professor professor = new Professor();
-    private Pessoa pessoa = new Pessoa();
-    private String msgConfirma = "";
-    private float valorComissaof = 0;
+    private String mensagem = "";
     private List<Professor> listaProfessores = new ArrayList();
-    private int idIndex = -1;
 
-    public String salvar() {
+    public void salvar() {
         ProfessorDB professorDB = new ProfessorDBToplink();
-        if (pessoa.getId() == -1) {
-            msgConfirma = "Pesquise uma pessoa para ser Professor!";
-            return null;
+        if (professor.getProfessor().getId() == -1) {
+            mensagem = "Pesquise uma pessoa para ser Professor!";
+            return;
         }
-        professor.setProfessor(pessoa);
         if (professorDB.existeProfessor(professor)) {
-            msgConfirma = "Professor já cadastrado!";
-            return null;
+            mensagem = "Professor já cadastrado!";
+            return;
         }
-        
-        professor.setNrComissao(valorComissaof);
+
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
         if (professor.getId() == -1) {
             if (!salvarAcumuladoDB.inserirObjeto(professor)) {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao salvar Professor!";
-                return null;
+                mensagem = "Erro ao salvar Professor!";
+                return;
             } else {
-                msgConfirma = "Cadastro salvo com sucesso!";
+                mensagem = "Cadastro salvo com sucesso!";
             }
         } else {
             if (!salvarAcumuladoDB.alterarObjeto(professor)) {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao atualizar Professor!";
-                return null;
+                mensagem = "Erro ao atualizar Professor!";
+                return;
             } else {
-                msgConfirma = "Cadastro atualizado com sucesso!";
+                mensagem = "Cadastro atualizado com sucesso!";
             }
         }
         salvarAcumuladoDB.comitarTransacao();
+        professor = new Professor();
         listaProfessores.clear();
-        return null;
     }
 
-    public String editar(Professor p) {
+    public void editar(Professor p) {
         professor = p;
-        pessoa = professor.getProfessor();
-        valorComissaof = professor.getNrComissao();
-        return "professor";
     }
 
-    public String excluir() {
+    public void excluir() {
         if (professor.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             professor = (Professor) salvarAcumuladoDB.pesquisaCodigo(professor.getId(), "Professor");
@@ -77,24 +69,41 @@ public class ProfessorBean implements java.io.Serializable {
                 salvarAcumuladoDB.comitarTransacao();
                 listaProfessores.clear();
                 professor = new Professor();
-                msgConfirma = "Cadastro excluído com sucesso!";
+                mensagem = "Cadastro excluído com sucesso!";
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao excluir Cadastro!";
+                mensagem = "Erro ao excluir Cadastro!";
             }
         }
-        return null;
     }
 
-    public String novo() {
-        pessoa = new Pessoa();
+    public void excluir(Professor p) {
+        if (p.getId() != -1) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            professor = (Professor) salvarAcumuladoDB.pesquisaCodigo(p.getId(), "Professor");
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(professor)) {
+                salvarAcumuladoDB.comitarTransacao();
+                listaProfessores.clear();
+                professor = new Professor();
+                mensagem = "Cadastro excluído com sucesso!";
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao excluir Cadastro!";
+            }
+        }
+    }
+
+    public void novo() {
         professor = new Professor();
-        msgConfirma = "";
-        valorComissaof = 0;
-        return "professor";
+        mensagem = "";
     }
 
     public Professor getProfessor() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+            professor.setProfessor((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        }
         return professor;
     }
 
@@ -102,24 +111,12 @@ public class ProfessorBean implements java.io.Serializable {
         this.professor = professor;
     }
 
-    public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        }
-        return pessoa;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setPessoa(Pessoa pessoa) {
-        this.pessoa = pessoa;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public List<Professor> getListaProfessores() {
@@ -132,21 +129,5 @@ public class ProfessorBean implements java.io.Serializable {
 
     public void setListaProfessores(List<Professor> listaProfessores) {
         this.listaProfessores = listaProfessores;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
-    public float getValorComissaof() {
-        return valorComissaof;
-    }
-
-    public void setValorComissaof(float valorComissaof) {
-        this.valorComissaof = valorComissaof;
     }
 }

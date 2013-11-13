@@ -11,77 +11,85 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.event.SelectEvent;
 
 @ManagedBean
 @SessionScoped
 public class TurmaBean implements Serializable {
 
     private Turma turma = new Turma();
-    private String msgConfirma = "";
+    private String mensagem = "";
     private int idServicos = 0;
     private int idProfessor = 0;
     private int idComponenteCurricular = 0;
     private List<TurmaProfessor> listaTurmaProfessor = new ArrayList();
     private List<Turma> listaTurma = new ArrayList();
-    private int idIndex = -1;
-    private int idIndexPesquisa = -1;
     private MacFilial macFilial = new MacFilial();
     private Filial filial = new Filial();
     private String msgStatusFilial = "";
     private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<SelectItem> listaProfessores = new ArrayList<SelectItem>();
     private List<SelectItem> listaComponenteCurricular = new ArrayList<SelectItem>();
+    private Date date = new Date();
+    private Date horaInicio = new Date();
+    private Date horaTermino = new Date();
 
-    public String salvar() {
+    public void salvar() {
         if (turma.getFilial().getId() == -1) {
-            msgConfirma = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
-            return null;
+            mensagem = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
+            return;
         }
         if (turma.getQuantidade() == 0) {
-            msgConfirma = "Informar a quantidade de vagas!";
-            return null;
+            mensagem = "Informar a quantidade de vagas!";
+            return;
         }
         if (turma.getDataInicio().equals("__:__") || turma.getDataInicio().equals("") || turma.getDataInicio().isEmpty()) {
-            msgConfirma = "Informar a data inicial da turma!";
-            return null;
+            mensagem = "Informar a data inicial da turma!";
+            return;
         }
         if (turma.getDataTermino().equals("__:__") || turma.getDataTermino().equals("") || turma.getDataTermino().isEmpty()) {
-            msgConfirma = "Informar a data de termino da turma!";
-            return null;
+            mensagem = "Informar a data de termino da turma!";
+            return;
         }
+        turma.setHoraInicio(DataHoje.livre(horaInicio, "HH:mm"));
+        turma.setHoraTermino(DataHoje.livre(horaTermino, "HH:mm"));
         if (turma.getId() == -1) {
             int dataInicioInteger = DataHoje.converteDataParaInteger(turma.getDataInicio());
             int dataFinalInteger = DataHoje.converteDataParaInteger(turma.getDataTermino());
             int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
             if (dataInicioInteger < dataHojeInteger) {
-                msgConfirma = "A data inicial do curso deve ser maior ou igual a data de hoje!";
-                return null;
+                mensagem = "A data inicial do curso deve ser maior ou igual a data de hoje!";
+                return;
             }
             if (dataFinalInteger < dataHojeInteger) {
-                msgConfirma = "A data final do curso deve ser maior ou igual a data de hoje!";
-                return null;
+                mensagem = "A data final do curso deve ser maior ou igual a data de hoje!";
+                return;
             }
-            if (dataFinalInteger >= dataInicioInteger) {
-                msgConfirma = "A data final deve ser maior ou igual a data inicial!";
-                return null;
+            if (dataFinalInteger < dataInicioInteger) {
+                mensagem = "A data final deve ser maior ou igual a data inicial!";
+                return;
             }
         }
         if (DataHoje.validaHora(turma.getHoraInicio()).isEmpty()) {
-            msgConfirma = "Hora inicial invalida!";
-            return null;
+            mensagem = "Hora inicial invalida!";
+            return;
         }
         if (DataHoje.validaHora(turma.getHoraTermino()).isEmpty()) {
-            msgConfirma = "Hora final invalida!";
-            return null;
+            mensagem = "Hora final invalida!";
+            return;
         }
         if (turma.getHoraInicio().equals("__:__")) {
             turma.setHoraInicio("");
@@ -94,37 +102,39 @@ public class TurmaBean implements Serializable {
         TurmaDB turmaDB = new TurmaDBToplink();
         if (turma.getId() == -1) {
             if (turmaDB.existeTurma(turma)) {
-                msgConfirma = "Turma já existe!";
-                return null;
+                mensagem = "Turma já existe!";
+                return;
             }
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.inserirObjeto(turma)) {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao salvar turma!";
-                return null;
+                mensagem = "Erro ao salvar turma!";
+                return;
             }
             salvarAcumuladoDB.comitarTransacao();
-            msgConfirma = "Turma salva com sucesso!";
+            mensagem = "Turma salva com sucesso!";
             listaTurma.clear();
         } else {
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.alterarObjeto(turma)) {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao atualizar turma!";
-                return null;
+                mensagem = "Erro ao atualizar turma!";
+                return;
             }
             salvarAcumuladoDB.comitarTransacao();
-            msgConfirma = "Turma atualizada com sucesso!";
+            mensagem = "Turma atualizada com sucesso!";
             listaTurma.clear();
         }
-        return null;
     }
 
-    public String editar(Turma t) {
+    public String editar(Turma t) throws ParseException {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         Turma turmaC = (Turma) dB.pesquisaCodigo(t.getId(), "Turma");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("turmaPesquisa", turmaC);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        SimpleDateFormat formatador = new SimpleDateFormat("HH:mm");
+        this.horaInicio = formatador.parse(turmaC.getHoraInicio());
+        this.horaTermino = formatador.parse(turmaC.getHoraTermino());
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "turma";
         } else {
@@ -132,34 +142,33 @@ public class TurmaBean implements Serializable {
         }
     }
 
-    public String excluir() {
+    public void excluir() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (turma.getId() != -1) {
             salvarAcumuladoDB.abrirTransacao();
             for (int i = 0; i < listaTurmaProfessor.size(); i++) {
                 if (listaTurmaProfessor.get(i).getId() != -1) {
                     if (!salvarAcumuladoDB.deletarObjeto((TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor.get(i).getId(), "TurmaProfessor"))) {
-                        msgConfirma = "Erro ao excluir Professores!";
                         salvarAcumuladoDB.desfazerTransacao();
-                        return null;
+                        mensagem = "Erro ao excluir Professores!";
+                        return;
                     }
                 }
             }
 
             if (!salvarAcumuladoDB.deletarObjeto((Turma) salvarAcumuladoDB.pesquisaCodigo(turma.getId(), "Turma"))) {
-                msgConfirma = "Erro ao excluir Turma!";
                 salvarAcumuladoDB.desfazerTransacao();
-                return null;
+                mensagem = "Erro ao excluir Turma!";
+                return;
             }
 
-            msgConfirma = "Cadastro excluído com sucesso!";
             salvarAcumuladoDB.comitarTransacao();
+            mensagem = "Cadastro excluído com sucesso!";
             turma = new Turma();
             novoGenerico();
         } else {
-            msgConfirma = "Pesquise uma turma para ser excluída!";
+            mensagem = "Pesquise uma turma para ser excluída!";
         }
-        return "turma";
     }
 
     public void removerTurmaProfessor(TurmaProfessor tp) {
@@ -169,10 +178,10 @@ public class TurmaBean implements Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.deletarObjeto(tp)) {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao excluir professor!";
+                GenericaMensagem.warn("Erro", "Ao remover este registro!");
             } else {
                 salvarAcumuladoDB.comitarTransacao();
-                msgConfirma = "Professor e Componente Curricular removidos com sucesso";
+                GenericaMensagem.info("Sucesso", "Professor e Componente Curricular removidos com sucesso");
                 listaTurmaProfessor.clear();
             }
         }
@@ -184,6 +193,8 @@ public class TurmaBean implements Serializable {
         turma = new Turma();
         idComponenteCurricular = 0;
         listaTurmaProfessor.clear();
+        horaInicio = new Date();
+        horaTermino = new Date();
         return "turma";
 
     }
@@ -192,32 +203,43 @@ public class TurmaBean implements Serializable {
         idServicos = 0;
         idProfessor = 0;
         turma = new Turma();
+        turma.setDtInicio(DataHoje.dataHoje());
+        turma.setDtTermino(DataHoje.dataHoje());
         idComponenteCurricular = 0;
         listaTurmaProfessor.clear();
+        horaInicio = new Date();
+        horaTermino = new Date();        
     }
 
-    public String adicionarTurmaProfessor() {
-        msgConfirma = "";
+    public void adicionarTurmaProfessor() {
+        mensagem = "";
         TurmaProfessor turmaProfessor = new TurmaProfessor();
         TurmaDB turmaDB = new TurmaDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        if (listaProfessores.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Cadastrar professores!");
+            return;
+        }
+        if (listaComponenteCurricular.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Cadastrar componente currícular!");
+            return;
+        }
         turmaProfessor.setProfessor((Professor) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaProfessores.get(idProfessor).getDescription()), "Professor"));
         turmaProfessor.setComponenteCurricular((ComponenteCurricular) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaComponenteCurricular.get(idComponenteCurricular).getDescription()), "ComponenteCurricular"));
         turmaProfessor.setTurma(turma);
         if (turmaDB.existeTurmaProfessor(turmaProfessor)) {
-            msgConfirma = "Professor e Componente curricular já existem!";
-            return null;
+            GenericaMensagem.warn("Validação", "Cadastro já existe!");
+            return;
         }
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.inserirObjeto(turmaProfessor)) {
-            msgConfirma = "Professor e Componente curricular adicionados com sucesso";
-            listaTurmaProfessor.clear();
+            GenericaMensagem.info("Sucesso", "Professor e Componente curricular adicionados");
             salvarAcumuladoDB.comitarTransacao();
+            listaTurmaProfessor.clear();
         } else {
-            msgConfirma = "Erro ao adicionar Professor e Componente curricular!";
             salvarAcumuladoDB.desfazerTransacao();
+            GenericaMensagem.warn("Erro", "Ao adicionar este registro!");
         }
-        return null;
     }
 
     public List<SelectItem> getListaServicos() {
@@ -274,7 +296,6 @@ public class TurmaBean implements Serializable {
 
     public Turma getTurma() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa") != null) {
-            TurmaDB turmaDB = new TurmaDBToplink();
             turma = (Turma) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("turmaPesquisa");
         }
@@ -289,12 +310,12 @@ public class TurmaBean implements Serializable {
         this.turma = turma;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public int getIdServicos() {
@@ -343,22 +364,6 @@ public class TurmaBean implements Serializable {
 
     public void setListaTurma(List<Turma> listaTurma) {
         this.listaTurma = listaTurma;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
-    public int getIdIndexPesquisa() {
-        return idIndexPesquisa;
-    }
-
-    public void setIdIndexPesquisa(int idIndexPesquisa) {
-        this.idIndexPesquisa = idIndexPesquisa;
     }
 
     public String getMsgStatusFilial() {
@@ -437,5 +442,42 @@ public class TurmaBean implements Serializable {
             }
         }
         return "turma";
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Date getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(Date horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public Date getHoraTermino() {
+        return horaTermino;
+    }
+
+    public void setHoraTermino(Date horaTermino) {
+        this.horaTermino = horaTermino;
+    }
+    
+    public void dataListener(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.date = DataHoje.converte(format.format(event.getObject()));
+    }    
+    
+    public void selecionaHoraInicio(SelectEvent event) {
+        this.horaInicio  = (Date) event.getObject();
+    }
+    
+    public void selecionaHoraTermino(SelectEvent event) {
+        this.horaTermino  = (Date) event.getObject();
     }
 }

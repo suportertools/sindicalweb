@@ -4,8 +4,10 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "ESC_TURMA")
@@ -228,6 +230,16 @@ public class Turma implements Serializable {
         if (!(dataTermino.isEmpty())) {
             this.setDtTermino(DataHoje.converte(dataTermino));
         }
+    }
+    
+    public void selecionaDataInicio(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dtInicio = DataHoje.converte(format.format(event.getObject()));
+    }
+    
+    public void selecionaDataTermino(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dtTermino = DataHoje.converte(format.format(event.getObject()));
     }
 
     public Filial getFilial() {
