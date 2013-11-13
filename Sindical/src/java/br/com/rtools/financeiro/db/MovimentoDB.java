@@ -132,6 +132,8 @@ public interface MovimentoDB {
 
     public List<Movimento> movimentoIdbaixa(int id_baixa);
 
+    public List<Movimento> listaMovimentoBaixaOrder(int id_baixa);
+    
     public List<Vector> pesquisaAcrescimo(int id_movimento);
 
     public List<Movimento> listaMovimentosDoLote(int idLote);

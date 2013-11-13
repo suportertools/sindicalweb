@@ -1,11 +1,14 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.pessoa.Cnae;
+import br.com.rtools.pessoa.db.CnaeDB;
+import br.com.rtools.pessoa.db.CnaeDBToplink;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -13,29 +16,20 @@ import javax.faces.context.FacesContext;
 @ManagedBean
 @SessionScoped
 public class CnaeBean implements Serializable {
-
     private Cnae cnae = new Cnae();
     private String msgConfirma;
     private int idIndex = -1;
     private List<Cnae> listaCnae = new ArrayList();
-    private boolean limpar = false;
-
-    public String novo() {
+    
+    public String novo(){
         cnae = new Cnae();
         listaCnae.clear();
-        return null;
-    }
-
-    public String limpar() {
-        if (isLimpar() == true) {
-            novo();
-        }
         return "cnae";
     }
 
     public Cnae getCnae() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cnaePesquisado") != null) {
-            cnae = (Cnae) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cnaePesquisado");
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cnaePesquisado")!= null){
+            cnae = (Cnae)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cnaePesquisado");
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cnaePesquisado");
         }
         return cnae;
@@ -53,74 +47,90 @@ public class CnaeBean implements Serializable {
         this.msgConfirma = msgConfirma;
     }
 
-    public String salvar() {
-        if (getCnae().getCnae().isEmpty()) {
+    public String salvar(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        CnaeDB db = new CnaeDBToplink();
+        if (getCnae().getCnae().isEmpty()){
             setMsgConfirma("Digite um Cnae!");
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
-        if (getCnae().getNumero().isEmpty()) {
+
+        if (getCnae().getNumero().isEmpty()){
             setMsgConfirma("Digite o Número do Cnae!");
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        if (getCnae().getId() == -1) {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(cnae)) {
-                salvarAcumuladoDB.comitarTransacao();
-                setMsgConfirma("Cnae salvo com sucesso.");
-                setLimpar(false);
-            } else {
-                salvarAcumuladoDB.desfazerTransacao();
+
+        if(db.idCnae(getCnae()) != null){
+            setMsgConfirma("Este Cnae já existe no Sistema!");
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            return null;
+        }
+
+        sv.abrirTransacao();
+        if (getCnae().getId() == -1){
+            if (sv.inserirObjeto(cnae)){
+                setMsgConfirma("Cnae salvo com sucesso");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+                listaCnae.clear();
+                sv.comitarTransacao();
+            }else{
                 setMsgConfirma("Erro ao salvar Cnae!");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                sv.desfazerTransacao();
             }
-        } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(getCnae())) {
-                salvarAcumuladoDB.comitarTransacao();
+        }else{
+            if (sv.alterarObjeto(cnae)){
                 setMsgConfirma("Cnae atualizada com sucesso.");
-            } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+                listaCnae.clear();
+                sv.comitarTransacao();
+            }else{
                 setMsgConfirma("Erro ao atualizar Cnae!");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                sv.desfazerTransacao();
             }
         }
         return null;
     }
 
-    public String excluir() {
-        if (getCnae().getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            setCnae((Cnae) salvarAcumuladoDB.pesquisaCodigo(getCnae().getId(), "Cnae"));
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(cnae)) {
-                salvarAcumuladoDB.comitarTransacao();
+    public String excluir(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        if (cnae.getId()!= -1){
+            sv.abrirTransacao();
+            if ( sv.deletarObjeto(sv.pesquisaCodigo(cnae.getId(), "Cnae")) ){
+                setMsgConfirma("Cadastro excluído com sucesso!");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                 cnae = new Cnae();
                 listaCnae.clear();
-                setMsgConfirma("Cadastro excluído com sucesso!");
-            } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                sv.comitarTransacao();
+            }else{
                 setMsgConfirma("Erro! Cadastro não foi excluído.");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             }
-        } else {
+        }else{
             setMsgConfirma("Não há registro para excluir.");
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
         }
         return null;
     }
 
-    public String editar(Cnae c) {
-        cnae = c;
+    public String editar(){
+        setCnae((Cnae) getListaCnae().get(getIdIndex()));
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cnaePesquisado", getCnae());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
         setCnae(new Cnae());
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null){
             return "cnae";
-        } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }else{
+            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
     }
 
     public List<Cnae> getListaCnae() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        listaCnae = salvarAcumuladoDB.listaObjeto("Cnae", true);
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        listaCnae = sv.listaObjeto("Cnae");
         return listaCnae;
     }
 
@@ -134,13 +144,5 @@ public class CnaeBean implements Serializable {
 
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
-    }
-
-    public boolean isLimpar() {
-        return limpar;
-    }
-
-    public void setLimpar(boolean limpar) {
-        this.limpar = limpar;
     }
 }

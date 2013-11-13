@@ -25,10 +25,7 @@ public class GrupoCidadesDBToplink extends DB implements GrupoCidadesDB {
     @Override
     public List pesquisaCidadesBase() {
         try {
-            Query qry = getEntityManager().createQuery("select cont.cidade"
-                    + "  from GrupoCidades cont "
-                    //+ " order by cont.cidade"
-                    + " group by cont.cidade");
+            Query qry = getEntityManager().createQuery("SELECT cont.cidade  FROM GrupoCidades cont GROUP BY cont.cidade ORDER BY cont.cidade.cidade ASC");
             return (qry.getResultList());
         } catch (Exception e) {
             return new ArrayList();

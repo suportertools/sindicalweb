@@ -1883,6 +1883,20 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return new ArrayList();
         }
     }
+    
+    @Override
+    public List<Movimento> listaMovimentoBaixaOrder(int id_baixa) {
+        try {
+            String textoQuery = " select m "
+                    + "   from Movimento m "
+                    + "  where m.baixa.id = :pid order by m.pessoa.id ASC";
+            Query qry = getEntityManager().createQuery(textoQuery);
+            qry.setParameter("pid", id_baixa);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
 
     @Override
     public List<Vector> pesquisaAcrescimo(int id_movimento) {

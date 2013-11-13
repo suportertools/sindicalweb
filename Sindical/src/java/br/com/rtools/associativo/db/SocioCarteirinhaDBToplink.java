@@ -1,9 +1,13 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.associativo.HistoricoCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
+import br.com.rtools.endereco.Endereco;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.Query;
 
 public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB {
@@ -83,6 +87,138 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
         return result;
     }
 
+    @Override
+    public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem){
+        try{
+            String textqry = " SELECT s.codsocio, " +
+                             "        s.nome, " +
+                             "        pj.ds_documento, " +
+                             "        pj.ds_nome, " +
+                             "        to_char(sc.dt_emissao, 'DD/MM/YYYY'), " +
+                             "        c.ds_cidade, " +
+                             "        to_char(s.validade_carteirinha, 'DD/MM/YYYY'), " +
+                             "        c.ds_uf, " +
+                             "        to_char(pe.dt_admissao, 'DD/MM/YYYY'), " +
+                             "        j.ds_fantasia, " +
+                             "        s.matricula, " +
+                             "        s.nr_via, " +
+                             "        s.id_socio, " +
+                             "        to_char(s.filiacao, 'DD/MM/YYYY'), " +
+                             "        '', " + // PROFISSAO
+                             "        p.ds_documento, " +
+                             "        f.ds_rg " +
+                             "  FROM soc_socios_vw s " +
+                             " INNER JOIN pes_pessoa p on p.id = s.codsocio " +
+                             " INNER JOIN pes_fisica f on f.id_pessoa = p.id " +
+                             "  LEFT JOIN pes_pessoa_empresa pe on f.id = pe.id_fisica " +
+                             "  LEFT JOIN pes_juridica j on j.id = pe.id_juridica " +
+                             "  LEFT JOIN pes_pessoa pj on pj.id = j.id_pessoa "+
+                    
+                             "  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = s.codsocio " +
+                             "  LEFT JOIN end_endereco ende on ende.id = pend.id_endereco " +
+                             "  LEFT JOIN end_cidade c on c.id = ende.id_cidade "+
+                             "  LEFT JOIN soc_carteirinha sc on sc.id_socio = s.id_socio "+
+                    
+                             "  WHERE s.parentesco = 'TITULAR' "+
+                             "    AND pe.dt_demissao IS NULL "+
+                             "    AND pend.id_tipo_endereco = 1 ";
+            // NÃO IMPRESSOS / EMPRESAS
+            if (tipo.equals("niEmpresa")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%"+descricao.toLowerCase()+"%' "
+                            +  "    AND s.id_socio NOT IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += "    AND s.id_socio NOT IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+            }
+            
+            // NÃO IMPRESSOS / CNPJ
+            if (tipo.equals("niCNPJ")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(pj.ds_documento)  LIKE '%"+descricao.toLowerCase()+"%' "
+                             + "    AND s.id_socio NOT IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += "    AND s.id_socio NOT IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+            }
+            
+            // IMPRESSOS / EMPRESAS
+            if (tipo.equals("iEmpresa")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%"+descricao.toLowerCase()+"%' "
+                            +  "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+            }
+            
+            // IMPRESSOS / CNPJ
+            if (tipo.equals("iCNPJ")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(pj.ds_documento)  LIKE '%"+descricao.toLowerCase()+"%' "
+                             + "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+            }
+            
+            // IMPRESSOS / ULTIMOS 30 DIAS
+            if (tipo.equals("iDias")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(pj.ds_nome)  LIKE '%"+descricao.toLowerCase()+"%' "
+                             + "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) "
+                             + "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
+                else
+                    textqry += "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) "
+                             + "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
+            }
+            
+            // SOCIOS / NOME
+            if (tipo.equals("iNome")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(s.nome)  LIKE '%"+descricao.toLowerCase()+"%' ";
+                             //+ "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += " ERRO ";
+            }
+            
+            // SOCIOS / CODIGO
+            if (tipo.equals("iCodigo")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND s.codsocio = "+Integer.parseInt(descricao);
+                             //+ "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += " ERRO ";
+            }
+            
+            // SOCIOS / CPF
+            if (tipo.equals("iCPF")){
+                if (!descricao.isEmpty())
+                    textqry += "    AND lower(p.ds_documento) LIKE '%"+descricao.toLowerCase()+"%' ";
+                             //+ "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
+                else
+                    textqry += " ERRO ";
+            }
+            
+            // ORDEM DA QUERY
+            if (indexOrdem.equals("0")) {
+                textqry += " ORDER BY s.nome ";
+            } else if (indexOrdem.equals("1")) {
+                textqry += " ORDER BY pj.ds_nome, pj.ds_documento, s.nome ";
+            } else if (indexOrdem.equals("2")) {
+                textqry += " ORDER BY pj.ds_documento, s.nome ";
+            } else if (indexOrdem.equals("3")) {
+                textqry += " ORDER BY sc.dt_emissao desc, s.nome ";
+            } else if (indexOrdem.equals("4")) {
+                textqry += " ORDER BY sc.dt_emissao desc, pj.ds_nome, pj.ds_documento, s.nome";
+            }
+            Query qry = getEntityManager().createNativeQuery(textqry);
+            
+            return qry.getResultList();
+        }catch(Exception e){
+        
+        }
+        return new ArrayList();
+            
+            
+    }
+    
     @Override
     public List listaFiltro(String indexFiltro, String descEmpresa, String indexOrdem, boolean fantasia) {
         List lista = new ArrayList();
@@ -303,5 +439,16 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
         } catch (Exception e) {
         }
         return false;
+    }
+    
+    @Override
+    public List<HistoricoCarteirinha> listaHistoricoCarteirinha(int id_socio) {
+        try {
+            Query qry = getEntityManager().createQuery(" SELECT hc FROM HistoricoCarteirinha hc WHERE hc.socios.id = "+id_socio);
+            return qry.getResultList();
+            
+        } catch (Exception e) {
+        }
+        return new ArrayList();
     }
 }

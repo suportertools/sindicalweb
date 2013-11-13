@@ -135,7 +135,7 @@ public class RelatorioContribuintesJSFBean {
         // BAIRRO DO RELATORIO -----------------------------------------------------------
         if (bairro.getId() != -1) {
             List<Bairro> listaBairro = new ArrayList();
-//                    listaBairro.add(dbBairro.pesquisaCodigo(bairro.getId()));
+            listaBairro.add((Bairro)salvarAcumuladoDB.pesquisaCodigo(bairro.getId(), "Bairro"));
             if (!listaBairro.isEmpty()) {
                 for (int i = 0; i < listaBairro.size(); i++) {
                     if (bairros.length() > 0 && i != listaBairro.size()) {
