@@ -36,7 +36,7 @@
                             </p:panel>
                             <p:panelGrid style="margin-top: 10px!important;" columns="6" styleClass="sbb">
                                 <p:outputLabel value="Data:"  />
-                                <p:calendar value="#{feriadosBean.feriados.dtData}" id="cal" readonlyInput="true" readonly="true" pattern="dd/MM/yyyy" >
+                                <p:calendar value="#{feriadosBean.feriados.dtData}" id="cal" readonlyInput="true" pattern="dd/MM/yyyy" >
                                     <p:ajax event="dateSelect" update="@this" listener="#{feriadosBean.dataListener}" />
                                 </p:calendar>
                                 <p:outputLabel value="Nome:" for="idNome"/>

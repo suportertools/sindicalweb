@@ -2,73 +2,58 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Vendedores</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="form_vendedor">
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Cadastro Vendedores" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae" style="text-align: left">
-                        <h:panelGrid columns="4">
-                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true"/>
-                            <h:outputLabel value="Vendedor: " styleClass="fontePadrao"/>
-                            <h:outputText id="idNome" value="#{vendedorBean.pessoa.nome}" styleClass="fontePadrao"/>
-                            <a4j:commandButton image="/Imagens/novo.png" immediate="true" action="#{vendedorBean.adicionar}" oncomplete="#{rich:component('form_vendedor:id_panel_mensagem')}.show(); return false;" render="id_panel_mensagem, tbl"/>
-                        </h:panelGrid>
-                        <h:panelGrid columns="3">
-                            <h:panelGroup style="overflow:auto; height:400px; width: 500px;"  layout="block">
-                                <rich:dataTable value="#{vendedorBean.listaVendedores}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column>
-                                    <rich:column styleClass="colunaPesquisa">
-                                        <f:facet name="header">
-                                            <h:outputText value="..."/>
-                                        </f:facet>
-                                        <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{vendedorBean.excluir(linha)}" oncomplete="#{rich:component('form_vendedor:id_panel_mensagem')}.show(); return false;" render="id_panel_mensagem, tbl" />
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Nome"/>
-                                        </f:facet>
-                                        <h:outputLabel value="#{linha.pessoa.nome}" styleClass="fontePadrao"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </h:panelGroup>
-                        </h:panelGrid>
-                    </div>
-                </center>
-                <rich:popupPanel id="id_panel_mensagem" modal="true" resizeable="true">
-                    <f:facet name="header">
-                        <h:outputText value="Mensagem"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('id_panel_mensagem')}.hide();
-                                return false;"></h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:outputText value="#{vendedorBean.msgConfirma}" styleClass="fontePadrao"/>                            
-                        <br /><br />
-                        <a4j:commandButton value="Ok" title="Ok" action="vendedor" oncomplete="#{rich:component('form_vendedor:id_panel_mensagem')}.hide();" />
-                    </center>
-                </rich:popupPanel>                
-            </h:form>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_vendedor">
+                    <p:outputLabel value="Cadastro de Vendedor" styleClass="fonteHeader"/>
+                    <c:set scope="request" var="object" value="${vendedorBean.vendedor}"/>
+                    <div class="clear"></div>
+                    <p:panel id="id_panel_turma" styleClass="sbb margin-top-max">
+                        <p:panelGrid columns="4">
+                            <p:commandButton value="Vendedor" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoa}" title="Pesquisar pessoa > vendedor" id="id_pessoa_vendedor"/>
+                            <p:column>
+                                <p:outputLabel value="Pesquisar pessoa" style="border-bottom: 1px dotted #888;" rendered="#{vendedorBean.vendedor.pessoa.id == -1}" for="id_pessoa_vendedor"/>
+                                <p:outputLabel id="idNome" value="#{vendedorBean.vendedor.pessoa.nome}" rendered="#{vendedorBean.vendedor.pessoa.id != -1}" for="id_pessoa_vendedor"/>
+                            </p:column>
+                            <p:commandButton value="Adicionar" action="#{vendedorBean.adicionar}" oncomplete="PF('dgl_panel_mensagem').show()" update="id_panel_turma, i_mensagem, tbl" rendered="#{vendedorBean.vendedor.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                        </p:panelGrid>
+                        <p:panelGrid columns="1" id="tbl" styleClass="sbb margin-top-max">
+                            <p:dataTable value="#{vendedorBean.listaVendedores}" var="linha">
+                                <p:column>
+                                    <f:facet name="header">
+                                        <h:outputText value="Nome"/>
+                                    </f:facet>
+                                    <h:outputLabel value="#{linha.pessoa.nome}" styleClass="fontePadrao"/>
+                                </p:column>
+                                <p:column>
+                                    <p:commandButton icon="ui-icon-trash" action="#{vendedorBean.excluir(linha)}" oncomplete="PF('dgl_panel_mensagem').show()" update=":form_vendedor:tbl, :form_vendedor:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
+                                </p:column>
+                                <f:facet name="header">
+                                    Relação de vendedores
+                                </f:facet>
+                            </p:dataTable>
+                        </p:panelGrid>                        
+                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
+                            <center>
+                                <h:outputLabel value="#{vendedorBean.mensagem}" id="i_mensagem"/>
+                                <br /><br />
+                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
+                            </center>
+                        </p:dialog>
+                    </p:panel>
+                </h:form>
+            </p:panel>
         </f:view>
     </h:body>
 </ui:composition>
