@@ -17,56 +17,48 @@ import javax.faces.context.FacesContext;
 public class VendedorBean implements java.io.Serializable {
 
     private Vendedor vendedor = new Vendedor();
-    private String msgConfirma = "";
+    private String mensagem = "";
     private List<Vendedor> listaVendedores = new ArrayList();
-    private Pessoa pessoa = new Pessoa();
-    private int idIndex = -1;
 
-    public String adicionar() {
-        if (pessoa.getId() == -1) {
-            msgConfirma = "Pesquise uma Pessoa para ser vendedora!";
-            return null;
+    public void adicionar() {
+        if (vendedor.getPessoa().getId() == -1) {
+            mensagem = "Pesquise uma Pessoa para ser vendedora!";
+            return;
         }
-        vendedor.setPessoa(pessoa);
         VendedorDB vendedorDB = new VendedorDBToplink();
         if (vendedorDB.existeVendedor(vendedor)) {
-            msgConfirma = "Este vendedor já existe!";
-            pessoa = new Pessoa();
+            mensagem = "Este vendedor já existe!";
             vendedor = new Vendedor();
-            return null;
+            return;
         }
-
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.inserirObjeto(vendedor)) {
             salvarAcumuladoDB.comitarTransacao();
-            msgConfirma = "Vendedor adicionado com sucesso!";
+            mensagem = "Vendedor adicionado com sucesso!";
         } else {
             salvarAcumuladoDB.desfazerTransacao();
-            msgConfirma = "Erro ao adicionar!";
+            mensagem = "Erro ao adicionar!";
         }
         listaVendedores.clear();
-        pessoa = new Pessoa();
         vendedor = new Vendedor();
-        return null;
     }
 
-    public String excluir(Vendedor v) {
+    public void excluir(Vendedor v) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         vendedor = (Vendedor) salvarAcumuladoDB.pesquisaCodigo(v.getId(), "Vendedor");
         if (vendedor != null) {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(vendedor)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msgConfirma = "Excluído com sucesso!";
+                mensagem = "Excluído com sucesso!";
                 listaVendedores.clear();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao Excluir!";
+                mensagem = "Erro ao Excluir!";
             }
         }
         vendedor = new Vendedor();
-        return null;
     }
 
     public List<Vendedor> getListaVendedores() {
@@ -81,39 +73,23 @@ public class VendedorBean implements java.io.Serializable {
         this.listaVendedores = listaVendedores;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public Vendedor getVendedor() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
+            vendedor.setPessoa((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        }
         return vendedor;
     }
 
     public void setVendedor(Vendedor vendedor) {
         this.vendedor = vendedor;
-    }
-
-    public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        }
-        return pessoa;
-    }
-
-    public void setPessoa(Pessoa pessoa) {
-        this.pessoa = pessoa;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 }
