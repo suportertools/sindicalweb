@@ -4,105 +4,81 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Menu - Social</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <style type="text/css">
-            .divMenuSocial, .divBotaoPrincipal:hover {-webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px;  border: 0;}
-            .corpoAcessos { width: 200px; height: 300px; }
-            .divMenuSocial {width: 980px;}
-            .divMenuSocial .divBotao {background: #e0e0e0;}
-            .divMenuSocial .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
-            .divMenuSocial .divBotao:hover {background: #abc4eb;}            
-        </style>
+        <title>Sindical - Menu Social</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body class="divMenu"><div Align="Center">
-            <f:subview id="header">
-                <ui:include src="template.xhtml"/>
-                <ui:include src="templateLinks.xhtml"/>
+    <h:body class="divMenu">
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <h:form id="formMenuSocial">
+                        <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
+                            <p:menubar>
+                                <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">  
+                                    <p:menuitem value="Associar / Física"  action="#{chamadaPaginaBean.pessoaFisica}"/>
+                                    <p:menuitem value="Suspensão de Socio" action="#{chamadaPaginaBean.suspencao}" />
+                                    <p:menuitem value="Convênio Médico"    action="#{chamadaPaginaBean.convenioMedico}" />
+                                    <p:menuitem value="Juridica"           action="#{chamadaPaginaBean.pessoaJuridica}" />
+
+                                    <p:submenu label="Convênio Empresas">
+                                        <p:menuitem value="Convênio"             action="#{chamadaPaginaBean.convenio}" />
+                                        <p:menuitem value="Grupo Convênio"       action="#{chamadaPaginaBean.grupoConvenio}" />
+                                        <p:menuitem value="SubGrupo Convênio"    action="#{chamadaPaginaBean.subGrupoConvenio}" />
+                                    </p:submenu>
+
+                                    <p:submenu label="Suporte">
+                                        <p:menuitem value="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" />
+                                        <p:menuitem value="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" />
+                                        <p:menuitem value="Banda"                action="#{chamadaPaginaBean.bandas}" />
+                                        <p:menuitem value="Baile"                action="#{chamadaPaginaBean.baile}" />
+                                        <p:menuitem value="Caravanas"            action="#{chamadaPaginaBean.caravana}" />
+                                        <p:menuitem value="Categoria do Sócio"   action="#{chamadaPaginaBean.categoria}" />
+                                        <p:menuitem value="Grupo Categoria"      action="#{chamadaPaginaBean.grupoCategoria}" />
+                                        <p:menuitem value="Parentesco"           action="#{chamadaPaginaBean.parentesco}" />
+                                        <p:menuitem value="Midia"                action="#{chamadaPaginaBean.midia}" />
+                                        <p:menuitem value="Registro Empresarial"         action="#{chamadaPaginaBean.registroEmpresarial}" />
+                                        <p:menuitem value="Desconto Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" />
+                                    </p:submenu>
+                                </p:submenu>
+
+                                <p:submenu label="Movimento" style="margin-right: 15px">
+                                    <p:menuitem value="Movimentos a Receber"   action="#{chamadaPaginaBean.movimentosReceberSocial()}" />
+                                    <p:menuitem value="Geração Mensal"         action="#{chamadaPaginaBean.contribuicaoSocio}" />
+                                    <p:menuitem value="Geração Individual"     action="#{chamadaPaginaBean.contribuicaoPorSocio}" />
+                                    <p:menuitem value="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" />
+                                    <p:menuitem value="Emissão de Guias"       action="#{chamadaPaginaBean.emissaoGuias}" />
+                                    <p:menuitem value="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" />
+                                    <p:menuitem value="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" />
+                                </p:submenu>    
+
+
+                                <p:submenu label="Relatórios">
+                                    <p:menuitem value="Relatórios de Sócios"     action="#{chamadaPaginaBean.relatorioSocios}" />
+                                    <p:menuitem value="Cartão Social"            action="#{chamadaPaginaBean.cartaoSocial}" />
+                                    <p:menuitem value="Ficha Social Branco"      action="#{sociosBean.imprimirFichaSocialVazia()}" />
+                                </p:submenu>                            
+                            </p:menubar> 
+                        </p:panel>
+                    </h:form>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
             </f:subview>
-            <f:view>
-                <h:form id="formMenuSocial" style="border: 0; width: 980px; height: 800px; border-bottom: 1px dashed #888; ">
-                    <h:panelGrid cellpadding="0" cellspacing="0">
-                        <h:panelGrid columns="2">
-                            <h:column><h:graphicImage value="/Imagens/BarraSuperior.png"/></h:column>
-                            <h:column><h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" /></h:column>
-                        </h:panelGrid>
-                        <rich:toolbar styleClass="divMenuSocial" style="background: #e0e0e0; border: 0">
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/cadastro.png" styleClass="pic"/>
-                                            <h:outputText value="Cadastro" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Associar / Física"  action="#{chamadaPaginaBean.pessoaFisica}" styleClass="divBotao"/>
-                                <rich:menuItem label="Suspensão de Socio" action="#{chamadaPaginaBean.suspencao}" styleClass="divBotao"/>
-                                <rich:menuItem label="Convênio Médico"    action="#{chamadaPaginaBean.convenioMedico}" styleClass="divBotao"/>
-                                <rich:menuItem label="Juridica"           action="#{chamadaPaginaBean.pessoaJuridica}" styleClass="divBotao"/>
-
-                                <rich:menuGroup label="Convênio Empresas" styleClass="divBotao">
-                                    <rich:menuItem label="Convênio"             action="#{chamadaPaginaBean.convenio}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Grupo Convênio"       action="#{chamadaPaginaBean.grupoConvenio}" styleClass="divBotao"/>
-                                    <rich:menuItem label="SubGrupo Convênio"    action="#{chamadaPaginaBean.subGrupoConvenio}" styleClass="divBotao"/>
-                                </rich:menuGroup>
-
-                                <rich:menuGroup label="Suporte" styleClass="divBotao">
-                                    <rich:menuItem label="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Banda"                action="#{chamadaPaginaBean.bandas}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Baile"                action="#{chamadaPaginaBean.baile}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Caravanas"            action="#{chamadaPaginaBean.caravana}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Categoria do Sócio"   action="#{chamadaPaginaBean.categoria}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Grupo Categoria"      action="#{chamadaPaginaBean.grupoCategoria}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Parentesco"           action="#{chamadaPaginaBean.parentesco}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Midia"                action="#{chamadaPaginaBean.midia}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Registro Empresarial"         action="#{chamadaPaginaBean.registroEmpresarial}" styleClass="divBotao"/>
-                                    <rich:menuItem label="Desconto Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" styleClass="divBotao"/>
-                                </rich:menuGroup>
-                                <!-- <rich:menuItem label="Contrato"                 action="#{chamadaPaginaBean.contrato}" styleClass="divBotao"/> -->
-                            </rich:dropDownMenu>
-
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/movimento.png" styleClass="pic"/>
-                                            <h:outputText value="Movimento" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Movimentos a Receber"   action="#{chamadaPaginaBean.movimentosReceberSocial()}" styleClass="divBotao"/>
-                                <rich:menuItem label="Geração Mensal"         action="#{chamadaPaginaBean.contribuicaoSocio}" styleClass="divBotao"/>
-                                <rich:menuItem label="Geração Individual"     action="#{chamadaPaginaBean.contribuicaoPorSocio}" styleClass="divBotao"/>
-                                <rich:menuItem label="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" styleClass="divBotao"/>
-                                <rich:menuItem label="Emissão de Guias"       action="#{chamadaPaginaBean.emissaoGuias}" styleClass="divBotao"/>
-                                <!-- <rich:menuItem label="Emissão de Carteirinha" action="# {chamadaPaginaBean.emissaoCarteirinha}" styleClass="divBotao"/> -->
-                                <rich:menuItem label="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" styleClass="divBotao"/>
-                                <rich:menuItem label="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" styleClass="divBotao"/>
-                            </rich:dropDownMenu>
-
-                            <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                                <f:facet name="label">
-                                    <h:panelGroup>
-                                        <h:panelGrid columns="2">
-                                            <h:graphicImage value="/Imagens/relatorio.png" styleClass="pic"/>
-                                            <h:outputText value="Relatórios" styleClass="fontePadraoNegrito"/>
-                                        </h:panelGrid>
-                                    </h:panelGroup>
-                                </f:facet>
-                                <rich:menuItem label="Relatórios de Sócios"     action="#{chamadaPaginaBean.relatorioSocios}" styleClass="divBotao" />
-                                <rich:menuItem label="Cartão Social"            action="#{chamadaPaginaBean.cartaoSocial}" styleClass="divBotao" />
-                                <rich:menuItem label="Ficha Social Branco"      action="#{sociosBean.imprimirFichaSocialVazia()}" styleClass="divBotao" immediate="true" title="Imprimir Ficha Social em Branco"/>
-                            </rich:dropDownMenu>
-                        </rich:toolbar>
-                    </h:panelGrid>
-                </h:form>
-            </f:view>
         </div>
     </h:body>
 </ui:composition>

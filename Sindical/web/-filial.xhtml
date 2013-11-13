@@ -1,0 +1,107 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Filial</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formFilial">
+            <c:set scope="request" var="object" value="${filialBean.filial}"/>
+            
+                <center>
+                    <div class="headerPanel" style="margin-bottom: 25px;">
+                        <h:outputText value="Cadastro de Filiais" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <div class="divMae">
+                        <div class="divFundo" style="width: 400px; float: left; margin-bottom: 15px;" >
+                            <div class="divFundo" style="background: white; height: 15px; width: 370px; margin-bottom: 15px;">
+                                Filiais
+                            </div>                            
+                            <h:panelGrid columns="2" style="float: left">
+                                <h:column>
+                                    <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" id="idPesquisaPessoa"/>
+                                </h:column>
+                                <h:column>                                    
+                                    <h:outputLabel value="Pesquisar Pessoa Jurídicas" styleClass="fontePadrao" style="cursor: pointer" rendered="#{filialBean.filial.filial.pessoa.id == -1}" for="idPesquisaPessoa"/>
+                                    <h:outputText id="idJuridica" value="#{filialBean.filial.filial.pessoa.documento} - #{filialBean.filial.filial.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{filialBean.filial.filial.pessoa.id != -1}"/>
+                                    <a4j:commandButton action="#{filialBean.btnAdicionarFilial}" id="idAdicionar" image="/Imagens/novo.png" immediate="true" render="tbl, idJuridica, outConfirma" oncomplete="modalMensagem()" rendered="#{filialBean.filial.filial.pessoa.id != -1}" title="Adicionar"/>
+                                </h:column>
+                            </h:panelGrid>
+                            <div class="clear"></div>
+                            <h:panelGrid style="float: left; margin-top: 15px;">
+                                <rich:dataTable value="#{filialBean.listaFilialSemMatriz}" var="linha" style="width: 100%" id="tbl">
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header"><h:outputText value="..."/></f:facet>
+                                        <a4j:commandButton image="/Imagens/excluirp.png" value="#{linha.id}" action="#{filialBean.excluir(linha)}" render="tbl, idJuridica, outConfirma" oncomplete="modalMensagem()" />
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="DOC/FILIAL"/></f:facet>
+                                        <p style="overflow: hidden; height: 15px;">
+                                            <h:outputText value="#{linha.filial.pessoa.documento} - #{linha.filial.pessoa.nome}"/>
+                                        </p>
+                                    </rich:column>
+                                </rich:dataTable>         
+                            </h:panelGrid>                            
+                        </div>
+                        <div class="divFundo" style="width: 400px; float: left;" >
+                            <div class="divFundo" style="background: white; height: 15px; width: 370px; margin-bottom: 15px;">
+                                Cidade Das Filias
+                            </div>
+                            <h:panelGrid>
+                                <rich:dataTable value="#{filialBean.listaCidade}" var="linha" id="tbl2" iterationStatusVar="it">
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="Cidade/UF" /></f:facet>
+                                        <h:outputText value="#{linha.argumento0.cidade}"/>
+                                    </rich:column>
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header"><h:outputText value="Filial"/></f:facet>
+                                        <h:selectOneMenu  id="cbSelectFilial" value="#{linha.argumento1}" style="width: 300px">
+                                            <a4j:ajax event="change" listener="#{filialBean.salvarCidadeFilial(it.index, linha.argumento1)}" />
+                                            <f:selectItems value="#{filialBean.result}" />
+                                        </h:selectOneMenu>
+                                    </rich:column>
+                                </rich:dataTable>                
+                            </h:panelGrid>
+
+                            <h:panelGrid>
+
+                            </h:panelGrid>                             
+                        </div>
+                        <div style="clear: both;"></div>
+                    </div>
+                </center>
+            
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{filialBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="filial" title="OK" render="tbl, tbl2"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                     
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>
