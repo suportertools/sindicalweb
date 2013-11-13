@@ -75,3 +75,28 @@ WITH (
 );
 ALTER TABLE fin_polling_email
   OWNER TO postgres;
+
+
+-- CLAUDEMIR
+
+-- Table: soc_historico_carteirinha
+
+-- DROP TABLE soc_historico_carteirinha;
+
+CREATE TABLE soc_historico_carteirinha
+(
+  id serial NOT NULL,
+  ds_hora character varying(255),
+  ds_descricao character varying(255),
+  dt_emissao date,
+  id_socio integer,
+  CONSTRAINT soc_historico_carteirinha_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_soc_historico_carteirinha_id_socio FOREIGN KEY (id_socio)
+      REFERENCES soc_socios (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE soc_historico_carteirinha
+  OWNER TO postgres;

@@ -147,13 +147,13 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.BaixaGeralJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+<!--
     <managed-bean>
         <managed-bean-name>arquivoBancoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ArquivoBancoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+-->
     <managed-bean>
         <managed-bean-name>extratoTelaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ExtratoTelaJSFBean</managed-bean-class>
