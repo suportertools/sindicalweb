@@ -1,8 +1,10 @@
 package br.com.rtools.pessoa;
 
 import br.com.rtools.utilitarios.DataHoje;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "PES_FISICA")
@@ -289,4 +291,9 @@ public class Fisica implements java.io.Serializable {
     public void setDataFoto(String dataFoto) {
         this.dtFoto = DataHoje.converte(dataFoto);
     }
+    
+    public void selecionaDataNascimento(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dtNascimento = DataHoje.converte(format.format(event.getObject()));
+    }  
 }

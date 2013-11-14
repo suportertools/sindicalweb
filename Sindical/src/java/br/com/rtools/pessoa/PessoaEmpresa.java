@@ -1,8 +1,10 @@
 package br.com.rtools.pessoa;
 
 import br.com.rtools.utilitarios.DataHoje;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "PES_PESSOA_EMPRESA")
@@ -145,4 +147,15 @@ public class PessoaEmpresa implements java.io.Serializable {
     public void setAvisoTrabalhado(boolean avisoTrabalhado) {
         this.avisoTrabalhado = avisoTrabalhado;
     }
+
+    public void selecionaDataAdmissao(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dtAdmissao = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void selecionaDataDemissao(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dtDemissao = DataHoje.converte(format.format(event.getObject()));
+    }
+
 }
