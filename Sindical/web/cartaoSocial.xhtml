@@ -115,7 +115,7 @@
                         <br /><br />    
                         <h:commandLink value="Etiqueta" action="#{cartaoSocialBean.imprimirEtiqueta()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         <br /><br />
-                        <h:commandLink value="Etiqueta Térmica" action="#{cartaoSocialBean.imprimirEtiqueta()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
+                        <h:commandLink value="Etiqueta Térmica" action="#{cartaoSocialBean.imprimirEtiquetaTermica()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         <br /><br />
                         <p:commandLink value="Histórico de Impressões (Selecionados)" actionListener="#{cartaoSocialBean.historicoCarteirinha()}" oncomplete="i_dlg.show()" update="i_panel_dlgx"
                                        rendered="#{(cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iCNPJ' or cartaoSocialBean.por == 'iDias' or cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iCPF') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
