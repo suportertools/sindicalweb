@@ -13,6 +13,7 @@
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
             <p:panel styleClass="wrapper" style="border: 0px;">
                 <h:outputScript name="tradutor_primefaces.js" library="js" /> 
                 <p:outputLabel value="Feriados" styleClass="fonteHeader" />
