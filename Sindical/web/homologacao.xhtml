@@ -14,6 +14,7 @@
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_homologacao">
                     <c:set scope="request" var="object" value="${homologacaoBean.agendamento}"/>
