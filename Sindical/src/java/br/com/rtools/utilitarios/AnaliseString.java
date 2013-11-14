@@ -222,4 +222,44 @@ public class AnaliseString {
             return String.valueOf(object);
         }
     }
+    
+    public static boolean isInteger(String s) {
+        try { 
+            Integer.parseInt(s); 
+        } catch(NumberFormatException e) { 
+            return false; 
+        }
+        // only got here if we didn't return false
+        return true;
+    }
+    
+    public static boolean isFloat(String s) {
+        boolean retorno = false;
+        try { 
+            Float.parseFloat(s);
+            retorno = true;
+        } catch(NumberFormatException e) { 
+            retorno = false; 
+        }
+        if(!retorno){
+            try { 
+                float numero = Moeda.substituiVirgulaFloat(s);
+                retorno = true;
+            } catch(NumberFormatException e) { 
+                retorno = false; 
+            }
+        }
+        // only got here if we didn't return false
+        return retorno;
+    }
+    
+    public static boolean isString(String s) {
+        try { 
+            Integer.parseInt(s); 
+        } catch(NumberFormatException e) { 
+            return false; 
+        }
+        // only got here if we didn't return false
+        return true;
+    }    
 }
