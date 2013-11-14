@@ -10,12 +10,17 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
+import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
+//import org.primefaces.component.tabview.Tab;
+//import org.primefaces.event.TabChangeEvent;
 
 public class ServicosJSFBean implements java.io.Serializable {
 
@@ -24,8 +29,7 @@ public class ServicosJSFBean implements java.io.Serializable {
     private String porPesquisa = "descricao";
     private String comoPesquisa = "P";
     private String descPesquisa = "";
-    private String msgConfirma;
-    private int idIndex = -1;
+    private String mensagem;
     private ServicoValor servicoValor = new ServicoValor();
     private String valorf = "0";
     private String taxa = "0";
@@ -37,6 +41,7 @@ public class ServicosJSFBean implements java.io.Serializable {
     private float descontoCategoria = 0;
     private CategoriaDesconto categoriaDesconto = new CategoriaDesconto();
     private String textoBtnServico = "Adicionar";
+//    private String tabViewTitle = "0";
 
     public String getDescPesquisa() {
         return descPesquisa;
@@ -62,15 +67,12 @@ public class ServicosJSFBean implements java.io.Serializable {
         this.servicos = servicos;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public void refreshForm() {
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public void acaoInicial() {
@@ -83,23 +85,18 @@ public class ServicosJSFBean implements java.io.Serializable {
         listaServicos.clear();
     }
 
-    public String salvar() {
-
+    public void salvar() {
         if (servicos.getDescricao().equals("")) {
-            msgConfirma = "Informe o nome do serviço a ser cadastrado!";
-            return null;
+            mensagem = "Informe o nome do serviço a ser cadastrado!";
+            return;
         }
 
         if (servicos.getPlano5().getId() == -1) {
-            msgConfirma = "Pesquise o plano de contas antes de salvar!";
-            return null;
+            mensagem = "Pesquise o plano de contas antes de salvar!";
+            return;
         }
-
-
         ServicosDB db = new ServicosDBToplink();
         SalvarAcumuladoDB salvar = new SalvarAcumuladoDBToplink();
-        //servicos.setPlano5(plano5);
-
         try {
             salvar.abrirTransacao();
             if (servicos.getId() == -1) {
@@ -107,15 +104,15 @@ public class ServicosJSFBean implements java.io.Serializable {
                     servicos.setDepartamento((Departamento) salvar.pesquisaCodigo(14, "Departamento"));
                     servicos.setFilial((Filial) salvar.pesquisaCodigo(1, "Filial"));
                     salvar.inserirObjeto(servicos);
-                    msgConfirma = "Serviço salvo com Sucesso!";
+                    mensagem = "Serviço salvo com Sucesso!";
                 } else {
-                    msgConfirma = "Este serviço já existe no Sistema.";
+                    mensagem = "Este serviço já existe no Sistema.";
                 }
             } else {
                 if (salvar.alterarObjeto(servicos)) {
-                    msgConfirma = "Serviço atualizado com sucesso!";
+                    mensagem = "Serviço atualizado com sucesso!";
                 } else {
-                    msgConfirma = "Erro na atualização do serviço!";
+                    mensagem = "Erro na atualização do serviço!";
                 }
             }
             for (CategoriaDesconto categoria : listaCategoriaDesconto) {
@@ -129,32 +126,34 @@ public class ServicosJSFBean implements java.io.Serializable {
             salvar.comitarTransacao();
         } catch (Exception e) {
             salvar.desfazerTransacao();
-            msgConfirma = "Erro no cadastro de serviço!";
+            mensagem = "Erro no cadastro de serviço!";
         }
-        return null;
     }
 
-    public String novo() {
+    public void novo() {
         servicos = new Servicos();
-        listaCategoriaDesconto = new ArrayList<CategoriaDesconto>();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("contaCobrancaPesquisa");
-        return "servicos";
+        listaCategoriaDesconto.clear();
+        listaServicoValor.clear();
+        listaServicos.clear();
+        valorf = "0";
+        desconto = "0";
+        taxa = "0";
+//        tabViewTitle = "0";
+        GenericaSessao.remove("contaCobrancaPesquisa");
     }
 
     public String novox() {
         return "servicos";
     }
 
-    public String editar() {
-        servicos = (Servicos) listaServicos.get(getIdIndex());
+    public String editar(Servicos s) {
+        servicos = s;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaServicos", servicos);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        
         servicoValor = new ServicoValor();
         valorf = "0";
         desconto = "0";
         taxa = "0";
-        
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
             return "servicos";
         } else {
@@ -162,16 +161,14 @@ public class ServicosJSFBean implements java.io.Serializable {
         }
     }
 
-    public String excluir() {
-        SalvarAcumuladoDB salvar = new SalvarAcumuladoDBToplink();
+    public void excluir() {
         if (servicos.getId() != -1) {
-            salvar.abrirTransacao();
+            SalvarAcumuladoDB salvar = new SalvarAcumuladoDBToplink();
             servicos = (Servicos) salvar.pesquisaCodigo(servicos.getId(), "Servicos");
-
             if (!listaServicoValor.isEmpty()) {
-                msgConfirma = "Existem valores cadastrados neste serviço!";
+                mensagem = "Existem valores cadastrados neste serviço!";
                 salvar.desfazerTransacao();
-                return null;
+                return;
             }
 
             try {
@@ -180,24 +177,19 @@ public class ServicosJSFBean implements java.io.Serializable {
                         salvar.deletarObjeto(salvar.pesquisaCodigo(categoria.getId(), "CategoriaDesconto"));
                     }
                 }
+                salvar.abrirTransacao();
                 if (salvar.deletarObjeto(servicos)) {
                     salvar.comitarTransacao();
-                    msgConfirma = "Cadastro excluido com sucesso!";
+                    mensagem = "Cadastro excluido com sucesso!";
                 } else {
                     salvar.desfazerTransacao();
-                    msgConfirma = "Erro cadastro não pode ser excluído!";
+                    mensagem = "Erro cadastro não pode ser excluído!";
                 }
             } catch (Exception e) {
-                salvar.desfazerTransacao();
-                msgConfirma = "Erro cadastro não pode ser excluído!";
+                mensagem = "Erro cadastro não pode ser excluído!";
             }
         }
-        listaCategoriaDesconto.clear();
-        listaServicoValor.clear();
-        listaServicos.clear();
-        servicos = new Servicos();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("contaCobrancaPesquisa");
-        return null;
+        novo();
     }
 
     public String pesquisaContaCobranca() {
@@ -230,45 +222,51 @@ public class ServicosJSFBean implements java.io.Serializable {
     }
 
     public boolean getDesabilitaValor() {
-        if (servicos.getId() == -1) {
-            return true;
-        } else {
-            return false;
-        }
+        return servicos.getId() == -1;
     }
 
-    public String salvarValor() {
+    public void salvarValor() {
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
         servicoValor.setValor(Moeda.substituiVirgulaFloat(valorf));
-        servicoValor.setDescontoAteVenc(Moeda.substituiVirgulaFloat(desconto));
         servicoValor.setTaxa(Moeda.substituiVirgulaFloat(taxa));
-        if (servicoValor.getValor() != 0) {
+        servicoValor.setDescontoAteVenc(Moeda.substituiVirgulaFloat(desconto));
+        boolean existeValor = true;
+//        if (servicoValor.getValor() != 0) {
+//            existeValor = true;
+//        } else if (servicoValor.getTaxa() != 0){
+//            existeValor = false;            
+//        }
+        if (existeValor) {
+            if (servicoValor.getDescontoAteVenc() > servicoValor.getValor()) {
+                servicoValor.setDescontoAteVenc(servicoValor.getValor());
+            }
             if (servicoValor.getId() == -1) {
                 acumuladoDB.abrirTransacao();
                 servicoValor.setServicos(servicos);
                 if (acumuladoDB.inserirObjeto(servicoValor)) {
                     acumuladoDB.comitarTransacao();
                     listaServicoValor.clear();
-                    msgConfirma = "Valor do serviço com sucesso!";
+                    GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
                 } else {
-                    msgConfirma = "Este valor para o serviço já existe no sistema.";
+                    GenericaMensagem.warn("Validação", "Este valor para o serviço já existe no sistema.");
                     acumuladoDB.desfazerTransacao();
                 }
             } else {
                 acumuladoDB.abrirTransacao();
                 if (acumuladoDB.alterarObjeto(servicoValor)) {
                     acumuladoDB.comitarTransacao();
-                    msgConfirma = "Valor do serviço atualizado com Sucesso!";
+                    GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
                 } else {
                     acumuladoDB.desfazerTransacao();
                 }
             }
+        } else {
+            GenericaMensagem.warn("Validação", "Informar o valor / taxa!");
         }
         setIndice("valor");
-        return null;
     }
 
-    public String novoValor() {
+    public String novoServicoValor() {
         servicoValor = new ServicoValor();
         valorf = "0";
         desconto = "0";
@@ -279,28 +277,25 @@ public class ServicosJSFBean implements java.io.Serializable {
         return null;
     }
 
-    public String editarValor(int index) {
-        if (index == -1) {
-            return null;
-        }
-        servicoValor = (ServicoValor) listaServicoValor.get(index);
+    public void editarServicoValor(ServicoValor sv) {
+        servicoValor = sv;
         valorf = Moeda.converteR$Float(servicoValor.getValor());
         desconto = Moeda.converteR$Float(servicoValor.getDescontoAteVenc());
         taxa = Moeda.converteR$Float(servicoValor.getTaxa());
         textoBtnServico = "Atualizar";
         setIndice("valor");
-        return null;
     }
 
-    public String excluirValor() {
-        excluirValor(-1);
-        return null;
+    public void removerServicoValor() {
+        removerServicoValor(null);
     }
 
-    public String excluirValor(int index) {
+    public void removerServicoValor(ServicoValor sv) {
         SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-        if (index != -1) {
-            servicoValor.setId(listaServicoValor.get(index).getId());
+        if (sv != null) {
+            if (sv.getId() != -1) {
+                servicoValor = sv;
+            }
         }
         textoBtnServico = "Adicionar";
         if (servicoValor.getId() != -1) {
@@ -309,15 +304,14 @@ public class ServicosJSFBean implements java.io.Serializable {
             if (acumuladoDB.deletarObjeto(servicoValor)) {
                 acumuladoDB.comitarTransacao();
                 listaServicoValor.clear();
-                msgConfirma = "Registro excluido com sucesso.";
+                mensagem = "Registro excluido com sucesso.";
             } else {
-                msgConfirma = "Falha ao excluir registro!";
+                GenericaMensagem.warn("Erro", "Ao excluir registro!");
                 acumuladoDB.desfazerTransacao();
             }
         }
         servicoValor = new ServicoValor();
         setIndice("valor");
-        return null;
     }
 
     public ServicoValor getServicoValor() {
@@ -336,12 +330,19 @@ public class ServicosJSFBean implements java.io.Serializable {
     }
 
     public void setValorf(String valorf) {
-        if (valorf.isEmpty()) {
-            valorf = "0";
+        if (!valorf.isEmpty()) {
+            if(AnaliseString.isInteger(valorf)){
+                this.valorf = Moeda.substituiVirgula(valorf);
+            } else if (AnaliseString.isFloat(valorf)) {
+                this.valorf = Moeda.substituiVirgula(valorf);
+            } else {
+                this.valorf = Moeda.substituiVirgula("0");
+            }
+        } else {
+            this.valorf = Moeda.substituiVirgula("0");
         }
-        this.valorf = Moeda.substituiVirgula(valorf);
     }
-    
+
     public String getDesconto() {
         if (desconto.isEmpty()) {
             desconto = "0";
@@ -350,13 +351,19 @@ public class ServicosJSFBean implements java.io.Serializable {
     }
 
     public void setDesconto(String desconto) {
-        if (desconto.isEmpty()) {
-            desconto = "0";
+        if (!desconto.isEmpty()) {
+            if(AnaliseString.isInteger(desconto)){
+                this.desconto = Moeda.substituiVirgula(desconto);
+            } else if (AnaliseString.isFloat(desconto)) {
+                this.desconto = Moeda.substituiVirgula(desconto);
+            } else {
+                this.desconto = Moeda.substituiVirgula("0");
+            }
+        } else {
+            this.desconto = Moeda.substituiVirgula("0");
         }
-        this.desconto = Moeda.substituiVirgula(desconto);
     }
-    
-      
+
     public String getTaxa() {
         if (taxa.isEmpty()) {
             taxa = "0";
@@ -365,12 +372,18 @@ public class ServicosJSFBean implements java.io.Serializable {
     }
 
     public void setTaxa(String taxa) {
-        if (taxa.isEmpty()) {
-            taxa = "0";
+        if (!taxa.isEmpty()) {
+            if(AnaliseString.isInteger(taxa)){
+                this.taxa = Moeda.substituiVirgula(taxa);
+            } else if (AnaliseString.isFloat(taxa)) {
+                this.taxa = Moeda.substituiVirgula(taxa);
+            } else {
+                this.taxa = Moeda.substituiVirgula("0");
+            }
+        } else {
+            this.taxa = Moeda.substituiVirgula("0");
         }
-        this.taxa = Moeda.substituiVirgula(taxa);
     }
-
 
     public String getIndice() {
         return indice;
@@ -426,14 +439,6 @@ public class ServicosJSFBean implements java.io.Serializable {
         this.listaServicos = listaServicos;
     }
 
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
     public String getTextoBtnServico() {
         return textoBtnServico;
     }
@@ -441,4 +446,18 @@ public class ServicosJSFBean implements java.io.Serializable {
     public void setTextoBtnServico(String textoBtnServico) {
         this.textoBtnServico = textoBtnServico;
     }
+    
+//    public void onChange(TabChangeEvent event) {
+//        Tab activeTab = event.getTab();
+//        this.tabViewTitle = activeTab.getTitle();
+//    }    
+//
+//    public String getTabViewTitle() {
+//        return tabViewTitle;
+//    }
+//
+//    public void setTabViewTitle(String tabViewTitle) {
+//        this.tabViewTitle = tabViewTitle;
+//    }
+    
 }
