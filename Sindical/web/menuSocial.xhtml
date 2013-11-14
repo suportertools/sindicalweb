@@ -63,11 +63,13 @@
 
 
                                 <p:submenu label="Relatórios">
-                                    <p:menuitem value="Relatórios de Sócios"     action="#{chamadaPaginaBean.relatorioSocios}" />
-                                    <p:menuitem value="Cartão Social"            action="#{chamadaPaginaBean.cartaoSocial}" />
-                                    <p:menuitem value="Ficha Social Branco"      action="#{sociosBean.imprimirFichaSocialVazia()}" />
+                                    <p:menuitem value="Relatórios de Sócios"    action="#{chamadaPaginaBean.relatorioSocios}" />
+                                    <p:menuitem value="Cartão Social"           action="#{chamadaPaginaBean.cartaoSocial}" />
+                                    <p:menuitem value="Ficha Social Branco"     action="#{sociosBean.imprimirFichaSocialVazia()}" ajax="false"/>
                                 </p:submenu>                            
                             </p:menubar> 
+                        </p:panel>
+                        <p:panel styleClass="wrapper no-border">
                         </p:panel>
                     </h:form>
                 </f:view>
