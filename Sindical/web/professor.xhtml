@@ -14,6 +14,7 @@
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
+            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_professor">
                     <p:outputLabel value="Cadastro de Professor" styleClass="fonteHeader"/>
