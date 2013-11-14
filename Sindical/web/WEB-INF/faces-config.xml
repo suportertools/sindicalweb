@@ -433,9 +433,9 @@
 
     <managed-bean>
         <managed-bean-name>relatorioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioBean</managed-bean-class>
+    
+        <managed-bean-scope>session</managed-bean-scope></managed-bean>
 
     <managed-bean>
         <managed-bean-name>convencaoPeriodoBean</managed-bean-name>

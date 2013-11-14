@@ -18,6 +18,7 @@
             * {font-family: 'lucida grande',verdana, tahoma, arial, sans-serif; font-size: 9pt!important}
         </style>
     </h:head>
+    
     <h:body>
         <!-- INICIA DIV wrap e main -->
 	<div id="wrapx">
@@ -46,7 +47,7 @@
                         
                         <p:submenu label="Sócios" >  
                             <p:menuitem value="Nome" action="#{cartaoSocialBean.sociosNome()}" update="i_panel i_panel_grid i_panel_botoes"/>  
-                            <p:menuitem value="Código" action="#{cartaoSocialBean.sociosCodigo()}" update="i_panel i_panel_grid i_panel_botoes" />  
+                            <p:menuitem value="Matrícula" action="#{cartaoSocialBean.sociosCodigo()}" update="i_panel i_panel_grid i_panel_botoes" />  
                             <p:menuitem value="CPF" action="#{cartaoSocialBean.sociosCPF()}" update="i_panel i_panel_grid i_panel_botoes" />  
                         </p:submenu>  
                     </p:panelMenu>  
@@ -59,7 +60,7 @@
                         <p:panel rendered="#{cartaoSocialBean.por == 'niEmpresa' or cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iDias'}">
                             <p:inputText id="b_nome_empresa" style="width: 420px" value="#{cartaoSocialBean.descricao}"/>
                             <p:watermark for="b_nome_empresa" value="Digite o Nome da Empresa" />
-                            <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid"/>
+                            <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
                         </p:panel>
                         
                         <p:panel rendered="#{cartaoSocialBean.por == 'niCNPJ' or cartaoSocialBean.por == 'iCNPJ'}" styleClass="fundoCinza" style="font-weight: bold">
@@ -68,7 +69,7 @@
                         <p:panel rendered="#{cartaoSocialBean.por == 'niCNPJ' or cartaoSocialBean.por == 'iCNPJ'}">
                             <p:inputMask id="b_cnpj_empresa" style="width: 420px" value="#{cartaoSocialBean.descricao}" mask="99.999?.999/9999-99"/>
                             <p:watermark for="b_cnpj_empresa" value="Digite o CNPJ da Empresa" />
-                            <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid"/>
+                            <p:commandButton value="Pesquisar" action="#{cartaoSocialBean.pesquisar()}" update="i_panel_grid i_panel_botoes"/>
                         </p:panel>
                         
                         <p:panel rendered="#{cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iCodigo'}" styleClass="fundoCinza" style="font-weight: bold">
@@ -104,30 +105,28 @@
                     </h:panelGrid>
                     
                     <p:panel id="i_panel_botoes" styleClass="fundoCinza" style="float: right; font-weight: bold; width: 200px" >
-                        <h:commandLink value="Imprimir" action="#{cartaoSocialBean.imprimirCarteirinha()}" 
-                                       rendered="#{(cartaoSocialBean.por == 'niEmpresa' or cartaoSocialBean.por == 'niCNPJ' or cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iCNPJ' 
-                                                   or cartaoSocialBean.por == 'iDias' or cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iCPF') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
+                        <p:commandLink ajax="false" value="Imprimir" action="#{cartaoSocialBean.imprimirCarteirinha()}" 
+                                       rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         
                         <br /><br />
-                        <h:commandLink value="Imprimir 2º Via" action="#{cartaoSocialBean.reImprimirCarteirinha()}" 
-                                       rendered="#{(cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iCNPJ' or cartaoSocialBean.por == 'iDias' or cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iCPF') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
+                        <p:commandLink ajax="false" value="Imprimir 2º Via" action="#{cartaoSocialBean.reImprimirCarteirinha()}" 
+                                       rendered="#{(cartaoSocialBean.por != 'niEmpresa' or cartaoSocialBean.por != 'niCNPJ') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         
                         <br /><br />    
-                        <h:commandLink value="Etiqueta" action="#{cartaoSocialBean.imprimirEtiqueta()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
+                        <p:commandLink ajax="false" value="Etiqueta" action="#{cartaoSocialBean.imprimirEtiqueta()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         <br /><br />
-                        <h:commandLink value="Etiqueta Térmica" action="#{cartaoSocialBean.imprimirEtiquetaTermica()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
+                        <p:commandLink ajax="false" value="Etiqueta Térmica" action="#{cartaoSocialBean.imprimirEtiquetaTermica()}" rendered="#{cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                         <br /><br />
                         <p:commandLink value="Histórico de Impressões (Selecionados)" actionListener="#{cartaoSocialBean.historicoCarteirinha()}" oncomplete="i_dlg.show()" update="i_panel_dlgx"
-                                       rendered="#{(cartaoSocialBean.por == 'iEmpresa' or cartaoSocialBean.por == 'iCNPJ' or cartaoSocialBean.por == 'iDias' or cartaoSocialBean.por == 'iNome' or cartaoSocialBean.por == 'iCPF') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
+                                       rendered="#{(cartaoSocialBean.por != 'niEmpresa' or cartaoSocialBean.por != 'niCNPJ') and cartaoSocialBean.listaCarteirinha.size() != 0}"/>
                     </p:panel>
                         
-                    
                     <h:panelGrid id="i_panel_grid" style="float: left; clear: both; width: 100%">
                         <p:dataTable id="i_tbl" var="linha" value="#{cartaoSocialBean.listaCarteirinha}" rowKey="#{linha[0]}" paginator="true" rows="15"  selection="#{cartaoSocialBean.listaSelecionado}" emptyMessage="Nenhuma carteirinha foi encontrada!">  
                             <p:column selectionMode="multiple" style="width:2%" />  
                             
-                            <p:column headerText="Código" style="text-align: center">  
-                                <h:outputText value="#{linha[0]}" />  
+                            <p:column headerText="Matrícula" style="text-align: center">  
+                                <h:outputText value="#{linha[10]}" />  
                             </p:column>  
 
                             <p:column headerText="Nome">  
