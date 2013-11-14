@@ -2,297 +2,177 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:pe="http://primefaces.org/ui/extensions"
+      xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Serviços</title>
     </h:head>
-    <h:body class="divMenu">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formServicos">
-                <c:set scope="request" var="object" value="${servicosBean.servicos}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Cadastro de Serviços" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                </center>
-                <div class="divMae">
-                    <div class="fontePadrao divFundo" style="width: 550px; height: 500px;">
-                        <h:column>
-                            <h:outputLabel value="Serviço: " styleClass="fontePadrao" for="idDSServicos" style="height: 20px;"/>
-                            <h:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" onkeyup="upperCase(this);" style="height: 30px; width: 300px; margin-bottom: 10px; font-size: 18px; text-transform: uppercase;"/>
-                        </h:column>
-                        <rich:panel id="idPainelServicos" style="border: 0; background: transparent;">
-                            <h:outputScript library="js" name="jScripts.js" />
-                            <rich:tabPanel switchType="client">
-                                <rich:tab id="servico" header="Serviços">
-                                    <h:panelGrid columns="6">
-                                        <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPlano}" id="idPesquisaPlano"/>
-                                        <h:outputLabel value="Conta Contábil: " styleClass="fontePadrao" />
-                                        <h:outputText value="#{servicosBean.servicos.plano5.numero} - #{servicosBean.servicos.plano5.conta}" title="#{servicosBean.servicos.plano5.conta}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
-                                    </h:panelGrid>
-                                    <br />
-                                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                                        <h:column>
-                                            <h:outputLabel value="Dias validos da guia: " styleClass="fontePadrao" for="idDiaValido"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:inputText id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" maxlength="11" onkeyup="somenteNumeros(this);" />
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Código: " styleClass="fontePadrao" for="idCodigo"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}" />
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Situação: " styleClass="fontePadrao"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectOneMenu value="#{servicosBean.servicos.situacao}">
+            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_servicos">
+                    <c:set scope="request" var="object" value="${servicosBean.servicos}"/>
+                    <p:outputLabel value="Cadastro de Serviços" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel id="id_painel_servicos">
+                        <f:facet name="header">
+                            Serviço: #{servicosBean.servicos.descricao}
+                        </f:facet>
+                        <div class="clear"></div>
+                        <p:panel styleClass="no-border">
+                            <p:tabView id="id_tab_view">
+                                <p:ajax event="tabChange" listener="#{servicosBean.onChange}" />
+                                <p:tab id="servico" title="Serviços">
+                                    <p:panelGrid columns="2" styleClass="sbb">
+                                        <p:outputLabel value="Serviço: " for="idDSServicos"/>
+                                        <p:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" size="25"/>                                        
+                                        <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPlano}" value="Conta Contábil" id="id_pesquisa_plano"/>
+                                        <p:column>
+                                            <p:outputLabel value="Pesquisar conta contábil" for="id_pesquisa_plano" rendered="#{servicosBean.servicos.plano5.id == -1}" style="border-bottom: 1px dashed #888"/>
+                                            <p:outputLabel value="Conta Contábil: #{servicosBean.servicos.plano5.numero} - #{servicosBean.servicos.plano5.conta}" title="#{servicosBean.servicos.plano5.conta}" rendered="#{servicosBean.servicos.plano5.id != -1}"/>
+                                        </p:column>
+                                        <p:outputLabel value="Dias validos da guia:" for="idDiaValido"/>
+                                        <p:spinner id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" min="0" max="90" />
+                                        <p:outputLabel value="Código: " for="idCodigo"/>
+                                        <p:inputText id="idCodigo" size="10" value="#{servicosBean.servicos.codigo}" />
+                                        <p:outputLabel value="Situação: " />
+                                        <p:column>
+                                            <p:selectOneMenu value="#{servicosBean.servicos.situacao}">
                                                 <f:selectItem itemValue="A" itemLabel="A" />
                                                 <f:selectItem itemValue="I" itemLabel="I" />
-                                            </h:selectOneMenu>
-                                        </h:column>
-                                    </h:panelGrid>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                    </p:panelGrid>
                                     <br />
-                                    <h:panelGrid columns="30" >
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="idServDebito" value="#{servicosBean.servicos.debito}" title="Débito"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Débito clube  " styleClass="fontePadrao" for="idServDebito"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="idServValor" value="#{servicosBean.servicos.alterarValor}" title="Alterar valor"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Alterar valor  " styleClass="fontePadrao" for="idServValor"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="idServAdmin" value="#{servicosBean.servicos.adm}" title="ADM"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="ADM  " styleClass="fontePadrao" for="idServAdmin"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="idServTab" value="#{servicosBean.servicos.tabela}" title="Tabela"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Tabela  " styleClass="fontePadrao" for="idServTab"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="idServEleicao" value="#{servicosBean.servicos.eleicao}" title="Eleição"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Eleição " styleClass="fontePadrao" for="idServEleicao"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:selectBooleanCheckbox id="idAgrupa" value="#{servicosBean.servicos.agrupaBoleto}" title="Agrupa boletos"/>
-                                        </h:column>
-                                        <h:column>
-                                            <h:outputLabel value="Agrupa boletos " styleClass="fontePadrao" for="idAgrupa"/>
-                                        </h:column>
-                                    </h:panelGrid>
-                                </rich:tab>
-                                <rich:tab id="valor" disabled="#{servicosBean.desabilitaValor}" header="Serviço Valor">
-                                    <div style="border-bottom: 1px dashed #efefef; width: 530px;">
-                                        <a4j:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.salvarValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; width: 80px; margin-bottom: 5px;" title="Adicionar valor" render="idPainelServicos tblValor"/>
-                                        <a4j:commandButton value="Novo" action="#{servicosBean.novoValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; margin-left: 5px; margin-bottom: 5px;" title="Novo valor"  render="idPainelServicos" />
-                                        <a4j:commandButton value="Remover"  action="#{servicosBean.excluirValor}" styleClass="idSalvar iLink" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; cursor: pointer; width: 80px; margin-left: 5px; margin-bottom: 5px;" title="Excluir valor" render="idPainelServicos tblValor" />
-                                        <h:outputText id="idServicoValor" value=" - Em edição: ID #{servicosBean.servicoValor.id}" rendered="#{servicosBean.servicoValor.id != -1}" style="font-size: 10pt; height: 20px; margin: 0; padding: 0; font-weight: bold; margin-left: 5px; margin-bottom: 5px;" />
-                                    </div>
-                                    <div style="clear: both"></div>
-                                    <div class="alinhaFormulario fontePadrao" style="width: 520px; height: 180px; background: #efefef; padding-top: 15px;">
-                                        <p>
-                                            <h:outputLabel value="Idade inicial: " styleClass="fontePadrao" for="idIni"/>
-                                            <h:inputText id="idIni" size="10" value="#{servicosBean.servicoValor.idadeIni}" maxlength="3" onkeyup="somenteNumeros(this);"/>
-                                        </p>
-                                        <p>
-                                            <h:outputLabel value=" Idade final: " styleClass="fontePadrao" for="idFim"/>
-                                            <h:inputText id="idFim" size="10" value="#{servicosBean.servicoValor.idadeFim}" maxlength="3" onkeyup="somenteNumeros(this);"/>
-                                        </p>
-                                        <p>
-                                            <h:outputLabel value="Valor: " styleClass="fontePadrao" for="idValor"/>
-                                            <h:inputText size="10" id="idValor" value="#{servicosBean.valorf}">
-                                                <a4j:ajax event="change" render="idValor" />
-                                            </h:inputText>
-                                        </p>
-                                        <p>
-                                            <h:outputLabel value=" Desconto até o vencimento: " styleClass="fontePadrao" for="idDesconto"/>
-                                            <h:inputText size="10" id="idDesconto" value="#{servicosBean.desconto}" style="text-align: left;" >
-                                                <a4j:ajax event="change" render="idDesconto" />
-                                            </h:inputText>
-                                        </p>
-                                        <p>
-                                            <h:outputLabel value=" Taxa: " styleClass="fontePadrao" for="idTaxa"/>
-                                            <h:inputText size="10" id="idTaxa" value="#{servicosBean.taxa}" style="text-align: left;">
-                                                <a4j:ajax event="change" render="idTaxa" />
-                                            </h:inputText>
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <h:panelGroup style="overflow:auto; height:170px; width:530px; margin-top: 20px;" layout="block">
-                                            <rich:dataTable value="#{servicosBean.listaServicoValor}" var="linha" id="tblValor" iterationStatusVar="it" style="width: 100%;">
-                                                <rich:column style="text-align: center;">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="..."/>
-                                                    </f:facet>
-                                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{servicosBean.excluirValor(it.index)}" disabled="#{controleAcessoBean.botaoExcluir}" render="idPainelServicos" title="Remover este registro"/>
-                                                </rich:column>
-                                                <rich:column styleClass="colunaPesquisa">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="ID"/>
-                                                    </f:facet>
-                                                    <a4j:commandLink action="#{servicosBean.editarValor(it.index)}" value="#{linha.id}" render="idPainelServicos" title="Alterar este registro"/>
-                                                </rich:column>
-                                                <rich:column styleClass="colunaPesquisa">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Idade inicial"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.idadeIni}"/>
-                                                </rich:column>
-                                                <rich:column styleClass="colunaPesquisa">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Idade Final"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.idadeFim}"/>
-                                                </rich:column>
-                                                <rich:column styleClass="colunaPesquisa">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Valor"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.valor}"/>
-                                                </rich:column>
-                                                <rich:column styleClass="colunaPesquisa">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Desconto"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.descontoAteVenc}"/>
-                                                </rich:column>
-                                                <rich:column styleClass="colunaPesquisa">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Taxa"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.taxa}"/>
-                                                </rich:column>
-                                            </rich:dataTable>
-                                        </h:panelGroup>
-                                    </div>
-                                </rich:tab>
-                                <rich:tab id="categoria" header="Serviço Categoria">
-                                <h:panelGroup style="overflow:auto; height:200px; width:530px; margin-top: 20px;" layout="block">
-                                    <rich:dataTable value="#{servicosBean.listaCategoriaDesconto}" var="linha" id="tblDesconto" iterationStatusVar="it" style="width: 100%;">
-                                        <rich:column style="text-align: center;">
+                                    <p:panelGrid columns="30" styleClass="sbb">
+                                        <p:selectBooleanCheckbox id="idServDebito" value="#{servicosBean.servicos.debito}" itemLabel="Débito"/>
+                                        <p:selectBooleanCheckbox id="idServValor" value="#{servicosBean.servicos.alterarValor}" itemLabel="Alterar valor"/>
+                                        <p:selectBooleanCheckbox id="idServAdmin" value="#{servicosBean.servicos.adm}" itemLabel="ADM"/>
+                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.tabela}" itemLabel="Tabela"/>
+                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.eleicao}" itemLabel="Eleição"/>
+                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.agrupaBoleto}" itemLabel="Agrupa boletos" />
+                                    </p:panelGrid>
+                                </p:tab>
+                                <p:tab id="valor" disabled="#{servicosBean.desabilitaValor}" title="Serviço Valor">                                    
+                                    <p:messages id="id_messages_growl" showDetail="true" autoUpdate="true" closable="true" />
+                                    <p:panel  id="id_painel_servico_valor" styleClass="margin-top">
+                                        <p:panelGrid columns="15" styleClass="sbb">
                                             <f:facet name="header">
-                                                <h:outputText value="#"/>
+                                                <p:outputLabel value="Editando registro id n° #{servicosBean.servicoValor.id}" rendered="#{servicosBean.servicoValor.id != -1}"  />
+                                                <p:outputLabel value="Novo registro" rendered="#{servicosBean.servicoValor.id == -1}"  />
                                             </f:facet>
-                                            <h:outputText value="#{it.index}"/>
-                                        </rich:column>
-
-                                        <rich:column styleClass="colunaPesquisa">
+                                            <p:outputLabel value="Idade inicial: "  for="idIni"/>
+                                            <p:spinner id="idIni" size="2" value="#{servicosBean.servicoValor.idadeIni}" min="0" max="120" >
+                                                <p:ajax event="change" update="idFim" />
+                                            </p:spinner>
+                                            <p:outputLabel value=" Idade final: "  for="idFim"/>
+                                            <p:spinner id="idFim" size="2" value="#{servicosBean.servicoValor.idadeFim}" min="#{servicosBean.servicoValor.idadeIni}" max="150" />
+                                            <p:outputLabel value="Valor: "  for="idValor"/>
+                                            <p:inputText id="idValor" value="#{servicosBean.valorf}">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
+                                            <p:outputLabel value=" Desconto até o vencimento: "  for="idDesconto"/>
+                                            <p:inputText size="10" id="idDesconto" value="#{servicosBean.desconto}" maxlength="100"> 
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
+                                            <p:outputLabel value=" Taxa: " for="idTaxa"/>
+                                            <p:inputText size="10" id="idTaxa" value="#{servicosBean.taxa}">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
+                                        </p:panelGrid>
+                                        <p:panelGrid columns="4" styleClass="sbb  margin-top-max" id="id_acao">
+                                            <p:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.salvarValor}" title="Adicionar serviço valor" update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl"/>
+                                            <p:commandButton value="Limpar" action="#{servicosBean.novoServicoValor}"  title="Novo serviço valor"  update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl id_acao" />
+                                            <p:commandButton value="Remover"  action="#{servicosBean.removerServicoValor}" title="Remover serviço valor" update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl" />                                            
+                                        </p:panelGrid>
+                                        <p:panelGrid columns="1" id="tbl_valor" styleClass="no-border margin-top-max">
                                             <f:facet name="header">
-                                                <h:outputText value="ID"/>
+                                                Serviços valores adicionados
                                             </f:facet>
-                                            <h:outputText value="#{linha.id}"/>
-                                        </rich:column>
-
-                                        <rich:column styleClass="colunaPesquisa">
-                                            <f:facet name="header">
-                                                <h:outputText value="Serviço"/>
+                                            <p:dataTable value="#{servicosBean.listaServicoValor}" var="servicoValor" scrollHeight="150" scrollable="true" style="width: 700px;" emptyMessage="Não existe(m) registro(s)">
+                                                <p:column styleClass="text-center" width="30">
+                                                    <p:commandButton icon="ui-icon-pencil" action="#{servicosBean.editarServicoValor(servicoValor)}" update=":form_servicos:id_tab_view:id_painel_servico_valor" title="Alterar este registro - Código: #{servicoValor.id}"/>
+                                                </p:column>
+                                                <p:column headerText="Idade inicial" styleClass="text-center" width="100">
+                                                    <p:outputLabel value="#{servicoValor.idadeIni}"/>
+                                                </p:column>
+                                                <p:column headerText="Idade Final" styleClass="text-center" width="100">
+                                                    <p:outputLabel value="#{servicoValor.idadeFim}"/>
+                                                </p:column>
+                                                <p:column headerText="Valor (R$)" width="90" styleClass="text-center">
+                                                    <p:outputLabel value="#{servicoValor.valor}"/>
+                                                </p:column>
+                                                <p:column headerText="Desconto (%)" width="110" styleClass="text-center">
+                                                    <p:outputLabel value="#{servicoValor.descontoAteVenc}"/>
+                                                </p:column>
+                                                <p:column styleClass="text-center" headerText="Taxa (R$)" width="40">
+                                                    <p:outputLabel value="#{servicoValor.taxa}"/>
+                                                </p:column>
+                                                <p:column styleClass="text-center" width="30">
+                                                    <p:commandButton icon="ui-icon-trash" action="#{servicosBean.removerServicoValor(servicoValor)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":form_servicos:id_tab_view:id_acao :form_servicos:id_tab_view:id_painel_servico_valor :form_servicos:id_tab_view:id_messages_growl" title="Remover este registro"/>
+                                                </p:column>                                                
+                                            </p:dataTable>
+                                        </p:panelGrid>
+                                    </p:panel>
+                                </p:tab>
+                                <p:tab title="Serviço Categoria" disabled="#{servicosBean.servicos.id == -1}">
+                                    <p:panel id="tblDesconto" styleClass="no-border">
+                                        <p:dataTable value="#{servicosBean.listaCategoriaDesconto}" var="categoriaDesconto" scrollHeight="200" scrollable="true" emptyMessage="Não existe(m) registro(s)">
+                                            <f:facet name="footer">
+                                                <h:outputText value="Desconto Ex. 10.6 / 100 / 33" styleClass="margin-left-max"/>
                                             </f:facet>
-                                            <h:outputText value="#{linha.servicos.descricao}"/>
-                                        </rich:column>
-
-                                        <rich:column styleClass="colunaPesquisa">
-                                            <f:facet name="header">
-                                                <h:outputText value="Categoria"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.categoria.categoria}"/>
-                                        </rich:column>
-
-                                        <rich:column styleClass="colunaPesquisa">
-                                            <f:facet name="header">
-                                                <h:outputText value="Desconto"/>
-                                            </f:facet>
-                                            <h:inputText value="#{linha.desconto}" style="text-align: right;"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </h:panelGroup>
-                            </rich:tab>
-                        </rich:tabPanel>
-                    </rich:panel>
-                    </div>
-                    <div style="clear: both;"></div>
-                    <div style="float: left; margin-top: 15px;">
-                        <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
-                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo registro / Limpar" action="#{servicosBean.novo}"/>
-                        <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaServicos}" title="Pesquisar serviços"/>
-                    </div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divSalvar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
+                                            <p:column headerText="Serviços" width="150">
+                                                <p:outputLabel value="#{categoriaDesconto.servicos.descricao}" title="Código: #{categoriaDesconto.id}"/>
+                                            </p:column>
+                                            <p:column headerText="Categoria" width="200" >
+                                                <p:outputLabel value="#{categoriaDesconto.categoria.categoria}" title="Código: #{categoriaDesconto.id}"/>
+                                            </p:column>
+                                            <p:column headerText="Desconto (%)" width="100" styleClass="text-center">
+                                                <p:column>
+                                                    <p:spinner value="#{categoriaDesconto.desconto}"  stepFactor="0.1" min="0" max="100" title="Código: #{categoriaDesconto.id}" size="2"/>                                                                                                    
+                                                </p:column>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:panel>
+                                </p:tab>
+                            </p:tabView>
+                        </p:panel>
+                        <p:panelGrid columns="4" id="id_acao" styleClass="sbb">
+                            <p:commandButton onclick="dgl_panel_salvar.show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{servicosBean.novo}" update="id_painel_servicos"/>
+                            <p:commandButton onclick="dgl_panel_excluir.show()" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
+                            <p:commandButton styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaServicos}" title="Pesquisar serviços"/>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
+                        <p:panelGrid columns="2" styleClass="sbb">
+                            <p:commandButton value="Sim" title="Salvar" action="#{servicosBean.salvar}" update="i_panel_mensagem id_painel_servicos"  oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
+                            <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
+                        </p:panelGrid>
+                    </p:dialog>
+                    <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
                         <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja salvar este Serviços?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{servicosBean.salvar}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
+                            <p:panelGrid columns="2" styleClass="sbb">
+                                <p:commandButton value="Sim" title="Excluir" action="#{servicosBean.excluir}" update="i_panel_mensagem id_painel_servicos" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_excluir').hide();"  />
+                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide()"/>
+                            </p:panelGrid>
                         </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divExcluir" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
+                    </p:dialog>
+                    <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
                         <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir esta Serviços?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{servicosBean.excluir}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{servicosBean.msgConfirma}" styleClass="fontePadrao"/>
+                            <h:outputLabel value="#{servicosBean.mensagem}" id="outConfirma"/>
                             <br /><br />
-                            <h:commandLink lang="close" styleClass="idNovo iLink" action="#{servicosBean.novox}" value="OK" title="OK"/>
+                            <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
                         </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-
-            </h:form>
+                    </p:dialog>                    
+                </h:form>
+            </p:panel>
         </f:view>
     </h:body>
 </ui:composition>
