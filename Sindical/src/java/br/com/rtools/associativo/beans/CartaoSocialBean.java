@@ -125,7 +125,7 @@ public class CartaoSocialBean implements Serializable {
     
     public void sociosCodigo(){
         por = "iCodigo";
-        porLabel = "Pesquisa por Sócios / CÓDIGO";
+        porLabel = "Pesquisa por Sócios / MATRÍCULA";
         
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         listaCarteirinha = db.pesquisaCarteirinha("iCodigo", descricao, indexOrdem);
@@ -200,6 +200,7 @@ public class CartaoSocialBean implements Serializable {
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
                     // ATUALIZA VALIDADE NA GRID
                     // ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
+                    listaSelecionado.get(i).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
                         sv.desfazerTransacao();
                         return;
@@ -276,6 +277,7 @@ public class CartaoSocialBean implements Serializable {
                     
                     socios.setNrViaCarteirinha(1);
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
+                    listaSelecionado.get(i).set(6, socios.getValidadeCarteirinha());
                     // ATUALIZA VALIDADE NA GRID
                     // ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {
@@ -313,6 +315,9 @@ public class CartaoSocialBean implements Serializable {
                     socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
                     
                     // ATUALIZA VALIDADE NA GRID
+                    listaSelecionado.get(i).set(11, socios.getNrViaCarteirinha());
+                    listaSelecionado.get(i).set(6, socios.getValidadeCarteirinha());
+                    
                     //((List) listaaux.get(i)).set(11, socios.getNrViaCarteirinha());
                     //((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
                     if (!sv.alterarObjeto(socios)) {

@@ -169,22 +169,26 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                              + "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
             }
             
+            if ((tipo.equals("iNome") || tipo.equals("iCodigo") || tipo.equals("iCPF")) && descricao.isEmpty()){
+                return new ArrayList();
+            }
+            
             // SOCIOS / NOME
             if (tipo.equals("iNome")){
                 if (!descricao.isEmpty())
                     textqry += "    AND lower(s.nome)  LIKE '%"+descricao.toLowerCase()+"%' ";
                              //+ "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
                 else
-                    textqry += " ERRO ";
+                    textqry += " ";
             }
             
             // SOCIOS / CODIGO
             if (tipo.equals("iCodigo")){
                 if (!descricao.isEmpty())
-                    textqry += "    AND s.codsocio = "+Integer.parseInt(descricao);
+                    textqry += "    AND s.matricula = "+Integer.parseInt(descricao);
                              //+ "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
                 else
-                    textqry += " ERRO ";
+                    textqry += "  ";
             }
             
             // SOCIOS / CPF
@@ -193,7 +197,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                     textqry += "    AND lower(p.ds_documento) LIKE '%"+descricao.toLowerCase()+"%' ";
                              //+ "    AND s.id_socio IN (SELECT c.id_socio FROM soc_carteirinha c) ";
                 else
-                    textqry += " ERRO ";
+                    textqry += " ";
             }
             
             // ORDEM DA QUERY
