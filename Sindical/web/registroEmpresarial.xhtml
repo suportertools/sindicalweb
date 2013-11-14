@@ -26,8 +26,7 @@
                     <p:panel styleClass="margin-top-max">
                         <f:facet name="header">Nome Empresa: #{registroEmpresarialBean.registro.filial.pessoa.nome}</f:facet>
                         <p:tabView>
-                            <p:ajax event="tabChange" listener="#{registroEmpresarialBean.onChange}"/>
-                            
+                            <p:ajax event="tabChange" listener="#{registroEmpresarialBean.onChange}"/>                            
                             <p:tab title="Cadastro" rendered="#{registroEmpresarialBean.codigoModulo == 0}">
                                 <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
                                     <p:outputLabel value="Email: "/>
