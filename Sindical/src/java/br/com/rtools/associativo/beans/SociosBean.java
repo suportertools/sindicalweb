@@ -983,6 +983,10 @@ public class SociosBean implements Serializable {
     public String imprimirFichaSocialVazia() {
         ImpressaoParaSocios.branco();
         return "menuSocial";
+    }  
+    
+    public void imprimirFichaSocialBranco() {
+        ImpressaoParaSocios.branco();
     }    
 
     public String getFotoSocio() {
