@@ -2,80 +2,59 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     
     <h:head>
         <title>Permissões</title>
     </h:head>
-    <h:body class="divMenu">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPermissao">
-            <c:set scope="request" var="object" value="${permissaoBean.permissao}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Permissões" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <rich:panel styleClass="divMae" style="text-align: left; border: 0;">
-                        <h:panelGrid columns="4" id="id_painel_permissao">
-                            <h:column>
-                                <h:outputLabel value="Módulo: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu value="#{permissaoBean.idModulo}">
-                                    <a4j:ajax event="change" render="id_painel_permissao tbl"/>
-                                    <f:selectItems value="#{permissaoBean.listaModulos}"/>
-                                </h:selectOneMenu>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Rotina: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu value="#{permissaoBean.idRotina}">
-                                    <f:selectItems value="#{permissaoBean.listaRotinas}"/>
-                                </h:selectOneMenu>
-                            </h:column>
-                            <h:column>
-                                <a4j:commandButton image="/Imagens/novo.png" action="#{permissaoBean.adicionarPermissao}" oncomplete="modalMensagem()" disabled="#{controleAcessoBean.botaoSalvar}" render="id_painel_permissao, tbl, outConfirma" status="i_status"/>
-                            </h:column>
+            <h:form id="form_permissao">
+                <p:panel styleClass="wrapper no-border">
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true"/>
+                    <c:set scope="request" var="object" value="${permissaoBean.permissao}"/>
+                    <h:outputText value="Permissões" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel styleClass="fundoCinza">
+                        <h:panelGrid columns="3" id="id_painel_permissao" styleClass="sbb fundoCinza">
+                            <p:outputLabel value="Módulo:"/>
+                            <p:outputLabel value="Rotina:"/>
+                            <p:column></p:column>
+                            <p:selectOneMenu value="#{permissaoBean.idModulo}">
+                                <p:ajax event="change" update="id_painel_permissao tbl"/>
+                                <f:selectItems value="#{permissaoBean.listaModulos}"/>
+                            </p:selectOneMenu>
+                            <p:selectOneMenu value="#{permissaoBean.idRotina}">
+                                <f:selectItems value="#{permissaoBean.listaRotinas}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton icon="ui-icon-plus" value="Adicionar" action="#{permissaoBean.adicionarPermissao}" disabled="#{controleAcessoBean.botaoSalvar}" update="id_painel_permissao, tbl" />
+                            <p:column></p:column>
+                            <p:column></p:column>
+                            <p:column></p:column>
                         </h:panelGrid>
-                        <h:panelGrid>
-                            <rich:panel style="overflow:auto; height:300px;">
-                                <rich:dataTable var="linha" style="width:100%" value="#{permissaoBean.listaPermissoes}" id="tbl" iterationStatusVar="it">
-                                    <f:facet name="header">
-                                        <h:outputLabel value="Permissões adicionadas" />
-                                    </f:facet>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="..."/>
-                                        </f:facet>
-                                        <a4j:commandButton image="/Imagens/excluirp.png" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" render="id_painel_permissao tbl" status="i_status"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Módulo"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.modulo.descricao}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Rotina"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.rotina.rotina}"/>
-                                    </rich:column>
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Evento"/>
-                                        </f:facet>
-                                        <h:outputText value="Inclusão, Alteração, Exclusão, Consulta"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </rich:panel>
-                        </h:panelGrid>                        
-                    </rich:panel>
-                </center>                
+                    </p:panel>
+                    <p:panel id="tbl" styleClass="margin-top-max">
+                        <p:dataTable var="linha" value="#{permissaoBean.listaPermissoes}" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                            <f:facet name="header">Permissões adicionadas</f:facet>
+                            <p:column headerText="Módulo">
+                                <p:outputLabel value="#{linha.modulo.descricao}"/>
+                            </p:column>
+                            <p:column headerText="Rotina">
+                                <p:outputLabel value="#{linha.rotina.rotina}"/>
+                            </p:column>
+                            <p:column headerText="Evento">
+                                <p:outputLabel value="Inclusão, Alteração, Exclusão, Consulta"/>
+                            </p:column>
+                            <p:column width="30" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-trash" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":form_permissao:id_painel_permissao :form_permissao:tbl :form_permissao:id_messages_growl" title="Código: #{linha.id}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </p:panel>
             </h:form>
         </f:view>
     </h:body>
