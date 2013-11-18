@@ -249,6 +249,8 @@ public class ImprimirBoleto {
                     cobranca = new Bradesco(mov, boletox);
                 } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.santander)) {
                     cobranca = new Santander(mov, boletox);
+                } else if (boletox.getContaCobranca().getContaBanco().getBanco().getNumero().equals(Cobranca.sicoob)) {
+                    cobranca = new Sicoob(mov, boletox);
                 }
 
                 try {
