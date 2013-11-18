@@ -16,6 +16,7 @@ public abstract class Cobranca {
     public final static String real = "356";
     public final static String santander = "033";
     public final static String hsbc = "0";
+    public final static String sicoob = "756";
     public final static int SICOB = 1;
     public final static int SINDICAL = 2;
     public final static int SIGCB = 3;
