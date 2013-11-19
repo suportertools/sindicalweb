@@ -5,7 +5,7 @@
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>Feríados</title>
+        <title>Feriados</title>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
     <h:body>
@@ -20,7 +20,7 @@
                 <div style="clear: both;"></div>
                 <h:form id="formFeriadoNovo">                                         
                     <c:set scope="request" var="object" value="${feriadosBean.feriados}"/>
-                    <p:schedule id="schedule" value="#{feriadosBean.eventModel}" widgetVar="myschedule" rightHeaderTemplate="month">
+                    <p:schedule id="schedule" value="#{feriadosBean.eventModel}" widgetVar="myschedule" rightHeaderTemplate="month" locale="pt_BR">
                         <p:ajax event="dateSelect" listener="#{feriadosBean.dataSelecionada}" update="i_panel_grid_fer" oncomplete="PF('eventDialog').show()" />  
                         <p:ajax event="eventSelect" listener="#{feriadosBean.editar}" update="i_panel_grid_fer" oncomplete="PF('eventDialog').show()" />  
                     </p:schedule>
@@ -37,7 +37,7 @@
                             </p:panel>
                             <p:panelGrid style="margin-top: 10px!important;" columns="6" styleClass="sbb">
                                 <p:outputLabel value="Data:"  />
-                                <p:calendar value="#{feriadosBean.feriados.dtData}" id="cal" readonlyInput="true" pattern="dd/MM/yyyy" >
+                                <p:calendar value="#{feriadosBean.feriados.dtData}" id="cal" readonlyInput="true" pattern="dd/MM/yyyy" locale="pt_BR">
                                     <p:ajax event="dateSelect" update="@this" listener="#{feriadosBean.dataListener}" />
                                 </p:calendar>
                                 <p:outputLabel value="Nome:" for="idNome"/>
