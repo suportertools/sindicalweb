@@ -446,7 +446,7 @@
                         <center>
                             <!-- <h:outputText id="outConfirma" value="# {webAgendamentoContabilidadeBean.msgConfirma}" styleClass="fontePadrao"/> -->
                             <h:panelGrid id="i_protocolo">
-                                <h:outputText value="#{webAgendamentoContabilidadeBean.msgConfirma}" styleClass="fontePadrao" rendered="#{!protocoloAgendamento.imprimir(webAgendamentoContabilidadeBean.agendamento)}"/>
+                                <h:outputText value="#{webAgendamentoContabilidadeBean.msgConfirma}" styleClass="fontePadrao" rendered="#{webAgendamentoContabilidadeBean.imprimirPro}"/>
                                 <h:commandLink value="#{webAgendamentoContabilidadeBean.msgConfirma}" target="_blank" rendered="#{webAgendamentoContabilidadeBean.imprimirPro}" action="#{protocoloAgendamento.imprimir(webAgendamentoContabilidadeBean.agendamento)}" styleClass="fontePadrao"/>
                                 <br /><br />
                                 <a4j:commandLink styleClass="idNovo iLink" value="OK" title="OK" action="webAgendamentoContabilidade"/>
