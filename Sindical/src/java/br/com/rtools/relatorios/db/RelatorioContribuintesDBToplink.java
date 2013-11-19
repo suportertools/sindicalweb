@@ -1,6 +1,7 @@
 package br.com.rtools.relatorios.db;
 
 import br.com.rtools.principal.DB;
+import br.com.rtools.relatorios.Relatorios;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -50,7 +51,7 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
     }
 
     @Override
-    public List listaRelatorioContribuintes(String emails, String condicao, String escritorio, String tipoPCidade, String cidade, String ordem, String cnaes,
+    public List listaRelatorioContribuintes(Relatorios relatorios, String emails, String condicao, String escritorio, String tipoPCidade, String cidade, String ordem, String cnaes,
             int idTipoEndereco, String idEndereco, String cTipo, String dsNumero, String idGrupos, String bairros) {
         List result = new ArrayList();
         String textQuery = "";
@@ -173,21 +174,27 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
             if (cnaes.length() != 0) {
                 textQuery += " and j.id_cnae in ( " + cnaes + " ) ";
             }
-
             // ORDEM ------------------------------------------------------------------------
-            if (ordem.equals("razao")) {
-                textQuery += " order by p.ds_nome ";
-            } else if (ordem.equals("documento")) {
-                textQuery += " order by p.ds_documento ";
-            } else if (ordem.equals("endereco")) {
-                textQuery += " order by c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
-            } else if (ordem.equals("cep")) {
-                textQuery += " order by e.ds_cep, c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
-            } else if (ordem.equals("escritorio")) {
-                textQuery += " order by conpes.ds_nome,p.ds_nome ";
+            if (relatorios.getQryOrdem() == null || relatorios.getQryOrdem().isEmpty()) {
+                if (ordem.equals("razao")) {
+                    textQuery += " order by p.ds_nome ";
+                } else if (ordem.equals("documento")) {
+                    textQuery += " order by p.ds_documento ";
+                } else if (ordem.equals("endereco")) {
+                    textQuery += " order by c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
+                } else if (ordem.equals("cep")) {
+                    textQuery += " order by e.ds_cep, c.ds_uf, c.ds_cidade, l.ds_descricao, de.ds_descricao, pe.ds_numero";
+                } else if (ordem.equals("escritorio")) {
+                    textQuery += " order by conpes.ds_nome,p.ds_nome ";
+                }
+            } else {
+                textQuery += " ORDER BY " + relatorios.getQryOrdem();
             }
             Query qry = getEntityManager().createNativeQuery(textQuery);
-            result = qry.getResultList();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }            
         } catch (Exception e) {
         }
         return result;
