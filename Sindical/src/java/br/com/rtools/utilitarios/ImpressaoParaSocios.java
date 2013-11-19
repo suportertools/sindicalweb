@@ -744,6 +744,7 @@ public class ImpressaoParaSocios {
                     "application/pdf",
                     FacesContext.getCurrentInstance());
             download.baixar();
+            download.remover();
         } catch (JRException e) {
         }
     }    

@@ -82,7 +82,7 @@ public class RelatorioGenericoDBToplink extends DB implements RelatorioGenericoD
     public List<Relatorios> pesquisaTodosRelatorios() {
         List<Relatorios> lista = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select r from Relatorios r");
+            Query qry = getEntityManager().createQuery("SELECT R FROM Relatorios AS R ORDER BY R.nome ASC ");
             lista = qry.getResultList();
         } catch (Exception e) {
         }

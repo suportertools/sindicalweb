@@ -55,4 +55,10 @@ public class Download {
             System.out.println("Error in downloadFile: " + ex.getMessage());
         }
     }
+    
+    public void remover () {
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 }

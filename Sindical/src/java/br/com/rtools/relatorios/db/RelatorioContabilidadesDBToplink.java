@@ -1,7 +1,7 @@
 package br.com.rtools.relatorios.db;
 
-import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.principal.DB;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -35,6 +35,26 @@ public class RelatorioContabilidadesDBToplink extends DB implements RelatorioCon
         }
         return result;
     }
+    
+    @Override
+    public int quantidadeEmpresas() {
+        int quantidade = 0;
+        try {
+            Query qry = getEntityManager().createNativeQuery(""
+                    + "    SELECT COUNT(*) "
+                    + "      FROM arr_contribuintes_vw AS C "
+                    + "     WHERE C.dt_inativacao IS NULL "
+                    + "       AND C.id_contabilidade > 0 "
+                    + "  GROUP BY C.id_contabilidade "
+                    + "  ORDER BY COUNT(*) DESC "
+                    + "     LIMIT 1");
+            List list = qry.getResultList();
+            quantidade = Integer.parseInt(((List) list.get(0)).get(0).toString());
+        } catch (Exception e) {
+            quantidade = 0;
+        }
+        return quantidade;
+    }
 
     @Override
     public List pesquisarCnaeContabilidade() {
@@ -51,116 +71,81 @@ public class RelatorioContabilidadesDBToplink extends DB implements RelatorioCon
     }
 
     @Override
-    public List listaRelatorioContabilidades(String pEmpresas, int indexEmp1, int indexEmp2, String tipoPCidade, String cidade, String ordem, String cnaes, int idTipoEndereco) {
-        String textQuery;
+    public List listaRelatorioContabilidades(String pEmpresas, int indexEmp1, int indexEmp2, String tipoPCidade, String cidade, String ordem, int idTipoEndereco) {
         String textQueryNativa;
         List list = new ArrayList();
         try {
-//            Query query = getEntityManager().createQuery("SELECT CI.juridica FROM ContribuintesInativos CI LEFT OUTER JOIN FETCH CI.juridica J");
-//            boolean verdade = true;
-//            List list = query.getResultList();                
-//            return list;
-            textQuery = "   SELECT J "
-                    + "       FROM Juridica AS J, "
-                    + " INNER JOIN PessoaEndereco AS PE "
-                    ;
-            textQueryNativa = 
-                   "        SELECT JUR.id                                                                       "
-                   +"         FROM pes_juridica                AS JUR                                           "
-                   +"   INNER JOIN pes_pessoa_endereco         AS PE   ON PE.id    = JUR.id_pessoa              "
-                   +"   INNER JOIN pes_pessoa                  AS PES  ON PES.id   = JUR.id_pessoa              "
-                   +"    LEFT JOIN end_endereco                AS ENDE ON ENDE.id  = PE.id_endereco             "
-                   +"   INNER JOIN end_logradouro              AS LOGR ON LOGR.id  = ENDE.id_logradouro         "
-                   +"   INNER JOIN end_cidade                  AS CID  ON CID.id   = ENDE.id_cidade             "
-                   +"   INNER JOIN end_descricao_endereco      AS DE   ON DE.id    = ENDE.id_descricao_endereco "
-                   //+"  LEFT JOIN arr_contribuintes_inativos  AS CI   ON CI.id    = JUR.id                   ";
-                   +"    LEFT JOIN arr_contribuintes_inativos  AS CI   ON CI.id_juridica = JUR.id AND CI.dt_ativacao IS NULL ";
-                   // -- left join contribuintes_inativos i on i.juridica.id=j.id and i.dt_ativacao IS NULL
-            if (pEmpresas.equals("todas")) {
-                textQuery = textQuery + " WHERE J.id IN(SELECT JC.contabilidade.id FROM Juridica AS JC WHERE JC.contabilidade IS NOT NULL) ";
-                textQueryNativa = textQueryNativa + "WHERE JUR.id IN(SELECT jc.id FROM pes_juridica AS jc where jc.id_contabilidade IS NOT NULL)";
-            } else if (pEmpresas.equals("semEmpresas")) {
-                textQuery = textQuery + " WHERE J.id NOT IN (SELECT JC.contabilidade.id FROM Juridica AS JC WHERE JC.contabilidade IS NOT NULL) ";
-                textQueryNativa = textQueryNativa + "WHERE JUR.id NOT IN(SELECT jc.id FROM pes_juridica AS jc where jc.id_contabilidade IS NOT NULL)";
-            } else if (pEmpresas.equals("comEmpresas")) {
-                textQuery = textQuery + " WHERE J.id IN (SELECT JC.contabilidade.id FROM Juridica JC WHERE JC.contabilidade IS NOT NULL GROUP BY JC.contabilidade.id HAVING COUNT(JC.contabilidade.id) >= " + indexEmp1 + " AND COUNT(JC.contabilidade.id) <= " + indexEmp2 +") ";
-                textQueryNativa = textQueryNativa + "WHERE JUR.id_contabilidade IS NOT NULL GROUP BY JUR.id_contabilidade HAVING COUNT(JUR.id_contabilidade) >= " + indexEmp1 + " AND COUNT(JUR.id_contabilidade) <= " + indexEmp2 +")";
+            String textFrom = "";
+            String textFaixa = "";
+            if (ordem.equals("razao")) {
+                textFrom = " , P.ds_nome ";
+            }
+            textQueryNativa
+                    = "      SELECT C.id_contabilidade,                                      "
+                    + "             PE.id as id_pessoa_endereco,                             "
+                    + "             COUNT(*) qtde                                           "
+                    + textFrom
+                    + "        FROM arr_contribuintes_vw AS C                                "
+                    + "  INNER JOIN pes_juridica         AS J ON J.id = C.id_contabilidade   "
+                    + "  INNER JOIN pes_pessoa_endereco  AS PE ON PE.id_pessoa = J.id_pessoa "
+                    + "  INNER JOIN endereco_vw          AS ENDE ON ENDE.id = PE.id_endereco "
+                    + "  INNER JOIN pes_pessoa           AS P ON P.ID = J.id_pessoa          "
+                    + "       WHERE C.dt_inativacao IS NULL AND C.id_contabilidade > 0       ";
+
+            if (pEmpresas.equals("comEmpresas")) {
+                textFaixa = " HAVING COUNT(C.id_contabilidade) >= " + indexEmp1 + " AND COUNT(C.id_contabilidade) <= " + indexEmp2;
             }
             // CIDADE -------------------------------------------------------
             if (tipoPCidade.equals("todas")) {
-                textQuery = textQuery + " and pe.pessoa.id = j.pessoa.id and pe.tipoEndereco.id = " + idTipoEndereco;
-                textQueryNativa = textQueryNativa + " AND PE.id_tipo_endereco = " + idTipoEndereco;
+                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco;
             } else if (tipoPCidade.equals("especificas")) {
-                textQuery = textQuery + " AND PE.pessoa.id = J.pessoa.id AND PE.tipoEndereco.id = " + idTipoEndereco + " AND PE.endereco.cidade.id = " + Integer.parseInt(cidade);
-                textQueryNativa = textQueryNativa + " PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.id_cidade = " + Integer.parseInt(cidade);
+                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.cidade = (SELECT ds_cidade FROM end_cidade WHERE id = " + Integer.parseInt(cidade)+")";
             } else if (tipoPCidade.equals("local")) {
-                textQuery = textQuery + " AND PE.pessoa.id = J.pessoa.id AND PE.tipoEndereco.id = " + idTipoEndereco + " AND PE.endereco.cidade.id = " + Integer.parseInt(cidade);
-                textQueryNativa = textQueryNativa + " PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.id_cidade = " + Integer.parseInt(cidade);
+                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.cidade = (SELECT ds_cidade FROM end_cidade WHERE id = " + Integer.parseInt(cidade)+")";
             } else if (tipoPCidade.equals("outras")) {
-                textQuery = textQuery + " AND PE.pessoa.id = J.pessoa.id AND PE.tipoEndereco.id = " + idTipoEndereco + " AND PE.endereco.cidade.id <> " + Integer.parseInt(cidade);
-                textQueryNativa = textQueryNativa + " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.id_cidade <> " + Integer.parseInt(cidade);
+                textQueryNativa += " AND PE.id_tipo_endereco = " + idTipoEndereco + " AND ENDE.cidade <> (SELECT ds_cidade FROM end_cidade WHERE id = " + Integer.parseInt(cidade)+")";
             }
-            // textQueryNativa = textQueryNativa + "CI.dt_ativacao IS NULL ";
-            // CNAES
-//            if (cnaes.length() != 0) {
-//                textQuery = textQuery + " AND J.cnae.id in ( " + cnaes + " ) ";
-//            }
-//            textQuery = textQuery + " AND CI.dtInativacao IS NULL ";
-
+            // AGRUPAR ------------------------------------------------------------------------
+            if (ordem.equals("razao")) {
+                textQueryNativa += " GROUP BY C.id_contabilidade, PE.id, P.ds_nome " + textFaixa;
+            } else if (ordem.equals("endereco")) {
+                textQueryNativa += " GROUP BY C.id_contabilidade, PE.id, ENDE.uf, ENDE.cidade, ENDE.logradouro, ENDE.endereco " + textFaixa;
+            } else if (ordem.equals("cep")) {
+                textQueryNativa += " GROUP BY C.id_contabilidade, PE.id, ENDE.cep, P.ds_nome,ENDE.uf, ENDE.cidade, ENDE.logradouro,ENDE.endereco " + textFaixa;
+            } else if (ordem.equals("qtde")) {
+                textQueryNativa += " GROUP BY C.id_contabilidade, PE.id, ENDE.cep, P.ds_nome,ENDE.uf, ENDE.cidade, ENDE.logradouro,ENDE.endereco " + textFaixa;
+            }
             // ORDEM ------------------------------------------------------------------------
             if (ordem.equals("razao")) {
-                textQuery = textQuery + " ORDER BY J.pessoa.nome";
-                textQueryNativa = textQueryNativa + " ORDER BY PES.ds_nome ASC ";
-            } else if (ordem.equals("documento")) {
-                textQuery = textQuery + " ORDER BY J.pessoa.documento";
-                textQueryNativa = textQueryNativa + " ORDER BY PES.ds_documento ASC ";
+                textQueryNativa = textQueryNativa + " ORDER BY P.ds_nome ASC ";
             } else if (ordem.equals("endereco")) {
-                textQuery = textQuery + " ORDER BY PE.endereco.cidade.uf,                          "
-                                      + "          PE.endereco.cidade.cidade,                      "
-                                      + "          PE.endereco.logradouro.logradouro,              "
-                                      + "          PE.endereco.descricaoEndereco.descricaoEndereco,"
-                                      + "          PE.numero ";
-                textQueryNativa = textQueryNativa + " ORDER BY CID.ds_uf ASC,                      "
-                                      + "                      CID.ds_cidade ASC,                  "
-                                      + "                      LOGR.ds_descricao ASC,              "
-                                      + "                      DE.ds_descricao ASC,                "
-                                      + "                      PE.ds_numero ASC                    ";
+                textQueryNativa += " ORDER BY ENDE.uf  ASC,                     "
+                        + "                   ENDE.cidade  ASC,                 "
+                        + "                   ENDE.logradouro ASC,              "
+                        + "                   ENDE.endereco ASC,                "
+                        + "                   PE.ds_numero ASC                  ";
             } else if (ordem.equals("cep")) {
-                textQuery = textQuery + " ORDER BY PE.endereco.cep,                                "
-                                      + "          PE.endereco.cidade.uf,                          "
-                                      + "          PE.endereco.cidade.cidade,                      "
-                                      + "          PE.endereco.logradouro.logradouro,              "
-                                      + "          PE.endereco.descricaoEndereco.descricaoEndereco,"
-                                      + "          PE.numero";
-                textQueryNativa = textQueryNativa + " ORDER BY ENDE.ds_cep ASC,                    "
-                                      + "                      CID.ds_uf  ASC,                     "
-                                      + "                      CID.ds_cidade  ASC,                 "
-                                      + "                      LOGR.ds_descricao  ASC,             "
-                                      + "                      DE.ds_descricao ASC,                "
-                                      + "                      PE.ds_numero ASC                    ";                
+                textQueryNativa += " ORDER BY ENDE.cep ASC,                     "
+                        + "                   ENDE.uf  ASC,                     "
+                        + "                   ENDE.cidade  ASC,                 "
+                        + "                   ENDE.logradouro ASC,              "
+                        + "                   ENDE.endereco ASC,                "
+                        + "                   PE.ds_numero ASC                  ";
+            } else if (ordem.equals("qtde")) {
+                textQueryNativa += " ORDER BY qtde ASC                          ";
             }
-            Query queryNativa = getEntityManager().createNativeQuery(textQueryNativa);    
-            list = (List) queryNativa.getResultList();
+            Query queryNativa = getEntityManager().createNativeQuery(textQueryNativa);
+            list = queryNativa.getResultList();
             if (!list.isEmpty()) {
-                String queryString = "";
-                for (int i = 0; i < list.size(); i++) {
-                    if (i == 0) {
-                        queryString = ((List) list.get(i)).get(0).toString();
-                    } else {
-                        queryString += ","+((List) list.get(i)).get(0).toString();
-                    }
-                }
-                Query qry = getEntityManager().createQuery("SELECT J FROM Juridica AS J WHERE J.id IN("+queryString+")");    
-                list = qry.getResultList();
-                if (!list.isEmpty()) {
-                    return list;
-                }
+                return list;
             }
-            return list;
         } catch (EJBQLException e) {
-            return new ArrayList();
+            return list;
+        } catch (NumberFormatException e) {
+            return list;
         } catch (Exception e) {
-            return new ArrayList();            
+            return list;
         }
+        return list;
     }
 }
