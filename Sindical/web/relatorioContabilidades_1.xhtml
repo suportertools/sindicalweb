@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    
+    <h:head>
+        <title>Relatório de Empresas Contábeis</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formRelatorioContabilidades">
+            
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Relatório de Empresas Contábeis" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <div class="divMae divFundo" align="left" style="width: auto">
+                        
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <h:outputLabel value="Tipo de Relatório: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu id="idTipoRelatorio" value="#{relatorioContabilidadesBean.idRelatorios}">
+                                    <f:selectItems value="#{relatorioContabilidadesBean.listaTipoRelatorios}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                            
+                            <h:column>
+                                <h:outputLabel value="Tipo do Endereço:" styleClass="fontePadrao" style="margin-left: 15px"/>
+                                <h:selectOneMenu id="idTipoEndereco" value="#{relatorioContabilidadesBean.idTipoEndereco}">
+                                    <f:selectItems value="#{relatorioContabilidadesBean.listaTipoEndereco}"/>
+                                </h:selectOneMenu>
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <br />
+                        
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <rich:panel style="width: 310px; height: auto">
+                                    <h:outputLabel value="Quant de Empresas: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
+                                    <h:selectOneMenu id="idEmpInicial" value="#{relatorioContabilidadesBean.idEmpInicial}" rendered="#{relatorioContabilidadesBean.renEmpresas}">
+                                        <a4j:ajax event="change" render="@form"/>
+                                        <f:selectItems value="#{relatorioContabilidadesBean.listaQntEmpresas1}"/>
+                                    </h:selectOneMenu><h:outputLabel value=" até " styleClass="fontePadrao" rendered="#{relatorioContabilidadesBean.renEmpresas}"/>
+                                    <h:selectOneMenu id="idEmpFinal" value="#{relatorioContabilidadesBean.idEmpFinal}" rendered="#{relatorioContabilidadesBean.renEmpresas}">
+                                        <a4j:ajax event="change" render="@form"/>
+                                        <f:selectItems value="#{relatorioContabilidadesBean.listaQntEmpresas2}"/>
+                                    </h:selectOneMenu>
+                                    <h:selectOneRadio id="idRadioEmpresas" value="#{relatorioContabilidadesBean.radioEmpresas}" styleClass="fontePadrao">
+                                        <a4j:ajax event="change" render="@form"/>
+                                        <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                        <f:selectItem itemValue="comEmpresas"   itemLabel="C/ Empresas"/>
+                                    </h:selectOneRadio>
+                                </rich:panel>
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <rich:panel style="width: 310px; height: auto">
+                                    <h:outputLabel value="Cidade: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
+                                    <h:selectOneMenu id="idCidades" value="#{relatorioContabilidadesBean.idCidades}" rendered="#{relatorioContabilidadesBean.renCidades}">
+                                        <f:selectItems value="#{relatorioContabilidadesBean.listaCidades}"/>
+                                    </h:selectOneMenu>
+                                    <h:selectOneRadio id="idRadioCidades" value="#{relatorioContabilidadesBean.radioCidades}" styleClass="fontePadrao">
+                                        <a4j:ajax event="change" render="@form"/>
+                                        <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                        <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
+                                        <f:selectItem itemValue="local"         itemLabel="Local"/>
+                                        <f:selectItem itemValue="outras"        itemLabel="Outras"/>
+                                    </h:selectOneRadio>
+                                </rich:panel>
+                            </h:column>
+                        </h:panelGrid> 
+                        
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <rich:panel style="width: 310px; height: auto">
+                                    <h:outputLabel value="Ordernar Por: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
+                                    <h:selectOneRadio id="idOrdem" value="#{relatorioContabilidadesBean.radioOrdem}" styleClass="fontePadrao">
+                                        <f:selectItem itemValue="razao"         itemLabel="Razão"/>
+                                        <f:selectItem itemValue="documento"     itemLabel="Documento"/>
+                                        <f:selectItem itemValue="endereco"      itemLabel="Endereço"/>
+                                        <f:selectItem itemValue="cep"           itemLabel="Cep"/>
+                                    </h:selectOneRadio>
+                                </rich:panel>
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <br />
+                        
+                        <h:panelGrid columns="1" rendered="false">
+                            <h:column>
+                                <rich:panel>
+                                    <div style="overflow:auto; height:150px; width:290px">
+                                        <rich:dataTable value="#{relatorioContabilidadesBean.listaCnaes}" id="tbl" var="linha">
+                                        <rich:column styleClass="coluna">
+                                            <f:facet name="header">
+                                                <h:selectBooleanCheckbox value="#{relatorioContabilidadesBean.chkCnaes}">
+                                                    <a4j:ajax event="change" listener="#{relatorioContabilidadesBean.marcaTodos}" render="tbl"/>
+                                                </h:selectBooleanCheckbox>
+                                            </f:facet>
+                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" />
+                                        </rich:column>
+
+                                        <rich:column>
+                                            <f:facet name="header">
+                                                <h:outputText value="Cnae"/>
+                                            </f:facet>
+                                                <h:outputText value="#{linha.argumento1.numero} - #{linha.argumento1.cnae}"/>
+                                        </rich:column>
+                                        </rich:dataTable>
+                                    </div>
+                                </rich:panel>
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <br />
+                        
+                        <h:commandLink styleClass="idPesquisar iLink" value="Visualizar" action="#{relatorioContabilidadesBean.condicaoDePesquisa}"  title="Visualizar" target="_blank"/>
+                    </div>
+                </center>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

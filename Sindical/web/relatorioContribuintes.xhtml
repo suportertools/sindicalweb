@@ -2,9 +2,8 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     
     <h:head>
         <title>Relatório de Contribuintes</title>
@@ -12,261 +11,146 @@
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formRelatorioContribuintes">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Relatório de Contribuintes" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" align="left" style="width: auto; height: auto">
-                        
-                        <h:panelGrid columns="5" id="idPainelG1">
-                            <h:column>
-                                <h:outputLabel value="Tipo de Relatório: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu id="idTipoRelatorio" value="#{relatorioContribuintesBean.idRelatorios}">
-                                    <a4j:ajax event="change" listener="#{relatorioContribuintesBean.atualizaPGOrdem}" render="idRadioEscritorio, idOrdem"/>
-                                    <f:selectItems value="#{relatorioContribuintesBean.listaTipoRelatorios}"/>
-                                </h:selectOneMenu>
-                            </h:column>
-
-                            <h:column>
-                                <h:outputLabel value="Condição:" styleClass="fontePadrao" style="margin-left: 30px"/>
-                                <h:selectOneMenu id="idCondicao" value="#{relatorioContribuintesBean.comboCondicao}">
-                                    <a4j:ajax event="change" render="this" />
-                                    <f:selectItem itemValue="ativos"            itemLabel="Ativos"/>
-                                    <f:selectItem itemValue="inativos"          itemLabel="Inativos"/>
-                                    <f:selectItem itemValue="contribuintes"     itemLabel="Contribuintes"/>
-                                    <f:selectItem itemValue="naoContribuinte"   itemLabel="Não Contribuinte"/>
-                                </h:selectOneMenu>
-                            </h:column>
-
-                            <h:column>
-                                <h:outputLabel value="Tipo do Endereço:" styleClass="fontePadrao" style="margin-left: 30px"/>
-                                <h:selectOneMenu id="idTipoEndereco" value="#{relatorioContribuintesBean.idTipoEndereco}">
-                                    <a4j:ajax event="change" render="this" />
-                                    <f:selectItems value="#{relatorioContribuintesBean.listaTipoEndereco}"/>
-                                </h:selectOneMenu>
-                            </h:column>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_relatorio_contribuintes">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Relatório de Contribuintes" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <p:panel styleClass="fundoCinza">
+                        <h:panelGrid columns="6" cellpadding="5">
+                            <p:outputLabel value="Tipo de Relatório: " />
+                            <p:selectOneMenu id="id_tipo_relatorio" value="#{relatorioContribuintesBean.idRelatorios}">
+                                <p:ajax event="change" listener="#{relatorioContribuintesBean.atualizaPGOrdem}" update="@this"/>
+                                <f:selectItems value="#{relatorioContribuintesBean.listaTipoRelatorios}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Condição:" />
+                            <p:selectOneMenu id="idCondicao" value="#{relatorioContribuintesBean.comboCondicao}">
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItem itemValue="ativos"            itemLabel="Ativos"/>
+                                <f:selectItem itemValue="inativos"          itemLabel="Inativos"/>
+                                <f:selectItem itemValue="contribuintes"     itemLabel="Contribuintes"/>
+                                <f:selectItem itemValue="naoContribuinte"   itemLabel="Não Contribuinte"/>
+                            </p:selectOneMenu>                            
+                            <p:outputLabel value="Tipo do Endereço:" />
+                            <p:selectOneMenu id="idTipoEndereco" value="#{relatorioContribuintesBean.idTipoEndereco}">
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItems value="#{relatorioContribuintesBean.listaTipoEndereco}"/>
+                            </p:selectOneMenu>
                         </h:panelGrid>
-
-                        <br />
-
-                        <h:panelGrid columns="2" id="idPainelG2">
-                            <h:column>
-                                <rich:panel>
-                                    <h:outputLabel value="Escritório: " styleClass="fonteFranklinNegrito" style="margin-left: 10px"/>
-                                    <h:selectOneMenu id="idContabilidade" value="#{relatorioContribuintesBean.idContabilidade}" rendered="#{relatorioContribuintesBean.radioEscritorios == 'especifico'}">
-                                        <a4j:ajax event="change" render="idContabilidade" />
-                                        <f:selectItems value="#{relatorioContribuintesBean.listaContabilidades}"/>
-                                    </h:selectOneMenu>
-
-                                    <h:selectOneRadio id="idRadioEscritorio" value="#{relatorioContribuintesBean.radioEscritorios}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                        <f:selectItem itemValue="todos"            itemLabel="Todos"/>
-                                        <f:selectItem itemValue="semEscritorio"    itemLabel="S/ Escritório"/>
-                                        <f:selectItem itemValue="comEscritorio"    itemLabel="C/ Escritório"/>
-                                        <f:selectItem itemValue="especifico"       itemLabel="Específico"/>
-                                    </h:selectOneRadio>
-                                </rich:panel>    
-                            </h:column>
-
-                            <h:column>
-                                <rich:panel style="width: 308px; height: 61px; margin-left: 5px">
-                                    <br />
-                                    <h:outputLabel value="Envio de Login: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
-                                    <h:selectOneMenu id="cbEmails" value="#{relatorioContribuintesBean.idEmails}" >
-                                        <a4j:ajax event="change" render="this" />
-                                        <f:selectItem itemValue="t"   itemLabel="Todos"/>
-                                        <f:selectItem itemValue="e"   itemLabel="Enviados"/>
-                                        <f:selectItem itemValue="n"   itemLabel="Não Enviados"/>
-                                    </h:selectOneMenu>
-                                </rich:panel>
-                            </h:column>
-                        </h:panelGrid>
-
-                        <br />
-
-                        <h:panelGrid columns="2" id="idPainelG3">
-                            <h:column>
-                                <rich:panel>
-                                    <h:outputLabel value="Cidade: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
-                                    <h:selectOneMenu id="idCidades" value="#{relatorioContribuintesBean.idCidades}" rendered="#{relatorioContribuintesBean.radioCidades == 'especificas'}">
-                                        <a4j:ajax event="change" render="idCidades" />
-                                        <f:selectItems value="#{relatorioContribuintesBean.listaCidades}"/>
-                                    </h:selectOneMenu>
-                                    
-                                    <h:selectOneRadio id="idRadioCidades" value="#{relatorioContribuintesBean.radioCidades}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                        <f:selectItem itemValue="todas"         itemLabel="Todas"/>
-                                        <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
-                                        <f:selectItem itemValue="local"         itemLabel="Local"/>
-                                        <f:selectItem itemValue="outras"        itemLabel="Outras"/>
-                                    </h:selectOneRadio>
-                                </rich:panel>
-                            </h:column>
-
-                            <h:column>
-                                <rich:panel style="margin-left: 5px">
-                                    <h:outputLabel value="Ordernar Por: " styleClass="fonteFranklinNegrito" style="margin-left: 8px"/>
-                                    <h:selectOneRadio id="idOrdem" value="#{relatorioContribuintesBean.radioOrdem}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="this" />
-                                        <f:selectItem itemValue="razao"         itemLabel="Razão"/>
-                                        <f:selectItem itemValue="documento"     itemLabel="Documento"/>
-                                        <f:selectItem itemValue="endereco"      itemLabel="Endereço"/>
-                                        <f:selectItem itemValue="cep"           itemLabel="Cep"/>
-                                        <f:selectItem itemValue="escritorio"    itemLabel="Escritório"/>
-                                    </h:selectOneRadio>
-                                </rich:panel>
-                            </h:column>
-                        </h:panelGrid>
-
-                        <br />
-
-                        <h:panelGrid columns="3" id="idPainelG4">
-                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.bairro}"/>
-                            <h:outputLabel value="Bairro: " styleClass="fontePadraoNegrito"/>
-                            <h:outputText value="#{relatorioContribuintesBean.bairro.descricao}" styleClass="fontePadrao"/>
-                        </h:panelGrid>
-
-                        <br />
-
-                        <h:panelGrid columns="4" id="idPainelG5">
-                            <h:column>
-                                <h:panelGrid columns="3">
-                                    <h:outputLabel value="Centro Comercial" styleClass="fonteFranklinNegrito"/>
-                                </h:panelGrid>
-
-                                <h:panelGrid columns="3">
-                                    <h:selectOneRadio id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}" styleClass="fontePadrao">
-                                        <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                        <f:selectItem itemValue="com"    itemLabel="Com"/>
-                                        <f:selectItem itemValue="sem"    itemLabel="Sem"/>
-                                        <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
-                                    </h:selectOneRadio>
-                                </h:panelGrid>
-                                <div style="overflow:auto; height:150px; width:300px">
-                                    <rich:dataTable value="#{relatorioContribuintesBean.listaCentroComercial}" var="linha" id="tblCentro">
-                                        <rich:column styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value="Selecione"/>
-                                            </f:facet>
-                                            <h:selectBooleanCheckbox value="#{linha.argumento0}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Centro Comerciais"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.argumento1.tipoCentroComercial.descricao}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Empresa"/>
-                                            </f:facet>
-                                            <h:outputLabel value="#{linha.argumento1.juridica.pessoa.nome}"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </div>
-                            </h:column>
-
-                            <h:column>
-                                <h:panelGrid columns="3">
-                                    <h:outputLabel value="Convenções" styleClass="fonteFranklinNegrito"/>
-                                </h:panelGrid>
-
-                                <rich:panel>
-                                    <div style="overflow:auto; height:150px; width:200px">
-                                        <rich:dataTable value="#{relatorioContribuintesBean.listaConvencoes}" var="linha" id="tblConvencao">
-                                            <rich:column id="colSelecioneCon">
-                                                <f:facet name="header">
-                                                    <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkConvencao}">
-                                                        <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodos}" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                                    </h:selectBooleanCheckbox>
-                                                </f:facet>
-                                                <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                    <a4j:ajax event="change" listener="#{relatorioContribuintesBean.atualizaGridCnaeConv}" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                                </h:selectBooleanCheckbox>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Convenção"/>
-                                                </f:facet>
-                                                    <h:outputText value="#{linha.argumento1.descricao}"/>
-                                            </rich:column>
-                                        </rich:dataTable>
-                                    </div>
-                                </rich:panel>
-                            </h:column>
-
-                            <h:column>
-                                <h:panelGrid columns="3">
-                                    <h:outputLabel value=" Grupos" styleClass="fonteFranklinNegrito"/>
-                                </h:panelGrid>
-                                <rich:panel>
-                                    <div style="overflow:auto; height:150px; width:200px">
-                                        <h:panelGrid columns="1">
-                                            <rich:dataTable value="#{relatorioContribuintesBean.listaGrupo}" style="width: 100%" var="linha" id="tblGrupo">
-                                                <rich:column styleClass="coluna">
-                                                    <f:facet name="header">
-                                                        <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkGrupo}">
-                                                            <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosGrupo}" render="tblGrupo"/>
-                                                        </h:selectBooleanCheckbox>
-                                                    </f:facet>
-                                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                        <a4j:ajax event="change" render="idPainelG1 idPainelG2 idPainelG3 idPainelG4 idPainelG5 idPainelG6"/>
-                                                    </h:selectBooleanCheckbox>
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Grupo Cidade"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.argumento1.descricao}"/>
-                                                </rich:column>
-                                            </rich:dataTable>
-                                        </h:panelGrid>
-                                    </div>
-                                </rich:panel>
-                            </h:column>
-                        </h:panelGrid>
-
-                        <h:panelGrid columns="1" id="idPainelG6">
-                            <h:column>
-                                <rich:panel style=" margin-left: 5px">
-                                    <div style="overflow:auto; height:150px; width:725px">
-                                        <rich:dataTable value="#{relatorioContribuintesBean.listaCnaeConvencao}" var="linha" id="tblCnaeConvencao">
-                                            <rich:column styleClass="coluna">
-                                                <f:facet name="header">
-                                                    <h:selectBooleanCheckbox value="#{relatorioContribuintesBean.chkCnaeConvencao}">
-                                                        <a4j:ajax event="change" listener="#{relatorioContribuintesBean.marcaTodosCnae}" render="tblCnaeConvencao"/>
-                                                    </h:selectBooleanCheckbox>
-                                                </f:facet>
-                                                <h:selectBooleanCheckbox value="#{linha.argumento0}" />
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header">
-                                                    <h:outputText value="Cnae"/>
-                                                </f:facet>
-                                                    <h:outputText value="#{linha.argumento1.cnae.numero} - #{linha.argumento1.cnae.cnae}"/>
-                                            </rich:column>
-                                        </rich:dataTable>
-                                    </div>
-                                </rich:panel>
-                            </h:column>
-                        </h:panelGrid> 
-                        <br />
-                        <h:commandLink styleClass="idPesquisar iLink" value="Visualizar"   title="Visualizar" action="#{relatorioContribuintesBean.condicaoDePesquisa}" target="_blank"/>
-                    </div>
-                </center>
-            </h:form>
+                    </p:panel>
+                    <p:accordionPanel multiple="true" styleClass="margin-top-max" id="id_acordion">
+                        <p:tab title="Escritório">
+                            <p:selectOneRadio value="#{relatorioContribuintesBean.radioEscritorios}">
+                                <p:ajax event="change" update="id_contabilidades"/>
+                                <f:selectItem itemValue="todos"            itemLabel="Todos"/>
+                                <f:selectItem itemValue="semEscritorio"    itemLabel="S/ Escritório"/>
+                                <f:selectItem itemValue="comEscritorio"    itemLabel="C/ Escritório"/>
+                                <f:selectItem itemValue="especifico"       itemLabel="Específico"/>
+                            </p:selectOneRadio>                            
+                            <h:panelGrid styleClass="no-border margin-top-max" id="id_contabilidades" columns="2">
+                                <p:selectOneMenu id="idContabilidade" value="#{relatorioContribuintesBean.idContabilidade}" rendered="#{relatorioContribuintesBean.radioEscritorios == 'especifico'}">
+                                    <p:ajax event="change" update="@this" />
+                                    <f:selectItems value="#{relatorioContribuintesBean.listaContabilidades}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Envio de Login">
+                            <p:selectOneMenu value="#{relatorioContribuintesBean.idEmails}" >
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItem itemValue="t"   itemLabel="Todos"/>
+                                <f:selectItem itemValue="e"   itemLabel="Enviados"/>
+                                <f:selectItem itemValue="n"   itemLabel="Não Enviados"/>
+                            </p:selectOneMenu>
+                        </p:tab>
+                        <p:tab title="Cidade">
+                            <p:selectOneRadio id="idRadioCidades" value="#{relatorioContribuintesBean.radioCidades}" styleClass="fontePadrao">
+                                <p:ajax event="change" update="id_cidades"/>
+                                <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
+                                <f:selectItem itemValue="local"         itemLabel="Local"/>
+                                <f:selectItem itemValue="outras"        itemLabel="Outras"/>
+                            </p:selectOneRadio>                            
+                            <h:panelGrid styleClass="no-border margin-top-max" id="id_cidades" columns="2">
+                                <p:selectOneMenu value="#{relatorioContribuintesBean.idCidades}" rendered="#{relatorioContribuintesBean.radioCidades == 'especificas'}">
+                                    <p:ajax event="change" update="@this" />
+                                    <f:selectItems value="#{relatorioContribuintesBean.listaCidades}"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                        </p:tab>
+                        <p:tab title="Ordenar por">
+                            <p:selectOneRadio value="#{relatorioContribuintesBean.radioOrdem}" >
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItem itemValue="razao"         itemLabel="Razão"/>
+                                <f:selectItem itemValue="documento"     itemLabel="Documento"/>
+                                <f:selectItem itemValue="endereco"      itemLabel="Endereço"/>
+                                <f:selectItem itemValue="cep"           itemLabel="Cep"/>
+                                <f:selectItem itemValue="escritorio"    itemLabel="Escritório"/>
+                            </p:selectOneRadio>                            
+                        </p:tab>
+                        <p:tab title="Bairro">
+                            <p:commandButton icon="ui-icon-search" value="Pesquisar bairro: " action="#{chamadaPaginaBean.bairro}"/>
+                            <p:outputLabel value="#{relatorioContribuintesBean.bairro.descricao}" />
+                        </p:tab>
+                    </p:accordionPanel>                    
+                    <h:panelGrid columns="3" id="id_panel_listas">
+                        <p:panel header="Centro Comercial" style="width: 320px; height: 275px;">
+                            <p:selectOneRadio id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}">
+                                <p:ajax event="change" update="tbl_centro_comercial"/>
+                                <f:selectItem itemValue="com"    itemLabel="Com"/>
+                                <f:selectItem itemValue="sem"    itemLabel="Sem"/>
+                                <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
+                            </p:selectOneRadio>
+                            <p:panel id="tbl_centro_comercial" styleClass="margin-top-max no-border">
+                                <p:dataTable value="#{relatorioContribuintesBean.listaCentrosComerciais}" var="centroComercial" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.centroComercialSelecionado}"  rowKey="#{centroComercial.id}" scrollHeight="115" scrollable="true">
+                                    <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                    <p:column headerText="Centro Comerciais">
+                                        <h:outputText value="#{centroComercial.tipoCentroComercial.descricao}"/>
+                                    </p:column>
+                                    <p:column headerText="Empresa">
+                                        <p:outputLabel value="#{centroComercial.juridica.pessoa.nome}"/>
+                                    </p:column>
+                                </p:dataTable>                                
+                            </p:panel>
+                        </p:panel>
+                        <p:panel id="tbl_convencao" header="Convenções" style="width: 320px;">
+                            <p:dataTable value="#{relatorioContribuintesBean.listaConvencaos}" var="convencao" scrollHeight="200" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.convencaoSelecionada}" rowKey="#{convencao.id}">
+                                <p:ajax event="rowSelectCheckbox" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
+                                <p:ajax event="rowSelect" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
+                                <p:ajax event="rowUnselectCheckbox" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
+                                <p:ajax event="rowUnselect" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
+                                <p:ajax event="toggleSelect" process="@this" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos"  />
+                                <p:column selectionMode="multiple" width="20" styleClass="text-center" disabledSelection="true"/>
+                                <p:column headerText="Convenção">
+                                    <p:outputLabel value="#{convencao.descricao}"/>
+                                </p:column>
+                            </p:dataTable>                                    
+                        </p:panel>
+                        <p:panel id="tbl_grupos" header="Grupos" style="width: 320px;">
+                            <p:dataTable value="#{relatorioContribuintesBean.listaGrupoCidades}" var="grupoCidade" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.grupoCidadeSelecionada}" rowKey="#{grupoCidade.id}" scrollHeight="200" scrollable="true" >
+                                <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                <p:column headerText="Grupo Cidade">
+                                    <h:outputText value="#{grupoCidade.descricao}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                    </h:panelGrid>
+                    <p:panel header="Cnaes Convenção" id="tbl_cnae_convencaos" styleClass="margin-top-max">
+                        <p:dataTable value="#{relatorioContribuintesBean.listaCnaeConvencaos}" var="cnaeConvencao" scrollHeight="150" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.cnaeConvencaoSelecionado}" rowKey="#{cnaeConvencao.id}">
+                            <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                            <p:column headerText="Número" width="80" styleClass="text-center">
+                                <p:outputLabel value="#{cnaeConvencao.cnae.numero}"/>
+                            </p:column>
+                            <p:column headerText="Cnae">
+                                <p:outputLabel value="#{cnaeConvencao.cnae.cnae}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioContribuintesBean.visualizar}" ajax="false" styleClass="margin-top-max" update="id_messages_growl"/>
+                </h:form>
+            </p:panel>
         </f:view>
     </h:body>
 </ui:composition>
