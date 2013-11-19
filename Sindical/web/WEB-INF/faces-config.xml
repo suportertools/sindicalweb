@@ -222,18 +222,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>relatorioContribuintesBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioContribuintesJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>relatorioContabilidadesBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioContabilidadesJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>relatorioMovimentosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioMovimentosJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -430,12 +418,6 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>relatorioBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioBean</managed-bean-class>
-    
-        <managed-bean-scope>session</managed-bean-scope></managed-bean>
 
     <managed-bean>
         <managed-bean-name>convencaoPeriodoBean</managed-bean-name>
