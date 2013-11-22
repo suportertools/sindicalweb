@@ -2,143 +2,97 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Pesquisa Juridica</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" /> 
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body styleClass="divMenu" onload="#{rich:element('formPesquisaPessoaJuridica:palavraChave')}.focus()">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaPessoaJuridica">                
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisa Jurídica" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <h:panelGrid columns="7">
-                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
-                        <h:inputText id="palavraChave" value="#{juridicaBean.descPesquisa}" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaPessoaJuridica:idInicial')}.onclick();}" />
-                        <h:outputLabel value="Por: "/>
-                        <h:selectOneMenu value="#{juridicaBean.porPesquisa}" onchange="submit();">
-                            <f:selectItem itemValue="nome"     itemLabel="Nome"/>
-                            <f:selectItem itemValue="fantasia" itemLabel="Fantasia"/>
-                            <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
-                            <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                            <f:selectItem itemValue="cei"      itemLabel="CEI"/>
-                            <f:selectItem itemValue="email1"    itemLabel="E-mail 1"/>
-                            <f:selectItem itemValue="email2"    itemLabel="E-mail 2"/>
-                            <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
-                            <rich:jQuery selector="#palavraChave" query="attr('class', '#{juridicaBean.porPesquisa}')" timing="immediate"/>
-                        </h:selectOneMenu>
-                        <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{juridicaBean.acaoPesquisaInicial}" />
-                        <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{juridicaBean.acaoPesquisaParcial}" />
-                        <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+            <p:panel styleClass="wrapper" style="border: 0px;">
+                <h:form id="formPesquisaPessoaJuridica">
+                
+                    <h:outputText value="Pesquisa Pessoas Juridicas" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                        <h:panelGrid columns="4">
+                            <p:inputMask value="#{juridicaBean.descPesquisa}" size="50" mask="#{juridicaBean.mascaraPesquisaJuridica}"/>
+                            <p:selectOneMenu value="#{juridicaBean.porPesquisa}">
+                                <p:ajax event="change" update="i_panel_pesquisa" />
+                                <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                                <f:selectItem itemValue="fantasia" itemLabel="Fantasia"/>
+                                <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
+                                <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                                <f:selectItem itemValue="cei"      itemLabel="CEI"/>
+                                <f:selectItem itemValue="email1" itemLabel="E-mail 1"/>
+                                <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
+                                <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
+                            </p:selectOneMenu>                        
+                            <p:commandButton value="Inicial" action="#{juridicaBean.acaoPesquisaInicial}" update=":formGridPesquisaPessoaJuridica:i_panel_grid" />
+                            <p:commandButton value="Parcial" action="#{juridicaBean.acaoPesquisaParcial}" update=":formGridPesquisaPessoaJuridica:i_panel_grid" />
+                        </h:panelGrid>
+                        <p:focus for="i_panel_pesquisa" />
+                    </p:panel>
+                </h:form>
+            </p:panel>
+            <p:panel style="margin: auto 0;">
+                <h:form id="formGridPesquisaPessoaJuridica">
+                    <h:panelGrid id="i_panel_grid" style="width: 100%">
+                        <p:dataTable value="#{juridicaBean.listaJuridica}" var="juridica" id="tbl" emptyMessage="Nenhuma empresa encontrada" scrollHeight="400" scrollable="true">
+                            <f:facet name="footer">
+                                Obs: T.Doc. = Tipo de Documento
+                            </f:facet>
+                            <p:column headerText="ID" styleClass="text-center" width="50">
+                                <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.id}"/>
+                            </p:column>
+                            <p:column headerText="Nome">
+                                <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.nome}"/>
+                            </p:column>
+
+                            <p:column headerText="Fantasia">
+                                <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.fantasia}"/>
+                            </p:column>                            
+
+                            <p:column headerText="Email">
+                                <h:outputText value="#{juridica.pessoa.email1}"/>
+                            </p:column>
+
+                            <p:column headerText="Documento">
+                                <p:commandLink action="#{juridicaBean.editar(juridica)}" value="#{juridica.pessoa.documento}"/>
+                            </p:column>
+
+                            <p:column headerText="T.Doc." styleClass="text-center" width="80">
+                                <h:outputText value="#{juridica.pessoa.tipoDocumento.descricao}"/>
+                            </p:column>
+
+                            <p:column headerText="Escritório">
+                                <h:outputText value="#{juridica.contabilidade.pessoa.nome}"/>
+                            </p:column>
+
+                            <p:column headerText="Status" width="90" styleClass="text-center">
+                                <h:outputText value="#{juridicaBean.status(juridica)}"/>
+                            </p:column>
+
+                            <p:column headerText="CNAE" width="60" styleClass="text-center">
+                                <h:outputText value="#{juridica.cnae.numero}"/>
+                            </p:column>
+
+                            <p:column headerText="Telefone" width="100" styleClass="text-center">
+                                <h:outputText value="#{juridica.pessoa.telefone1}"/>
+                            </p:column>
+                        </p:dataTable>
                     </h:panelGrid>
-                    <div style="overflow:auto; height:380px;" class="margin-top-maior">
-                        <br /><br />
-                        <rich:dataTable value="#{juridicaBean.listaJuridica}" var="linha" iterationStatusVar="it"  style="width: 95%" id="tbl"  styleClass="stable">
-                            <rich:column style="text-align: center;">
-                                <f:facet name="header">
-                                    <h:outputText value="#"/>
-                                </f:facet>
-                                <h:outputText value="#{it.index}"/>
-                            </rich:column>
-                            <rich:column styleClass="colunaPesquisa">
-                                <f:facet name="header">
-                                    <h:outputText value="ID"/>
-                                </f:facet>
-                                <a4j:commandLink action="#{juridicaBean.editar}" value="#{linha.argumento0.id}">
-                                    <a4j:param value="#{it.index}" assignTo="#{juridicaBean.idIndex}" />
-                                </a4j:commandLink>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Nome"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.nome}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Fantasia"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.fantasia}"/>
-                            </rich:column>                            
-                            
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="E-mail"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.email1}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Documento"/>
-                                </f:facet>
-                                <div style="width: 100px">
-                                    <h:outputText value="#{linha.argumento0.pessoa.documento}"/>
-                                </div>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Tipo Documento"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.tipoDocumento.descricao}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Escritório"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.contabilidade.pessoa.nome}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Status"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento1}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Grupo"/>
-                                </f:facet>
-                                <h:outputText value=""/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Convenção"/>
-                                </f:facet>
-                                <h:outputText value=""/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="CNAE"/>
-                                </f:facet>
-                                <div style="width: 60px">
-                                    <h:outputText value="#{linha.argumento0.cnae.numero}"/>
-                                </div>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Telefone"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.telefone1}"/>
-                            </rich:column>
-                        </rich:dataTable>
-                    </div>
-                </center>
-            </h:form>
-            <rich:jQuery selector=".stable tr:odd" query="addClass('odd-row')" />
-            <rich:jQuery selector=".stable tr:even" query="addClass('even-row')" />
-            <rich:jQuery selector=".stable tr" event="mouseover" query="jQuery(this).addClass('active-row')" />
-            <rich:jQuery selector=".stable tr" event="mouseout" query="jQuery(this).removeClass('active-row')" />              
+                </h:form>
+            </p:panel>
         </f:view>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>
+        
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
     </h:body>
 </ui:composition>
