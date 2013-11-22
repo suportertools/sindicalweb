@@ -74,6 +74,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private List listaEnd;
     public List itens;
     private List<DataObject> listaPessoa;
+    private List<Fisica> listaPessoaFisica = new ArrayList<Fisica>();
     private List<PessoaEmpresa> listaPessoaEmpresa;
     private List<SelectItem> listaProfissoes;
     private int idPais;
@@ -499,8 +500,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return null;
     }
 
-    public String editarFisica(DataObject object) {
-        if (fisica.getId() != ((Fisica) object.getArgumento0()).getId()) {
+    public String editarFisica(Fisica f) {
+        if (fisica.getId() != f.getId()) {
             FacesContext context = FacesContext.getCurrentInstance();
             File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
             if (fExiste.exists()) {
@@ -510,7 +511,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
-        fisica = (Fisica) object.getArgumento0();
+        fisica = f;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
         String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
@@ -823,17 +824,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
-    public void refreshForm() {
-    }
-
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
         listaPessoa.clear();
+        listaPessoaFisica.clear();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
         listaPessoa.clear();
+        listaPessoaFisica.clear();
     }
 
     public int getRetornaIdPessoaList() {
@@ -1543,5 +1543,39 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (!msgs.isEmpty()) {
             throw new ValidatorException(msgs);
         }
+    }    
+    
+    public String getMascaraPesquisaFisica(){
+        return Mask.getMascaraPesquisa(porPesquisa, true);
+    }      
+
+    public List<Fisica> getListaPessoaFisica() {
+        if (listaPessoaFisica.isEmpty()) {
+            FisicaDB db = new FisicaDBToplink();
+            if (pesquisaPor.equals("socioativo")) {
+                listaPessoaFisica = db.pesquisaPessoaSocio(descPesquisa, porPesquisa, comoPesquisa);
+            } else if (pesquisaPor.equals("pessoa")) {
+                listaPessoaFisica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
+            } else if (pesquisaPor.equals("socioinativo")) {
+                listaPessoaFisica = db.pesquisaPessoaSocioInativo(descPesquisa, porPesquisa, comoPesquisa);
+            }
+        }
+        return listaPessoaFisica;
+    }
+
+    public void setListaPessoaFisica(List<Fisica> listaPessoaFisica) {
+        this.listaPessoaFisica = listaPessoaFisica;
+    }
+    
+    public String pessoaEmpresaString(Fisica f) {
+        String pessoaEmpresaString = "";
+        PessoaEmpresaDB pessoaEmpresaDB = new PessoaEmpresaDBToplink();
+        PessoaEmpresa pe = (PessoaEmpresa) pessoaEmpresaDB.pesquisaPessoaEmpresaPorFisica(f.getId());
+        if (pe != null) {
+            if (pe.getId() != -1) {
+                pessoaEmpresaString = pe.getJuridica().getPessoa().getNome();
+            }
+        }
+        return pessoaEmpresaString;
     }
 }
