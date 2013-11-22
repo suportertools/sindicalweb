@@ -2,13 +2,19 @@ package br.com.rtools.associativo;
 
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "SOC_SUSPENCAO")
-@NamedQuery(name = "Suspencao.pesquisaID", query = "select s from Suspencao s where s.id = :pid")
-public class Suspencao implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Suspencao.pesquisaID", query = "SELECT S FROM Suspencao AS S WHERE S.id = :pid"),
+    @NamedQuery(name = "Suspencao.findAll", query = "SELECT S FROM Suspencao AS S ORDER BY S.dtFinal DESC, S.pessoa.nome ASC ")
+})
+public class Suspencao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -108,4 +114,14 @@ public class Suspencao implements java.io.Serializable {
             this.dtFinal = DataHoje.converte(dataFinal);
         }
     }
+    
+    public void selecionaDataInicio(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dtInicial = DataHoje.converte(format.format(event.getObject()));
+    }
+    
+    public void selecionaDataTermino(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dtFinal = DataHoje.converte(format.format(event.getObject()));
+    }    
 }
