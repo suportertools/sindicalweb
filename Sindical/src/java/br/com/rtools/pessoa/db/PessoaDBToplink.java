@@ -8,6 +8,7 @@ import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaSemCadastro;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -107,7 +108,10 @@ public class PessoaDBToplink extends DB implements PessoaDB {
 
     @Override
     public List pesquisarPessoa(String desc, String por, String como) {
-        List lista = new Vector<Object>();
+        if (por.equals("cnpj") || por.equals("cpf") || por.equals("cei")){
+            por = "documento";
+        }
+        List lista;
         String textQuery = null;
         if (como.equals("T")) {
             textQuery = "";
@@ -128,7 +132,7 @@ public class PessoaDBToplink extends DB implements PessoaDB {
             }
             lista = qry.getResultList();
         } catch (Exception e) {
-            lista = new Vector<Object>();
+            lista = new ArrayList();
         }
         return lista;
     }

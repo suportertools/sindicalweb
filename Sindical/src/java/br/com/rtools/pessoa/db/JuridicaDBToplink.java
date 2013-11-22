@@ -90,7 +90,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
 
     @Override
     public List pesquisaPessoa(String desc, String por, String como) {
-        List lista = new Vector<Object>();
+        List lista;
         String textQuery = null;
         if (por.equals("fantasia")) {
             por = "fantasia";
@@ -169,7 +169,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
                     + "     OR UPPER(logr.ds_descricao || ' ' || enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                               "
                     + "     OR UPPER(enddes.ds_descricao) LIKE UPPER('%" + desc + "%')                                                                                                           "
                     + "     OR UPPER(cid.ds_cidade) LIKE UPPER('%" + desc + "%')                                                                                                                 "
-                    + "     OR UPPER(ende.ds_cep) = '" + desc + "' LIMIT 5000 ";
+                    + "     OR UPPER(ende.ds_cep) = '" + desc + "' LIMIT 1000 ";
 
             Query qryEndereco = getEntityManager().createNativeQuery(queryEndereco);
             List listEndereco = qryEndereco.getResultList();
@@ -215,7 +215,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             }
             lista = qry.getResultList();
         } catch (Exception e) {
-            lista = new Vector<Object>();
+            lista = new ArrayList();
         }
         return lista;
     }
