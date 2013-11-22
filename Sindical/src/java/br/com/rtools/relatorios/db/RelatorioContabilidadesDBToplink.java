@@ -1,7 +1,6 @@
 package br.com.rtools.relatorios.db;
 
 import br.com.rtools.principal.DB;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
