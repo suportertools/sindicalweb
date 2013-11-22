@@ -106,7 +106,7 @@ public class ImpressaoParaSocios {
 
             Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
             download.baixar();
-
+            download.remover();
         } catch (JRException e) {
             return false;
         }
