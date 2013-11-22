@@ -1,0 +1,144 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:head>
+        <title>Pesquisa Juridica</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body styleClass="divMenu" onload="#{rich:element('formPesquisaPessoaJuridica:palavraChave')}.focus()">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formPesquisaPessoaJuridica">                
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Pesquisa Jurídica" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                    <br /><br />
+                    <h:panelGrid columns="7">
+                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
+                        <h:inputText id="palavraChave" value="#{juridicaBean.descPesquisa}" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formPesquisaPessoaJuridica:idInicial')}.onclick();}" />
+                        <h:outputLabel value="Por: "/>
+                        <h:selectOneMenu value="#{juridicaBean.porPesquisa}" onchange="submit();">
+                            <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                            <f:selectItem itemValue="fantasia" itemLabel="Fantasia"/>
+                            <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
+                            <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                            <f:selectItem itemValue="cei"      itemLabel="CEI"/>
+                            <f:selectItem itemValue="email1"    itemLabel="E-mail 1"/>
+                            <f:selectItem itemValue="email2"    itemLabel="E-mail 2"/>
+                            <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
+                            <rich:jQuery selector="#palavraChave" query="attr('class', '#{juridicaBean.porPesquisa}')" timing="immediate"/>
+                        </h:selectOneMenu>
+                        <h:commandLink id="idInicial" value="Inicial" styleClass="idNovo iLink" action="#{juridicaBean.acaoPesquisaInicial}" />
+                        <h:commandLink id="idParcial" value="Parcial" styleClass="idNovo iLink" action="#{juridicaBean.acaoPesquisaParcial}" />
+                        <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+                    </h:panelGrid>
+                    <div style="overflow:auto; height:380px;" class="margin-top-maior">
+                        <br /><br />
+                        <rich:dataTable value="#{juridicaBean.listaJuridica}" var="linha" iterationStatusVar="it"  style="width: 95%" id="tbl"  styleClass="stable">
+                            <rich:column style="text-align: center;">
+                                <f:facet name="header">
+                                    <h:outputText value="#"/>
+                                </f:facet>
+                                <h:outputText value="#{it.index}"/>
+                            </rich:column>
+                            <rich:column styleClass="colunaPesquisa">
+                                <f:facet name="header">
+                                    <h:outputText value="ID"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{juridicaBean.editar}" value="#{linha.argumento0.id}">
+                                    <a4j:param value="#{it.index}" assignTo="#{juridicaBean.idIndex}" />
+                                </a4j:commandLink>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Nome"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.nome}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Fantasia"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.fantasia}"/>
+                            </rich:column>                            
+                            
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="E-mail"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.email1}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Documento"/>
+                                </f:facet>
+                                <div style="width: 100px">
+                                    <h:outputText value="#{linha.argumento0.pessoa.documento}"/>
+                                </div>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Tipo Documento"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.tipoDocumento.descricao}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Escritório"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.contabilidade.pessoa.nome}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Status"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento1}"/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Grupo"/>
+                                </f:facet>
+                                <h:outputText value=""/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Convenção"/>
+                                </f:facet>
+                                <h:outputText value=""/>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="CNAE"/>
+                                </f:facet>
+                                <div style="width: 60px">
+                                    <h:outputText value="#{linha.argumento0.cnae.numero}"/>
+                                </div>
+                            </rich:column>
+                            <rich:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Telefone"/>
+                                </f:facet>
+                                <h:outputText value="#{linha.argumento0.pessoa.telefone1}"/>
+                            </rich:column>
+                        </rich:dataTable>
+                    </div>
+                </center>
+            </h:form>
+            <rich:jQuery selector=".stable tr:odd" query="addClass('odd-row')" />
+            <rich:jQuery selector=".stable tr:even" query="addClass('even-row')" />
+            <rich:jQuery selector=".stable tr" event="mouseover" query="jQuery(this).addClass('active-row')" />
+            <rich:jQuery selector=".stable tr" event="mouseout" query="jQuery(this).removeClass('active-row')" />              
+        </f:view>
+        <p style="text-align: center">
+            R'Tools Desenvolvimento de Sistemas LTDA ®
+        </p>
+    </h:body>
+</ui:composition>
