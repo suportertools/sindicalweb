@@ -144,7 +144,7 @@
                                     </p:selectBooleanCheckbox>                                                
                                     <p:column>
                                         <p:outputLabel value="Agendamento retroativo: " />
-                                        <p:calendar value="#{registroEmpresarialBean.registro.agendamentoRetroativo}" pattern="dd/MM/yyyy" readonlyInput="true" size="10" title="Permite agendamento retroativo até">
+                                        <p:calendar value="#{registroEmpresarialBean.registro.agendamentoRetroativo}" navigator="true" pattern="dd/MM/yyyy" readonlyInput="true" size="10" title="Permite agendamento retroativo até">
                                             <p:ajax event="dateSelect" update=":form_registro_empresarial:id_messages :form_registro_empresarial:id_messages_growl" listener="#{registroEmpresarialBean.salvarSemSenha}"/>
                                         </p:calendar>
                                     </p:column>
