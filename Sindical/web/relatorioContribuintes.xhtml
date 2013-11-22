@@ -41,113 +41,133 @@
                             </p:selectOneMenu>
                         </h:panelGrid>
                     </p:panel>
-                    <p:accordionPanel multiple="true" styleClass="margin-top-max" id="id_acordion">
-                        <p:tab title="Escritório">
-                            <p:selectOneRadio value="#{relatorioContribuintesBean.radioEscritorios}">
-                                <p:ajax event="change" update="id_contabilidades"/>
-                                <f:selectItem itemValue="todos"            itemLabel="Todos"/>
-                                <f:selectItem itemValue="semEscritorio"    itemLabel="S/ Escritório"/>
-                                <f:selectItem itemValue="comEscritorio"    itemLabel="C/ Escritório"/>
-                                <f:selectItem itemValue="especifico"       itemLabel="Específico"/>
-                            </p:selectOneRadio>                            
-                            <h:panelGrid styleClass="no-border margin-top-max" id="id_contabilidades" columns="2">
-                                <p:selectOneMenu id="idContabilidade" value="#{relatorioContribuintesBean.idContabilidade}" rendered="#{relatorioContribuintesBean.radioEscritorios == 'especifico'}">
-                                    <p:ajax event="change" update="@this" />
-                                    <f:selectItems value="#{relatorioContribuintesBean.listaContabilidades}"/>
-                                </p:selectOneMenu>
-                            </h:panelGrid>
-                        </p:tab>
-                        <p:tab title="Envio de Login">
-                            <p:selectOneMenu value="#{relatorioContribuintesBean.idEmails}" >
-                                <p:ajax event="change" update="@this" />
-                                <f:selectItem itemValue="t"   itemLabel="Todos"/>
-                                <f:selectItem itemValue="e"   itemLabel="Enviados"/>
-                                <f:selectItem itemValue="n"   itemLabel="Não Enviados"/>
-                            </p:selectOneMenu>
-                        </p:tab>
-                        <p:tab title="Cidade">
-                            <p:selectOneRadio id="idRadioCidades" value="#{relatorioContribuintesBean.radioCidades}" styleClass="fontePadrao">
-                                <p:ajax event="change" update="id_cidades"/>
-                                <f:selectItem itemValue="todas"         itemLabel="Todas"/>
-                                <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
-                                <f:selectItem itemValue="local"         itemLabel="Local"/>
-                                <f:selectItem itemValue="outras"        itemLabel="Outras"/>
-                            </p:selectOneRadio>                            
-                            <h:panelGrid styleClass="no-border margin-top-max" id="id_cidades" columns="2">
-                                <p:selectOneMenu value="#{relatorioContribuintesBean.idCidades}" rendered="#{relatorioContribuintesBean.radioCidades == 'especificas'}">
-                                    <p:ajax event="change" update="@this" />
-                                    <f:selectItems value="#{relatorioContribuintesBean.listaCidades}"/>
-                                </p:selectOneMenu>
-                            </h:panelGrid>
-                        </p:tab>
-                        <p:tab title="Ordenar por">
-                            <p:selectOneRadio value="#{relatorioContribuintesBean.radioOrdem}" >
-                                <p:ajax event="change" update="@this" />
-                                <f:selectItem itemValue="razao"         itemLabel="Razão"/>
-                                <f:selectItem itemValue="documento"     itemLabel="Documento"/>
-                                <f:selectItem itemValue="endereco"      itemLabel="Endereço"/>
-                                <f:selectItem itemValue="cep"           itemLabel="Cep"/>
-                                <f:selectItem itemValue="escritorio"    itemLabel="Escritório"/>
-                            </p:selectOneRadio>                            
-                        </p:tab>
-                        <p:tab title="Bairro">
-                            <p:commandButton icon="ui-icon-search" value="Pesquisar bairro: " action="#{chamadaPaginaBean.bairro}"/>
-                            <p:outputLabel value="#{relatorioContribuintesBean.bairro.descricao}" />
-                        </p:tab>
-                    </p:accordionPanel>                    
-                    <h:panelGrid columns="3" id="id_panel_listas">
-                        <p:panel header="Centro Comercial" style="width: 320px; height: 275px;">
-                            <p:selectOneRadio id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}">
-                                <p:ajax event="change" update="tbl_centro_comercial"/>
-                                <f:selectItem itemValue="com"    itemLabel="Com"/>
-                                <f:selectItem itemValue="sem"    itemLabel="Sem"/>
-                                <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
-                            </p:selectOneRadio>
-                            <p:panel id="tbl_centro_comercial" styleClass="margin-top-max no-border">
-                                <p:dataTable value="#{relatorioContribuintesBean.listaCentrosComerciais}" var="centroComercial" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.centroComercialSelecionado}"  rowKey="#{centroComercial.id}" scrollHeight="115" scrollable="true">
-                                    <p:column selectionMode="multiple" width="20" styleClass="text-center" />
-                                    <p:column headerText="Centro Comerciais">
-                                        <h:outputText value="#{centroComercial.tipoCentroComercial.descricao}"/>
-                                    </p:column>
-                                    <p:column headerText="Empresa">
-                                        <p:outputLabel value="#{centroComercial.juridica.pessoa.nome}"/>
-                                    </p:column>
-                                </p:dataTable>                                
-                            </p:panel>
-                        </p:panel>
-                        <p:panel id="tbl_convencao" header="Convenções" style="width: 320px;">
-                            <p:dataTable value="#{relatorioContribuintesBean.listaConvencaos}" var="convencao" scrollHeight="200" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.convencaoSelecionada}" rowKey="#{convencao.id}">
-                                <p:ajax event="rowSelectCheckbox" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
-                                <p:ajax event="rowSelect" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
-                                <p:ajax event="rowUnselectCheckbox" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
-                                <p:ajax event="rowUnselect" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos" />
-                                <p:ajax event="toggleSelect" process="@this" update="@this, :form_relatorio_contribuintes:tbl_cnae_convencaos, :form_relatorio_contribuintes:tbl_convencao :form_relatorio_contribuintes:tbl_grupos"  />
-                                <p:column selectionMode="multiple" width="20" styleClass="text-center" disabledSelection="true"/>
-                                <p:column headerText="Convenção">
-                                    <p:outputLabel value="#{convencao.descricao}"/>
-                                </p:column>
-                            </p:dataTable>                                    
-                        </p:panel>
-                        <p:panel id="tbl_grupos" header="Grupos" style="width: 320px;">
-                            <p:dataTable value="#{relatorioContribuintesBean.listaGrupoCidades}" var="grupoCidade" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.grupoCidadeSelecionada}" rowKey="#{grupoCidade.id}" scrollHeight="200" scrollable="true" >
-                                <p:column selectionMode="multiple" width="20" styleClass="text-center" />
-                                <p:column headerText="Grupo Cidade">
-                                    <h:outputText value="#{grupoCidade.descricao}"/>
-                                </p:column>
-                            </p:dataTable>
-                        </p:panel>
+                    <h:panelGrid columns="1">
+                        <p:tabView styleClass="margin-top-max no-border" id="id_acordion" orientation="left" >
+                            <p:tab title="Escritório">
+                                <p:panel header="Escritórios">
+                                    <p:selectOneRadio value="#{relatorioContribuintesBean.radioEscritorios}">
+                                        <p:ajax event="change" update="id_contabilidades"/>
+                                        <f:selectItem itemValue="todos"            itemLabel="Todos"/>
+                                        <f:selectItem itemValue="semEscritorio"    itemLabel="S/ Escritório"/>
+                                        <f:selectItem itemValue="comEscritorio"    itemLabel="C/ Escritório"/>
+                                        <f:selectItem itemValue="especifico"       itemLabel="Específico"/>
+                                    </p:selectOneRadio>
+                                    <h:panelGrid styleClass="no-border margin-top-max" id="id_contabilidades" columns="2">
+                                        <p:selectOneMenu id="idContabilidade" value="#{relatorioContribuintesBean.idContabilidade}" rendered="#{relatorioContribuintesBean.radioEscritorios == 'especifico'}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItems value="#{relatorioContribuintesBean.listaContabilidades}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Envio de Login">
+                                <p:panel header="Envio de Login">
+                                    <p:selectOneMenu value="#{relatorioContribuintesBean.idEmails}" >
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItem itemValue="t"   itemLabel="Todos"/>
+                                        <f:selectItem itemValue="e"   itemLabel="Enviados"/>
+                                        <f:selectItem itemValue="n"   itemLabel="Não Enviados"/>
+                                    </p:selectOneMenu>                                    
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Cidade">
+                                <p:panel header="Cidades">
+                                    <p:selectOneRadio id="idRadioCidades" value="#{relatorioContribuintesBean.radioCidades}" styleClass="fontePadrao">
+                                        <p:ajax event="change" update="id_cidades"/>
+                                        <f:selectItem itemValue="todas"         itemLabel="Todas"/>
+                                        <f:selectItem itemValue="especificas"   itemLabel="Específicas"/>
+                                        <f:selectItem itemValue="local"         itemLabel="Local"/>
+                                        <f:selectItem itemValue="outras"        itemLabel="Outras"/>
+                                    </p:selectOneRadio>                            
+                                    <h:panelGrid styleClass="no-border margin-top-max" id="id_cidades" columns="2">
+                                        <p:selectOneMenu value="#{relatorioContribuintesBean.idCidades}" rendered="#{relatorioContribuintesBean.radioCidades == 'especificas'}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItems value="#{relatorioContribuintesBean.listaCidades}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Ordenar por">
+                                <p:panel header="Ordenar por">
+                                    <p:selectOneRadio value="#{relatorioContribuintesBean.radioOrdem}" >
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItem itemValue="razao"         itemLabel="Razão"/>
+                                        <f:selectItem itemValue="documento"     itemLabel="Documento"/>
+                                        <f:selectItem itemValue="endereco"      itemLabel="Endereço"/>
+                                        <f:selectItem itemValue="cep"           itemLabel="Cep"/>
+                                        <f:selectItem itemValue="escritorio"    itemLabel="Escritório"/>
+                                    </p:selectOneRadio>
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Bairro">
+                                <p:panel header="Bairro">
+                                    <p:commandButton icon="ui-icon-search" value="Pesquisar bairro: " action="#{chamadaPaginaBean.bairro}"/>
+                                    <p:outputLabel value="#{relatorioContribuintesBean.bairro.descricao}" />
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Centro Comercial">
+                                <p:panel header="Centro Comercial">
+                                    <p:selectOneRadio id="idCentro" value="#{relatorioContribuintesBean.radioCentroComercial}">
+                                        <p:ajax event="change" update="tbl_centro_comercial"/>
+                                        <f:selectItem itemValue="com"    itemLabel="Com"/>
+                                        <f:selectItem itemValue="sem"    itemLabel="Sem"/>
+                                        <f:selectItem itemValue="nenhum" itemLabel="Nenhum"/>
+                                    </p:selectOneRadio>
+                                    <p:panel id="tbl_centro_comercial" styleClass="margin-top-max no-border">
+                                        <p:dataTable value="#{relatorioContribuintesBean.listaCentrosComerciais}" var="centroComercial" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.centroComercialSelecionado}"  rowKey="#{centroComercial.id}" scrollHeight="180" scrollable="true">
+                                            <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                            <p:column headerText="Centro Comerciais">
+                                                <h:outputText value="#{centroComercial.tipoCentroComercial.descricao}"/>
+                                            </p:column>
+                                            <p:column headerText="Empresa">
+                                                <p:outputLabel value="#{centroComercial.juridica.pessoa.nome}"/>
+                                            </p:column>
+                                        </p:dataTable>                                
+                                    </p:panel>
+                                </p:panel>
+                            </p:tab>
+                            <p:tab title="Avançado">
+                                <p:panel header="Avançado">
+                                    <h:panelGrid columns="2">
+                                        <p:panel id="tbl_convencao" header="Convenções" style="height: 200px;">
+                                            <p:dataTable value="#{relatorioContribuintesBean.listaConvencaos}" var="convencao"  scrollHeight="220" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.convencaoSelecionada}" rowKey="#{convencao.id}">
+                                                <p:ajax event="rowSelectCheckbox" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
+                                                <p:ajax event="rowSelect" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
+                                                <p:ajax event="rowUnselectCheckbox" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
+                                                <p:ajax event="rowUnselect" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
+                                                <p:ajax event="toggleSelect" process="@this" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos"  />
+                                                <p:column selectionMode="multiple" width="20" styleClass="text-center" disabledSelection="true"/>
+                                                <p:column headerText="Convenção">
+                                                    <p:outputLabel value="#{convencao.descricao}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                        <p:panel id="tbl_grupos" header="Grupo Cidade" style="height: 200px;">
+                                            <p:dataTable value="#{relatorioContribuintesBean.listaGrupoCidades}" var="grupoCidade" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.grupoCidadeSelecionada}" rowKey="#{grupoCidade.id}" scrollHeight="200" scrollable="true" >
+                                                <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                                <p:column headerText="Grupo Cidade">
+                                                    <h:outputText value="#{grupoCidade.descricao}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>
+                                    </h:panelGrid>
+                                    <p:panel header="Cnaes Convenção" styleClass="margin-top-max">
+                                        <h:panelGrid columns="1" id="tbl_cnae_convencaos" style="height: 150px;">
+                                            <p:dataTable value="#{relatorioContribuintesBean.listaCnaeConvencaos}" var="cnaeConvencao" scrollHeight="150" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.cnaeConvencaoSelecionado}" rowKey="#{cnaeConvencao.id}">
+                                                <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                                <p:column headerText="Nº" width="80" styleClass="text-center">
+                                                    <p:outputLabel value="#{cnaeConvencao.cnae.numero}"/>
+                                                </p:column>
+                                                <p:column headerText="Cnae">
+                                                    <p:outputLabel value="#{cnaeConvencao.cnae.cnae}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:panel>
+                            </p:tab>
+                        </p:tabView>
                     </h:panelGrid>
-                    <p:panel header="Cnaes Convenção" id="tbl_cnae_convencaos" styleClass="margin-top-max">
-                        <p:dataTable value="#{relatorioContribuintesBean.listaCnaeConvencaos}" var="cnaeConvencao" scrollHeight="150" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.cnaeConvencaoSelecionado}" rowKey="#{cnaeConvencao.id}">
-                            <p:column selectionMode="multiple" width="20" styleClass="text-center" />
-                            <p:column headerText="Número" width="80" styleClass="text-center">
-                                <p:outputLabel value="#{cnaeConvencao.cnae.numero}"/>
-                            </p:column>
-                            <p:column headerText="Cnae">
-                                <p:outputLabel value="#{cnaeConvencao.cnae.cnae}"/>
-                            </p:column>
-                        </p:dataTable>
-                    </p:panel>
                     <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioContribuintesBean.visualizar}" ajax="false" styleClass="margin-top-max" update="id_messages_growl"/>
                 </h:form>
             </p:panel>
