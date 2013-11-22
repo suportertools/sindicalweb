@@ -7,64 +7,18 @@ import javax.persistence.Query;
 
 public class SuspencaoDBToplink extends DB implements SuspencaoDB {
 
-    public boolean insert(Suspencao suspencao) {
+    @Override
+    public boolean existeSuspensaoSocio(Suspencao suspencao) {
         try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(suspencao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
+            Query query = getEntityManager().createQuery("SELECT S FROM Suspencao AS S WHERE S.pessoa.id = :pessoa AND S.dtFinal < CURRENT_DATE");
+            query.setParameter("pessoa", suspencao.getPessoa().getId());
+            query.setParameter("dataFinal", suspencao.getDataFinal());
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
         } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
         }
-    }
-
-    public boolean update(Suspencao suspencao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(suspencao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(Suspencao suspencao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(suspencao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public Suspencao pesquisaCodigo(int id) {
-        Suspencao result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Suspencao.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Suspencao) qry.getSingleResult();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return result;
-    }
-
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select s from Suspencao s");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
+        return false;
     }
 }
