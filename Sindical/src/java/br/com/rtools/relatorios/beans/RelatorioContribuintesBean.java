@@ -204,7 +204,7 @@ public class RelatorioContribuintesBean implements Serializable {
         Juridica sindicato = dbJur.pesquisaCodigo(1);
         PessoaEndereco endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         @SuppressWarnings("UseOfObsoleteCollectionType")
-        List result = new ArrayList();
+        List<List> result = new ArrayList();
         if (cnaeConvencaoSelecionado != null) {
             result = dbContri.listaRelatorioContribuintes(relatorios, idEmails, condicao, escritorio, radioCidades, cidades, radioOrdem, cnaeConvencaoSelecionados, tipoEndereco.getId(), enderecos, radioCentroComercial, numeros, gruposCidadesSelecionados, bairros);
         }
@@ -234,35 +234,35 @@ public class RelatorioContribuintesBean implements Serializable {
                             sindicato.getPessoa().getSite(),
                             sindicato.getPessoa().getTipoDocumento().getDescricao(),
                             sindicato.getPessoa().getDocumento(),
-                            getConverteNullInt(((List) result.get(i)).get(0)), // ID
-                            getConverteNullString(((List) result.get(i)).get(1)), // NOME PESSOA
-                            getConverteNullString(((List) result.get(i)).get(4)), // DESCRICAO ENDERECO
-                            getConverteNullString(((List) result.get(i)).get(3)), // LOGRADOURO
-                            getConverteNullString(((List) result.get(i)).get(7)), // NUMERO
-                            getConverteNullString(((List) result.get(i)).get(8)), // COMPLEMENTO
-                            getConverteNullString(((List) result.get(i)).get(11)), // BAIRRO
-                            getConverteNullString(((List) result.get(i)).get(9)), // CEP
-                            getConverteNullString(((List) result.get(i)).get(5)), // CIDADE
-                            getConverteNullString(((List) result.get(i)).get(6)), // UF
-                            getConverteNullString(((List) result.get(i)).get(12)), // TELEFONE
-                            getConverteNullString(((List) result.get(i)).get(13)), // EMAIL
-                            getConverteNullString(((List) result.get(i)).get(14)), // TIPO DOCUMENTO
-                            getConverteNullString(((List) result.get(i)).get(2)), // DOCUMENTO
-                            getConverteNullInt(((List) result.get(i)).get(15)), //ID CNAE
-                            getConverteNullString(((List) result.get(i)).get(16)), // NUMERO CNAE
-                            getConverteNullString(((List) result.get(i)).get(17)), // DESCRICAO CNAE
-                            getConverteNullInt(((List) result.get(i)).get(18)), // ID CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(10)), // NOME CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(20)), // DESCRICAO ENDERECO CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(19)), // LOGRADOURO CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(24)), // NUMERO CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(25)), // COMPLEMENTO CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(21)), // BAIRRO CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(26)), // CEP CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(22)), // CIDADE CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(23)), // UF CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(27)), // TELEFONE CONTABILIDADE
-                            getConverteNullString(((List) result.get(i)).get(28)) // EMAIL CONTABILIDADE
+                            getConverteNullInt((result.get(i)).get(0)), // ID
+                            getConverteNullString((result.get(i)).get(1)), // NOME PESSOA
+                            getConverteNullString((result.get(i)).get(4)), // DESCRICAO ENDERECO
+                            getConverteNullString((result.get(i)).get(3)), // LOGRADOURO
+                            getConverteNullString((result.get(i)).get(7)), // NUMERO
+                            getConverteNullString((result.get(i)).get(8)), // COMPLEMENTO
+                            getConverteNullString((result.get(i)).get(11)), // BAIRRO
+                            getConverteNullString((result.get(i)).get(9)), // CEP
+                            getConverteNullString((result.get(i)).get(5)), // CIDADE
+                            getConverteNullString((result.get(i)).get(6)), // UF
+                            getConverteNullString((result.get(i)).get(12)), // TELEFONE
+                            getConverteNullString((result.get(i)).get(13)), // EMAIL
+                            getConverteNullString((result.get(i)).get(14)), // TIPO DOCUMENTO
+                            getConverteNullString((result.get(i)).get(2)), // DOCUMENTO
+                            getConverteNullInt((result.get(i)).get(15)), //ID CNAE
+                            getConverteNullString((result.get(i)).get(16)), // NUMERO CNAE
+                            getConverteNullString((result.get(i)).get(17)), // DESCRICAO CNAE
+                            getConverteNullInt((result.get(i)).get(18)), // ID CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(10)), // NOME CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(20)), // DESCRICAO ENDERECO CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(19)), // LOGRADOURO CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(24)), // NUMERO CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(25)), // COMPLEMENTO CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(21)), // BAIRRO CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(26)), // CEP CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(22)), // CIDADE CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(23)), // UF CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(27)), // TELEFONE CONTABILIDADE
+                            getConverteNullString((result.get(i)).get(28)) // EMAIL CONTABILIDADE
                     ));
                 }
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listaContrs);
@@ -273,21 +273,18 @@ public class RelatorioContribuintesBean implements Serializable {
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
 
                 String nomeDownload = "relatorio_contribuintes_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
-
                 SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
                 String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios");
-
                 sa.salvaNaPasta(pathPasta);
-
-                Download download = new Download(nomeDownload,
-                        pathPasta,
-                        "application/pdf",
-                        FacesContext.getCurrentInstance());
+                Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
                 download.baixar();
+                download.remover();
             } catch (JRException erro) {
+                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
         } catch (JRException erro) {
+            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
     }

@@ -1,6 +1,5 @@
 package br.com.rtools.relatorios.beans;
 
-import br.com.rtools.arrecadacao.lista.ListaRelatorioContabilidade;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.db.CidadeDB;
 import br.com.rtools.endereco.db.CidadeDBToplink;
@@ -17,6 +16,7 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -100,6 +100,10 @@ public class RelatorioContabilidadesBean implements Serializable {
         sindicato = dbJur.pesquisaCodigo(1);
         endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         List list = dbConta.listaRelatorioContabilidades(radioEmpresas, inicio, fim, radioCidades, cidades, radioOrdem, tipoEndereco.getId());
+        if (list.isEmpty()) {
+            GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
+            return;
+        }        
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             Collection listaEscritorios = new ArrayList<ParametroEscritorios>();
@@ -170,9 +174,11 @@ public class RelatorioContabilidadesBean implements Serializable {
                 download.baixar();
                 download.remover();
             } catch (JRException erro) {
+                GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
                 System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             }
         } catch (JRException erro) {
+            GenericaMensagem.info("Sistema", "O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage());
         }
     }
@@ -289,28 +295,28 @@ public class RelatorioContabilidadesBean implements Serializable {
         return listaTipoEndereco;
     }
 
-    public static void BubbleSort(List<SelectItem> dados) {
-        boolean trocou;
-        int limite = dados.size() - 1;
-        String swap1 = null;
-        String swap2 = null;
-        int i = 0;
-        do {
-            trocou = false;
-            i = 0;
-            while (i < limite) {
-                if ((Integer.parseInt(dados.get(i).getLabel())) > (Integer.parseInt(dados.get(i + 1).getLabel()))) {
-                    swap1 = dados.get(i).getLabel();
-                    swap2 = dados.get(i + 1).getLabel();
-                    dados.get(i).setLabel(swap2);
-                    dados.get(i + 1).setLabel(swap1);
-                    trocou = true;
-                }
-                i++;
-            }
-            limite--;
-        } while (trocou);
-    }
+//    public static void BubbleSort(List<SelectItem> dados) {
+//        boolean trocou;
+//        int limite = dados.size() - 1;
+//        String swap1 = null;
+//        String swap2 = null;
+//        int i = 0;
+//        do {
+//            trocou = false;
+//            i = 0;
+//            while (i < limite) {
+//                if ((Integer.parseInt(dados.get(i).getLabel())) > (Integer.parseInt(dados.get(i + 1).getLabel()))) {
+//                    swap1 = dados.get(i).getLabel();
+//                    swap2 = dados.get(i + 1).getLabel();
+//                    dados.get(i).setLabel(swap2);
+//                    dados.get(i + 1).setLabel(swap1);
+//                    trocou = true;
+//                }
+//                i++;
+//            }
+//            limite--;
+//        } while (trocou);
+//    }
 
     public int getIdRelatorios() {
         return idRelatorios;
