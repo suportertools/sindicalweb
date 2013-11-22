@@ -1,117 +1,86 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
-
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>Pesquisa Física</title>
+        <title>Pesquisa Pessoas Física</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body styleClass="divMenu" onload="#{rich:element('formPesquisaPessoaFisica:palavraChave')}.focus();">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaPessoaFisica">                
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisa Físicas" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br />
-                    <h:panelGrid columns="8">
-                        <h:selectOneMenu value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px;">
-                            <a4j:ajax event="change" render="this"/>
-                            <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
-                            <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
-                            <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
-                        </h:selectOneMenu>                        
-                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
-                        <h:inputText onkeypress="if (event.keyCode === 13) {#{rich:element('formPesquisaPessoaFisica:btnInicial')}.onclick();
-            }" 
-                                     id="palavraChave" value="#{fisicaBean.descPesquisa}" class="#{fisicaBean.porPesquisa}"/>
-                        <h:outputLabel value="Por: "/>
-                        <h:selectOneMenu value="#{fisicaBean.porPesquisa}" onchange="submit();">
-                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
-                            <f:selectItem itemValue="rg" itemLabel="RG"/>
-                            <f:selectItem itemValue="cpf" itemLabel="CPF"/>
-                            <f:selectItem itemValue="email1"    itemLabel="E-mail 1"/>
-                            <f:selectItem itemValue="email2"    itemLabel="E-mail 2"/>
-                            <f:selectItem itemValue="endereco" itemLabel="Endereço"/>                            
-                            <!-- <rich:jQuery selector="#palavraChave" query="attr('value', '')" timing="immediate"/> -->
-                        </h:selectOneMenu>
-
-                        <h:commandLink id="btnInicial" action="#{fisicaBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" />
-                        <h:commandLink id="btnParcial" action="#{fisicaBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" />
-                        <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Aguarde"/></f:facet></a4j:status>
+            <p:panel styleClass="wrapper" style="border: 0px;">
+                <h:form id="form_pesquisa_pessoa">                
+                    <h:outputText value="Pesquisa Pessoas Física" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                        <h:panelGrid columns="5">
+                            <p:selectOneMenu value="#{fisicaBean.pesquisaPor}" style="margin-right: 30px;">
+                                <p:ajax event="change" update="@this, id_desc_pesquisa, :form_pesquisa_pessoa_fisica:i_panel_grid" listener="#{fisicaBean.listaPessoaFisica.clear()}"/>
+                                <f:selectItem itemValue="pessoa"       itemLabel="Física"/>
+                                <f:selectItem itemValue="socioativo"   itemLabel="Sócio Ativo"/>
+                                <f:selectItem itemValue="socioinativo" itemLabel="Sócio Inativos"/>
+                            </p:selectOneMenu>                             
+                            <p:inputMask id="id_desc_pesquisa" value="#{fisicaBean.descPesquisa}" size="50" mask="#{fisicaBean.mascaraPesquisaFisica}"/>
+                            <p:selectOneMenu value="#{fisicaBean.porPesquisa}">
+                                <p:ajax event="change" update="i_panel_pesquisa" />
+                                <f:selectItem itemValue="nome"     itemLabel="Nome"/>
+                                <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                                <f:selectItem itemValue="rg"      itemLabel="RG"/>
+                                <f:selectItem itemValue="email1" itemLabel="E-mail 1"/>
+                                <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
+                                <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
+                            </p:selectOneMenu>                        
+                            <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update=":form_pesquisa_pessoa_fisica:i_panel_grid" rendered="#{fisicaBean.porPesquisa.equals('cpf')}"/>
+                            <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update=":form_pesquisa_pessoa_fisica:i_panel_grid" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
+                            <p:commandButton value="Parcial" action="#{fisicaBean.acaoPesquisaParcial}" update=":form_pesquisa_pessoa_fisica:i_panel_grid" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
+                        </h:panelGrid>
+                        <p:focus for="i_panel_pesquisa" />
+                    </p:panel>
+                </h:form>
+            </p:panel>
+            <p:panel style="margin: auto 0;">
+                <h:form id="form_pesquisa_pessoa_fisica">
+                    <h:panelGrid id="i_panel_grid" style="width: 100%">
+                        <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                            <f:facet name="footer">Obs: Nasc. = Nascimento</f:facet>
+                            <p:column headerText="ID" styleClass="text-center" width="50">
+                                <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.id}"/>
+                            </p:column>
+                            <p:column headerText="Nome">
+                                <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.pessoa.nome}"/>
+                            </p:column>
+                            <p:column headerText="RG" width="80"  styleClass="text-center">
+                                <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.rg}"/>
+                            </p:column>
+                            <p:column headerText="CPF" width="100"  styleClass="text-center">
+                                <p:commandLink action="#{fisicaBean.editarFisica(fisica)}" value="#{fisica.pessoa.documento}"/>
+                            </p:column>                            
+                            <p:column headerText="Nasc." width="80"  styleClass="text-center">
+                                <h:outputText value="#{fisica.nascimento}"/>
+                            </p:column>
+                            <p:column headerText="E-mail">
+                                <h:outputText value="#{fisica.pessoa.email1}"/>
+                            </p:column>
+                            <p:column headerText="Telefone" width="100" styleClass="text-center">
+                                <h:outputText value="#{fisica.pessoa.telefone1}"/>
+                            </p:column>
+                            <p:column headerText="Local de trabalho" >
+                                <h:outputText value="#{fisicaBean.pessoaEmpresaString(fisica)}"/>
+                            </p:column>
+                        </p:dataTable>
                     </h:panelGrid>
-
-                    <div style="overflow:auto; height:380px;">
-                        <br />                        
-                        <rich:dataTable value="#{fisicaBean.listaPessoa}" var="linha" style="width: 95%" id="tbl" styleClass="stable">
-                            <rich:column styleClass="colunaPesquisa">
-                                <f:facet name="header">
-                                    <h:outputText value="ID"/>
-                                </f:facet>
-                                <a4j:commandLink action="#{fisicaBean.editarFisica(linha)}" value="#{linha.argumento0.pessoa.id}" />
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Nome"/>
-                                </f:facet>
-                                <a4j:commandLink action="#{fisicaBean.editarFisica(linha)}" value="#{linha.argumento0.pessoa.nome}" styleClass="underline-hover"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="RG"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.rg}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="CPF"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.documento}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Nascimento"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.nascimento}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Telefone"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.telefone1}"/>
-                            </rich:column>
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="E-mail"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento0.pessoa.email1}"/>
-                            </rich:column>
-
-                            <rich:column>
-                                <f:facet name="header">
-                                    <h:outputText value="Local Trabalho"/>
-                                </f:facet>
-                                <h:outputText value="#{linha.argumento1.juridica.pessoa.nome}"/>
-                            </rich:column>
-                        </rich:dataTable>
-                    </div>
-                </center>
-            </h:form>
-            <rich:jQuery selector=".stable tr:odd" query="addClass('odd-row')" />
-            <rich:jQuery selector=".stable tr:even" query="addClass('even-row')" />
-            <rich:jQuery selector=".stable tr" event="mouseover" query="jQuery(this).addClass('active-row')" />
-            <rich:jQuery selector=".stable tr" event="mouseout" query="jQuery(this).removeClass('active-row')" />             
+                </h:form>
+            </p:panel>
         </f:view>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>        
+        
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
     </h:body>
 </ui:composition>
