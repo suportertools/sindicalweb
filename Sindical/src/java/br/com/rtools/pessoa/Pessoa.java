@@ -1,23 +1,14 @@
 package br.com.rtools.pessoa;
 
-import br.com.rtools.pessoa.db.FisicaDB;
-import br.com.rtools.pessoa.db.FisicaDBToplink;
-import br.com.rtools.pessoa.db.JuridicaDB;
-import br.com.rtools.pessoa.db.JuridicaDBToplink;
-import br.com.rtools.pessoa.db.PessoaEmpresaDB;
-import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
-import br.com.rtools.pessoa.db.PessoaEnderecoDB;
-import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
-import java.util.ArrayList;
+import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PES_PESSOA")
 @NamedQuery(name = "Pessoa.pesquisaID", query = "select pes from Pessoa pes where pes.id=:pid")
-public class Pessoa implements java.io.Serializable {
+public class Pessoa implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
