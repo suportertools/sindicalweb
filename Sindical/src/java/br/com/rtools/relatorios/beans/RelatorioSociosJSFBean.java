@@ -364,7 +364,7 @@ public class RelatorioSociosJSFBean {
             id_juridica = dbJ.pesquisaCodigo(Integer.parseInt(getListaEmpresas().get(idEmpresas).getDescription())).getId();
         }
 
-        List<Vector> result = dbS.pesquisaSocios(relatorios, booMatricula, matriculaInicial, matriculaFinal, booIdade, idadeInicial, idadeFinal, booGrupoCategoria, ids_gc, ids_c,
+        List<List> result = dbS.pesquisaSocios(relatorios, booMatricula, matriculaInicial, matriculaFinal, booIdade, idadeInicial, idadeFinal, booGrupoCategoria, ids_gc, ids_c,
                 booSexo, tipoSexo, booGrau, ids_parentesco, booFotos, tipoFotos, booCarteirinha, tipoCarteirinha,
                 booTipoCobranca, ids_pagamento, booCidadeSocio, ids_cidade_socio, booCidadeEmpresa, ids_cidade_empresa,
                 booAniversario, meses, di, df, booData, dataCadastro, dataCadastroFim, dataRecadastro, dataRecadastroFim, dataDemissao, dataDemissaoFim, dataAdmissaoSocio,
@@ -374,7 +374,7 @@ public class RelatorioSociosJSFBean {
         Collection lista = new ArrayList<ParametroSocios>();
 
         for (int i = 0; i < result.size(); i++) {
-            lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoCliente.png"),
+            lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() +"/Imagens/LogoCliente.png"),
                     getConverteNullString(result.get(i).get(1)), // SITE
                     getConverteNullString(result.get(i).get(2)), // SIN NOME
                     getConverteNullString(result.get(i).get(3)), // SIN ENDERECO
