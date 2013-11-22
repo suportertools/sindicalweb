@@ -3,6 +3,9 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.utilitarios.Mask;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -18,11 +21,9 @@ public class PessoaBean {
     private String comoPesquisa = "";
     private String masc;
     private String maxl;
-    private int idIndex = -1;
     private List<Pessoa> listaPessoa = new ArrayList();
 
     public PessoaBean() {
-        idIndex = -1;
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -69,15 +70,20 @@ public class PessoaBean {
     }
 
     public String salvar() {
-        PessoaDB db = new PessoaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (pessoa.getId() == -1) {
-            db.insert(pessoa);
-        } else {
-            db.getEntityManager().getTransaction().begin();
-            if (db.update(pessoa)) {
-                db.getEntityManager().getTransaction().commit();
+            salvarAcumuladoDB.abrirTransacao();
+            if(salvarAcumuladoDB.inserirObjeto(pessoa)) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
+            }
+        } else {
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.alterarObjeto(pessoa)) {
+                salvarAcumuladoDB.comitarTransacao();
+            } else {
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         return null;
@@ -89,14 +95,14 @@ public class PessoaBean {
     }
 
     public String excluir() {
-        PessoaDB db = new PessoaDBToplink();
+        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (pessoa.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            setPessoa(db.pesquisaCodigo(pessoa.getId()));
-            if (db.delete(pessoa)) {
-                db.getEntityManager().getTransaction().commit();
+            setPessoa( (Pessoa) salvarAcumuladoDB.pesquisaObjeto(pessoa.getId(), "Pessoa"));
+            salvarAcumuladoDB.abrirTransacao();
+            if (salvarAcumuladoDB.deletarObjeto(pessoa)) {
+                salvarAcumuladoDB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                salvarAcumuladoDB.desfazerTransacao();
             }
         }
         setPessoa(pessoa = new Pessoa());
@@ -122,8 +128,8 @@ public class PessoaBean {
         return "pesquisaPessoa";
     }
 
-    public String editar() {
-        pessoa = (Pessoa) listaPessoa.get(idIndex);
+    public String editar(Pessoa p) {
+        pessoa = p;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", pessoa);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         pessoa = new Pessoa();
@@ -155,18 +161,10 @@ public class PessoaBean {
         return maxl;
     }
 
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
-    }
-
     public List<Pessoa> getListaPessoa() {
         PessoaDB pesquisa = new PessoaDBToplink();
         if (descPesquisa.equals("")) {
-            listaPessoa = new ArrayList();
+            listaPessoa.clear();
             return listaPessoa;
         } else {
             listaPessoa = pesquisa.pesquisarPessoa(descPesquisa, porPesquisa, comoPesquisa);
@@ -177,4 +175,8 @@ public class PessoaBean {
     public void setListaPessoa(List<Pessoa> listaPessoa) {
         this.listaPessoa = listaPessoa;
     }
+    
+    public String getMascaraPesquisa(){
+        return Mask.getMascaraPesquisa(porPesquisa, true);
+    }      
 }

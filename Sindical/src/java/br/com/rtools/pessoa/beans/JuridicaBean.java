@@ -93,7 +93,7 @@ public class JuridicaBean implements Serializable {
     private List listaEnd = new ArrayList();
     private List listEn = new ArrayList();
     private List<Cnae> listaCnae = new ArrayList();
-    private List<DataObject> listaJuridica = new ArrayList();
+    private List<Juridica> listaJuridica = new ArrayList();
     private List<Juridica> listaContabilidade = new ArrayList();
     private List<DataObject> listaEmpresasPertencentes = new ArrayList();
     private List<SelectItem> listaTipoDocumento = new ArrayList<SelectItem>();
@@ -763,8 +763,8 @@ public class JuridicaBean implements Serializable {
         return null;
     }
 
-    public String editar() {
-        Juridica j = (Juridica) listaJuridica.get(idIndex).getArgumento0();
+    public String editar(Juridica j) {
+        juridica = j;
         if (juridica.getId() != -1) {
             if (juridica.getId() != j.getId()) {
                 listaContribuintesInativos.clear();
@@ -831,51 +831,51 @@ public class JuridicaBean implements Serializable {
         return "pessoaJuridica";
     }
 
-    public String editar(Juridica jur) {
-        juridica = jur;
-        if (juridica.getContabilidade() == null) {
-            contabilidade = new Juridica();
-        } else {
-            contabilidade = juridica.getContabilidade();
-        }
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        descPesquisa = "";
-        porPesquisa = "nome";
-        comoPesquisa = "";
-        if (!getListaTipoDocumento().isEmpty()) {
-            for (int o = 0; o < listaTipoDocumento.size(); o++) {
-                if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
-                    idTipoDocumento = o;
-                }
-            }
-        }
-
-        if (!getListaPorte().isEmpty()) {
-            for (int o = 0; o < listaPorte.size(); o++) {
-                if (Integer.parseInt(listaPorte.get(o).getDescription()) == juridica.getPorte().getId()) {
-                    idPorte = o;
-                }
-            }
-        }
-        if (url != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
-
-            if (juridica.getContabilidade() == null) {
-                renChkEndereco = "false";
-            } else {
-                renChkEndereco = "true";
-            }
-            renNovoEndereco = "false";
-            renEndereco = "false";
-            alterarEnd = true;
-            listaEnd = new ArrayList();
-            enderecoCobranca = "NENHUM";
-            getListaEnderecos();
-            return url;
-        }
-        return "pessoaJuridica";
-    }
+//    public String editar(Juridica j) {
+//        juridica = j;
+//        if (juridica.getContabilidade() == null) {
+//            contabilidade = new Juridica();
+//        } else {
+//            contabilidade = juridica.getContabilidade();
+//        }
+//        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+//        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+//        descPesquisa = "";
+//        porPesquisa = "nome";
+//        comoPesquisa = "";
+//        if (!getListaTipoDocumento().isEmpty()) {
+//            for (int o = 0; o < listaTipoDocumento.size(); o++) {
+//                if (Integer.parseInt(listaTipoDocumento.get(o).getDescription()) == juridica.getPessoa().getTipoDocumento().getId()) {
+//                    idTipoDocumento = o;
+//                }
+//            }
+//        }
+//
+//        if (!getListaPorte().isEmpty()) {
+//            for (int o = 0; o < listaPorte.size(); o++) {
+//                if (Integer.parseInt(listaPorte.get(o).getDescription()) == juridica.getPorte().getId()) {
+//                    idPorte = o;
+//                }
+//            }
+//        }
+//        if (url != null) {
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
+//
+//            if (juridica.getContabilidade() == null) {
+//                renChkEndereco = "false";
+//            } else {
+//                renChkEndereco = "true";
+//            }
+//            renNovoEndereco = "false";
+//            renEndereco = "false";
+//            alterarEnd = true;
+//            listaEnd = new ArrayList();
+//            enderecoCobranca = "NENHUM";
+//            getListaEnderecos();
+//            return url;
+//        }
+//        return "pessoaJuridica";
+//    }
 
     public String editarEmpresaPertencente() {
         juridica = (Juridica) listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
@@ -2022,34 +2022,59 @@ public class JuridicaBean implements Serializable {
         this.atualiza = atualiza;
     }
 
-    public List<DataObject> getListaJuridica() {
+//    public List<DataObject> getListaJuridicax() {
+//        if (listaJuridica.isEmpty()) {
+//            JuridicaDB db = new JuridicaDBToplink();
+//            //List<Juridica> lista = new ArrayList();
+//            List<Juridica> lista = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
+//
+//            for (int i = 0; i < lista.size(); i++) {
+//                List listax = db.listaJuridicaContribuinte(lista.get(i).getId());
+//                String status;
+//                if (listax.isEmpty()) {
+//                    status = "NÃO CONTRIBUINTE";
+//                } else {
+//                    if (((List) listax.get(0)).get(11) != null) {
+//                        status = "CONTRIBUINTE INATIVO";
+//                    } else {
+//                        status = "ATIVO";
+//                    }
+//                }
+//                listaJuridica.add(new DataObject(lista.get(i), status));
+//            }
+//
+//        }
+//        return listaJuridica;
+//    }
+//    
+//    public void setListaJuridica(List<DataObject> listaJuridica) {
+//        this.listaJuridica = listaJuridica;
+//    }
+    
+    public List<Juridica> getListaJuridica() {
         if (listaJuridica.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
-            //List<Juridica> lista = new ArrayList();
-            List<Juridica> lista = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
-
-            for (int i = 0; i < lista.size(); i++) {
-                List listax = db.listaJuridicaContribuinte(lista.get(i).getId());
-                String status;
-                if (listax.isEmpty()) {
-                    status = "NÃO CONTRIBUINTE";
-                } else {
-                    if (((List) listax.get(0)).get(11) != null) {
-                        status = "CONTRIBUINTE INATIVO";
-                    } else {
-                        status = "ATIVO";
-                    }
-                }
-                listaJuridica.add(new DataObject(lista.get(i), status));
-            }
-
+            listaJuridica = db.pesquisaPessoa(descPesquisa, porPesquisa, comoPesquisa);
         }
         return listaJuridica;
     }
-
-    public void setListaJuridica(List<DataObject> listaJuridica) {
-        this.listaJuridica = listaJuridica;
+    
+    public String status(Juridica j) {
+        String status;
+        JuridicaDB db = new JuridicaDBToplink();
+        List listax = db.listaJuridicaContribuinte(j.getId());
+        if (listax.isEmpty()) {
+            status = "NÃO CONTRIBUINTE";
+        } else {
+            if (((List) listax.get(0)).get(11) != null) {
+                status = "CONTRIBUINTE INATIVO";
+            } else {
+                status = "ATIVO";
+            }
+        }    
+        return status;
     }
+
 
     public int getIdIndex() {
         return idIndex;
@@ -2205,4 +2230,8 @@ public class JuridicaBean implements Serializable {
             juridica.setCnae(null);
         }
     }
+    
+    public String getMascaraPesquisaJuridica(){
+        return Mask.getMascaraPesquisa(porPesquisa, true);
+    }    
 }
