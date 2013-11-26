@@ -1,377 +1,254 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Impressão de Boletos</title>
+        <title>Sindical - Impressão de Boletos</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/> 
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu-label .ui-inputfield{
+
+            }
+            * {font-family: 'lucida grande',verdana, tahoma, arial, sans-serif; font-size: 9pt!important}
+        </style>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formImpressaoBoletos">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Impressão de Boletos" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br />
-                    <div class="divMae">
-                        <h:panelGrid columns="1" style="float: left; background: #cccccc;">
-                            <h:outputText value="Qnt Empresas" styleClass="fontePadraoNegrito"/>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel  styleClass="wrapper" style="border: 0px;">
+                        <h:form id="formImpressaoBoletos">
+                            <h:outputText value="Impressão de Boletos" styleClass="fonteHeader" />
 
-                            <h:panelGrid columns="2">
-                                <h:selectOneRadio id="idEscritorio" value="#{impressaoBoletosBean.regraEscritorios}" dir="LTR" styleClass="fonteRederencia">
-                                    <a4j:ajax event="change" render="cbQuantidade" />
-                                        <f:selectItem itemValue="all" itemLabel="Tudo"/>
-                                        <f:selectItem itemValue="ate" itemLabel="Até "/>
-                                        <f:selectItem itemValue="apartir" itemLabel="A partir"/>
-                                </h:selectOneRadio>
-                                <h:selectOneMenu disabled="#{impressaoBoletosBean.desabilitaComboQuantidadeEmpresas}" id="cbQuantidade" value="#{impressaoBoletosBean.quantidadeEmpresas}" style="margin-left: 20px">
-                                    <a4j:ajax event="change" render="this" />
-                                    <f:selectItem itemValue="1" itemLabel="1"/>
-                                    <f:selectItem itemValue="2" itemLabel="2"/>
-                                    <f:selectItem itemValue="3" itemLabel="3"/>
-                                    <f:selectItem itemValue="4" itemLabel="4"/>
-                                </h:selectOneMenu>
-                            </h:panelGrid>
-                            
-                        </h:panelGrid>
-                        
-                        <h:panelGrid style="float: left; background: #cccccc; margin-left: 30px">
-                            <h:outputText value="Filtro e-mails" styleClass="fontePadraoNegrito"/>
-                            
-                            <h:panelGrid>
-                                <h:selectOneMenu id="cbEmail" value="#{impressaoBoletosBean.cbEmail}" style="margin-left: 20px" onchange="submit();">
-                                    <f:selectItem itemValue="todos" itemLabel="Todos"/>
-                                    <f:selectItem itemValue="com" itemLabel="Com e-mail"/>
-                                    <f:selectItem itemValue="sem" itemLabel="Sem e-mail"/>
-                                </h:selectOneMenu>
-                            </h:panelGrid>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid style="float: left; background: #cccccc; margin-left: 30px">
-                            <h:outputText value="Escritório" styleClass="fontePadraoNegrito"/>
-                            <h:panelGrid columns="3">
-                                <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Contabilidade" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" />
-                                <h:outputLabel value="#{impressaoBoletosBean.contabilidade.pessoa.documento} - #{impressaoBoletosBean.contabilidade.pessoa.nome}" />
-                                <h:commandButton image="/Imagens/excluir.png" action="#{impressaoBoletosBean.removerContabilidade}" rendered="#{impressaoBoletosBean.contabilidade.id != -1}"/>
-                            </h:panelGrid>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid columns="10" style="float: left;  clear: both; margin-top: 10px">
-                           <h:column>
-                               <div style="overflow:scroll;  height:70px; width:100%" >
-                                   <rich:dataTable value="#{impressaoBoletosBean.listaConvencao}" var="linha" iterationStatusVar="it" style="width: 100%;">
-                                       <rich:column style="text-align: center;">
-                                            <f:facet name="header">
-                                                <h:outputText value="#"/>
-                                            </f:facet>
-                                            <h:outputText value="#{it.index}"/>
-                                        </rich:column>   
-                                        <rich:column styleClass="coluna">
-                                            <f:facet name="header"><h:outputText value="Convencao"/></f:facet>
-                                            <h:panelGrid columns="10">
-                                                <h:column>
-                                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                        <a4j:ajax event="change" render="this" />
-                                                    </h:selectBooleanCheckbox>
-                                                </h:column>
-                                                <h:column>
-                                                   <h:outputText style="font-size:8pt" value="#{linha.argumento1.descricao}"/>
-                                                </h:column>
-                                            </h:panelGrid>
-                                       </rich:column>
-                                   </rich:dataTable>
-                               </div>
-                            </h:column>
-                            <h:column>
-                                <a4j:commandButton value="Atualizar" action="#{impressaoBoletosBean.carregarGrupos}" render="tbGrupo" />
-                            </h:column>
-                            <h:column>
-                                <div style="overflow:scroll;  height:70px; width:100%  " >
-                                    <rich:dataTable value="#{impressaoBoletosBean.listaGrupoCidade}" id="tbGrupo" var="linha" iterationStatusVar="it" style="width: 100%;">
-                                       <rich:column styleClass="coluna">
-                                           <f:facet name="header"><h:outputText value="Grupo de cidade" /></f:facet>
-                                           <h:panelGrid columns="10">
-                                               <h:column>
-                                                   <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                       <a4j:ajax event="change" render="this" />
-                                                   </h:selectBooleanCheckbox>
-                                               </h:column>
-                                               <h:column>
-                                                   <h:outputText style="font-size:8pt" value="#{linha.argumento1.descricao}"/>
-                                               </h:column>
-                                           </h:panelGrid>
-                                       </rich:column>
-                                   </rich:dataTable>
-                               </div>
-                            </h:column>
-                            
-                            <h:column>
-                                <h:panelGrid columns="5">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="3">
                                     <h:column>
-                                        <h:selectOneRadio id="idSelTodasAsContas" value="#{impressaoBoletosBean.todasContas}" dir="LTR" styleClass="fonteRederencia">
-                                            <!-- <a4j:ajax event="change" listener="# limpar a lista ao trocar {impressaoBoletosBean.alterarTodasDatas}" render="cbContribuicao, tbDatas, tbMovimento"/> -->
-                                            <a4j:ajax event="change" listener="#{impressaoBoletosBean.alterarTodasDatas}" render="cbContribuicao, tbDatas, tbMovimento"/>
-                                                <f:selectItem itemValue="false" itemLabel="Específico"/>
+                                        <h:outputText value="Quantidade de Empresas" style="font-weight: bold"/>
+                                        <h:panelGrid columns="2">
+                                            <p:selectOneRadio id="idEscritorio" value="#{impressaoBoletosBean.regraEscritorios}">
+                                                <p:ajax event="change" update="cbQuantidade" />
+                                                <f:selectItem itemValue="all" itemLabel="Tudo"/>
+                                                <f:selectItem itemValue="ate" itemLabel="Até "/>
+                                                <f:selectItem itemValue="apartir" itemLabel="A partir"/>
+                                            </p:selectOneRadio>
+
+                                            <p:selectOneMenu disabled="#{impressaoBoletosBean.desabilitaComboQuantidadeEmpresas}" id="cbQuantidade" value="#{impressaoBoletosBean.quantidadeEmpresas}" style="margin-left: 20px; padding-right: 5px">
+                                                <p:ajax event="change" update="cbQuantidade" />
+                                                <f:selectItem itemValue="1" itemLabel="1"/>
+                                                <f:selectItem itemValue="2" itemLabel="2"/>
+                                                <f:selectItem itemValue="3" itemLabel="3"/>
+                                                <f:selectItem itemValue="4" itemLabel="4"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputText value="Filtro Emails" style="font-weight: bold; margin-left: 20px"/>
+                                        <h:panelGrid>
+                                            <p:selectOneMenu id="cbEmail" value="#{impressaoBoletosBean.cbEmail}" style="margin-left: 20px; padding-right: 10px">
+                                                <p:ajax event="change" update="i_panel_botao"/>
+                                                <f:selectItem itemValue="todos" itemLabel="Todos"/>
+                                                <f:selectItem itemValue="com" itemLabel="Com e-mail"/>
+                                                <f:selectItem itemValue="sem" itemLabel="Sem e-mail"/>
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
+                                    </h:column>
+
+                                    <h:column>
+                                            <h:outputText value="Contribuições" style="font-weight: bold; margin-left: 20px"/>
+                                        <h:panelGrid columns="2">
+
+                                            <p:selectOneRadio id="idSelTodasAsContas" value="#{impressaoBoletosBean.todasContas}" style="margin-left: 20px">
+                                                <p:ajax event="change" listener="#{impressaoBoletosBean.alterarTodasDatas}" update="cbContribuicao i_panel tbMovimento"/>
                                                 <f:selectItem itemValue="true" itemLabel="Todos"/>
-                                        </h:selectOneRadio>
+                                                <f:selectItem itemValue="false" itemLabel="Específico"/>
+                                            </p:selectOneRadio>
+
+                                            <p:selectOneMenu id="cbContribuicao" value="#{impressaoBoletosBean.idCombo}" style="margin-left: 20px;  width: 360px" disabled="#{impressaoBoletosBean.desabilitarContas}" >
+                                                <p:ajax event="change" listener="#{impressaoBoletosBean.alterarTodasDatas()}" update="i_panel tbMovimento"/>
+                                                <f:selectItems value="#{impressaoBoletosBean.listaServicoCobranca}" />
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
                                     </h:column>
                                 </h:panelGrid>
-                                <h:panelGrid columns="5">
-                                    <h:column>
-                                        <h:selectOneMenu id="cbContribuicao" value="#{impressaoBoletosBean.idCombo}"  disabled="#{impressaoBoletosBean.desabilitarContas}" >
-                                            <a4j:ajax event="change" render="tbDatas, tbMovimento"/>
-                                            <f:selectItems value="#{impressaoBoletosBean.listaServicoCobranca}" />
-                                        </h:selectOneMenu>
-                                    </h:column>
-                                </h:panelGrid>
-                            </h:column>
-                        </h:panelGrid>
-                        <br /><br />
-                        <h:panelGrid columns="10" border="0" style="float: left;  clear: both; width: 800px;" class="divFundo">
-                            <h:column >
-                                <h:panelGroup style="overflow:auto; height:367px; width: 140px; border: 0px ; border-top: 0px; border-spacing: 0px" layout="block">
-                                    <rich:dataTable value="#{impressaoBoletosBean.listaDatas}" id="tbDatas" var="linha" iterationStatusVar="it" style="width: 100%;">
-                                        <rich:column style="text-align: center;">
-                                            <f:facet name="header">
-                                                <h:outputText value="#"/>
-                                            </f:facet>
-                                            <h:outputText value="#{it.index}"/>
-                                        </rich:column>                         
-                                        
-                                        <rich:column styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:selectBooleanCheckbox value="#{impressaoBoletosBean.chkTodosVencimentos}">
-                                                    <a4j:ajax event="change" render="tbDatas" listener="#{impressaoBoletosBean.marcaVencimentos}"/>
-                                                </h:selectBooleanCheckbox>                                                
-                                                <a4j:commandLink action="#{impressaoBoletosBean.filtrar}" value="Vencimento" render="tbMovimento, total, totalEscr, totalE, idQuantidade, totalMarcados"
-                                                                 onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', false)">
-                                                    
-                                                </a4j:commandLink>
-                                            </f:facet>
-                                            <h:panelGrid columns="10">
-                                                <h:column>
-                                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                                        <a4j:ajax event="change" render="tbMovimento"/>
-                                                    </h:selectBooleanCheckbox>
-                                                </h:column>
-                                                <h:column>
-                                                    <h:outputText style="font-size:8pt" value="#{linha.argumento1}"/>
-                                                </h:column>
-                                            </h:panelGrid>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </h:panelGroup>
-                            </h:column>
-                            <h:column>
-                                <rich:panel>
-                                    <div style="overflow:scroll;  height:340px; width:100%">
-                                        <rich:dataTable value="#{impressaoBoletosBean.listaMovGrid}" id="tbMovimento" rows="20" var="linha" iterationStatusVar="it" style="width: 150%;">
-                                            <f:facet name="header">
-                                                <rich:dataScroller for="tbMovimento" />
-                                            </f:facet>
-                                            
-                                            <rich:column style="text-align: center;">
-                                                <f:facet name="header">
-                                                    <h:outputText value="#"/>
-                                                </f:facet>
-                                                <h:outputText value="#{it.index}"/>
-                                            </rich:column>   
-                                            
-                                            <rich:column styleClass="coluna">
-                                                <h:outputLabel value="#{linha.coluna.valor}°"/>
-                                            </rich:column>
+                            </p:panel>
+    
+                            <p:panel id="i_panel" style="width: 200px; float: left">
+                                <p:dataTable value="#{impressaoBoletosBean.listaConvencao}" selection="#{impressaoBoletosBean.listaConvencaoSelecionada}" var="linha" rowKey="#{linha.id}" emptyMessage="Nenhuma convenção foi encontrada!">
+                                    <p:ajax event="rowSelect" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
+                                    <p:ajax event="rowSelectCheckbox" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
+                                    <p:ajax event="rowUnselect" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
+                                    <p:ajax event="rowUnselectCheckbox" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
+                                    <p:ajax event="toggleSelect" listener="#{impressaoBoletosBean.limpaGrupoCidade()}" update=":formImpressaoBoletos:i_panel"/>
+                                    
+                                    <p:column selectionMode="multiple" />
 
-                                            <rich:column styleClass="coluna">
-                                                <h:selectBooleanCheckbox value="#{linha.valor}">
-                                                    <a4j:ajax event="change" listener="#{impressaoBoletosBean.marcarUm(it.index)}" render="totalMarcados"/>
-                                                </h:selectBooleanCheckbox>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Boleto"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.valor}" />
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Razão"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.coluna.valor}"/>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                 <f:facet name="header"><h:outputText value="CNPJ"/></f:facet>
-                                                 <div style="width: 100px">
-                                                    <h:outputText value="#{linha.coluna.coluna.coluna.coluna.valor}"/>
-                                                 </div>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Escritório"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.valor}"/>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Contribuição"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.coluna.valor}"/>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Tipo"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.coluna.coluna.valor}"/>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Vencimento"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.coluna.coluna.coluna.valor}"/>
-                                            </rich:column>
-
-                                            <rich:column>
-                                                <f:facet name="header"><h:outputText value="Referência" id="lbReferencia"/></f:facet>
-                                                <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.coluna.coluna.coluna.coluna.valor}"/>
-                                            </rich:column>
-                                            <f:facet name="footer">
-                                                <rich:dataScroller for="tbMovimento" />
-                                            </f:facet>
-                                        </rich:dataTable>
-                                    </div>
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0">
-                                        <tr><td>
-                                            <h:panelGrid columns="10">
-                                                <h:column>
-                                                    <h:outputText value="Quantidade: " styleClass="fonteRederencia"/>
-                                                    <h:inputText value="#{impressaoBoletosBean.quantidade}" size="5" id="idQuantidade" styleClass="fonteRederencia">
-                                                        <a4j:ajax event="change" render="this" />
-                                                    </h:inputText>
-                                                </h:column>
-                                                <h:column>
-                                                    <h:outputText value="Inicio: " styleClass="fonteRederencia"/>
-                                                    <h:inputText value="#{impressaoBoletosBean.fInicio}" id="idfInicio" size="5" styleClass="fonteRederencia">
-                                                          <a4j:ajax event="change" render="this" />
-                                                    </h:inputText>
-                                                </h:column>
-                                                <h:column>
-                                                    <h:outputText value="Fim: " styleClass="fonteRederencia"/>
-                                                    <h:inputText value="#{impressaoBoletosBean.fFim}" id="idfFim" size="5" styleClass="fonteRederencia">
-                                                        <a4j:ajax event="change" render="this" />
-                                                    </h:inputText>
-                                                </h:column>
-                                                <h:column>
-                                                    <a4j:commandButton value="Selecionar" action="#{impressaoBoletosBean.controleMovimentos}" render="tbMovimento, cbContribuicao, idQuantidade, totalMarcados"/>
-                                                </h:column>
-                                            </h:panelGrid>
-                                        </td></tr>
-                                    </table>
-                                </rich:panel>
-                            </h:column>
-                        </h:panelGrid>  
-                        
-                        <br /><br />
-                        
-                        <h:panelGrid columns="20" style="float: left;  clear: both">
-                            <h:column>
-                                <h:selectBooleanCheckbox value="#{impressaoBoletosBean.imprimeVerso}">
-                                    <a4j:ajax event="change" render="this"/>
-                                </h:selectBooleanCheckbox>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value=" Imprime Verso" styleClass="fontePadrao"/>
-                            </h:column>
-                            <h:column>
+                                    <p:column  headerText="Convenção">
+                                        <h:outputText style="font-size:8pt" value="#{linha.descricao}"/>
+                                    </p:column>
+                                </p:dataTable>
                                 
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Boletos: " styleClass="fontePadrao"/>
-                                <h:inputText readonly="true" value="#{impressaoBoletosBean.totalBoletos}" size="7" id="total">
-                                    <a4j:ajax event="change" render="this" />
-                                </h:inputText>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Marcados: " styleClass="fontePadrao"/>
-                                <h:inputText readonly="true" value="#{impressaoBoletosBean.marcados}" size="7" id="totalMarcados">
-                                    <a4j:ajax event="change" render="this" />
-                                </h:inputText>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Empresas: " styleClass="fontePadrao"/>
-                                <h:inputText readonly="true" value="#{impressaoBoletosBean.totalEmpresas}" size="7" id="totalE" >
-                                    <a4j:ajax event="change" render="this"/>
-                                </h:inputText>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Escritorios: " styleClass="fontePadrao"/>
-                                <h:inputText readonly="true" value="#{impressaoBoletosBean.totalEscritorios}" size="7" id="totalEscr">
-                                    <a4j:ajax event="change" render="this" />
-                                </h:inputText>
-                            </h:column>
-                        </h:panelGrid>
+                                <p:dataTable value="#{impressaoBoletosBean.listaGrupoCidade}" selection="#{impressaoBoletosBean.listaGrupoSelecionada}" rowKey="#{linha.id}" var="linha" style="clear: both; margin-top: 20px"  emptyMessage="Selecione uma Convenção">
+                                    <p:column selectionMode="multiple" />  
+                                    
+                                    <p:column  headerText="Grupo Cidade">
+                                       <h:outputText style="font-size:8pt" value="#{linha.descricao}"/>
+                                    </p:column>
+                               </p:dataTable>
+                                
+                                <p:commandButton action="#{impressaoBoletosBean.filtrar}" value="Filtrar Vencimento" update=":formImpressaoBoletos:tbMovimento i_panel_mais" style="clear: both; margin-top: 20px"/>
+                                
+                                <p:dataTable value="#{impressaoBoletosBean.listaData}" var="linha" rowKey="#{linha}" selection="#{impressaoBoletosBean.listaDataSelecionada}" style="clear: both; margin-top: 20px" emptyMessage="Nenhuma vencimento foi encontrado!">
+                                    <p:column selectionMode="multiple" style="text-align: center; width: 20px"/>
+                                    
+                                    <p:column style="text-align: center" headerText="Vencimento">
+                                        <h:outputText style="font-size:8pt" value="#{linha}"/>
+                                    </p:column>
+                                </p:dataTable>
+                                
+                            </p:panel>
+                        
+                            <p:panel style="float: left; width: 785px">
+                                <h:outputText value="Escritório" style="font-weight: bold; margin-left: 20px;"/>
+                                <h:panelGrid columns="3" style="margin-left: 20px;">
+                                    <p:commandButton ajax="false" value="Pesquisar Escritório" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" rendered="#{impressaoBoletosBean.contabilidade.id == -1}"/>
+                                    <h:outputLabel value="#{impressaoBoletosBean.contabilidade.pessoa.documento} - #{impressaoBoletosBean.contabilidade.pessoa.nome}" />
+                                    <p:commandButton icon="ui-icon-circle-close" action="#{impressaoBoletosBean.removerContabilidade}" title="Remover pesquisa por Escritório" rendered="#{impressaoBoletosBean.contabilidade.id != -1}"/>
+                                </h:panelGrid>        
+                            </p:panel>
+                            
+                            
+                            <p:dataTable value="#{impressaoBoletosBean.listaMovGrid}" selection="#{impressaoBoletosBean.listaMovGridSelecionada}" id="tbMovimento" var="linha" rowKey="#{linha.coluna.valor}" paginator="true" rows="11" style="float: left; width: 792px"  emptyMessage="Nenhum boleto foi encontrado!">
+                                <p:column selectionMode="multiple" style="text-align: center; width: 20px"/>
+                                <p:ajax event="rowSelect" update=":formImpressaoBoletos:i_panel_mais"/>
+                                <p:ajax event="rowSelectCheckbox" update=":formImpressaoBoletos:i_panel_mais"/>
+                                <p:ajax event="rowUnselect" update=":formImpressaoBoletos:i_panel_mais"/>
+                                <p:ajax event="rowUnselectCheckbox" update=":formImpressaoBoletos:i_panel_mais"/>
+                                <p:ajax event="toggleSelect" update=":formImpressaoBoletos:i_panel_mais"/>
+                                    
+                                <p:column headerText="...">
+                                    <h:outputLabel value="#{linha.coluna.valor}°"/>
+                                </p:column>
 
-                        <h:panelGrid columns="20" style="float: left;  clear: both">
-                            <h:column>
-                                <h:commandLink id="i_imprimir" styleClass="idNovo iLink" style="width: 100px;" value="Visualizar" rendered="#{!impressaoBoletosBean.desabilitaVi}"
-                                               action="#{impressaoBoletosBean.imprimirBoleto}" target="_blank" />
-                            </h:column>
+                                <!-- <p:column headerText="Boleto">
+                                    <h:outputText value="# {linha.coluna.coluna.valor}" />
+                                </p:column> -->
 
-                            <h:column rendered="false">
-                                <div style="border: 1px solid gray; width: 440px">
-                                    <h:commandLink styleClass="iLink" value="Arquivo Remessa" action="#{impressaoBoletosBean.criarArquivoBanco}" style="margin: 5px; font-size: 10pt;"/>
-                                    <label> | </label>
-                                    <h:commandLink styleClass="iLink" value="baixar arquivos gerados" action="#{impressaoBoletosBean.baixarArquivosGerados}" style="margin: 5px; font-size: 10pt;"/>
-                                    <label> | </label>
-                                    <h:commandLink styleClass="iLink" value="limpar diretórios" action="#{impressaoBoletosBean.limparIn}"  style="margin: 5px; font-size: 10pt;"/>
-                                </div>
-                            </h:column>
+                                <p:column headerText="Razão">
+                                    <h:outputText value="#{linha.coluna.coluna.coluna.valor}"/>
+                                </p:column>
 
-                            <h:column>
-                                <a4j:commandLink id="i_envio" styleClass="idNovo iLink" value="Enviar E-mail" action="#{impressaoBoletosBean.enviarEmail}" rendered="#{!impressaoBoletosBean.desabilitaEmail}"
-                                                 onclick="modalOpcao('divProcesso');" render="outConfirma" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()" style="margin: 5px; width: 120px"/>
-                            </h:column>
+                                <p:column headerText="CNPJ">
+                                    <h:outputText value="#{linha.coluna.coluna.coluna.coluna.valor}"/>
+                                </p:column>
 
-                            <h:column>
-                                <h:commandLink styleClass="idNovo iLink" value="Etiqueta das Empresas" action="#{impressaoBoletosBean.etiquetaEmpresa}" target="_blank" style="margin: 5px; width: 200px;"/>
-                            </h:column>
+                                <p:column headerText="Escritório">
+                                    <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.valor}"/>
+                                </p:column>
 
-                            <h:column>
-                                <h:commandLink styleClass="idNovo iLink" value="Etiqueta dos Escritórios" action="#{impressaoBoletosBean.etiquetaEscritorio}" target="_blank" style="margin: 5px; width: 210px;"/>
-                            </h:column>
-                        </h:panelGrid>                        
-                    </div>
-                </center>
-                
-                <div id="boxes">
-                    <div id="divProcesso" class="window">
-                        <br />
-                        <center>
-                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{impressaoBoletosBean.msgImpressao}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" action="impressaoBoletos" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                    
-                
-            </h:form>
-        </f:view>
+                                <p:column headerText="Contr / Tipo">
+                                    <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.coluna.valor} - #{linha.coluna.coluna.coluna.coluna.coluna.coluna.coluna.valor}"/>
+                                </p:column>
+
+                                <p:column headerText="Ref. / Vencimento">
+                                    <h:outputText value="#{linha.coluna.coluna.coluna.coluna.coluna.coluna.coluna.coluna.coluna.valor} - #{linha.coluna.coluna.coluna.coluna.coluna.coluna.coluna.coluna.valor}"/>
+                                </p:column>
+                            </p:dataTable>
+                            
+                            <p:panelGrid styleClass="sbb" columns="5" style="float: left">
+                                <h:column>
+                                    <h:outputText value="Quantidade" styleClass="fonteRederencia"/><br />
+                                    <p:inputText value="#{impressaoBoletosBean.quantidade}" size="5" />
+                                </h:column>
+                                
+                                <p:column style="margin-left: 20px">
+                                    <h:outputText value="Inicio" styleClass="fonteRederencia"/><br />
+                                    <p:inputText value="#{impressaoBoletosBean.fInicio}" size="5" />
+                                </p:column>
+
+                                <p:column style="margin-left: 20px">
+                                    <h:outputText value="Fim" styleClass="fonteRederencia"/><br />
+                                    <p:inputText value="#{impressaoBoletosBean.fFim}" size="5" />
+                                </p:column>
+
+                                <h:column>
+                                    <br />
+                                    <p:commandButton value="Selecionar" action="#{impressaoBoletosBean.controleMovimentos}" update="tbMovimento i_panel_mais"/>
+                                </h:column>
+                                <h:column>
+                                    <br />
+                                    <p:commandButton value="Limpar Seleção" action="#{impressaoBoletosBean.limparSelecao()}" update="tbMovimento i_panel_mais"/>
+                                </h:column>
+                            </p:panelGrid>
+                            
+                            <p:panel id="i_panel_mais" style="float: left; width: 785px" styleClass="fundoCinza">
+                                <h:column>
+                                    <p:selectBooleanCheckbox value="#{impressaoBoletosBean.imprimeVerso}" itemLabel="Imprimir Verso"/>
+                                </h:column>
+                                
+                                <br /><br />
+                                
+                                <h:column>
+                                    <h:outputLabel value="Boletos " />
+                                    <h:outputLabel value="#{impressaoBoletosBean.totalBoletos}" style="font-weight: bold; font-size: 15pt!important"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="Marcados " style="margin-left: 25px"/>
+                                    <h:outputLabel value="#{impressaoBoletosBean.listaMovGridSelecionada.size()}" style="font-weight: bold; font-size: 15pt!important"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="Empresas " style="margin-left: 25px"/>
+                                    <h:outputLabel value="#{impressaoBoletosBean.totalEmpresas}" style="font-weight: bold; font-size: 15pt!important"/>
+                                </h:column>
+                                
+                                <h:column>
+                                    <h:outputLabel value="Escritórios " style="margin-left: 25px"/>
+                                    <h:outputLabel value="#{impressaoBoletosBean.totalEscritorios}" style="font-weight: bold; font-size: 15pt!important"/>
+                                </h:column>
+                            </p:panel>
+                            
+                            <h:panelGrid id="i_panel_botao" columns="4" style="float: left">
+                                <h:column>
+                                    <p:commandButton ajax="false" id="i_imprimir" value="Visualizar" rendered="#{!impressaoBoletosBean.desabilitaVi}" action="#{impressaoBoletosBean.imprimirBoleto}" />
+                                </h:column>
+
+                                <h:column>
+                                    <p:commandButton id="i_envio" ajax="false" styleClass="idNovo iLink" value="Enviar E-mail" action="#{impressaoBoletosBean.enviarEmail}" rendered="#{!impressaoBoletosBean.desabilitaEmail}"/>
+                                </h:column>
+
+                                <h:column>
+                                    <p:commandButton ajax="false" value="Etiqueta das Empresas" action="#{impressaoBoletosBean.etiquetaEmpresa}" />
+                                </h:column>
+
+                                <h:column>
+                                    <p:commandButton ajax="false" value="Etiqueta dos Escritórios" action="#{impressaoBoletosBean.etiquetaEscritorio}" />
+                                </h:column>
+                            </h:panelGrid>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                   
+
     </h:body>
 </ui:composition>

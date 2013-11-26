@@ -1,164 +1,178 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-                xmlns:ui="http://java.sun.com/jsf/facelets"
-                xmlns:h="http://java.sun.com/jsf/html"
-                xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
-
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+    
     <h:head>
-        <title>Cidades</title>
+        <title>Sindical - Cidades</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <script type="text/javascript">
+            $(document).ready(function(){  
+               resizeContent();
+              //attach on resize event
+               $(window).resize(function() {
+                   resizeContent();
+                });
+            });
+            function resizeContent(){
+               $('#content').attr('height', $(window).height() - $('#header').height() - $('#footer').height());
+            }
+        </script>
+        
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu-label .ui-inputfield{
+                
+            }
+            * {font-family: 'lucida grande',verdana, tahoma, arial, sans-serif; font-size: 9pt!important}
+        </style>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+	<div id="wrapx">
+        <div id="mainx">
+        <!-- INICIA DIV wrap e main -->  
+         <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
+        
         <f:view>
-            <h:form id="form_cidade">
-                <c:set scope="request" var="object" value="${cidadeBean.cidade}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputLabel value="Cadastro Cidades" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <rich:panel styleClass="divMae no-border" id="id_panel_cidade">
-                        <h:panelGrid columns="7">
-                            <h:outputLabel value="Pesquisar: " styleClass="fontePadrao" for="idDescricaoCidade"/>
-                            <h:inputText size="50" value="#{cidadeBean.descricaoCidadePesquisa}" id="idDescricaoCidade" onkeypress="if (event.keyCode === 13) {#{rich:element('form_cidade:btnInicial')}.onclick();}" title="Descrição da cidade"/>
-                            <h:outputLabel value="UF: " styleClass="fontePadrao"/>
-                            <h:selectOneMenu value="#{cidadeBean.descricaoUFPesquisa}" >
-                                <f:selectItem itemValue="AC" itemLabel="AC"/>
-                                <f:selectItem itemValue="AL" itemLabel="AL"/>
-                                <f:selectItem itemValue="AP" itemLabel="AP"/>
-                                <f:selectItem itemValue="AM" itemLabel="AM"/>
-                                <f:selectItem itemValue="BA" itemLabel="BA"/>
-                                <f:selectItem itemValue="CE" itemLabel="CE"/>
-                                <f:selectItem itemValue="DF" itemLabel="DF"/>
-                                <f:selectItem itemValue="ES" itemLabel="ES"/>
-                                <f:selectItem itemValue="GO" itemLabel="GO"/>
-                                <f:selectItem itemValue="MA" itemLabel="MA"/>
-                                <f:selectItem itemValue="MT" itemLabel="MT"/>
-                                <f:selectItem itemValue="MS" itemLabel="MS"/>
-                                <f:selectItem itemValue="MG" itemLabel="MG"/>
-                                <f:selectItem itemValue="PA" itemLabel="PA"/>
-                                <f:selectItem itemValue="PB" itemLabel="PB"/>
-                                <f:selectItem itemValue="PR" itemLabel="PR"/>
-                                <f:selectItem itemValue="PE" itemLabel="PE"/>
-                                <f:selectItem itemValue="PI" itemLabel="PI"/>
-                                <f:selectItem itemValue="RJ" itemLabel="RJ"/>
-                                <f:selectItem itemValue="RN" itemLabel="RN"/>
-                                <f:selectItem itemValue="RS" itemLabel="RS"/>
-                                <f:selectItem itemValue="RO" itemLabel="RO"/>
-                                <f:selectItem itemValue="RR" itemLabel="RR"/>
-                                <f:selectItem itemValue="SC" itemLabel="SC"/>
-                                <f:selectItem itemValue="SP" itemLabel="SP"/>
-                                <f:selectItem itemValue="SE" itemLabel="SE"/>
-                                <f:selectItem itemValue="TO" itemLabel="TO"/>
-                            </h:selectOneMenu>
-                            <a4j:commandLink styleClass="idSalvar iLink margin-left" action="#{cidadeBean.novo()}" value="Novo" oncomplete="#{rich:component('form_cidade:i_painel_novo')}.show(); return false;" render="id_painel_novo_cadastro" status="i_status" disabled="#{controleAcessoBean.botaoSalvar}" title="Novo cadastro"/>
-                        </h:panelGrid>
-                        <h:panelGrid columns="3" styleClass="margin-top">
-                            <h:outputLabel value="Pesquisar: " styleClass="fontePadrao"/>
-                            <a4j:commandLink id="btnInicial" action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl" status="i_status"/>
-                            <a4j:commandLink action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl" status="i_status"/>
-                        </h:panelGrid>
-                        <rich:panel style="overflow:auto; height:380px; width: 600px;" styleClass="margin-top-maior">
-                            <rich:dataTable value="#{cidadeBean.listaCidade}" var="linha" style="width:100%" id="tbl">
-                                <rich:column style="width: 100px;" styleClass="text-center">
-                                    <f:facet name="header">
-                                        <h:outputLabel value="ID"/>
-                                    </f:facet>
-                                    <a4j:commandLink value="Editar [#{linha.id}]" action="#{cidadeBean.editar(linha)}" oncomplete="#{rich:component('form_cidade:i_painel_novo')}.show(); return false;" render="id_painel_novo_cadastro" status="i_status"/>
-                                </rich:column>
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputLabel value="Cidade"/>
-                                    </f:facet>
-                                    <a4j:commandLink value="#{linha.cidade}" action="#{cidadeBean.editar(linha)}" styleClass="underline-hover" oncomplete="#{rich:component('form_cidade:i_painel_novo')}.show(); return false;" render="id_painel_novo_cadastro" status="i_status"/>
-                                </rich:column>
-                                <rich:column style="width: 25px;" styleClass="text-center">
-                                    <f:facet name="header">
-                                        <h:outputLabel value="UF"/>
-                                    </f:facet>
-                                    <h:outputText value="#{linha.uf}"/>
-                                </rich:column>
-                                <rich:column style="width: 25px;" styleClass="text-center">
-                                    <f:facet name="header">
-                                        <h:outputLabel value="E" title="Excluir"/>
-                                    </f:facet>
-                                    <a4j:commandLink action="#{cidadeBean.excluir(linha)}" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.show(); return false;" render="id_panel_cidade, i_painel_mensagem" title="Excluir este registro">
-                                        <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                                    </a4j:commandLink>
-                                </rich:column>                                    
-                            </rich:dataTable>
-                        </rich:panel>                        
-                    </rich:panel>
-                </center>
-                <rich:popupPanel id="i_painel_novo" modal="true" resizeable="true" domElementAttachment="form" header="Novo">
-                    <f:facet name="controls">
-                        <a4j:commandLink oncomplete="#{rich:component('form_cidade:i_painel_novo')}.hide(); return false;" action="#{simplesBean.novo}" status="i_status" render="i_painel_novo_cadastro, tbl">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
-                        </a4j:commandLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid id="id_painel_novo_cadastro" columns="2">
-                            <h:outputLabel value="Descrição: " styleClass="fontePadrao" for="iDescricao"/>
-                            <h:inputText id="iDescricao" value="#{cidadeBean.cidade.cidade}" size="20" autocomplete="off" title="Descrição" />
-                            <h:outputLabel value="UF: " styleClass="fontePadrao"/>
-                            <h:selectOneMenu value="#{cidadeBean.cidade.uf}" >
-                                <f:selectItem itemValue="AC" itemLabel="AC"/>
-                                <f:selectItem itemValue="AL" itemLabel="AL"/>
-                                <f:selectItem itemValue="AP" itemLabel="AP"/>
-                                <f:selectItem itemValue="AM" itemLabel="AM"/>
-                                <f:selectItem itemValue="BA" itemLabel="BA"/>
-                                <f:selectItem itemValue="CE" itemLabel="CE"/>
-                                <f:selectItem itemValue="DF" itemLabel="DF"/>
-                                <f:selectItem itemValue="ES" itemLabel="ES"/>
-                                <f:selectItem itemValue="GO" itemLabel="GO"/>
-                                <f:selectItem itemValue="MA" itemLabel="MA"/>
-                                <f:selectItem itemValue="MT" itemLabel="MT"/>
-                                <f:selectItem itemValue="MS" itemLabel="MS"/>
-                                <f:selectItem itemValue="MG" itemLabel="MG"/>
-                                <f:selectItem itemValue="PA" itemLabel="PA"/>
-                                <f:selectItem itemValue="PB" itemLabel="PB"/>
-                                <f:selectItem itemValue="PR" itemLabel="PR"/>
-                                <f:selectItem itemValue="PE" itemLabel="PE"/>
-                                <f:selectItem itemValue="PI" itemLabel="PI"/>
-                                <f:selectItem itemValue="RJ" itemLabel="RJ"/>
-                                <f:selectItem itemValue="RN" itemLabel="RN"/>
-                                <f:selectItem itemValue="RS" itemLabel="RS"/>
-                                <f:selectItem itemValue="RO" itemLabel="RO"/>
-                                <f:selectItem itemValue="RR" itemLabel="RR"/>
-                                <f:selectItem itemValue="SC" itemLabel="SC"/>
-                                <f:selectItem itemValue="SP" itemLabel="SP"/>
-                                <f:selectItem itemValue="SE" itemLabel="SE"/>
-                                <f:selectItem itemValue="TO" itemLabel="TO"/>
-                            </h:selectOneMenu>                             
-                        </h:panelGrid>
-                        <h:panelGrid columns="2" styleClass="margin-left-max margin-top">
-                            <a4j:commandButton action="#{cidadeBean.salvar}"   value="Salvar" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.show(); return false;" render="tbl, id_painel_novo_cadastro, i_painel_mensagem" status="i_status" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            <a4j:commandButton action="#{cidadeBean.novo}"     value="Novo" status="i_status" render="id_painel_novo_cadastro" />
-                        </h:panelGrid>
-                    </center>
-                </rich:popupPanel>                
-                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true">
-                    <f:facet name="header">
-                        <h:outputText value="Mensagem"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_painel_mensagem')}.hide(); return false;">
+            <p:panel styleClass="wrapper" style="border: 0px">
+                <h:form id="formCidade">
+                    <c:set scope="request" var="object" value="${cidadeBean.cidade}"/>
+                    <h:outputText value="Cidades" styleClass="fonteHeader" />
+                    
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza" style="clear: both">
+                        <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" />  
+                        <p:inputText id="i_cidade" size="50" value="#{cidadeBean.cidade.cidade}" />
+                        <p:watermark for="i_cidade" value="Digite o nome da Cidade" />
+                        
+                        <p:selectOneMenu value="#{cidadeBean.cidade.uf}" style="position: absolute; margin-left: 15px; margin-top: 2px; padding-right: 5px">
+                            <f:selectItem itemValue="AC" itemLabel="AC"/>
+                            <f:selectItem itemValue="AL" itemLabel="AL"/>
+                            <f:selectItem itemValue="AP" itemLabel="AP"/>
+                            <f:selectItem itemValue="AM" itemLabel="AM"/>
+                            <f:selectItem itemValue="BA" itemLabel="BA"/>
+                            <f:selectItem itemValue="CE" itemLabel="CE"/>
+                            <f:selectItem itemValue="DF" itemLabel="DF"/>
+                            <f:selectItem itemValue="ES" itemLabel="ES"/>
+                            <f:selectItem itemValue="GO" itemLabel="GO"/>
+                            <f:selectItem itemValue="MA" itemLabel="MA"/>
+                            <f:selectItem itemValue="MT" itemLabel="MT"/>
+                            <f:selectItem itemValue="MS" itemLabel="MS"/>
+                            <f:selectItem itemValue="MG" itemLabel="MG"/>
+                            <f:selectItem itemValue="PA" itemLabel="PA"/>
+                            <f:selectItem itemValue="PB" itemLabel="PB"/>
+                            <f:selectItem itemValue="PR" itemLabel="PR"/>
+                            <f:selectItem itemValue="PE" itemLabel="PE"/>
+                            <f:selectItem itemValue="PI" itemLabel="PI"/>
+                            <f:selectItem itemValue="RJ" itemLabel="RJ"/>
+                            <f:selectItem itemValue="RN" itemLabel="RN"/>
+                            <f:selectItem itemValue="RS" itemLabel="RS"/>
+                            <f:selectItem itemValue="RO" itemLabel="RO"/>
+                            <f:selectItem itemValue="RR" itemLabel="RR"/>
+                            <f:selectItem itemValue="SC" itemLabel="SC"/>
+                            <f:selectItem itemValue="SP" itemLabel="SP"/>
+                            <f:selectItem itemValue="SE" itemLabel="SE"/>
+                            <f:selectItem itemValue="TO" itemLabel="TO"/>
+                        </p:selectOneMenu>   
+
+                        <p:commandButton action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" style="margin-left: 80px" update=":formCidadePesquisar:i_panel_grid"/>
+                        <p:commandButton action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" update=":formCidadePesquisar:i_panel_grid" />
+                        
+                        <p:commandButton value="Adicionar nova Cidade" action="#{cidadeBean.novo()}" update=":formCidadeSalvar:i_panel_novo" disabled="#{controleAcessoBean.botaoSalvar}" style="float: right" onclick="i_dlg_salvar.show()"/>
+         
+                    </p:panel>
+                </h:form>
+                    
+                <h:form id="formCidadePesquisar">
+                    <h:panelGrid id="i_panel_grid" style="width: 100%">
+                        <p:dataTable value="#{cidadeBean.listaCidade}" var="linha" id="tbl" emptyMessage="Nenhuma cidade encontrada">
+                            <p:column headerText="Excluir" style="text-align: center">
+                                <p:commandButton icon="ui-icon-trash" action="#{cidadeBean.excluir(linha)}" update=":formCidadePesquisar:i_panel_grid :formCidade:i_panel_pesquisa" title="Clique para excluir esta Cidade"/>
+                            </p:column>   
                             
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:outputText value="#{cidadeBean.msgConfirma}" styleClass="fontePadrao"/>                            
-                        <br /><br />
-                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_cidade:i_painel_mensagem')}.hide();" action="id_panel_cidade"/>
-                    </center>
-                </rich:popupPanel>
-            </h:form>
+                            <p:column headerText="ID" style="text-align: center">
+                                <p:commandLink value="#{linha.id}" action="#{cidadeBean.editar(linha)}"/>
+                            </p:column>          
+
+                            <p:column headerText="Editar" style="text-align: center">
+                                <p:commandButton icon="ui-icon-search"  action="#{cidadeBean.editarPagina(linha)}" update=":formCidadeSalvar:i_panel_novo" onclick="i_dlg_salvar.show()" title="Clique para editar esta Cidade"/>
+                            </p:column>                  
+
+                            <p:column headerText="Cidade (clique para selecionar)">
+                                <p:commandLink value="#{linha.cidade}" action="#{cidadeBean.editar(linha)}"/>
+                            </p:column>                  
+
+                            <p:column headerText="UF">
+                                <h:outputText value="#{linha.uf}"/>
+                            </p:column>                  
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+                
+                <h:form id="formCidadeSalvar">
+                    <p:dialog widgetVar="i_dlg_salvar" showEffect="fade" header="Nova Cidade" width="500" resizable="false">  
+                        <h:panelGrid id="i_panel_novo" columns="2" style="float: left">
+                            <h:column>
+                                <p:outputLabel value="Nome" /><br />
+                                <p:inputText id="i_nome_cidade" size="50" value="#{cidadeBean.cidade.cidade}" required="true" requiredMessage="Digite um nome para Cidade"/>
+                                <p:watermark for="i_nome_cidade" value="Digite o nome da nova Cidade" />
+                            </h:column>
+                            
+                            <h:column>
+                                <p:outputLabel value="UF" style="margin-left: 15px;"/><br />
+                                <p:selectOneMenu value="#{cidadeBean.cidade.uf}" style="margin-left: 15px;">
+                                    <f:selectItem itemValue="AC" itemLabel="AC"/>
+                                    <f:selectItem itemValue="AL" itemLabel="AL"/>
+                                    <f:selectItem itemValue="AP" itemLabel="AP"/>
+                                    <f:selectItem itemValue="AM" itemLabel="AM"/>
+                                    <f:selectItem itemValue="BA" itemLabel="BA"/>
+                                    <f:selectItem itemValue="CE" itemLabel="CE"/>
+                                    <f:selectItem itemValue="DF" itemLabel="DF"/>
+                                    <f:selectItem itemValue="ES" itemLabel="ES"/>
+                                    <f:selectItem itemValue="GO" itemLabel="GO"/>
+                                    <f:selectItem itemValue="MA" itemLabel="MA"/>
+                                    <f:selectItem itemValue="MT" itemLabel="MT"/>
+                                    <f:selectItem itemValue="MS" itemLabel="MS"/>
+                                    <f:selectItem itemValue="MG" itemLabel="MG"/>
+                                    <f:selectItem itemValue="PA" itemLabel="PA"/>
+                                    <f:selectItem itemValue="PB" itemLabel="PB"/>
+                                    <f:selectItem itemValue="PR" itemLabel="PR"/>
+                                    <f:selectItem itemValue="PE" itemLabel="PE"/>
+                                    <f:selectItem itemValue="PI" itemLabel="PI"/>
+                                    <f:selectItem itemValue="RJ" itemLabel="RJ"/>
+                                    <f:selectItem itemValue="RN" itemLabel="RN"/>
+                                    <f:selectItem itemValue="RS" itemLabel="RS"/>
+                                    <f:selectItem itemValue="RO" itemLabel="RO"/>
+                                    <f:selectItem itemValue="RR" itemLabel="RR"/>
+                                    <f:selectItem itemValue="SC" itemLabel="SC"/>
+                                    <f:selectItem itemValue="SP" itemLabel="SP"/>
+                                    <f:selectItem itemValue="SE" itemLabel="SE"/>
+                                    <f:selectItem itemValue="TO" itemLabel="TO"/>
+                                </p:selectOneMenu>   
+                            </h:column>
+                        </h:panelGrid>
+                        
+                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cidadeBean.salvar()}" update=":formCidadePesquisar:i_panel_grid" onclick="i_dlg_salvar.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_salvar.hide()" style="float: left" icon="ui-icon-close"/>       
+                    </p:dialog>  
+                </h:form>
+            </p:panel>
         </f:view>
+        
+        <!-- FINALIZA div wrap main -->
+        </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>
     </h:body>
 </ui:composition>
