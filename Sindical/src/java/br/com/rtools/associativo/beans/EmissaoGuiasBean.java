@@ -27,6 +27,7 @@ import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -227,9 +228,9 @@ public class EmissaoGuiasBean {
                 0, // CORRECAO
                 0, // JUROS
                 0, // MULTA
-                0, // DESCONTO
+                descontox, // DESCONTO
                 0, // TAXA
-                0, // VALOR BAIXA
+                Moeda.multiplicarValores(quantidade, Moeda.subtracaoValores(valorx, descontox)), // VALOR BAIXA
                 td, // FTipo_documento 13 - CARTEIRA, 2 - BOLETO
                 0 // REPASSE AUTOMATICO
         ), 
@@ -302,6 +303,7 @@ public class EmissaoGuiasBean {
             return null;
         }
 
+        List<Movimento> listaaux = new ArrayList();
         for (int i = 0; i < listaMovimento.size(); i++){
             ((Movimento)listaMovimento.get(i).getArgumento0()).setLote(lote);
             if (!sv.inserirObjeto((Movimento)listaMovimento.get(i).getArgumento0())){
@@ -309,6 +311,7 @@ public class EmissaoGuiasBean {
                 sv.desfazerTransacao();
                 return null;
             }
+            listaaux.add((Movimento)listaMovimento.get(i).getArgumento0());
         }
         
         Guia guias = new Guia(
@@ -325,6 +328,28 @@ public class EmissaoGuiasBean {
             return null;
         }
         sv.comitarTransacao();
+        
+//        Movimento movimento = new Movimento();
+        for (int i = 0; i < listaMovimento.size(); i++){
+//            movimento = (Movimento)sv.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())), "Movimento");
+//
+//            movimento.setMulta(((Movimento)listaMovimento.get(i).getArgumento0()).getMulta());
+//            movimento.setJuros(((Movimento)listaMovimento.get(i).getArgumento0()).getJuros());
+//            movimento.setCorrecao(((Movimento)listaMovimento.get(i).getArgumento0()).getCorrecao());
+//            movimento.setDesconto(((Movimento)listaMovimento.get(i).getArgumento0()).getDesconto());
+//
+//            //movimento.setValor( Float.valueOf( listaMovimento.get(i).getArgumento9().toString() ) );
+//            movimento.setValor(((Movimento)listaMovimento.get(i).getArgumento0()).getValor());
+//
+//            // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
+//            movimento.setValorBaixa(((Movimento)listaMovimento.get(i).getArgumento0()).getValorBaixa());
+//
+//            listaaux.add(movimento);
+            
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", listaaux);
+            return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
+        }
+        
         msgConfirma = " Lançamento efetuado com Sucesso!";
         return null;
     }    

@@ -41,11 +41,14 @@ import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -57,11 +60,15 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class ImpressaoBoletosJSFBean {
+@ManagedBean
+@SessionScoped
+public class ImpressaoBoletosBean implements Serializable {
 
     private String escritorio = "null";
-    private List<DataObject> listaDatas = new ArrayList<DataObject>();
+    private List<String> listaData = new ArrayList<String>();
+    private List<String> listaDataSelecionada = new ArrayList<String>();
     private List<Linha> listaMovGrid = new ArrayList<Linha>();
+    private List<Linha> listaMovGridSelecionada = new ArrayList<Linha>();
     List<Movimento> listaAux = new ArrayList<Movimento>();
     private Juridica contabilidade = new Juridica();
     private int boletosSel;
@@ -73,11 +80,14 @@ public class ImpressaoBoletosJSFBean {
     private long totalBoletos = 0;
     private long totalEmpresas = 0;
     private long totalEscritorios = 0;
-    private int marcados = 0;
     private boolean imprimeVerso = true;
     private String msgImpressao = "";
-    private List<DataObject> listaConvencao = new ArrayList();
-    private List<DataObject> listaGrupoCidade = new ArrayList();
+    //private List<DataObject> listaConvencao = new ArrayList();
+    private List<Convencao> listaConvencao = new ArrayList();
+    private List<Convencao> listaConvencaoSelecionada = new ArrayList();
+    //private List<DataObject> listaGrupoCidade = new ArrayList();
+    private List<GrupoCidade> listaGrupoCidade = new ArrayList();
+    private List<GrupoCidade> listaGrupoSelecionada = new ArrayList();
     private String todasContas = "true";
     private String movimentosSemMensagem = null;
     private int quantidadeEmpresas = 0;
@@ -85,23 +95,9 @@ public class ImpressaoBoletosJSFBean {
     private String cbEmail = "todos";
     private boolean chkTodosVencimentos = false;
 
-    public ImpressaoBoletosJSFBean() {
-    }
-
     public String removerContabilidade() {
         contabilidade = new Juridica();
         return "impressaoBoletos";
-    }
-
-    public void marcaVencimentos() {
-        for (int i = 0; i < listaDatas.size(); i++) {
-            if (chkTodosVencimentos) {
-                listaDatas.get(i).setArgumento0(true);
-            } else {
-                listaDatas.get(i).setArgumento0(false);
-            }
-
-        }
     }
 
     public String getEscritorio() {
@@ -118,16 +114,6 @@ public class ImpressaoBoletosJSFBean {
 
     public void setIdCombo(int idCombo) {
         this.idCombo = idCombo;
-    }
-
-    public String marcarUm(int index) {
-        if ((Boolean) listaMovGrid.get(index).getValor()) {
-            marcados++;
-        } else {
-            marcados--;
-        }
-
-        return null;
     }
 
     public boolean getDesabilitarContas() {
@@ -193,7 +179,6 @@ public class ImpressaoBoletosJSFBean {
             List<Integer> listC = new ArrayList();
             Object[] result = new Object[]{new ArrayList(), new Integer(0)};
 
-            marcados = 0;
             totalBoletos = 0;
             totalEmpresas = 0;
             totalEscritorios = 0;
@@ -205,26 +190,21 @@ public class ImpressaoBoletosJSFBean {
             }
 
 
-            if ((!listaGrupoCidade.isEmpty()) && (!listaConvencao.isEmpty())) {
-                for (int i = 0; i < listaGrupoCidade.size(); i++) {
-                    if ((Boolean) listaGrupoCidade.get(i).getArgumento0()) {
-                        listG.add(((GrupoCidade) listaGrupoCidade.get(i).getArgumento1()).getId());
-                    }
+            if ((!listaGrupoSelecionada.isEmpty()) && (!listaConvencaoSelecionada.isEmpty())) {
+                for (int i = 0; i < listaGrupoSelecionada.size(); i++) {
+                    listG.add(listaGrupoSelecionada.get(i).getId());
                 }
-                for (int i = 0; i < listaConvencao.size(); i++) {
-                    if ((Boolean) listaConvencao.get(i).getArgumento0()) {
-                        listC.add(((Convencao) listaConvencao.get(i).getArgumento1()).getId());
-                    }
+                
+                for (int i = 0; i < listaConvencaoSelecionada.size(); i++) {
+                    listC.add(listaConvencaoSelecionada.get(i).getId());
                 }
             }
 
-            if (!(listaDatas.isEmpty())) {
+            if (!(listaDataSelecionada.isEmpty())) {
                 List ids = new ArrayList<String>();
 
-                for (int i = 0; i < listaDatas.size(); i++) {
-                    if ((Boolean) listaDatas.get(i).getArgumento0()) {
-                        ids.add((String) listaDatas.get(i).getArgumento1());
-                    }
+                for (int i = 0; i < listaDataSelecionada.size(); i++) {
+                    ids.add(listaDataSelecionada.get(i));
                 }
                 Vector vetorAux = new Vector();
 
@@ -363,7 +343,7 @@ public class ImpressaoBoletosJSFBean {
         }
     }
 
-    public synchronized List<DataObject> getListaDatas() {
+    public synchronized List<String> getListaData() {
         try {
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
             ServicoContaCobranca contaCobranca;
@@ -377,7 +357,7 @@ public class ImpressaoBoletosJSFBean {
             int i = 0;
             if (this.todasContas.equals("false")) {
                 if (contaCobranca.getId() != idData) {
-                    listaDatas.clear();
+                    listaData.clear();
                     idData = contaCobranca.getId();
                     lista = db.datasMovimento(
                             contaCobranca.getServicos().getId(),
@@ -388,7 +368,7 @@ public class ImpressaoBoletosJSFBean {
             } else {
                 if (idData == -2) {
                     idData = -1;
-                    listaDatas.clear();
+                    listaData.clear();
                     lista = db.datasMovimento();
                 }
             }
@@ -397,28 +377,25 @@ public class ImpressaoBoletosJSFBean {
                 lista = new ArrayList<DataObject>();
             }
             while (i < lista.size()) {
-                listaDatas.add(new DataObject(
-                        false,
-                        DataHoje.converteData((Date) lista.get(i))));
+                listaData.add(DataHoje.converteData((Date) lista.get(i)));
                 i++;
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return listaDatas;
+        return listaData;
 
     }
-
-    public void setListaDatas(List<DataObject> listaDatas) {
-        this.listaDatas = listaDatas;
+    
+    public void limparSelecao(){
+        listaMovGridSelecionada.clear();
+        quantidade = 0;
+        fInicio = 0;
+        fFim = 0;
+        
     }
-
+    
     public synchronized void controleMovimentos() {
-        if (quantidade > 0) {
-            marcados = quantidade;
-        } else {
-            marcados = (fFim - fInicio) + 1;
-        }
         int i = 0;
         limparGrid();
         if ((quantidade != 0) && fInicio == 0 && fFim == 0) {//CASO 1 SOMENTE POR QUANTIDADE
@@ -426,7 +403,8 @@ public class ImpressaoBoletosJSFBean {
                 quantidade = listaMovGrid.size();
             }
             while (i < quantidade) {
-                listaMovGrid.get(i).setValor(new Boolean(true));
+                //listaMovGrid.get(i).setValor(new Boolean(true));
+                listaMovGridSelecionada.add(listaMovGrid.get(i));
                 i++;
             }
         } else if (quantidade == 0 && fInicio != 0 && fFim == 0) {//CASO 2 SOMENTE POR INICIO
@@ -434,7 +412,8 @@ public class ImpressaoBoletosJSFBean {
                 i = fInicio - 1;
                 while (i < listaMovGrid.size()) {
                     quantidade++;
-                    listaMovGrid.get(i).setValor(new Boolean(true));
+                    //listaMovGrid.get(i).setValor(new Boolean(true));
+                    listaMovGridSelecionada.add(listaMovGrid.get(i));
                     i++;
                 }
             }
@@ -443,7 +422,8 @@ public class ImpressaoBoletosJSFBean {
                 int o = 0;
                 i = fInicio - 1;
                 while ((o < quantidade) && (i < listaMovGrid.size())) {
-                    listaMovGrid.get(i).setValor(new Boolean(true));
+                    //listaMovGrid.get(i).setValor(new Boolean(true));
+                    listaMovGridSelecionada.add(listaMovGrid.get(i));
                     i++;
                     o++;
                 }
@@ -453,7 +433,8 @@ public class ImpressaoBoletosJSFBean {
                 i = fInicio - 1;
                 while (i < fFim) {
                     quantidade++;
-                    listaMovGrid.get(i).setValor(new Boolean(true));
+                    //listaMovGrid.get(i).setValor(new Boolean(true));
+                    listaMovGridSelecionada.add(listaMovGrid.get(i));
                     i++;
                 }
             }
@@ -461,7 +442,8 @@ public class ImpressaoBoletosJSFBean {
             if (fFim <= listaMovGrid.size()) {
                 while (i < fFim) {
                     quantidade++;
-                    listaMovGrid.get(i).setValor(new Boolean(true));
+                    //listaMovGrid.get(i).setValor(new Boolean(true));
+                    listaMovGridSelecionada.add(listaMovGrid.get(i));
                     i++;
                 }
             }
@@ -475,7 +457,8 @@ public class ImpressaoBoletosJSFBean {
                 quantidade = 0;
                 while (i < fFim) {
                     quantidade++;
-                    listaMovGrid.get(i).setValor(new Boolean(true));
+                    //listaMovGrid.get(i).setValor(new Boolean(true));
+                    listaMovGridSelecionada.add(listaMovGrid.get(i));
                     i++;
                 }
             }
@@ -488,7 +471,8 @@ public class ImpressaoBoletosJSFBean {
                 quantidade = 0;
                 while (i < fFim) {
                     quantidade++;
-                    listaMovGrid.get(i).setValor(new Boolean(true));
+                    //listaMovGrid.get(i).setValor(new Boolean(true));
+                    listaMovGridSelecionada.add(listaMovGrid.get(i));
                     i++;
                 }
             }
@@ -571,23 +555,17 @@ public class ImpressaoBoletosJSFBean {
     }
 
     public String imprimirBoleto() {
-        boolean marcado = false;
-        int i = 0;
         MovimentoDB db = new MovimentoDBToplink();
         List<Movimento> lista = new ArrayList<Movimento>();
         List<Float> listaValores = new ArrayList<Float>();
         List<String> listaVencimentos = new ArrayList<String>();
         Movimento mov = new Movimento();
-        while (i < listaMovGrid.size()) {
-            marcado = (Boolean) listaMovGrid.get(i).getValor();
-            if (marcado) {
-                mov = db.pesquisaCodigo(
-                        (Integer) listaMovGrid.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
-                lista.add(mov);
-                listaValores.add(mov.getValor());
-                listaVencimentos.add(mov.getVencimento());
-            }
-            i++;
+        for (int i = 0; i < listaMovGridSelecionada.size(); i++) {
+            mov = db.pesquisaCodigo(
+                    (Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+            lista.add(mov);
+            listaValores.add(mov.getValor());
+            listaVencimentos.add(mov.getVencimento());
         }
         ImprimirBoleto imp = new ImprimirBoleto();
         imp.imprimirBoleto(lista, listaValores, listaVencimentos, imprimeVerso);
@@ -668,13 +646,11 @@ public class ImpressaoBoletosJSFBean {
             cnaes = "";
         }
 
-        for (int i = 0; i < listaMovGrid.size(); i++) {
-            if ((Boolean) listaMovGrid.get(i).getValor()) {
-                if (idsJuridica.length() > 0 && i != listaMovGrid.size()) {
-                    idsJuridica = idsJuridica + ",";
-                }
-                idsJuridica = idsJuridica + ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+        for (int i = 0; i < listaMovGridSelecionada.size(); i++) {
+            if (idsJuridica.length() > 0 && i != listaMovGridSelecionada.size()) {
+                idsJuridica = idsJuridica + ",";
             }
+            idsJuridica = idsJuridica + ((Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
         }
 
         sindicato = dbJur.pesquisaCodigo(1);
@@ -899,23 +875,21 @@ public class ImpressaoBoletosJSFBean {
 
         int idContabil1 = 0, idContabil2 = 0;
         boolean um = true;
-        for (int i = 0; i < listaMovGrid.size(); i++) {
-            if ((Boolean) listaMovGrid.get(i).getValor()) {
-                if (um) {
-                    if (idsJuridica.length() > 0 && i != listaMovGrid.size()) {
+        for (int i = 0; i < listaMovGridSelecionada.size(); i++) {
+            if (um) {
+                if (idsJuridica.length() > 0 && i != listaMovGridSelecionada.size()) {
+                    idsJuridica = idsJuridica + ",";
+                }
+                idsJuridica = idsJuridica + ((Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+                um = false;
+            } else {
+                idContabil1 = ((Integer) listaMovGridSelecionada.get(i - 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+                idContabil2 = ((Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+                if (idContabil1 != idContabil2) {
+                    if (idsJuridica.length() > 0 && i != listaMovGridSelecionada.size()) {
                         idsJuridica = idsJuridica + ",";
                     }
-                    idsJuridica = idsJuridica + ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
-                    um = false;
-                } else {
-                    idContabil1 = ((Integer) getListaMovGrid().get(i - 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
-                    idContabil2 = ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
-                    if (idContabil1 != idContabil2) {
-                        if (idsJuridica.length() > 0 && i != listaMovGrid.size()) {
-                            idsJuridica = idsJuridica + ",";
-                        }
-                        idsJuridica = idsJuridica + ((Integer) getListaMovGrid().get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
-                    }
+                    idsJuridica = idsJuridica + ((Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
                 }
             }
         }
@@ -1110,22 +1084,16 @@ public class ImpressaoBoletosJSFBean {
         List<Float> listaValores = new ArrayList<Float>();
         List<String> listaVencimentos = new ArrayList<String>();
 
-        List<Linha> select = new ArrayList();
 
         boolean enviar = false;
         int id_contabil = 0, id_empresa = 0, id_compara = 0;
-        for (int i = 0; i < listaMovGrid.size(); i++) {
-            if ((Boolean) listaMovGrid.get(i).getValor()) {
-                select.add(listaMovGrid.get(i));
-            }
-        }
-
-        for (int i = 0; i < select.size(); i++) {
-            id_contabil = (Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
-            id_empresa = (Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
+        
+        for (int i = 0; i < listaMovGridSelecionada.size(); i++) {
+            id_contabil = (Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
+            id_empresa = (Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
 
             /* ENVIO PARA CONTABILIDADE */
-            movimento = dbM.pesquisaCodigo((Integer) select.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
+            movimento = dbM.pesquisaCodigo((Integer) listaMovGridSelecionada.get(i).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor());
             juridica = dbj.pesquisaCodigo(id_empresa);
 
             if (id_contabil != 0 && juridica.isEmailEscritorio()) {
@@ -1136,7 +1104,7 @@ public class ImpressaoBoletosJSFBean {
                 juridica = dbj.pesquisaJuridicaPorPessoa(id_contabil);
 
                 try {
-                    id_compara = (Integer) select.get(i + 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
+                    id_compara = (Integer) listaMovGridSelecionada.get(i + 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
                     if (id_contabil != id_compara) {
                         enviar = true;
                     }
@@ -1150,7 +1118,7 @@ public class ImpressaoBoletosJSFBean {
                 listaVencimentos.add(movimento.getVencimento());
 
                 try {
-                    id_compara = (Integer) select.get(i + 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
+                    id_compara = (Integer) listaMovGridSelecionada.get(i + 1).getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getColuna().getValor();
                     if (id_empresa != id_compara) {
                         enviar = true;
                     }
@@ -1299,60 +1267,40 @@ public class ImpressaoBoletosJSFBean {
         this.imprimeVerso = imprimeVerso;
     }
 
-    public int getMarcados() {
-        return marcados;
-    }
-
-    public void setMarcados(int marcados) {
-        this.marcados = marcados;
-    }
-
-    public List<DataObject> getListaConvencao() {
+    public List<Convencao> getListaConvencao() {
         if (listaConvencao.isEmpty()) {
             ConvencaoDB convencaoDB = new ConvencaoDBToplink();
-            List<Convencao> lista = convencaoDB.pesquisaTodos();
-            if (lista == null) {
-                lista = new ArrayList();
-            }
-            for (Convencao convencao : lista) {
-                listaConvencao.add(new DataObject(false, convencao));
-            }
+            listaConvencao = convencaoDB.pesquisaTodos();
         }
         return listaConvencao;
     }
 
-    public List<DataObject> getListaGrupoCidade() {
+    public List<GrupoCidade> getListaGrupoCidade() {
         if (listaGrupoCidade.isEmpty()) {
-            this.carregarGrupos();
+            if (!listaConvencaoSelecionada.isEmpty()){
+                ConvencaoCidadeDB convencaoCidadeDB = new ConvencaoCidadeDBToplink();
+                List<Integer> listInt = new ArrayList();
+
+                for (int i = 0; i < listaConvencaoSelecionada.size(); i++) {
+                    listInt.add(listaConvencaoSelecionada.get(i).getId());
+                }
+
+                listaGrupoCidade = convencaoCidadeDB.pesquisarConvencaoCidade(listInt);
+            }
         }
         return listaGrupoCidade;
     }
 
-    public void carregarGrupos() {
+    public void limpaGrupoCidade(){
         listaGrupoCidade.clear();
-        if (!listaConvencao.isEmpty()) {
-            ConvencaoCidadeDB convencaoCidadeDB = new ConvencaoCidadeDBToplink();
-            List<Integer> listInt = new ArrayList();
-            for (int i = 0; i < listaConvencao.size(); i++) {
-                if ((Boolean) listaConvencao.get(i).getArgumento0()) {
-                    listInt.add(((Convencao) listaConvencao.get(i).getArgumento1()).getId());
-                }
-            }
-            List<GrupoCidade> listGrupo = convencaoCidadeDB.pesquisarConvencaoCidade(listInt);
-            if (listGrupo == null) {
-                listGrupo = new ArrayList();
-            }
-            for (GrupoCidade grupoCidade : listGrupo) {
-                listaGrupoCidade.add(new DataObject(false, grupoCidade));
-            }
-        }
+        listaGrupoSelecionada.clear();
     }
-
-    public void setListaConvencao(List<DataObject> listaConvencao) {
+    
+    public void setListaConvencao(List<Convencao> listaConvencao) {
         this.listaConvencao = listaConvencao;
     }
 
-    public void setListaGrupoCidade(List<DataObject> listaGrupoCidade) {
+    public void setListaGrupoCidade(List<GrupoCidade> listaGrupoCidade) {
         this.listaGrupoCidade = listaGrupoCidade;
     }
 
@@ -1422,5 +1370,37 @@ public class ImpressaoBoletosJSFBean {
 
     public void setContabilidade(Juridica contabilidade) {
         this.contabilidade = contabilidade;
+    }
+
+    public List<Convencao> getListaConvencaoSelecionada() {
+        return listaConvencaoSelecionada;
+    }
+
+    public void setListaConvencaoSelecionada(List<Convencao> listaConvencaoSelecionada) {
+        this.listaConvencaoSelecionada = listaConvencaoSelecionada;
+    }
+
+    public List<GrupoCidade> getListaGrupoSelecionada() {
+        return listaGrupoSelecionada;
+    }
+
+    public void setListaGrupoSelecionada(List<GrupoCidade> listaGrupoSelecionada) {
+        this.listaGrupoSelecionada = listaGrupoSelecionada;
+    }
+
+    public List<String> getListaDataSelecionada() {
+        return listaDataSelecionada;
+    }
+
+    public void setListaDataSelecionada(List<String> listaDataSelecionada) {
+        this.listaDataSelecionada = listaDataSelecionada;
+    }
+
+    public List<Linha> getListaMovGridSelecionada() {
+        return listaMovGridSelecionada;
+    }
+
+    public void setListaMovGridSelecionada(List<Linha> listaMovGridSelecionada) {
+        this.listaMovGridSelecionada = listaMovGridSelecionada;
     }
 }
