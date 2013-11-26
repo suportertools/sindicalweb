@@ -67,35 +67,32 @@ public class Sicoob extends Cobranca {
 
     @Override
     public String codigoBarras() {
-        String codigoBarras = "";
-        codigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
-        codigoBarras += this.moduloOnze(codigoBarras); // digito verificador
+        String iniCodigoBarras = "", fimCodigoBarras = "";
+        iniCodigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
         
-        codigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
-        int i = 0;
-
-        int tam = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor())).length();
-        while (i != (10 - tam)) { // zeros
-            codigoBarras += "0";
-            i++;
-        }
-        codigoBarras += Moeda.limparPonto(Float.toString(movimento.getValor())); // valor
-        codigoBarras += boleto.getContaCobranca().getCarteira();       // carteira
+        fimCodigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
         
-        codigoBarras += boleto.getContaCobranca().getContaBanco().getAgencia();
+        String valor = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor()));
+        int tam = valor.length();
         
-        codigoBarras += "02";        // modalidade -- 01 com registro no banco // -- 02 sem registro no banco
+        fimCodigoBarras += "0000000000".substring(0, 10-tam) + valor; // valor
         
-        codigoBarras += boleto.getContaCobranca().getCodCedente();        // codigo cedente
+        fimCodigoBarras += boleto.getContaCobranca().getCarteira();       // carteira
         
-        codigoBarras += "41";        // complemento do codigo cedente
+        fimCodigoBarras += boleto.getContaCobranca().getContaBanco().getAgencia();
         
-        codigoBarras += boleto.getBoletoComposto();       // nosso numero
+        fimCodigoBarras += "02";        // modalidade -- 01 com registro no banco // -- 02 sem registro no banco
         
-        codigoBarras += "000";       // numero da parcela
-        //codigoBarras = codigoBarras.substring(0, 4) + this.moduloOnzeDV(codigoBarras) + codigoBarras.substring(4, codigoBarras.length());
+        String cedente = "0000000".substring(0, 7 - boleto.getContaCobranca().getCodCedente().length()) + boleto.getContaCobranca().getCodCedente();        // codigo cedente
+        fimCodigoBarras += cedente;
         
-        return codigoBarras;
+        String nossoNumero = boleto.getBoletoComposto() + calculoConstante();
+        
+        fimCodigoBarras += "00000000".substring(0, 8 - nossoNumero.length()) + nossoNumero;       // nosso numero
+        
+        fimCodigoBarras += "001";       // numero da parcela
+        
+        return iniCodigoBarras + this.moduloOnze(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
     }
 
     @Override
@@ -111,6 +108,7 @@ public class Sicoob extends Cobranca {
         repNumerica += codigoBarras.substring(34, 44);
         repNumerica += moduloDez(codigoBarras.substring(34, 44));
         repNumerica += codigoBarras.substring(4, 5);
+        
         swap += codigoBarras.substring(5, 19);
         i = 0;
         while (i < (15 - swap.length())) {
@@ -129,15 +127,54 @@ public class Sicoob extends Cobranca {
         return repNumerica;
     }
 
+    public String calculoConstante(){
+        String agencia = boleto.getContaCobranca().getContaBanco().getAgencia();
+        String cedente = "0000000".substring(0, 7 - boleto.getContaCobranca().getCodCedente().length()) + boleto.getContaCobranca().getCodCedente();
+        String composicao = agencia+("0000000000".substring(0, 10- cedente.length()) + cedente) + "0000000".substring(0, 7 - boleto.getBoletoComposto().length()) + boleto.getBoletoComposto();
+        
+        if (!composicao.isEmpty()){
+            int soma = 0;
+            
+            int peso = 0;
+            String constante[] = new String[4];
+            constante[0] = "3";
+            constante[1] = "1";
+            constante[2] = "9";
+            constante[3] = "7";
+            
+            String quebra[] = composicao.split("");
+            
+            for (String quebra1 : quebra) {
+                if (!quebra1.isEmpty()) {
+                    if (Integer.valueOf(quebra1) != 0) {
+                        int um = Integer.valueOf(quebra1);
+                        int vezes = Integer.valueOf(constante[peso]);
+                        soma = (um * vezes) + soma; 
+                    }
+                    if (peso < 3)
+                        peso = peso + 1;
+                    else
+                        peso = 0; 
+                }
+            }
+            
+            if ((11 - (soma % 11)) == 0 || (11 - (soma % 11)) == 1 || (11 - (soma % 11)) > 9) {
+                composicao = "0";
+            } else {
+                composicao = Integer.toString(11 - (soma % 11));
+            }
+        }
+        return composicao;
+    }
+        
     @Override
     public String getNossoNumeroFormatado() {
-        return boleto.getBoletoComposto() + "-" + moduloOnze(boleto.getBoletoComposto());
+        return boleto.getBoletoComposto() + "-" + calculoConstante();
     }
 
     @Override
     public String getCedenteFormatado() {
-        return boleto.getContaCobranca().getCodCedente().substring(0, 3) + "." + boleto.getContaCobranca().getCodCedente().substring(3) + "-"
-                + moduloOnze(boleto.getContaCobranca().getContaBanco().getAgencia() + boleto.getContaCobranca().getCodCedente());
+        return boleto.getContaCobranca().getCodCedente();
     }
 
     @Override

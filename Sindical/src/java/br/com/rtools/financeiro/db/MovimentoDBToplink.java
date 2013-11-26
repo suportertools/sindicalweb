@@ -274,6 +274,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + " group by m.dtVencimento"
                     + " order by m.dtVencimento desc");
             qry.setParameter("data", dataAnterior);
+            qry.setMaxResults(20);
             return qry.getResultList();
         } catch (Exception e) {
 
@@ -294,6 +295,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + " group by m.dtVencimento"
                     + " order by m.dtVencimento desc");
             qry.setParameter("data", dataAnterior);
+            qry.setMaxResults(20);
             return qry.getResultList();
         } catch (Exception e) {
 
@@ -1960,7 +1962,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    result = (Double) ((Vector) vetor.get(i)).get(0);
+                    if (((Vector) vetor.get(i)).get(0) != null)
+                        result = (Double) ((Vector) vetor.get(i)).get(0);
                 }
             }
             return result;
@@ -1980,7 +1983,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    result = (Double) ((Vector) vetor.get(i)).get(0);
+                    if (((Vector) vetor.get(i)).get(0) != null)
+                        result = (Double) ((Vector) vetor.get(i)).get(0);
                 }
             }
             return result;
@@ -2000,7 +2004,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
-                    result = (Double) ((Vector) vetor.get(i)).get(0);
+                    if (((Vector) vetor.get(i)).get(0) != null)
+                        result = (Double) ((Vector) vetor.get(i)).get(0);
                 }
             }
             return result;
