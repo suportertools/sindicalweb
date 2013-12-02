@@ -1,10 +1,9 @@
 package br.com.rtools.associativo;
 
-import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.ServicoPessoa;
-import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import java.text.SimpleDateFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.util.Date;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "MATR_ACADEMIA")
@@ -67,6 +67,11 @@ public class MatriculaAcademia implements java.io.Serializable {
         this.dtInativo = dtInativo;
     }
 
+   public void selecionaDataInativacao(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dtInativo = DataHoje.converte(format.format(event.getObject()));
+    }
+   
     public ServicoPessoa getServicoPessoa() {
         return servicoPessoa;
     }
