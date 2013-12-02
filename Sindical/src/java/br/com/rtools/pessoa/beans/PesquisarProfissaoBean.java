@@ -3,11 +3,12 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.pessoa.Profissao;
 import br.com.rtools.pessoa.db.ProfissaoDB;
 import br.com.rtools.pessoa.db.ProfissaoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.richfaces.component.SortOrder;
 
-public class PesquisarProfissaoBean {
+public class PesquisarProfissaoBean implements Serializable {
 
     protected Profissao profissao = new Profissao();
     private String por;
