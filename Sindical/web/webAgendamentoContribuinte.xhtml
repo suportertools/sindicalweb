@@ -114,7 +114,7 @@
                                                 
                                                 <rich:column styleClass="coluna">
                                                     <f:facet name="header"><h:outputText value="Imprimir Protocolo"/></f:facet>
-                                                    <h:commandLink action="#{webAgendamentoContribuinteBean.imprimirProtocolo(linha.argumento9.id)}" target="_blank" value="#{linha.argumento9.id}" rendered="#{webAgendamentoContribuinteBean.idStatus == 1}"/>
+                                                    <h:commandLink action="#{protocoloAgendamento.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento9.id}" rendered="#{webAgendamentoContribuinteBean.idStatus == 1}"/>
                                                 </rich:column>
                                             </rich:dataTable>
                                         </h:panelGroup>
@@ -385,17 +385,16 @@
                         </a4j:commandLink>
                         <br />
                         <center>
-                            <!-- <h:outputText id="i_protocolo" value="# {webAgendamentoContribuinteBean.msgConfirma}" styleClass="fontePadrao"/> -->
                             <h:panelGrid id="i_protocolo">
-                                <h:outputText value="#{webAgendamentoContribuinteBean.msgConfirma}" styleClass="fontePadrao" rendered="#{!webAgendamentoContribuinteBean.imprimirPro}"/>
-                                <h:commandLink value="#{webAgendamentoContribuinteBean.msgConfirma}" target="_blank" action="#{webAgendamentoContribuinteBean.imprimirProtocolo(webAgendamentoContabilidadeBean.id_protocolo)}" rendered="#{webAgendamentoContribuinteBean.imprimirPro}" styleClass="fontePadrao"/>
+                                <h:outputText value="#{webAgendamentoContribuinteBean.msgConfirma}" styleClass="fontePadrao" />
+                                <h:commandLink value="Para imprimir protocolo clique aqui!" target="_blank" rendered="#{webAgendamentoContribuinteBean.agendamentoProtocolo.id != -1}" action="#{protocoloAgendamento.imprimir(webAgendamentoContribuinteBean.agendamentoProtocolo)}" styleClass="fontePadrao"/>
                                 <br /><br />
                                 <a4j:commandLink styleClass="idNovo iLink" value="OK" title="OK" action="webAgendamentoContribuinte"/>
                             </h:panelGrid>
                         </center>
                     </div>
                     <div id="mask"></div>
-                </div>                       
+                </div>
             </h:form>
         </f:view>
     </h:body>
