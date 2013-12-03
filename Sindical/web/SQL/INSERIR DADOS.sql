@@ -341,6 +341,8 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 198, 'PESQUISA SUSPENÇÃO', '"/Sindical/pesquisaSuspencao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 198);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 199, 'ACADEMIA - GRADE HORÁRIOS', '"/Sindical/academiaGrade.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 199);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 200, 'ACADEMIA - TABELA DE PREÇOS', '"/Sindical/academiaGrade.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 200);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 201, 'PESQUISA BAILE', '"/Sindical/pesquisaBaile.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 201);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 202, 'PESQUISA CARAVANA', '"/Sindical/pesquisaCaravana.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 202);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
