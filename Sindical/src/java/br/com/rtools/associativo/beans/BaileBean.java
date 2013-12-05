@@ -9,17 +9,26 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.component.dnd.Draggable;
+import org.primefaces.event.DragDropEvent;
+import org.primefaces.event.FileUploadEvent;
 
-public class BaileJSFBean {
-
+@ManagedBean
+@SessionScoped
+public class BaileBean implements Serializable{
     private EventoBaile eventoBaile = new EventoBaile();
     private EventoBanda eventoBanda = new EventoBanda();
     private EventoServico eventoServico = new EventoServico();
@@ -43,7 +52,89 @@ public class BaileJSFBean {
     private String descPesquisa = "";
     private boolean limpar = false;
     DataHoje dataHoje = new DataHoje();
+    private List<EventoBaileMapa> listaMesas = new ArrayList();
+    private List<EventoBaileMapa> listaMesaSelecionada = new ArrayList();
 
+    public void uploadMapa(FileUploadEvent event){
+        
+    }
+
+    public void onDrop(DragDropEvent event) {  
+        EventoBaileMapa ebm = (EventoBaileMapa) event.getData();  
+  
+        if (eventoBaile.getId() != -1){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
+            
+            if (!sv.inserirObjeto(new EventoBaileMapa(-1, eventoBaile, ebm.getMesa(), event.getDropId().replace("formBaile:", "")))){
+                sv.desfazerTransacao();
+            }else{
+                listaMesaSelecionada.add(new EventoBaileMapa(-1, eventoBaile, ebm.getMesa(), event.getDropId().replace("formBaile:", "")));  
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ebm.getMesa() + " adicionada", "Posição: " + event.getDropId()));
+                sv.comitarTransacao();
+            }
+        }
+    }     
+    
+    public List<EventoBaileMapa> getListaMesas() {
+        if (listaMesas.isEmpty()){
+            for (int i = 1; i <= eventoBaile.getQuantidadeMesas(); i++){
+                if (eventoBaile.getId() != -1){
+                    EventoBaileDB db = new EventoBaileDBToplink();
+                    EventoBaileMapa result = db.listaMesaBaile(eventoBaile.getId(), i);
+                    if (result.getId() == -1)
+                        listaMesas.add(new EventoBaileMapa(-1, new EventoBaile(), i, "i_"+i));
+                    else{
+                        listaMesas.add(result);
+                        listaMesaSelecionada.add(result);
+                    }
+                }else
+                    listaMesas.add(new EventoBaileMapa(-1, new EventoBaile(), i, ""));
+            }
+        }
+        return listaMesas;
+    }
+
+    public void setListaMesas(List<EventoBaileMapa> listaMesas) {
+        this.listaMesas = listaMesas;
+    }    
+    
+    public List<EventoBaileMapa> getListaMesaSelecionada() {
+        if (listaMesaSelecionada.isEmpty()){
+            if (eventoBaile.getId() != -1){
+                EventoBaileDB db = new EventoBaileDBToplink();
+                List<EventoBaileMapa> lista = db.listaBaileMapa(eventoBaile.getId());
+                
+                for (int i = 0; i < lista.size(); i++){
+                    listaMesaSelecionada.add(new EventoBaileMapa(lista.get(i).getId(), eventoBaile, lista.get(i).getMesa(), lista.get(i).getPosicao()));
+                }
+            }
+        }
+        return listaMesaSelecionada;
+    }
+
+    public void setListaMesaSelecionada(List<EventoBaileMapa> listaMesaSelecionada) {
+        this.listaMesaSelecionada = listaMesaSelecionada;
+    }
+    
+    public void removerEndereco(){
+        if (endereco.getId() == -1){
+            endereco  = new AEndereco();
+        }else{
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            
+            sv.abrirTransacao();
+            if (!sv.deletarObjeto(sv.pesquisaCodigo(endereco.getId(), "AEndereco"))){
+                GenericaMensagem.warn("Erro", "Não foi possível excluir este endereço!");
+                sv.desfazerTransacao();
+                return;
+            }
+            
+            endereco = new AEndereco();
+            sv.comitarTransacao();
+        }
+    }
+    
     public EventoBaile getEventoBaile() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
             endereco.setEndereco((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa"));
@@ -57,21 +148,7 @@ public class BaileJSFBean {
     }
 
     public String novo() {
-        evento = new AEvento();
-        endereco = new AEndereco();
-        eventoBaile = new EventoBaile();
-        eventoBanda = new EventoBanda();
-        eventoServico = new EventoServico();
-        listaEventoBanda.clear();
-        listaEventoServicoValor.clear();
-        idIndex = -1;
-        idIndexBanda = -1;
-        idIndexServico = -1;
-        idBanda = 0;
-        idServicos = 0;
-        idDescricaoEvento = 0;
-        limpar = false;
-        msgConfirma = "";
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("baileBean");
         return "baile";
     }
 
@@ -86,83 +163,130 @@ public class BaileJSFBean {
         }
     }
 
-    public String salvar() {
+    public boolean validaSalvar(){
         if (eventoBaile.getDataString().equals("")) {
             msgConfirma = "Informar data do evento!";
-            return null;
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return false;
         }
+        
         if (eventoBaile.getHoraInicio().equals("")) {
             msgConfirma = "Necessário preencher a hora inicial do evento!";
-            return null;
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return false;
         }
+        
         if (eventoBaile.getHoraFim().equals("")) {
             msgConfirma = "Necessário preencher a hora final do evento!";
-            return null;
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return false;
         }
         if (eventoBaile.getQuantidadeMesas() <= 0) {
             msgConfirma = "Necessário informar a quantidade de mesas!";
-            return null;
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return false;
         }
         if (endereco.getEndereco().getId() == -1) {
             msgConfirma = "Pesquise um endereço!";
-            return null;
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return false;
         }
         if (endereco.getNumero().equals("")) {
             msgConfirma = "Informar o número do endereço!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return false;
+        }
+        return true;
+    }
+    
+    public String salvar() {
+        if (!validaSalvar()){
             return null;
         }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
         evento.setDescricaoEvento(((DescricaoEvento) sv.pesquisaCodigo(Integer.parseInt(listaComboDescricaoEvento.get(idDescricaoEvento).getDescription()), "DescricaoEvento")));
+        sv.abrirTransacao();
+        
         if (evento.getId() == -1) {
             if (!dataHoje.maiorData(eventoBaile.getDataString(), DataHoje.converteData(dataHoje.dataHoje()))) {
-                msgConfirma = "Data do evento deve superir a data de hoje!";
+                msgConfirma = "Data do evento deve ser superior a data de hoje!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
             }
-            sv.abrirTransacao();
-            if (sv.inserirObjeto(evento)) {
-                eventoBaile.setEvento(evento);
-                endereco.setEvento(evento);
-                if (sv.inserirObjeto(eventoBaile)) {
-                    if (sv.inserirObjeto(endereco)) {
-                        msgConfirma = "Registro inserido com sucesso";
-                        sv.comitarTransacao();
-                        return null;
-                    } else {
-                        msgConfirma = "Falha ao inserir o endereço!";
-                    }
-                } else {
-                    msgConfirma = "Falha ao inserir Evento Baile!";
-                }
+            
+            
+            if (!sv.inserirObjeto(evento)) {
+                sv.desfazerTransacao();
+                msgConfirma = "Falha ao inserir Evento!";
+                GenericaMensagem.warn("Erro", msgConfirma);
+                return null;
             }
-            msgConfirma = "Falha ao inserir Evento!";
-            sv.desfazerTransacao();
+            
+            eventoBaile.setEvento(evento);
+            endereco.setEvento(evento);
+            
+            if (!sv.inserirObjeto(eventoBaile)) {
+                sv.desfazerTransacao();
+                msgConfirma = "Falha ao inserir Evento Baile!";
+                GenericaMensagem.warn("Erro", msgConfirma);
+                return null;
+            }
+            
+            if (!sv.inserirObjeto(endereco)) {
+                sv.desfazerTransacao();
+                msgConfirma = "Falha ao inserir o endereço!";
+                GenericaMensagem.warn("Erro", msgConfirma); 
+                return null;
+            } 
+                    
+            listaMesas.clear();
+            msgConfirma = "Registro inserido com sucesso";
+            GenericaMensagem.info("Sucesso", msgConfirma);
+            sv.comitarTransacao();
         } else {
-            sv.abrirTransacao();
-            if (sv.alterarObjeto(evento)) {
-                if (sv.alterarObjeto(eventoBaile)) {
-                    if (sv.alterarObjeto(eventoBaile)) {
-                        if (sv.alterarObjeto(endereco)) {
-                            msgConfirma = "Registro atualizado com sucesso!";
-                            sv.comitarTransacao();
-                            return null;
-                        } else {
-                            msgConfirma = "Falha ao atualizar o Endereço!";
-                        }
-                    } else {
-                        msgConfirma = "Falha ao atualizar o Evento Serviço!";
-                    }
-                } else {
-                    msgConfirma = "Falha ao atualizar Evento Baile";
+            if (!sv.alterarObjeto(evento)) {
+                sv.desfazerTransacao();
+                msgConfirma = "Falha ao atualizar Evento";
+                GenericaMensagem.warn("Erro", msgConfirma);
+                return null;
+            }
+                
+            if (!sv.alterarObjeto(eventoBaile)) {
+                sv.desfazerTransacao();
+                msgConfirma = "Falha ao atualizar Evento Baile";
+                GenericaMensagem.warn("Erro", msgConfirma);
+                return null;
+            }
+                
+            if (endereco.getId() != -1){
+                if (!sv.alterarObjeto(endereco)) {
+                    sv.desfazerTransacao();
+                    msgConfirma = "Falha ao atualizar o Endereço!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
+                    return null;
+                }
+            }else{
+                endereco.setEvento(evento);
+                if (!sv.inserirObjeto(endereco)) {
+                    sv.desfazerTransacao();
+                    msgConfirma = "Falha ao atualizar o Endereço!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
+                    return null;
                 }
             }
-            msgConfirma = "Falha ao atualizar Evento";
-            sv.desfazerTransacao();
+            
+            listaMesas.clear();
+            msgConfirma = "Registro atualizado com sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
+            sv.comitarTransacao();
         }
         return null;
     }
 
-    public String editar() {
-        eventoBaile = (EventoBaile) listaEventoBaile.get(idIndex);
+    public String editar(EventoBaile eve) {
+        eventoBaile = eve; //(EventoBaile) listaEventoBaile.get(idIndex);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("eventoBandaPesquisa", eventoBaile);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         descPesquisa = "";
@@ -173,11 +297,20 @@ public class BaileJSFBean {
     }
 
     public String excluir() {
+        if (evento.getId() == -1){
+            msgConfirma = "Pesquise um Baile para ser excluído!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
+        
+        
         for (int i = 0; i < listaEventoBanda.size(); i++) {
             if (!excluirBanda(listaEventoBanda.get(i).getId(), sv)) {
                 msgConfirma = "Banda do Evento não podem ser excluídas!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -185,6 +318,7 @@ public class BaileJSFBean {
         for (int i = 0; i < listaEventoServicoValor.size(); i++) {
             if (!excluirEventoServico(listaEventoServicoValor.get(i).getId(), sv)) {
                 msgConfirma = "Serviços de Valores não podem ser excluídos!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -192,24 +326,29 @@ public class BaileJSFBean {
         endereco = (AEndereco) sv.pesquisaCodigo(endereco.getId(), "AEndereco");
         if (!sv.deletarObjeto(endereco)) {
             msgConfirma = "Endereço Baile não pode ser excluído!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
         eventoBaile = (EventoBaile) sv.pesquisaCodigo(eventoBaile.getId(), "EventoBaile");
         if (!sv.deletarObjeto(eventoBaile)) {
             msgConfirma = "Evento Baile não pode ser excluído! ";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
         evento = (AEvento) sv.pesquisaCodigo(eventoBaile.getEvento().getId(), "AEvento");
         if (!sv.deletarObjeto(evento)) {
             msgConfirma = "Evento não pode ser excluído! ";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
-        msgConfirma = "Evento excluído com sucesso.";
+        
+        msgConfirma = "Evento excluído com sucesso!";
+        GenericaMensagem.info("Sucesso", msgConfirma);
         sv.comitarTransacao();
-        limpar = true;
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("baileBean");
         return null;
     }
 
@@ -219,52 +358,68 @@ public class BaileJSFBean {
         if (Integer.parseInt(listaComboServicos.get(idServicos).getDescription()) == 0
                 || Integer.parseInt(listaComboServicos.get(idServicos).getDescription()) == -1) {
             msgConfirma = "Escolha um serviço válido!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (eventoServicoValor.getValor() == 0) {
             msgConfirma = "Informar o valor do serviço!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (eventoServicoValor.getIdadeInicial() == 0) {
             msgConfirma = "Informar a idade inicial!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (eventoServicoValor.getIdadeFinal() == 0) {
             msgConfirma = "Informar a idade final!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (eventoServicoValor.getIdadeFinal() < eventoServicoValor.getIdadeInicial()) {
             msgConfirma = "Idade final deve ser maior ou igual a idade inicial!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
+        
+        if (evento.getId() == -1){
+            msgConfirma = "Salve este Baile antes de Adicionar Serviços!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
         eventoServicoValor.setId(-1);
         if (eventoServicoValor.getId() == -1) {
+            
             sv.abrirTransacao();
             eventoServico.setaEvento(evento);
             if (sv.inserirObjeto(eventoServico)) {
                 eventoServicoValor.setEventoServico(eventoServico);
                 if (sv.inserirObjeto(eventoServicoValor)) {
                     msgConfirma = "Serviço adicionado com sucesso";
+                    GenericaMensagem.info("Sucesso", msgConfirma);
                     listaEventoServicoValor.clear();
                     eventoServicoValor = new EventoServicoValor();
                     eventoServico = new EventoServico();
                     sv.comitarTransacao();
                 } else {
                     msgConfirma = "Serviço Valor não pode ser adicionado!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                     sv.desfazerTransacao();
                 }
             } else {
                 msgConfirma = "Serviço não pode ser adicionado!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
             }
         }
         return null;
     }
 
-    public String removerEventoServico() {
+    public String removerEventoServico(EventoServicoValor esv) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        if (excluirEventoServico(listaEventoServicoValor.get(idIndexServico).getId(), sv)) {
+        if (excluirEventoServico(esv.getId(), sv)) {
             listaEventoServicoValor.clear();
             eventoServicoValor = new EventoServicoValor();
             eventoServico = new EventoServico();
@@ -574,4 +729,8 @@ public class BaileJSFBean {
     public void setIdIndexServico(int idIndexServico) {
         this.idIndexServico = idIndexServico;
     }
+
+
+
+
 }
