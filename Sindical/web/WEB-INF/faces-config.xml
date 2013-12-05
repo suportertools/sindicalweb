@@ -104,13 +104,13 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+<!--
     <managed-bean>
         <managed-bean-name>mensagemConvencaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.MensagemConvencaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+-->
     <managed-bean>
         <managed-bean-name>contribuicaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuicaoJSFBean</managed-bean-class>
@@ -322,24 +322,24 @@
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <managed-bean>
+    <!-- <managed-bean>
         <managed-bean-name>baileBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.BaileJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>bandaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.BandaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+<!--
     <managed-bean>
         <managed-bean-name>vendaBaileBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.VendaBaileJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+-->
     <managed-bean>
         <managed-bean-name>descricaoEventoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.DescricaoEventoJSFBean</managed-bean-class>
