@@ -12,7 +12,7 @@ public interface RelatorioContribuintesDB {
     public List pesquisarGrupoPorConvencao(String ids);
 
     public List listaRelatorioContribuintes(Relatorios relatorios, String emails, String condicao, String escritorio, String tipoPCidade, String cidade,
-            String ordem, String cnaes, int idTipoEndereco, String centroComercial, String cTipo, String dsNumero, String idGrupos, String bairros);
+            String ordem, String cnaes, int idTipoEndereco, String centroComercial, String cTipo, String dsNumero, String idGrupos, String bairros, String convencoes);
 
     public List listaCentros(String ids);
 
