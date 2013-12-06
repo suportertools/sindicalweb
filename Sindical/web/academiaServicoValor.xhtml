@@ -1,0 +1,70 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Academia - Tabela Preço</title>
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
+                <p:outputLabel value="Academia - Tabela Preço" styleClass="fonteHeader" />
+                <div style="clear: both;"></div>
+                <h:form id="form_academia_servico_valor_novo">                     
+                    <p:growl autoUpdate="true" id="id_messages_growl" showDetail="true" />
+                    <c:set scope="request" var="object" value="${academiaServicoValorBean.academiaServicoValor}"/>
+                    <p:panel id="id_panel_grade_horarios">
+                        <h:panelGrid columns="2">
+                            <p:outputLabel value="Serviço: " />
+                            <p:selectOneMenu value="#{academiaServicoValorBean.idServicos}" valueChangeListener="#{academiaServicoValorBean.listaAcademiaServicoValors.clear()}">
+                                <p:ajax event="change" update="@this, :form_academia_servico_valor:i_panel_grid_valores"/>
+                                <f:selectItems value="#{academiaServicoValorBean.listaServicos}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Período:" />
+                            <p:selectOneMenu value="#{academiaServicoValorBean.idPeriodo}">
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItems value="#{academiaServicoValorBean.listaPeriodos}" />
+                            </p:selectOneMenu>                            
+                            <p:outputLabel value="Grade:" />
+                            <p:selectOneMenu value="#{academiaServicoValorBean.idGrade}">
+                                <p:ajax event="change" update="@this" />
+                                <f:selectItems value="#{academiaServicoValorBean.listaGrades}" />
+                            </p:selectOneMenu>
+                            <p:outputLabel value="Fórmula:" />
+                            <p:inputText value="#{academiaServicoValorBean.academiaServicoValor.formula}" size="120"/>
+                            <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaServicoValorBean.salvar()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margion-left-max"  update=":form_academia_servico_valor_novo:id_panel_grade_horarios :form_academia_servico_valor:i_panel_grid_valores"/>
+                            <p:commandButton value="Novo" title="Novo" action="#{academiaServicoValorBean.novo()}" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" styleClass="margion-left-max"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </h:form>
+                <h:form id="form_academia_servico_valor">
+                    <p:panelGrid id="i_panel_grid_valores" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
+                        <p:dataTable value="#{academiaServicoValorBean.listaAcademiaServicoValors}" var="academiaServicoValor" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) serviços(s) cadastrados" >
+                            <f:facet name="header">Grade serviços valor</f:facet>
+                            <p:column headerText="Serviços" styleClass="text-center">
+                                <p:commandLink update=":form_academia_servico_valor_novo:id_panel_grade_horarios" value="#{academiaServicoValor.servicos.descricao}" action="#{academiaServicoValorBean.editar(academiaServicoValor)}"/>
+                            </p:column>
+                            <p:column headerText="Período" styleClass="text-center">
+                                <p:commandLink update=":form_academia_servico_valor_novo:id_panel_grade_horarios" value="#{academiaServicoValor.periodo.descricao}" action="#{academiaServicoValorBean.editar(academiaServicoValor)}"/>
+                            </p:column>
+                            <p:column headerText="Grade (hrs)" styleClass="text-center">#{academiaServicoValor.academiaGrade.horaInicio} - #{academiaServicoValor.academiaGrade.horaFim}</p:column>
+                            <p:column headerText="Fórmula" styleClass="text-center">#{academiaServicoValor.formula}</p:column>
+                            <p:column styleClass="text-center" width="25">
+                                <p:commandButton icon="ui-icon-trash" action="#{academiaServicoValorBean.excluir(academiaServicoValor)}" update=":form_academia_servico_valor:i_panel_grid_valores :form_academia_servico_valor_novo: :form_academia_servico_valor_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset"/>
+                            </p:column>                             
+                        </p:dataTable>
+                    </p:panelGrid>
+                </h:form>
+            </p:panel>
+        </f:view>
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
+    </h:body>
+</ui:composition>

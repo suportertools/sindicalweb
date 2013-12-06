@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Grade Horários</title>
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
+                <p:outputLabel value="Grade Horários" styleClass="fonteHeader" />
+                <div style="clear: both;"></div>
+                <h:form id="form_grade_novo">                     
+                    <p:growl autoUpdate="true" id="id_messages_growl" showDetail="true" />
+                    <c:set scope="request" var="object" value="${academiaGradeBean.academiaGrade}"/>
+                    <p:panel id="id_panel_grade_horarios" styleClass="fundoCinza" style="clear: both">
+                        <p:column>
+                            <p:outputLabel value="Horário: " />
+                        </p:column>
+                        <p:column>
+                            <p:calendar  pattern="HH:mm" value="#{academiaGradeBean.horaInicio}" timeOnly="true" readonlyInput="true">
+                                <p:ajax event="dateSelect" listener="#{academiaGradeBean.selecionaHoraInicio}" update="id_hora_termino"/>
+                            </p:calendar>
+                            <p:outputLabel value=" às " />
+                            <p:calendar id="id_hora_termino" pattern="HH:mm" value="#{academiaGradeBean.horaFim}" timeOnly="true" readonlyInput="true">
+                                <p:ajax event="dateSelect" listener="#{academiaGradeBean.selecionaHoraFim}" />
+                            </p:calendar>
+                            <p:outputLabel value=" horas " />
+                        </p:column>
+                        <p:column>
+                            <p:selectBooleanButton value="#{academiaGradeBean.dom}" onLabel="Dom" offLabel="Dom" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            <p:selectBooleanButton value="#{academiaGradeBean.seg}" onLabel="Seg" offLabel="Seg" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            <p:selectBooleanButton value="#{academiaGradeBean.ter}" onLabel="Ter" offLabel="Ter" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            <p:selectBooleanButton value="#{academiaGradeBean.qua}" onLabel="Qua" offLabel="Qua" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            <p:selectBooleanButton value="#{academiaGradeBean.qui}" onLabel="Qui" offLabel="Qui" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            <p:selectBooleanButton value="#{academiaGradeBean.sex}" onLabel="Sex" offLabel="Sex" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            <p:selectBooleanButton value="#{academiaGradeBean.sab}" onLabel="Sáb" offLabel="Sáb" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                        </p:column>
+                    </p:panel>
+                    <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaGradeBean.salvar()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margin-top-max"  update=":form_grade_novo:id_panel_grade_horarios :form_grade:i_panel_grid_horarios"/>
+                    <p:commandButton value="Novo" title="Novo" action="#{academiaGradeBean.novo()}" update=":form_grade_novo:id_panel_grade_horarios" styleClass="margin-left-max margin-top-max"/>
+                </h:form>
+                <h:form id="form_grade">
+                    <p:panelGrid id="i_panel_grid_horarios" style="margin-top: 15px; width: 150px; float: left; margin-bottom: 15px;" columns="1">
+                        <p:dataTable value="#{academiaGradeBean.listaAcademiaGrades}" var="academiaGrade" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) horários(s) cadastrados" >
+                            <f:facet name="header">Grade de horários</f:facet>
+                            <p:column width="50" headerText="Inicio" styleClass="text-center">#{academiaGrade.horaInicio}</p:column>
+                            <p:column width="50" headerText="Fim" styleClass="text-center">#{academiaGrade.horaFim}</p:column>
+                            <p:column width="50" headerText="Dom" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 1)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 1)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Seg" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 2)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 2)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Ter" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 3)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 3)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Qua" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 4)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 4)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Qui" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 5)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 5)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Sex" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 6)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 6)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Sab" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{academiaGradeBean.showSemanaGrade(academiaGrade, 7)}" immediate="true">
+                                    <p:ajax event="change" update="@this" listener="#{academiaGradeBean.updateSemanaGrade(academiaGrade, 7)}" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column styleClass="text-center" width="25">
+                                <p:commandButton icon="ui-icon-trash" action="#{academiaGradeBean.excluir(academiaGrade)}" update=":form_grade:i_panel_grid_horarios :form_grade_novo: :form_grade_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset" immediate="true"/>
+                            </p:column>                             
+                        </p:dataTable>
+                    </p:panelGrid>
+                </h:form>
+            </p:panel>
+        </f:view>
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
+    </h:body>
+</ui:composition>
