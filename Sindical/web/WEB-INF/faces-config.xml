@@ -146,13 +146,13 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.BaixaGeralJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-<!--
-    <managed-bean>
-        <managed-bean-name>arquivoBancoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.ArquivoBancoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
--->
+    <!--
+        <managed-bean>
+            <managed-bean-name>arquivoBancoBean</managed-bean-name>
+            <managed-bean-class>br.com.rtools.arrecadacao.beans.ArquivoBancoJSFBean</managed-bean-class>
+            <managed-bean-scope>session</managed-bean-scope>
+        </managed-bean>
+    -->
     <managed-bean>
         <managed-bean-name>extratoTelaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ExtratoTelaJSFBean</managed-bean-class>
@@ -239,18 +239,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>webAgendamentoContribuinteBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.homologacao.beans.WebAgendamentoContribuinteJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>webAgendamentoContabilidadeBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.homologacao.beans.WebAgendamentoContabilidadeJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>parentescoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ParentescoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -277,12 +265,6 @@
     <managed-bean>
         <managed-bean-name>contribuicaoPorSocioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoPorSocioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>matriculaAcademiaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.MatriculaAcademiaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
@@ -367,12 +349,6 @@
     <managed-bean>
         <managed-bean-name>centroComercialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.CentroComercialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>enviarArquivosBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.EnviarArquivosJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
@@ -1183,7 +1159,7 @@
 
         <navigation-case>
             <from-outcome>servicoPessoa</from-outcome>
-            <to-view-id>/servicoPessoa.jsp</to-view-id>
+            <to-view-id>/servicoPessoa.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
@@ -1694,6 +1670,18 @@
         <navigation-case>
             <from-outcome>spc</from-outcome>
             <to-view-id>/spc.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>academiaGrade</from-outcome>
+            <to-view-id>/academiaGrade.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>academiaServicoValor</from-outcome>
+            <to-view-id>/academiaServicoValor.jsf</to-view-id>
             <redirect/>
         </navigation-case>
         
