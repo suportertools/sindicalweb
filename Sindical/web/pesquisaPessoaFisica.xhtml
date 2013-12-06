@@ -44,9 +44,9 @@
                     </p:panel>
                 </h:form>
             </p:panel>
-            <p:panel style="margin: auto 0;">
+            <div style="margin: auto 0;">
                 <h:form id="form_pesquisa_pessoa_fisica">
-                    <h:panelGrid id="i_panel_grid" style="width: 100%">
+                    <h:panelGrid id="i_panel_grid" style="width: 95%">
                         <p:dataTable value="#{fisicaBean.listaPessoaFisica}" var="fisica" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
                             <f:facet name="footer">Obs: Nasc. = Nascimento</f:facet>
                             <p:column headerText="ID" styleClass="text-center" width="50">
@@ -76,7 +76,7 @@
                         </p:dataTable>
                     </h:panelGrid>
                 </h:form>
-            </p:panel>
+            </div>
         </f:view>
         
         <f:subview id="footer">
