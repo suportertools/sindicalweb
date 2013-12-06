@@ -52,7 +52,7 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
 
     @Override
     public List listaRelatorioContribuintes(Relatorios relatorios, String emails, String condicao, String escritorio, String tipoPCidade, String cidade, String ordem, String cnaes,
-            int idTipoEndereco, String idEndereco, String cTipo, String dsNumero, String idGrupos, String bairros) {
+            int idTipoEndereco, String idEndereco, String cTipo, String dsNumero, String idGrupos, String bairros, String convencoes) {
         List result = new ArrayList();
         String textQuery = "";
         try {
@@ -170,6 +170,10 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
                 textQuery += " and b.id in (" + bairros + ")";
             }
 
+            // CONVENÇÃO
+            if (convencoes.length() != 0) {
+                textQuery += " AND j.id IN (select c.id_juridica from arr_contribuintes_vw c where id_convencao in ("+convencoes+")) ";
+            }
             // CNAES
             if (cnaes.length() != 0) {
                 textQuery += " and j.id_cnae in ( " + cnaes + " ) ";
