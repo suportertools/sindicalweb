@@ -169,6 +169,7 @@ public class ImpressaoBoletosBean implements Serializable {
     public synchronized void carregarGrid() {
         try {
             listaMovGrid.clear();
+            listaMovGridSelecionada.clear();
             ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
             MovimentoDB movDB = new MovimentoDBToplink();
             List<Linha> listaSwap = new ArrayList<Linha>();
@@ -328,6 +329,7 @@ public class ImpressaoBoletosBean implements Serializable {
 
     public void alterarTodasDatas() {
         listaMovGrid.clear();
+        listaMovGridSelecionada.clear();
         if (this.todasContas.equals("true")) {
             idData = -2;
         } else {
@@ -395,9 +397,17 @@ public class ImpressaoBoletosBean implements Serializable {
         
     }
     
+    public void limparTotais(){
+        listaMovGrid.clear();
+        listaMovGridSelecionada.clear();
+        totalBoletos = 0;
+        totalEmpresas = 0;
+        totalEscritorios = 0;
+    }
+    
     public synchronized void controleMovimentos() {
         int i = 0;
-        limparGrid();
+        listaMovGridSelecionada.clear();
         if ((quantidade != 0) && fInicio == 0 && fFim == 0) {//CASO 1 SOMENTE POR QUANTIDADE
             if (quantidade > listaMovGrid.size()) {
                 quantidade = listaMovGrid.size();
@@ -479,13 +489,6 @@ public class ImpressaoBoletosBean implements Serializable {
         }
     }
 
-    public void limparGrid() {
-        int i = 0;
-        while (i < listaMovGrid.size()) {
-            listaMovGrid.get(i).setValor(new Boolean(false));
-            i++;
-        }
-    }
 
     public List<SelectItem> getListaServicoCobranca() {
         List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
