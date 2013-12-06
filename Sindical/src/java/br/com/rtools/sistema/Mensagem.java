@@ -11,7 +11,7 @@ public class Mensagem {
 
     public Mensagem() {
         this.assunto = "";
-        this.mensagem = "";
+        this.mensagem = "Dígite seu texto aqui";
         this.data = DataHoje.dataHoje();
     }
 

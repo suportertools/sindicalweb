@@ -12,11 +12,11 @@ public interface EnviarArquivosDB {
 
     public List pesquisaContabilidades();
 
-    public List pesquisaContribuintes(List<Convencao> listaConvencao, List<GrupoCidade> listaGrupoCidade, List<Cnae> listaCnae);
+    public List pesquisaContribuintes(String listaConvencao, String listaGrupoCidade, String listaCnae);
 
     public List<Convencao> listaConvencao();
 
-    public List<GrupoCidade> listaConvencaoGrupoCidade(List<Convencao> listaConvencao);
+    public List<GrupoCidade> listaGrupoCidadePorConvencao(String listaConvencao);
 
-    public List<Cnae> listaCnaeConvencao(List<Convencao> listaConvencao);
+    public List<Cnae> listaCnaePorConvencao(String listaConvencao);
 }
