@@ -7,7 +7,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "ACA_SERVICO_VALOR")
-@NamedQuery(name = "AcademiaServicoValor.pesquisaID", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.id = :pid")
+@NamedQueries({
+    @NamedQuery(name = "AcademiaServicoValor.pesquisaID", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.id = :pid"),
+    @NamedQuery(name = "AcademiaServicoValor.findAll", query = "SELECT ASV FROM AcademiaServicoValor AS ASV ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC, ASV.academiaGrade.horaInicio ASC")
+})
 public class AcademiaServicoValor implements Serializable {
 
     @Id
