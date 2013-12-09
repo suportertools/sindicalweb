@@ -11,17 +11,20 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.financeiro.db.TipoServicoDB;
 import br.com.rtools.financeiro.db.TipoServicoDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class MensagemConvencaoJSFBean {
-
+@ManagedBean
+@SessionScoped
+public class MensagemConvencaoBean {
     private MensagemConvencao mensagemConvencao = new MensagemConvencao();
     private String msgConfirma;
     private int idGrupo;
@@ -38,7 +41,7 @@ public class MensagemConvencaoJSFBean {
     private String vencimento = DataHoje.data();
     private String replicaPara = "";
 
-    public MensagemConvencaoJSFBean() {
+    public MensagemConvencaoBean() {
         mensagemConvencao.setReferencia(DataHoje.data().substring(3));
     }
 
@@ -78,10 +81,12 @@ public class MensagemConvencaoJSFBean {
         }
         if (comita) {
             sv.comitarTransacao();
-            msgConfirma = "Concluído com Sucesso!";
+            msgConfirma = "Registro replicado com Sucesso!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
         } else {
             sv.desfazerTransacao();;
             msgConfirma = "Nenhuma mensagem para Replicar!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
         }
         return "";
     }
@@ -112,16 +117,16 @@ public class MensagemConvencaoJSFBean {
         return mensagemConvencao;
     }
 
-    public MensagemConvencao getMensagemConvencaoPesquisa() {
-        try {
-            MensagemConvencao c = (MensagemConvencao) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("mensagemPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("mensagemPesquisa");
-            return c;
-        } catch (Exception e) {
-            MensagemConvencao c = new MensagemConvencao();
-            return c;
-        }
-    }
+//    public MensagemConvencao getMensagemConvencaoPesquisa() {
+//        try {
+//            MensagemConvencao c = (MensagemConvencao) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("mensagemPesquisa");
+//            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("mensagemPesquisa");
+//            return c;
+//        } catch (Exception e) {
+//            MensagemConvencao c = new MensagemConvencao();
+//            return c;
+//        }
+//    }
 
     public void setMensagemConvencao(MensagemConvencao mensagemConvencao) {
         this.mensagemConvencao = mensagemConvencao;
@@ -175,17 +180,20 @@ public class MensagemConvencaoJSFBean {
 
         if (!mensagemConvencao.getVencimento().equals(vencimento)) {
             msgConfirma = "Este vencimento esta incorreto!";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
 
         if ((mensagemConvencao.getReferencia().length() != 7)
                 && (Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()) != 4)) {
             msgConfirma = "Referência esta incorreta";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
 
         if (DataHoje.converteData(mensagemConvencao.getDtVencimento()) == null) {
             msgConfirma = "Informe o vencimento";
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             return null;
         }
 
@@ -194,6 +202,7 @@ public class MensagemConvencaoJSFBean {
                 // SE ACORDO FOR FALSO ----------------------------------------------------
                 if (mensagemConvencao.getReferencia().length() != 7 && !disAcordo) {
                     msgConfirma = "Digite uma referencia!";
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                     return null;
                 }
 
@@ -228,9 +237,9 @@ public class MensagemConvencaoJSFBean {
                         for (int l = 0; l < ano; l++) {
                             for (int k = 0; k < listgc.size(); k++) {
                                 if (gerarAno && !disAcordo) {
-                                    this.insertMensagem(conv, listgc.get(k).getId(), iservicos, itiposervico, referencia.substring(3), vencto);
+                                    msgConfirma = this.insertMensagem(conv, listgc.get(k).getId(), iservicos, itiposervico, referencia.substring(3), vencto);
                                 } else {
-                                    this.insertMensagem(conv, listgc.get(k).getId(), iservicos, itiposervico, referencia, vencto);
+                                    msgConfirma = this.insertMensagem(conv, listgc.get(k).getId(), iservicos, itiposervico, referencia, vencto);
                                 }
                             }
                             referencia = dataHoje.incrementarMeses(1, referencia);
@@ -250,9 +259,9 @@ public class MensagemConvencaoJSFBean {
                         for (int l = 0; l < ano; l++) {
                             for (int k = 0; k < listc.size(); k++) {
                                 if (gerarAno && !disAcordo) {
-                                    this.insertMensagem(listc.get(k).getId(), grupoC, iservicos, itiposervico, referencia.substring(3), vencto);
+                                    msgConfirma = this.insertMensagem(listc.get(k).getId(), grupoC, iservicos, itiposervico, referencia.substring(3), vencto);
                                 } else {
-                                    this.insertMensagem(listc.get(k).getId(), grupoC, iservicos, itiposervico, referencia, vencto);
+                                    msgConfirma = this.insertMensagem(listc.get(k).getId(), grupoC, iservicos, itiposervico, referencia, vencto);
                                 }
 
                             }
@@ -274,9 +283,9 @@ public class MensagemConvencaoJSFBean {
                                 List<GrupoCidade> listgc = dbc.pesquisarGruposPorConvencao(Integer.parseInt(listc.get(k).getDescription()));
                                 for (int w = 0; w < listgc.size(); w++) {
                                     if (gerarAno && !disAcordo) {
-                                        this.insertMensagem(Integer.parseInt(listc.get(k).getDescription()), listgc.get(w).getId(), iservicos, itiposervico, referencia.substring(3), vencto);
+                                        msgConfirma = this.insertMensagem(Integer.parseInt(listc.get(k).getDescription()), listgc.get(w).getId(), iservicos, itiposervico, referencia.substring(3), vencto);
                                     } else {
-                                        this.insertMensagem(Integer.parseInt(listc.get(k).getDescription()), listgc.get(w).getId(), iservicos, itiposervico, referencia, vencto);
+                                        msgConfirma = this.insertMensagem(Integer.parseInt(listc.get(k).getDescription()), listgc.get(w).getId(), iservicos, itiposervico, referencia, vencto);
                                     }
                                 }
                             }
@@ -296,9 +305,9 @@ public class MensagemConvencaoJSFBean {
                                 grupoC = Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription());
                         for (int l = 0; l < ano; l++) {
                             if (gerarAno && !disAcordo) {
-                                this.insertMensagem(conv, grupoC, iservicos, itiposervico, referencia.substring(3), vencto);
+                                msgConfirma = this.insertMensagem(conv, grupoC, iservicos, itiposervico, referencia.substring(3), vencto);
                             } else {
-                                this.insertMensagem(conv, grupoC, iservicos, itiposervico, referencia, vencto);
+                                msgConfirma = this.insertMensagem(conv, grupoC, iservicos, itiposervico, referencia, vencto);
                             }
 
                             referencia = dataHoje.incrementarMeses(1, referencia);
@@ -331,8 +340,10 @@ public class MensagemConvencaoJSFBean {
                         if ((men == null) || (men.getId() != -1)) {
                             if (db.update(lista.get(i))) {
                                 msgConfirma = "Mensagem atualizado com sucesso!";
+                                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                             } else {
                                 msgConfirma = "Ocorreu um erro ao atualizar!";
+                                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                             }
                         }
                     }
@@ -345,175 +356,27 @@ public class MensagemConvencaoJSFBean {
                     if (men == null || (men.getId() == mensagemConvencao.getId())) {
                         if (db.update(mensagemConvencao)) {
                             msgConfirma = "Mensagem atualizado com sucesso!";
+                            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
                         } else {
                             msgConfirma = "Ocorreu um erro ao atualizar!";
+                            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                         }
                     } else {
                         msgConfirma = "Mensagem já existe!";
+                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
                     }
                 }
             }
         } catch (Exception e) {
             msgConfirma = e.getMessage();
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
         }
-        mensagemConvencao = new MensagemConvencao();
-        idGrupo = 0;
-        idConvencao = 0;
-        idServico = 0;
-        idTipoServico = 0;
+//        mensagemConvencao = new MensagemConvencao();
+//        idGrupo = 0;
+//        idConvencao = 0;
+//        idServico = 0;
+//        idTipoServico = 0;
         return null;
-    }
-
-    public synchronized String salvarxxxxxx() {
-        MensagemConvencaoDB db = new MensagemConvencaoDBToplink();
-        int i = 0;
-        DataHoje dataHoje = new DataHoje();
-        mensagemConvencao.setVencimento(vencimento);
-        try {
-            if ((mensagemConvencao.getReferencia().length() != 7)
-                    && (Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()) != 4)) {
-                msgConfirma = "Referência esta incorreta";
-                return null;
-            }
-
-            if (DataHoje.converteData(mensagemConvencao.getDtVencimento()) == null) {
-                msgConfirma = "Informe o vencimento";
-                return "mensagem";
-            }
-
-            if (mensagemConvencao.getId() != -1) {
-                MensagemConvencao men = null;
-                if (processarTipoServicos) {
-                    List<MensagemConvencao> lista = db.mesmoTipoServico(
-                            Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                            Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                            mensagemConvencao.getReferencia().substring(3));
-                    while (lista.size() > i) {
-                        lista.get(i).setMensagemCompensacao(mensagemConvencao.getMensagemCompensacao());
-                        lista.get(i).setMensagemContribuinte(mensagemConvencao.getMensagemContribuinte());
-                        men = db.verificaMensagem(lista.get(i).getConvencao().getId(),
-                                lista.get(i).getServicos().getId(),
-                                lista.get(i).getTipoServico().getId(),
-                                lista.get(i).getGrupoCidade().getId(),
-                                lista.get(i).getReferencia());
-                        if (men == null || men.getId() != -1) {
-                            if (db.update(lista.get(i))) {
-                                msgConfirma = "Mensagem atualizado com sucesso!";
-                            } else {
-                                msgConfirma = "Ocorreu um erro ao atualizar!";
-                            }
-                        }
-                        i++;
-                    }
-                } else {
-                    men = db.verificaMensagem(mensagemConvencao.getConvencao().getId(),
-                            mensagemConvencao.getServicos().getId(),
-                            mensagemConvencao.getTipoServico().getId(),
-                            mensagemConvencao.getGrupoCidade().getId(),
-                            mensagemConvencao.getReferencia());
-                    if (men == null || men.getId() != -1) {
-                        if (db.update(mensagemConvencao)) {
-                            msgConfirma = "Mensagem atualizado com sucesso!";
-                        } else {
-                            msgConfirma = "Ocorreu um erro ao atualizar!";
-                        }
-                    } else {
-                        msgConfirma = "Mensagem já existe!";
-                    }
-                }
-            } else {
-                if (mensagemConvencao.getReferencia().length() != 7 && disAcordo == false) {
-                    msgConfirma = "Digite uma referencia!";
-                } else {
-                    //if ((!gerarAno) && (getProcessarGrupos().equals("true"))){
-                    for (int k = 0; k < this.getListaGrupoCidade().size(); k++) {
-                        this.insertMensagem(
-                                Integer.parseInt(this.getListaConvencoes().get(idConvencao).getDescription()),
-                                Integer.parseInt(this.getListaGrupoCidade().get(k).getDescription()),
-                                Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                                Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                                mensagemConvencao.getReferencia(),
-                                mensagemConvencao.getVencimento());
-                    }
-                    //}else if ((gerarAno) && (getProcessarGrupos().equals("null"))){
-                    String referencia = "01/01/" + mensagemConvencao.getReferencia().substring(3);
-                    String vencto = mensagemConvencao.getVencimento();
-                    for (int l = 0; l < 12; l++) {
-                        this.insertMensagem(
-                                Integer.parseInt(this.getListaConvencoes().get(idConvencao).getDescription()),
-                                Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription()),
-                                Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                                Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                                referencia.substring(3),
-                                vencto);
-                        referencia = dataHoje.incrementarMeses(1, referencia);
-                        vencto = dataHoje.incrementarMeses(1, vencto);
-                    }
-                    //}else if ((getProcessarGrupos().equals("true")) && (gerarAno)){
-//                        String referencia = "01/01/" + mensagemConvencao.getReferencia().substring(3);
-//                        String vencto = mensagemConvencao.getVencimento();
-                    for (int l = 0; l < 12; l++) {
-                        for (int k = 0; k < this.getListaGrupoCidade().size(); k++) {
-                            this.insertMensagem(
-                                    Integer.parseInt(this.getListaConvencoes().get(idConvencao).getDescription()),
-                                    Integer.parseInt(this.getListaGrupoCidade().get(k).getDescription()),
-                                    Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                                    Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                                    referencia.substring(3),
-                                    vencto);
-                        }
-                        referencia = dataHoje.incrementarMeses(1, referencia);
-                        vencto = dataHoje.incrementarMeses(1, vencto);
-                    }
-                    //}else if ((!gerarAno) && (getProcessarGrupos().equals("false"))){
-                    int idGrupoCidade = Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription());
-                    for (int k = 0; k < this.getListaConvencoes().size(); k++) {
-                        if (Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription()) == idGrupoCidade) {
-                            this.insertMensagem(
-                                    Integer.parseInt(this.getListaConvencoes().get(k).getDescription()),
-                                    Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription()),
-                                    Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                                    Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                                    mensagemConvencao.getReferencia(),
-                                    mensagemConvencao.getVencimento());
-                        }
-                    }
-                    // }else if ((getProcessarGrupos().equals("false")) && (gerarAno)){
-//                        String referencia = "01/01/" + mensagemConvencao.getReferencia().substring(3);
-//                        String vencto = mensagemConvencao.getVencimento();
-                    for (int l = 0; l < 12; l++) {
-                        for (int k = 0; k < this.getListaGrupoCidade().size(); k++) {
-                            this.insertMensagem(
-                                    Integer.parseInt(this.getListaConvencoes().get(k).getDescription()),
-                                    Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription()),
-                                    Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                                    Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                                    referencia.substring(3),
-                                    vencto);
-                        }
-                        referencia = dataHoje.incrementarMeses(1, referencia);
-                        vencto = dataHoje.incrementarMeses(1, vencto);
-                    }
-                    //}else{
-                    this.insertMensagem(
-                            Integer.parseInt(this.getListaConvencoes().get(idConvencao).getDescription()),
-                            Integer.parseInt(this.getListaGrupoCidade().get(idGrupo).getDescription()),
-                            Integer.parseInt(this.getListaServico().get(idServico).getDescription()),
-                            Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()),
-                            mensagemConvencao.getReferencia(),
-                            mensagemConvencao.getVencimento());
-                }
-            }
-            //}
-        } catch (Exception e) {
-            msgConfirma = e.getMessage();
-        }
-        mensagemConvencao = new MensagemConvencao();
-        idGrupo = 0;
-        idConvencao = 0;
-        idServico = 0;
-        idTipoServico = 0;
-        return "mensagem";
     }
 
     private synchronized String insertMensagem(int idConv, int idGrupo, int idServ, int idTipo, String referencia, String vencimento) {
@@ -534,14 +397,14 @@ public class MensagemConvencaoJSFBean {
             if (menConvencao == null) {
                 if (db.insert(mensagemConvencao)) {
                     mensagemConvencao.setId(-1);
-                    msgConfirma = "Mensagem salva com Sucesso!";
+                    result = "Mensagem salva com Sucesso!";
                 } else {
-                    msgConfirma = "Erro ao salvar mensagem!";
+                    result = "Erro ao salvar mensagem!";
                 }
             } else if (menConvencao.getId() == -1) {
-                msgConfirma = "Mensagem ja existe!";
+                result = "Mensagem ja existe!";
             } else {
-                msgConfirma = "Mensagem ja existe!";
+                result = "Mensagem ja existe!";
                 //menConvencao.setMensagemCompensacao(mensagemConvencao.getMensagemCompensacao());
                 //menConvencao.setMensagemContribuinte(mensagemConvencao.getMensagemContribuinte());
                 //db.update(mensagemConvencao);
@@ -553,13 +416,16 @@ public class MensagemConvencaoJSFBean {
 
     public String novo() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("mensagemPesquisa");
-        mensagemConvencao = new MensagemConvencao();
-        msgConfirma = "";
-        idGrupo = 0;
-        idConvencao = 0;
-        idServico = 0;
-        idTipoServico = 0;
-        vencimento = DataHoje.data();
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("mensagemConvencaoBean");
+//        mensagemConvencao = new MensagemConvencao();
+//        msgConfirma = "";
+//        idGrupo = 0;
+//        idConvencao = 0;
+//        idServico = 0;
+//        idTipoServico = 0;
+//        vencimento = DataHoje.data();
+        
+        mensagemConvencao.setReferencia(DataHoje.data().substring(3));
         return "mensagem";
     }
 
@@ -571,17 +437,15 @@ public class MensagemConvencaoJSFBean {
             if (db.delete(mensagemConvencao)) {
                 db.getEntityManager().getTransaction().commit();
                 msgConfirma = "Mensagem Excluida com Sucesso!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
             } else {
                 db.getEntityManager().getTransaction().rollback();
                 msgConfirma = "Mensagem não pode ser Excluida!";
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
             }
+        }else{
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Pesquise uma mensagem para ser Excluída!"));
         }
-        idGrupo = 0;
-        idConvencao = 0;
-        idServico = 0;
-        idTipoServico = 0;
-        mensagemConvencao = new MensagemConvencao();
-        vencimento = DataHoje.data();
         return null;
     }
 
@@ -623,10 +487,10 @@ public class MensagemConvencaoJSFBean {
         }
     }
 
-    public String editar() {
-        mensagemConvencao = (MensagemConvencao) listaMensagens.get(idIndex);
+    public String editar(MensagemConvencao me) {
+        mensagemConvencao = me;
         vencimento = mensagemConvencao.getVencimento();
-        listaMensagens.remove(listaMensagens.get(idIndex));
+        //listaMensagens.remove(listaMensagens.get(idIndex));
         msgConfirma = "";
 
 
@@ -636,6 +500,42 @@ public class MensagemConvencaoJSFBean {
                     idConvencao = (Integer) getListaConvencoes().get(i).getValue();
                     break;
                 }
+            }
+        }
+        
+        if (mensagemConvencao.getGrupoCidade().getId() != -1) {
+            List<SelectItem> grupo = new ArrayList<SelectItem>();
+            grupo = getListaGrupoCidade();
+            for (int i = 0; i < grupo.size(); i++) {
+                if (Integer.parseInt(grupo.get(i).getDescription()) == mensagemConvencao.getGrupoCidade().getId()) {
+                    idGrupo = (Integer) grupo.get(i).getValue();
+                    break;
+                }
+                i++;
+            }
+        }
+        
+        if (mensagemConvencao.getTipoServico().getId() != -1) {
+            List<SelectItem> tipoServico = new ArrayList<SelectItem>();
+            tipoServico = getListaTipoServico();
+            for (int i = 0; i < tipoServico.size(); i++) {
+                if (Integer.parseInt(tipoServico.get(i).getDescription()) == mensagemConvencao.getTipoServico().getId()) {
+                    idTipoServico = (Integer) tipoServico.get(i).getValue();
+                    break;
+                }
+                i++;
+            }
+        }
+        
+        if (mensagemConvencao.getServicos().getId() != -1) {
+            List<SelectItem> servicos = new ArrayList<SelectItem>();
+            servicos = getListaServico();
+            for (int i = 0; i < servicos.size(); i++) {
+                if (Integer.parseInt(servicos.get(i).getDescription()) == mensagemConvencao.getServicos().getId()) {
+                    idServico = (Integer) servicos.get(i).getValue();
+                    break;
+                }
+                i++;
             }
         }
         return "mensagem";
@@ -655,14 +555,14 @@ public class MensagemConvencaoJSFBean {
         }
 
 
-        if (mensagemConvencao.getConvencao().getId() != -1) {
-            for (int x = 0; x < convencoes.size(); x++) {
-                if (Integer.parseInt(convencoes.get(x).getDescription()) == mensagemConvencao.getConvencao().getId()) {
-                    idConvencao = (Integer) convencoes.get(x).getValue();
-                    break;
-                }
-            }
-        }
+//        if (mensagemConvencao.getConvencao().getId() != -1) {
+//            for (int x = 0; x < convencoes.size(); x++) {
+//                if (Integer.parseInt(convencoes.get(x).getDescription()) == mensagemConvencao.getConvencao().getId()) {
+//                    idConvencao = (Integer) convencoes.get(x).getValue();
+//                    break;
+//                }
+//            }
+//        }
         return convencoes;
     }
 
@@ -687,16 +587,16 @@ public class MensagemConvencaoJSFBean {
             }
         }
 
-        if (mensagemConvencao.getGrupoCidade().getId() != -1) {
-            i = 0;
-            while (i < grupo.size()) {
-                if (Integer.parseInt(grupo.get(i).getDescription()) == mensagemConvencao.getGrupoCidade().getId()) {
-                    idGrupo = (Integer) grupo.get(i).getValue();
-                    break;
-                }
-                i++;
-            }
-        }
+//        if (mensagemConvencao.getGrupoCidade().getId() != -1) {
+//            i = 0;
+//            while (i < grupo.size()) {
+//                if (Integer.parseInt(grupo.get(i).getDescription()) == mensagemConvencao.getGrupoCidade().getId()) {
+//                    idGrupo = (Integer) grupo.get(i).getValue();
+//                    break;
+//                }
+//                i++;
+//            }
+//        }
         return grupo;
     }
 
@@ -713,16 +613,16 @@ public class MensagemConvencaoJSFBean {
             i++;
         }
 
-        if (mensagemConvencao.getTipoServico().getId() != -1) {
-            i = 0;
-            while (i < tipoServico.size()) {
-                if (Integer.parseInt(tipoServico.get(i).getDescription()) == mensagemConvencao.getTipoServico().getId()) {
-                    idTipoServico = (Integer) tipoServico.get(i).getValue();
-                    break;
-                }
-                i++;
-            }
-        }
+//        if (mensagemConvencao.getTipoServico().getId() != -1) {
+//            i = 0;
+//            while (i < tipoServico.size()) {
+//                if (Integer.parseInt(tipoServico.get(i).getDescription()) == mensagemConvencao.getTipoServico().getId()) {
+//                    idTipoServico = (Integer) tipoServico.get(i).getValue();
+//                    break;
+//                }
+//                i++;
+//            }
+//        }
         return tipoServico;
     }
 
@@ -739,16 +639,16 @@ public class MensagemConvencaoJSFBean {
             i++;
         }
 
-        if (mensagemConvencao.getServicos().getId() != -1) {
-            i = 0;
-            while (i < servicos.size()) {
-                if (Integer.parseInt(servicos.get(i).getDescription()) == mensagemConvencao.getServicos().getId()) {
-                    idServico = (Integer) servicos.get(i).getValue();
-                    break;
-                }
-                i++;
-            }
-        }
+//        if (mensagemConvencao.getServicos().getId() != -1) {
+//            i = 0;
+//            while (i < servicos.size()) {
+//                if (Integer.parseInt(servicos.get(i).getDescription()) == mensagemConvencao.getServicos().getId()) {
+//                    idServico = (Integer) servicos.get(i).getValue();
+//                    break;
+//                }
+//                i++;
+//            }
+//        }
 
         return servicos;
     }
