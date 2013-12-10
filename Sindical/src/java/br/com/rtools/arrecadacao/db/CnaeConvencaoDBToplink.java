@@ -159,6 +159,7 @@ public class CnaeConvencaoDBToplink extends DB implements CnaeConvencaoDB {
         return result;
     }
 
+    @Override
     public List<PatronalCnae> listaCnaePorPatronal(int id_patronal) {
         List<PatronalCnae> result = new ArrayList();
         try {
