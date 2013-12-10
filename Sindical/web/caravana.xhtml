@@ -17,6 +17,7 @@
         </f:subview>
         <f:view>
             <h:form id="formCaravana">
+                <c:set scope="request" var="object" value="${caravanaBean.caravana}"/>
                 <center>
                     <div class="headerPanel">
                         <h:outputText value="Agendamento Caravana" styleClass="fontePanel" style="width: 100%;"/>
@@ -104,7 +105,7 @@
                     <h:inputText value="#{caravanaBean.eventoServicoValor.idadeFinal}" size="5" />
 
                     <h:outputLabel value="Valor: " styleClass="fontePadrao" style="margin-left: 20px"/>
-                    <h:inputText id="idValor" value="#{caravanaBean.valor}" size="10" styleClass="fontePadraoNegrito" dir="RTL" class="real">
+                    <h:inputText id="idValor" value="#{caravanaBean.valor}" size="10" styleClass="fontePadraoNegrito" dir="RTL">
                         <a4j:ajax event="change" render="idValor"/>
                     </h:inputText>
 
