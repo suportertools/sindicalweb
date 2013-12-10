@@ -1,128 +1,164 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
-    <h:head>
-        <title>Convite / Mesa</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-    </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formVendasBaile">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Vendas Baile" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" align="left" style="width: 400px">
-                        
-                        <h:panelGrid>
-                            <h:column>
-                                <h:selectBooleanCheckbox id="rdTodos" value=""/>
-                                <h:outputText value="Todos" styleClass="fontePadrao"/>
-                            </h:column>
-                        </h:panelGrid>
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
-                        <h:panelGrid>
-                            <h:column>
-                                    <h:outputText value="Baile: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu>
-                                    <f:selectItems/>
-                                </h:selectOneMenu>
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid columns="20">
-                            <h:column>
-                                <a4j:commandButton image="/Imagens/pesquisar.png"
-                                                   action="#{chamadaPaginaBean.pesquisaPessoaFisica}"/>
-                            </h:column>
-                            
-                            <h:column>
-                                <h:outputLabel value="Pessoa: " styleClass="fontePadrao"/>
-                            </h:column>
-                            
-                            <h:column>
-                                <h:outputText value="" id="idPessoa" styleClass="fontePadrao"/>
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid columns="20"> 
-                            <h:column>
-                                <h:outputLabel value="Titular: " styleClass="fontePadrao"/>
-                            </h:column>
-                            
-                            <h:column>
-                                <h:outputText value="" id="idTitular" styleClass="fontePadrao"/>
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <br/>
-                        
-                        <h:panelGrid columns="2">
-                            <h:column>
-                                <a4j:commandButton id="btMesas" value="Visualizar mesas"/>
-                            </h:column>
-                            
-                            <h:column>
-                                <a4j:commandButton value="Vender convite"/>
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <div style="padding: 3px; overflow: auto; height:100px; width:600px ">
-                            <rich:dataTable value="" var="linha">
-                                <rich:column id="colRemover" styleClass="centralizar">
-                                    <a4j:commandButton image="/Imagens/excluirp.png"/>
-                                </rich:column>
-                                
-                                <rich:column styleClass="centralizar">
-                                    <f:facet name="header">
-                                        <h:outputText value="Serviço"/>
-                                    </f:facet>
-                                    <h:outputText/>
-                                </rich:column>
-                                
-                                <rich:column styleClass="centralizar">
-                                    <f:facet name="header">
-                                        <h:outputText value="Mesa"/>
-                                    </f:facet>
-                                    <h:outputText/>
-                                </rich:column>
-                                
-                                <rich:column styleClass="centralizar">
-                                    <f:facet name="header">
-                                        <h:outputText value="Valor"/>
-                                    </f:facet>
-                                    <h:outputText/>
-                                </rich:column>
-                                
-                                <rich:column styleClass="centralizar">
-                                    <f:facet name="header">
-                                        <h:outputText value=""/>
-                                    </f:facet>
-                                    <h:selectBooleanCheckbox/>
-                                </rich:column>
-                            </rich:dataTable>
-                            
-                            <br/>
-                            
+    <h:head>
+        <title>Sindical - Vendas Baile</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu-label .ui-inputfield{
+
+            }
+        </style>   
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:form id="formVendasBaile">
+                            <h:outputText value="Vendas Baile" styleClass="fonteHeader" />
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <!-- <p:selectBooleanCheckbox value="" itemLabel="Todos" /> -->
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <h:outputText value="Baile"/><br />
+                                        <p:selectOneMenu value="#{vendaBaileBean.indexEventoBaile}" style="width: 500px; padding-right: 20px">
+                                            <f:selectItems value="#{vendaBaileBean.listaEventoBaile}" />
+                                        </p:selectOneMenu>
+                                    </h:column>
+                                </h:panelGrid>
+
+                                <h:panelGrid id="i_panel_pessoa" columns="2">
+                                    <p:commandButton ajax="false" value="Adicionar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" rendered="#{vendaBaileBean.fisica.id == -1}"/>
+                                    <p:outputLabel value="#{vendaBaileBean.fisica.pessoa.nome}" rendered="#{vendaBaileBean.fisica.id != -1}" style="font-size: 13pt!important"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{vendaBaileBean.removerFisica}" update="i_panel_pessoa" rendered="#{vendaBaileBean.fisica.id != -1}" />
+                                </h:panelGrid>
+                            </p:panel>
+                            <br />
                             <h:panelGrid>
-                            <a4j:commandLink styleClass="idNovo iLink" style="width: 150px;" value="Pagamento à vista"/>
+                                <p:commandLink value="Visualizar Mesas" style="font-size: 12pt!important" onclick="i_dlg_mapa.show()"/>
                             </h:panelGrid>
-                        </div>
-                    </div>
-                </center>
-                
-            </h:form>
-        </f:view>
+                            
+                                <p:dialog widgetVar="i_dlg_mapa" header="Novo mapa do Baile" resizable="false" width="1000" modal="true" height="800">
+                                    <h:form id="formBaileMapa" enctype="multipart/form-data">
+                                        <p:fileUpload fileUploadListener="#{baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
+                                                      sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" disabled="true"/>
+                                    </h:form>
+                                    <h:form id="formBaileMesas">
+                                        <p:panel header="Mesas Disponíveis" style="width: 130px; float: left; position: absolute; z-index: 200; height: 700px">  
+                                            <p:dataGrid id="i_mesas_disponiveis" value="#{vendaBaileBean.listaMesas}" var="linha" columns="3" emptyMessage="Defina uma quantidade de Mesa!" style="width: 130px; float: left" styleClass="sb">  
+                                                <p:column rendered="#{linha.id == -1}">  
+                                                    <h:panelGrid id="i_mesa" styleClass="fundoCinza" style="padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; cursor: pointer">
+                                                        <h:outputLabel value="#{linha.mesa}" style="font-size: 8pt!important; cursor: pointer"/>
+                                                    </h:panelGrid>
+                                                    <p:draggable for="i_mesa" revert="true" scope="0" disabled="true" /> 
+                                                </p:column>
+
+                                                <p:column rendered="#{linha.id != -1}">  
+                                                    <h:panelGrid  styleClass="fundoCinza ui-draggable" style="padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; #{linha.posicao}; cursor: pointer">
+                                                        <p:commandLink value="#{linha.mesa}" style="font-size: 8pt!important; font-weight: bold;" />
+                                                    </h:panelGrid>
+                                                </p:column>
+                                            </p:dataGrid>  
+                                        </p:panel>
+
+                                        <h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute; margin-left:150px;" width="750"/>
+                                    </h:form>
+                            </p:dialog>
+                            
+                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>
     </h:body>
 </ui:composition>
+
+<!--
+<h:panelGrid columns="20"> 
+    <h:column>
+        <h:outputLabel value="Titular: " styleClass="fontePadrao"/>
+    </h:column>
+    
+    <h:column>
+        <h:outputText value="" id="idTitular" styleClass="fontePadrao"/>
+    </h:column>
+</h:panelGrid>
+
+<br/>
+
+<h:panelGrid columns="2">
+    <h:column>
+        <a4j:commandButton id="btMesas" value="Visualizar mesas"/>
+    </h:column>
+    
+    <h:column>
+        <a4j:commandButton value="Vender convite"/>
+    </h:column>
+</h:panelGrid>
+
+    <rich:dataTable value="" var="linha">
+        <rich:column id="colRemover" styleClass="centralizar">
+            <a4j:commandButton image="/Imagens/excluirp.png"/>
+        </rich:column>
+        
+        <rich:column styleClass="centralizar">
+            <f:facet name="header">
+                <h:outputText value="Serviço"/>
+            </f:facet>
+            <h:outputText/>
+        </rich:column>
+        
+        <rich:column styleClass="centralizar">
+            <f:facet name="header">
+                <h:outputText value="Mesa"/>
+            </f:facet>
+            <h:outputText/>
+        </rich:column>
+        
+        <rich:column styleClass="centralizar">
+            <f:facet name="header">
+                <h:outputText value="Valor"/>
+            </f:facet>
+            <h:outputText/>
+        </rich:column>
+        
+        <rich:column styleClass="centralizar">
+            <f:facet name="header">
+                <h:outputText value=""/>
+            </f:facet>
+            <h:selectBooleanCheckbox/>
+        </rich:column>
+    </rich:dataTable>
+    
+    <br/>
+    
+    <h:panelGrid>
+    <a4j:commandLink styleClass="idNovo iLink" style="width: 150px;" value="Pagamento à vista"/>
+    </h:panelGrid>
+-->
+
+
+

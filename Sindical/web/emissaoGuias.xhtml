@@ -32,7 +32,7 @@
                             <h:panelGrid columns="2" style="width: 100%">
                                 <h:column>
                                     <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
-                                    <h:inputText id="nomeBene" size="50" value="#{emissaoGuiasBean.pessoa.nome}" onblur="upperCase(this);" />
+                                    <h:inputText id="nomeBene" size="50" value="#{emissaoGuiasBean.pessoa.nome}" readonly="true" />
                                     <h:commandButton id="btnPesquisar" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
                                 </h:column>
                                     
@@ -191,8 +191,8 @@
                         <h:panelGrid columns="6">
                             <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Salvar" rendered="#{emissaoGuiasBean.lote.id == -1}"  title="Salvar este Lançamento"/>
                             <h:commandLink action="#{emissaoGuiasBean.novo()}" styleClass="idNovo iLink" value="Novo"   title="Novo Lançamento"/>
-                            <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Imprimir" style="width: 70px" title="Imprimir"/>
-                            <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Debitar"  title="Debitar"/>
+                            <!-- <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Imprimir" style="width: 70px" title="Imprimir"/>
+                            <a4j:commandLink onclick="modalOpcao('divNovo');" styleClass="idNovo iLink" value="Debitar"  title="Debitar"/> -->
                         </h:panelGrid>
                     </div>
                 </center>
@@ -206,7 +206,7 @@
                             <h:panelGrid columns="3" style="display: block">
                                 <h:column>
                                     <h:outputLabel value="CPF: " styleClass="fontePadrao"/><br />
-                                    <p:inputMask size="12" value="#{emissaoGuiasBean.pessoa.documento}" mask="***.***.***-**" >
+                                    <p:inputMask size="12" value="#{emissaoGuiasBean.pessoa.documento}" mask="999.999.999-99" >
                                         <p:ajax event="blur" update="i_panel_sem_cadastro" listener="#{emissaoGuiasBean.pesquisaSemCadastro('cpf')}"/>
                                     </p:inputMask>
                                 </h:column>

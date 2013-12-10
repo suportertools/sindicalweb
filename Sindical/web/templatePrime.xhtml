@@ -13,6 +13,7 @@
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <style type="text/css">
            .ui-datalist-item {float: left!important;}
+           * {font-family: 'lucida grande',verdana, tahoma, arial, sans-serif; font-size: 9pt!important}
           //.ui-datalist-item a {color: white; text-decoration: none;}
         </style>
     </h:head>
@@ -30,7 +31,7 @@
                         <p:outputLabel value="#{controleUsuarioBean.filial}" style="color: #bc4763; font-size: 10pt;  margin-left: 50px; "/>
                     </p:panel>
                     
-                    <p:panel style="border: 0px; background: #dbeaeb; clear: both; ">
+                    <p:panel style="border: 0px; background: #dbeaeb; clear: both">
                         <h:column>
                             <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento0}" action="#{chamadaPaginaBean.clickNivelLink0}" style="font-weight: bold;" title="Ir ao Menu Principal" immediate="true"/>
                         </h:column>
