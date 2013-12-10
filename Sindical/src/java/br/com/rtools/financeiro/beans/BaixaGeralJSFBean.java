@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.arrecadacao.beans.BaixaBoletoJSFBean;
+import br.com.rtools.associativo.beans.EmissaoGuiasBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
@@ -377,6 +378,8 @@ public class BaixaGeralJSFBean {
                 ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
             } else if (url.equals("movimentosReceberSocial")){
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+            }else if (url.equals("emissaoGuias") || url.equals("menuPrincipal")){
+                ((EmissaoGuiasBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("emissaoGuiasBean")).atualizarHistorico();
             }else{
                 ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
             }

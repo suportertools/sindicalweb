@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.db;
 
+import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
@@ -2110,5 +2111,39 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
         return false;
     }
-
+    
+    @Override
+    public List<HistoricoEmissaoGuias> pesquisaHistoricoEmissaoGuias(int id_usuario) {
+        try {
+            Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.usuario.id = "+id_usuario+" and heg.baixado = false");
+            List<HistoricoEmissaoGuias> list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+    
+    @Override
+    public HistoricoEmissaoGuias pesquisaHistoricoEmissaoGuiasPorMovimento(int id_usuario, int id_movimento) {
+        try {
+            Query qry = getEntityManager().createQuery("select heg from HistoricoEmissaoGuias heg where heg.movimento.id = "+id_movimento+" and heg.usuario.id = "+id_usuario+" and heg.baixado = false");
+            HistoricoEmissaoGuias result = (HistoricoEmissaoGuias)qry.getSingleResult();
+            return result;
+        } catch (Exception e) {
+            return new HistoricoEmissaoGuias();
+        }
+    }
+    
+    public Guia pesquisaGuias(int id_lote) {
+        try {
+            Query qry = getEntityManager().createQuery("select g from Guia g where g.lote.id = "+id_lote);
+            Guia result = (Guia)qry.getSingleResult();
+            return result;
+        } catch (Exception e) {
+            return new Guia();
+        }
+    }
 }
