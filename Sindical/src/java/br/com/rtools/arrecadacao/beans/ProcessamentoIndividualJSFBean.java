@@ -7,7 +7,6 @@ import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.financeiro.beans.MovimentoValorJSFBean;
 import br.com.rtools.financeiro.db.*;
-import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Juridica;
@@ -34,7 +33,6 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
