@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro.db;
 
+import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.financeiro.*;
 import br.com.rtools.pessoa.Pessoa;
 //import br.com.rtools.listax.GGeracao;
@@ -163,4 +164,8 @@ public interface MovimentoDB {
      * @return boolean (true -> se existe débito / false -> caso não exista)
      */    
     public boolean existeDebitoPessoa(Pessoa pessoa, Date vencimento);
+    
+    public List<HistoricoEmissaoGuias> pesquisaHistoricoEmissaoGuias(int id_usuario);
+    public HistoricoEmissaoGuias pesquisaHistoricoEmissaoGuiasPorMovimento(int id_usuario, int id_movimento);
+    public Guia pesquisaGuias(int id_lote) ;
 }
