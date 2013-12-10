@@ -238,6 +238,8 @@ public class CaravanaJSFBean {
         List<SelectItem> result = new Vector<SelectItem>();
         List<DescricaoEvento> select = new ArrayList();
         DescricaoEventoDB db = new DescricaoEventoDBToplink();
+        if (getListaGrupoEvento().isEmpty())
+            return result;
         select = db.pesquisaDescricaoPorGrupo(Integer.parseInt(getListaGrupoEvento().get(idGrupoEvento).getDescription()));
         for (int i = 0; i < select.size(); i++) {
             result.add(new SelectItem(new Integer(i), select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));

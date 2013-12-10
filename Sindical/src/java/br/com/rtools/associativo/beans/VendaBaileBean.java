@@ -1,6 +1,131 @@
-//
-//
-//package br.com.rtools.associativo.beans;
+package br.com.rtools.associativo.beans;
+
+import br.com.rtools.associativo.EventoBaile;
+import br.com.rtools.associativo.EventoBaileMapa;
+import br.com.rtools.associativo.db.EventoBaileDB;
+import br.com.rtools.associativo.db.EventoBaileDBToplink;
+import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+
+
+@ManagedBean
+@SessionScoped
+public class VendaBaileBean implements Serializable{
+    private final List<SelectItem> listaEventoBaile = new ArrayList();
+    private List<EventoBaile> listae = new ArrayList();
+    private int indexEventoBaile = 0;
+    private Fisica fisica = new Fisica();
+    private List<EventoBaileMapa> listaMesas = new ArrayList();
+    private List<EventoBaileMapa> listaMesaSelecionada = new ArrayList();
+    private List<Integer> listaQuantidade = new ArrayList();
+
+    public List<Integer> getListaQuantidade() {
+        if (listaQuantidade.isEmpty()){
+            for (int i = 1; i < 419; i++){
+                listaQuantidade.add(i);
+            }
+        }
+        return listaQuantidade;
+    }
+
+    public void setListaQuantidade(List<Integer> listaQuantidade) {
+        this.listaQuantidade = listaQuantidade;
+    }
+    
+        public List<EventoBaileMapa> getListaMesas() {
+        if (listaMesas.isEmpty()){
+            for (int i = 1; i <= listae.get(indexEventoBaile).getQuantidadeMesas(); i++){
+                
+                EventoBaileDB db = new EventoBaileDBToplink();
+                EventoBaileMapa result = db.pesquisaMesaBaile(listae.get(indexEventoBaile).getId(), i);
+                if (result.getId() == -1)
+                    listaMesas.add(new EventoBaileMapa(-1, new EventoBaile(), i, "i_"+i, ""));
+                else{
+                    listaMesas.add(result);
+                    listaMesaSelecionada.add(result);
+                }
+                
+            }
+        }
+        return listaMesas;
+    }
+
+    public void setListaMesas(List<EventoBaileMapa> listaMesas) {
+        this.listaMesas = listaMesas;
+    }    
+    
+    public List<EventoBaileMapa> getListaMesaSelecionada() {
+        if (listaMesaSelecionada.isEmpty()){
+            
+            EventoBaileDB db = new EventoBaileDBToplink();
+            List<EventoBaileMapa> lista = db.listaBaileMapa(listae.get(indexEventoBaile).getId());
+
+            for (int i = 0; i < lista.size(); i++){
+                listaMesaSelecionada.add(new EventoBaileMapa(lista.get(i).getId(), listae.get(indexEventoBaile), lista.get(i).getMesa(), lista.get(i).getComponenteId(), lista.get(i).getPosicao()));
+            }
+            
+        }
+        return listaMesaSelecionada;
+    }
+
+    public void setListaMesaSelecionada(List<EventoBaileMapa> listaMesaSelecionada) {
+        this.listaMesaSelecionada = listaMesaSelecionada;
+    }
+    
+    public void removerFisica(){
+        fisica = new Fisica();
+    }
+    
+    public List<SelectItem> getListaEventoBaile(){
+        if(listaEventoBaile.isEmpty()){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            listae = sv.listaObjeto("EventoBaile");
+            if (!listae.isEmpty()){
+                for (int i = 0; i < listae.size(); i++){
+                    listaEventoBaile.add(new SelectItem(
+                           new Integer(i),
+                           listae.get(i).getEvento().getDescricaoEvento().getDescricao() + " -  " +
+                           listae.get(i).getDataString() + " - (" +
+                           listae.get(i).getHoraInicio() + " às  " +
+                           listae.get(i).getHoraFim() + ")   " +
+                           listae.get(i).getQuantidadeMesas() + " mesas  ",
+                           Integer.toString(( listae.get(i)).getId())  ));
+                }
+            }
+        }
+        return listaEventoBaile;
+    }
+
+    public int getIndexEventoBaile() {
+        return indexEventoBaile;
+    }
+
+    public void setIndexEventoBaile(int indexEventoBaile) {
+        this.indexEventoBaile = indexEventoBaile;
+    }
+
+    public Fisica getFisica() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null){
+            fisica = (Fisica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
+        }
+        return fisica;
+    }
+
+    public void setFisica(Fisica fisica) {
+        this.fisica = fisica;
+    }
+    
+
+}
 //
 //import br.com.rtools.associativo.AStatus;
 //import br.com.rtools.associativo.BVenda;

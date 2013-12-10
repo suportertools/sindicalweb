@@ -8,6 +8,7 @@ import br.com.rtools.associativo.db.DescricaoEventoDBToplink;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -30,28 +31,33 @@ public class DescricaoEventoJSFBean {
         GrupoEvento gpEvento = new GrupoEvento();
         Servicos servicos = new Servicos();
         if (descricaoEvento.getDescricao().isEmpty()) {
-            msgConfirma = "Descrição não pode estar vazio!";
+            msgConfirma = "Digite um nome para o Evento!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (getListaGrupoEvento().isEmpty()) {
             msgConfirma = "Lista de Grupo Evento vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         gpEvento = db.pesquisaGrupoEvento(Integer.parseInt(getListaGrupoEvento().get(idGrupoEvento).getDescription()));
         if (gpEvento == null) {
             msgConfirma = "Erro ao encontrar Grupo Evento!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (getListaServicos().isEmpty()) {
             msgConfirma = "Lista Serviços vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         servicos = dbS.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
         if (servicos == null) {
             msgConfirma = "Erro ao encontrar Serviço!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -59,34 +65,39 @@ public class DescricaoEventoJSFBean {
         descricaoEvento.setServicoMovimento(servicos);
         if (db.insert(descricaoEvento)) {
             msgConfirma = "Adicionado com sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             listaDescricao.clear();
         } else {
             msgConfirma = "Erro ao Salvar!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         descricaoEvento = new DescricaoEvento();
         return null;
     }
 
-    public String excluir() {
+    public String excluir(DescricaoEvento de) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         DescricaoEventoDB db = new DescricaoEventoDBToplink();
         List<AEvento> ae = new ArrayList();
-        ae = db.listaEventoPorDescricao(((DescricaoEvento) listaDescricao.get(idIndex)).getId());
+        ae = db.listaEventoPorDescricao( de.getId() );
         sv.abrirTransacao();
         for (int i = 0; i < ae.size(); i++) {
             if (!sv.deletarObjeto((AEvento) sv.pesquisaCodigo(ae.get(i).getId(), "AEvento"))) {
                 msgConfirma = "Erro ao excluir evento!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
         }
 
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(((DescricaoEvento) listaDescricao.get(idIndex)).getId(), "DescricaoEvento"))) {
+        if (!sv.deletarObjeto(sv.pesquisaCodigo(de.getId(), "DescricaoEvento"))) {
             msgConfirma = "Erro ao excluir descrição!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         } else {
             msgConfirma = "Excluido com Sucesso!";
+            GenericaMensagem.info("Erro", msgConfirma);
             sv.comitarTransacao();
             listaDescricao.clear();
             return null;
