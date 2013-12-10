@@ -1,6 +1,7 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.GrupoConvenio;
+import br.com.rtools.associativo.HistoricoEmissaoGuias;
 import br.com.rtools.associativo.SubGrupoConvenio;
 import br.com.rtools.associativo.db.ConvenioServicoDB;
 import br.com.rtools.associativo.db.ConvenioServicoDBToplink;
@@ -18,6 +19,8 @@ import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.db.MovimentoDB;
+import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -27,6 +30,7 @@ import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -34,6 +38,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -44,7 +49,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class EmissaoGuiasBean {
+public class EmissaoGuiasBean implements Serializable{
     private Pessoa pessoa = new Pessoa();
     private Fisica fisica = new Fisica();
     private Lote lote = new Lote();
@@ -57,14 +62,112 @@ public class EmissaoGuiasBean {
     private final List<SelectItem> listaSubGrupo = new ArrayList<SelectItem>();
     private final List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private List<SelectItem> listaJuridica = new ArrayList<SelectItem>();
+    private List<Movimento> listaaux = new ArrayList();
+    private List<HistoricoEmissaoGuias> listah = new ArrayList();
     private String valor = "";
     private String desconto = "";
     private String total = "";
     private List<DataObject> listaMovimento = new ArrayList();
     private String msgConfirma = "";
+    
     private boolean validaok = false;
     
-    public void limpaGrupo(){
+    public String baixarErrado(HistoricoEmissaoGuias heg){
+        if (!listah.isEmpty() ){
+            listaaux.clear();
+            
+            for(int i = 0; i < listah.size(); i++){
+                if (heg.getMovimento().getLote().getId() == listah.get(i).getMovimento().getLote().getId())
+                    listaaux.add(listah.get(i).getMovimento());
+            }
+            listah.clear();
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", listaaux);
+            return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
+        }
+        return null;
+    }
+    
+    public String excluirErrado(HistoricoEmissaoGuias heg){
+        if (!listah.isEmpty() ){
+            listaaux.clear();
+            
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            MovimentoDB db = new MovimentoDBToplink();
+            sv.abrirTransacao();
+            
+            for(int i = 0; i < listah.size(); i++){
+                if (heg.getMovimento().getLote().getId() == listah.get(i).getMovimento().getLote().getId()){
+                    listaaux.add(listah.get(i).getMovimento());
+                    if (!sv.deletarObjeto(sv.pesquisaCodigo(listah.get(i).getId(), "HistoricoEmissaoGuias"))){
+                        sv.desfazerTransacao();
+                        return null;
+                    }
+                }
+            }
+            
+            // GUIA
+            Guia guias = db.pesquisaGuias(heg.getMovimento().getLote().getId());
+            
+            if (!sv.deletarObjeto(sv.pesquisaCodigo(guias.getId(), "Guia"))){
+                sv.desfazerTransacao();
+                return null;
+            }
+            
+            // MOVIMENTO
+            for (int i = 0; i < listaaux.size(); i++){
+                if (!sv.deletarObjeto(sv.pesquisaCodigo(listaaux.get(i).getId(), "Movimento"))){
+                    sv.desfazerTransacao();
+                    return null;    
+                }
+            }
+            
+            // LOTE
+            if (!sv.deletarObjeto(sv.pesquisaCodigo(heg.getMovimento().getLote().getId(), "Lote"))){
+                sv.desfazerTransacao();
+                return null;
+            }
+            sv.comitarTransacao();
+            
+            listah.clear();
+        }
+        return "menuPrincipal";
+    }
+    
+    public void atualizarHistorico(){
+        
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        HistoricoEmissaoGuias heg = new HistoricoEmissaoGuias();
+        Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        MovimentoDB db = new MovimentoDBToplink();
+        
+        if (!listaaux.isEmpty()){
+            for (int i = 0; i < listaaux.size(); i++){
+                heg = db.pesquisaHistoricoEmissaoGuiasPorMovimento(usuario.getId(), listaaux.get(i).getId());
+                sv.abrirTransacao();
+                
+                heg.setBaixado(true);
+                sv.alterarObjeto(heg);
+                sv.comitarTransacao();
+            }   
+        }
+    }
+    
+    public List<HistoricoEmissaoGuias> getListah() {
+        if(listah.isEmpty())       {
+            MovimentoDB db = new MovimentoDBToplink();
+            Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+            
+            listah = db.pesquisaHistoricoEmissaoGuias(usuario.getId());
+        }
+        return listah;
+    }
+
+    public void setListah(List<HistoricoEmissaoGuias> listah) {
+        this.listah = listah;
+    }
+    
+    public void limpaGrupo(){     
         listaSubGrupo.clear();
         listaServicos.clear();
         listaJuridica.clear();
@@ -228,9 +331,9 @@ public class EmissaoGuiasBean {
                 0, // CORRECAO
                 0, // JUROS
                 0, // MULTA
-                descontox, // DESCONTO
+                0,//descontox, // DESCONTO
                 0, // TAXA
-                Moeda.multiplicarValores(quantidade, Moeda.subtracaoValores(valorx, descontox)), // VALOR BAIXA
+                0,//Moeda.multiplicarValores(quantidade, Moeda.subtracaoValores(valorx, descontox)), // VALOR BAIXA
                 td, // FTipo_documento 13 - CARTEIRA, 2 - BOLETO
                 0 // REPASSE AUTOMATICO
         ), 
@@ -303,7 +406,6 @@ public class EmissaoGuiasBean {
             return null;
         }
 
-        List<Movimento> listaaux = new ArrayList();
         for (int i = 0; i < listaMovimento.size(); i++){
             ((Movimento)listaMovimento.get(i).getArgumento0()).setLote(lote);
             if (!sv.inserirObjeto((Movimento)listaMovimento.get(i).getArgumento0())){
@@ -311,7 +413,7 @@ public class EmissaoGuiasBean {
                 sv.desfazerTransacao();
                 return null;
             }
-            listaaux.add((Movimento)listaMovimento.get(i).getArgumento0());
+            //listaaux.add((Movimento)listaMovimento.get(i).getArgumento0());
         }
         
         Guia guias = new Guia(
@@ -329,23 +431,42 @@ public class EmissaoGuiasBean {
         }
         sv.comitarTransacao();
         
-//        Movimento movimento = new Movimento();
+        Movimento movimento = new Movimento();
+        //List<Movimento> listaaux = new ArrayList();
+        float valorx = 0; Moeda.converteUS$(valor);
+        float descontox = 0; Moeda.converteUS$(desconto);
+        
+
         for (int i = 0; i < listaMovimento.size(); i++){
-//            movimento = (Movimento)sv.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())), "Movimento");
-//
-//            movimento.setMulta(((Movimento)listaMovimento.get(i).getArgumento0()).getMulta());
-//            movimento.setJuros(((Movimento)listaMovimento.get(i).getArgumento0()).getJuros());
-//            movimento.setCorrecao(((Movimento)listaMovimento.get(i).getArgumento0()).getCorrecao());
-//            movimento.setDesconto(((Movimento)listaMovimento.get(i).getArgumento0()).getDesconto());
-//
-//            //movimento.setValor( Float.valueOf( listaMovimento.get(i).getArgumento9().toString() ) );
-//            movimento.setValor(((Movimento)listaMovimento.get(i).getArgumento0()).getValor());
-//
-//            // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
-//            movimento.setValorBaixa(((Movimento)listaMovimento.get(i).getArgumento0()).getValorBaixa());
-//
-//            listaaux.add(movimento);
+            HistoricoEmissaoGuias heg = new HistoricoEmissaoGuias();
+            movimento = (Movimento)sv.pesquisaCodigo( ((Movimento)listaMovimento.get(i).getArgumento0()).getId(), "Movimento");
+
+            descontox = Moeda.converteUS$(listaMovimento.get(i).getArgumento2().toString());
+            valorx = Moeda.converteUS$(listaMovimento.get(i).getArgumento3().toString());
             
+            movimento.setMulta(((Movimento)listaMovimento.get(i).getArgumento0()).getMulta());
+            movimento.setJuros(((Movimento)listaMovimento.get(i).getArgumento0()).getJuros());
+            movimento.setCorrecao(((Movimento)listaMovimento.get(i).getArgumento0()).getCorrecao());
+            movimento.setDesconto(descontox);
+
+            //movimento.setValor( Float.valueOf( listaMovimento.get(i).getArgumento9().toString() ) );
+            movimento.setValor(((Movimento)listaMovimento.get(i).getArgumento0()).getValor());
+
+            // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
+            movimento.setValorBaixa(valorx);
+            
+            listaaux.add(movimento);
+            heg.setMovimento(movimento);
+            heg.setUsuario((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
+            
+            sv.abrirTransacao();
+            if (!sv.inserirObjeto(heg))
+                sv.desfazerTransacao();
+            else
+                sv.comitarTransacao();
+        }
+        
+        if (!listaaux.isEmpty() ){
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", listaaux);
             return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
         }
@@ -566,5 +687,6 @@ public class EmissaoGuiasBean {
     public void setLote(Lote lote) {
         this.lote = lote;
     }
+
     
 }

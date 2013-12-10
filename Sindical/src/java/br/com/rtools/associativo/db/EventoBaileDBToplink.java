@@ -1,8 +1,9 @@
 package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.AEndereco;
-import br.com.rtools.associativo.EventoBaile;
+import br.com.rtools.associativo.EventoBaileMapa;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -10,80 +11,6 @@ import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class EventoBaileDBToplink extends DB implements EventoBaileDB {
-
-    public void abrirTransacao() {
-        getEntityManager().getTransaction().begin();
-    }
-
-    public void comitarTransacao() {
-        getEntityManager().getTransaction().commit();
-    }
-
-    public void desfazerTransacao() {
-        getEntityManager().getTransaction().rollback();
-    }
-
-    public boolean insert(EventoBaile eventoBaile) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(eventoBaile);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(EventoBaile eventoBaile) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(eventoBaile);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(EventoBaile eventoBaile) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(eventoBaile);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public EventoBaile pesquisaCodigo(int id) {
-        EventoBaile result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("EventoBaile.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (EventoBaile) qry.getSingleResult();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return result;
-    }
-
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select r from EventoBaile r");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
-
     public List pesquisaTodosAtuais(Date data) {
         try {
             Query qry = getEntityManager().createQuery(
@@ -96,6 +23,7 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
         }
     }
 
+    @Override
     public String excluirBaile(int idEvento) {
         try {
             Query qry = getEntityManager().createNativeQuery(
@@ -112,6 +40,7 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
         return null;
     }
 
+    @Override
     public AEndereco pesquisaEnderecoEvento(int idEvento) {
         AEndereco aEndereco = new AEndereco();
         try {
@@ -150,5 +79,27 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
             lista = new Vector<Object>();
         }
         return lista;
+    }
+    
+    @Override
+    public List listaBaileMapa(int id_baile) {
+        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = "+id_baile;
+        try {
+            Query qry = getEntityManager().createQuery(textQuery);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public EventoBaileMapa pesquisaMesaBaile(int id_baile, int mesa) {
+        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = "+id_baile+" and ebm.mesa = "+mesa;
+        try {
+            Query qry = getEntityManager().createQuery(textQuery);
+            return (EventoBaileMapa)qry.getSingleResult();
+        } catch (Exception e) {
+            return new EventoBaileMapa();
+        }
     }
 }
