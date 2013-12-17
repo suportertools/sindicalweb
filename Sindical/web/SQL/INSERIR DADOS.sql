@@ -87,6 +87,19 @@ INSERT INTO sis_semana (id, ds_descricao) SELECT 6, 'Sexta'     WHERE NOT EXISTS
 INSERT INTO sis_semana (id, ds_descricao) SELECT 7, 'Sábado'    WHERE NOT EXISTS ( SELECT id FROM sis_semana WHERE id = 7 );
 SELECT setval('sis_semana_id_seq', max(id)) FROM sis_semana;
 
+-- sis_periodo
+-- Criate: 2013-07-24
+-- Last edition: 2013-07-24 - by: Bruno Vieira
+
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 1, 'DIÁRIO', 1 WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 1 );
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 2, 'SEMANAL', 7 WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 2 );
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 3, 'MENSAL', 30 WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 3 );
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 4, 'BIMESTRAL', 60  WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 4 );
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 5, 'TRIMESTRAL', 90 WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 5 );
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 6, 'SEMESTRAL', 180 WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 6 );
+INSERT INTO sis_periodo (id, ds_descricao, nr_dias) SELECT 7, 'ANUAL', 365 WHERE NOT EXISTS ( SELECT id FROM sis_periodo WHERE id = 7 );
+SELECT setval('sis_periodo_id_seq', max(id)) FROM sis_periodo;
+
 -- seg_modulo
 -- Criate: 2013-07-24
 -- Last edition: 2013-07-24 - by: Bruno Vieira
@@ -340,7 +353,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 197, 'PESQUISA RELATÓRIOS', '"/Sindical/pesquisaRelatorios.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 197 );
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 198, 'PESQUISA SUSPENÇÃO', '"/Sindical/pesquisaSuspencao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 198);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 199, 'ACADEMIA - GRADE HORÁRIOS', '"/Sindical/academiaGrade.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 199);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 200, 'ACADEMIA - TABELA DE PREÇOS', '"/Sindical/academiaGrade.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 200);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 200, 'ACADEMIA - TABELA DE PREÇOS', '"/Sindical/academiaTabelaPreco.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 200);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 201, 'PESQUISA BAILE', '"/Sindical/pesquisaBaile.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 201);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 202, 'PESQUISA CARAVANA', '"/Sindical/pesquisaCaravana.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 202);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
