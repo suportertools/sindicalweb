@@ -9,3 +9,9 @@ ALTER TABLE seg_registro
      REFERENCES fin_servicos (id) MATCH SIMPLE      
 	ON UPDATE NO ACTION 
 	ON DELETE NO ACTION;
+
+ALTER TABLE matr_academia
+  ADD CONSTRAINT fk_matr_academia_id_evt FOREIGN KEY (id_evt)
+     REFERENCES fin_evt (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
