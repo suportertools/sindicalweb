@@ -2,6 +2,7 @@ ALTER TABLE aca_servico_valor ADD COLUMN nr_parcelas integer;
 
 ALTER TABLE matr_academia ADD COLUMN nr_parcelas integer;
 ALTER TABLE matr_academia ADD COLUMN is_taxa boolean;
+ALTER TABLE matr_academia ADD COLUMN is_taxa_cartao boolean;
 
 ALTER TABLE seg_registro ADD COLUMN id_servico_cartao integer;
 ALTER TABLE seg_registro
