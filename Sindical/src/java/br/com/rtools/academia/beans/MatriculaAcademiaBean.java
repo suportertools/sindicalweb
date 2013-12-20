@@ -1,141 +1,350 @@
 package br.com.rtools.academia.beans;
 
+import br.com.rtools.academia.AcademiaSemana;
+import br.com.rtools.academia.AcademiaServicoValor;
+import br.com.rtools.academia.db.AcademiaDB;
+import br.com.rtools.academia.db.AcademiaDBToplink;
 import br.com.rtools.associativo.MatriculaAcademia;
-import br.com.rtools.associativo.beans.ServicoPessoaBean;
-import br.com.rtools.associativo.db.MatriculaAcademiaDB;
-import br.com.rtools.associativo.db.MatriculaAcademiaDBToplink;
+import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
+import br.com.rtools.escola.db.MatriculaEscolaDB;
+import br.com.rtools.escola.db.MatriculaEscolaDBToplink;
+import br.com.rtools.financeiro.CondicaoPagamento;
+import br.com.rtools.financeiro.Evt;
+import br.com.rtools.financeiro.FStatus;
+import br.com.rtools.financeiro.FTipoDocumento;
+import br.com.rtools.financeiro.Lote;
+import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.ServicoPessoa;
+import br.com.rtools.financeiro.ServicoValor;
+import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.db.LoteDB;
+import br.com.rtools.financeiro.db.LoteDBToplink;
+import br.com.rtools.financeiro.db.MovimentoDB;
+import br.com.rtools.financeiro.db.MovimentoDBToplink;
+import br.com.rtools.financeiro.db.ServicoValorDB;
+import br.com.rtools.financeiro.db.ServicoValorDBToplink;
+import br.com.rtools.impressao.CarneEscola;
+import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
+import br.com.rtools.pessoa.db.FisicaDB;
+import br.com.rtools.pessoa.db.FisicaDBToplink;
+import br.com.rtools.pessoa.db.JuridicaDB;
+import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Mask;
+import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.db.FunctionsDB;
+import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
 public class MatriculaAcademiaBean implements Serializable {
 
-    private MatriculaAcademia matriculaAcademia;
-    private ServicoPessoaBean servicoPessoaJSFBean;
-    private String descPesquisa;
-    private String porPesquisa;
-    private String comoPesquisa;
-    private String mensagem;
-    private List<MatriculaAcademia> listaAcademia;
+    private MatriculaAcademia matriculaAcademia = new MatriculaAcademia();
+    private Fisica aluno = new Fisica();
+    private Registro registro = new Registro();
+    private Pessoa responsavel = new Pessoa();
+    private Pessoa cobranca = null;
+    private Juridica juridica = new Juridica();
+    private Pessoa pessoaAlunoMemoria = new Pessoa();
+    private Pessoa pessoaResponsavelMemoria = new Pessoa();
+    private PessoaComplemento pessoaComplemento = new PessoaComplemento();
+    private Movimento movimento = new Movimento();
+    private Lote lote = new Lote();
+    private String descricaoPesquisa = "";
+    private String porPesquisa = "";
+    private String comoPesquisa = "";
+    private String mensagem = "";
+    private String mensagemStatusDebito = "";
+    private String mensagemStatusEmpresa = "";
+    private String valor = "";
+    private String valorParcela = "";
+    private String valorParcelaVencimento = "";
+    private String valorLiquido = "";
+    private String valorTaxa = "";
+    private String target = "#";
+    private List<MatriculaAcademia> listaAcademia = new ArrayList<MatriculaAcademia>();
+    private List<Movimento> listaMovimentos = new ArrayList<Movimento>();
+    private List<SelectItem> listaDiaVencimento = new ArrayList<SelectItem>();
+    private List<SelectItem> listaModalidades = new ArrayList<SelectItem>();
+    private List<SelectItem> listaPeriodosGrade = new ArrayList<SelectItem>();
+    private boolean taxa = false;
+    private boolean ocultaBotaoSalvar = false;
+    private boolean socio = false;
+    private boolean desabilitaCamposMovimento = false;
+    private boolean desabilitaGeracaoContrato = false;
+    private boolean desabilitaDiaVencimento = false;
+    private boolean ocultaParcelas = true;
+    private boolean ocultaBotaoTarifaCartao = true;
+    private boolean taxaCartao = false;
+    private int idDiaVencimento = 0;
+    private int idModalidade = 0;
+    private int idPeriodoGrade = 0;
+    private int idServico = 0;
+    private int idDiaVencimentoPessoa = 0;
+    private int idFTipoDocumento = 0;
+    private float vTaxa = 0;
+    private float desconto = 0;
+    private float valorCartao = 0;    
 
-    public MatriculaAcademiaBean() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaBean());
-        servicoPessoaJSFBean = ((ServicoPessoaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
-        servicoPessoaJSFBean.setRenderServicos(true);
+    public void novo() {
+        registro = new Registro();
+        ocultaBotaoTarifaCartao = true;
+        taxaCartao = false;
+        valorCartao = 0;
         matriculaAcademia = new MatriculaAcademia();
-        descPesquisa = "";
+        aluno = new Fisica();
+        responsavel = new Pessoa();
+        juridica = new Juridica();
+        pessoaAlunoMemoria = new Pessoa();
+        pessoaResponsavelMemoria = new Pessoa();
+        pessoaComplemento = new PessoaComplemento();
+        movimento = new Movimento();
+        lote = new Lote();
+        descricaoPesquisa = "";
         porPesquisa = "";
         comoPesquisa = "";
         mensagem = "";
+        mensagemStatusDebito = "";
+        mensagemStatusEmpresa = "";
+        valor = "";
+        valorParcela = "";
+        valorParcelaVencimento = "";
+        valorLiquido = "";
+        valorTaxa = "";
+        target = "#";
         listaAcademia.clear();
+        listaMovimentos.clear();
+        listaDiaVencimento.clear();
+        listaModalidades.clear();
+        listaPeriodosGrade.clear();
+        taxa = false;
+        ocultaBotaoSalvar = false;
+        socio = false;
+        desabilitaCamposMovimento = false;
+        desabilitaGeracaoContrato = false;
+        desabilitaDiaVencimento = false;
+        ocultaParcelas = true;
+        idDiaVencimento = 0;
+        idModalidade = 0;
+        idPeriodoGrade = 0;
+        idServico = 0;
+        idDiaVencimentoPessoa = 0;
+        idFTipoDocumento = 0;
+        vTaxa = 0;
+        desconto = 0;
+        cobranca = null;
     }
 
     public void salvar() {
-        SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        if (servicoPessoaJSFBean.getServicoPessoa().getPessoa().getId() == -1) {
-            mensagem = "Pesquise uma Pessoa!";
+        if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
+            mensagem = "Pesquisar uma pessoa!";
             return;
         }
-        dbSalvar.abrirTransacao();
-        if (servicoPessoaJSFBean.getServicoPessoa().getId() == -1) {
-            mensagem = servicoPessoaJSFBean.salvarServicoPessoa(null, dbSalvar);
-            if (mensagem.isEmpty()) {
-                matriculaAcademia.setServicoPessoa(servicoPessoaJSFBean.getServicoPessoa());
-                matriculaAcademia.setUsuario((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-                if (dbSalvar.inserirObjeto(matriculaAcademia)) {
-                    dbSalvar.comitarTransacao();
-                    mensagem = "Matricula salva com Sucesso!";
-                } else {
-                    dbSalvar.desfazerTransacao();
-                    mensagem = "Erro ao Salvar Matricula!";
-                }
-            } else {
-                dbSalvar.desfazerTransacao();
-            }
-        } else {
-            mensagem = servicoPessoaJSFBean.atualizarServicoPessoa(null, dbSalvar);
-            if (mensagem.isEmpty()) {
-                matriculaAcademia.setServicoPessoa(servicoPessoaJSFBean.getServicoPessoa());
-                matriculaAcademia.setUsuario((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
-                if (dbSalvar.alterarObjeto(matriculaAcademia)) {
-                    dbSalvar.comitarTransacao();
-                    mensagem = "Matricula atualizada com Sucesso!";
-                } else {
-                    dbSalvar.desfazerTransacao();
-                    mensagem = "Erro ao atualizar Matricula!";
-                }
-            } else {
-                dbSalvar.desfazerTransacao();
-            }
+        if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() == -1) {
+            mensagem = "Pesquisar um responsável!";
+            return;
         }
-    }
-
-    public void novo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaAcademiaBean", new MatriculaAcademiaBean());
-        matriculaAcademia = new MatriculaAcademia();
-        mensagem = "";
+        if (listaModalidades.isEmpty()) {
+            mensagem = "Cadastrar modalidades!";
+            return;
+        }
+        if (listaPeriodosGrade.isEmpty()) {
+            mensagem = "Cadastrar período grade!";
+            return;
+        }
+        matriculaAcademia.getServicoPessoa().setNrDiaVencimento(idDiaVencimento);
+        SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+        matriculaAcademia.getServicoPessoa().setTipoDocumento((FTipoDocumento) acumuladoDB.pesquisaObjeto(1, "FTipoDocumento"));
+        matriculaAcademia.setAcademiaServicoValor((AcademiaServicoValor) acumuladoDB.pesquisaObjeto(Integer.parseInt(listaPeriodosGrade.get(idPeriodoGrade).getDescription()), "AcademiaServicoValor"));
+        if (cobranca != null) {
+            matriculaAcademia.getServicoPessoa().setCobranca(cobranca);
+        } else {
+            matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getResponsavel());            
+        }
+        if (responsavel != null) {
+            matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
+        }
+        if (matriculaAcademia.getId() == -1) {
+            Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+            matriculaAcademia.setUsuario(usuario);
+            matriculaAcademia.getServicoPessoa().setServicos(matriculaAcademia.getAcademiaServicoValor().getServicos());
+            acumuladoDB.abrirTransacao();
+            if (!acumuladoDB.inserirObjeto(matriculaAcademia.getServicoPessoa())) {
+                acumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao adicionar serviço pessoa!";
+                return;
+            }
+            matriculaAcademia.setEvt(null);
+            if (!acumuladoDB.inserirObjeto(matriculaAcademia)) {
+                acumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao adicionar registro!";
+                return;
+            }
+            pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
+            mensagem = "Registro inserido com sucesso";
+            acumuladoDB.comitarTransacao();
+        } else {
+            acumuladoDB.abrirTransacao();
+            if (!acumuladoDB.alterarObjeto(matriculaAcademia.getServicoPessoa())) {
+                acumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao atualizar serviço pessoa!";
+                return;
+            }
+            if (!acumuladoDB.alterarObjeto(matriculaAcademia)) {
+                acumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao atualizar registro!";
+                return;
+            }
+            pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
+            mensagem = "Registro atualizado com sucesso";
+            acumuladoDB.comitarTransacao();
+        }
     }
 
     public void excluir() {
-        if (servicoPessoaJSFBean.getServicoPessoa().getId() != -1) {
-            SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-            dbSalvar.abrirTransacao();
-            if (dbSalvar.deletarObjeto((MatriculaAcademia) dbSalvar.pesquisaCodigo(matriculaAcademia.getId(), "MatriculaAcademia"))) {
-                if (dbSalvar.deletarObjeto((ServicoPessoa) dbSalvar.pesquisaCodigo(servicoPessoaJSFBean.getServicoPessoa().getId(), "ServicoPessoa"))) {
-                    dbSalvar.comitarTransacao();
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaAcademiaBean", new MatriculaAcademiaBean());
-                    ((MatriculaAcademiaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaAcademiaBean")).setMensagem("Matricula Excluida com sucesso!");
-                } else {
-                    mensagem = "Erro ao excluir serviço pessoa!";
-                    dbSalvar.desfazerTransacao();
-                }
-            } else {
-                mensagem = "Erro ao excluir Matricula!";
-                dbSalvar.desfazerTransacao();
+        SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+        if (matriculaAcademia.getId() != -1) {
+            acumuladoDB.abrirTransacao();
+            if (!acumuladoDB.deletarObjeto((MatriculaAcademia) acumuladoDB.pesquisaObjeto(matriculaAcademia.getId(), "MatriculaAcademia"))) {
+                acumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao excluir registro!";
+                return;
             }
+            if (!acumuladoDB.deletarObjeto((ServicoPessoa) acumuladoDB.pesquisaObjeto(matriculaAcademia.getServicoPessoa().getId(), "ServicoPessoa"))) {
+                acumuladoDB.desfazerTransacao();
+                mensagem = "Erro ao excluir serviço pessoa!";
+                return;
+            }
+            mensagem = "Registro excluído com sucesso";
+            acumuladoDB.comitarTransacao();
+            novo();
         }
+
     }
 
     public String editar(MatriculaAcademia ma) {
         matriculaAcademia = ma;
-        servicoPessoaJSFBean.setServicoPessoa(matriculaAcademia.getServicoPessoa());
-        descPesquisa = "";
-        porPesquisa = "nome";
-        comoPesquisa = "";
-        servicoPessoaJSFBean.editar(matriculaAcademia.getServicoPessoa());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        listaAcademia.clear();
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
-            return "academia";
-        } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        idDiaVencimentoPessoa = 0;
+        if (matriculaAcademia.getEvt() != null) {
+            desabilitaCamposMovimento = true;
+            desabilitaDiaVencimento = true;
         }
+        for (int i = 0; i < listaModalidades.size(); i++) {
+            if (Integer.parseInt(listaModalidades.get(i).getDescription()) == ma.getServicoPessoa().getServicos().getId()) {
+                idModalidade = i;
+            }
+        }
+        for (int i = 0; i < listaPeriodosGrade.size(); i++) {
+            if (Integer.parseInt(listaPeriodosGrade.get(i).getDescription()) == ma.getAcademiaServicoValor().getId()) {
+                idPeriodoGrade = i;
+            }
+        }
+        taxa = matriculaAcademia.isTaxa();
+        taxaCartao = matriculaAcademia.isTaxaCartao();
+        idDiaVencimento = ma.getServicoPessoa().getNrDiaVencimento();
+        idFTipoDocumento = matriculaAcademia.getServicoPessoa().getTipoDocumento().getId();
+        FisicaDB fisicaDB = new FisicaDBToplink();
+        aluno = fisicaDB.pesquisaFisicaPorPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId());
+        if (aluno.getId() != -1) {
+            getResponsavel();
+            verificaSocio();
+        }
+        pegarIdServico();
+        atualizaValor();
+        calculaValorLiquido();
+        pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
+        pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+        return "academia";
     }
 
-    public void acaoPesquisaInicial() {
-        listaAcademia.clear();
-        comoPesquisa = "I";
+    public MatriculaAcademia getMatriculaAcademia() {
+        getAluno();
+        if (socio == false) {
+            getJuridica();
+        }
+        if (cobranca == null) {
+            SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            if (matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
+                int idResponsavel = functionsDB.responsavel(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
+                if (idResponsavel != -1) {
+                    cobranca = (Pessoa) acumuladoDB.pesquisaCodigo(idResponsavel, "Pessoa");
+                } else {
+                    cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                }
+            } else {
+                int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
+                if (idResponsavelEmpresa != -1) {
+                    JuridicaDB juridicaDB = new JuridicaDBToplink();
+                    Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
+                    if (juridicaB.getId() != -1) {
+                        cobranca = (Pessoa) acumuladoDB.pesquisaCodigo(idResponsavelEmpresa, "Pessoa");
+                    } else {
+                        cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                    }
+                } else {
+                    cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                }
+            }
+            if (cobranca.getId() == -1) {
+                cobranca = null;
+            }
+        }
+        JuridicaDB juridicaDB = new JuridicaDBToplink();
+        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getResponsavel().getId());
+        verificaSeContribuinteInativo();
+        getRegistro();
+        return matriculaAcademia;
     }
 
-    public void acaoPesquisaParcial() {
-        listaAcademia.clear();
-        comoPesquisa = "P";
+    public void setMatriculaAcademia(MatriculaAcademia matriculaAcademia) {
+        this.matriculaAcademia = matriculaAcademia;
     }
 
-    public String getDescPesquisa() {
-        return descPesquisa;
+    public String getDescricaoPesquisa() {
+        return descricaoPesquisa;
     }
 
-    public void setDescPesquisa(String descPesquisa) {
-        this.descPesquisa = descPesquisa;
+    public void setDescricaoPesquisa(String descricaoPesquisa) {
+        this.descricaoPesquisa = descricaoPesquisa;
     }
 
     public String getPorPesquisa() {
@@ -154,14 +363,6 @@ public class MatriculaAcademiaBean implements Serializable {
         this.comoPesquisa = comoPesquisa;
     }
 
-    public MatriculaAcademia getMatriculaAcademia() {
-        return matriculaAcademia;
-    }
-
-    public void setMatriculaAcademia(MatriculaAcademia matriculaAcademia) {
-        this.matriculaAcademia = matriculaAcademia;
-    }
-
     public String getMensagem() {
         return mensagem;
     }
@@ -171,9 +372,9 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public List<MatriculaAcademia> getListaAcademia() {
-        if (listaAcademia.isEmpty()) {
-            MatriculaAcademiaDB db = new MatriculaAcademiaDBToplink();
-            listaAcademia = db.pesquisaMatriculaAcademia(descPesquisa, porPesquisa, comoPesquisa);
+        if (!descricaoPesquisa.isEmpty()) {
+            AcademiaDB academiaDB = new AcademiaDBToplink();
+            listaAcademia = academiaDB.pesquisaMatriculaAcademia("", porPesquisa, comoPesquisa, descricaoPesquisa);
         }
         return listaAcademia;
     }
@@ -181,4 +382,1171 @@ public class MatriculaAcademiaBean implements Serializable {
     public void setListaAcademia(List<MatriculaAcademia> listaAcademia) {
         this.listaAcademia = listaAcademia;
     }
+
+    public List<SelectItem> getListaDiaVencimento() {
+        if (listaDiaVencimento.isEmpty()) {
+            for (int i = 1; i <= 31; i++) {
+                listaDiaVencimento.add(new SelectItem(Integer.toString(i)));
+            }
+        }
+        return listaDiaVencimento;
+    }
+
+    public void setListaDiaVencimento(List<SelectItem> listaDiaVencimento) {
+        this.listaDiaVencimento = listaDiaVencimento;
+    }
+
+    public List<SelectItem> getListaModalidades() {
+        if (listaModalidades.isEmpty()) {
+            AcademiaDB academiaDB = new AcademiaDBToplink();
+            List<AcademiaServicoValor> list = academiaDB.listaServicoValorPorRotina();
+            int idServicoMemoria = 0;
+            for (int i = 0; i < list.size(); i++) {
+                if (idServicoMemoria != list.get(i).getServicos().getId()) {
+                    listaModalidades.add(new SelectItem(new Integer(i),
+                            list.get(i).getServicos().getDescricao(),
+                            Integer.toString(list.get(i).getId())));
+                    idServicoMemoria = list.get(i).getServicos().getId();
+                }
+            }
+        }
+        return listaModalidades;
+    }
+
+    public void setListaModalidades(List<SelectItem> listaModalidades) {
+        this.listaModalidades = listaModalidades;
+    }
+
+    public List<SelectItem> getListaPeriodosGrade() {
+        if (listaPeriodosGrade.isEmpty()) {
+            AcademiaDB academiaDB = new AcademiaDBToplink();
+            SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+            List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) acumuladoDB.pesquisaObjeto(Integer.parseInt(listaModalidades.get(idModalidade).getDescription()), "AcademiaServicoValor")).getServicos().getId());
+            List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
+            for (int i = 0; i < list.size(); i++) {
+                listSemana.clear();
+                listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
+                String periodoSemana = "";
+                for (int j = 0; j < listSemana.size(); j++) {
+                    if (j == 0) {
+                        periodoSemana += semanaResumo(listSemana.get(j).getSemana().getDescricao());
+                    } else {
+                        periodoSemana += " - " + semanaResumo(listSemana.get(j).getSemana().getDescricao());
+                    }
+                }
+                listaPeriodosGrade.add(new SelectItem(new Integer(i), list.get(i).getPeriodo().getDescricao() + " - " + list.get(i).getAcademiaGrade().getHoraInicio() + "-" + list.get(i).getAcademiaGrade().getHoraFim() + " - " + periodoSemana, Integer.toString(list.get(i).getId())));
+            }
+        }
+        return listaPeriodosGrade;
+    }
+
+    public void setListaPeriodosGrade(List<SelectItem> listaPeriodosGrade) {
+        this.listaPeriodosGrade = listaPeriodosGrade;
+    }
+
+    public void carregaParcelas() {
+        SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+        AcademiaServicoValor asv = (AcademiaServicoValor) acumuladoDB.pesquisaObjeto(Integer.parseInt(getListaPeriodosGrade().get(idPeriodoGrade).getDescription()), "AcademiaServicoValor");
+        int id = asv.getPeriodo().getId();
+        switch (id) {
+            case 5:
+                ocultaParcelas = false;
+                break;
+            case 6:
+                ocultaParcelas = false;
+                break;
+            case 7:
+                ocultaParcelas = false;
+                break;
+            default:
+                ocultaParcelas = true;
+        }
+        if (matriculaAcademia.getNumeroParcelas() == 0 || matriculaAcademia.getNumeroParcelas() == asv.getNumeroParcelas()) {
+            matriculaAcademia.setNumeroParcelas(asv.getNumeroParcelas());
+        }
+    }
+
+    public boolean isTaxa() {
+        matriculaAcademia.setTaxa(taxa);
+        return taxa;
+    }
+
+    public void setTaxa(boolean taxa) {
+        this.taxa = taxa;
+    }
+
+    public Fisica getAluno() {
+        if (GenericaSessao.exists("fisicaPesquisa")) {
+            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            if (GenericaSessao.exists("pesquisaFisicaTipo")) {
+                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
+                if (tipoFisica.equals("aluno")) {
+                    valorTaxa = "";
+                    taxa = false;
+                    aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
+                    if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
+                        pessoaAlunoMemoria = aluno.getPessoa();
+                    } else {
+                        if (aluno.getPessoa().getId() != matriculaAcademia.getServicoPessoa().getPessoa().getId()) {
+                            pessoaAlunoMemoria = aluno.getPessoa();
+                        }
+                    }
+                    if (aluno.getId() != -1) {
+                        getResponsavel();
+                        verificaSocio();
+                    }
+                    if (responsavel.getId() != -1) {
+                        pessoaComplemento = new PessoaComplemento();
+                        pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                        if (pessoaComplemento != null) {
+                            this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+                        }
+                        matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
+                    }
+                    matriculaAcademia.getServicoPessoa().setPessoa(aluno.getPessoa());
+                    matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
+                    pegarIdServico();
+                    atualizaValor();
+                    calculaValorLiquido();
+                } else if (tipoFisica.equals("responsavel")) {
+                    Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
+                    FunctionsDB functionsDB = new FunctionsDBTopLink();
+                    int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
+                    if (idade >= 18) {
+                        if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
+                            matriculaAcademia.getServicoPessoa().setResponsavel(resp);
+                        }
+                    } else {
+                        GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
+                    }
+                    GenericaSessao.remove("juridicaPesquisa");
+                }
+            }
+            if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() == -1) {
+                pessoaResponsavelMemoria = responsavel;
+            } else {
+                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getResponsavel().getId()) {
+                    pessoaResponsavelMemoria = responsavel;
+                }
+            }
+        }
+        verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getResponsavel());
+        return aluno;
+    }
+
+    public void setAluno(Fisica aluno) {
+        this.aluno = aluno;
+    }
+
+    public Pessoa getResponsavel() {
+        if (aluno.getId() != -1) {
+            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            int titularResponsavel = functionsDB.responsavel(aluno.getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
+            if (titularResponsavel > -1) {
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                responsavel = (Pessoa) salvarAcumuladoDB.pesquisaCodigo(titularResponsavel, "Pessoa");
+            }
+        } else {
+            responsavel = new Pessoa();
+        }
+        return responsavel;
+    }
+
+    public void setResponsavel(Pessoa responsavel) {
+        this.responsavel = responsavel;
+    }
+
+    public int getIdDiaVencimento() {
+        if (idDiaVencimentoPessoa == 0) {
+            if (matriculaAcademia.getId() == -1) {
+                this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+            } else {
+                this.idDiaVencimento = matriculaAcademia.getServicoPessoa().getNrDiaVencimento();
+            }
+        } else {
+            this.idDiaVencimento = idDiaVencimentoPessoa;
+        }
+        return idDiaVencimento;
+    }
+
+    public void setIdDiaVencimento(int idDiaVencimento) {
+        this.idDiaVencimento = idDiaVencimento;
+    }
+
+    public int getIdModalidade() {
+        return idModalidade;
+    }
+
+    public void setIdModalidade(int idModalidade) {
+        this.idModalidade = idModalidade;
+    }
+
+    public int getIdPeriodoGrade() {
+        return idPeriodoGrade;
+    }
+
+    public void setIdPeriodoGrade(int idPeriodoGrade) {
+        this.idPeriodoGrade = idPeriodoGrade;
+    }
+
+    public void verificaDebitosResponsavel(Pessoa responsavelPessoa) {
+        mensagemStatusDebito = "";
+        setOcultaBotaoSalvar(false);
+        if (responsavelPessoa.getId() != -1) {
+            MovimentoDB movimentoDB = new MovimentoDBToplink();
+            if (movimentoDB.existeDebitoPessoa(responsavelPessoa, null)) {
+                mensagemStatusDebito = "Responsável possui débitos!";
+                setOcultaBotaoSalvar(true);
+            }
+        }
+    }
+
+    public String getMensagemStatusDebito() {
+        return mensagemStatusDebito;
+    }
+
+    public void setMensagemStatusDebito(String mensagemStatusDebito) {
+        this.mensagemStatusDebito = mensagemStatusDebito;
+    }
+
+    public boolean isOcultaBotaoSalvar() {
+        return ocultaBotaoSalvar;
+    }
+
+    public void setOcultaBotaoSalvar(boolean ocultaBotaoSalvar) {
+        this.ocultaBotaoSalvar = ocultaBotaoSalvar;
+    }
+
+    public void pegarIdServico() {
+        if (!listaModalidades.isEmpty()) {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            idServico = ((AcademiaServicoValor) (salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaModalidades.get(idModalidade).getDescription()), "AcademiaServicoValor"))).getServicos().getId();
+        }
+    }
+
+    public int getIdServico() {
+        return idServico;
+    }
+
+    public void setIdServico(int idServico) {
+        this.idServico = idServico;
+    }
+
+    public void verificaSocio() {
+        SociosDB dB = new SociosDBToplink();
+        Socios socios = dB.pesquisaSocioPorPessoa(aluno.getId());
+        if (socios != null) {
+            if (socios.getId() != -1) {
+                socio = true;
+            } else {
+                socio = false;
+            }
+        }
+    }
+
+    public String getValor() {
+        return valor;
+    }
+
+    public void setValor(String valor) {
+        this.valor = valor;
+    }
+
+    public String getValorParcela() {
+        return valorParcela;
+    }
+
+    public void setValorParcela(String valorParcela) {
+        this.valorParcela = valorParcela;
+    }
+
+    public String getValorParcelaVencimento() {
+        return valorParcelaVencimento;
+    }
+
+    public void setValorParcelaVencimento(String valorParcelaVencimento) {
+        this.valorParcelaVencimento = valorParcelaVencimento;
+    }
+
+    public String getValorLiquido() {
+        return valorLiquido;
+    }
+
+    public void setValorLiquido(String valorLiquido) {
+        this.valorLiquido = valorLiquido;
+    }
+
+    public String getValorTaxa() {
+        if (vTaxa > 0) {
+            valorTaxa = "" + vTaxa;
+        } else {
+            valorTaxa = "";
+        }
+        return valorTaxa;
+    }
+
+    public void setValorTaxa(String valorTaxa) {
+        this.valorTaxa = valorTaxa;
+    }
+
+    public String getValorTaxaString() {
+        return Moeda.substituiVirgula(valorTaxa);
+    }
+
+    public void setValorTaxaString(String valorTaxa) {
+        this.valorTaxa = Moeda.substituiVirgula(valorTaxa);
+    }
+
+    public PessoaComplemento getPessoaComplemento() {
+        return pessoaComplemento;
+    }
+
+    public void setPessoaComplemento(PessoaComplemento pessoaComplemento) {
+        this.pessoaComplemento = pessoaComplemento;
+    }
+
+    public int getIdDiaVencimentoPessoa() {
+        return idDiaVencimentoPessoa;
+    }
+
+    public void setIdDiaVencimentoPessoa(int idDiaVencimentoPessoa) {
+        this.idDiaVencimentoPessoa = idDiaVencimentoPessoa;
+    }
+    
+    public void recalcular() {
+        pegarIdServico();
+        atualizaValor();
+        calculaValorLiquido();
+    }
+
+    public void calculaValorLiquido() {
+        listaPeriodosGrade.clear();
+        valor = Moeda.substituiVirgula(valor);
+        valorLiquido = "0";
+        valorParcela = "0";
+        valorParcelaVencimento = "0";
+        if (!valor.isEmpty()) {
+            if ((Float.parseFloat(valor) - Float.parseFloat(valor) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100) > 0) {
+                valorLiquido = valor;
+                valorLiquido = Moeda.converteR$Float(Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) - Float.parseFloat(Moeda.substituiVirgula(valorLiquido)) * matriculaAcademia.getServicoPessoa().getNrDesconto() / 100);
+            }
+        }
+        valor = Moeda.converteR$(valor);
+        carregaParcelas();
+    }
+
+    public void atualizaValor() {
+        valor = "";
+        FunctionsDB functionsDB = new FunctionsDBTopLink();
+        valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0));
+        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+        AcademiaServicoValor asv = (AcademiaServicoValor) dB.pesquisaObjeto(Integer.parseInt(getListaPeriodosGrade().get(idPeriodoGrade).getDescription()), "AcademiaServicoValor");
+        if (!asv.getFormula().isEmpty()) {
+            String calculoFormula = asv.getFormula().replace("valor", valor);
+            if (!(functionsDB.scriptSimples(calculoFormula)).isEmpty()) {
+                valor = Moeda.converteR$(functionsDB.scriptSimples(calculoFormula));
+            }
+        }        
+        vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);
+    }
+
+    public void pesquisaFisica(String tipoPesquisa) {
+        GenericaSessao.put("pesquisaFisicaTipo", tipoPesquisa);
+    }
+
+    public boolean isSocio() {
+        return socio;
+    }
+
+    public void setSocio(boolean socio) {
+        this.socio = socio;
+    }
+
+    public boolean isDesabilitaCamposMovimento() {
+        return desabilitaCamposMovimento;
+    }
+
+    public void setDesabilitaCamposMovimento(boolean desabilitaCamposMovimento) {
+        this.desabilitaCamposMovimento = desabilitaCamposMovimento;
+    }
+
+    public float getDesconto() {
+        return desconto;
+    }
+
+    public void setDesconto(float desconto) {
+        this.desconto = desconto;
+    }
+
+    public void cobrarTaxa() {
+        if (taxa == true) {
+            this.valorTaxa = Moeda.converteR$Float(vTaxa);
+        } else {
+            this.valorTaxa = "";
+        }
+    }
+
+    public Juridica getJuridica() {
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
+            MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
+                responsavel = juridica.getPessoa();
+                if (responsavel.getId() != -1) {
+                    pessoaComplemento = new PessoaComplemento();
+                    pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
+                    if (pessoaComplemento != null) {
+                        this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
+                    }
+                    matriculaAcademia.getServicoPessoa().setResponsavel(juridica.getPessoa());
+                }
+                pegarIdServico();
+                atualizaValor();
+                calculaValorLiquido();
+            }
+            if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() == -1) {
+                pessoaResponsavelMemoria = responsavel;
+            } else {
+                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getResponsavel().getId()) {
+                    pessoaResponsavelMemoria = responsavel;
+                }
+            }
+            juridica = new Juridica();
+        }
+        return juridica;
+    }
+
+    public void setJuridica(Juridica juridica) {
+        this.juridica = juridica;
+    }
+
+    public boolean verificaSeContribuinteInativo() {
+        JuridicaDB juridicaDB = new JuridicaDBToplink();
+        Juridica j = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getResponsavel().getId());
+        if (j != null) {
+            if (juridicaDB.empresaInativa(matriculaAcademia.getServicoPessoa().getResponsavel(), "FECHOU")) {
+                mensagemStatusEmpresa = "Empresa inátiva!";
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getMensagemStatusEmpresa() {
+        return mensagemStatusEmpresa;
+    }
+
+    public void setMensagemStatusEmpresa(String mensagemStatusEmpresa) {
+        this.mensagemStatusEmpresa = mensagemStatusEmpresa;
+    }
+
+    public void gerarMovimento() {
+        if (matriculaAcademia.getId() != -1) {
+            if (matriculaAcademia.getEvt() == null) {
+                int periodo = matriculaAcademia.getAcademiaServicoValor().getPeriodo().getId();
+                int numeroParcelas = matriculaAcademia.getNumeroParcelas();
+                if (numeroParcelas == 0) {
+                    numeroParcelas = 1;
+                }
+                if (periodo == 3) {
+                    if (!matriculaAcademia.isTaxa()) {
+                        GenericaMensagem.warn("Validação", "Movimento gerado com sucesso");
+                        return;
+                    }
+                }
+                if (matriculaAcademia.getServicoPessoa().getPessoa().getId() != pessoaAlunoMemoria.getId()) {
+                    GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
+                    return;
+                }
+                if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() != pessoaResponsavelMemoria.getId()) {
+                    GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
+                    return;
+                }
+                String vencimento;
+                String referencia;
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                Plano5 plano5;
+                // 1 | DIÁRIO       | 1
+                // 2 | SEMANAL      | 7
+                // 3 | MENSAL       | 30
+                // 4 | BIMESTRAL    | 60
+                // 5 | TRIMESTRAL   | 90
+                // 6 | SEMESTRAL    | 180
+                // 7 | ANUAL        | 365
+                Servicos servicos;
+                int idCondicaoPagto;
+                if (numeroParcelas == 1) {
+                    idCondicaoPagto = 1;
+                } else {
+                    idCondicaoPagto = 2;
+                }
+                plano5 = matriculaAcademia.getServicoPessoa().getServicos().getPlano5();
+                servicos = matriculaAcademia.getServicoPessoa().getServicos();
+                FTipoDocumento fTipoDocumento = (FTipoDocumento) salvarAcumuladoDB.pesquisaCodigo(matriculaAcademia.getServicoPessoa().getTipoDocumento().getId(), "FTipoDocumento");
+                setLote(
+                        new Lote(
+                                -1,
+                                (Rotina) salvarAcumuladoDB.pesquisaCodigo(122, "Rotina"),
+                                "R",
+                                DataHoje.data(),
+                                matriculaAcademia.getServicoPessoa().getResponsavel(),
+                                matriculaAcademia.getServicoPessoa().getServicos().getPlano5(),
+                                false,
+                                "",
+                                0,
+                                null,
+                                null,
+                                null,
+                                "",
+                                fTipoDocumento,
+                                (CondicaoPagamento) salvarAcumuladoDB.pesquisaCodigo(idCondicaoPagto, "CondicaoPagamento"),
+                                (FStatus) salvarAcumuladoDB.pesquisaCodigo(1, "FStatus"),
+                                null,
+                                matriculaAcademia.getServicoPessoa().isDescontoFolha(), null));
+                salvarAcumuladoDB.abrirTransacao();
+                try {
+
+                    String nrCtrBoletoResp = "";
+
+                    for (int x = 0; x < (Integer.toString(matriculaAcademia.getServicoPessoa().getResponsavel().getId())).length(); x++) {
+                        nrCtrBoletoResp += 0;
+                    }
+
+                    nrCtrBoletoResp += matriculaAcademia.getServicoPessoa().getResponsavel().getId();
+
+                    String mes = matriculaAcademia.getServicoPessoa().getEmissao().substring(3, 5);
+                    String ano = matriculaAcademia.getServicoPessoa().getEmissao().substring(6, 10);
+                    referencia = mes + "/" + ano;
+
+                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaAcademia.getServicoPessoa().getNrDiaVencimento()) {
+                        if (matriculaAcademia.getServicoPessoa().getNrDiaVencimento() < 10) {
+                            vencimento = "0" + matriculaAcademia.getServicoPessoa().getNrDiaVencimento() + "/" + mes + "/" + ano;
+                        } else {
+                            vencimento = matriculaAcademia.getServicoPessoa().getNrDiaVencimento() + "/" + mes + "/" + ano;
+                        }
+                    } else {
+                        String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+                        if (diaSwap.length() < 2) {
+                            diaSwap = "0" + diaSwap;
+                        }
+                        vencimento = diaSwap + "/" + mes + "/" + ano;
+                    }
+                    String dataVencimento = "";
+                    boolean insereTaxa = false;
+                    if (isTaxa()) {
+                        insereTaxa = true;
+                    }
+                    boolean cobrarTaxaCartao = false;
+                    if (taxaCartao) {
+                        cobrarTaxaCartao = true;
+                    }
+                    Evt evt = new Evt();
+                    if (!salvarAcumuladoDB.inserirObjeto(evt)) {
+                        salvarAcumuladoDB.desfazerTransacao();
+                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+                        return;
+                    }
+                    lote.setFilial((Filial) salvarAcumuladoDB.pesquisaObjeto(1, "Filial"));
+                    lote.setEvt(evt);
+                    matriculaAcademia.setEvt(evt);
+                    if (salvarAcumuladoDB.inserirObjeto(lote)) {
+                        int loop;
+                        if (insereTaxa) {
+                            loop = numeroParcelas + 1;
+                        } else {
+                            loop = numeroParcelas;
+                        }
+                        if (cobrarTaxaCartao) {
+                            loop = loop + 1;
+                        }
+                        String vecimentoString = "";
+                        Pessoa pessoaAluno = matriculaAcademia.getServicoPessoa().getPessoa();
+                        Pessoa pessoaResponsavelTitular = matriculaAcademia.getServicoPessoa().getResponsavel();
+                        Pessoa pessoaResponsavel = matriculaAcademia.getServicoPessoa().getCobranca();
+                        if (pessoaResponsavel.getId() == -1) {
+                            salvarAcumuladoDB.desfazerTransacao();
+                            return;
+                        }
+                        int b = 0;
+                        for (int i = 0; i < loop; i++) {
+                            float valorParcelaF;
+                            float valorDescontoAteVencimento;
+                            TipoServico tipoServico;
+                            if (insereTaxa) {
+                                tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(5, "TipoServico");
+                                valorParcelaF = vTaxa;
+                                valorDescontoAteVencimento = 0;
+                                vecimentoString = vencimento;
+                                vencimento = DataHoje.data();
+                                insereTaxa = false;
+                            } else if (cobrarTaxaCartao) {
+                                tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(5, "TipoServico");
+                                valorParcelaF = valorCartao;
+                                valorDescontoAteVencimento = 0;
+                                vecimentoString = vencimento;
+                                vencimento = DataHoje.data();
+                                cobrarTaxaCartao = false;
+                            } else {
+                                tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(1, "TipoServico");
+                                valorDescontoAteVencimento = 0;
+                                valorParcelaF = Moeda.substituiVirgulaFloat(valorLiquido);
+                                if (!vecimentoString.equals("")) {
+                                    vencimento = vecimentoString;
+                                    vecimentoString = "";
+                                }
+                                mes = vencimento.substring(3, 5);
+                                ano = vencimento.substring(6, 10);
+                                referencia = mes + "/" + ano;
+                                switch (periodo) {
+                                    case 1:
+                                        vencimento = DataHoje.data();
+                                        break;
+                                    case 4:
+                                    case 5:
+                                    case 6:
+                                    case 7:
+                                        valorParcelaF = valorParcelaF / matriculaAcademia.getNumeroParcelas();
+                                        if (b > 0) {
+                                            vencimento = (new DataHoje()).incrementarMeses(1, vencimento);
+                                        }
+                                        break;
+                                }
+                                b++;
+                            }
+                            String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
+                            setMovimento(new Movimento(
+                                    -1,
+                                    lote,
+                                    plano5,
+                                    pessoaResponsavel, // EMPRESA DO RESPONSÁVEL (SE DESCONTO FOLHA) OU RESPONSÁVEL (SE NÃO FOR DESCONTO FOLHA)
+                                    matriculaAcademia.getServicoPessoa().getServicos(),
+                                    null,
+                                    tipoServico,
+                                    null,
+                                    valorParcelaF,
+                                    referencia,
+                                    vencimento,
+                                    1,
+                                    true,
+                                    "E",
+                                    false,
+                                    pessoaResponsavelTitular, // TITULAR / RESPONSÁVEL
+                                    pessoaAluno, // BENEFICIÁRIO
+                                    "",
+                                    nrCtrBoleto,
+                                    vencimento,
+                                    valorDescontoAteVencimento,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    fTipoDocumento,
+                                    0));
+                            if (!salvarAcumuladoDB.inserirObjeto(movimento)) {
+                                salvarAcumuladoDB.desfazerTransacao();
+                                GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+                                return;
+                            }
+                            if (matriculaAcademia.getAcademiaServicoValor().getPeriodo().getId() == 3) {
+                                break;
+                            }
+                        }
+                        if (!salvarAcumuladoDB.alterarObjeto(matriculaAcademia)) {
+                            salvarAcumuladoDB.desfazerTransacao();
+                            GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+                            return;
+                        }
+                        salvarAcumuladoDB.comitarTransacao();
+                        GenericaMensagem.info("Sucesso", "Movimentos gerados com sucesso");
+                        desabilitaCamposMovimento = true;
+                        desabilitaDiaVencimento = true;
+                    } else {
+                        salvarAcumuladoDB.desfazerTransacao();
+                        GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");
+                    }
+                } catch (NumberFormatException e) {
+                    salvarAcumuladoDB.desfazerTransacao();
+                }
+            } else {
+                GenericaMensagem.warn("Sistema", "Esse movimento já foi gerado!");
+            }
+        } else {
+            GenericaMensagem.warn("Sistema", "Pesquisar aluno!");
+        }
+    }
+
+    public void desfazerMovimento() {
+        if (matriculaAcademia.getId() != -1) {
+            if (matriculaAcademia.getEvt() != null) {
+                if (existeMovimento()) {
+                    GenericaMensagem.warn("Validação", "Movimento já possui baixa, não pode ser cancelado!");
+                    return;
+                }
+                AcademiaDB academiaDB = new AcademiaDBToplink();
+                if (academiaDB.desfazerMovimento(matriculaAcademia)) {
+                    listaMovimentos.clear();
+                    desabilitaCamposMovimento = false;
+                    bloqueiaComboDiaVencimento();
+                    GenericaMensagem.info("Sucesso", "Transação desfeita com sucesso");
+                } else {
+                    GenericaMensagem.warn("Falha", "ao desfazer essa transação!");
+                }
+                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                matriculaAcademia = (MatriculaAcademia) salvarAcumuladoDB.pesquisaCodigo(matriculaAcademia.getId(), "MatriculaAcademia");
+            }
+        }
+    }
+
+    public void gerarContrato() {
+//        if (matriculaEscola.getEvt() == null) {
+//            GenericaMensagem.warn("Sistema", "Necessário gerar movimento para imprimir esse contrato!");
+//            return;
+//        }
+//        if (matriculaEscola.getId() != -1) {
+//            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+//            Turma turma = new Turma();
+//            String contratoCurso;
+//            String contratoDiaSemana = "";
+//            MatriculaContratoDB dB = new MatriculaContratoDBToplink();
+//            if (tipoMatricula.equals("Individual")) {
+//                matriculaContrato = dB.pesquisaCodigoServico(matriculaIndividual.getCurso().getId());
+//            } else {
+//                matriculaContrato = dB.pesquisaCodigoServico(matriculaTurma.getTurma().getCursos().getId());
+//            }
+//            if (matriculaContrato == null) {
+//                msgConfirma = "Não é possível gerar um contrato para este serviço. Para gerar um contrato acesse: Menu Escola > Suporte > Modelo Contrato.";
+//                GenericaMensagem.warn("Sistema", msgConfirma);
+//                return;
+//            }
+//            String horaInicial;
+//            String horaFinal;
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$aluno", matriculaEscola.getAluno().getNome()));
+//            FisicaDB fisicaDB = new FisicaDBToplink();
+//            Fisica contratoFisica = fisicaDB.pesquisaFisicaPorPessoa(matriculaEscola.getResponsavel().getId());
+//            List listaDiaSemana = new ArrayList();
+//            int periodoMeses;
+//            String periodoMesesExtenso;
+//            if (tipoMatricula.equals("Individual")) {
+//                contratoCurso = matriculaIndividual.getCurso().getDescricao();
+//                if (matriculaIndividual.isSegunda()) {
+//                    listaDiaSemana.add("Seg");
+//                }
+//                if (matriculaIndividual.isTerca()) {
+//                    listaDiaSemana.add("Ter");
+//                }
+//                if (matriculaIndividual.isQuarta()) {
+//                    listaDiaSemana.add("Qua");
+//                }
+//                if (matriculaIndividual.isQuinta()) {
+//                    listaDiaSemana.add("Qui");
+//                }
+//                if (matriculaIndividual.isSexta()) {
+//                    listaDiaSemana.add("Sex");
+//                }
+//                if (matriculaIndividual.isSabado()) {
+//                    listaDiaSemana.add("Sab");
+//                }
+//                if (matriculaIndividual.isDomingo()) {
+//                    listaDiaSemana.add("Dom");
+//                }
+//                horaInicial = matriculaIndividual.getInicio();
+//                horaFinal = matriculaIndividual.getTermino();
+//                periodoMeses = DataHoje.quantidadeMeses(matriculaIndividual.getDataInicio(), matriculaIndividual.getDataTermino());
+//            } else {
+//                turma = (Turma) salvarAcumuladoDB.pesquisaCodigo(matriculaTurma.getTurma().getId(), "Turma");
+//                contratoCurso = matriculaTurma.getTurma().getCursos().getDescricao();
+//                periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino());
+//                if (turma.isSegunda()) {
+//                    listaDiaSemana.add("Seg");
+//                }
+//                if (turma.isTerca()) {
+//                    listaDiaSemana.add("Ter");
+//                }
+//                if (turma.isQuarta()) {
+//                    listaDiaSemana.add("Qua");
+//                }
+//                if (turma.isQuinta()) {
+//                    listaDiaSemana.add("Qui");
+//                }
+//                if (turma.isSexta()) {
+//                    listaDiaSemana.add("Sex");
+//                }
+//                if (turma.isSabado()) {
+//                    listaDiaSemana.add("Sab");
+//                }
+//                if (turma.isDomingo()) {
+//                    listaDiaSemana.add("Dom");
+//                }
+//                horaInicial = matriculaTurma.getTurma().getHoraInicio();
+//                horaFinal = matriculaTurma.getTurma().getHoraTermino();
+//                matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$descricao", turma.getDescricao()));
+//            }
+//            if (periodoMeses == 0) {
+//                periodoMesesExtenso = "mês atual";
+//            } else {
+//                ValorExtenso valorExtenso = new ValorExtenso();
+//                valorExtenso.setNumber((double) periodoMeses);
+//                periodoMesesExtenso = (valorExtenso.toString()).replace("reais", "");
+//            }
+//            for (int i = 0; i < listaDiaSemana.size(); i++) {
+//                if (i == 0) {
+//                    contratoDiaSemana = listaDiaSemana.get(i).toString();
+//                } else {
+//                    contratoDiaSemana += " , " + listaDiaSemana.get(i).toString();
+//                }
+//            }
+//            String enderecoAlunoString = "";
+//            String bairroAlunoString = "";
+//            String cidadeAlunoString = "";
+//            String estadoAlunoString = "";
+//            String cepAlunoString = "";
+//            String enderecoResponsavelString = "";
+//            String bairroResponsavelString = "";
+//            String cidadeResponsavelString = "";
+//            String estadoResponsavelString = "";
+//            String cepResponsavelString = "";
+//            PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+//            PessoaEndereco pessoaEnderecoAluno = (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getAluno().getId(), 1);
+//
+//            int idTipoEndereco = -1;
+//            if (pessoaEnderecoAluno != null) {
+//                enderecoAlunoString = pessoaEnderecoAluno.getEndereco().getEnderecoSimplesToString() + ", " + pessoaEnderecoAluno.getNumero();
+//                bairroAlunoString = pessoaEnderecoAluno.getEndereco().getBairro().getDescricao();
+//                cidadeAlunoString = pessoaEnderecoAluno.getEndereco().getCidade().getCidade();
+//                estadoAlunoString = pessoaEnderecoAluno.getEndereco().getCidade().getUf();
+//                cepAlunoString = pessoaEnderecoAluno.getEndereco().getCep();
+//            }
+//            if (matriculaEscola.getResponsavel().getId() != matriculaEscola.getAluno().getId()) {
+//                // Tipo Documento - CPF
+//                if (matriculaEscola.getResponsavel().getTipoDocumento().getId() == 1) {
+//                    idTipoEndereco = 1;
+//                    // Tipo Documento - CNPJ
+//                } else if (matriculaEscola.getResponsavel().getTipoDocumento().getId() == 2) {
+//                    idTipoEndereco = 3;
+//                }
+//            } else {
+//                enderecoResponsavelString = enderecoAlunoString;
+//                bairroResponsavelString = bairroAlunoString;
+//                cidadeResponsavelString = cidadeAlunoString;
+//                estadoResponsavelString = estadoAlunoString;
+//                cepResponsavelString = cepAlunoString;
+//            }
+//            PessoaEndereco pessoaEnderecoResponsavel = (PessoaEndereco) pessoaEnderecoDB.pesquisaEndPorPessoaTipo(matriculaEscola.getResponsavel().getId(), idTipoEndereco);
+//            if (pessoaEnderecoResponsavel != null) {
+//                enderecoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getEnderecoSimplesToString() + ", " + pessoaEnderecoResponsavel.getNumero();
+//                bairroResponsavelString = pessoaEnderecoResponsavel.getEndereco().getBairro().getDescricao();
+//                cidadeResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCidade().getCidade();
+//                estadoResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCidade().getUf();
+//                cepResponsavelString = pessoaEnderecoResponsavel.getEndereco().getCep();
+//            }
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cpfAluno", (matriculaEscola.getAluno().getDocumento())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$rgAluno", (aluno.getRg())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$responsavel", (getResponsavel().getNome())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cpfResponsavel", (getResponsavel().getDocumento())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$rgResponsavel", (contratoFisica.getRg())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$curso", (contratoCurso)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaSemana", (contratoDiaSemana)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataInicialExtenso", (DataHoje.dataExtenso(turma.getDataInicio()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinalExtenso", (DataHoje.dataExtenso(turma.getDataTermino()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataExtenso", (DataHoje.dataExtenso(DataHoje.data()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataInicial", (turma.getDataInicio())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataFinal", (turma.getDataTermino())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorParcela", (Moeda.converteR$Float(matriculaEscola.getValorTotal() / matriculaEscola.getNumeroParcelas()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$parcelas", (Integer.toString(matriculaEscola.getNumeroParcelas()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$diaVencimento", (Integer.toString(matriculaEscola.getDiaVencimento()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorAteVencimento", (Moeda.converteR$Float((matriculaEscola.getValorTotal() - matriculaEscola.getDescontoAteVencimento()) / matriculaEscola.getNumeroParcelas()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaInicial", (horaInicial)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$horaFinal", (horaFinal)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", (Moeda.converteR$Float((matriculaEscola.getValorTotal())))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$matricula", (Integer.toString(matriculaEscola.getId()))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$ano", (DataHoje.livre(DataHoje.dataHoje(), "yyyy"))));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoAluno", (enderecoAlunoString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroAluno", (bairroAlunoString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeAluno", (cidadeAlunoString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoAluno", (estadoAlunoString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepAluno", (cepAlunoString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesesExtenso", (periodoMesesExtenso)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$meses", (Integer.toString(periodoMeses))));
+//            String alunoNascimento = "";
+//            if (contratoFisica.getId() != -1) {
+//                alunoNascimento = (contratoFisica.getNascimento());
+//            }
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$nascimentoAluno", (alunoNascimento)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailAluno", (matriculaEscola.getAluno().getEmail1())));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$enderecoResponsavel", (enderecoResponsavelString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$bairroResponsavel", (bairroResponsavelString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cidadeResponsavel", (cidadeResponsavelString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$estadoResponsavel", (estadoResponsavelString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$cepResponsavel", (cepResponsavelString)));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$emailResponsavel", (matriculaEscola.getResponsavel().getEmail1())));
+//            String valorTaxaString = "";
+//            String listaValores = "";
+//            String listaValoresComData = "";
+//            int z = 1;
+//            for (int y = 0; y < listaMovimentos.size(); y++) {
+//                if (listaMovimentos.get(y).getTipoServico().getId() == 5) {
+//                    valorTaxaString = Float.toString(listaMovimentos.get(y).getTaxa());
+//                } else {
+//                    if (z == 1) {
+//                        listaValores = "Parcela nº" + z + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
+//                        listaValoresComData = listaMovimentos.get(y).getVencimento() + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
+//                    } else {
+//                        listaValores += ", " + "Parcela nº" + z + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
+//                        listaValoresComData += ", " + listaMovimentos.get(y).getVencimento() + " - Valor: R$ " + Float.toString(listaMovimentos.get(y).getValor());
+//                    }
+//                    z++;
+//                }
+//            }
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$taxa", valorTaxaString));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$listaValoresComData", listaValoresComData));
+//            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$listaValores", listaValores));
+//            try {
+//                File dirFile = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"));
+//                if (!dirFile.exists()) {
+//                    boolean success = dirFile.mkdir();
+//                    if (!success) {
+//                        return;
+//                    }
+//                }
+//                String fileName = "contrato" + DataHoje.hora().hashCode() + ".pdf";
+//                String filePDF = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName);
+//                File file = new File(filePDF);
+//                boolean success = file.createNewFile();
+//                if (success) {
+//                    OutputStream os = new FileOutputStream(filePDF);
+//                    HtmlToPDF.convert(matriculaContrato.getDescricao(), os);
+//                    os.close();
+//                    Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
+//                    String linha = reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName;
+//                    HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+//                    response.sendRedirect(linha);
+//                }
+//            } catch (IOException e) {
+//                e.getMessage();
+//            } catch (DocumentException e) {
+//                e.getMessage();
+//            }
+//        }
+    }
+
+    public void gerarCarne() throws Exception, JRException {
+        if (matriculaAcademia.getEvt() != null) {
+            if (listaMovimentos.size() > 0) {
+                PessoaEnderecoDB pessoaEnderecoDB = new PessoaEnderecoDBToplink();
+                //PessoaEndereco pessoaEndereco = ((List<PessoaEndereco>) pessoaEnderecoDB.pesquisaEndPorPessoa(matriculaEscola.getFilial().getFilial().getPessoa().getId())).get(0);
+                List<CarneEscola> list = new ArrayList<CarneEscola>();
+                int j = 1;
+                for (int i = 0; i < listaMovimentos.size(); i++) {
+                }
+                if (!list.isEmpty()) {
+                    JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(list);
+                    JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/CARNE.jasper"));
+                    JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+                    byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                    String nomeDownload = "carne_academia" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+                    SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+                    if (!new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes")).exists()) {
+                        File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes"));
+                        file.mkdir();
+                    }
+                    String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/carnes");
+                    sa.salvaNaPasta(pathPasta);
+                    Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+                    download.baixar();
+                    download.remover();
+                }
+            }
+        }
+    }
+
+    public boolean isDesabilitaGeracaoContrato() {
+        return desabilitaGeracaoContrato;
+    }
+
+    public void setDesabilitaGeracaoContrato(boolean desabilitaGeracaoContrato) {
+        this.desabilitaGeracaoContrato = desabilitaGeracaoContrato;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public List<Movimento> getListaMovimentos() {
+        if (listaMovimentos.isEmpty()) {
+            if (matriculaAcademia.getId() != -1) {
+                int count = 0;
+                if (matriculaAcademia.getEvt() != null) {
+                    MovimentoDB movimentoDB = new MovimentoDBToplink();
+                    LoteDB loteDB = new LoteDBToplink();
+                    lote = (Lote) loteDB.pesquisaLotePorEvt(matriculaAcademia.getEvt());
+                    listaMovimentos = movimentoDB.listaMovimentosDoLote(lote.getId());
+                    for (int i = 0; i < listaMovimentos.size(); i++) {
+                        if (listaMovimentos.get(i).getTipoServico().getId() == 5) {
+                            setTaxa(true);
+                            valorTaxa = Moeda.converteR$Float(listaMovimentos.get(i).getValor());
+                            listaMovimentos.get(i).setQuantidade(0);
+                        } else {
+                            count++;
+                            listaMovimentos.get(i).setQuantidade(count);
+                        }
+                    }
+                    lote = new Lote();
+                }
+            }
+        }
+        return listaMovimentos;
+    }
+
+    public void setListaMovimentos(List<Movimento> listaMovimentos) {
+        this.listaMovimentos = listaMovimentos;
+    }
+
+    public Lote getLote() {
+        return lote;
+    }
+
+    public void setLote(Lote lote) {
+        this.lote = lote;
+    }
+
+    public boolean existeMovimento() {
+        if (matriculaAcademia.getEvt() != null) {
+            MovimentoDB movimentoDB = new MovimentoDBToplink();
+            if (!((List) movimentoDB.movimentosBaixadosPorEvt(matriculaAcademia.getEvt().getId())).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void bloqueiaComboDiaVencimento() {
+        if (idFTipoDocumento == 2) {
+            desabilitaDiaVencimento = true;
+        } else if (idFTipoDocumento == 13) {
+            desabilitaDiaVencimento = false;
+        }
+    }
+
+    public boolean isDesabilitaDiaVencimento() {
+        return desabilitaDiaVencimento;
+    }
+
+    public void setDesabilitaDiaVencimento(boolean desabilitaDiaVencimento) {
+        this.desabilitaDiaVencimento = desabilitaDiaVencimento;
+    }
+
+    public Movimento getMovimento() {
+        return movimento;
+    }
+
+    public void setMovimento(Movimento movimento) {
+        this.movimento = movimento;
+    }
+
+    public String periodoSemanaString(MatriculaAcademia academia) {
+        String periodoSemana = "";
+        AcademiaDB academiaDB = new AcademiaDBToplink();
+        List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(academia.getServicoPessoa().getServicos().getId());
+        List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
+        for (int i = 0; i < list.size(); i++) {
+            listSemana.clear();
+            listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
+            for (int j = 0; j < listSemana.size(); j++) {
+                if (j == 0) {
+                    periodoSemana += listSemana.get(j).getSemana().getDescricao();
+                } else {
+                    periodoSemana += " - " + listSemana.get(j).getSemana().getDescricao();
+                }
+            }
+        }
+        return periodoSemana;
+    }
+
+    public void acaoPesquisaInicial() {
+        comoPesquisa = "I";
+        listaAcademia.clear();
+    }
+
+    public void acaoPesquisaParcial() {
+        comoPesquisa = "P";
+        listaAcademia.clear();
+    }
+
+    public String getMascaraPesquisa() {
+        return Mask.getMascaraPesquisa(porPesquisa, true);
+    }
+
+    public boolean isOcultaParcelas() {
+        return ocultaParcelas;
+    }
+
+    public void setOcultaParcelas(boolean ocultaParcelas) {
+        this.ocultaParcelas = ocultaParcelas;
+    }
+
+    public Pessoa getCobranca() {
+        return cobranca;
+    }
+
+    public void setCobranca(Pessoa cobranca) {
+        this.cobranca = cobranca;
+    }
+    
+    public String semanaResumo(String descricao) {
+        descricao = descricao.substring(0, 3);
+        return descricao; 
+    }
+
+    public Registro getRegistro() {
+        if (registro != null) {
+            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+            registro = (Registro) dB.pesquisaObjeto(1, "Registro");
+            if(registro.getServicos() != null) {
+                ServicoValorDB servicoValorDB = new ServicoValorDBToplink();
+                List<ServicoValor> list = (List<ServicoValor>) servicoValorDB.pesquisaServicoValor(registro.getServicos().getId());
+                if (!list.isEmpty()) {
+                    valorCartao = list.get(0).getValor();
+                }
+                ocultaBotaoTarifaCartao = false;
+            } else {
+                ocultaBotaoTarifaCartao = true;
+            }
+        }
+        return registro;
+    }
+
+    public void setRegistro(Registro registro) {
+        this.registro = registro;
+    }
+
+    public boolean isOcultaBotaoTarifaCartao() {
+        return ocultaBotaoTarifaCartao;
+    }
+
+    public void setOcultaBotaoTarifaCartao(boolean ocultaBotaoTarifaCartao) {
+        this.ocultaBotaoTarifaCartao = ocultaBotaoTarifaCartao;
+    }
+
+    public float getValorCartao() {
+        return valorCartao;
+    }
+
+    public void setValorCartao(float valorCartao) {
+        this.valorCartao = valorCartao;
+    }
+
+    public boolean isTaxaCartao() {
+        return taxaCartao;
+    }
+
+    public void setTaxaCartao(boolean taxaCartao) {
+        this.taxaCartao = taxaCartao;
+    }
+
 }
