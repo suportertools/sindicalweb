@@ -33,4 +33,11 @@ public interface FunctionsDB {
      * @return
      */
     public int idade(String campoData, String dataString, int idPessoa);
+    
+    /**
+     * Retorna operações e linhas de comando passados via SQL
+     * @param script --> Nome da linha de comando
+     * @return 
+     */    
+    public String scriptSimples(String script);
 }

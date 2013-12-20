@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca;
 
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
@@ -74,6 +75,9 @@ public class Registro implements java.io.Serializable {
     @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO ")
     @Temporal(TemporalType.DATE)
     private Date agendamentoRetroativo;
+    @JoinColumn(name = "ID_SERVICO_CARTAO", referencedColumnName = "ID", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Servicos servicos;
 
     public Registro() {
         this.id = -1;
@@ -106,6 +110,7 @@ public class Registro implements java.io.Serializable {
         this.limiteEnvios = 0;
         this.intervaloEnvios = 0;
         this.agendamentoRetroativo = new Date();
+        this.servicos = new Servicos();
     }
 
     public Registro(int id,
@@ -137,7 +142,8 @@ public class Registro implements java.io.Serializable {
             boolean agendamentoWeb,
             int limiteEnvios,
             int intervaloEnvios,
-            String agendamentoRetroativo) {
+            String agendamentoRetroativo,
+            Servicos servicos) {
 
         this.id = id;
         this.filial = filial;
@@ -169,6 +175,7 @@ public class Registro implements java.io.Serializable {
         this.limiteEnvios = limiteEnvios;
         this.intervaloEnvios = intervaloEnvios;
         this.agendamentoRetroativo = DataHoje.converte(agendamentoRetroativo);
+        this.servicos = new Servicos();
     }
 
     public int getId() {
@@ -431,5 +438,13 @@ public class Registro implements java.io.Serializable {
 
     public void setAgendamentoRetroativoString(String agendamentoRetroativoString) {
         this.agendamentoRetroativo =  DataHoje.converte(agendamentoRetroativoString);
+    }
+
+    public Servicos getServicos() {
+        return servicos;
+    }
+
+    public void setServicos(Servicos servicos) {
+        this.servicos = servicos;
     }
 }

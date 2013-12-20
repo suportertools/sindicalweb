@@ -43,8 +43,9 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
     @Override
     public float valorServico(int idPessoa, int idServico, Date date, int tipo) {        
         String dataString = DataHoje.converteData(date);
+        String queryString = "SELECT func_valor_servico("+idPessoa+", "+idServico+", '"+dataString+"', "+tipo+") ";
         try {
-            Query qry = getEntityManager().createNativeQuery( "SELECT func_valor_servico("+idPessoa+", "+idServico+", '"+dataString+"', "+tipo+") ");
+            Query qry = getEntityManager().createNativeQuery(queryString);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 list = (List) qry.getSingleResult();
@@ -77,5 +78,25 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
             idade = 0;
         }
         return idade;
+    }
+    
+    /**
+     * Retorna operações e linhas de comando passados via SQL
+     * @param script --> Nome da linha de comando
+     * @return 
+     */
+    @Override
+    public String scriptSimples(String script) {
+        String retorno = "";        
+        try {
+            Query query = getEntityManager().createNativeQuery( "SELECT "+script);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                retorno = ((List) query.getSingleResult()).get(0).toString();
+            }
+        } catch (Exception e) {
+            retorno = "";
+        }
+        return retorno;
     }
 }

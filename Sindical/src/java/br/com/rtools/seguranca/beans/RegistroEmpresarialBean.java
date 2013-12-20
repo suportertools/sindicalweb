@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
@@ -11,7 +12,6 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -29,6 +29,7 @@ public class RegistroEmpresarialBean implements Serializable {
     private String confirmaSenha = "";
     private String mensagem = "";
     private int codigoModulo = 0;
+    private int codigoServico = -1;
 
     public void salvar() {
 //        if (!validacao()) {
@@ -45,6 +46,13 @@ public class RegistroEmpresarialBean implements Serializable {
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
+        Servicos servicos;
+        if (codigoServico <= 0) {
+            servicos = null;
+        } else {
+            servicos = (Servicos) sv.pesquisaObjeto(codigoServico, "Servicos");
+        }
+        registro.setServicos(servicos);
         if (sv.alterarObjeto(registro)) {
             sv.comitarTransacao();
             GenericaMensagem.info("Sucesso", "Registro atualizado");
@@ -102,6 +110,9 @@ public class RegistroEmpresarialBean implements Serializable {
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
                 registro = (Registro) sv.pesquisaCodigo(1, "Registro");
                 senha = registro.getSenha();
+                if (registro.getServicos() != null) {
+                    codigoServico = registro.getServicos().getId();                    
+                }
             }
         }
         return registro;
@@ -181,6 +192,14 @@ public class RegistroEmpresarialBean implements Serializable {
 
     public void onChange(TabChangeEvent event) {
         Tab activeTab = event.getTab();
+    }
+
+    public int getCodigoServico() {
+        return codigoServico;
+    }
+
+    public void setCodigoServico(int codigoServico) {
+        this.codigoServico = codigoServico;
     }
 
 }

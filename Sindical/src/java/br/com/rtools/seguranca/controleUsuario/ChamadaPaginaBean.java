@@ -504,6 +504,11 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         return metodoGenerico(2, "academia");
     }
+    
+    public synchronized String academiaGrade() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("academiaGradeBean");
+        return metodoGenerico(2, "academiaGrade");
+    }
 
     public synchronized String servicoRotina() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("servicoRotinaBean");
@@ -940,6 +945,11 @@ public class ChamadaPaginaBean implements Serializable {
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosSocialBean");
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
+    }
+    
+    public synchronized String academiaServicoValor() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("academiaServicoValorBean");
+        return metodoGenerico(2, "academiaServicoValor");
     }
 
     //------------------------------------------------------------------------------------------------------------

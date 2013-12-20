@@ -13,6 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import oracle.toplink.essentials.config.CacheType;
 import oracle.toplink.essentials.config.TopLinkProperties;
+import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 
 public class DB {
 
@@ -60,6 +61,7 @@ public class DB {
                     properties.put(TopLinkProperties.JDBC_PASSWORD, config.getArgumento2().toString());
                     properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + config.getArgumento0() + ":5432/" + config.getArgumento1().toString());
                     EntityManagerFactory emf = Persistence.createEntityManagerFactory(config.getArgumento1().toString(), properties);
+                    //properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
                     //emf = Persistence.createEntityManagerFactory(persist, properties);
                     entidade = emf.createEntityManager();
                     GenericaSessao.put("conexao", emf);

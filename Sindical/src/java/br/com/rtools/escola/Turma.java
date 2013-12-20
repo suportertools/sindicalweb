@@ -57,10 +57,14 @@ public class Turma implements Serializable {
     private String sala;
     @Column(name = "DS_DESCRICAO", length = 255)
     private String descricao;
+    @Column(name = "NR_IDADE_INI")
+    private int idadeInicial;
+    @Column(name = "NR_IDADE_FIM")    
+    private int idadeFim;
 
     public Turma(int id, Servicos cursos, String dataInicio, String dataTermino, String horaInicio, String horaTermino,
             boolean segunda, boolean terca, boolean quarta, boolean quinta, boolean sexta, boolean sabado, boolean domingo, Filial filial,
-            int quantidade, String sala, String descricao) {
+            int quantidade, String sala, String descricao, int idadeInicial, int idadeFim) {
         this.id = id;
         this.cursos = cursos;
         setDataInicio(dataInicio);
@@ -78,6 +82,8 @@ public class Turma implements Serializable {
         this.quantidade = quantidade;
         this.sala = sala;
         this.descricao = descricao;
+        this.idadeInicial = idadeInicial;
+        this.idadeFim = idadeFim;
     }
 
     public Turma() {
@@ -272,5 +278,21 @@ public class Turma implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public int getIdadeInicial() {
+        return idadeInicial;
+    }
+
+    public void setIdadeInicial(int idadeInicial) {
+        this.idadeInicial = idadeInicial;
+    }
+
+    public int getIdadeFim() {
+        return idadeFim;
+    }
+
+    public void setIdadeFim(int idadeFim) {
+        this.idadeFim = idadeFim;
     }
 }
