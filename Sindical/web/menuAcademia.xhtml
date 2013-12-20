@@ -1,79 +1,58 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
-    <h:head>
-        <title>Sindical - Página Academia</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
-         <style type="text/css">
-            .divMenuAcademia, .divBotaoPrincipal:hover {-webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px;  border: 0;}
-            .corpoAcessos { width: 200px; height: 300px; }
-            .divMenuAcademia {width: 980px;}
-            .divMenuAcademia .divBotao {background: #e0e0e0;}
-            .divMenuAcademia .divBotaoPrincipal:hover {background: #d4d5d7; border: 1px solid #d4d5d7;}
-            .divMenuAcademia .divBotao:hover {background: #abc4eb;}
-         </style>
-    </h:head>
-    <h:body class="divMenu"><div Align="Center">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formMenuAcademia" style="border: 0; width: 980px; height: 800px; border-bottom: 1px dashed #888; ">
-               <h:panelGrid cellpadding="0" cellspacing="0">   
-                  <h:panelGrid columns="2">
-                    <h:column><h:graphicImage value="/Imagens/BarraSuperior.png"/></h:column>
-                    <h:column><h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" /></h:column>
-                  </h:panelGrid>
-                  <rich:toolbar styleClass="divMenuAcademia" style="background: #e0e0e0; border: 0">
-                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                        <f:facet name="label">
-                          <h:panelGroup>
-                              <h:panelGrid columns="2">
-                                  <h:graphicImage value="/Imagens/cadastro.png" styleClass="pic"/>
-                                  <h:outputText value="Cadastro" styleClass="fontePadraoNegrito"/>
-                              </h:panelGrid>
-                          </h:panelGroup>
-                        </f:facet>
-                            <rich:menuItem label="Matricula Academia"           action="#{chamadaPaginaBean.academia}" styleClass="divBotao"/>
-                            <rich:menuItem label="Tabela Preço"           action="#{chamadaPaginaBean.academiaServicoValor}" styleClass="divBotao"/>
-                            <rich:menuItem label="Grade Academia"               action="#{chamadaPaginaBean.academiaGrade()}" styleClass="divBotao"/>
-                            <rich:menuItem label="Modelo Contrato"              action="#{chamadaPaginaBean.contrato}" styleClass="divBotao"/>
-                            <rich:menuItem label="Desconto Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" styleClass="divBotao"/>
-                      </rich:dropDownMenu>
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
 
-                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                        <f:facet name="label">
-                          <h:panelGroup>
-                              <h:panelGrid columns="2">
-                                  <h:graphicImage value="/Imagens/movimento.png" styleClass="pic"/>
-                                  <h:outputText value="Movimento" styleClass="fontePadraoNegrito"/>
-                              </h:panelGrid>
-                          </h:panelGroup>
-                        </f:facet>
-                      </rich:dropDownMenu>
-                      <rich:dropDownMenu styleClass="divBotaoPrincipal">
-                        <f:facet name="label">
-                            <h:panelGroup>
-                                <h:panelGrid columns="2">
-                                    <h:graphicImage value="/Imagens/relatorio.png" styleClass="pic"/>
-                                    <h:outputText value="Relatórios" styleClass="fontePadraoNegrito"/>
-                                </h:panelGrid>
-                            </h:panelGroup>
-                        </f:facet>
-                    </rich:dropDownMenu>
-                  </rich:toolbar>
-                  </h:panelGrid>
+    <h:head>
+        <title>Sindical - Menu Academia</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+    </h:head>
+    
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+	<div id="wrapx">
+        <div id="mainx">
+        <!-- INICIA DIV wrap e main -->  
+         <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+
+        <f:view>
+            <h:form id="formMenuPrincipal">
+                <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
+                    <p:menubar>
+                        <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">  
+                            <p:menuitem value="Matricula Academia"          action="#{chamadaPaginaBean.academia}"/>
+                            <p:menuitem value="Tabela Preço"                action="#{chamadaPaginaBean.academiaServicoValor}" />
+                            <p:submenu label="Suporte">
+                                <p:menuitem value="Grade Academia"          action="#{chamadaPaginaBean.academiaGrade()}"/>
+                                <p:menuitem value="Modelo Contrato"         action="#{chamadaPaginaBean.contrato}" />
+                                <p:menuitem value="Desc. Serviço Empresa"   action="#{chamadaPaginaBean.descontoServicoEmpresa}" title="Desconto Serviço Empresa"/>
+                            </p:submenu>                            
+                        </p:submenu>
+                        <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">  
+                            <p:menuitem value="Agendamento"     action="#{chamadaPaginaBean.agendamento}" />
+                        </p:submenu>
+                        <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  
+                        </p:submenu>
+                    </p:menubar> 
+                </p:panel>
             </h:form>
         </f:view>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>            
-      </div>
+
+        
+        
+        <!-- FINALIZA div wrap main -->
+        </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>
     </h:body>
-</ui:composition>
+</html>
