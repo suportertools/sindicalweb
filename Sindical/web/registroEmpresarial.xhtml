@@ -132,6 +132,8 @@
                                         <div class="clear"></div>
                                         <p:inputTextarea value="#{registroEmpresarialBean.registro.fichaSocial}" cols="75" rows="7" styleClass="no-resize margin-top-max" />
                                     </p:column>                                        
+                                    <p:outputLabel value="Código Serviço Cartão:"/>
+                                    <p:inputText value="#{registroEmpresarialBean.codigoServico}" />
                                 </p:panelGrid>
                             </p:tab>
                             <p:tab title="Homologação" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 4}">
