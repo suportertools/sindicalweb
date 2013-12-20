@@ -27,6 +27,8 @@ public class AcademiaServicoValor implements Serializable {
     private AcademiaGrade academiaGrade;
     @Column(name = "DS_FORMULA", length = 255)
     private String formula;
+    @Column(name = "NR_PARCELAS")
+    private int numeroParcelas;
 
     public AcademiaServicoValor() {
         this.id = -1;
@@ -34,14 +36,16 @@ public class AcademiaServicoValor implements Serializable {
         this.periodo = new Periodo();
         this.academiaGrade = new AcademiaGrade();
         this.formula = "";
+        this.numeroParcelas = 0;
     }
 
-    public AcademiaServicoValor(int id, Servicos servicos, Periodo periodo, AcademiaGrade academiaGrade, String formula) {
+    public AcademiaServicoValor(int id, Servicos servicos, Periodo periodo, AcademiaGrade academiaGrade, String formula, int numeroParcelas) {
         this.id = id;
         this.servicos = servicos;
         this.periodo = periodo;
         this.academiaGrade = academiaGrade;
         this.formula = formula;
+        this.numeroParcelas = numeroParcelas;
     }
 
     public int getId() {
@@ -82,6 +86,14 @@ public class AcademiaServicoValor implements Serializable {
 
     public void setFormula(String formula) {
         this.formula = formula;
+    }
+
+    public int getNumeroParcelas() {
+        return numeroParcelas;
+    }
+
+    public void setNumeroParcelas(int numeroParcelas) {
+        this.numeroParcelas = numeroParcelas;
     }
 
 }
