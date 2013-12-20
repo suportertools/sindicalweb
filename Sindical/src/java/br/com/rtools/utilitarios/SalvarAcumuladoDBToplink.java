@@ -2,6 +2,7 @@ package br.com.rtools.utilitarios;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.principal.DB;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -51,9 +52,6 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
                 log.novo("Alterar " + objeto.getClass().getSimpleName(), "Objeto esta passando -1");
                 return false;
             }
-            getEntityManager().merge(objeto);
-            getEntityManager().flush();
-            return true;
         } catch (IllegalAccessException e) {
             log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
@@ -67,6 +65,14 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         } catch (InvocationTargetException e) {
+            log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        }
+        try {
+            getEntityManager().merge(objeto);
+            getEntityManager().flush();
+            return true;
+        } catch (Exception e) {
             log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
             return false;
         }

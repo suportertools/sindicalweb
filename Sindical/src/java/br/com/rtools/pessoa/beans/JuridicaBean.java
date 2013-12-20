@@ -764,13 +764,9 @@ public class JuridicaBean implements Serializable {
     }
 
     public String editar(Juridica j) {
+        listaContribuintesInativos.clear();
+        contribuintesInativos = new ContribuintesInativos();
         juridica = j;
-        if (juridica.getId() != -1) {
-            if (juridica.getId() != j.getId()) {
-                listaContribuintesInativos.clear();
-                contribuintesInativos = new ContribuintesInativos();
-            }
-        }
         juridica = j;
         if (juridica.getContabilidade() == null) {
             contabilidade = new Juridica();
