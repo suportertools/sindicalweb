@@ -1487,7 +1487,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     @Override
     public List<Movimento> listaMovimentosDoLote(int idLote) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT MOV FROM Movimento AS MOV WHERE MOV.lote.id = :pLote ORDER BY MOV.dtVencimento ASC ");
+            Query qry = getEntityManager().createQuery(" SELECT MOV FROM Movimento AS MOV WHERE MOV.lote.id = :pLote ORDER BY MOV.dtVencimento ASC, MOV.id ASC");
             qry.setParameter("pLote", idLote);
             List<Movimento> listMovimentos = qry.getResultList();
             if (!listMovimentos.isEmpty()) {
