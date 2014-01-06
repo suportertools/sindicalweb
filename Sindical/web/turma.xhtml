@@ -83,6 +83,15 @@
                                 <p:outputLabel value=" horas " />
                             </p:column>
                             <p:column>
+                                <p:outputLabel value="Faixa de idade: " />
+                            </p:column>
+                            <p:column>
+                                <p:spinner value="#{turmaBean.turma.idadeInicial}" min="0" max="120" size="2"/>
+                                <p:outputLabel value=" à " styleClass="margin-left-max"/>
+                                <p:spinner value="#{turmaBean.turma.idadeFim}" min="0" max="120" size="2" styleClass="margin-left-max"/>
+                                <p:outputLabel value=" ano(s) " styleClass="margin-left-max"/>
+                            </p:column>
+                            <p:column>
                                 <p:outputLabel value="Dias da semana: " />
                             </p:column>
                             <p:column>                                
