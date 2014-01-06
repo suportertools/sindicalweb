@@ -104,6 +104,8 @@ public class Turma implements Serializable {
         this.quantidade = 0;
         this.sala = "";
         this.descricao = "";
+        this.idadeInicial = 0;
+        this.idadeFim = 120;
     }
 
     public int getId() {
