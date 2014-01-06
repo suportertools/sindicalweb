@@ -1493,7 +1493,9 @@ public class MatriculaEscolaBean implements Serializable {
                         + list.get(i).getDataInicio() + " - "
                         + list.get(i).getHoraInicio() + " h - Sala: "
                         + list.get(i).getSala() + " - Descrição: "
-                        + list.get(i).getDescricao(),
+                        + list.get(i).getDescricao()
+                        + " - Faixa de idade " + list.get(i).getIdadeInicial()
+                        + " à " + list.get(i).getIdadeFim() + " ano(s)",
                         Integer.toString(list.get(i).getId())));
             }
         }
