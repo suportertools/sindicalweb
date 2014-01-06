@@ -38,6 +38,9 @@
                         <p:column headerText="Curso">
                             <p:commandLink value="#{linha.cursos.descricao}" action="#{turmaBean.editar(linha)}"/>
                         </p:column>
+                        <p:column headerText="Idade" width="80" styleClass="text-center">
+                            <h:outputText value="#{linha.idadeInicial} à #{linha.idadeFim} ano(s)"/>
+                        </p:column>
                         <p:column headerText="Filial">
                             <h:outputText value="#{linha.cursos.filial.filial.pessoa.nome} - CNPJ: #{linha.cursos.filial.filial.pessoa.documento}"/>
                         </p:column>
