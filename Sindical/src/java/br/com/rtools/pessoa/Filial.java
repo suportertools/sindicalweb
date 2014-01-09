@@ -2,6 +2,15 @@ package br.com.rtools.pessoa;
 
 import javax.persistence.*;
 
+/**
+ * <p>
+ * <strong>Filial</strong></p>
+ * <p>
+ * <strong>Definição:</strong> Estabelecimento dependente de outro.</p>
+ * <p><strong>Importante:</strong> Utilizar filiais somente caso houver um endereçamento diferente da sede!</p>
+ * @author rtools
+ */
+
 @Entity
 @Table(name = "PES_FILIAL")
 @NamedQueries({

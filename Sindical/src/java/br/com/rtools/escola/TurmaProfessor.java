@@ -2,6 +2,14 @@ package br.com.rtools.escola;
 
 import javax.persistence.*;
 
+/**
+ * <p>
+ * <b>TurmaProfessor</b></p>
+ * <p> Cadastro de professores e componentes currículares para a turma. </p>
+ * <p> O mesmo professor poderá ministrar diversas disciplinas, adiciones os componentes currículares e as turmas que este pprofessor ministrá. </p>
+  * @author rtools
+ */
+
 @Entity
 @Table(name = "ESC_TURMA_PROFESSOR")
 @NamedQueries({

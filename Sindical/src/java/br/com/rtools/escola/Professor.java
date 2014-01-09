@@ -3,12 +3,24 @@ package br.com.rtools.escola;
 import br.com.rtools.pessoa.Pessoa;
 import javax.persistence.*;
 
+/**
+ * <p>
+ * <b>Professor</b></p>
+ * <p>
+ * Cadastro único de professores. </p>
+ * <p>
+ * O valor percentual da comissão será usado para gerar um bônus ao professor
+ * conforme o valor final do serviço após ser gravado na tabela movimento
+ * financeiro.</p>
+ *
+ * @author rtools
+ */
 @Entity
 @Table(name = "ESC_PROFESSOR")
 @NamedQueries({
-    @NamedQuery(name = "Professor.pesquisaID",    query = "SELECT P FROM Professor AS P WHERE P.id = :pid"),
-    @NamedQuery(name = "Professor.findAll",       query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC"),
-    @NamedQuery(name = "Professor.findName",      query = "SELECT P FROM Professor AS P WHERE UPPER(P.professor.nome) LIKE :pdescricao ORDER BY P.professor.nome ASC ")
+    @NamedQuery(name = "Professor.pesquisaID", query = "SELECT P FROM Professor AS P WHERE P.id = :pid"),
+    @NamedQuery(name = "Professor.findAll", query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC"),
+    @NamedQuery(name = "Professor.findName", query = "SELECT P FROM Professor AS P WHERE UPPER(P.professor.nome) LIKE :pdescricao ORDER BY P.professor.nome ASC ")
 })
 public class Professor implements java.io.Serializable {
 
