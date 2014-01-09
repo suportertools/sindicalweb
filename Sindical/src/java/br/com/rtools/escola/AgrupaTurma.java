@@ -82,5 +82,11 @@ public class AgrupaTurma implements Serializable {
 
     public void setTurmaIntegral(Turma turmaIntegral) {
         this.turmaIntegral = turmaIntegral;
+    }    
+
+    @Override
+    public String toString() {
+        return "AgrupaTurma{" + "id=" + id + ", turma=" + turma + ", turmaIntegral=" + turmaIntegral + '}';
     }
+    
 }
