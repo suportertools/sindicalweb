@@ -48,9 +48,11 @@ public class AgrupaTurmaBean implements Serializable {
         AgrupaTurmaDB dB = new AgrupaTurmaDBToplink();
         for (int i = 0; i < itensAgrupados.size(); i++) {
             if (itensAgrupados.get(i).getAgrupaTurma().getId() == -1) {
-                if(!((List) dB.pesquisaPorTurmaIntegral(itensAgrupados.get(i).getAgrupaTurma().getTurmaIntegral().getId())).isEmpty()){
-                    GenericaMensagem.warn("Validação", "Grupo integral já cadastrado! Realizar agrupamento com o já existente.");
-                    return;
+                if(itensAgrupados.isEmpty()){
+                    if(!((List) dB.pesquisaPorTurmaIntegral(itensAgrupados.get(i).getAgrupaTurma().getTurmaIntegral().getId())).isEmpty()){
+                        GenericaMensagem.warn("Validação", "Grupo integral já cadastrado! Realizar agrupamento com o já existente.");
+                        return;
+                    }
                 }
                 if (!salvarAcumuladoDB.inserirObjeto(itensAgrupados.get(i).getAgrupaTurma())) {
                     erro = true;
@@ -169,9 +171,23 @@ public class AgrupaTurmaBean implements Serializable {
     }
 
     public void removeItensLista(ListaAgrupaTurma lat) {
+        boolean grupoIntegral = false;
         for (int i = 0; i < itensAgrupados.size(); i++) {
             if (itensAgrupados.get(i).getAgrupaTurma().getTurma().getId() == lat.getAgrupaTurma().getTurma().getId()) {
+                if (itensAgrupados.get(i).getAgrupaTurma().getTurmaIntegral().getId() == lat.getAgrupaTurma().getTurma().getId()) {
+                    grupoIntegral = true;
+                }
                 itensAgrupados.remove(i);
+            }
+        }
+        if (itensAgrupados.size() > 0) {
+            int idTurma = itensAgrupados.get(0).getAgrupaTurma().getTurma().getId();
+            for (int j = 0; j < itensAgrupados.size(); j++) {
+                if(grupoIntegral) {
+                    itensAgrupados.get(j).setIsIntegral(grupoIntegral);
+                }
+                itensAgrupados.get(j).getAgrupaTurma().setTurmaIntegral(itensAgrupados.get(j).getAgrupaTurma().getTurma());
+                grupoIntegral = false;
             }
         }
     }
