@@ -9,12 +9,28 @@ import java.util.Date;
 import javax.persistence.*;
 import org.primefaces.event.SelectEvent;
 
+/**
+ * <p>
+ * <b>Turma</b></p>
+ * <p>
+ * Turmas para escola e predefinições sobre o curso no ato da matrícula. As
+ * turmas devem obrigatoriamente pertecerem a uma filial, não será possível
+ * realizar o cadastramento sem a filial.</p>
+ * <p>
+ * Não poderá haver há mesma turma para o mesma sala no mesmo período e
+ * horários, exceto que os horários sejam diferentes.</p>
+ * <p>
+ * Para realizar o cadastro de curso acessar Menu Principal > Menu Financeiro >
+ * Serviços</p>
+ *
+ * @author rtools
+ */
 @Entity
 @Table(name = "ESC_TURMA")
 @NamedQueries({
-    @NamedQuery(name = "Turma.pesquisaID",      query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
-    @NamedQuery(name = "Turma.findAll",         query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC "),
-    @NamedQuery(name = "Turma.findName",        query = "SELECT T FROM Turma AS T WHERE UPPER(T.cursos.descricao) LIKE :pdescricao ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ")
+    @NamedQuery(name = "Turma.pesquisaID", query = "SELECT T FROM Turma AS T WHERE T.id = :pid"),
+    @NamedQuery(name = "Turma.findAll", query = "SELECT T FROM Turma AS T ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC "),
+    @NamedQuery(name = "Turma.findName", query = "SELECT T FROM Turma AS T WHERE UPPER(T.cursos.descricao) LIKE :pdescricao ORDER BY T.cursos.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ")
 })
 public class Turma implements Serializable {
 
@@ -59,7 +75,7 @@ public class Turma implements Serializable {
     private String descricao;
     @Column(name = "NR_IDADE_INI")
     private int idadeInicial;
-    @Column(name = "NR_IDADE_FIM")    
+    @Column(name = "NR_IDADE_FIM")
     private int idadeFim;
 
     public Turma(int id, Servicos cursos, String dataInicio, String dataTermino, String horaInicio, String horaTermino,
@@ -239,14 +255,14 @@ public class Turma implements Serializable {
             this.setDtTermino(DataHoje.converte(dataTermino));
         }
     }
-    
+
     public void selecionaDataInicio(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dtInicio = DataHoje.converte(format.format(event.getObject()));
     }
-    
+
     public void selecionaDataTermino(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dtTermino = DataHoje.converte(format.format(event.getObject()));
     }
 

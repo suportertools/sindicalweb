@@ -766,6 +766,12 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "spc");
     }
     
+    public synchronized String agrupaTurma() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("turmaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agrupaTurmaBean");
+        return metodoGenerico(2, "agrupaTurma");
+    }
+    
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
