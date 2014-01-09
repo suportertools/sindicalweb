@@ -2,7 +2,6 @@ package br.com.rtools.utilitarios;
 
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.principal.DB;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
