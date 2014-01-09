@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Agrupa Turma</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_agrupa_turma">
+                    <h:outputScript name="tradutor_primefaces.js" library="js" /> 
+                    <p:growl id="growl" showDetail="true"/> 
+                    <p:outputLabel value="Agrupa Turma" styleClass="fonteHeader"/>
+                    <c:set scope="request" var="object" value="${agrupaTurmaBean.agrupaTurma}"/>
+                    <div class="clear"></div>
+                    <p:panel id="id_panel_agrupa_turma">
+                        <h:panelGrid columns="2" cellpadding="5">
+                            <p:column>
+                                <p:commandButton id="idPesquisarTurma" icon="ui-icon-search" title="Pesquisar turma" action="#{chamadaPaginaBean.pesquisaTurma}" />
+                            </p:column>
+                            <p:column>
+                                <h:panelGrid columns="3">
+                                    <h:column>
+                                        <p:outputLabel value="Pesquisar turma" style="border-bottom: 1px dashed #ECF3FE;" rendered="#{agrupaTurmaBean.agrupaTurma.turma.id == -1}" for="idPesquisarTurma" />
+                                        <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.cursos.descricao}" rendered="#{agrupaTurmaBean.agrupaTurma.turma.id != -1}"/>
+                                    </h:column>
+                                    <p:selectBooleanCheckbox value="#{agrupaTurmaBean.integral}" itemLabel="Integral" styleClass="margin-left-max"/>
+                                    <p:commandButton icon="ui-icon-plus" title="Adicionar a lista" action="#{agrupaTurmaBean.adicionarItem()}" styleClass="margin-left-max" update="growl id_panel_agrupa_turma"/>
+                                </h:panelGrid>
+                            </p:column>
+                        </h:panelGrid>
+                        <p:panelGrid columns="6" style="margin-bottom: 15px;" columnClasses="text-center" rendered="#{agrupaTurmaBean.agrupaTurma.turma.id != -1}">
+                            <f:facet name="header">
+                                Detalhes da turma
+                            </f:facet>
+                            <p:column><strong>Sala</strong></p:column>
+                            <p:column><strong>Descrição</strong></p:column>
+                            <p:column><strong>Quantidade</strong></p:column>
+                            <p:column><strong>Período</strong></p:column>
+                            <p:column><strong>Horário</strong></p:column>
+                            <p:column><strong>Faixa de idade</strong></p:column>
+                            <p:column>
+                                <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.sala}" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.descricao}" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.quantidade}" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.dataInicio} à #{agrupaTurmaBean.agrupaTurma.turma.dataTermino}" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.horaInicio} às #{agrupaTurmaBean.agrupaTurma.turma.horaTermino} hr(s)" />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="#{agrupaTurmaBean.agrupaTurma.turma.idadeInicial} até #{agrupaTurmaBean.agrupaTurma.turma.idadeFim}" />
+                            </p:column>                            
+                        </p:panelGrid>
+                        <br />
+                        <p:panel id="i_itens_agrupados" styleClass="no-margin margin-top-max" header="Itens adicionados a salvar">
+                            <p:dataTable value="#{agrupaTurmaBean.itensAgrupados}" var="listaAgrupaTurma" scrollHeight="200" rendered="#{agrupaTurmaBean.itensAgrupados.size() != 0}" emptyMessage="Não existe(m) registro(s) cadastrado(s)" styleClass="margin-top">
+                                <p:column headerText="Turma"  styleClass="text-left">
+                                    <p:outputLabel value="#{listaAgrupaTurma.agrupaTurma.turma.cursos.descricao}" />
+                                </p:column>
+                                <p:column headerText="Sala" width="40"  styleClass="text-center">
+                                    <p:outputLabel value="#{listaAgrupaTurma.agrupaTurma.turma.sala}" />
+                                </p:column>
+                                <p:column headerText="Descrição" styleClass="text-center">
+                                    <p:outputLabel value="#{listaAgrupaTurma.agrupaTurma.turma.descricao}" />
+                                </p:column>
+                                <p:column headerText="Vagas" width="50"  styleClass="text-center">
+                                    <p:outputLabel value="#{listaAgrupaTurma.agrupaTurma.turma.quantidade}" />
+                                </p:column>
+                                <p:column headerText="Período" >
+                                    <p:outputLabel value="#{listaAgrupaTurma.agrupaTurma.turma.dataInicio} até #{listaAgrupaTurma.agrupaTurma.turma.dataTermino}" />
+                                </p:column>
+                                <p:column headerText="Horário" >
+                                    <p:outputLabel value="#{listaAgrupaTurma.agrupaTurma.turma.horaInicio} às #{listaAgrupaTurma.agrupaTurma.turma.horaTermino} hr(s)" />
+                                </p:column>
+                                <p:column headerText="Integral" width="50" styleClass="text-center">
+                                    <p:selectBooleanCheckbox value="#{listaAgrupaTurma.isIntegral}">
+                                        <p:ajax event="change" listener="#{agrupaTurmaBean.editaItensLista(listaAgrupaTurma)}" update=":form_agrupa_turma:i_itens_agrupados" />
+                                    </p:selectBooleanCheckbox>
+                                </p:column>
+                                <p:column width="30">
+                                    <p:commandButton icon="ui-icon-trash" disabled="#{controleAcessoBean.botaoExcluir}" action="#{agrupaTurmaBean.removeItensLista(listaAgrupaTurma)}" update=":form_agrupa_turma:i_itens_agrupados" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                        <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
+                            <p:column>
+                                <p:commandButton value="Salvar Grupo" title="Salvar" action="#{agrupaTurmaBean.salvar()}" disabled="#{controleAcessoBean.botaoSalvar}" update="growl id_panel_agrupa_turma i_grupos" />
+                                <p:commandButton value="Novo" title="Novo" action="#{agrupaTurmaBean.novo()}" update="id_panel_agrupa_turma i_grupos"/>
+                            </p:column>
+                        </p:panelGrid>
+                    </p:panel>
+                    <br /><br />
+                    <p:panel id="i_grupos" styleClass="no-margin margin-top-max" header="Grupos" style="margin-top: 15px;">
+                        <p:dataTable value="#{agrupaTurmaBean.listaAgrupaTurma}" var="agrupaTurma" scrollHeight="200" rendered="#{agrupaTurmaBean.listaAgrupaTurma.size() != 0}" emptyMessage="Não existe(m) registro(s) cadastrado(s)" styleClass="margin-top">
+                            <p:column headerText="Grupo"  styleClass="text-left">
+                                <p:commandLink value="#{agrupaTurma.turma.cursos.descricao}" update=":form_agrupa_turma:id_panel_agrupa_turma" action="#{agrupaTurmaBean.editar(agrupaTurma)}"/>
+                            </p:column>
+                            <p:column headerText="Sala" width="40"  styleClass="text-center">
+                                <p:outputLabel value="#{agrupaTurma.turma.sala}" />
+                            </p:column>
+                            <p:column headerText="Descrição" styleClass="text-center">
+                                <p:outputLabel value="#{agrupaTurma.turma.descricao}" />
+                            </p:column>
+                            <p:column headerText="Vagas" width="50"  styleClass="text-center">
+                                <p:outputLabel value="#{agrupaTurma.turma.quantidade}" />
+                            </p:column>
+                            <p:column width="30">
+                                <p:commandButton icon="ui-icon-trash" disabled="#{controleAcessoBean.botaoExcluir}" action="#{agrupaTurmaBean.remover(agrupaTurma)}" update=":form_agrupa_turma:i_grupos :form_agrupa_turma:i_itens_agrupados" title="Remover grupo"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>                        
+                </h:form>
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
