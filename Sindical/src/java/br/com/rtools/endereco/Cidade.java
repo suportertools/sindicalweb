@@ -2,6 +2,15 @@ package br.com.rtools.endereco;
 
 import javax.persistence.*;
 
+/**
+ * <p>
+ * <b>Cidade</b></p>
+ * <p>
+ * Cadastro de cidade e estado</p>
+ *
+ * @author rtools
+ */
+
 @Entity
 @Table(name = "END_CIDADE")
 @NamedQueries({
