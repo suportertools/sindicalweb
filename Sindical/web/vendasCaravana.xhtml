@@ -1,268 +1,275 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Vendas de Caravana</title>
+        <title>Sindical - Vendas Caravana</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu-label .ui-inputfield{
+
+            }
+        </style>   
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formVendasCaravana">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Vendas Caravana" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" style="width: auto;" align="left">
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <h:form id="formVendasCaravana">
+                        <p:growl id="i_msg" showDetail="true" />  
+                        <p:panel styleClass="wrapper" style="border: 0px;">
+                            <h:outputText value="Vendas Caravana" styleClass="fonteHeader" />
+
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid id="i_panel_pessoa" columns="5">
+                                    <p:commandButton ajax="false" value="Adicionar Pessoa" action="#{chamadaPaginaBean.pesquisaPessoa()}" rendered="#{vendasCaravanaBean.pessoa.id == -1}"/>
+                                    <p:outputLabel value="Responsável: " rendered="#{vendasCaravanaBean.pessoa.id != -1}" style="font-size: 11pt!important;"/>
+                                    <p:outputLabel value="#{vendasCaravanaBean.pessoa.nome}" rendered="#{vendasCaravanaBean.pessoa.id != -1}" style="font-size: 12pt!important; font-weight: bold"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{vendasCaravanaBean.removerPessoa}" update="i_panel_pessoa" rendered="#{vendasCaravanaBean.pessoa.id != -1} " style="width: 25px; height: 25px"/>
+                                    <h:panelGrid rendered="#{vendasCaravanaBean.pessoaEndereco.id == -1 and vendasCaravanaBean.pessoa.id != -1}">
+                                        <h:outputLabel value="Esta pessoa não possui endereço" style="font-size: 9pt!important; color: red" />
+                                        <p:commandLink value="clique aqui para adicionar" action="#{vendasCaravanaBean.cadastroFisica()}" rendered="#{vendasCaravanaBean.pessoaFisica.id != -1}" style="font-size: 9pt!important; color: blue" />
+                                        <p:commandLink value="clique aqui para adicionar" action="#{vendasCaravanaBean.cadastroJuridica()}" rendered="#{vendasCaravanaBean.pessoaJuridica.id != -1}" style="font-size: 9pt!important; color: blue" />
+                                    </h:panelGrid> 
+                                    <h:panelGrid rendered="#{vendasCaravanaBean.pessoaEndereco.id != -1 and vendasCaravanaBean.pessoa.id != -1}">
+                                        <p:commandButton ajax="false" icon="ui-icon-home" title="Editar Endereço" action="#{vendasCaravanaBean.cadastroFisica()}" rendered="#{vendasCaravanaBean.pessoaFisica.id != -1}" style="width: 25px; height: 25px"/>
+                                        <p:commandButton ajax="false" icon="ui-icon-home" title="Editar Endereço" action="#{vendasCaravanaBean.cadastroJuridica()}" rendered="#{vendasCaravanaBean.pessoaJuridica.id != -1}" style="width: 25px; height: 25px"/>
+                                    </h:panelGrid> 
+                                </h:panelGrid>
+
+                                <h:panelGrid id="i_caravanas" columns="4">
+                                    <h:column>
+                                        <h:outputLabel value="Caravana" /><br />
+                                        <p:selectOneMenu value="#{vendasCaravanaBean.idCaravana}" style="width: 500px; padding-right: 20px" disabled="#{vendasCaravanaBean.listaReserva.size() != 0}">
+                                            <p:ajax event="change" listener="#{vendasCaravanaBean.atualizaCaravana()}" update="i_panel i_caravanas"/>
+                                            <f:selectItems value="#{vendasCaravanaBean.listaCaravanaSelect}" />
+                                        </p:selectOneMenu>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="N° Quarto" style="margin-left: 30px" /><br />
+                                        <p:inputText size="5" value="#{vendasCaravanaBean.vendas.quarto}" style="margin-left: 30px"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="Tipo" style="margin-left: 30px"/><br />
+                                        <p:selectOneMenu value="#{vendasCaravanaBean.idTipo}" style="margin-left: 30px; padding-right: 20px" disabled="#{vendasCaravanaBean.vendas.id != -1}">
+                                            <p:ajax event="change" listener="#{vendasCaravanaBean.atualizaTipo()}" update="i_panel"/>
+                                            <f:selectItems value="#{vendasCaravanaBean.listaTipo}"/>
+                                        </p:selectOneMenu>
+                                    </h:column>
+                                    
+                                    <h:column>
+                                        <br />
+                                        <p:commandButton value="Adicionar" style="margin-left: 30px" action="#{vendasCaravanaBean.adicionarReserva()}" disabled="#{vendasCaravanaBean.vendas.id != -1}" update="i_msg i_servicos i_caravanas"/>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <br />
+
+                            <h:panelGrid id="i_panel" columns="9">
+                                <h:column>
+                                    <h:outputLabel value="Data Saída" /><br /><br />
+                                    <h:outputLabel value="#{vendasCaravanaBean.caravana.dataSaida}" style="font-weight: bold; font-size: 14pt"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Horário" style="margin-left: 30px"/><br /><br />
+                                    <h:outputLabel value="#{vendasCaravanaBean.caravana.horaSaida}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                </h:column>
+
+                                <h:column>
+                                    <hr style="height: 15px; margin-left: 30px" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Data Retorno" style="margin-left: 30px" /><br /><br />
+                                    <h:outputLabel value="#{vendasCaravanaBean.caravana.dataRetorno}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Horário" style="margin-left: 30px"/><br /><br />
+                                    <h:outputLabel value="#{vendasCaravanaBean.caravana.horaRetorno}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                </h:column>
+
+                                <h:column>
+                                    <hr style="height: 15px; margin-left: 30px" />
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Data Chegada" style="margin-left: 30px" /><br /><br />
+                                    <h:outputLabel value="#{vendasCaravanaBean.caravana.dataChegada}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:outputLabel value="Horário" style="margin-left: 30px"/><br /><br />
+                                    <h:outputLabel value="#{vendasCaravanaBean.caravana.horaChegada}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                </h:column>
+
+                                <h:column>
+                                    <h:selectBooleanCheckbox id="i_cafe" style="margin-left: 30px" value="#{vendasCaravanaBean.caravana.isCafe}" disabled="true"/>
+                                    <h:outputLabel for="i_cafe" value=" Café " />
+
+                                    <h:selectBooleanCheckbox id="i_almoco" style="margin-left: 30px" value="#{vendasCaravanaBean.caravana.isAlmoco}" disabled="true"/>
+                                    <h:outputLabel for="i_almoco" value=" Almoço " />
+
+                                    <h:selectBooleanCheckbox id="i_jantar" style="margin-left: 30px" value="#{vendasCaravanaBean.caravana.isJantar}" disabled="true"/>
+                                    <h:outputLabel for="i_jantar" value=" Jantar " />
+                                </h:column>
+                            </h:panelGrid>
+                            <hr />
+
+                            <br />
+
+                            <h:panelGrid style="width: 100%">
+                                <h:outputLabel value="Observações" /><br />
+                                <p:inputTextarea value="#{vendasCaravanaBean.vendas.observacao}" rows="1" style="width: 100%"/>
+                            </h:panelGrid>
+
+                            <br />
+
+                            <p:dataTable id="i_servicos" var="linha" style="width:100%;" value="#{vendasCaravanaBean.listaReserva}" rowIndexVar="it" emptyMessage="Nenhum serviço foi adicionado!">
+                                <p:column>
+                                    <p:commandButton icon="ui-icon-trash" title="Excluir Serviço" action="#{vendasCaravanaBean.removerReserva(it, linha)}" update="i_servicos :formVendasCaravana:i_valores :formVendasCaravana:i_caravanas" disabled="#{vendasCaravanaBean.vendas.id != -1}"/>
+                                </p:column>
+
+                                <p:column headerText="Passageiro">
+                                    <p:commandButton ajax="false" icon="ui-icon-search" action="#{vendasCaravanaBean.pesquisaPassageiro(it)}" disabled="#{vendasCaravanaBean.vendas.id != -1}"/>
+                                    <h:outputLabel value="#{linha.argumento0.pessoa.nome}" style="margin-left: 10px "/>
+                                </p:column>
+
+                                <p:column headerText="Poltrona" style="text-align: center">
+                                    <p:selectOneMenu value="#{linha.argumento1}" style="padding-right: 20px" rendered="#{vendasCaravanaBean.vendas.id == -1}">
+                                        <f:selectItems value="#{vendasCaravanaBean.listaPoltrona}" />
+                                    </p:selectOneMenu>
+                                    
+                                    <h:outputLabel value="#{linha.argumento4.poltrona}" style="margin-left: 10px; font-weight: bold; font-size: 12pt!important" rendered="#{vendasCaravanaBean.vendas.id != -1}"/>
+                                </p:column>
+
+                                <p:column headerText="Valor" style="text-align: center">
+                                    <h:outputLabel value="R$ " />
+                                    <h:outputText value="#{linha.argumento2}" style="font-weight: bold"/>
+                                </p:column>
+
+                                <p:column headerText="Desconto" style="text-align: center">
+                                    <h:outputLabel value="R$ " />
+                                    <p:inputText value="#{linha.argumento3}" rendered="#{vendasCaravanaBean.vendas.id == -1}">
+                                        <p:ajax event="blur" listener="#{vendasCaravanaBean.atualizaValoresGrid(it)}" update="@this :formVendasCaravana:i_valores"/>
+                                    </p:inputText>
+                                    <h:outputText value="#{linha.argumento3}" style="font-weight: bold" rendered="#{vendasCaravanaBean.vendas.id != -1}"/>
+                                </p:column>
+
+                                <p:column headerText="Tipo">
+                                    <h:outputLabel value="#{linha.argumento4.eventoServico.descricao}" />
+                                </p:column>
+                            </p:dataTable>
+
+                            <p:panel id="i_valores" styleClass="fundoCinza" style="clear: both; margin-top: 10px">
+                                <h:panelGrid columns="7">
+                                    <h:column>
+                                        <h:outputLabel value="Valor Total" /><br /><br />
+                                        <h:outputLabel value="R$ #{vendasCaravanaBean.valorTotal}" style="font-weight: bold; font-size: 14pt;"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="Valor Pago" style="margin-left: 30px"/><br /><br />
+                                        <h:outputLabel value="R$ #{vendasCaravanaBean.valorPago}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                    </h:column>
+
+                                    <h:column>
+                                        <h:outputLabel value="Outras Parcelas" style="margin-left: 30px"/><br /><br />
+                                        <h:outputLabel value="R$ #{vendasCaravanaBean.valorOutras}" style="font-weight: bold; font-size: 14pt; margin-left: 30px"/>
+                                    </h:column>      
+
+                                    <h:column>
+                                        <h:outputLabel value="Parcelas" style="margin-left: 30px"/><br />
+                                        <p:inputText value="#{vendasCaravanaBean.parcelas}" style="margin-left: 30px"/>
+                                    </h:column>      
+
+                                    <h:column>
+                                        <h:outputLabel value="Data Entrada" style="margin-left: 30px"/><br />
+                                        <p:inputMask value="#{vendasCaravanaBean.dataEntrada}" style="margin-left: 30px" mask="99/99/9999" size="8"/>
+                                    </h:column>      
+
+                                    <h:column>
+                                        <h:outputLabel value="Valor Entrada" style="margin-left: 30px"/><br />
+                                        <p:inputText value="#{vendasCaravanaBean.valorEntrada}" style="margin-left: 30px">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                    </h:column>      
+
+                                    <h:column>
+                                        <h:outputLabel value="" style="margin-left: 30px"/><br />
+                                        <p:commandButton value="Gerar" action="#{vendasCaravanaBean.gerarParcelas}" disabled="#{vendasCaravanaBean.vendas.id != -1}" style="margin-left: 30px" update="i_parcelas"/>
+                                    </h:column>      
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:dataTable id="i_parcelas" value="#{vendasCaravanaBean.listaParcelas}" var="linha" style="width:100%" emptyMessage="Nenhuma Parcela Adicionada">
+                                <p:column headerText="Vencimento" style="text-align: center">
+                                    <h:outputLabel value="#{linha.argumento0}" />
+                                </p:column>
+
+                                <p:column headerText="Valor da Parcela" style="text-align: center">
+                                    <h:outputLabel value="R$ "/>
+                                    <p:inputText value="#{linha.argumento1}">
+                                        <p:ajax event="blur" listener="#{vendasCaravanaBean.atualizaValoresParcela(it)}" update="@this"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column headerText="Status" style="text-align: center">
+                                    <h:outputLabel value="· PAGO ·" style="color:blue; font-weight: bold" rendered="#{linha.argumento2}"/>
+                                    <h:outputLabel value="· NÃO PAGO ·" style="color:red; font-weight: bold" rendered="#{!linha.argumento2}"/> 
+                                </p:column>
+                            </p:dataTable><br />
+
+                            <h:panelGrid columns="4">
+                                <p:commandButton value="Concluir Reserva" title="Gravar Reserva" onclick="i_dlg_s.show()"/>
+                                <p:commandButton ajax="false" value="Novo" title="Novo" action="#{vendasCaravanaBean.novo()}"/>
+                                <p:commandButton value="Excluir" title="Excluir" onclick="i_dlg_e.show()"/>
+                                <p:commandButton ajax="false" value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaVendasCaravana()}"/>
+                            </h:panelGrid>
+                        </p:panel>
                         
-                        <h:panelGrid columns="2">
-                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true" title="Pesquisar Pessoa"/>
-                            <h:outputLabel id="idPessoa" value="#{vendasCaravanaBean.pessoa.documento} - #{vendasCaravanaBean.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                        </h:panelGrid>
+                        <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar esta Venda" resizable="false" width="400" modal="true">
+                            <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{vendasCaravanaBean.salvar()}" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check" update="i_msg formVendasCaravana"/>  
+                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                        </p:dialog>
                         
-                        <br/>
+                        <p:dialog widgetVar="i_dlg_e" header="Deseja Excluir esta Venda" resizable="false" width="400" modal="true">
+                            <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{vendasCaravanaBean.excluir()}" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-closethick" update="i_msg formVendasCaravana"/>  
+                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                        </p:dialog>
+                    </h:form>
+                    
+                    <p:dialog id="i_dialog" widgetVar="i_dlg_mapa" header="Mapa de Lugares" resizable="false" width="1000" modal="true" height="800">
+                        <h:form id="formCaravanaOnibus">
+                            <h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_onibus01.jpg" style="position: absolute; " width="250"/>
+                        </h:form>
+                    </p:dialog>
+                </f:view>
 
-                        <rich:panel style="width: auto; height: auto;">
-                            <h:panelGrid columns="8">
-                                <h:outputLabel value="Evento: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu>
-                                <f:selectItems/>
-                                </h:selectOneMenu>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                                <h:outputLabel value="Número do Quarto: " styleClass="fontePadrao" style="margin-left: 30px"/>
-                                <h:inputText size="5" value=""/>
-
-                                <h:outputLabel value="Tipo: " styleClass="fontePadrao" style="margin-left: 30px"/>
-                                <h:selectOneMenu>
-                                <f:selectItems/>
-                                </h:selectOneMenu>
-                            </h:panelGrid>
-                        </rich:panel>            
-
-                        <br/>
-
-                        <rich:panel style="width: auto; height: auto;">
-                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2Espaco">
-                                <h:column>
-                                    <h:outputLabel value=" Data Saída: " styleClass="fontePadrao"/>
-                                    <h:outputLabel value="  " styleClass="fontePadraoNegrito"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value=" Horário: " styleClass="fontePadrao"/>
-                                    <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
-
-                                    <h:selectBooleanCheckbox style="margin-left: 30px"/>
-                                    <h:outputLabel value=" Café " styleClass="fontePadrao"/>
-
-                                    <h:selectBooleanCheckbox style="margin-left: 30px"/>
-                                    <h:outputLabel value=" Almoço " styleClass="fontePadrao"/>
-
-                                    <h:selectBooleanCheckbox style="margin-left: 30px"/>
-                                    <h:outputLabel value=" Jantar " styleClass="fontePadrao"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value="Data Retorno: " styleClass="fontePadrao"/>
-                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
-                                </h:column> 
-
-                                <h:column>
-                                    <h:outputLabel value="Horário: " styleClass="fontePadrao"/>
-                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
-
-                                    <h:outputLabel value="Qntd de Poltronas: " styleClass="fontePadrao" style="margin-left: 30px"/>
-                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
-                                </h:column> 
-                            </h:panelGrid>
-
-                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2Espaco">
-                                <h:column>
-                                    <h:outputLabel value="Data Chegada: " styleClass="fontePadrao"/>
-                                    <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value="Horário: " styleClass="fontePadrao"/>
-                                    <h:outputLabel styleClass="fontePadraoNegrito"/>
-                                </h:column>
-                            </h:panelGrid>
-                        </rich:panel> 
-
-                        <br/>
-
-                        <rich:panel style="width: auto; height: auto">
-                            <h:panelGrid columns="2">
-                                <h:column>
-                                    <h:outputLabel value="Observações: " styleClass="fontePadrao"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:inputTextarea value="" cols="70" rows="1" styleClass="fontePadrao"/>
-                                </h:column> 
-                            </h:panelGrid>
-                            
-                            <br/>
-                            
-                            <h:panelGrid>
-                                <h:panelGroup style="overflow:auto; height:100px; width: auto;"  layout="block">
-                                    <rich:dataTable value="" var="linha" style="width:100%;">
-                                        <rich:column id="colId" styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value=" Excluir " id="lbId"/>
-                                            </f:facet>
-                                            <h:commandButton value="[x]" id="btnExcluir" title="Excluir"/>
-                                        </rich:column>
-
-                                        <rich:column id="colPassageiro">
-                                            <f:facet name="header">
-                                                <h:outputText value="Passageiro"/>
-                                            </f:facet>
-                                            <a4j:commandButton value="...[]"/>
-                                            <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
-                                        </rich:column>
-
-                                        <rich:column id="colPoltrona" styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value="Poltrona"/>
-                                            </f:facet>
-                                            <h:selectOneMenu id="idPolt" value="">
-                                            <f:selectItems/>
-                                            </h:selectOneMenu>
-                                            <h:outputLabel id="idPolt2" value="" styleClass="fontePadraoNegrito"/>
-                                        </rich:column>
-
-                                        <rich:column id="colValor">
-                                            <f:facet name="header">
-                                                <h:outputText value="Valor"/>
-                                            </f:facet>
-                                            <h:outputLabel value="" styleClass="fontePadrao"/>
-                                        </rich:column>
-
-                                        <rich:column id="colDesconto">
-                                            <f:facet name="header">
-                                                <h:outputText value="Desconto"/>
-                                            </f:facet>
-                                            <h:inputText value="" size="6" disabled="true"/>
-                                        </rich:column>
-
-                                        <rich:column id="colValorLq">
-                                            <f:facet name="header">
-                                                <h:outputText value="Tipo / Valor" id="lbValorLq"/>
-                                            </f:facet>
-                                            <h:outputLabel value=" - " styleClass="fontePadrao"/>
-                                        </rich:column>
-
-                                        <rich:column id="colAdicionar" styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value=" " id="lbAdc"/>
-                                            </f:facet>
-                                            <a4j:commandButton value="[+]" styleClass="fontePadraoNegrito" title="Adicionar"/>
-                                        </rich:column>
-
-                                        <rich:column id="colAtualizar" styleClass="coluna">
-                                            <f:facet name="header">
-                                                <h:outputText value=" " id="lbAtualizar"/>
-                                            </f:facet>
-                                            <a4j:commandButton value="[o]" styleClass="fontePadraoNegrito" title="Atualizar"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </h:panelGroup> 
-                            </h:panelGrid>
-
-                            <h:panelGrid columns="8" columnClasses="coluna1, coluna2Espaco">
-                                <h:column>
-                                    <h:outputLabel value="Valor Total: " id="lbValorTotal" styleClass="fontePadrao"/>
-                                    <h:outputLabel id="idTotal" value="R$ " styleClass="fontePadraoNegrito"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value="Valor Pago: " id="lbValorPago" styleClass="fontePadrao"/>
-                                    <h:outputLabel id="idPago" value="R$ " styleClass="fontePadraoNegrito"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value="Outras Parcelas: " id="lbValorAPagar" styleClass="fontePadrao" style="margin-left: 30px"/>
-                                    <h:outputLabel id="idAPagar" value="R$ " styleClass="fontePadraoNegrito"/>
-                                </h:column>      
-                            </h:panelGrid>
-                            
-                            <br/>
-                            
-                            <h:panelGrid columns="9" columnClasses="coluna1, coluna2Espaco">
-                                <h:column>
-                                    <h:outputLabel value="Parcelas: " styleClass="fontePadrao"/>
-                                    <h:inputText id="idParcelas" size="7" value=""/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value="Data Entrada: " styleClass="fontePadrao"/>
-                                    <h:inputText  id="idDataEntrada" size="8" value="" maxlength="10" class="data"/>
-                                </h:column>
-
-                                <h:column>
-                                    <h:outputLabel value="Valor Entrada: " styleClass="fontePadrao" style="margin-left: 30px"/>
-                                    <h:inputText id="idVlrEntrada" size="7" value=""/>
-                                </h:column>
-
-                                <h:column>
-                                    <a4j:commandButton image="/Imagens/novo.png"  immediate="true"/>
-                                </h:column>
-                            </h:panelGrid>
-                            
-                            <br/>
-                            
-                            <h:panelGroup style="overflow:auto; height:100px; width: 320px;"  layout="block">
-                                <rich:dataTable value="" var="linha" style="width:100%">
-                                    <rich:column id="colVencimento">
-                                        <f:facet name="header">
-                                            <h:outputText value="Vencimento"/>
-                                        </f:facet>
-                                        <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
-                                    </rich:column>
-
-                                    <rich:column id="colValorPar">
-                                        <f:facet name="header">
-                                            <h:outputText value="Valor da Parcela"/>
-                                        </f:facet>
-                                        <h:inputText id="idVlrParcela" size="10"  styleClass="fontePadrao" />
-                                        <h:outputLabel value="" styleClass="fontePadraoNegrito"/>
-                                    </rich:column>
-
-                                    <rich:column id="colStatus">
-                                        <f:facet name="header">
-                                            <h:outputText value="Status"/>
-                                        </f:facet>
-                                        <h:outputLabel value="" style="color:blue;" styleClass="fontePadraoNegrito"/>
-                                        <h:outputLabel value=""  style="color:red;" styleClass="fontePadraoNegrito"/> 
-                                    </rich:column>
-                                </rich:dataTable>
-                            </h:panelGroup>
-                        </rich:panel>
-                        
-                        <br/>
-                        
-                        <h:panelGrid>
-                        <h:column>
-                            <a4j:commandLink onclick="modalOpcao('divSalvar');" styleClass="idSalvar iLink" value="Gravar Reserva" style="width: 120px;" title="Gravar Reserva"/>
-                            <a4j:commandLink styleClass="idNovo iLink" value="Novo" title="Novo"/>
-                            <a4j:commandLink onclick="modalOpcao('divExcluir');" styleClass="idExcluir iLink" value="Excluir" title="Excluir"/>
-                            <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" title="Pesquisar"/>
-                        </h:column>
-                        </h:panelGrid>
-                    </div>
-                </center>
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

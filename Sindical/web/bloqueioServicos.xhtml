@@ -1,111 +1,119 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Bloqueio de Serviços</title>
+        <title>Sindical - Bloqueio de Serviços</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formBloqueioServicos">
-                <c:set scope="request" var="object" value="${bloqueioServicosBean.bloqueia}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Bloqueio de Serviços" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae">
-                        <div class="divFundo">
-                            <h:panelGrid columns="4" style="float: left">
-                                <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}"/>
-                                <h:outputLabel value="Pesquisa Pessoa: " styleClass="fontePadrao" />
-                                <h:outputText id="i_nome" value="#{bloqueioServicosBean.pessoa.nome}" title="#{bloqueioServicosBean.pessoa.nome}" styleClass="negritoDescricao" style="overflow-x: hidden"/>
-                                <a4j:commandButton id="b_remover" image="/Imagens/excluirp.png" action="#{bloqueioServicosBean.removerPesquisa}" style="margin-left: 10px" rendered="#{bloqueioServicosBean.pessoa.id != -1}" render="i_nome, b_remover, tbl" />
-                            </h:panelGrid>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Bloqueio de Serviços" styleClass="fonteHeader" />
+                        <h:form id="formBloqueioServicos">
+                            <c:set scope="request" var="object" value="${bloqueioServicosBean.bloqueia}"/>
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid id="i_panel_pessoa" columns="2">
+                                    <p:commandButton ajax="false" action="#{chamadaPaginaBean.pesquisaPessoa}" value="Adicionar Pessoa" rendered="#{bloqueioServicosBean.pessoa.id == -1}"/>
+                                    <h:outputText id="i_nome" value="#{bloqueioServicosBean.pessoa.nome}" title="#{bloqueioServicosBean.pessoa.nome}" style="font-weight: bold"/>
+                                    <p:commandButton id="b_remover" icon="ui-icon-trash" action="#{bloqueioServicosBean.removerPesquisa}" rendered="#{bloqueioServicosBean.pessoa.id != -1}" update="i_panel_pessoa"/>
+                                </h:panelGrid>
+
+                                <h:panelGrid id="i_panel_servicos" columns="6">
+                                    <p:column>
+                                        <h:outputLabel value="Serviços" /><br />
+                                        <p:selectOneMenu  value="#{bloqueioServicosBean.idServicos}" style="width: 180px">
+                                            <f:selectItems value="#{bloqueioServicosBean.listaServico}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Data Inicial" /><br />
+                                        <p:inputMask value="#{bloqueioServicosBean.refInicial}" size="5" mask="99/9999"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Data Final" /><br />
+                                        <p:inputMask value="#{bloqueioServicosBean.refFinal}" size="5" mask="99/9999"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:selectBooleanCheckbox id="chk_impressao" value="#{bloqueioServicosBean.bloqueia.impressao}" />
+                                        <h:outputLabel value="Imprimir Guias" for="chk_impressao"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:selectBooleanCheckbox id="chk_geracao" value="#{bloqueioServicosBean.bloqueia.geracao}" />
+                                        <h:outputLabel value="Gerar Boletos" styleClass="fontePadrao" for="chk_geracao"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Salvar" action="#{bloqueioServicosBean.salvar}" style="margin-left: 20px" title="Salvar este Bloqueio" update="formBloqueioServicos" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:panel>
                             
-                            <h:panelGrid columns="11" style="clear: both">
-                                <h:selectOneMenu  value="#{bloqueioServicosBean.idServicos}">
-                                    <a4j:ajax event="change" render="this"/>
-                                    <f:selectItems value="#{bloqueioServicosBean.listaServico}" />
-                                </h:selectOneMenu>
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            
+                            <p:dataTable value="#{bloqueioServicosBean.listaBloqueios}" var="linha" id="tbl" emptyMessage="Nenhum Bloqueio foi encontrado!">
+                                <p:column headerText="Excluir" style="text-align: center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{bloqueioServicosBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formBloqueioServicos" />
+                                </p:column>
                                 
-                                <h:outputLabel value="Data Inicial" styleClass="fontePadrao" />
-                                <h:inputText value="#{bloqueioServicosBean.refInicial}" class="referencia" size="5"/>
-                                
-                                <h:outputLabel value="Data Final" styleClass="fontePadrao" />
-                                <h:inputText value="#{bloqueioServicosBean.refFinal}" class="referencia" size="5"/>
-                                
-                                <h:selectBooleanCheckbox id="chk_impressao" value="#{bloqueioServicosBean.bloqueia.impressao}">
-                                    <a4j:ajax event="change" render="this"/>
-                                </h:selectBooleanCheckbox>
-                                <h:outputLabel value="Imprimir Guias" styleClass="fontePadrao" for="chk_impressao"/>
-                                
-                                <h:selectBooleanCheckbox id="chk_geracao" value="#{bloqueioServicosBean.bloqueia.geracao}">
-                                    <a4j:ajax event="change" render="this"/>
-                                </h:selectBooleanCheckbox>
-                                <h:outputLabel value="Gerar Boletos" styleClass="fontePadrao" for="chk_geracao"/>
-                                
-                                <a4j:commandButton image="/Imagens/novo.png" action="#{bloqueioServicosBean.salvar}" title="Salvar este Bloqueio" render="i_msg tbl" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                            </h:panelGrid>
-                        </div>
-                        <br />
-                        <h:outputLabel id="i_msg" value="#{bloqueioServicosBean.msgConfirma}" style="color: red; font-size: 13pt; clear: both; float: left"/>
-                        <div style="overflow:auto; height:600px; width:1024px; clear: both; float: left">
-                            <rich:dataTable onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#FFFFFF'" value="#{bloqueioServicosBean.listaBloqueios}"
-                                            var="linha" style="width: 100%" id="tbl" rows="20">
-                                <rich:column styleClass="colunaPesquisa">
-                                    <f:facet name="header"><h:outputText value="..."/></f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{bloqueioServicosBean.excluir(linha)}" render="i_msg tbl" disabled="#{controleAcessoBean.botaoExcluir}"/>
-                                </rich:column>
-                                
-                                <rich:column>
-                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
-                                    <a4j:commandLink value="#{linha.id}" action="#{bloqueioServicosBean.editar(linha)}" styleClass="iLink" />
-                                </rich:column>
+                                <p:column headerText="Serviços">
+                                    <p:commandLink value="#{linha.servicos.descricao}" action="#{bloqueioServicosBean.editar(linha)}" update=":formBloqueioServicos"/>
+                                </p:column>
 
-                                <rich:column>
-                                    <f:facet name="header"><h:outputText value="Serviço"/></f:facet>
-                                    <h:outputText value="#{linha.servicos.descricao}"/>
-                                </rich:column>
-
-                                <rich:column>
-                                    <f:facet name="header"><h:outputText value="Data Inicial"/></f:facet>
+                                <p:column headerText="Data Inicial">
                                     <h:outputText value="#{linha.inicio}"/>
-                                </rich:column>
-                                
-                                <rich:column>
-                                    <f:facet name="header"><h:outputText value="Data Final"/></f:facet>
+                                </p:column>
+
+                                <p:column headerText="Data Final">
                                     <h:outputText value="#{linha.fim}"/>
-                                </rich:column>
+                                </p:column>
                                 
-                                <rich:column style="text-align: center">
-                                    <f:facet name="header"><h:outputText value="Impressão de Guias"/></f:facet>
-                                    
-                                    <h:commandLink value="** IMPRIME **"     action="#{bloqueioServicosBean.alteraImprime(linha)}" title="Clique para mudar o Status" rendered="#{linha.impressao}"/>
-                                    <h:commandLink value="** NÃO IMPRIME **" action="#{bloqueioServicosBean.alteraImprime(linha)}" title="Clique para mudar o Status" rendered="#{!linha.impressao}"/>
-                                </rich:column>
-                                
-                                <rich:column style="text-align: center">
-                                    <f:facet name="header"><h:outputText value="Geração de Guias"/></f:facet>
-                                    <h:commandLink value="** GERA BOLETOS **" action="#{bloqueioServicosBean.alteraGera(linha)}" title="Clique para mudar o Status" rendered="#{linha.geracao}"/>
-                                    <h:commandLink value="** NÃO GERA BOLETOS **" action="#{bloqueioServicosBean.alteraGera(linha)}" title="Clique para mudar o Status" rendered="#{!linha.geracao}"/>
-                                </rich:column>
-                            </rich:dataTable>
-                        </div>    
-                        
-                    </div>
-                </center>
-                
-            </h:form>
-        </f:view>
+                                <p:column headerText="Impressão de Guias" style="text-align: center">
+                                    <p:commandLink value="** IMPRIME **"     action="#{bloqueioServicosBean.alteraImprime(linha)}" title="Clique para mudar o Status" rendered="#{linha.impressao}" update=":formBloqueioServicos"/>
+                                    <p:commandLink value="** NÃO IMPRIME **" action="#{bloqueioServicosBean.alteraImprime(linha)}" title="Clique para mudar o Status" rendered="#{!linha.impressao}" update=":formBloqueioServicos"/>
+                                </p:column>
+
+                                <p:column headerText="Geração de Guias" style="text-align: center">
+                                    <p:commandLink value="** GERA BOLETOS **" action="#{bloqueioServicosBean.alteraGera(linha)}" title="Clique para mudar o Status" rendered="#{linha.geracao}" update=":formBloqueioServicos"/>
+                                    <p:commandLink value="** NÃO GERA BOLETOS **" action="#{bloqueioServicosBean.alteraGera(linha)}" title="Clique para mudar o Status" rendered="#{!linha.geracao}" update=":formBloqueioServicos"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

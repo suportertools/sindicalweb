@@ -47,14 +47,14 @@
                                             <f:selectItems value="#{descricaoEventoBean.listaGrupoEvento}"/>
                                         </p:selectOneMenu>
                                     </h:column>
-
+<!--
                                     <h:column>
                                         <h:outputLabel value="Serviços" style="margin-left: 30px"/><br />
-                                        <p:selectOneMenu id="idServicos" value="#{descricaoEventoBean.idServicos}" style="margin-left: 30px; padding-right: 20px">
-                                            <f:selectItems value="#{descricaoEventoBean.listaServicos}"/>
+                                        <p:selectOneMenu id="idServicos" value="# {descricaoEventoBean.idServicos}" style="margin-left: 30px; padding-right: 20px">
+                                            <f:selectItems value="# {descricaoEventoBean.listaServicos}"/>
                                         </p:selectOneMenu>
                                     </h:column>
-
+-->
                                     <h:column>
                                         <br />
                                         <p:commandButton action="#{descricaoEventoBean.salvar()}" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 30px" update="formDescricaoEvento"/>
@@ -72,11 +72,11 @@
                                 <p:column headerText="Grupo Evento">
                                     <h:outputLabel value="#{linha.grupoEvento.descricao}"/>
                                 </p:column>
-
+<!--
                                 <p:column headerText="Serviço">
-                                    <h:outputLabel value="#{linha.servicoMovimento.descricao}" />
+                                    <h:outputLabel value="# {linha.servicoMovimento.descricao}" />
                                 </p:column>
-                                
+-->                            
                                 <p:column style="text-align: center">
                                     <p:commandButton action="#{descricaoEventoBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" icon="ui-icon-trash" update=":formDescricaoEvento"/>
                                 </p:column>

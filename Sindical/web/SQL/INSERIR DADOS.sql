@@ -356,8 +356,14 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 200, 'ACADEMIA - TABELA DE PREÇOS', '"/Sindical/academiaTabelaPreco.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 200);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 201, 'PESQUISA BAILE', '"/Sindical/pesquisaBaile.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 201);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 202, 'PESQUISA CARAVANA', '"/Sindical/pesquisaCaravana.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 202);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 203, 'AGRUPA TURMA', '"/Sindical/agrupaTurma.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM esc_agrupa_turma WHERE id = 203);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 204, 'PESQUISA AGRUPA TURMA', '"/Sindical/pesquisaAgrupaTurma.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM esc_agrupa_turma WHERE id = 204);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 203, 'PESQUISA VENDAS CARAVANA', '"/Sindical/pesquisaVendasCaravana.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 203);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 204, 'CAIXA', '"/Sindical/caixa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 204);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 205, 'MENU LOCADORA', '"/Sindical/menuLocadora.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 205);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 206, 'MENU ATENDIMENTO', '"/Sindical/menuAtendimento.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 206);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 207, 'PISO SALARIAL', '"/Sindical/pisoSalarial.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 207);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 208, 'BLOQUEIO DE SERVIÇOS', '"/Sindical/bloqueioServicos.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 208);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 209, 'AGRUPA TURMA', '"/Sindical/agrupaTurma.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM esc_agrupa_turma WHERE id = 209);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 210, 'PESQUISA AGRUPA TURMA', '"/Sindical/pesquisaAgrupaTurma.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM esc_agrupa_turma WHERE id = 210);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao

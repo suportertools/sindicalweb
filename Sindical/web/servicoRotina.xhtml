@@ -2,65 +2,76 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Serviço Rotina</title>
+        <title>Sindical - Serviço Rotina</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formServicoRotina">
-                <c:set scope="request" var="object" value="${servicoRotinaBean.servicoRotina}"/>            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Serviço Rotina" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" style="text-align: left; width: 600px;">
-                        <h:panelGrid columns="3">
-                            <h:outputLabel value="SERVIÇOS: " styleClass="fontePadrao"/>
-                            <h:outputLabel value="ROTINAS: " styleClass="fontePadrao"/>
-                            <h:column></h:column>
-                            <h:selectOneMenu id="idServicos" value="#{servicoRotinaBean.idServicos}" >
-                                <a4j:ajax event="change" listener="#{servicoRotinaBean.limparRotina}" render="idPainelMensagem idRotinas tbl"/>
-                                <f:selectItems value="#{servicoRotinaBean.listaServicos}"/>
-                            </h:selectOneMenu>
-                            <h:selectOneMenu id="idRotinas" value="#{servicoRotinaBean.idRotinas}" >
-                                <a4j:ajax event="change" listener="#{servicoRotinaBean.limparServicoRotina}" render="idPainelMensagem idRotinas tbl"/>
-                                <f:selectItems value="#{servicoRotinaBean.listaRotinas}"/>
-                            </h:selectOneMenu>
-                            <a4j:commandButton image="/Imagens/novo.png" action="#{servicoRotinaBean.adicionar}" render="idPainelMensagem idRotinas tbl"/>
-                        </h:panelGrid>
-                        <h:panelGrid id="idPainelMensagem">
-                            <h:outputLabel value="#{servicoRotinaBean.msgConfirma}" styleClass="fontePadraoVermelho"/>
-                        </h:panelGrid>
-                        <div style="overflow-y: scroll; height: 300px; width: 300px;">
-                            <rich:dataTable value="#{servicoRotinaBean.listaServicoRotina}" var="linha" id="tbl" style="width: 100%; margin-top: 15px;" iterationStatusVar="it">
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Serviço Rotina" styleClass="fonteHeader" />
+                        <h:form id="formServicoRotina">
+                            <c:set scope="request" var="object" value="${servicoRotinaBean.servicoRotina}"/> 
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid id="i_panel" columns="3">
+                                    <p:column>
+                                        <p:selectOneMenu id="idServicos" value="#{servicoRotinaBean.idServicos}" style="padding-right: 20px">
+                                            <p:ajax event="change" listener="#{servicoRotinaBean.limparRotina}" update="i_panel tbl"/>
+                                            <f:selectItems value="#{servicoRotinaBean.listaServicos}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                        
+                                    <p:column>
+                                        <p:selectOneMenu id="idRotinas" value="#{servicoRotinaBean.idRotinas}" style="padding-right: 20px">
+                                            <p:ajax event="change" listener="#{servicoRotinaBean.limparServicoRotina}" update="i_panel tbl"/>
+                                            <f:selectItems value="#{servicoRotinaBean.listaRotinas}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    <p:commandButton value="Adicionar" action="#{servicoRotinaBean.adicionar}" update="i_panel :formServicoRotina:tbl"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:messages id="i_msg" showDetail="true" closable="true" /> 
+                            <p:dataTable value="#{servicoRotinaBean.listaServicoRotina}" var="linha" id="tbl" emptyMessage="Nenhum Serviço Rotina encontrado!">
                                 <f:facet name="header">Lista de Serviços / Rotinas</f:facet>
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value=""/>
-                                    </f:facet>
-                                    <a4j:commandButton image="/Imagens/excluirp.png" action="#{servicoRotinaBean.excluir(linha)}" render="idPainelMensagem idRotinas tbl">
-                                    </a4j:commandButton>
-                                </rich:column>
-                                <rich:column>
-                                    <f:facet name="header">
-                                        <h:outputText value="Rotinas"/>
-                                    </f:facet>
+                                <p:column style="text-align: center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{servicoRotinaBean.excluir(linha)}" update=":formServicoRotina:tbl :formServicoRotina:i_panel :formServicoRotina:i_msg"/>
+                                </p:column>
+                                
+                                <p:column headerText="Rotinas">
                                     <h:outputText value="#{linha.rotina.rotina}"/>
-                                </rich:column>
-                            </rich:dataTable>
-                        </div>
-                    </div>
-                </center>
-            </h:form>
-        </f:view>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

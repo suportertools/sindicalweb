@@ -1,200 +1,167 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Cadastro Correção</title>
+        <title>Sindical - Correção</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            .fonteCorr{
+                font-size: 11pt!important;
+            }
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formCorrecao">
-                <c:set scope="request" var="object" value="${correcaoBean.correcao}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Cadastro Correção" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo"  style="text-align: left; width: 820px">
-                        <h:panelGrid columns="2">
-                            <rich:panel>
-                            <h:column>
-                                <table>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Contribuição: " styleClass="fontePadrao"/></td>
-                                        <td><h:selectOneMenu id="idServicos" value="#{correcaoBean.idServicos}">
-                                                <a4j:ajax event="change" render="this"/>
-                                            <f:selectItems value="#{correcaoBean.listaServico}"/>
-                                        </h:selectOneMenu></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Índices: " styleClass="fontePadrao"/></td>
-                                        <td><h:selectOneMenu id="idIndices" value="#{correcaoBean.idIndices}">
-                                                <a4j:ajax event="change" render="this"/>
-                                            <f:selectItems value="#{correcaoBean.listaIndices}"/>
-                                        </h:selectOneMenu></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Multa 1° Mês: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.multaPriMes}" size="3"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Multa Apartir do 2° Mês: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.multaApartir2Mes}" size="3"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Juros 1° Mês: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.jurosPriMes}" size="3"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Juros Apartir do 2° Mês: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.jurosApartir2Mes}" size="3"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Multa N° de Funcionários: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.multaPorFuncionario}" size="3"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Juros Diário: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.jurosDiarios}" size="3"/></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Ref. Inicial: " styleClass="fontePadraoNegrito"/></td>
-                                                <td><h:inputText value="#{correcaoBean.correcao.referenciaInicial}" size="7" class="referencia" /></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><h:outputLabel value="Ref. Final: " styleClass="fontePadraoNegrito"/></td>
-                                        <td><h:inputText value="#{correcaoBean.correcao.referenciaFinal}" size="7" class="referencia" /></td>
-                                    </tr>
-                                </table>
-                            </h:column>
-                            </rich:panel>
-                            <h:column>
-                                <div style="overflow:auto; height:248px; width:500px">
-                                    <rich:dataTable  value="#{correcaoBean.listaCorrecao}" var="linha" id="tbl" iterationStatusVar="it">
-                                        <rich:column style="text-align: center;">
-                                            <f:facet name="header">
-                                                <h:outputText value="#"/>
-                                            </f:facet>
-                                            <h:outputText value="#{it.index}"/>
-                                        </rich:column>
-                                        
-                                        <rich:column styleClass="centralizar">
-                                            <f:facet name="header">
-                                                <h:outputText value="..."/>
-                                            </f:facet>
-                                            <a4j:commandButton image="/Imagens/excluirp.png" action="#{correcaoBean.btnExcluir}" oncomplete="modalMensagem()" render="outConfirma">
-                                                <a4j:ajax event="complete" render="tbl"/>
-                                                <a4j:param value="#{it.index}" assignTo="#{correcaoBean.idIndex}"/>
-                                            </a4j:commandButton>
-                                        </rich:column>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Correção" styleClass="fonteHeader" />
+                        <h:form id="formCorrecao">    
+                            <c:set scope="request" var="object" value="${correcaoBean.correcao}"/>
+                            <h:panelGrid columns="4" style="clear: both">
+                                <p:column>
+                                    <p:panel styleClass="fundoCinza" style="clear: both; height: 170px">
+                                        <table>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Contribuição: " styleClass="fonteCorr"/></td>
+                                                <td><p:selectOneMenu id="idServicos" value="#{correcaoBean.idServicos}" style="width: 180px">
+                                                        <f:selectItems value="#{correcaoBean.listaServico}"/>
+                                                    </p:selectOneMenu>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Índices: " styleClass="fonteCorr"/></td>
+                                                <td><p:selectOneMenu id="idIndices" value="#{correcaoBean.idIndices}" style="width: 180px">
+                                                        <f:selectItems value="#{correcaoBean.listaIndices}"/>
+                                                    </p:selectOneMenu>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Ref. Inicial: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputMask value="#{correcaoBean.correcao.referenciaInicial}" size="7" mask="99/9999"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Ref. Final: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputMask value="#{correcaoBean.correcao.referenciaFinal}" size="7" mask="99/9999" /></td>
+                                            </tr>
+                                        </table>
+                                    </p:panel>
+                                </p:column>
+                                <p:column>
+                                    <p:panel styleClass="fundoCinza" style="clear: both; height: 170px; margin-left: 35px">
+                                        <table>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Multa 1° Mês: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputText value="#{correcaoBean.correcao.multaPriMes}" size="3"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Multa Apartir do 2° Mês: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputText value="#{correcaoBean.correcao.multaApartir2Mes}" size="3"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Multa N° de Funcionários: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputText value="#{correcaoBean.correcao.multaPorFuncionario}" size="3"/></td>
+                                            </tr>
+                                        </table>
+                                    </p:panel>
+                                </p:column>
+                                <p:column>
+                                    <p:panel styleClass="fundoCinza" style="clear: both; height: 170px; margin-left: 35px">
+                                        <table>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Juros 1° Mês: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputText value="#{correcaoBean.correcao.jurosPriMes}" size="3"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Juros Apartir do 2° Mês: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputText value="#{correcaoBean.correcao.jurosApartir2Mes}" size="3"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><h:outputLabel value="Juros Diário: " styleClass="fonteCorr"/></td>
+                                                <td><p:inputText value="#{correcaoBean.correcao.jurosDiarios}" size="3"/></td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right"><p:commandButton ajax="false" value="Novo" action="#{correcaoBean.novo()}"/></td>
+                                                <td><p:commandButton value="Salvar" action="#{correcaoBean.salvar()}" update="formCorrecao"/></td>
+                                            </tr>
+                                        </table>
+                                    </p:panel>
+                                </p:column>
+                            </h:panelGrid>
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                                <p:dataTable  value="#{correcaoBean.listaCorrecao}" var="linha" id="tbl" emptyMessage="Nenhuma Correção foi encontrada!">
+                                    <p:column headerText="Excluir" style="text-align: center">
+                                        <p:commandButton icon="ui-icon-trash" action="#{correcaoBean.btnExcluir(linha)}" update=":formCorrecao" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Servico"/>
-                                            </f:facet>
-                                            <h:commandLink action="#{correcaoBean.editar}" styleClass="iLink" value="#{linha.servicos.descricao}">
-                                                <a4j:param value="#{it.index}" assignTo="#{correcaoBean.idIndex}"/>
-                                            </h:commandLink>
-                                        </rich:column>
+                                    <p:column headerText="Serviço">
+                                        <p:commandLink action="#{correcaoBean.editar(linha)}" value="#{linha.servicos.descricao}" update=":formCorrecao"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Índice"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.indice.descricao}"/>
-                                        </rich:column>
+                                    <p:column headerText="Índice">
+                                        <p:commandLink action="#{correcaoBean.editar(linha)}" value="#{linha.indice.descricao}" update=":formCorrecao"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Multa 1° Mês"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.multaPriMes}"/>
-                                        </rich:column>
+                                    <p:column headerText="Multa 1° Mês">
+                                        <h:outputText value="#{linha.multaPriMes}"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Multa Apartir 2° Mês"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.multaApartir2Mes}"/>
-                                        </rich:column>
+                                    <p:column headerText="Multa Apartir 2° Mês">
+                                        <h:outputText value="#{linha.multaApartir2Mes}"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Juros 1° Mês"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.jurosPriMes}"/>
-                                        </rich:column>
+                                    <p:column headerText="Juros 1° Mês">
+                                        <h:outputText value="#{linha.jurosPriMes}"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Juros Apartir 2° Mês"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.jurosApartir2Mes}"/>
-                                        </rich:column>
+                                    <p:column headerText="Juros Apartir 2° Mês">
+                                        <h:outputText value="#{linha.jurosApartir2Mes}"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Multa Por Funcionário"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.multaPorFuncionario}"/>
-                                        </rich:column>
+                                    <p:column headerText="Multa Por Funcionário">
+                                        <h:outputText value="#{linha.multaPorFuncionario}"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Juros Diários"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.jurosDiarios}"/>
-                                        </rich:column>
+                                    <p:column headerText="Juros Diário">
+                                        <h:outputText value="#{linha.jurosDiarios}"/>
+                                    </p:column>
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Ref.Inicial"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.referenciaInicial}"/>
-                                        </rich:column>
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Ref.Final"/>
-                                            </f:facet>
-                                                <h:outputText value="#{linha.referenciaFinal}"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </div>
-                            </h:column>
-                        </h:panelGrid>                        
-                        <h:panelGrid columns="3" style="text-align: left">
-                            <a4j:commandLink value="Adicionar" styleClass="idPesquisar iLink" action="#{correcaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink value="Novo" styleClass="idNovo iLink" action="#{correcaoBean.novo}"/>
-                        </h:panelGrid>                
-                    </div>
-                </center>
-                
-                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{correcaoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="OK" title="OK" action="correcao"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-                
-            </h:form>
-        </f:view>
+                                    <p:column headerText="Ref. Inicial">
+                                        <h:outputText value="#{linha.referenciaInicial}"/>
+                                    </p:column>
+
+                                    <p:column headerText="Ref. Final">
+                                        <h:outputText value="#{linha.referenciaFinal}"/>
+                                    </p:column>
+                               </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
