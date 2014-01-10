@@ -119,11 +119,12 @@ public class MatriculaEscolaBean implements Serializable {
     private int idFTipoDocumento = 0;
     private int idIndividual = 0;
     private int idMidia = 0;
-    private int idTurma = -1;
+    private int idTurma = 0;
     private int idStatus = 0;
     private int idVendedor = 0;
     private int idProfessor = 0;
     private int idServico = 0;
+    private int vagasDisponiveis = 0;
     private float vTaxa = 0;
     private boolean desabilitaTurma = false;
     private boolean desabilitaIndividual = false;
@@ -653,6 +654,17 @@ public class MatriculaEscolaBean implements Serializable {
         sv.abrirTransacao();
         if (matriculaEscola.getId() == -1) {
             MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
+            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            int idNumeroVagas = functionsDB.vagasEscolaTurma(matriculaTurma.getTurma().getId());
+            if (idNumeroVagas == 0) {
+                matriculaEscola.setId(-1);
+                matriculaTurma.setId(-1);
+                matriculaIndividual.setId(-1);
+                sv.desfazerTransacao();
+                msgConfirma = "Não existem mais vagas disponíveis para esta turma!";
+                GenericaMensagem.warn("Validação", msgConfirma);
+                return null;
+            }
             pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(idPessoa);
             if (pessoaComplemento == null) {
                 pessoaComplemento = new PessoaComplemento();
@@ -1498,7 +1510,7 @@ public class MatriculaEscolaBean implements Serializable {
                         + " à " + list.get(i).getIdadeFim() + " ano(s)",
                         Integer.toString(list.get(i).getId())));
             }
-        }
+        }       
         return listaTurma;
     }
 
@@ -1758,7 +1770,7 @@ public class MatriculaEscolaBean implements Serializable {
             desabilitaDescontoFolha = true;
             ocultaDescontoFolha = true;
         }
-        verificaSeContribuinteInativo();
+        verificaSeContribuinteInativo();       
         return matriculaEscola;
     }
 
@@ -2151,5 +2163,17 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setMsgStatusEmpresa(String msgStatusEmpresa) {
         this.msgStatusEmpresa = msgStatusEmpresa;
+    }
+
+    public int getVagasDisponiveis() {
+        if (!listaTurma.isEmpty()) {
+            FunctionsDB functionsDB = new FunctionsDBTopLink();
+            setVagasDisponiveis(functionsDB.vagasEscolaTurma(Integer.parseInt(listaTurma.get(idTurma).getDescription())));
+        }        
+        return vagasDisponiveis;
+    }
+
+    public void setVagasDisponiveis(int vagasDisponiveis) {
+        this.vagasDisponiveis = vagasDisponiveis;
     }
 }
