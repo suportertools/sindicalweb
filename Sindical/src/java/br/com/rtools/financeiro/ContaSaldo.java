@@ -10,7 +10,6 @@ import javax.persistence.*;
 @Table(name = "FIN_CONTA_SALDO")
 @NamedQuery(name = "ContaSaldo.pesquisaID", query = "select cs from ContaSaldo cs where cs.id=:pid")
 public class ContaSaldo implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -22,39 +21,38 @@ public class ContaSaldo implements java.io.Serializable {
     @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @OneToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
-    @ManyToOne
-    private Servicos servicos;
-    @JoinColumn(name = "ID_TIPO_SERVICO", referencedColumnName = "ID")
-    @ManyToOne
-    private TipoServico tipoServico;
     @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID")
     @OneToOne
     private Usuario usuario;
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Filial filial;
+    @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
+    @OneToOne
+    private Caixa caixa;
+    @Column(name = "NR_VALOR_INFORMADO")
+    private float valorInformado;
 
     public ContaSaldo() {
         this.id = -1;
         this.setData(null);
         this.saldo = 0;
         this.plano5 = new Plano5();
-        this.servicos = new Servicos();
-        this.tipoServico = new TipoServico();
         this.usuario = new Usuario();
         this.filial = new Filial();
+        this.caixa = new Caixa();
+        this.valorInformado = 0;
     }
 
-    public ContaSaldo(int id, Date dtData, float saldo, Plano5 plano5, Servicos servicos, TipoServico tipoServico, Usuario usuario, Filial filial) {
+    public ContaSaldo(int id, Date dtData, float saldo, Plano5 plano5, Usuario usuario, Filial filial, Caixa caixa, float valorInformado) {
         this.id = id;
         this.dtData = dtData;
         this.saldo = saldo;
         this.plano5 = plano5;
-        this.servicos = servicos;
-        this.tipoServico = tipoServico;
         this.usuario = usuario;
         this.filial = filial;
+        this.caixa = caixa;
+        this.valorInformado = valorInformado;
     }
 
     public int getId() {
@@ -89,22 +87,6 @@ public class ContaSaldo implements java.io.Serializable {
         this.plano5 = plano5;
     }
 
-    public Servicos getServicos() {
-        return servicos;
-    }
-
-    public void setServicos(Servicos servicos) {
-        this.servicos = servicos;
-    }
-
-    public TipoServico getTipoServico() {
-        return tipoServico;
-    }
-
-    public void setTipoServico(TipoServico tipoServico) {
-        this.tipoServico = tipoServico;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -127,5 +109,21 @@ public class ContaSaldo implements java.io.Serializable {
 
     public void setData(String data) {
         this.dtData = DataHoje.converte(data);
+    }
+
+    public Caixa getCaixa() {
+        return caixa;
+    }
+
+    public void setCaixa(Caixa caixa) {
+        this.caixa = caixa;
+    }
+
+    public float getValorInformado() {
+        return valorInformado;
+    }
+
+    public void setValorInformado(float valorInformado) {
+        this.valorInformado = valorInformado;
     }
 }

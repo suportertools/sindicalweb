@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca;
 
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.utilitarios.GenericaSessao;
 import javax.persistence.*;
@@ -22,6 +23,9 @@ public class MacFilial implements java.io.Serializable {
     private String mac;
     @Column(name = "NR_MESA")
     private int mesa;
+    @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
+    @ManyToOne
+    private Caixa caixa;
 
     public MacFilial() {
         this.id = -1;
@@ -29,14 +33,16 @@ public class MacFilial implements java.io.Serializable {
         this.filial = new Filial();
         this.mac = "";
         this.mesa = 0;
+        this.caixa = new Caixa();
     }
 
-    public MacFilial(int id, Departamento departamento, Filial filial, String mac, int mesa) {
+    public MacFilial(int id, Departamento departamento, Filial filial, String mac, int mesa, Caixa caixa) {
         this.id = id;
         this.departamento = departamento;
         this.filial = filial;
         this.mac = mac;
         this.mesa = mesa;
+        this.caixa = caixa;
     }
 
     public int getId() {
@@ -85,5 +91,13 @@ public class MacFilial implements java.io.Serializable {
             macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
         }
         return macFilial;
+    }
+
+    public Caixa getCaixa() {
+        return caixa;
+    }
+
+    public void setCaixa(Caixa caixa) {
+        this.caixa = caixa;
     }
 }

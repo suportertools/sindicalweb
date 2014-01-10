@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -38,16 +39,19 @@ public class BloqueioServicosJSFBean {
 
         if (pessoa.getId() == -1) {
             msgConfirma = "Pesquise uma pessoa para bloquear!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (refInicial.isEmpty()) {
             msgConfirma = "Referência inicial esta vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (refFinal.isEmpty()) {
             msgConfirma = "Referência final esta vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -61,6 +65,7 @@ public class BloqueioServicosJSFBean {
 
         if (db.pesquisaBloqueiaServicoPessoa(pessoa.getId(), servicos.getId(), bloqueia.getDtInicio(), bloqueia.getDtFim()) != null) {
             msgConfirma = "Este bloqueio já existe!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -72,21 +77,25 @@ public class BloqueioServicosJSFBean {
         if (bloqueia.getId() == -1) {
             if (sv.inserirObjeto(bloqueia)) {
                 msgConfirma = "Bloqueio salvo com Sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 listaBloqueios.clear();
                 bloqueia = new BloqueiaServicoPessoa();
                 sv.comitarTransacao();
             } else {
                 msgConfirma = "Erro ao salvar Bloqueio!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
             }
         } else {
             if (sv.alterarObjeto(bloqueia)) {
                 msgConfirma = "Bloqueio alterado com Sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 listaBloqueios.clear();
                 bloqueia = new BloqueiaServicoPessoa();
                 sv.comitarTransacao();
             } else {
                 msgConfirma = "Erro ao excluir Bloqueio!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
             }
         }
@@ -100,10 +109,12 @@ public class BloqueioServicosJSFBean {
 
         if (sv.deletarObjeto(sv.pesquisaCodigo(bl.getId(), "BloqueiaServicoPessoa"))) {
             msgConfirma = "Bloqueio excluído com Sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             listaBloqueios.clear();
             sv.comitarTransacao();
         } else {
             msgConfirma = "Erro ao excluir bloqueio!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
         }
         return null;
@@ -127,9 +138,11 @@ public class BloqueioServicosJSFBean {
 
         if (sv.alterarObjeto(bl)) {
             msgConfirma = "Bloqueio atualizado!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             sv.comitarTransacao();
         } else {
             msgConfirma = "Erro ao atualizar status de Bloqueio!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
         }
 
@@ -150,9 +163,11 @@ public class BloqueioServicosJSFBean {
 
         if (sv.alterarObjeto(bl)) {
             msgConfirma = "Bloqueio atualizado!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             sv.comitarTransacao();
         } else {
             msgConfirma = "Erro ao atualizar status de Bloqueio!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
         }
 

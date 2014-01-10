@@ -13,7 +13,7 @@ import java.util.Vector;
 import javax.persistence.Query;
 
 public class NotificacaoDBToplink extends DB implements NotificacaoDB {
-
+    
     @Override
     public Object[] listaParaNotificacao(int id_lote, String data, String id_empresa, String id_contabil, String id_cidade, boolean comContabil, boolean semContabil) {
         Object[] obj = new Object[2];
@@ -310,18 +310,47 @@ public class NotificacaoDBToplink extends DB implements NotificacaoDB {
             return new CobrancaEnvio();
         }
     }
-    //            String textQry = "select m.id, " +
-//                             "       co.ds_nome, " +
-//                             "       m.ds_documento, " +
-//                             "       m.nr_valor   " +
-//                             "  from arr_contribuintes_vw as co " +
-//                             " inner join fin_movimento      as m  on m.id_pessoa = co.id_pessoa " +
-//                             " inner join pes_juridica_vw    as pj on pj.id_pessoa = co.id_pessoa " +
-//                             "  left join fin_cobranca       as fc on fc.id_movimento = m.id " +
-//                             " inner join end_cidade         as cid on cid.id = pj.jur_idcidade " +
-//                             " where m.id_baixa is null " +
-//                             "   and m.is_ativo = true " +
-//                             "   and m.dt_vencimento < '"+data+"' " +
-//                             filtro_empresa + filtro_contabil + filtro_cidade + filtro_lote +
-//                             " order by co.ds_nome";
+    
+    @Override
+    public List<Vector> listaParaEtiqueta(String string_qry, CobrancaTipo ct){
+        List<Vector> result = null;
+        
+        String text = "";
+        String text_group_by = "";
+        String text_order_by = "";
+        
+        if (ct.getId() == 6){
+            text = "select c.id_pessoa, c.ds_nome, fc.id_lote, ce.id_lote, ce.dt_emissao "+string_qry;
+            text_group_by = " group by c.id_pessoa, c.ds_nome, fc.id_lote, ce.id_lote, ce.dt_emissao ";
+            text_order_by = " order by c.ds_nome, c.id_pessoa ";
+        }else{
+            text = "select c.id_contabilidade, fc.id_lote, ce.id_lote, ce.dt_emissao "+string_qry;
+            text_group_by = " group by c.id_contabilidade, fc.id_lote, ce.id_lote, ce.dt_emissao ";
+            text_order_by = " order by c.id_contabilidade";
+        }
+        
+        text += text_group_by+text_order_by;
+        Query qry = getEntityManager().createNativeQuery(text);
+        try{
+            result = qry.getResultList();
+        }catch(Exception e){
+            
+        }
+        return result;
+    }
+        
 }
+
+//                String text_from = "  from arr_contribuintes_vw as c  "
+//                    + "  left join pes_juridica as je on je.id = c.id_contabilidade "
+//                    + "  left join pes_pessoa as pe on pe.id = je.id_pessoa "
+//                    + " inner join fin_movimento as m on m.id_pessoa = c.id_pessoa "
+//                    + "  left join pes_pessoa_endereco as pee on pee.id_pessoa = c.id_pessoa "
+//                    + "  left join end_endereco as en on en.id = pee.id_endereco "
+//                    + "  left join fin_cobranca       as fc on fc.id_movimento = m.id  "
+//                    + "  left join fin_cobranca_envio as ce on ce.id_lote = fc.id_lote "
+//                    + " where c.dt_inativacao is null    "
+//                    + "   and m.is_ativo = true          "
+//                    + "   and m.id_baixa is null         "
+//                    + "   and m.dt_vencimento < '" + data + "' "
+//                    + "   and pee.id_tipo_endereco = 5 ";    

@@ -6,6 +6,7 @@ import br.com.rtools.financeiro.CobrancaLote;
 import br.com.rtools.financeiro.CobrancaTipo;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 public interface NotificacaoDB {
 
@@ -32,4 +33,6 @@ public interface NotificacaoDB {
     public List pesquisaUltimoLote();
 
     public CobrancaEnvio pesquisaCobrancaEnvio(int id_lote);
+    
+    public List<Vector> listaParaEtiqueta(String string_qry, CobrancaTipo ct);
 }

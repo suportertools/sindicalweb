@@ -59,6 +59,7 @@ public class JuridicaDBToplink extends DB implements JuridicaDB {
             qry.setParameter("pid", id);
             result = (Juridica) qry.getSingleResult();
         } catch (Exception e) {
+            e.getMessage();
         }
         return result;
     }

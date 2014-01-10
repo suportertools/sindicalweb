@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.db.CorrecaoDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -36,30 +37,37 @@ public class CorrecaoJSFBean {
                 List dd = db.pesquisaRefValida(servico, correcao.getReferenciaInicial(), correcao.getReferenciaFinal());
                 if (Integer.parseInt(String.valueOf((Long) dd.get(0))) == 0) {
                     if (db.insert(correcao)) {
-                        msgConfirma = "Adicionado!";
+                        msgConfirma = "Correção Salva!";
+                        GenericaMensagem.info("Sucesso", msgConfirma);
                         correcao = new Correcao();
                         idIndices = 0;
                         idServicos = 0;
                     } else {
                         msgConfirma = "Erro ao Salvar!";
+                        GenericaMensagem.warn("Erro", msgConfirma);
                     }
                 } else {
                     msgConfirma = "Correção já existente!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                 }
             } else {
                 msgConfirma = "Referencia Invalida!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else if (DataHoje.validaReferencias(correcao.getReferenciaInicial(), correcao.getReferenciaFinal())) {
             if (db.update(correcao)) {
-                msgConfirma = "Correção atualizada!";
+                msgConfirma = "Correção Atualizada!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 correcao = new Correcao();
                 idIndices = 0;
                 idServicos = 0;
             } else {
                 msgConfirma = "Erro ao atualizar!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
             msgConfirma = "Referencia Invalida!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         listaCorrecao.clear();
         return null;
@@ -74,22 +82,24 @@ public class CorrecaoJSFBean {
         return "correcao";
     }
 
-    public String btnExcluir() {
+    public String btnExcluir(Correcao co) {
         CorrecaoDB db = new CorrecaoDBToplink();
-        correcao = (Correcao) listaCorrecao.get(idIndex);
+        correcao = co;
         Correcao cor = db.pesquisaCodigo(correcao.getId());
         if (db.delete(cor)) {
             msgConfirma = "Correção Excluida!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
         } else {
             msgConfirma = "Erro ao excluir Correção!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         correcao = new Correcao();
         listaCorrecao.clear();
         return null;
     }
 
-    public String editar() {
-        correcao = (Correcao) listaCorrecao.get(idIndex);
+    public String editar(Correcao co) {
+        correcao = co;
         for (int i = 0; i < getListaServico().size(); i++) {
             if (Integer.parseInt(getListaServico().get(i).getDescription()) == correcao.getServicos().getId()) {
                 setIdServicos(i);

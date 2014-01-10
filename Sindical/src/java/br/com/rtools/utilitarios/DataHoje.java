@@ -619,11 +619,11 @@ public class DataHoje {
     }
 
     public int calcularIdade(String dataNascimento) {
-        // int idade = -1;
+//         int idade = -1;
         String dataHoje = DataHoje.data();
         int[] dataH = DataHoje.DataToArrayInt(dataHoje);
         int[] dataN = DataHoje.DataToArrayInt(dataNascimento);
-        int idade = dataN[2] - dataH[2];
+        int idade = dataH[2] - dataN[2];
         int[] novaData = DataHoje.DataToArrayInt(incrementarAnos(idade, dataNascimento));
         if (dataH[1] < novaData[1]) {
             idade--;
@@ -632,6 +632,7 @@ public class DataHoje {
                 idade--;
             }
         }
+        //int idade = DataHoje.converteDataParaInteger(DataHoje.data()) - DataHoje.converteDataParaInteger(dataNascimento);
         return idade;
     }
 

@@ -811,12 +811,13 @@ public class GerarMovimento extends DB {
 
         Baixa baixa = new Baixa();
         baixa.setUsuario(usuario);
-        baixa.setFechamentoCaixa("");
+        baixa.setFechamentoCaixa(null);
         baixa.setBaixa(pagamento);
         baixa.setImportacao(DataHoje.data());
         baixa.setSequenciaBaixa(nrSequencia);
         baixa.setDocumentoBaixa(numeroComposto);
-
+        baixa.setCaixa(null);
+        
         sv.abrirTransacao();
         if (!sv.inserirObjeto(baixa)) {
             sv.desfazerTransacao();
@@ -878,7 +879,7 @@ public class GerarMovimento extends DB {
         return true;
     }
 
-    public static boolean baixarMovimentoManual(List<Movimento> movimento, Usuario usuario, List<FormaPagamento> fp, float valorTotal, String pagamento) {
+    public static boolean baixarMovimentoManual(List<Movimento> movimento, Usuario usuario, List<FormaPagamento> fp, float valorTotal, String pagamento, Caixa caixa) {
         // 15
         // 000003652580001
         // 8
@@ -899,10 +900,11 @@ public class GerarMovimento extends DB {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             Baixa baixa = new Baixa();
             baixa.setUsuario(usuario);
-            baixa.setFechamentoCaixa("");
+            baixa.setFechamentoCaixa(null);
             baixa.setBaixa(pagamento);
             baixa.setDocumentoBaixa(numeroComposto);
-
+            baixa.setCaixa(caixa);
+            
             sv.abrirTransacao();
             if (!sv.inserirObjeto(baixa)) {
                 sv.desfazerTransacao();

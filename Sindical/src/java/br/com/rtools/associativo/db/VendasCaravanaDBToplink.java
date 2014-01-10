@@ -92,14 +92,15 @@ public class VendasCaravanaDBToplink extends DB implements VendasCaravanaDB {
         }
     }
 
+    @Override
     public List<Movimento> listaMovCaravana(int idResponsavel, int idEvt) {
         List<Movimento> list = new ArrayList();
         try {
             Query qry = getEntityManager().createQuery("select mov"
-                    + "  from Movimento mov"
-                    + " where mov.pessoa.id = " + idResponsavel
-                    + "   and mov.evt.id = " + idEvt
-                    + " order by mov.dtVencimento");
+                                                    + "  from Movimento mov"
+                                                    + " where mov.pessoa.id = " + idResponsavel
+                                                    + "   and mov.lote.evt.id = " + idEvt
+                                                    + " order by mov.dtVencimento");
             list = qry.getResultList();
             return list;
         } catch (EJBQLException e) {

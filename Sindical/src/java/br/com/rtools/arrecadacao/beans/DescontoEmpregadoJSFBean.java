@@ -9,6 +9,7 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -106,6 +107,7 @@ public class DescontoEmpregadoJSFBean {
 
         if (descontoEmpregado.getPercentual() <= 0 && descontoEmpregado.getValorEmpregado() <= 0) {
             msgConfirma = "Digite um Percentual ou Valor de empregado!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -117,14 +119,17 @@ public class DescontoEmpregadoJSFBean {
                 if (sv.inserirObjeto(descontoEmpregado)) {
                     sv.comitarTransacao();
                     msgConfirma = "Desconto salvo com Sucesso!";
+                    GenericaMensagem.info("Sucesso", msgConfirma);
                     log.novo("Novo registro", "Desconto Empregado inserido ID: " + descontoEmpregado.getId() + " - Servico: " + descontoEmpregado.getServicos().getDescricao() + " - Valor: " + descontoEmpregado.getValorEmpregado() + " - Grupo" + descontoEmpregado.getGrupoCidade().getDescricao() + " - Convencao:" + descontoEmpregado.getConvencao().getDescricao());
                 } else {
                     sv.desfazerTransacao();
                     msgConfirma = "Erro ao salvar Desconto!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                 }
             } else {
                 sv.desfazerTransacao();
                 msgConfirma = "Referência incorreta!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
             DescontoEmpregado desconto = new DescontoEmpregado();
@@ -136,6 +141,7 @@ public class DescontoEmpregadoJSFBean {
             if (sv.alterarObjeto(descontoEmpregado)) {
                 sv.comitarTransacao();
                 msgConfirma = "Desconto atualizado com Sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 log.novo("Atualizado", antes + " - para ID: " + descontoEmpregado.getId() + " - Servico: " + descontoEmpregado.getServicos().getDescricao() + " - Percentual: " + descontoEmpregado.getPercentual() + " - Valor: " + descontoEmpregado.getValorEmpregado() + " - Grupo" + descontoEmpregado.getGrupoCidade().getDescricao() + " - Convencao:" + descontoEmpregado.getConvencao().getDescricao());
             } else {
                 sv.desfazerTransacao();
@@ -144,25 +150,27 @@ public class DescontoEmpregadoJSFBean {
         return null;
     }
 
-    public String btnExcluir() {
+    public String btnExcluir(DescontoEmpregado de) {
         NovoLog log = new NovoLog();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        descontoEmpregado = (DescontoEmpregado) sv.pesquisaCodigo(listaDescontoEmpregado.get(idIndex).getId(), "DescontoEmpregado");
+        descontoEmpregado = (DescontoEmpregado) sv.pesquisaCodigo(de.getId(), "DescontoEmpregado");
         if (sv.deletarObjeto(descontoEmpregado)) {
             limpar = true;
             msgConfirma = "Desconto Excluido com Sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             log.novo("Excluido", " ID: " + descontoEmpregado.getId() + " - Servico: " + descontoEmpregado.getServicos().getDescricao() + " - Valor: " + descontoEmpregado.getValorEmpregado() + " - Grupo" + descontoEmpregado.getGrupoCidade().getDescricao() + " - Convencao:" + descontoEmpregado.getConvencao().getDescricao());
             sv.comitarTransacao();
         } else {
             msgConfirma = "Desconto não pode ser Excluido!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
         }
         return null;
     }
 
-    public String editar() {
-        descontoEmpregado = (DescontoEmpregado) listaDescontoEmpregado.get(idIndex);
+    public String editar(DescontoEmpregado de) {
+        descontoEmpregado = de;//(DescontoEmpregado) listaDescontoEmpregado.get(idIndex);
         if (descontoEmpregado != null) {
             int i = 0;
             if (descontoEmpregado.getServicos().getId() != -1) {

@@ -6,6 +6,7 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -23,7 +24,7 @@ public class CaravanaJSFBean {
     private EventoServicoValor eventoServicoValor = new EventoServicoValor();
     private String msgConfirma = "";
     private int idDescricaoEvento = 0;
-    private int idGrupoEvento = 0;
+    private int idGrupoEvento = 1;
     private int idServicos = 0;
     private int idIndex = -1;
     private int idIndexServicos = -1;
@@ -40,18 +41,21 @@ public class CaravanaJSFBean {
         if (caravana.getId() == -1) {
             aEvento.setDescricaoEvento(db.pesquisaCodigo(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription())));
             if (!sv.inserirObjeto(aEvento)) {
-                msgConfirma = ("Erro ao salvar Evento!");
+                msgConfirma = "Erro ao salvar Evento!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
 
             caravana.setaEvento(aEvento);
             if (!sv.inserirObjeto(caravana)) {
-                msgConfirma = ("Erro ao salvar caravana!");
+                msgConfirma = "Erro ao salvar caravana!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             } else {
-                msgConfirma = ("Caravana salva com sucesso!");
+                msgConfirma = "Caravana salva com sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 sv.comitarTransacao();
                 return null;
             }
@@ -59,18 +63,21 @@ public class CaravanaJSFBean {
             aEvento = (AEvento) sv.pesquisaCodigo(caravana.getaEvento().getId(), "AEvento");
             aEvento.setDescricaoEvento(db.pesquisaCodigo(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription())));
             if (!sv.alterarObjeto(aEvento)) {
-                msgConfirma = ("Erro ao atualizar Evento!");
+                msgConfirma = "Erro ao atualizar Evento!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
 
             caravana.setaEvento(aEvento);
             if (!sv.alterarObjeto(caravana)) {
-                msgConfirma = ("Erro ao atulizar caravana!");
+                msgConfirma = "Erro ao atulizar caravana!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             } else {
-                msgConfirma = ("Caravana atualizada com sucesso!");
+                msgConfirma = "Caravana atualizada com sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 sv.comitarTransacao();
                 return null;
             }
@@ -80,6 +87,7 @@ public class CaravanaJSFBean {
     public String adicionarServico() {
         if (getListaServicos().isEmpty()) {
             msgConfirma = "Não existe nenhum serviço para ser adicionado!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -90,6 +98,7 @@ public class CaravanaJSFBean {
             aEvento.setDescricaoEvento(db.pesquisaCodigo(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription())));
             if (!sv.inserirObjeto(aEvento)) {
                 msgConfirma = "Erro ao salvar Evento!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -97,6 +106,7 @@ public class CaravanaJSFBean {
             caravana.setaEvento(aEvento);
             if (!sv.inserirObjeto(caravana)) {
                 msgConfirma = "Erro ao salvar caravana!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -105,18 +115,19 @@ public class CaravanaJSFBean {
         servicos = new Servicos();
         servicos = (Servicos) sv.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServicos).getDescription()), "Servicos");
         float vl = 0;
-        for (int i = 0; i < listaServicosAdd.size(); i++) {
-            if (((Servicos) listaServicosAdd.get(i).getArgumento0()).getId() == servicos.getId()) {
-                eventoServico = new EventoServico();
-                eventoServicoValor = new EventoServicoValor();
-                msgConfirma = "Serviço já existente!";
-                return null;
-            }
-        }
+//        for (int i = 0; i < listaServicosAdd.size(); i++) {
+//            if (((Servicos) listaServicosAdd.get(i).getArgumento0()).getId() == servicos.getId()) {
+//                eventoServico = new EventoServico();
+//                eventoServicoValor = new EventoServicoValor();
+//                msgConfirma = "Serviço já existente!";
+//                return null;
+//            }
+//        }
         eventoServico.setaEvento(caravana.getaEvento());
         eventoServico.setServicos(servicos);
         if (!sv.inserirObjeto(eventoServico)) {
             msgConfirma = "Erro ao inserir Evento Serviço!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
@@ -125,12 +136,14 @@ public class CaravanaJSFBean {
         eventoServicoValor.setValor(vl);
         if (!sv.inserirObjeto(eventoServicoValor)) {
             msgConfirma = "Erro ao inserir Evento Serviço Valor!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
 
         sv.comitarTransacao();
         msgConfirma = "Serviço adicionado!";
+        GenericaMensagem.info("Sucesso", msgConfirma);
         if (eventoServico.isIndividual()) {
             listaServicosAdd.add(new DataObject(servicos, eventoServico, eventoServicoValor, eventoServico.isIndividual(), valor, "<< Sim >>"));
         } else {
@@ -156,36 +169,43 @@ public class CaravanaJSFBean {
                     if (!excluirServicos(sv, dtObj)) {
                         sv.desfazerTransacao();
                         msgConfirma = "Erro ao excluir lista de Serviços!";
+                        GenericaMensagem.warn("Erro", msgConfirma);
                         return null;
                     }
                 }
             }
             if (!sv.deletarObjeto(caravana)) {
                 msgConfirma = "Erro ao excluír caravana!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
 
             if (!sv.deletarObjeto(aEvento)) {
                 msgConfirma = "Erro ao excluir Evento!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             } else {
                 sv.comitarTransacao();
-                ((CaravanaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("caravanaBean")).setMsgConfirma("Caravana excluído com sucesso!");
+                //((CaravanaJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("caravanaBean")).setMsgConfirma("Caravana excluído com sucesso!");
+                msgConfirma = "Caravana excluído com sucesso!";
+                caravana = new Caravana();
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 return null;
             }
         } else {
-            msgConfirma = ("Pesquise uma caravana antes de excluir!");
+            msgConfirma = "Pesquise uma caravana antes de excluir!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
     }
 
-    public String excluirServicos() {
+    public String excluirServicos(DataObject dob) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        DataObject dtObj = (DataObject) listaServicosAdd.get(idIndexServicos);
+        DataObject dtObj = dob;//(DataObject) listaServicosAdd.get(idIndexServicos);
         if (excluirServicos(sv, dtObj)) {
             sv.comitarTransacao();
         } else {
@@ -199,14 +219,17 @@ public class CaravanaJSFBean {
         eventoServicoValor = (EventoServicoValor) sv.pesquisaCodigo(((EventoServicoValor) dtObj.getArgumento2()).getId(), "EventoServicoValor");
         if (!sv.deletarObjeto(eventoServicoValor)) {
             msgConfirma = "Erro ao Excluir evento serviço valor!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return false;
         }
 
         if (!sv.deletarObjeto(eventoServico)) {
             msgConfirma = "Erro ao Excluir evento serviço!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return false;
         } else {
             msgConfirma = "Serviço excluido!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             eventoServico = new EventoServico();
             eventoServicoValor = new EventoServicoValor();
             return true;
@@ -218,8 +241,8 @@ public class CaravanaJSFBean {
         return "caravana";
     }
 
-    public String editar() {
-        caravana = (Caravana) listaCaravana.get(idIndex);
+    public String editar(Caravana car) {
+        caravana = car;//(Caravana) listaCaravana.get(idIndex);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         for (int i = 0; i < getListaGrupoEvento().size(); i++) {
             if (Integer.parseInt(getListaGrupoEvento().get(i).getDescription()) == caravana.getaEvento().getDescricaoEvento().getGrupoEvento().getId()) {

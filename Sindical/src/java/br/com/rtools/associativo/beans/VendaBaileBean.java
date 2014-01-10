@@ -1,10 +1,14 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.associativo.AStatus;
+import br.com.rtools.associativo.BVenda;
 import br.com.rtools.associativo.EventoBaile;
 import br.com.rtools.associativo.EventoBaileMapa;
+import br.com.rtools.associativo.Mesa;
 import br.com.rtools.associativo.db.EventoBaileDB;
 import br.com.rtools.associativo.db.EventoBaileDBToplink;
 import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -23,13 +27,57 @@ public class VendaBaileBean implements Serializable{
     private List<EventoBaile> listae = new ArrayList();
     private int indexEventoBaile = 0;
     private Fisica fisica = new Fisica();
-    private List<EventoBaileMapa> listaMesas = new ArrayList();
-    private List<EventoBaileMapa> listaMesaSelecionada = new ArrayList();
+    private BVenda venda = new BVenda();
+    private List<Mesa> listaMesa = new ArrayList();
     private List<Integer> listaQuantidade = new ArrayList();
-
+    
+    public void adicionarMesa(EventoBaileMapa ebm){
+        for (int i = 0; i < listaMesa.size(); i++){
+            if (listaMesa.get(i).getEventoBaileMapa().getId() == ebm.getId() ){
+                listaMesa.remove(i);
+                return;
+            }
+        }
+        
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        listaMesa.add(new Mesa(-1, null, (AStatus)sv.pesquisaCodigo(1, "AStatus"), ebm));
+    }
+    
+    public void removerMesa(Mesa me){
+        for (int i = 0; i < listaMesa.size(); i++){
+            if (listaMesa.get(i).getEventoBaileMapa().getId() == me.getEventoBaileMapa().getId() ){
+                listaMesa.remove(i);
+                return;
+            }
+        }
+    }
+    
+    public String retornaStatus(EventoBaileMapa ebm){
+        //SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        for (int i = 0; i < listaMesa.size(); i++){
+            if (listaMesa.get(i).getEventoBaileMapa().getId() == ebm.getId() )
+                return "background-color: yellow;";
+        }
+        
+        
+        return "";
+    }
+    
+    public void salvar(){
+        if (fisica.getId() == -1){
+            GenericaMensagem.warn("Erro", "Pesquise uma pessoa para salvar esta venda!");
+            return;
+        }
+        
+        if (listaMesa.isEmpty()){
+            GenericaMensagem.warn("Erro", "Lista de Mesa esta vazia!");
+        }
+    }
+    
     public List<Integer> getListaQuantidade() {
         if (listaQuantidade.isEmpty()){
-            for (int i = 1; i < 419; i++){
+            for (int i = 1; i < 426; i++){
                 listaQuantidade.add(i);
             }
         }
@@ -39,47 +87,7 @@ public class VendaBaileBean implements Serializable{
     public void setListaQuantidade(List<Integer> listaQuantidade) {
         this.listaQuantidade = listaQuantidade;
     }
-    
-        public List<EventoBaileMapa> getListaMesas() {
-        if (listaMesas.isEmpty()){
-            for (int i = 1; i <= listae.get(indexEventoBaile).getQuantidadeMesas(); i++){
-                
-                EventoBaileDB db = new EventoBaileDBToplink();
-                EventoBaileMapa result = db.pesquisaMesaBaile(listae.get(indexEventoBaile).getId(), i);
-                if (result.getId() == -1)
-                    listaMesas.add(new EventoBaileMapa(-1, new EventoBaile(), i, "i_"+i, ""));
-                else{
-                    listaMesas.add(result);
-                    listaMesaSelecionada.add(result);
-                }
-                
-            }
-        }
-        return listaMesas;
-    }
-
-    public void setListaMesas(List<EventoBaileMapa> listaMesas) {
-        this.listaMesas = listaMesas;
-    }    
-    
-    public List<EventoBaileMapa> getListaMesaSelecionada() {
-        if (listaMesaSelecionada.isEmpty()){
-            
-            EventoBaileDB db = new EventoBaileDBToplink();
-            List<EventoBaileMapa> lista = db.listaBaileMapa(listae.get(indexEventoBaile).getId());
-
-            for (int i = 0; i < lista.size(); i++){
-                listaMesaSelecionada.add(new EventoBaileMapa(lista.get(i).getId(), listae.get(indexEventoBaile), lista.get(i).getMesa(), lista.get(i).getComponenteId(), lista.get(i).getPosicao()));
-            }
-            
-        }
-        return listaMesaSelecionada;
-    }
-
-    public void setListaMesaSelecionada(List<EventoBaileMapa> listaMesaSelecionada) {
-        this.listaMesaSelecionada = listaMesaSelecionada;
-    }
-    
+        
     public void removerFisica(){
         fisica = new Fisica();
     }
@@ -122,6 +130,22 @@ public class VendaBaileBean implements Serializable{
 
     public void setFisica(Fisica fisica) {
         this.fisica = fisica;
+    }
+
+    public BVenda getVenda() {
+        return venda;
+    }
+
+    public void setVenda(BVenda venda) {
+        this.venda = venda;
+    }
+
+    public List<Mesa> getListaMesa() {
+        return listaMesa;
+    }
+
+    public void setListaMesa(List<Mesa> listaMesa) {
+        this.listaMesa = listaMesa;
     }
     
 

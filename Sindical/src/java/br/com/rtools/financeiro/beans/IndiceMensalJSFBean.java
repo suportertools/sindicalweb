@@ -5,6 +5,7 @@ import br.com.rtools.financeiro.IndiceMensal;
 import br.com.rtools.financeiro.db.IndiceMensalDB;
 import br.com.rtools.financeiro.db.IndiceMensalDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -51,8 +52,10 @@ public class IndiceMensalJSFBean {
 
         msgConfirma = "";
 
-        if (valor.equals("")) {
+        if (valor.isEmpty()) {
             msgConfirma = "Digite um valor válido!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
         }
 
         IndiceMensalDB db = new IndiceMensalDBToplink();
@@ -65,28 +68,33 @@ public class IndiceMensalJSFBean {
         if (db.pesquisaIndMensalExistente(indice.getId(), indiceMensal.getAno(), indiceMensal.getMes()).isEmpty()) {
             if (db.insert(indiceMensal)) {
                 msgConfirma = "Indice Mensal salvo com Sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
                 msgConfirma = "Erro ao salvar Indice Mensal";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
-            msgConfirma = "Indice Mensal ja existe no Sistema!";
+            msgConfirma = "Indice Mensal já existe no Sistema!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         indiceMensal = new IndiceMensal();
         listaIndiceMensal.clear();
         return null;
     }
 
-    public String btnExcluir() {
-        indiceMensal = (IndiceMensal) listaIndiceMensal.get(idIndex);
+    public String btnExcluir(IndiceMensal im) {
+        indiceMensal = im;
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
 
         if (!sv.deletarObjeto(sv.pesquisaCodigo(indiceMensal.getId(), "IndiceMensal"))) {
             msgConfirma = "Erro ao excluir Indice Mensal!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         } else {
             msgConfirma = "Registro excluido com Sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             indiceMensal = new IndiceMensal();
             listaIndiceMensal.clear();
             setLimpar(true);

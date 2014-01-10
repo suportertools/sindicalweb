@@ -76,6 +76,7 @@ public class Plano5DBToplink extends DB implements Plano5DB {
         return result;
     }
 
+    @Override
     public Plano5 pesquisaPlano5IDContaBanco(int id) {
         Plano5 result = null;
         try {

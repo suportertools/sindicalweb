@@ -3,6 +3,7 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.associativo.GrupoCategoria;
 import br.com.rtools.associativo.db.GrupoCategoriaDB;
 import br.com.rtools.associativo.db.GrupoCategoriaDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,25 +18,31 @@ public class GrupoCategoriaJSFBean {
         GrupoCategoriaDB db = new GrupoCategoriaDBToplink();
         if (grupoCategoria.getGrupoCategoria().equals("") || grupoCategoria.getGrupoCategoria() == null) {
             msgConfirma = "Digite um nome para o grupo!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (grupoCategoria.getNrProximaMatricula() < 0) {
             msgConfirma = "Número da matricula inválida!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (grupoCategoria.getId() == -1) {
             if (db.insert(grupoCategoria)) {
                 msgConfirma = "Grupo salvo com sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 grupoCategoria = new GrupoCategoria();
             } else {
                 msgConfirma = "Erro ao salvar grupo!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
             if (db.update(grupoCategoria)) {
                 msgConfirma = "Grupo atualizado com sucesso.";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 grupoCategoria = new GrupoCategoria();
             } else {
                 msgConfirma = "Erro ao atualizar grupo!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         }
         return null;
@@ -45,19 +52,22 @@ public class GrupoCategoriaJSFBean {
         GrupoCategoriaDB db = new GrupoCategoriaDBToplink();
         if (grupoCategoria.getId() == -1) {
             msgConfirma = "Selecione um grupo para ser excluído!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (db.delete(db.pesquisaCodigo(grupoCategoria.getId()))) {
             msgConfirma = "Grupo deletado com sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             grupoCategoria = new GrupoCategoria();
         } else {
             msgConfirma = "Erro ao deletar grupo!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         return null;
     }
 
-    public String editar() {
-        grupoCategoria = (GrupoCategoria) listaGrupoCategoria.get(idIndex);
+    public String editar(GrupoCategoria gc) {
+        grupoCategoria = gc; //(GrupoCategoria) listaGrupoCategoria.get(idIndex);
         return "grupoCategoria";
     }
 

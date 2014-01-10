@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -70,16 +71,19 @@ public class ServicoRotinaJSFBean implements java.io.Serializable {
         ServicoRotinaDB servicoRotinaDB = new ServicoRotinaDBToplink();
         if (listaServicos.isEmpty()) {
             msgConfirma = "Serviços não existe!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (listaRotinas.isEmpty()) {
             msgConfirma = "Rotina não existe!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         servicoRotina.setServicos((Servicos) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
         servicoRotina.setRotina((Rotina) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaRotinas.get(idRotinas).getDescription()), "Rotina"));
         if (servicoRotinaDB.existeServicoRotina(servicoRotina.getServicos().getId(), servicoRotina.getRotina().getId())) {
             msgConfirma = "Serviço Rotina já existe!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         salvarAcumuladoDB.abrirTransacao();
@@ -88,11 +92,13 @@ public class ServicoRotinaJSFBean implements java.io.Serializable {
             log.novo("Novo registro", "Serviço Rotina inserido " + servicoRotina.getId() + " - Serviços: " + servicoRotina.getServicos().getId() + " - " + servicoRotina.getServicos().getDescricao() + " - Rotina: " + servicoRotina.getRotina().getId() + " - " + servicoRotina.getRotina().getRotina());
             salvarAcumuladoDB.comitarTransacao();
             msgConfirma = "Registro adicionado!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             listaServicoRotina.clear();
             listaRotinas.clear();
         } else {
             salvarAcumuladoDB.desfazerTransacao();
             msgConfirma = "Erro ao Salvar!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         servicoRotina = new ServicoRotina();
         return null;
@@ -114,11 +120,13 @@ public class ServicoRotinaJSFBean implements java.io.Serializable {
             NovoLog log = new NovoLog();
             log.novo("Excluido", "Serviço Rotina excluído " + servicoRotina.getId() + " - Serviços: " + servicoRotina.getServicos().getId() + " - " + servicoRotina.getServicos().getDescricao() + " - Rotina: " + servicoRotina.getRotina().getId() + " - " + servicoRotina.getRotina().getRotina());
             msgConfirma = "Registro excluído!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             listaServicoRotina.clear();
             listaRotinas.clear();
         } else {
             salvarAcumuladoDB.desfazerTransacao();
             msgConfirma = "Erro ao Excluir!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         servicoRotina = new ServicoRotina();
         return null;
