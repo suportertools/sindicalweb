@@ -323,7 +323,7 @@
                                         <f:facet name="header">
                                             <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
                                         </f:facet>
-                                        <h:commandLink action="#{protocoloAgendamento.imprimir(objeto.agendamento)}" target="_blank" value="#{objeto.agendamento.id}" rendered="#{agendamentoBean.idStatus == 1}" title="Imprimir Protocolo"/>
+                                        <h:commandLink action="#{protocoloAgendamento.imprimir(objeto.agendamento)}" target="_blank" value="#{objeto.agendamento.id}" rendered="#{agendamentoBean.disabledProtocolo}" title="Imprimir Protocolo"/>
                                     </rich:column>
                                 </rich:dataTable>
                             </h:panelGrid>
