@@ -185,7 +185,10 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         PisoSalarialLote ps = new PisoSalarialLote();
         try {
             Query qry = getEntityManager().createQuery("select ps from PisoSalarialLote ps where ps.ano = " + ano + " and ps.patronal.id = " + id_patronal + " and ps.porte.id = " + id_porte);
-            ps = (PisoSalarialLote) qry.getSingleResult();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                ps = (PisoSalarialLote) qry.getSingleResult();                
+            }
         } catch (Exception e) {
         }
         return ps;
