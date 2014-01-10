@@ -4,7 +4,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Cadastro de Matrícula</title>
@@ -119,8 +120,13 @@
                                     <h:outputLabel value="Turma: " styleClass="fontePadrao" style="width: 100px;" title="Turma"/>
                                     <h:selectOneMenu  id="cbTurma" value="#{matriculaEscolaBean.idTurma}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" >
                                         <f:selectItems value="#{matriculaEscolaBean.listaTurma}"/>
-                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela idVagasD" />
                                     </h:selectOneMenu>
+                                </h:panelGrid>
+                                <br />
+                                <h:panelGrid columns="2" id="idVagasD">
+                                    <h:outputLabel value="Vagas disponíveis:" />
+                                    <h:inputText value="#{matriculaEscolaBean.vagasDisponiveis}" disabled="true" size="5" style="text-align: center;"/>
                                 </h:panelGrid>
                             </rich:accordionItem>                                
                             <rich:accordionItem name="Individual" header="Individual" id="idIndividual" disabled="#{matriculaEscolaBean.desabilitaIndividual}" rendered="#{!matriculaEscolaBean.desabilitaIndividual}">
