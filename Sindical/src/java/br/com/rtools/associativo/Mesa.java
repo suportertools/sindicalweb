@@ -6,39 +6,39 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "EVE_MESA")
 @NamedQuery(name = "Mesa.pesquisaID", query = "select s from Mesa s where s.id=:pid")
 public class Mesa implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_VENDA", referencedColumnName = "ID", nullable = true)
-    @OneToOne
+    @JoinColumn(name = "ID_VENDA", referencedColumnName = "ID")
+    @ManyToOne
     private BVenda bVenda;
-    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID", nullable = true)
-    @OneToOne
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
+    @ManyToOne
     private AStatus status;
-    @Column(name = "NR_MESAS", nullable = true)
-    private int nrMesa;
+    @JoinColumn(name = "ID_EVENTO_BAILE_MAPA")
+    @ManyToOne
+    private EventoBaileMapa eventoBaileMapa;
 
     public Mesa() {
         this.id = -1;
         this.bVenda = new BVenda();
         this.status = new AStatus();
-        this.nrMesa = 0;
+        this.eventoBaileMapa = new EventoBaileMapa();
     }
 
-    public Mesa(int id, BVenda bVenda, AStatus status, int nrMesa) {
+    public Mesa(int id, BVenda bVenda, AStatus status, EventoBaileMapa eventoBaileMapa) {
         this.id = id;
         this.bVenda = bVenda;
         this.status = status;
-        this.nrMesa = nrMesa;
+        this.eventoBaileMapa = eventoBaileMapa;
     }
 
     public int getId() {
@@ -65,11 +65,12 @@ public class Mesa implements java.io.Serializable {
         this.status = status;
     }
 
-    public int getNrMesa() {
-        return nrMesa;
+    public EventoBaileMapa getEventoBaileMapa() {
+        return eventoBaileMapa;
     }
 
-    public void setNrMesa(int nrMesa) {
-        this.nrMesa = nrMesa;
+    public void setEventoBaileMapa(EventoBaileMapa eventoBaileMapa) {
+        this.eventoBaileMapa = eventoBaileMapa;
     }
+
 }

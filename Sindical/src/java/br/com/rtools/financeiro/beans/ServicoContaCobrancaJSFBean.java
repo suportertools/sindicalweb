@@ -5,6 +5,7 @@ import br.com.rtools.financeiro.ServicoContaCobranca;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.financeiro.db.*;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -71,11 +72,14 @@ public class ServicoContaCobrancaJSFBean {
                 servicoContaCobranca.setContaCobranca(contaCobranca);
                 if (servContaCobrancaDB.insert(servicoContaCobranca)) {
                     msgConfirma = "Serviço adicionado!";
+                    GenericaMensagem.info("Sucesso", msgConfirma);
                 } else {
                     msgConfirma = "Erro ao Salvar!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                 }
             } else {
                 msgConfirma = "Serviço já existente!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         }
         servicoContaCobranca = new ServicoContaCobranca();
@@ -83,18 +87,20 @@ public class ServicoContaCobrancaJSFBean {
         return null;
     }
 
-    public String excluir() {
+    public String excluir(ServicoContaCobranca scc) {
         ServicoContaCobrancaDB db = new ServicoContaCobrancaDBToplink();
-        servicoContaCobranca = listaServicoCobranca.get(idIndex);
+        servicoContaCobranca = scc; //listaServicoCobranca.get(idIndex);
         if (servicoContaCobranca.getId() != -1) {
             db.getEntityManager().getTransaction().begin();
             servicoContaCobranca = db.pesquisaCodigo(servicoContaCobranca.getId());
             if (db.delete(servicoContaCobranca)) {
                 db.getEntityManager().getTransaction().commit();
                 msgConfirma = "Serviço excluido!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
                 db.getEntityManager().getTransaction().rollback();
                 msgConfirma = "Erro ao excluir serviço!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         }
         servicoContaCobranca = new ServicoContaCobranca();

@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
@@ -25,10 +26,12 @@ public class MacFilialBean {
     private MacFilial macFilial;
     private int idFilial;
     private int idDepartamento;
+    private int idCaixa = 0;
     private String msgConfirma;
     private List<MacFilial> listaMacs;
     public List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
     public List<SelectItem> listaDepartamentos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaCaixa = new ArrayList<SelectItem>();
     
     public MacFilialBean(){
         macFilial = new MacFilial();
@@ -61,15 +64,26 @@ public class MacFilialBean {
         }
         macFilial.setDepartamento(departamento);
         macFilial.setFilial(filial);
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.inserirObjeto(macFilial)) {
-            salvarAcumuladoDB.comitarTransacao();
+        
+        if (listaCaixa.get(idCaixa).getDescription().equals("-1")){
+            macFilial.setCaixa(null);
+        }else{
+            for (int i = 0; i < listaMacs.size(); i++){
+                if (listaMacs.get(i).getCaixa() != null && listaMacs.get(i).getCaixa().getId() == Integer.valueOf(listaCaixa.get(idCaixa).getDescription())){
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Já existe uma filial cadastrada para este Caixa"));
+                    return null;
+                }
+            }
+            macFilial.setCaixa((Caixa)sv.pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
+        }
+        sv.abrirTransacao();
+        if (sv.inserirObjeto(macFilial)) {
+            sv.comitarTransacao();
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Salvo", "Este Computador registrado com sucesso!"));
             macFilial = new MacFilial();
             listaMacs.clear();
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
+            sv.desfazerTransacao();
             msgConfirma = "Erro ao inserir esse registro!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
         }
@@ -170,5 +184,32 @@ public class MacFilialBean {
 
     public void setListaMacs(List<MacFilial> listaMacs) {
         this.listaMacs = listaMacs;
+    }
+
+    public int getIdCaixa() {
+        return idCaixa;
+    }
+
+    public void setIdCaixa(int idCaixa) {
+        this.idCaixa = idCaixa;
+    }
+
+    public List<SelectItem> getListaCaixa() {
+        if (listaCaixa.isEmpty()){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            List<Caixa> result = sv.listaObjeto("Caixa");
+            
+            listaCaixa.add(new SelectItem(new Integer(0), "NENHUM CAIXA", "-1"));
+            for(int i = 0; i < result.size(); i++){
+                listaCaixa.add(new SelectItem(new Integer(i+1),
+                              ((String.valueOf(result.get(i).getCaixa()).length() == 1) ? ("0"+String.valueOf(result.get(i).getCaixa())) : result.get(i).getCaixa()) +" - "+ result.get(i).getDescricao(),
+                              Integer.toString(result.get(i).getId())));
+            }
+        }
+        return listaCaixa;
+    }
+
+    public void setListaCaixa(List<SelectItem> listaCaixa) {
+        this.listaCaixa = listaCaixa;
     }
 }

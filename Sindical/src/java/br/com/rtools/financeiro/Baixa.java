@@ -22,38 +22,44 @@ public class Baixa implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_IMPORTACAO")
     private Date dtImportacao;
-    @Temporal(TemporalType.DATE)
-    @Column(name = "DT_FECHAMENTO_CAIXA")
-    private Date dtFechamentoCaixa;
     @Column(name = "NR_SEQUENCIA_BAIXA")
     private int sequenciaBaixa;
     @Column(name = "DS_DOCUMENTO_BAIXA")
     private String documentoBaixa;
+    @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
+    @ManyToOne
+    private Caixa caixa;
+    @JoinColumn(name = "ID_FECHAMENTO_CAIXA", referencedColumnName = "ID")
+    @ManyToOne
+    private FechamentoCaixa fechamentoCaixa;
 
     public Baixa() {
         this.id = -1;
         this.usuario = new Usuario();
         this.setBaixa("");
         this.setImportacao("");
-        this.setFechamentoCaixa("");
         this.sequenciaBaixa = 0;
         this.documentoBaixa = "";
+        this.caixa = new Caixa();
+        this.fechamentoCaixa = new FechamentoCaixa();
     }
 
     public Baixa(int id,
             Usuario usuario,
             String baixa,
             String importacao,
-            String fechamentoCaixa,
             int sequenciaBaixa,
-            String documentoBaixa) {
+            String documentoBaixa,
+            Caixa caixa, 
+            FechamentoCaixa fechamentoCaixa) {
         this.id = id;
         this.usuario = usuario;
         this.setBaixa(baixa);
         this.setImportacao(importacao);
-        this.setFechamentoCaixa(fechamentoCaixa);
+        this.fechamentoCaixa = fechamentoCaixa;
         this.sequenciaBaixa = sequenciaBaixa;
         this.documentoBaixa = documentoBaixa;
+        this.caixa = caixa;
     }
 
     public int getId() {
@@ -104,22 +110,6 @@ public class Baixa implements java.io.Serializable {
         this.dtBaixa = dtBaixa;
     }
 
-    public Date getDtFechamentoCaixa() {
-        return dtFechamentoCaixa;
-    }
-
-    public void setDtFechamentoCaixa(Date dtFechamentoCaixa) {
-        this.dtFechamentoCaixa = dtFechamentoCaixa;
-    }
-
-    public String getFechamentoCaixa() {
-        return DataHoje.converteData(dtFechamentoCaixa);
-    }
-
-    public void setFechamentoCaixa(String fechamentoCaixa) {
-        this.dtFechamentoCaixa = DataHoje.converte(fechamentoCaixa);
-    }
-
     public int getSequenciaBaixa() {
         return sequenciaBaixa;
     }
@@ -134,5 +124,21 @@ public class Baixa implements java.io.Serializable {
 
     public void setDocumentoBaixa(String documentoBaixa) {
         this.documentoBaixa = documentoBaixa;
+    }
+
+    public Caixa getCaixa() {
+        return caixa;
+    }
+
+    public void setCaixa(Caixa caixa) {
+        this.caixa = caixa;
+    }
+
+    public FechamentoCaixa getFechamentoCaixa() {
+        return fechamentoCaixa;
+    }
+
+    public void setFechamentoCaixa(FechamentoCaixa fechamentoCaixa) {
+        this.fechamentoCaixa = fechamentoCaixa;
     }
 }

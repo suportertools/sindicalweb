@@ -3,6 +3,7 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.associativo.db.ParentescoDB;
 import br.com.rtools.associativo.db.ParentescoDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,20 +20,27 @@ public class ParentescoJSFBean {
         ParentescoDB db = new ParentescoDBToplink();
         if (getParentesco().getParentesco().equals("") || getParentesco().getParentesco() == null) {
             setMsgConfirma("Digite um nome para o parentesco!");
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (getParentesco().getId() == -1) {
             if (db.insert(getParentesco())) {
                 setLimpar(false);
                 setMsgConfirma("Parentesco salvo com sucesso.");
+                GenericaMensagem.info("Sucesso", msgConfirma);
+                parentesco = new Parentesco();
             } else {
                 setMsgConfirma("Erro ao salvar parentesco!");
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
             if (db.update(getParentesco())) {
                 setMsgConfirma("Parentesco atualizado com sucesso.");
+                GenericaMensagem.info("Sucesso", msgConfirma);
+                parentesco = new Parentesco();
             } else {
                 setMsgConfirma("Erro ao atualizar parentesco!");
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         }
         return null;
@@ -42,19 +50,23 @@ public class ParentescoJSFBean {
         ParentescoDB db = new ParentescoDBToplink();
         if (parentesco.getId() == -1) {
             msgConfirma = "Selecione um parentesco para ser excluído!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (db.delete(db.pesquisaCodigo(parentesco.getId()))) {
             setLimpar(true);
             msgConfirma = "Parentesco deletado com sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
         } else {
             setMsgConfirma("Erro ao deletar parentesco!");
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
+        parentesco = new Parentesco();
         return null;
     }
 
-    public String editar() {
-        parentesco = (Parentesco) getListaParentesco().get(getIdIndex());
+    public String editar(Parentesco p) {
+        parentesco = p; //(Parentesco) getListaParentesco().get(getIdIndex());
         return "parentesco";
     }
 

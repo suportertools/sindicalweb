@@ -9,9 +9,18 @@ import br.com.rtools.financeiro.CobrancaTipo;
 import br.com.rtools.financeiro.PollingEmail;
 import br.com.rtools.financeiro.db.NotificacaoDB;
 import br.com.rtools.financeiro.db.NotificacaoDBToplink;
+import br.com.rtools.impressao.ParametroContribuintes;
+import br.com.rtools.impressao.ParametroEtiqueta;
 import br.com.rtools.impressao.ParametroNotificacao;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaEndereco;
+import br.com.rtools.pessoa.TipoEndereco;
+import br.com.rtools.pessoa.db.JuridicaDB;
+import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaEnderecoDB;
+import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -22,6 +31,7 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -53,6 +63,7 @@ public class NotificacaoJSFBean implements Serializable {
     private List<DataObject> listaNotificacao = new ArrayList();
     private int quantidade = 0;
     private int quantidadeMenu = 0;
+    private int indexTab = 0;
     private boolean chkTodos = true;
     private boolean empresa = true;
     private boolean habilitaNot = false;
@@ -73,7 +84,41 @@ public class NotificacaoJSFBean implements Serializable {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         registro = (Registro) sv.pesquisaCodigo(1, "Registro");
     }
+    
+    public void acoes(){
+        if (indexTab == 0){
+            gerarParaTodas();
+        }
+        
+        if (indexTab == 1){
+            addEmpresa();
+        }
+        
+        if (indexTab == 2){
+            addContabil();
+        }
+        
+        if (indexTab == 3){
+            gerarSemContabil();
+        }
+        
+        if (indexTab == 4){
+            gerarComContabil();
+        }
+    }
 
+    public void removerListaJuridica() {
+        listaEmpresaAdd.clear();
+        listaContabilAdd.clear();
+        if (indexTab == 1){
+            addEmpresa();
+        }
+        
+        if (indexTab == 2){
+            addContabil();
+        }
+    }
+    
     public void iniciar() {
         progressoAtivo = true;
         valorAtual = 0;
@@ -137,7 +182,7 @@ public class NotificacaoJSFBean implements Serializable {
     public synchronized List<DataObject> getListaNotificacao() {
         if (listaNotificacao.isEmpty()) {
             NotificacaoDB db = new NotificacaoDBToplink();
-
+            //quantidade = 0;
             String empresas = "", contabils = "", cidades = "";
             for (int i = 0; i < listaEmpresaAdd.size(); i++) {
                 if (empresas.length() > 0 && i != listaEmpresaAdd.size()) {
@@ -168,7 +213,12 @@ public class NotificacaoJSFBean implements Serializable {
             if (lote.getId() != -1) {
                 obj = db.listaParaNotificacao(lote.getId(), DataHoje.data(), empresas, contabils, cidades, comContabil, semContabil);
             } else {
-                obj = db.listaParaNotificacao(-1, DataHoje.data(), empresas, contabils, cidades, comContabil, semContabil);
+                // EMPRESA --
+                if ( (indexTab == 1 && empresas.isEmpty()) || (indexTab == 2 && contabils.isEmpty())  ){
+                    return listaNotificacao;
+                }else{
+                    obj = db.listaParaNotificacao(-1, DataHoje.data(), empresas, contabils, cidades, comContabil, semContabil);
+                }
             }
 
             result = (Vector) obj[1];
@@ -185,7 +235,7 @@ public class NotificacaoJSFBean implements Serializable {
 //                        listaNotificacao.add(new DataObject(true, result.get(i), listaNots.get(1), null, null, null));
 //                    }
                 }
-                quantidade = listaNotificacao.size();
+                //quantidade = listaNotificacao.size();
             }
         }
         if (listaNotificacao.isEmpty()) {
@@ -200,6 +250,7 @@ public class NotificacaoJSFBean implements Serializable {
 
         if (!sv.alterarObjeto(lote)) {
             msgConfirma = "Erro ao atualizar Mensagem";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
@@ -225,18 +276,20 @@ public class NotificacaoJSFBean implements Serializable {
                 listaArquivo.clear();
             }
         } catch (Exception e) {
-            sv.desfazerTransacao();
-            return null;
+            //sv.desfazerTransacao();
+            //return null;
         }
 
         sv.comitarTransacao();
-        msgConfirma = "Atualizado com sucesso!";
+        msgConfirma = "Notificação atualizada!";
+        GenericaMensagem.info("Sucesso", msgConfirma);
         return null;
     }
 
     public String gerarNotificacao() {
         if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == -1) {
             msgConfirma = "Usuário não esta na sessão, faça seu login novamente!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -257,6 +310,7 @@ public class NotificacaoJSFBean implements Serializable {
         sv.abrirTransacao();
         if (!sv.inserirObjeto(lote)) {
             msgConfirma = "Erro ao Gerar Lote";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
@@ -264,10 +318,12 @@ public class NotificacaoJSFBean implements Serializable {
 
         sv.abrirTransacao();
         //for (int i = 0; i < listaNotificacao.size(); i++) {
-        if (!sv.executeQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " and fc.id_lote is null order by c.ds_nome, c.id_pessoa)")) {
+        //if (!sv.executeQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " and fc.id_lote is null order by c.ds_nome, c.id_pessoa)")) {
+        if (!sv.executeQuery("insert into fin_cobranca (id_movimento,id_lote) (select m.id, " + lote.getId() + query + " order by c.ds_nome, c.id_pessoa)")) {
 //            if ((Boolean) listaNotificacao.get(i).getArgumento0()) {
 //                if (!sv.inserirQuery("insert into fin_cobranca (id_movimento,id_lote) values (" + ((Vector) listaNotificacao.get(i).getArgumento1()).get(0) + "," + lote.getId() + ")")) {
             msgConfirma = "Erro ao inserir Cobrança";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
 
             sv.abrirTransacao();
@@ -281,13 +337,94 @@ public class NotificacaoJSFBean implements Serializable {
 
         sv.comitarTransacao();
         msgConfirma = "Gerado com sucesso!";
+        GenericaMensagem.info("Sucesso", msgConfirma);
         itensLista.clear();
-
+        
         listaNotificacao.clear();
         listaEmpresaAdd.clear();
         listaContabilAdd.clear();
         lote = new CobrancaLote();
         chkTodos = true;
+        return null;
+    }
+    
+    public String gerarEtiquetas() {
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        CobrancaTipo ct = (CobrancaTipo) sv.pesquisaCodigo(Integer.valueOf(listaTipoEnvio.get(idTipoEnvio).getDescription()), "CobrancaTipo");
+        JuridicaDB dbJur = new JuridicaDBToplink();
+        PessoaEnderecoDB dbPesEnd = new PessoaEnderecoDBToplink();
+        NotificacaoDB db = new NotificacaoDBToplink();
+        
+        List<Vector> result = db.listaParaEtiqueta(query, ct);
+        
+        List<ParametroEtiqueta> listax = new ArrayList();
+        
+        Juridica juridica = new Juridica();
+        PessoaEndereco endereco = new PessoaEndereco();
+        for (int i = 0; i < result.size(); i++) {
+            try{
+                
+                if (ct.getId() == 6){
+                    juridica = dbJur.pesquisaJuridicaPorPessoa((Integer) result.get(i).get(0));
+                    endereco = dbPesEnd.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
+                }else{
+                    juridica = dbJur.pesquisaCodigo((Integer) result.get(i).get(0));
+                    endereco = dbPesEnd.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
+                }
+
+                listax.add(new ParametroEtiqueta(
+                        juridica.getId(),
+                        (juridica.getPessoa().getNome() != null) ? juridica.getPessoa().getNome() : "",
+                        (endereco != null) ? endereco.getEndereco().getDescricaoEndereco().getDescricao() : "",
+                        (endereco != null) ? endereco.getEndereco().getLogradouro().getDescricao() : "",
+                        (endereco != null) ? endereco.getNumero() : "",
+                        (endereco != null) ? endereco.getComplemento() : "",
+                        (endereco != null) ? endereco.getEndereco().getBairro().getDescricao() : "",
+                        (endereco != null) ? endereco.getEndereco().getCep() : "",
+                        (endereco != null) ? endereco.getEndereco().getCidade().getCidade() : "",
+                        (endereco != null) ? endereco.getEndereco().getCidade().getUf() : "", 
+                        (juridica.getPessoa().getTelefone1() != null) ? juridica.getPessoa().getTelefone1() : "", 
+                        (juridica.getPessoa().getEmail1() != null) ? juridica.getPessoa().getEmail1() : "", 
+                        (juridica.getPessoa().getTipoDocumento().getDescricao() != null) ? juridica.getPessoa().getTipoDocumento().getDescricao() : "",
+                        (juridica.getPessoa().getDocumento() != null) ? juridica.getPessoa().getDocumento() : ""
+                ));
+            }catch(Exception e){
+                
+            }
+        }
+        
+        try{
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
+            String string_jasper = "";
+            if (ct.getId() == 6){
+                string_jasper = "/Relatorios/ETCONTRIBUINTES6181.jasper";
+            }else{
+                // USANDO O MESMO RELATÓRIO PARA OS DOIS TROCAR DEPOIS AQUI
+                string_jasper = "/Relatorios/ETCONTRIBUINTES6181.jasper";
+                //string_jasper = "/Relatorios/ETESCRITORIO6181.jasper";
+            }
+            
+            JasperReport jasperx = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(string_jasper));
+            JasperPrint print = JasperFillManager.fillReport(jasperx, null, dtSource);
+            byte[] arquivo = new byte[0];
+            
+            arquivo = JasperExportManager.exportReportToPdf(print);
+
+            String nomeDownload = "etiquetas_notificacao_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+
+            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/etiquetas");
+
+            sa.salvaNaPasta(pathPasta);
+
+            Download download = new Download(nomeDownload,
+                    pathPasta,
+                    "application/pdf",
+                    FacesContext.getCurrentInstance());
+            download.baixar();
+        }catch(Exception e){
+            e.getMessage();
+        }
         return null;
     }
 
@@ -363,11 +500,13 @@ public class NotificacaoJSFBean implements Serializable {
     public String enviarNotificacao() throws JRException {
         if (lote.getId() == -1) {
             msgConfirma = "Selecione um Lote para envio!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId() == -1) {
             msgConfirma = "Usuário não esta na sessão, faça seu login novamente!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -379,6 +518,7 @@ public class NotificacaoJSFBean implements Serializable {
 
         if (result.isEmpty()) {
             msgConfirma = "Lista de parametros para envio vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -394,6 +534,7 @@ public class NotificacaoJSFBean implements Serializable {
             ce.setTipoCobranca(ct);
             if (!sv.inserirObjeto(ce)) {
                 msgConfirma = "Erro ao salvar Cobrança Envio";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -403,6 +544,7 @@ public class NotificacaoJSFBean implements Serializable {
             List<Vector> lista = db.pollingEmailTrue();
             if (!lista.isEmpty()) {
                 msgConfirma = "Existem notificações às " + lista.get(0).get(1) + " para serem enviadas, conclua o envio antes de notificar mais!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -523,6 +665,7 @@ public class NotificacaoJSFBean implements Serializable {
 
                             if (!sv.inserirObjeto(link)) {
                                 msgConfirma = "Erro ao salvar Link de envio!";
+                                GenericaMensagem.warn("Erro", msgConfirma);
                                 sv.desfazerTransacao();
                                 return null;
                             }
@@ -541,6 +684,7 @@ public class NotificacaoJSFBean implements Serializable {
 
                             if (!sv.inserirObjeto(pe)) {
                                 msgConfirma = "Erro ao salvar Polling de envio!";
+                                GenericaMensagem.warn("Erro", msgConfirma);
                                 sv.desfazerTransacao();
                                 return null;
                             }
@@ -651,6 +795,7 @@ public class NotificacaoJSFBean implements Serializable {
 
                         if (!sv.inserirObjeto(link)) {
                             msgConfirma = "Erro ao salvar Link de envio!";
+                            GenericaMensagem.warn("Erro", msgConfirma);
                             sv.desfazerTransacao();
                             return null;
                         }
@@ -677,48 +822,6 @@ public class NotificacaoJSFBean implements Serializable {
         return "notificacao";
     }
 
-//    try {
-//                    if (ct.getId() == 1) {
-//                        id_compara = getConverteNullInt(result.get(i).get(38)); // ID_JURIDICA
-//                        if (id_compara != getConverteNullInt(result.get(i + 1).get(38)) && (atual >= limite)) {
-//                            jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_ESCRITORIO.jasper"));
-//                            imprimir = true;
-//                            atual = 0;
-//                            //pes = ((Juridica) sv.pesquisaCodigo(id_compara, "Juridica")).getPessoa();
-//                        }
-//                    } else if (ct.getId() == 2) {
-//                        id_compara = getConverteNullInt(result.get(i).get(39)); // ID_PESSOA
-//                        if (id_compara != getConverteNullInt(result.get(i + 1).get(39))  && (atual >= limite)) {
-//                            jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
-//                            imprimir = true;
-//                            atual = 0;
-//                            //pes = (Pessoa) sv.pesquisaCodigo(id_compara, "Pessoa");
-//                            //pes = ((Juridica)sv.pesquisaCodigo(id_compara, "Juridica")).getPessoa();
-//                        }
-//                    } else if (ct.getId() == 3) {
-//                        id_compara = getConverteNullInt(result.get(i).get(39)); // ID_PESSOA
-//                        if (id_compara != getConverteNullInt(result.get(i + 1).get(39))  && (atual >= limite)) {
-//                            jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
-//                            imprimir = true;
-//                            atual = 0;
-//                            //pes = (Pessoa) sv.pesquisaCodigo(id_compara, "Pessoa");
-//                            //pes = ((Juridica)sv.pesquisaCodigo(id_compara, "Juridica")).getPessoa();
-//                        }
-//                    }
-//                } catch (Exception e) {
-//                    if (ct.getId() == 1) {
-//                        jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_ESCRITORIO.jasper"));
-//                        //pes = ((Juridica) sv.pesquisaCodigo(id_compara, "Juridica")).getPessoa();
-//                    } else if (ct.getId() == 2) {
-//                        jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
-//                        //pes = (Pessoa) sv.pesquisaCodigo(id_compara, "Pessoa");
-//                    } else if (ct.getId() == 3) {
-//                        jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/NOTIFICACAO_ARRECADACAO_EMPRESA.jasper"));
-//                        //pes = (Pessoa) sv.pesquisaCodigo(id_compara, "Pessoa");
-//                    }
-//                    imprimir = true;
-//                }
-//                atual++;
     public String enviarEmailPolling(Links link) {
         try {
             if (link.getPessoa().getEmail1().isEmpty()) {
@@ -748,8 +851,10 @@ public class NotificacaoJSFBean implements Serializable {
             }
             if (!ret[1].isEmpty()) {
                 msgConfirma = ret[1];
+                GenericaMensagem.warn("Erro", msgConfirma);
             } else {
                 msgConfirma = ret[0];
+                GenericaMensagem.info("Sucesso", msgConfirma);
             }
         } catch (Exception e) {
         }
@@ -771,6 +876,12 @@ public class NotificacaoJSFBean implements Serializable {
             String nomeDownload = nomeArq + DataHoje.hora().replace(":", "") + ".pdf";
             SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
             String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
+            
+            File create = new File(pathPasta);
+            if (!create.exists()) {
+                create.mkdir();
+            }
+            
             sa.salvaNaPasta(pathPasta);
 
             Links link = new Links();
@@ -781,6 +892,7 @@ public class NotificacaoJSFBean implements Serializable {
 
             if (!sv.inserirObjeto(link)) {
                 msgConfirma = "Erro ao salvar Link de envio!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
@@ -808,8 +920,10 @@ public class NotificacaoJSFBean implements Serializable {
             }
             if (!ret[1].isEmpty()) {
                 msgConfirma = ret[1];
+                GenericaMensagem.warn("Erro", msgConfirma);
             } else {
                 msgConfirma = ret[0];
+                GenericaMensagem.info("Sucesso", msgConfirma);
             }
         } catch (Exception e) {
         }
@@ -916,6 +1030,7 @@ public class NotificacaoJSFBean implements Serializable {
 //            getListaNotificacao();
 //            quantidade = listaNotificacao.size();
 //        }
+        quantidade = listaNotificacao.size();
         return quantidade;
     }
 
@@ -1093,4 +1208,13 @@ public class NotificacaoJSFBean implements Serializable {
     public void setListaArquivo(List<DataObject> listaArquivo) {
         this.listaArquivo = listaArquivo;
     }
+
+    public int getIndexTab() {
+        return indexTab;
+    }
+
+    public void setIndexTab(int indexTab) {
+        this.indexTab = indexTab;
+    }
+
 }

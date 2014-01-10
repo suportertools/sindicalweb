@@ -24,8 +24,6 @@ public class EventoBaileMapa implements Serializable {
     private EventoBaile eventoBaile;
     @Column(name = "NR_MESA")
     private int mesa;
-    @Column(name = "DS_COMPONENTE_ID")
-    private String componenteId;
     @Column(name = "DS_POSICAO")
     private String posicao;
 
@@ -33,15 +31,13 @@ public class EventoBaileMapa implements Serializable {
         this.id = -1;
         this.eventoBaile = new EventoBaile();
         this.mesa = 0;
-        this.componenteId = "";
         this.posicao = "";
     }
     
-    public EventoBaileMapa(int id, EventoBaile eventoBaile, int mesa, String componenteId, String posicao) {
+    public EventoBaileMapa(int id, EventoBaile eventoBaile, int mesa, String posicao) {
         this.id = id;
         this.eventoBaile = eventoBaile;
         this.mesa = mesa;
-        this.componenteId = componenteId;
         this.posicao = posicao;
     }
 
@@ -76,14 +72,4 @@ public class EventoBaileMapa implements Serializable {
     public void setPosicao(String posicao) {
         this.posicao = posicao;
     }
-
-    public String getComponenteId() {
-        return componenteId;
-    }
-
-    public void setComponenteId(String componenteId) {
-        this.componenteId = componenteId;
-    }
-    
-    
 }

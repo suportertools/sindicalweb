@@ -10,6 +10,7 @@ import br.com.rtools.financeiro.db.ContaBancoDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.ListaArgumentos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -35,6 +36,10 @@ public class ContaBancoJSFBean {
     private boolean salvar = false;
     private List<ContaBanco> listaContaBanco = new ArrayList();
 
+    public void removerCidade(){
+        cidade = new Cidade();
+    }
+    
     public String salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         Filial filial = (Filial) sv.pesquisaCodigo(Integer.parseInt(getListaFilial().get(idFilial).getDescription()), "Filial");
@@ -42,11 +47,13 @@ public class ContaBancoJSFBean {
         contaBanco.setFilial(filial);
         if (cidade == null) {
             msgConfirma = "Pesquise uma Cidade!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (Integer.parseInt(getListaPlano5Conta().get(idPlanoContas).getDescription()) == 0) {
             msgConfirma = "Resgistro não pode ser salvo sem Plano de Contas!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -59,20 +66,25 @@ public class ContaBancoJSFBean {
             salvar = true;
             if (!sv.inserirObjeto(contaBanco)) {
                 msgConfirma = "Erro ao Salvar!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
             msgConfirma = "Conta salva com Sucesso!";
+            GenericaMensagem.warn("Sucesso", msgConfirma);
         } else {
             if (!sv.alterarObjeto(contaBanco)) {
                 msgConfirma = "Erro ao atualizar Conta!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             }
             msgConfirma = "Conta atualizada com Sucesso!";
+            GenericaMensagem.warn("Sucesso", msgConfirma);
         }
         if (!atualizaPlano5Conta(sv)) {
             msgConfirma = "Erro ao atualizar Plano 5!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
@@ -105,6 +117,7 @@ public class ContaBancoJSFBean {
                 plano5.setConta("??????????????????");
                 if (!sv.alterarObjeto(plano5)) {
                     msgConfirma = "Erro ao atualizar Plano 5!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                     sv.desfazerTransacao();
                     return null;
                 }
@@ -112,10 +125,12 @@ public class ContaBancoJSFBean {
             contaBanco = (ContaBanco) sv.pesquisaCodigo(contaBanco.getId(), "ContaBanco");
             if (!sv.deletarObjeto(contaBanco)) {
                 msgConfirma = "Conta não pode ser Excluida!";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
                 return null;
             } else {
                 msgConfirma = "Conta Excluida com Sucesso!";
+                GenericaMensagem.warn("Sucesso", msgConfirma);
                 sv.comitarTransacao();
             }
             novo();
@@ -146,8 +161,8 @@ public class ContaBancoJSFBean {
         this.listaContaBanco = listaContaBanco;
     }
 
-    public String editar() {
-        contaBanco = (ContaBanco) listaContaBanco.get(idIndex); //(ContaBanco) lista.get(idIndex); 
+    public String editar(ContaBanco cb) {
+        contaBanco = cb;
         Plano5DB db = new Plano5DBToplink();
         plano5 = db.pesquisaPlano5IDContaBanco(contaBanco.getId());
 

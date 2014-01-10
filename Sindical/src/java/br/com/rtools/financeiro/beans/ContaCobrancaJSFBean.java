@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.db.ContaCobrancaDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -41,48 +42,57 @@ public class ContaCobrancaJSFBean {
         contaCobranca.setLayout(la);
         //contaCobranca.setRepasse( Moeda.substituiVirgulaFloat(repasse) );
 
-        if (contaCobranca.getContaBanco().getBanco().getBanco().equals("")) {
+        if (contaCobranca.getContaBanco().getBanco().getBanco().isEmpty()) {
             msgConfirma = "Atenção, é preciso pesquisar um Banco!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if ((contaCobranca.getCodCedente().equals("")) || (contaCobranca.getCodCedente().equals("0"))) {
+        if ((contaCobranca.getCodCedente().isEmpty()) || (contaCobranca.getCodCedente().equals("0"))) {
             msgConfirma = "Digite um Código Cedente!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (contaCobranca.getCedente().equals("")) {
+        if (contaCobranca.getCedente().isEmpty()) {
             msgConfirma = "Digite um Cedente!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (contaCobranca.getLocalPagamento().equals("")) {
+        if (contaCobranca.getLocalPagamento().isEmpty()) {
             msgConfirma = "Local de Pagamento não pode ser nulo!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if ((contaCobranca.getBoletoInicial().equals("0")) || (contaCobranca.getBoletoInicial().equals(""))) {
+        if ((contaCobranca.getBoletoInicial().equals("0")) || (contaCobranca.getBoletoInicial().isEmpty())) {
             msgConfirma = "Boleto Inicial está em branco!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (contaCobranca.getMoeda().equals("")) {
+        if (contaCobranca.getMoeda().isEmpty()) {
             msgConfirma = "O campo Moeda está em branco!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (contaCobranca.getEspecieMoeda().equals("")) {
+        if (contaCobranca.getEspecieMoeda().isEmpty()) {
             msgConfirma = "O campo Espécie Moeda está em branco!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (contaCobranca.getEspecieDoc().equals("")) {
+        if (contaCobranca.getEspecieDoc().isEmpty()) {
             msgConfirma = "Digite uma Espécie de Documento!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (contaCobranca.getAceite().equals("")) {
+        if (contaCobranca.getAceite().isEmpty()) {
             msgConfirma = "Digite um Aceite!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -91,13 +101,16 @@ public class ContaCobrancaJSFBean {
         if (contaCobranca.getId() == -1) {
             if (db.idContaCobranca(contaCobranca) != null) {
                 msgConfirma = "Este cadastro já existe no Sistema.";
+                GenericaMensagem.warn("Erro", msgConfirma);
             } else {
                 atualizarSicas();
                 if (db.insert(contaCobranca)) {
                     log.novo("Novo Registro", " ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                     msgConfirma = "Cadastro salvo com Sucesso!";
+                    GenericaMensagem.info("Sucesso", msgConfirma);
                 } else {
                     msgConfirma = "Erro ao Salvar!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                 }
             }
         } else {
@@ -108,8 +121,10 @@ public class ContaCobrancaJSFBean {
             if (db.update(contaCobranca)) {
                 log.novo("Atualizado", antes + " - para ID: " + contaCobranca.getId() + " Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                 msgConfirma = "Cadastro atualizado com sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
                 msgConfirma = "Falha na atualização do cadastro!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         }
         limpar = false;
@@ -162,11 +177,13 @@ public class ContaCobrancaJSFBean {
             if (db.deletarObjeto(contaCobranca)) {
                 log.novo("Excluído", " ID: " + contaCobranca.getId() + " - Banco: " + contaCobranca.getContaBanco().getBanco().getBanco() + " - Agência: " + contaCobranca.getContaBanco().getAgencia() + " - Conta: " + contaCobranca.getContaBanco().getConta() + " - Cedente: " + contaCobranca.getCedente() + " - Código Cedente: " + contaCobranca.getCodCedente());
                 msgConfirma = "Cadastro Excluido com sucesso!";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 limpar = true;
                 db.comitarTransacao();
             } else {
                 db.desfazerTransacao();
                 msgConfirma = "Não foi possível excluir esse cadastro. Verifique se há vínculos externos!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         }
         return null;

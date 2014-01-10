@@ -508,7 +508,7 @@ public class MovimentosReceberSocialJSFBean {
     }
    
     public List<DataObject> getListaMovimento() {
-        if (listaMovimento.isEmpty()) {
+        if (listaMovimento.isEmpty() && !listaPessoa.isEmpty()) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
             String ids = "";
             for (int i = 0; i < listaPessoa.size(); i++) {

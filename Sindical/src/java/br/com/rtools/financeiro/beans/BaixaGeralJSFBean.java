@@ -320,6 +320,10 @@ public class BaixaGeralJSFBean {
         if (macFilial == null) {
             return mensagem = "Não existe filial na sessão!";
         }
+        
+        if (macFilial.getCaixa() == null) {
+            return mensagem = "Não é possivel salvar baixa sem um caixa definido!";
+        }
 
         Filial filial;
         Departamento departamento = new Departamento();
@@ -330,7 +334,7 @@ public class BaixaGeralJSFBean {
         } catch (Exception e) {
             return mensagem = "Não é foi possível encontrar a filial no sistema!";
         }
-
+        
         if (Moeda.converteUS$(valor) > 0) {
             return mensagem = "Complete as parcelas para que o Valor seja zerado!";
         } else if (Moeda.converteUS$(valor) < 0) {
@@ -344,9 +348,15 @@ public class BaixaGeralJSFBean {
         if (verificaBaixaBoleto()) {
             plano5 = plano5DB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaConta().get(getIdConta())).getDescription()));
         } else {
-            if (!lista.isEmpty()) {
-                plano5 = listaMovimentos.get(0).getPlano5();
+            // PEGAR PLANO 5 VINCULADO AO FIN_BOLETO > FIN_CONTA_COBRANCA
+            // CASO NÃO TENHA FIN_BOLETO return mensagem = "Não existe conta banco para baixar este boleto!";
+            MovimentoDB db = new MovimentoDBToplink();
+            Boleto bol = db.pesquisaBoletos(listaMovimentos.get(0).getNrCtrBoleto());
+            //plano5 = listaMovimentos.get(0).getPlano5();
+            if (bol == null){
+                return mensagem = "Não existe conta banco para baixar este boleto!";
             }
+            plano5 = plano5DB.pesquisaPlano5IDContaBanco(bol.getContaCobranca().getContaBanco().getId());
         }
 
         if (DataHoje.converte(quitacao) == null) {
@@ -366,7 +376,7 @@ public class BaixaGeralJSFBean {
             listaMovimentos.get(i).setTaxa(Moeda.converteUS$(taxa));
         }
 
-        if (!GerarMovimento.baixarMovimentoManual(listaMovimentos, usuario, lfp, Moeda.substituiVirgulaFloat(total), quitacao)) {
+        if (!GerarMovimento.baixarMovimentoManual(listaMovimentos, usuario, lfp, Moeda.substituiVirgulaFloat(total), quitacao, macFilial.getCaixa())) {
             mensagem = "Erro ao atualizar boleto!";
             return null;
         } else {
