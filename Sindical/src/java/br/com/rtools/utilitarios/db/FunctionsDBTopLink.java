@@ -10,15 +10,16 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
 
     /**
      * Trazer o responsável
+     *
      * @param idPessoa
      * @param decontoFolha
-     * @return 
+     * @return
      */
     @Override
     public int responsavel(int idPessoa, boolean decontoFolha) {
         int idResponsavel = -1;
         try {
-            Query query = getEntityManager().createNativeQuery(" SELECT func_responsavel("+idPessoa+", "+decontoFolha+") ");
+            Query query = getEntityManager().createNativeQuery(" SELECT func_responsavel(" + idPessoa + ", " + decontoFolha + ") ");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 idResponsavel = Integer.parseInt(((List) query.getSingleResult()).get(0).toString());
@@ -31,19 +32,20 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return idResponsavel;
     }
-    
+
     /**
-     * 
+     *
      * @param idPessoa
      * @param idServico
      * @param date
-     * @param tipo (0 -> Valor (já calculado) - ), (1 -> Valor até o vencimento (já calculado)), (2 -> Taxa até o vencimento (já calculado))
+     * @param tipo (0 -> Valor (já calculado) - ), (1 -> Valor até o vencimento
+     * (já calculado)), (2 -> Taxa até o vencimento (já calculado))
      * @return float valor
      */
     @Override
-    public float valorServico(int idPessoa, int idServico, Date date, int tipo) {        
+    public float valorServico(int idPessoa, int idServico, Date date, int tipo) {
         String dataString = DataHoje.converteData(date);
-        String queryString = "SELECT func_valor_servico("+idPessoa+", "+idServico+", '"+dataString+"', "+tipo+") ";
+        String queryString = "SELECT func_valor_servico(" + idPessoa + ", " + idServico + ", '" + dataString + "', " + tipo + ") ";
         try {
             Query qry = getEntityManager().createNativeQuery(queryString);
             List list = qry.getResultList();
@@ -57,19 +59,20 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return 0;
     }
-    
+
     /**
      * Retorna a idade da pessoa
+     *
      * @param campoData --> Nome do campo
      * @param dataString --> Default current_date
      * @param idPessoa
-     * @return 
+     * @return
      */
     @Override
     public int idade(String campoData, String dataString, int idPessoa) {
-        int idade = 0;        
+        int idade = 0;
         try {
-            Query query = getEntityManager().createNativeQuery( "SELECT func_idade("+campoData+", "+dataString+") FROM pes_fisica WHERE id_pessoa = "+idPessoa);
+            Query query = getEntityManager().createNativeQuery("SELECT func_idade(" + campoData + ", " + dataString + ") FROM pes_fisica WHERE id_pessoa = " + idPessoa);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 idade = Integer.parseInt(((List) query.getSingleResult()).get(0).toString());
@@ -79,17 +82,18 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
         }
         return idade;
     }
-    
+
     /**
      * Retorna operações e linhas de comando passados via SQL
+     *
      * @param script --> Nome da linha de comando
-     * @return 
+     * @return
      */
     @Override
     public String scriptSimples(String script) {
-        String retorno = "";        
+        String retorno = "";
         try {
-            Query query = getEntityManager().createNativeQuery( "SELECT "+script);
+            Query query = getEntityManager().createNativeQuery("SELECT " + script);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 retorno = ((List) query.getSingleResult()).get(0).toString();
@@ -98,5 +102,26 @@ public class FunctionsDBTopLink extends DB implements FunctionsDB {
             retorno = "";
         }
         return retorno;
+    }
+
+    /**
+     * Retorna quantidade de vagas disponíveis para cadastro de turma
+     *
+     * @param turma ID da turma
+     * @return int
+     */
+    @Override
+    public int vagasEscolaTurma(int turma) {
+        int vagas = 0;
+        try {
+            Query query = getEntityManager().createNativeQuery("SELECT func_esc_turmas_vagas_disponiveis(" + turma + ");");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                vagas = Integer.parseInt(((List) query.getSingleResult()).get(0).toString());
+            }
+        } catch (Exception e) {
+            vagas = 0;
+        }
+        return vagas;
     }
 }
