@@ -226,7 +226,12 @@ public class PisoSalarialJSFBean {
         pisoSalarialLote = (PisoSalarialLote) listaPisoSalarialLote.get(idIndex);
         listaPisoSalarial = new WebREPISDBToplink().listaPisoSalarialLote(pisoSalarialLote.getId());
         ano = String.valueOf(pisoSalarialLote.getAno());
-
+        for (int i = 0; i < listaComboPorte.size(); i++) {
+            if (pisoSalarialLote.getPorte().getId() == Integer.parseInt(listaComboPorte.get(i).getDescription())) {
+                idPorte = i;
+                break;
+            }
+        }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "pisoSalarial";
