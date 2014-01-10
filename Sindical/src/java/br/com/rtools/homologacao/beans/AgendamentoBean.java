@@ -15,9 +15,7 @@ import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.ListaAgendamento;
 import br.com.rtools.homologacao.Status;
 import br.com.rtools.homologacao.db.*;
-import br.com.rtools.impressao.ParametroProtocolo;
 import br.com.rtools.impressao.beans.ProtocoloAgendamento;
-import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
@@ -26,28 +24,17 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.sistema.Links;
-import br.com.rtools.sistema.db.LinksDB;
-import br.com.rtools.sistema.db.LinksDBToplink;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
-import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -1096,88 +1083,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
     }
 
-//    public String imprimirProtocolo(int proto) {
-//        if (proto == -1) {
-//            proto = id_protocolo;
-//        }
-//
-//        Collection lista = new ArrayList<ParametroProtocolo>();
-//        try {
-//            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-//                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
-//
-//            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//
-//            Agendamento age = (Agendamento) sv.pesquisaCodigo(proto, "Agendamento");
-//            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
-//
-//            Juridica contabilidade;
-//            if (age.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
-//                contabilidade = age.getPessoaEmpresa().getJuridica().getContabilidade();
-//            } else {
-//                contabilidade = new Juridica();
-//            }
-//
-//            getEnderecoFilial();
-//
-//            String datax = "", horario = "";
-//            if (!age.getData().isEmpty()) {
-//                datax = age.getData();
-//                horario = age.getHorarios().getHora();
-//            }
-//            Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-//
-//            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-//                    sindicato.getPessoa().getNome(),
-//                    sindicato.getPessoa().getSite(),
-//                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
-//                    sindicato.getPessoa().getDocumento(),
-//                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
-//                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
-//                    enderecoFilial.getNumero(),
-//                    enderecoFilial.getComplemento(),
-//                    enderecoFilial.getEndereco().getBairro().getDescricao(),
-//                    enderecoFilial.getEndereco().getCep(),
-//                    enderecoFilial.getEndereco().getCidade().getCidade(),
-//                    enderecoFilial.getEndereco().getCidade().getUf(),
-//                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
-//                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
-//                    String.valueOf(age.getId()),
-//                    datax,
-//                    horario,
-//                    age.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-//                    age.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
-//                    contabilidade.getPessoa().getNome(),
-//                    age.getPessoaEmpresa().getFisica().getPessoa().getNome(),
-//                    age.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
-//                    registro.getDocumentoHomologacao(),
-//                    registro.getFormaPagamentoHomologacao(),
-//                    age.getEmissao()));
-//
-//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-//            JasperPrint print = JasperFillManager.fillReport(
-//                    jasper,
-//                    null,
-//                    dtSource);
-//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//
-//            String nomeDownload = "imp_protocolo_" + proto + ".pdf";
-//
-//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-//
-//            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-//            sa.salvaNaPasta(pathPasta);
-//
-//            Download download = new Download(nomeDownload,
-//                    pathPasta,
-//                    "application/pdf",
-//                    FacesContext.getCurrentInstance());
-//            download.baixar();
-//        } catch (Exception e) {
-//        }
-//        return null;
-//    }
-
     public String pesquisarProtocolo() {
         HomologacaoDB db = new HomologacaoDBToplink();
         if (protocolo > 0) {
@@ -1216,141 +1121,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         return null;
     }
     
-//    public String enviarEmailProtocolo() {
-//        if (agendamento.getId() == -1) {
-//            agendamento = (Agendamento) new SalvarAcumuladoDBToplink().pesquisaCodigo(id_protocolo, "Agendamento");
-//        }
-//        imprimirPro = false;
-//
-//        if (agendamento.getEmail().isEmpty()) {
-//            msgConfirma = "Email destinatário vazio!";
-//            return null;
-//        }
-//
-//        try {
-//            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-//                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PROTOCOLO.jasper"));
-//
-//            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-//            Juridica sindicato = (Juridica) sv.pesquisaCodigo(1, "Juridica");
-//
-//            Juridica contabilidade;
-//            if (agendamento.getPessoaEmpresa().getJuridica().getContabilidade() != null) {
-//                contabilidade = agendamento.getPessoaEmpresa().getJuridica().getContabilidade();
-//            } else {
-//                contabilidade = new Juridica();
-//            }
-//
-//            getEnderecoFilial();
-//
-//            String datax = "", horario = "";
-//            if (!agendamento.getData().isEmpty()) {
-//                datax = agendamento.getData();
-//                horario = agendamento.getHorarios().getHora();
-//            }
-//            Registro registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-//
-//            Collection lista = new ArrayList<ParametroProtocolo>();
-//            lista.add(new ParametroProtocolo(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-//                    sindicato.getPessoa().getNome(),
-//                    sindicato.getPessoa().getSite(),
-//                    sindicato.getPessoa().getTipoDocumento().getDescricao(),
-//                    sindicato.getPessoa().getDocumento(),
-//                    enderecoFilial.getEndereco().getDescricaoEndereco().getDescricao(),
-//                    enderecoFilial.getEndereco().getLogradouro().getDescricao(),
-//                    enderecoFilial.getNumero(),
-//                    enderecoFilial.getComplemento(),
-//                    enderecoFilial.getEndereco().getBairro().getDescricao(),
-//                    enderecoFilial.getEndereco().getCep(),
-//                    enderecoFilial.getEndereco().getCidade().getCidade(),
-//                    enderecoFilial.getEndereco().getCidade().getUf(),
-//                    macFilial.getFilial().getFilial().getPessoa().getTelefone1(),
-//                    macFilial.getFilial().getFilial().getPessoa().getEmail1(),
-//                    String.valueOf(agendamento.getId()),
-//                    datax,
-//                    horario,
-//                    agendamento.getPessoaEmpresa().getJuridica().getPessoa().getDocumento(),
-//                    agendamento.getPessoaEmpresa().getJuridica().getPessoa().getNome(),
-//                    contabilidade.getPessoa().getNome(),
-//                    agendamento.getPessoaEmpresa().getFisica().getPessoa().getNome(),
-//                    agendamento.getPessoaEmpresa().getFisica().getPessoa().getDocumento(),
-//                    registro.getDocumentoHomologacao(),
-//                    registro.getFormaPagamentoHomologacao(),
-//                    DataHoje.data()));
-//
-//            //byte[] arquivo = new byte[0];
-//            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
-//            JasperPrint print = JasperFillManager.fillReport(
-//                    jasper,
-//                    null,
-//                    dtSource);
-//            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-//
-//            String nomeDownload = "envio_protocolo_" + agendamento.getId() + ".pdf";
-//            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-//            if (!new File(pathPasta).exists()) {
-//                File fNew = new File(pathPasta);
-//                fNew.mkdir();
-//            }
-//
-//            SalvaArquivos sa = new SalvaArquivos(arquivo, nomeDownload, false);
-//            sa.salvaNaPasta(pathPasta);
-//
-//            LinksDB db = new LinksDBToplink();
-//            Links link = db.pesquisaNomeArquivo(nomeDownload);
-//
-//            if (link == null) {
-//                link = new Links();
-//                link.setCaminho("/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/protocolo");
-//                link.setNomeArquivo(nomeDownload);
-//                link.setPessoa(agendamento.getPessoaEmpresa().getFisica().getPessoa());
-//
-//                sv.abrirTransacao();
-//                if (sv.inserirObjeto(link)) {
-//                    sv.comitarTransacao();
-//                } else {
-//                    sv.desfazerTransacao();
-//                }
-//            }
-//
-//            List<Pessoa> p = new ArrayList();
-//            agendamento.getPessoaEmpresa().getFisica().getPessoa().setEmail1(agendamento.getEmail());
-//            p.add(agendamento.getPessoaEmpresa().getFisica().getPessoa());
-//            String[] ret;
-//            //String[] ret = new String[2];
-//            if (registro.isEnviarEmailAnexo()) {
-//                //EnviarEmail.EnviarEmailComAnexo(registro, juridica, horario, null);
-//                List<File> fls = new ArrayList<File>();
-//                fls.add(new File(pathPasta + "/" + nomeDownload));
-//
-//                ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-//                        p,
-//                        " <h5>Baixe seu protocolo que esta anexado neste email</5><br /><br />",
-//                        fls,
-//                        "Envio de protocolo de homologação");
-//            } else {
-//                ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-//                        p,
-//                        " <h5>Visualize seu protocolo clicando no link abaixo</5><br /><br />"
-//                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir seu protocolo</a><br />",
-//                        //" <a href='"+registro.getUrlPath()+"/Sindical/Arquivos/downloads/protocolo/"+nomeDownload+".pdf' target='_blank'>Clique aqui para abrir seu protocolo</a><br />", 
-//                        new ArrayList(),
-//                        "Envio de protocolo de homologação");
-//
-//            }
-//            if (!ret[1].isEmpty()) {
-//                msgConfirma = ret[1];
-//                limpar();
-//            } else {
-//                msgConfirma = ret[0];
-//            }
-//        } catch (Exception e) {
-//            NovoLog log = new NovoLog();
-//            log.novo("Erro de envio de protocolo por e-mail:", "Mensagem: " + e.getMessage() + " - Causa: " + e.getCause() + " - Caminho: " + e.getStackTrace().toString());
-//        }
-//        return null;
-//    }
-
     public void pesquisaEndereco() {
         if (!cepEndereco.equals("")) {
             listaEnderecos.clear();
@@ -1363,8 +1133,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void editarEndereco(Endereco e) {
         enderecoFisica.setEndereco(e);
-        // return null;
-        // return "agendamento";
     }
 
     public int getIdStatus() {
