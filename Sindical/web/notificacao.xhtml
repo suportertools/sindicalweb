@@ -1,288 +1,212 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Gerar Notificação</title>
+        <title>Sindical - Notificações</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }            
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-                        
-            <h:form id="formNotificacao">
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Notificação" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br />
-                    <a4j:status onstart="#{rich:component('popup')}.show(); return false;" onstop="#{rich:component('popup')}.hide()" />
-                    
-                    <rich:popupPanel id="popup" modal="true" resizeable="false" height="50" width="200">
-                        <center>
-                            <h:outputLabel value="Aguarde carregando ...    " styleClass="fontePadrao" />
-                        </center> 
-                    </rich:popupPanel>
-                    
-                    <rich:popupPanel id="popup_arq" modal="true" resizeable="false" height="200" width="300" header="Arquivos para o Lote">
-                        <f:facet name="controls">
-                            <a4j:commandButton image="/Imagens/excluirp.png" onclick="#{rich:component('popup_arq')}.hide(); return false;" title="Fechar lista"/>
-                        </f:facet>
-                        <rich:panel style="height: 180px; overflow: auto" id="tbl_arq">
-                            <rich:list value="#{notificacaoBean.listaArquivo}" styleClass="fontePadrao" var="linha">
-                                <h:outputLink value="#{linha.argumento0}" target="_blank">
-                                    <f:verbatim> #{linha.argumento1} </f:verbatim>
-                                </h:outputLink>
-                                
-                                <h:outputLink value="#{linha.argumento0}" target="_blank">
-                                    <h:outputText value="#{linha.argumento1}" />
-                                </h:outputLink>
-                            </rich:list>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Notificações" styleClass="fonteHeader" />
+                        <h:form id="formNotificacao">
+                            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
                             
-                        </rich:panel>
-                    </rich:popupPanel>
-                    
-                    <div class="divMae divFundo" style="width: 1024px; position: relative">
-                        <h:panelGrid columns="1" style="float: left">
-                            <h:column>
-                                <h:outputLabel value="Lotes: " styleClass="fontePadrao" />
-                                <h:selectOneMenu value="#{notificacaoBean.idLista}" title="Selecione uma Opção" style="padding: 5px">
-                                    <a4j:ajax event="change" listener="#{notificacaoBean.alteraCombo()}" render="i_mensagem i_panel i_panel2 id_atualizar id_gerar i_panel_qnt i_panel_grid i_panel_gerar"/>
-                                    <f:selectItems value="#{notificacaoBean.itensLista}"/>
-                                </h:selectOneMenu>
-                                <h:outputLabel value="15 últimos" styleClass="fontePadraoPequeno" />
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid style="float: left; clear: both">
-                            <h:inputTextarea id="i_mensagem" cols="90" rows="5" value="#{notificacaoBean.lote.mensagem}" />
-                        </h:panelGrid>
-
-                        <h:panelGrid id="i_panel_grid" style="float: left; clear: both; position: absolute; margin-top: 170px">
-                            <rich:dataTable value="#{notificacaoBean.listaNotificacao}" var="linha" style="width:100%" id="tbl" noDataLabel="Nenhuma pendência foi encontrada" rows="17">
-                                <rich:column style="text-align: center;" rendered="false">
+                            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                                <h:outputLabel value="Carregando ... Aguarde" />
+                            </p:dialog> 
+                            
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid id="i_panel" columns="6">
+                                    <p:column>
+                                        <p:selectOneMenu value="#{notificacaoBean.idLista}" style="width: 400px;">
+                                            <p:ajax event="change" listener="#{notificacaoBean.alteraCombo()}" update="formNotificacao"/>
+                                            <f:selectItems value="#{notificacaoBean.itensLista}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
                                     
-                                    <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                        <a4j:ajax event="change" render="@this"/>
-                                    </h:selectBooleanCheckbox>
-                                </rich:column>
-                                
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header"><h:outputText value="ID"/></f:facet>
-                                    <h:outputText value="#{linha.argumento1[0]}" />
-                                </rich:column>
-                                
-                                <rich:column>
-                                    <f:facet name="header"><h:outputText value="Empresa"/></f:facet>
-                                    <h:outputText value="#{linha.argumento1[1]}" />
-                                </rich:column>
-                                
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header"><h:outputText value="Quantidade de Pendências"/></f:facet>
-                                    <h:outputText value="#{linha.argumento1[2]}" />
-                                </rich:column>
-                                
-                                <rich:column style="text-align: center;">
-                                    <f:facet name="header"><h:outputText value="Notificada"/></f:facet>
-                                    <h:outputText value="#{linha.argumento2}"/>
-                                </rich:column>
-                                <f:facet name="footer">
-                                    <rich:dataScroller id="datascroller2" maxPages="17" render="tbl" oncomplete="#{rich:component('popup')}.hide()"/>
-                                </f:facet>
-                            </rich:dataTable>
-                        </h:panelGrid>                        
-                        
-                        <h:panelGrid columns="2" style="position: absolute; margin-top: 140px;" rendered="false">
-                            <h:selectBooleanCheckbox id="chkLista" value="#{notificacaoBean.chkTodos}">
-                                <a4j:ajax event="change" render="i_panel_grid" listener="#{notificacaoBean.marcarTodos()}"/>
-                            </h:selectBooleanCheckbox>
-                            <h:outputLabel value="Selecionar todos" styleClass="fonteFranklinNegrito" for="chkLista" style="cursor: pointer"/>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid id="i_panel_qnt" style="position: absolute; margin-top: 140px; margin-left: 500px">
-                            <h:outputLabel value="Serão geradas #{notificacaoBean.quantidade} notificações" styleClass="fontePadrao" />
-                        </h:panelGrid>
-                        
-                        <h:panelGrid id="i_panel_gerar" style="width: 260px; float: right">
-                            <rich:accordion switchType="ajax" activeItem="#{notificacaoBean.tabAtiva}">
-                                <rich:accordionItem name="todos" header="Gerar para Todas" disabled="#{notificacaoBean.lote.id != -1}">
-                                    <a4j:ajax event="enter" listener="#{notificacaoBean.gerarParaTodas()}" render="tbl i_panel_qnt"/>
-                                    <h:outputText value="Todas Empresas" styleClass="fontePadrao"/>
-                                </rich:accordionItem>
-
-                                <rich:accordionItem name="empresa" header="Gerar para empresa específica" disabled="#{notificacaoBean.lote.id != -1}">
-                                    <a4j:ajax event="enter" listener="#{notificacaoBean.addEmpresa()}"/>
-                                    <h:commandLink value="Adicionar" styleClass="fontePadrao" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" style="float: left" />
-                                    <br />
-                                    <c:forEach items="#{notificacaoBean.listaEmpresaAdd}" var="linhae">
-                                        <br /><h:outputText value="#{linhae.argumento1.pessoa.nome}" styleClass="fontePadrao" style="float: left; font-size: 8pt"/>
-                                    </c:forEach>
-                                </rich:accordionItem>
-
-                                <rich:accordionItem name="contabil" header="Gerar para contabilidade específica" disabled="#{notificacaoBean.lote.id != -1}">
-                                    <a4j:ajax event="enter" listener="#{notificacaoBean.addContabil()}"/>
-                                    <h:commandLink value="Adicionar" styleClass="fontePadrao" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" style="float: left; font-size: 8pt" />
-                                    <br />
-                                    <c:forEach items="#{notificacaoBean.listaContabilAdd}" var="linhac">
-                                        <br /><h:outputText value="#{linhac.argumento1.pessoa.nome}" styleClass="fontePadrao"/>
-                                    </c:forEach>
-                                </rich:accordionItem>
-
-                                <rich:accordionItem name="semContabil" header="Gerar para empresas sem contabilidade" disabled="#{notificacaoBean.lote.id != -1}">
-                                    <a4j:ajax event="enter" listener="#{notificacaoBean.gerarSemContabil()}" render="tbl i_panel_qnt"/>
-                                    <h:outputText value="Todas Empresas sem contabilidade" styleClass="fontePadrao"/>
-                                </rich:accordionItem>
-
-                                <rich:accordionItem name="comContabil" header="Gerar para empresas com contabilidade" disabled="#{notificacaoBean.lote.id != -1}">
-                                    <a4j:ajax event="enter" listener="#{notificacaoBean.gerarComContabil()}" render="tbl i_panel_qnt"/>
-                                    <h:outputText value="Todas Empresas com contabilidade" styleClass="fontePadrao"/>
-                                </rich:accordionItem>
-                            </rich:accordion>
-                        </h:panelGrid>
-                            
-                        <rich:panel style="width: 255px; height: 380px; margin-left: 7px; overflow: auto; float: right; clear: both">
-                            <h:panelGrid>
-                                <h:panelGrid columns="2">
-                                    <h:selectBooleanCheckbox id="chkCidades" value="#{notificacaoBean.chkCidadesBase}">
-                                        <a4j:ajax event="click" listener="#{notificacaoBean.marcarCidadesBase}" render="tbl i_panel_qnt tblCidadesBase"/>
-                                    </h:selectBooleanCheckbox>
-                                    <h:outputLabel value="Cidades da Base" styleClass="fonteFranklinNegrito" for="chkCidades" style="cursor: pointer"/>
+                                    <p:column>
+                                        <h:outputLabel value="15 últimos" styleClass="fontePadraoPequeno" />
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <p:commandButton id="id_atualizar" style="width: 100px" onclick="i_dlg_a.show()" value="Atualizar" title="Atualizar Mensagem Editada" rendered="#{notificacaoBean.lote.id != -1}"/>
+                                        <p:commandButton id="id_gerar" style="float: right; clear: both" onclick="i_dlg_s.show()"  value="Gerar Notificação" title="Gerar Notificação para essas Opções" rendered="#{notificacaoBean.lote.id == -1}" />
+                                    </p:column>
+                                        
+                                    <p:column>
+                                        <p:selectOneMenu value="#{notificacaoBean.idTipoEnvio}" rendered="#{notificacaoBean.lote.id != -1}" style="padding-right: 20px">
+                                            <p:ajax event="change" update="i_panel" />
+                                            <f:selectItems value="#{notificacaoBean.listaTipoEnvio}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <c:if test="#{notificacaoBean.idTipoEnvio == 3 or notificacaoBean.idTipoEnvio == 4}">
+                                            <p:commandButton value="Enviar" title="Enviar Notificação por Email" rendered="#{notificacaoBean.lote.id != -1}" onclick="i_dlg_e.show()"/>
+                                        </c:if>
+                                        
+                                        <c:if test="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}">
+                                            <p:commandButton value="Criar Arquivos" title="Criar arquivos de Notificação" rendered="#{notificacaoBean.lote.id != -1}" onclick="i_dlg_e.show()"/>
+                                        </c:if>
+                                        
+                                        <c:if test="#{notificacaoBean.idTipoEnvio == 5 or notificacaoBean.idTipoEnvio == 6}">
+                                            <p:commandButton ajax="false" value="Criar Etiquetas" title="Criar etiquetas de Notificação" rendered="#{notificacaoBean.lote.id != -1}" action="#{notificacaoBean.gerarEtiquetas}"/>
+                                        </c:if>
+                                    </p:column>
+                                        
+                                    <p:dialog widgetVar="i_dlg_s" header="Deseja Realmente Gerar esta Notificação?" resizable="false" width="400" modal="true">
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.gerarNotificacao()}" update="formNotificacao" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    </p:dialog>
+                                    
+                                    <p:dialog widgetVar="i_dlg_a" header="Deseja Realmente Atualizar esta Notificação?" resizable="false" width="400" modal="true">
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.salvar()}" update="formNotificacao" onclick="i_dlg_a.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_a.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    </p:dialog>
+                                    
+                                    <p:dialog widgetVar="i_dlg_e" header="Deseja Realmente Enviar estas Notificações?" resizable="false" width="400" modal="true">
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{notificacaoBean.enviarNotificacao()}" update="formNotificacao" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                                    </p:dialog>
+                                    
+                                    <p:dialog widgetVar="i_dlg_popup" header="Lista de Arquivos" resizable="false" width="400" modal="true">
+                                        <c:forEach var="linha" items="#{notificacaoBean.listaArquivo}">
+                                            <h:outputLink value="#{linha.argumento0}" target="_blank">
+                                                <h:outputText value="#{linha.argumento1}" />
+                                            </h:outputLink>
+                                            <br /><br />
+                                        </c:forEach>
+                                    </p:dialog>
                                 </h:panelGrid>
-                                <rich:dataTable id="tblCidadesBase" value="#{notificacaoBean.listaCidadesBase}" var="linha">
-                                    <rich:column>
-                                        <h:selectBooleanCheckbox value="#{linha.argumento0}">
-                                            <a4j:ajax event="click" listener="#{notificacaoBean.addCidades}" render="tbl i_panel_qnt"/>
-                                        </h:selectBooleanCheckbox>
-                                    </rich:column>
+                                
+                                <h:panelGrid id="i_panel_qnt" style="width: 100%" columns="2">
+                                    <h:outputLabel value="#{notificacaoBean.listaNotificacao.size()} notificações" style="float: left; font-weight: bold"/>
+                                    <p:commandLink value="Listar arquivos do Lote" onclick="i_dlg_popup.show()" rendered="#{notificacaoBean.lote.id != -1}" style="float: right"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            <h:panelGrid style="float: left">
+                                <p:column>
+                                    <p:inputTextarea id="i_mensagem" style="width: 700px" rows="5" value="#{notificacaoBean.lote.mensagem}" /><br />
+                                    <p:watermark value="Digite a mensagem que irá ser enviada na notificação" for="i_mensagem"/>
+                                    <p:dataTable value="#{notificacaoBean.listaNotificacao}" rowKey="#{linha.argumento1[0]}" var="linha" id="tbl" style="width: 700px"
+                                         emptyMessage="Nenhuma pendência foi encontrada" rows="15" paginator="true" rowsPerPageTemplate="15, 30, 50, 100">
+                                        <p:column headerText="Empresa">
+                                            <h:outputText value="#{linha.argumento1[1]}" />
+                                        </p:column>
 
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="Cidade/UF"/></f:facet>
-                                        <h:outputText value="#{linha.argumento1.cidade} - #{linha.argumento1.uf}"/>
-                                    </rich:column>
-                                </rich:dataTable>
+                                        <p:column style="text-align: center;" headerText="Pendências">
+                                            <h:outputText value="#{linha.argumento1[2]}" />
+                                        </p:column>
+
+                                        <p:column style="text-align: center;" headerText="Notificada">
+                                            <h:outputText value="#{linha.argumento2}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:column>
                             </h:panelGrid>
-                        </rich:panel>
+                                
+                            <h:panelGrid style="float: left">
+                                <p:column>
+                                    <p:accordionPanel style="width:285px; " activeIndex="#{notificacaoBean.indexTab}" rendered="#{notificacaoBean.lote.id == -1}">   
+                                        <p:ajax event="tabChange" update=":formNotificacao" listener="#{notificacaoBean.acoes}"/>  
 
-                        <h:panelGrid id="i_panel" columns="3" style="float: right; clear: both">
-                            <a4j:commandLink id="id_atualizar" onclick="modalOpcao('divCriar');" style="width: 100px; " styleClass="idSalvar iLink" value="Atualizar" title="Atualizar mensagem editada" rendered="#{notificacaoBean.lote.id != -1}"/>
-                            <a4j:commandLink id="id_gerar" onclick="modalOpcao('divSalvar');" style="float: right; clear: both" styleClass="idSalvar iLink" value="Gerar" title="Gerar notificação" rendered="#{notificacaoBean.lote.id == -1}" />
-                        </h:panelGrid>
-                        
-                        <h:panelGrid id="i_panel2" style="float: left; clear: both">
-                            <h:panelGrid columns="4" rendered="#{notificacaoBean.lote.id != -1}">
-                                <a4j:commandLink id="id_enviar" onclick="modalOpcao('divEmail');" styleClass="idSalvar iLink" value="Enviar" title="Enviar por Email esta notificação" rendered="#{notificacaoBean.idTipoEnvio >= 3}" style="margin-left: 5px"/>
-                                <a4j:commandLink id="id_imprimir" onclick="modalOpcao('divExcluir');" styleClass="idPesquisar iLink" value="Criar Arquivos" title="Criar arquivos de Notificação" rendered="#{notificacaoBean.idTipoEnvio == 0 or notificacaoBean.idTipoEnvio == 1 or notificacaoBean.idTipoEnvio == 2}" style="margin-left: 5px; width: 150px"/>
-                                <h:selectOneMenu value="#{notificacaoBean.idTipoEnvio}" style="padding: 5px" title="Tipos de Envio">
-                                    <a4j:ajax event="change" render="i_panel2" oncomplete="#{rich:component('popup')}.hide()"/>
-                                    <f:selectItems value="#{notificacaoBean.listaTipoEnvio}"/>
-                                </h:selectOneMenu>
-                                <a4j:commandLink value="Listar arquivos do Lote" onclick="#{rich:component('popup_arq')}.show()" styleClass="fontePadrao" style="margin-left: 20px" render="tbl_arq"/>
+                                        <p:tab title="Gerar para Todas">  
+                                            <h:panelGrid style="background: #99ccff; padding: 5px; text-align: center; width: 100%">
+                                                <h:outputLabel value="Todas Empresas" />
+                                            </h:panelGrid>
+                                        </p:tab>  
+                                        
+                                        <p:tab title="Gerar para Empresas Específicas">  
+                                            <p:commandLink value="Adicionar" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" style="float: right; " />
+                                            <h:outputLabel value=" | " style="float: right; margin-left: 5px; margin-right: 5px"/>
+                                            <p:commandLink value="Limpar" action="#{notificacaoBean.removerListaJuridica()}" update=":formNotificacao" style="float: right; " />
+                                            <br />
+                                            <c:forEach items="#{notificacaoBean.listaEmpresaAdd}" var="linhae">
+                                                <br /><hr /><h:outputText value="#{linhae.argumento1.pessoa.nome}" style="float: left"/>
+                                            </c:forEach>
+                                        </p:tab>  
+                                        
+                                        <p:tab title="Gerar para Contabilidade Específica">  
+                                            <p:commandLink value="Adicionar" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" style="float: right; " />
+                                            <h:outputLabel value=" | " style="float: right; margin-left: 5px; margin-right: 5px"/>
+                                            <p:commandLink value="Limpar" action="#{notificacaoBean.removerListaJuridica()}" update=":formNotificacao" style="float: right" />
+                                            <br />
+                                            <c:forEach items="#{notificacaoBean.listaContabilAdd}" var="linhac">
+                                                <br /><hr /><h:outputText value="#{linhac.argumento1.pessoa.nome}" style="float: left"/>
+                                            </c:forEach>
+                                        </p:tab> 
+                                        
+                                        <p:tab title="Gerar para Empresas SEM Contabilidade" closable="false">  
+                                            <h:panelGrid style="background: #99ccff; padding: 5px; text-align: center">
+                                                <h:outputText value="Todas Empresas sem Contabilidade" style="float: left; font-weight: bold; width: 100%"/>
+                                            </h:panelGrid>
+                                        </p:tab>  
+                                        
+                                        <p:tab title="Gerar para Empresas COM Contabilidade">  
+                                            <h:panelGrid style="background: #99ccff; padding: 5px; text-align: center">
+                                                <h:outputText value="Todas Empresas com Contabilidade" style="float: left; font-weight: bold; width: 100%"/>
+                                            </h:panelGrid>
+                                        </p:tab>  
+                                        
+                                    </p:accordionPanel>  
+                                    
+                                    <h:panelGrid columns="2" rendered="#{notificacaoBean.lote.id == -1}">
+                                        <p:selectBooleanCheckbox id="chkCidades" value="#{notificacaoBean.chkCidadesBase}" itemLabel="Todas Cidades da Base" style="font-weight: bold">
+                                            <p:ajax event="change" listener="#{notificacaoBean.marcarCidadesBase}" update=":formNotificacao"/>
+                                        </p:selectBooleanCheckbox>
+                                    </h:panelGrid>
+                                    
+                                    <p:dataTable id="tblCidadesBase" value="#{notificacaoBean.listaCidadesBase}" var="linha" rendered="#{notificacaoBean.lote.id == -1}">
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{linha.argumento0}">
+                                                <p:ajax event="change" listener="#{notificacaoBean.addCidades}" update=":formNotificacao"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+
+                                        <p:column headerText="Cidade / UF"> 
+                                            <h:outputText value="#{linha.argumento1.cidade} - #{linha.argumento1.uf}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:column>
+                                    
                             </h:panelGrid>
-                        </h:panelGrid>
-                    </div>
-                </center>
+                            
+                            
+                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                <div id="boxes">
-                    <div id="divCriar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja realmente atualizar esta notificação?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{notificacaoBean.salvar()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-
-                <div id="boxes">
-                    <div id="divSalvar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja realmente gerar essa notificação?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{notificacaoBean.gerarNotificacao()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-                
-                <div id="boxes">
-                    <div id="divEmail" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja realmente enviar essa notificação?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{notificacaoBean.enviarNotificacao()}" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>        
-                
-                <div id="boxes">
-                    <div id="divExcluir" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja realmente imprimir essa notificação?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Salvando"/></f:facet></a4j:status>
-                            </h:panelGrid>
-
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{notificacaoBean.enviarNotificacao()}" onclick="fecharModal();"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{notificacaoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" action="notificacao" value="OK" title="OK" oncomplete="#{rich:component('popup')}.hide()"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

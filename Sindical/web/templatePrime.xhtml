@@ -17,6 +17,7 @@
           //.ui-datalist-item a {color: white; text-decoration: none;}
         </style>
     </h:head>
+    <h:body onload="#{controleAcessoBean.validacao}"></h:body>
     <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
         <f:view>
             <h:form id="formTemplateLinks" onsubmit="#{chamadaPaginaBean.controleLinks}">

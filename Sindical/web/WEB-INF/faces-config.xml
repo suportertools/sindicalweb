@@ -297,14 +297,15 @@
         <managed-bean-class>br.com.rtools.associativo.beans.CaravanaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    
+    <!--
     <managed-bean>
         <managed-bean-name>vendasCaravanaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.VendasCaravanaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
-    <!-- <managed-bean>
+     <managed-bean>
         <managed-bean-name>baileBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.BaileJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -1315,7 +1316,7 @@
 
         <navigation-case>
             <from-outcome>pesquisaVendasCaravana</from-outcome>
-            <to-view-id>/pesquisaVendasCaravana.jsp</to-view-id>
+            <to-view-id>/pesquisaVendasCaravana.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
@@ -1686,10 +1687,15 @@
         </navigation-case>
         
         <navigation-case>
-            <from-outcome>agrupaTurma</from-outcome>
-            <to-view-id>/agrupaTurma.jsf</to-view-id>
+            <from-outcome>caixa</from-outcome>
+            <to-view-id>/caixa.jsf</to-view-id>
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>agrupaTurma</from-outcome>
+            <to-view-id>/agrupaTurma.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
     </navigation-rule>
 </faces-config>

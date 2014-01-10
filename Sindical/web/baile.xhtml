@@ -25,29 +25,31 @@
         <f:verbatim escape="true">
             <script type="text/javascript">
 
-    /* 			 function handleDrop(event, ui) {
-                                    ui.draggable.fadeOut(function() {$(this).fadeIn();});
+                /* 			 function handleDrop(event, ui) {
+                 ui.draggable.fadeOut(function() {$(this).fadeIn();});
+                 
+                 alert('ok!');
+                 
+                 $(this).droppable('disable');
+                 
+                 }                         */
 
-                                    alert('ok!');
+                function handleDrop(event, ui) {
+                    ui.draggable.fadeOut(function() {
+                        $(this).fadeIn();
+                    });
+                    //$(this).droppable('disable');
 
-                                    $(this).droppable('disable');
+                    var exdate = new Date();
+                    exdate.setDate(exdate.getDate() + 1000);
 
-                            }                         */
+                    var mesa_left = ui.position.left;
+                    var mesa_top = ui.position.top;
 
-                    function handleDrop(event, ui) {  
-                        ui.draggable.fadeOut(function() {$(this).fadeIn();});                
-                        //$(this).droppable('disable');
-                        
-                        var exdate = new Date();
-                        exdate.setDate(exdate.getDate() + 1000);
-                        
-                        var mesa_left = ui.position.left;
-                        var mesa_top = ui.position.top;
-                        
-                        document.cookie = 'mesa_left = ' + mesa_left;
-                        document.cookie = 'mesa_top = ' + mesa_top;
-                        //ui.draggable('disabled');
-                    }  
+                    document.cookie = 'mesa_left = ' + mesa_left;
+                    document.cookie = 'mesa_top = ' + mesa_top;
+                    //ui.draggable('disabled');
+                }
 
 
             </script>
@@ -67,10 +69,10 @@
                         <h:form id="formBaile">
                             <h:outputText value="Baile" styleClass="fonteHeader" />
                             <c:set scope="request" var="object" value="${baileBean.eventoBaile}"/>
-                            
+
                             <p:panel style="clear: both; border: 0px;" styleClass="fundoCinza">
-                                
-                                <h:panelGrid columns="4" style="clear: both; border: 0px;">
+
+                                <h:panelGrid columns="5" style="clear: both; border: 0px;">
                                     <p:column>
                                         <h:outputLabel value="Data" /><br />
                                         <p:inputMask value="#{baileBean.eventoBaile.dataString}" size="8" mask="99/99/9999"/>
@@ -93,6 +95,11 @@
                                     <p:column>
                                         <h:outputLabel value="Qnt de Mesas" style="margin-left: 30px"/><br />
                                         <p:inputText value="#{baileBean.eventoBaile.quantidadeMesas}" size="6" maxlength="5" style="margin-left: 30px"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Evt " style="margin-left: 30px; font-size: 13pt!important"/>
+                                        <h:outputLabel value="NENHUM" style="margin-left: 10px; font-weight: bold"/>
                                     </p:column>
                                 </h:panelGrid>
 
@@ -120,7 +127,7 @@
                             <p:panel style="border: 0px; margin-top: 10px">
                                 <p:outputLabel value="Serviço Valor" style="font-size: 13pt!important" />
                                 <hr />
-                                
+
                                 <h:panelGrid id="i_panel_tipo" columns="6" style="width: 100%">
                                     <h:column>
                                         <h:outputLabel value="Tipo"/>
@@ -130,7 +137,7 @@
                                             <f:selectItem itemValue="false" itemLabel="Mesa"/>
                                         </p:selectOneRadio>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <h:outputLabel value="Sexo" style="margin-left: 20px"/><br />
                                         <p:selectOneRadio value="#{baileBean.eventoServicoValor.sexo}" disabled="#{!baileBean.eventoServico.mesa}" style="margin-left: 20px">
@@ -139,60 +146,60 @@
                                             <f:selectItem itemValue="A" itemLabel="Ambos"/>
                                         </p:selectOneRadio>                                
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <h:outputLabel value="Serviços"  style="margin-left: 20px"/><br />
                                         <p:selectOneMenu value="#{baileBean.idServicos}" style="margin-left: 20px; padding-right: 20px">
                                             <f:selectItems value="#{baileBean.listaComboServicos}" />
                                         </p:selectOneMenu>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <h:outputLabel value="Valor" style="margin-left: 20px"/><br />
                                         <p:inputText id="i_valor" value="#{baileBean.eventoServicoValor.valorString}" maxlength="15" size="6" title="Valor" style="margin-left: 20px">
                                             <p:ajax event="change" update="i_valor" />
                                         </p:inputText>
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <h:outputLabel value="Faixa Etária" style="margin-left: 20px"/><br />
                                         <p:inputText value="#{baileBean.eventoServicoValor.idadeInicial}" maxlength="3" size="1" style="margin-left: 20px"/>
                                         <h:outputLabel value=" à " />
                                         <p:inputText value="#{baileBean.eventoServicoValor.idadeFinal}" maxlength="3" size="1" />
                                     </h:column>
-                                    
+
                                     <h:column>
                                         <br />
                                         <p:commandButton value="Adicionar" action="#{baileBean.adicionarServico}" style="float: right; margin-left: 30px" update="tbl_s"/>
                                     </h:column>
                                 </h:panelGrid>
-                                
-                                
+
+
                                 <p:dataTable value="#{baileBean.listaEventoServicoValor}" var="linha" id="tbl_s" emptyMessage="Nenhum Serviço adicionado para este Baile">
                                     <p:column headerText="Serviços">
                                         <h:outputLabel value="#{linha.eventoServico.servicos.descricao}" />
                                     </p:column>
-                                    
+
                                     <p:column headerText="Valor">
-                                        <h:outputLabel value="#{linha.valor}" styleClass="fontePadrao"/>
+                                        <h:outputLabel value="#{linha.valor}"/>
                                     </p:column>
-                                    
+
                                     <p:column headerText="Faixa Etária" style="text-align: center">
-                                        <h:outputLabel value="#{linha.idadeInicial} à #{linha.idadeFinal}" styleClass="fontePadrao"/>
+                                        <h:outputLabel value="#{linha.idadeInicial} à #{linha.idadeFinal}" />
                                     </p:column>
-                                    
+
                                     <p:column headerText="Convite / Mesa" style="text-align: center">
                                         <h:graphicImage url="/Imagens/mesa.png" styleClass="fontePadrao" rendered="#{!linha.eventoServico.mesa}" style="width: 20px; height: 20px;" alt="Mesa" title="Mesa"/>
                                         <h:graphicImage url="/Imagens/convite.png" styleClass="fontePadrao" rendered="#{linha.eventoServico.mesa}" style="width: 20px; height: 20px;" alt="Convite" title="Convite"/>
                                     </p:column>
-                                    
+
                                     <p:column style="text-align: center">
                                         <p:commandButton action="#{baileBean.removerEventoServico(linha)}" icon="ui-icon-trash" update="tbl_s"/>
                                     </p:column>                                    
                                 </p:dataTable>
-                                    
+
                             </p:panel>
-                            
+
                             <h:panelGrid columns="5">
                                 <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="i_dlg_s.show()" title="Salvar"/>
                                 <p:commandButton ajax="false" value="Novo" action="#{baileBean.novo()}" />
@@ -200,60 +207,39 @@
                                 <p:commandButton ajax="false" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaBaile()}"/>
                                 <p:commandButton value="Criar Mapa" onclick="i_dlg_mapa.show()" rendered="#{baileBean.eventoBaile.id != -1}"/>
                             </h:panelGrid>
-                            
+
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar este Baile" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.salvar()}" update="formBaile :formBaileMesas" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.salvar()}" update="formBaile :formBaileComp" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_e" header="Deseja Excluir este Baile" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile :formBaileMesas" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile :formBaileComp" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
+                            
                         </h:form>
-                        <p:dialog widgetVar="i_dlg_mapa" header="Novo mapa do Baile" resizable="false" width="1000" modal="true" height="800">
-                                    <h:form id="formBaileMapa" enctype="multipart/form-data">
-                                        <p:fileUpload fileUploadListener="#{baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
-                                                      update=":formBaile:i_msg" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" />
-                                    </h:form>
-                                    <h:form id="formBaileMesas">
-                                            <p:panel header="Mesas Disponíveis" style="width: 130px; float: left; position: absolute; z-index: 200; height: 700px">  
-                                                <p:dataGrid id="i_mesas_disponiveis" value="#{baileBean.listaMesas}" var="linha" columns="3" emptyMessage="Defina uma quantidade de Mesa!" style="width: 130px; float: left" styleClass="sb">  
-                                                    <p:column rendered="#{linha.id == -1}">  
-                                                        <h:panelGrid id="i_mesa" styleClass="fundoCinza" style="padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; cursor: pointer">
-                                                            <h:outputLabel value="#{linha.mesa}" style="font-size: 8pt!important; cursor: pointer"/>
-                                                        </h:panelGrid>
-                                                        <p:draggable for="i_mesa" revert="true" scope="0" disabled="false" /> 
-                                                    </p:column>
-
-                                                    <p:column rendered="#{linha.id != -1}">  
-                                                        <h:panelGrid  styleClass="fundoCinza ui-draggable" style="padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; #{linha.posicao}; cursor: pointer">
-                                                            <h:outputLabel value="#{linha.mesa}" style="font-size: 8pt!important; font-weight: bold; cursor: pointer"/>
-                                                            <p:ajax event="dblclick" listener="#{baileBean.excluirMesa(linha)}" update="i_mesas_disponiveis"/>
-                                                        </h:panelGrid>
-                                                    </p:column>
-                                                </p:dataGrid>  
-                                            </p:panel>
-
-                                            <h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute; margin-left:150px;" width="750"/>
-
-                                            <h:panelGroup style="float: left; position: absolute">
-                                                <h:panelGrid columns="22" style="margin-left:150px; float: left;">
-                                                    <c:forEach var="item" items="#{baileBean.listaQuantidade}">
-                                                        <p:column>
-                                                            <p:outputPanel id="i_#{item}" style="width: 30px; height: 30px; display: block; border: 1px solid gray">  
-                                                                <p:droppable  tolerance="fit" datasource="i_mesas_disponiveis" scope="0" onDrop="handleDrop">
-                                                                    <p:ajax listener="#{baileBean.onDrop}" update="i_mesas_disponiveis"/>
-                                                                </p:droppable>  
-                                                            </p:outputPanel>
-                                                        </p:column>
-                                                    </c:forEach>
-                                                </h:panelGrid>
-                                            </h:panelGroup>
-                                        
-                                    </h:form>
-                            </p:dialog>
                         
+                        <p:dialog widgetVar="i_dlg_mapa" header="Novo mapa do Baile" resizable="false" width="900" modal="true" height="800">
+                            <!-- O CONTEUDO DESSE MODAL DE MAPA ESTA NO ARQUIVO  rascunho.txt EM AREA DE TRABALHO, CONTINUAR POR ELE -->
+                            <h:form id="formBaileMapa" enctype="multipart/form-data">
+                                <p:fileUpload fileUploadListener="#{baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
+                                              update=":formBaile:i_msg :formBaileComp:i_img" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpeg|png)$/" />
+                            </h:form>
+                            <h:form id="formBaileComp">
+                                <h:graphicImage id="i_img" url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute;" width="750"/>
+                                
+                            </h:form>
+                            
+                        </p:dialog> 
+                        
+                        <h:form id="formBaileMesa">
+                            <p:dialog widgetVar="i_dlg_mesa" header="Adicionar Mesa" modal="true" resizable="false" width="300">
+                                <h:outputLabel value="Número da Mesa" /><br /><br />
+                                <p:inputText size="2" value="#{baileBean.nrMesa}" />
+                                <p:commandButton value="OK" action="#{baileBean.salvarMesa()}" update=":formBaileComp formBaileMesa" oncomplete="i_dlg_mesa.hide()"/>
+                            </p:dialog>
+                        </h:form>
                     </p:panel>
                 </f:view>
 
