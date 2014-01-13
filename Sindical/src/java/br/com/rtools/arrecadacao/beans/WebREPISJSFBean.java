@@ -247,12 +247,11 @@ public class WebREPISJSFBean {
         if (repisMovimento.getId() != -1) {
             HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
             try {
-
                 JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper"));
                 Collection vetor = new ArrayList<ParametroCertificado>();
 
-
-                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), dbj.pesquisaJuridicaPorPessoa(patronal.getPessoa().getId()).getPorte().getId());
+                //PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), dbj.pesquisaJuridicaPorPessoa(patronal.getPessoa().getId()).getPorte().getId());
+                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), jur.getPorte().getId());
 
                 if (lote.getId() == -1) {
                     msg = "Lote Salarial não encontrada, contate seu sindicato!";
