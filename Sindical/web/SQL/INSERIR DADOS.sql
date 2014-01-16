@@ -56,6 +56,7 @@ INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 5
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 52, 'Mes/Ano Inicial Extenso',       '$mesAnoInicalExtenso',         8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 52);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 53, 'Mes/Ano Final   Extenso',       '$mesAnoFinalExtenso',          8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 53);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 54, 'Sala',                          '$sala',                        8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 54);
+INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 55, 'Data matrícula',                '$dataMatricula',               8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 55);
 SELECT setval('matr_contrato_campos_id_seq', max(id)) FROM matr_contrato_campos;
 
 -- age_tipo_telefone;
