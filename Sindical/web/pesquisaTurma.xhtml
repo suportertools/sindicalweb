@@ -15,6 +15,7 @@
         </f:subview>
         <f:view>
             <p:panel styleClass="wrapper no-border">
+                <h:form id="formTemplate" rendered="#{controleAcessoBean.validacao}"></h:form>
                 <h:form id="form_turma">
                     <p:outputLabel value="Pesquisar de Turma" styleClass="fonteHeader"/>
                     <c:set scope="request" var="object" value="${turmaBean.turma}"/>

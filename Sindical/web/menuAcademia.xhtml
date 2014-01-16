@@ -27,14 +27,19 @@
                         <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">  
                             <p:menuitem value="Matricula Academia"          action="#{chamadaPaginaBean.academia}"/>
                             <p:menuitem value="Tabela Preço"                action="#{chamadaPaginaBean.academiaServicoValor}" />
+                            <p:menuitem value="Pessoa Jurídica"             action="#{chamadaPaginaBean.pessoaJuridica}"/>
+                            <p:menuitem value="Pessoa Física"               action="#{chamadaPaginaBean.pessoaFisica}"/>
+                            <p:menuitem value="SPC"                         action="#{chamadaPaginaBean.spc()}"/>                            
                             <p:submenu label="Suporte">
                                 <p:menuitem value="Grade Academia"          action="#{chamadaPaginaBean.academiaGrade()}"/>
-                                <p:menuitem value="Modelo Contrato"         action="#{chamadaPaginaBean.contrato}" />
+                                <p:menuitem value="Modelo Contrato"         action="#{chamadaPaginaBean.modeloContrato}" />
                                 <p:menuitem value="Desc. Serviço Empresa"   action="#{chamadaPaginaBean.descontoServicoEmpresa}" title="Desconto Serviço Empresa"/>
+                                <p:menuitem value="Serviços"                action="#{chamadaPaginaBean.servicos()}"/>
+                                <p:menuitem value="Serviço Rotina"          action="#{chamadaPaginaBean.servicoRotina()}"/>                                
                             </p:submenu>                            
                         </p:submenu>
                         <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">  
-                            <p:menuitem value="Agendamento"     action="#{chamadaPaginaBean.agendamento}" />
+                            
                         </p:submenu>
                         <p:submenu label="Relatório" icon="ui-icon-document" style="margin-right: 15px">  
                         </p:submenu>

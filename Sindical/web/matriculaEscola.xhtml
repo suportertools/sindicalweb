@@ -120,7 +120,7 @@
                                     <h:outputLabel value="Turma: " styleClass="fontePadrao" style="width: 100px;" title="Turma"/>
                                     <h:selectOneMenu  id="cbTurma" value="#{matriculaEscolaBean.idTurma}" disabled="#{matriculaEscolaBean.desabilitaIndividual}" >
                                         <f:selectItems value="#{matriculaEscolaBean.listaTurma}"/>
-                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela idVagasD" />
+                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.updateGrid}" render="idTabela idVagasD" />
                                     </h:selectOneMenu>
                                 </h:panelGrid>
                                 <br />
@@ -135,8 +135,7 @@
                                     <h:outputLabel value="Curso:" styleClass="fontePadrao"/>
                                     <h:selectOneMenu  id="cbCursoIndividual" value="#{matriculaEscolaBean.idIndividual}" style="max-width: 300px;" disabled="#{matriculaEscolaBean.desabilitaCampo}">
                                         <f:selectItems value="#{matriculaEscolaBean.listaIndividual}" />
-                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.atualizaValor}" render="idTabela" />
-                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                                        <a4j:ajax event="change" listener="#{matriculaEscolaBean.updateGrid}" render="idTabela" />
                                     </h:selectOneMenu>
                                     <h:outputLabel value="Data Inicío:" styleClass="fontePadrao" for="idDataInicio"/>
                                     <h:column>
@@ -200,8 +199,8 @@
                             </rich:accordionItem>
                         </rich:accordion>
                     </rich:panel>
-                    <rich:panel styleClass="divFundo" style="background: white; margin-bottom: 10px; margin: 0; border: 0;">
-                        <h:panelGrid columns="8" id="idTabela">
+                    <rich:panel styleClass="divFundo" style="background: white; margin-bottom: 10px; margin: 0; border: 0;" id="idTabela">
+                        <h:panelGrid columns="9">
                             <h:column>                                    
                                 <h:outputLabel value="Valor" styleClass="fontePadrao" for="idValor"/>
                             </h:column>
@@ -210,6 +209,9 @@
                             </h:column>
                             <h:column>                                    
                                 <h:outputLabel value="Desc. Vecto" styleClass="fontePadrao" for="idDescontoVencimento"/>
+                            </h:column>
+                            <h:column>                                    
+                                <h:outputLabel value="Desc. Propor." styleClass="fontePadrao" rendered="#{matriculaEscolaBean.descontoProporcional}"/>
                             </h:column>
                             <h:column>                                    
                                 <h:outputLabel value="V. Liquído" styleClass="fontePadrao" for="idValorLiquido"/>
@@ -242,6 +244,9 @@
                                 </h:inputText>
                             </h:column>
                             <h:column>                                    
+                                <h:inputText readonly="true" dir="RTL" id="idDescPro" size="5" maxlength="10" value="#{matriculaEscolaBean.matriculaEscola.valorDescontoProporcional}" title="Desconto proporcional"  rendered="#{matriculaEscolaBean.descontoProporcional}" disabled="true"/>
+                            </h:column>
+                            <h:column>                                    
                                 <h:inputText readonly="true" dir="RTL" id="idValorLiquido" size="5" maxlength="10" value="#{matriculaEscolaBean.valorLiquido}" title="Valor Liquído"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
                             </h:column>
                             <h:column>                                    
@@ -267,6 +272,10 @@
                                 <h:outputText id="idTextoTaxa" value=" -  R$ #{matriculaEscolaBean.valorTaxaString}"  />
                             </h:column>
                         </h:panelGrid>
+                        <h:selectBooleanCheckbox id="idDescontoProporcional" value="#{matriculaEscolaBean.descontoProporcional}" rendered="#{matriculaEscolaBean.showDescontoProporcional}"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                            <a4j:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" render="idTabela" />
+                        </h:selectBooleanCheckbox> 
+                        <h:outputLabel value="Desconto Proporcional" rendered="#{matriculaEscolaBean.showDescontoProporcional}" for="idDescontoProporcional"/>
                     </rich:panel>
                     <rich:panel styleClass="clear" style="border: 0; background: transparent;"></rich:panel>
                     <h:panelGrid>
