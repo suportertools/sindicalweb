@@ -67,6 +67,10 @@ public class MatriculaEscola implements java.io.Serializable {
     private boolean descontoFolha;
     @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean habilitado;
+    @Column(name = "IS_DESCONTO_PROPORCIONAL", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean descontoProporcional;
+    @Column(name = "NR_DESCONTO_PROPORCIONAL")
+    private float valorDescontoProporcional;
 
     public MatriculaEscola() {
         id = -1;
@@ -89,9 +93,11 @@ public class MatriculaEscola implements java.io.Serializable {
         filial = new Filial();
         descontoFolha = false;
         habilitado = true;
+        descontoProporcional = false;
+        valorDescontoProporcional = 0;
     }
 
-    public MatriculaEscola(int id, Date dataMatricula, EscStatus escStatus, Pessoa responsavel, Pessoa aluno, Vendedor vendedor, Midia midia, Evt evt, int numeroParcelas, float desconto, String obs, Date status, EFinanceiro esEFinanceiro, float valorTotal, int diaVencimento, float descontoAteVencimento, FTipoDocumento tipoDocumento, Filial filial, boolean descontoFolha, boolean habilitado) {
+    public MatriculaEscola(int id, Date dataMatricula, EscStatus escStatus, Pessoa responsavel, Pessoa aluno, Vendedor vendedor, Midia midia, Evt evt, int numeroParcelas, float desconto, String obs, Date status, EFinanceiro esEFinanceiro, float valorTotal, int diaVencimento, float descontoAteVencimento, FTipoDocumento tipoDocumento, Filial filial, boolean descontoFolha, boolean habilitado, boolean descontoProporcional, float valorDescontoProporcional) {
         this.id = id;
         this.dataMatricula = dataMatricula;
         this.escStatus = escStatus;
@@ -112,6 +118,8 @@ public class MatriculaEscola implements java.io.Serializable {
         this.filial = filial;
         this.descontoFolha = descontoFolha;
         this.habilitado = habilitado;
+        this.descontoProporcional = descontoProporcional;
+        this.valorDescontoProporcional = valorDescontoProporcional;
     }
 
     public int getId() {
@@ -312,5 +320,21 @@ public class MatriculaEscola implements java.io.Serializable {
 
     public void setHabilitado(boolean habilitado) {
         this.habilitado = habilitado;
+    }
+
+    public boolean isDescontoProporcional() {
+        return descontoProporcional;
+    }
+
+    public void setDescontoProporcional(boolean descontoProporcional) {
+        this.descontoProporcional = descontoProporcional;
+    }
+
+    public float getValorDescontoProporcional() {
+        return valorDescontoProporcional;
+    }
+
+    public void setValorDescontoProporcional(float valorDescontoProporcional) {
+        this.valorDescontoProporcional = valorDescontoProporcional;
     }
 }

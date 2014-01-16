@@ -164,18 +164,18 @@ public class AcordoComissaoDBToplink extends DB implements AcordoComissaoDB {
         try {
             String textQuery =
                     "select DISTINCT ON (bo.id_conta_cobranca,m.ds_documento,p.ds_nome) "
-                    + "                   p.ds_documento as CNPJ, "
-                    + "                   p.ds_nome EMPRESA, "
-                    + "                   m.id_acordo ACORDO, "
-                    + "                   m.ds_documento BOLETO, "
-                    + "                   se.ds_descricao  as CONTRIBUICAO, "
-                    + "                   lb.dt_importacao as IMPORTACAO, "
-                    + "                   lb.dt_baixa   as RECEBTO, "
-                    + "                   m.dt_vencimento  as VENCIMENTO, "
-                    + "                   acc.dt_inicio    as DT_INICIO, "
-                    + "                   m.nr_valor as VLRECEB, "
-                    + "                   m.nr_taxa as TAXA, "
-                    + "                   cc.nr_repasse REPASSE "
+                    + "                   p.ds_documento as CNPJ, "             // 0
+                    + "                   p.ds_nome EMPRESA, "                  // 1
+                    + "                   m.id_acordo ACORDO, "                 // 2
+                    + "                   m.ds_documento BOLETO, "              // 3
+                    + "                   se.ds_descricao  as CONTRIBUICAO, "   // 4    
+                    + "                   lb.dt_importacao as IMPORTACAO, "     // 5
+                    + "                   lb.dt_baixa   as RECEBTO, "           // 6
+                    + "                   m.dt_vencimento  as VENCIMENTO, "     // 7
+                    + "                   acc.dt_inicio    as DT_INICIO, "      // 8
+                    + "                   m.nr_valor_baixa as VLRECEB, "        // 9
+                    + "                   m.nr_taxa AS TAXA, "                  // 10
+                    + "                   cc.nr_repasse AS REPASSE "            // 11
                     + "              from fin_movimento            as m "
                     + "             inner join pes_pessoa          as p   on p.id            = m.id_pessoa "
                     + "             inner join fin_baixa           as lb  on lb.id           = m.id_baixa "

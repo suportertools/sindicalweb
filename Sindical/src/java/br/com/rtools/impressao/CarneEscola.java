@@ -50,8 +50,8 @@ public class CarneEscola {
         this.contrato = "";
         this.curso = "";
         this.vencimento = "";
-        this.valorCurso = null;
-        this.valorParcela = null;
+        this.valorCurso = "";
+        this.valorParcela = "";
         this.usuario = "";
         this.numeroParcela = 0;
         this.hora = "";

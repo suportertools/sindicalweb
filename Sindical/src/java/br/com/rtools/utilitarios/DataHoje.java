@@ -43,10 +43,10 @@ public class DataHoje {
     }
 
     public static String converteData(String data) {
-        if (!data.isEmpty()){
+        if (!data.isEmpty()) {
             DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
             return dateFormat.format(data);
-        }else{
+        } else {
             return "";
         }
     }
@@ -653,11 +653,11 @@ public class DataHoje {
         }
         return idade;
     }
-    
-    public static int quantidadeMeses(Date dataInicial, Date dataFinal) {     
-        final double MES_EM_MILISEGUNDOS = 30.0 * 24.0 * 60.0 * 60.0 * 1000.0;  
+
+    public static int quantidadeMeses(Date dataInicial, Date dataFinal) {
+        final double MES_EM_MILISEGUNDOS = 30.0 * 24.0 * 60.0 * 60.0 * 1000.0;
         //final double MES_EM_MILISEGUNDOS = 2592000000.0;            
-        int numeroDeMeses = (int) (double)((dataFinal.getTime() - dataInicial.getTime()) / MES_EM_MILISEGUNDOS);
+        int numeroDeMeses = (int) (double) ((dataFinal.getTime() - dataInicial.getTime()) / MES_EM_MILISEGUNDOS);
         if (numeroDeMeses <= 0) {
             return 0;
         }
@@ -711,11 +711,22 @@ public class DataHoje {
     }
 
     public static String dataExtenso(String data) {
+        return dataExtenso(data, 0);
+    }
+
+    /**
+     * Tipo
+     *
+     * @param data
+     * @param tipo 0 = dia/mes/ano/ ; 1 = mes/ano ; 2 - ano
+     * @return
+     */
+    public static String dataExtenso(String data, int tipo) {
         String extenso;
         try {
             String dia = data.substring(0, 2);
             String mes = data.substring(3, 5);
-            String ano = data.substring(6, 10);        
+            String ano = data.substring(6, 10);
             switch (Integer.parseInt(dia)) {
                 case 1:
                     dia = "Primeiro";
@@ -849,10 +860,16 @@ public class DataHoje {
                     mes = "Dezembro";
                     break;
             }
-             extenso = dia + " de " + mes + " de " + ano;
+            if (tipo == 2) {
+                extenso = ano;
+            } else if (tipo == 1) {
+                extenso = mes + " de " + ano;
+            } else {
+                extenso = dia + " de " + mes + " de " + ano;
+            }
         } catch (Exception e) {
-             extenso = data;
-            
+            extenso = data;
+
         }
         return extenso;
 

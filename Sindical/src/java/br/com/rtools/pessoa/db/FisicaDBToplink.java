@@ -464,10 +464,14 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  from Fisica f "
                     + " where f.pessoa.id = :pid");
             qry.setParameter("pid", idPessoa);
-            return (Fisica) qry.getSingleResult();
+            List list = qry.getResultList();
+            if(!list.isEmpty()) {
+                return (Fisica) qry.getSingleResult();
+            }
         } catch (Exception e) {
             return null;
         }
+        return null;
     }
 
     @Override

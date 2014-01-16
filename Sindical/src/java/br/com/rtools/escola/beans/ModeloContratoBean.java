@@ -6,15 +6,19 @@ import br.com.rtools.escola.MatriculaContratoServico;
 import br.com.rtools.escola.db.MatriculaContratoDB;
 import br.com.rtools.escola.db.MatriculaContratoDBToplink;
 import br.com.rtools.financeiro.Servicos;
-import br.com.rtools.financeiro.db.ServicosDB;
-import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -22,6 +26,10 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.model.UploadedFile;
 
 @ManagedBean
 @SessionScoped
@@ -33,19 +41,21 @@ public class ModeloContratoBean implements java.io.Serializable {
     private List<MatriculaContrato> matriculaContratos = new ArrayList<MatriculaContrato>();
     private List<MatriculaContratoServico> listaMatriculaContratoServico = new ArrayList<MatriculaContratoServico>();
     private List<MatriculaContratoCampos> listaMatriculaContratoCampos = new ArrayList<MatriculaContratoCampos>();
+    private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
+    private List<SelectItem> listaModulos2 = new ArrayList<SelectItem>();
+    private List listaArquivos = new ArrayList();
     private int idIndexServicos = -1;
     private int idIndex = -1;
     private Modulo modulo = new Modulo();
     private int idModulo = 0;
     private int idModulo2 = 0;
     private int idServicos = 0;
+    private int quantidadeAnexo = 0;    
     private Servicos servicos = new Servicos();
-    private String msg = "";
+    private String mensagem = "";
     private String descricaoPesquisa = "";
     private String msgServico = "";
-    List<SelectItem> listaServicos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaModulos2 = new ArrayList<SelectItem>();
     private boolean desabilitaObservacao = false;
 
     public boolean isDesabilitaObservacao() {
@@ -63,10 +73,11 @@ public class ModeloContratoBean implements java.io.Serializable {
 
     // MATRICULA CONTRATO
     public String novo() {
+        listaServicos.clear();
         idServicos = 0;
         matriculaContrato = new MatriculaContrato();
         idIndex = -1;
-        msg = "";
+        mensagem = "";
         setMsgServico("");
         matriculaContratos.clear();
         servicos = new Servicos();
@@ -78,11 +89,11 @@ public class ModeloContratoBean implements java.io.Serializable {
 
     public void salvar() {
         if (matriculaContrato.getTitulo().equals("")) {
-            msg = "Informar o titulo!";
+            mensagem = "Informar o titulo!";
             return;
         }
         if (matriculaContrato.getDescricao().equals("")) {
-            msg = "Informar a descrição!";
+            mensagem = "Informar a descrição!";
             return;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -96,17 +107,17 @@ public class ModeloContratoBean implements java.io.Serializable {
             matriculaContrato.setModulo(modulo);
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             if (matriculaContratoDB.existeMatriculaContrato(matriculaContrato)) {
-                msg = "Contrato já existe!";
+                mensagem = "Contrato já existe!";
                 return;
             }
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.inserirObjeto(matriculaContrato)) {
                 salvarAcumuladoDB.comitarTransacao();
                 matriculaContratos.clear();
-                msg = "Registro inserido com sucesso.";
+                mensagem = "Registro inserido com sucesso.";
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao inserir o registro!";
+                mensagem = "Falha ao inserir o registro!";
             }
         } else {
             matriculaContrato.setDataAtualizado(DataHoje.data());
@@ -114,10 +125,10 @@ public class ModeloContratoBean implements java.io.Serializable {
             if (salvarAcumuladoDB.alterarObjeto(matriculaContrato)) {
                 salvarAcumuladoDB.comitarTransacao();
                 matriculaContratos.clear();
-                msg = "Registro atualizado com sucesso.";
+                mensagem = "Registro atualizado com sucesso.";
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao atualizar o registro!";
+                mensagem = "Falha ao atualizar o registro!";
             }
         }
     }
@@ -130,7 +141,7 @@ public class ModeloContratoBean implements java.io.Serializable {
             for (int i = 0; i < listaMatriculaContratoServico.size(); i++) {
                 if (!salvarAcumuladoDB.deletarObjeto((MatriculaContratoServico) salvarAcumuladoDB.pesquisaCodigo(listaMatriculaContratoServico.get(i).getId(), "MatriculaContratoServico"))) {
                     salvarAcumuladoDB.desfazerTransacao();
-                    msg = "Falha ao excluir esse registro!";
+                    mensagem = "Falha ao excluir esse registro!";
                     return;
                 }
             }
@@ -138,10 +149,10 @@ public class ModeloContratoBean implements java.io.Serializable {
                 salvarAcumuladoDB.comitarTransacao();
                 matriculaContratos.clear();
                 novo();
-                msg = "Registro excluído com sucesso";
+                mensagem = "Registro excluído com sucesso";
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msg = "Falha ao excluir esse registro!";
+                mensagem = "Falha ao excluir esse registro!";
             }
         }
     }
@@ -168,7 +179,7 @@ public class ModeloContratoBean implements java.io.Serializable {
     }
 
     public void novoMatriculaContratoCampos() {
-        msg = "";
+        mensagem = "";
         idModulo = 0;
         listaMatriculaContratoServico.clear();
         matriculaContratoCampos = new MatriculaContratoCampos();
@@ -255,8 +266,6 @@ public class ModeloContratoBean implements java.io.Serializable {
         if (listaServicos.isEmpty()) {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             List<Servicos> list = (List<Servicos>) matriculaContratoDB.listaServicosDispiniveis();
-            // ServicosDB servicosDB = new ServicosDBToplink();
-            // List list = servicosDB.pesquisaTodos();
             for (int i = 0; i < list.size(); i++) {
                 listaServicos.add(new SelectItem(new Integer(i), (String) (list.get(i)).getDescricao(), Integer.toString((list.get(i)).getId())));
             }
@@ -318,12 +327,12 @@ public class ModeloContratoBean implements java.io.Serializable {
         this.matriculaContrato = matriculaContrato;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public int getIdIndex() {
@@ -335,6 +344,7 @@ public class ModeloContratoBean implements java.io.Serializable {
     }
 
     public List<MatriculaContrato> getMatriculaContratos() {
+        matriculaContratos.clear();
         if (matriculaContratos.isEmpty()) {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             if (getModulo().getId() != -1) {
@@ -502,5 +512,100 @@ public class ModeloContratoBean implements java.io.Serializable {
 
     public void setDescricaoPesquisa(String descricaoPesquisa) {
         this.descricaoPesquisa = descricaoPesquisa;
+    }
+    
+    public void upload(FileUploadEvent event) {
+        if (matriculaContrato.getId() != -1) {
+            UploadedFile file = event.getFile();
+            HttpServletRequest request = null;
+            if (file.getFileName() == null) {
+                return;
+            }
+            String cliente = "";
+            String caminho = "";
+            if (GenericaSessao.exists("sessaoCliente")) {
+                cliente = GenericaSessao.getString("sessaoCliente");
+            }
+            caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + cliente + "/Arquivos/");
+            if (!new File(caminho).exists()) {
+                File fl2 = new File(caminho);
+                fl2.mkdir();
+            }
+            if (!new File(caminho + "//").exists()) {
+                File fl2 = new File(caminho + "/contrato/");
+                fl2.mkdir();
+            }
+            if (!new File(caminho + "/contrato/" + matriculaContrato.getId() + "/").exists()) {
+                File fl2 = new File(caminho + "/contrato/" + matriculaContrato.getId() + "/");
+                fl2.mkdir();
+            }
+            try {
+                File fl = new File(caminho + "/contrato/" + matriculaContrato.getId() + "/" + file.getFileName());
+                InputStream in = file.getInputstream();
+                FileOutputStream out = new FileOutputStream(fl.getPath());
+                byte[] buf = new byte[(int) file.getSize()];
+                int count;
+                while ((count = in.read(buf)) >= 0) {
+                    out.write(buf, 0, count);
+                }
+                in.close();
+                out.flush();
+                out.close();
+                listaArquivos.clear();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+            
+        }
+    }    
+    
+    public void excluirArquivo(int index) {
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"+matriculaContrato.getId()+"/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1());
+        File fl = new File(caminho);
+        fl.delete();
+        listaArquivos.remove(index);
+        listaArquivos.clear();
+        getListaArquivos();
+    }    
+
+    public List getListaArquivos() {
+        if (matriculaContrato.getId() != -1) {
+            if (listaArquivos.isEmpty()) {
+                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"+matriculaContrato.getId()+"/");
+                try {
+                    File files = new File(caminho);
+                    if (!files.exists()) {
+                        return new ArrayList();
+                    }
+                    File listFile[] = files.listFiles();
+                    int numArq = listFile.length;
+                    int i = 0;
+                    while (i < numArq) {
+                        listaArquivos.add(new DataObject(listFile[i], listFile[i].getName(), i));
+                        i++;
+                    }
+                    if (listaArquivos.size() > 0) {
+                        setQuantidadeAnexo(listaArquivos.size());
+                    } else {
+                        setQuantidadeAnexo(0);
+                    }
+                } catch (Exception e) {
+                    return new ArrayList();
+                }
+            }
+        }
+        return listaArquivos;
+    }
+
+    public void setListaArquivos(List listaArquivos) {
+        this.listaArquivos = listaArquivos;
+    }
+
+    public int getQuantidadeAnexo() {
+        return quantidadeAnexo;
+    }
+
+    public void setQuantidadeAnexo(int quantidadeAnexo) {
+        this.quantidadeAnexo = quantidadeAnexo;
     }
 }
