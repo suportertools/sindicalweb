@@ -1,49 +1,41 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Pesquisa Modelo Contrato</title>
+        <title>Pesquisa Modelo Contrato - #{modeloContratoBean.modulo.descricao}</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaContratoEscola">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisa Modelo Contrato" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae">
-                        <div style="border-left: 1px solid #efefef; padding-left: 15px; margin-top: 30px;">
-                            <rich:dataTable value="#{modeloContratoBean.matriculaContratos}" var="linha" style="width: 95%;" id="tbl">
-                                <rich:column style="width: 80px;">
-                                    <f:facet name="header">
-                                            <h:outputText value="Data Cadastro"/>
-                                    </f:facet>
-                                    <a4j:commandLink value="#{linha.dataCadastro}" action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
-                                </rich:column>
-                                <rich:column>
-                                    <f:facet name="header">
-                                            <h:outputText value="Titulo"/>
-                                    </f:facet>
-                                    <a4j:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
-                                </rich:column>
-                            </rich:dataTable>
-                        </div>
-                    </div>
-                </center>
-                
-            </h:form>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_pesquisa_modelo_contrato">
+                    <p:outputLabel value="Pesquisa Modelo Contrato - #{modeloContratoBean.modulo.descricao}" styleClass="fonteHeader"/>
+                    <c:set scope="request" var="object" value="${modeloContratoBean.matriculaContrato}"/>
+                    
+                    <div class="clear"></div>
+                    <p:dataTable value="#{modeloContratoBean.matriculaContratos}" var="linha" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado!">
+                        <f:facet name="footer">
+                            Selecione um modelo de contrato
+                        </f:facet>
+                        <p:column headerText="Cadastro" styleClass="text-center" width="80" >
+                            <p:commandLink value="#{linha.dataCadastro}" action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
+                        </p:column>
+                        <p:column headerText="Atualizado" styleClass="text-center" width="80" >
+                            <p:commandLink value="#{linha.dataAtualizado}" action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
+                        </p:column>
+                        <p:column headerText="Título" >
+                            <p:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover" style="text-transform: uppercase"/>
+                        </p:column>
+                    </p:dataTable>                     
+                </h:form>                    
+            </p:panel>                    
         </f:view>
     </h:body>
 </ui:composition>
