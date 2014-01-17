@@ -43,3 +43,10 @@ CREATE OR REPLACE VIEW pes_pessoa_vw AS
 ALTER TABLE pes_pessoa_vw
 
   OWNER TO postgres;
+
+
+
+ALTER TABLE fin_servico_pessoa
+  ADD CONSTRAINT fk_fin_servico_pessoa_id_responsavel FOREIGN KEY (id_responsavel)
+      REFERENCES pes_pessoa (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
