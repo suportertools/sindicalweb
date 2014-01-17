@@ -1,4 +1,4 @@
-package br.com.rtools.escola.beans; 
+package br.com.rtools.escola.beans;
 
 import br.com.rtools.escola.MatriculaContrato;
 import br.com.rtools.escola.MatriculaContratoCampos;
@@ -9,12 +9,15 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Upload;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,7 +54,7 @@ public class ModeloContratoBean implements java.io.Serializable {
     private int idModulo = 0;
     private int idModulo2 = 0;
     private int idServicos = 0;
-    private int quantidadeAnexo = 0;    
+    private int quantidadeAnexo = 0;
     private Servicos servicos = new Servicos();
     private String mensagem = "";
     private String descricaoPesquisa = "";
@@ -513,85 +516,36 @@ public class ModeloContratoBean implements java.io.Serializable {
     public void setDescricaoPesquisa(String descricaoPesquisa) {
         this.descricaoPesquisa = descricaoPesquisa;
     }
-    
+
     public void upload(FileUploadEvent event) {
         if (matriculaContrato.getId() != -1) {
-            UploadedFile file = event.getFile();
-            HttpServletRequest request = null;
-            if (file.getFileName() == null) {
-                return;
-            }
-            String cliente = "";
-            String caminho = "";
-            if (GenericaSessao.exists("sessaoCliente")) {
-                cliente = GenericaSessao.getString("sessaoCliente");
-            }
-            caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + cliente + "/Arquivos/");
-            if (!new File(caminho).exists()) {
-                File fl2 = new File(caminho);
-                fl2.mkdir();
-            }
-            if (!new File(caminho + "//").exists()) {
-                File fl2 = new File(caminho + "/contrato/");
-                fl2.mkdir();
-            }
-            if (!new File(caminho + "/contrato/" + matriculaContrato.getId() + "/").exists()) {
-                File fl2 = new File(caminho + "/contrato/" + matriculaContrato.getId() + "/");
-                fl2.mkdir();
-            }
-            try {
-                File fl = new File(caminho + "/contrato/" + matriculaContrato.getId() + "/" + file.getFileName());
-                InputStream in = file.getInputstream();
-                FileOutputStream out = new FileOutputStream(fl.getPath());
-                byte[] buf = new byte[(int) file.getSize()];
-                int count;
-                while ((count = in.read(buf)) >= 0) {
-                    out.write(buf, 0, count);
-                }
-                in.close();
-                out.flush();
-                out.close();
+            ConfiguracaoUpload cu = new ConfiguracaoUpload();
+            cu.setArquivo(event.getFile().getFileName());
+            cu.setDiretorio("Arquivos/contrato/" + matriculaContrato.getId());
+            cu.setEvent(event);
+            if (Upload.enviar(cu, true)) {
                 listaArquivos.clear();
-            } catch (IOException e) {
-                System.out.println(e);
             }
-            
         }
-    }    
-    
+    }
+
     public void excluirArquivo(int index) {
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"+matriculaContrato.getId()+"/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1());
-        File fl = new File(caminho);
-        fl.delete();
-        listaArquivos.remove(index);
-        listaArquivos.clear();
-        getListaArquivos();
-    }    
+        if(Diretorio.remover("Arquivos/contrato/" + matriculaContrato.getId() + "/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1())) {
+            listaArquivos.remove(index);
+            listaArquivos.clear();
+            getListaArquivos();
+        }
+    }
 
     public List getListaArquivos() {
         if (matriculaContrato.getId() != -1) {
             if (listaArquivos.isEmpty()) {
-                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"+matriculaContrato.getId()+"/");
-                try {
-                    File files = new File(caminho);
-                    if (!files.exists()) {
-                        return new ArrayList();
-                    }
-                    File listFile[] = files.listFiles();
-                    int numArq = listFile.length;
-                    int i = 0;
-                    while (i < numArq) {
-                        listaArquivos.add(new DataObject(listFile[i], listFile[i].getName(), i));
-                        i++;
-                    }
-                    if (listaArquivos.size() > 0) {
-                        setQuantidadeAnexo(listaArquivos.size());
-                    } else {
-                        setQuantidadeAnexo(0);
-                    }
-                } catch (Exception e) {
-                    return new ArrayList();
-                }
+                listaArquivos = Diretorio.listaArquivos("Arquivos/contrato/" + matriculaContrato.getId());
+                if (listaArquivos.size() > 0) {
+                    setQuantidadeAnexo(listaArquivos.size());
+                } else {
+                    setQuantidadeAnexo(0);
+                }                
             }
         }
         return listaArquivos;
