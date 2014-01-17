@@ -11,7 +11,7 @@ public class ConfiguracaoUpload {
     public ConfiguracaoUpload() {
         this.diretorio = "";
         this.arquivo = "";
-        this.event = new FileUploadEvent(null, null);
+        this.event = null;
     }
 
     public ConfiguracaoUpload(int id, String diretorio, String arquivo, FileUploadEvent event) {

@@ -10,13 +10,16 @@ import br.com.rtools.pessoa.db.EnviarArquivosDB;
 import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.sistema.Mensagem;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Upload;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -457,14 +460,29 @@ public class EnviarArquivosBean implements Serializable {
     }
 
     public void uploadContribuinte(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
-        upload("ArquivoContribuinte", file);
-        getListaArquivosContribuinte();
+        ConfiguracaoUpload configuracaoUpload = new ConfiguracaoUpload();
+        configuracaoUpload.setArquivo(event.getFile().getFileName());
+        configuracaoUpload.setDiretorio("Arquivos/Pendentes/ArquivoContribuinte");
+        configuracaoUpload.setEvent(event);
+        if(Upload.enviar(configuracaoUpload, true)) {
+            listaArquivos.clear();
+        }
+//        UploadedFile file = event.getFile();
+//        upload("ArquivoContribuinte", file);
+        getListaArquivosContabilidade();
     }
 
     public void uploadContabilidade(FileUploadEvent event) {
-        UploadedFile file = event.getFile();
-        upload("ArquivoContabilidade", file);
+        ConfiguracaoUpload configuracaoUpload = new ConfiguracaoUpload();
+        configuracaoUpload.setArquivo(event.getFile().getFileName());
+        configuracaoUpload.setDiretorio("Arquivos/Pendentes/ArquivoContabilidade");
+        configuracaoUpload.setEvent(event);
+        Upload.enviar(configuracaoUpload);
+        if(Upload.enviar(configuracaoUpload)) {
+            listaArquivos.clear();
+        }        
+//        UploadedFile file = event.getFile();
+//        upload("ArquivoContabilidade", file);
         getListaArquivosContabilidade();
     }
 

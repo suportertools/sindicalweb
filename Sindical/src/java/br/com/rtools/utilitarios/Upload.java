@@ -5,14 +5,33 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import javax.faces.context.FacesContext;
+import javax.servlet.ServletContext;
 
 public class Upload {
 
     public static boolean enviar(ConfiguracaoUpload cu) {
+        return enviar(cu, false);
+    }
+
+    public static boolean enviar(ConfiguracaoUpload cu, boolean criarDiretorios) {
         if (cu.getEvent().getFile().getFileName() == null) {
             return false;
         }
-        String diretorio = cu.getDiretorio();
+        String cliente = "";
+        if (GenericaSessao.exists("sessaoCliente")) {
+            cliente = GenericaSessao.getString("sessaoCliente");
+            if (cliente.equals("")) {
+                return false;
+            }
+        }        
+        String diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + cliente + "/" + cu.getDiretorio());
+        if (criarDiretorios) {
+            if (diretorio.equals("")) {
+                return false;
+            }
+            Diretorio.criar(cu.getDiretorio());
+        }
         try {
             File file = new File(diretorio + "/" + cu.getEvent().getFile().getFileName());
             InputStream in = cu.getEvent().getFile().getInputstream();
