@@ -13,7 +13,7 @@ public class ConfiguracaoUpload {
     private int alturaMaxima;
     private int larguraMaxima;
     private List tiposPermitidos;
-    
+
     public ConfiguracaoUpload() {
         this.diretorio = "";
         this.arquivo = "";
@@ -23,7 +23,7 @@ public class ConfiguracaoUpload {
         this.larguraMaxima = 0;
         this.tiposPermitidos = new ArrayList();
     }
-    
+
     public ConfiguracaoUpload(String diretorio, String arquivo, FileUploadEvent event, int tamanhoMaximo, int alturaMaxima, int larguraMaxima, List tiposPermitidos) {
         this.diretorio = diretorio;
         this.arquivo = arquivo;
@@ -32,8 +32,7 @@ public class ConfiguracaoUpload {
         this.alturaMaxima = alturaMaxima;
         this.larguraMaxima = larguraMaxima;
         this.tiposPermitidos = tiposPermitidos;
-    }    
-
+    }
 
     public String getDiretorio() {
         return diretorio;
