@@ -1361,8 +1361,7 @@ public class MatriculaEscolaBean implements Serializable {
                     pessoaResponsavelMemoria = responsavel;
                 }
             }
-        }
-        verificaDebitosResponsavel(matriculaEscola.getResponsavel());
+        }        
         return aluno;
     }
 
@@ -1876,21 +1875,22 @@ public class MatriculaEscolaBean implements Serializable {
         } else {
             desabilitaGeracaoContrato = false;
         }
-        JuridicaDB juridicaDB = new JuridicaDBToplink();
-        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaEscola.getResponsavel().getId());
-        if (juridicas != null) {
-            if (juridicas.getId() != -1) {
-                desabilitaDescontoFolha = false;
-                ocultaDescontoFolha = false;
-            } else {
-                desabilitaDescontoFolha = true;
-                ocultaDescontoFolha = true;
-            }
-        } else {
-            desabilitaDescontoFolha = true;
-            ocultaDescontoFolha = true;
-        }
-        verificaSeContribuinteInativo();
+////        JuridicaDB juridicaDB = new JuridicaDBToplink();
+////        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaEscola.getResponsavel().getId());
+////        if (juridicas != null) {
+////            if (juridicas.getId() != -1) {
+////                desabilitaDescontoFolha = false;
+////                ocultaDescontoFolha = false;
+////            } else {
+////                desabilitaDescontoFolha = true;
+////                ocultaDescontoFolha = true;
+////            }
+////        } else {
+////            desabilitaDescontoFolha = true;
+////            ocultaDescontoFolha = true;
+////        }
+////        verificaSeContribuinteInativo();
+////        verificaDebitosResponsavel(matriculaEscola.getResponsavel());
         return matriculaEscola;
     }
 
