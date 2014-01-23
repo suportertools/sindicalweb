@@ -120,6 +120,12 @@
                             <p:column headerText="Vagas" width="50"  styleClass="text-center">
                                 <p:outputLabel value="#{agrupaTurma.turma.quantidade}" />
                             </p:column>
+                            <p:column headerText="Período" >
+                                <p:outputLabel value="#{agrupaTurma.turma.dataInicio} até #{agrupaTurma.turma.dataTermino}" />
+                            </p:column>
+                            <p:column headerText="Horário" >
+                                <p:outputLabel value="#{agrupaTurma.turma.horaInicio} às #{agrupaTurma.turma.horaTermino} hr(s)" />
+                            </p:column>                            
                             <p:column width="30">
                                 <p:commandButton icon="ui-icon-trash" disabled="#{controleAcessoBean.botaoExcluir}" action="#{agrupaTurmaBean.remover(agrupaTurma)}" update=":form_agrupa_turma:i_grupos :form_agrupa_turma:i_itens_agrupados" title="Remover grupo"/>
                             </p:column>

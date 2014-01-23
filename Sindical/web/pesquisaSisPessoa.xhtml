@@ -1,0 +1,67 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Pesquisar Pessoas</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper" style="border: 0px;">
+                <h:form id="form_pesquisa_sis_pessoa">
+                
+                    <h:outputText value="Pesquisa Pessoas" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                        <h:panelGrid columns="4">
+                            <p:inputMask value="#{sisPessoaBean.descPesquisa}" size="50" mask="#{pessoaBean.mascaraPesquisa}"/>
+                            <p:selectOneMenu value="#{sisPessoaBean.porPesquisa}">
+                                <p:ajax event="change" update="i_panel_pesquisa" />
+                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                            <f:selectItem itemValue="cnpj"     itemLabel="CNPJ"/>
+                            <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                            <f:selectItem itemValue="telefone" itemLabel="Telefone"/>
+                            </p:selectOneMenu>                        
+                            <p:commandButton value="Inicial" action="#{sisPessoaBean.acaoPesquisaInicial}" update=":form_grid_pesquisa_sis_pessoa:i_panel_grid" />
+                            <p:commandButton value="Parcial" action="#{sisPessoaBean.acaoPesquisaParcial}" update=":form_grid_pesquisa_sis_pessoa:i_panel_grid" />
+                        </h:panelGrid>
+                        <p:focus for="i_panel_pesquisa" />
+                    </p:panel>
+                </h:form>
+            </p:panel>
+            <p:panel style="margin: auto 0;">
+                <h:form id="form_grid_pesquisa_sis_pessoa">
+                    <h:panelGrid id="i_panel_grid" style="width: 100%">
+                        <p:dataTable value="#{sisPessoaBean.listaSisPessoa}" var="sisPessoa" id="tbl" emptyMessage="Nenhuma registro encontrado" scrollHeight="400" scrollable="true">
+                            <p:column headerText="ID" styleClass="text-center" width="50">
+                                <p:commandLink action="#{sisPessoaBean.editar(sisPessoa)}" value="#{sisPessoa.id}"/>
+                            </p:column>
+                            <p:column headerText="Nome">
+                                <p:commandLink action="#{sisPessoaBean.editar(sisPessoa)}" value="#{sisPessoa.nome}"/>
+                            </p:column>
+                            <p:column headerText="Documento" width="120" styleClass="text-center">
+                                <p:commandLink action="#{sisPessoaBean.editar(sisPessoa)}" value="#{sisPessoa.documento}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Documento" width="100" styleClass="text-center">
+                                #{sisPessoa.tipoDocumento.descricao}
+                            </p:column>
+                            <p:column headerText="Telefone" width="100" styleClass="text-center">
+                                <h:outputText value="#{sisPessoa.telefone}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+            </p:panel>
+        </f:view>        
+        <f:subview id="footer">
+            <ui:include src="templateFooter.xhtml"/>
+        </f:subview>
+    </h:body>
+</ui:composition>

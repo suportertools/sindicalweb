@@ -6,7 +6,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.persistence.Query;
 
 public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
@@ -278,7 +277,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     @Override
     public boolean executeQueryVetor(String textQuery) {
         try {
-            List<Vector> valor = getEntityManager().createNativeQuery(textQuery).getResultList();
+            List<List> valor = getEntityManager().createNativeQuery(textQuery).getResultList();
             if ((Integer)valor.get(0).get(0) > 0) {
                 return true;
             } else {

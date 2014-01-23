@@ -2,7 +2,7 @@ package br.com.rtools.atendimento.beans;
 
 import br.com.rtools.atendimento.AteMovimento;
 import br.com.rtools.atendimento.AteOperacao;
-import br.com.rtools.atendimento.AtePessoa;
+import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
 import br.com.rtools.pessoa.Filial;
@@ -32,7 +32,7 @@ public class AtendimentoBean {
 
     private AteOperacao ateOperacao = new AteOperacao();
     private AteMovimento ateMovimento = new AteMovimento();
-    private AtePessoa atePessoa = new AtePessoa();
+    private SisPessoa atePessoa = new SisPessoa();
     private String porPesquisa = "hoje";
     Pessoa pessoa = new Pessoa();
     Fisica fisica = new Fisica();
@@ -46,7 +46,7 @@ public class AtendimentoBean {
     private String msgCPF = "";
     private String msgErro = "";
     private List<AteMovimento> listaAteMovimento = new ArrayList();
-    private List<AtePessoa> listaAtePessoas = new ArrayList();
+    private List<SisPessoa> listaAtePessoas = new ArrayList();
     private int idFilial = 0;
     private int idOperacao = 0;
     private List<SelectItem> listaAtendimentoOperacoes = new ArrayList<SelectItem>();
@@ -69,7 +69,7 @@ public class AtendimentoBean {
         setHoraEmissaoString("");
         pessoa = new Pessoa();
         fisica = new Fisica();
-        atePessoa = new AtePessoa();
+        atePessoa = new SisPessoa();
         ateMovimento = new AteMovimento();
         ateMovimento.setFilial(filial);
         getListaAtendimentoOperacoes().clear();
@@ -99,13 +99,13 @@ public class AtendimentoBean {
             msg = "Informar a Filial!";
             return null;
         }
-        if (ateMovimento.getPessoa().getCPF().equals("___.___.___-__") || ateMovimento.getPessoa().getCPF().length() < 14 || ateMovimento.getPessoa().getCPF().equals("")) {
+        if (ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") || ateMovimento.getPessoa().getDocumento().length() < 14 || ateMovimento.getPessoa().getDocumento().equals("")) {
             msg = "Informar o CPF!";
         } else {
             isMostraDocumento = true;
         }
-        if (!ateMovimento.getPessoa().getCPF().equals("___.___.___-__") && !ateMovimento.getPessoa().getCPF().equals("")) {
-            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getCPF()))) {
+        if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && !ateMovimento.getPessoa().getDocumento().equals("")) {
+            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
                 setMsgCPF("CPF inválido!");
                 return null;
             }
@@ -125,14 +125,14 @@ public class AtendimentoBean {
             msg = "Informar o nome da pessoa!";
             return null;
         }
-        AtePessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getCPF());
+        SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
         if (ap == null) {
             ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getRg());
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (ap != null) {
             if (ateMovimento.getId() > 0 || ap.getId() > 0) {
-                if (!ap.getNome().equals(ateMovimento.getPessoa().getNome()) || !ap.getTelefone().equals(ateMovimento.getPessoa().getTelefone()) || !ap.getRg().equals(ateMovimento.getPessoa().getRg()) || !ap.getCPF().equals(ateMovimento.getPessoa().getCPF())) {
+                if (!ap.getNome().equals(ateMovimento.getPessoa().getNome()) || !ap.getTelefone().equals(ateMovimento.getPessoa().getTelefone()) || !ap.getRg().equals(ateMovimento.getPessoa().getRg()) || !ap.getDocumento().equals(ateMovimento.getPessoa().getDocumento())) {
                     salvarAcumuladoDB.abrirTransacao();
                     if (ateMovimento.getPessoa().getId() == -1) {
                         ateMovimento.getPessoa().setId(ap.getId());
@@ -194,8 +194,8 @@ public class AtendimentoBean {
     }
 
     public String atualizarPessoa() {
-        if (!ateMovimento.getPessoa().getCPF().equals("___.___.___-__") && !ateMovimento.getPessoa().getCPF().equals("")) {
-            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getCPF()))) {
+        if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && !ateMovimento.getPessoa().getDocumento().equals("")) {
+            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
                 msg = "CPF inválido!";
                 return null;
             }
@@ -209,7 +209,7 @@ public class AtendimentoBean {
         setBtnEditaPessoa(true);
         setDesabilitaCamposPessoa(false);
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
-        AtePessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getCPF());
+        SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
         if (ap == null) {
             ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getRg());
         }
@@ -229,7 +229,7 @@ public class AtendimentoBean {
             }
         } else {
             if (ateMovimento.getPessoa().getId() != -1 || ap.getId() != -1) {
-                if (!ap.getNome().equals(ateMovimento.getPessoa().getNome()) || !ap.getTelefone().equals(ateMovimento.getPessoa().getTelefone()) || !ap.getRg().equals(ateMovimento.getPessoa().getRg()) || !ap.getCPF().equals(ateMovimento.getPessoa().getCPF())) {
+                if (!ap.getNome().equals(ateMovimento.getPessoa().getNome()) || !ap.getTelefone().equals(ateMovimento.getPessoa().getTelefone()) || !ap.getRg().equals(ateMovimento.getPessoa().getRg()) || !ap.getDocumento().equals(ateMovimento.getPessoa().getDocumento())) {
                     salvarAcumuladoDB.abrirTransacao();
                     if (ateMovimento.getPessoa().getId() == -1) {
                         ateMovimento.getPessoa().setId(ap.getId());
@@ -300,7 +300,7 @@ public class AtendimentoBean {
     public String verificaPessoaOposicao() {
         setMsgOposicao("");
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
-        if (atendimentoDB.pessoaOposicao(ateMovimento.getPessoa().getCPF())) {
+        if (atendimentoDB.pessoaOposicao(ateMovimento.getPessoa().getDocumento())) {
             setMsgOposicao("Pessoa cadastrada em oposição");
         }
         return "atendimento";
@@ -311,10 +311,10 @@ public class AtendimentoBean {
             return null;
         }
         String valorPesquisa = "";
-        int count = ateMovimento.getPessoa().getCPF().length();
+        int count = ateMovimento.getPessoa().getDocumento().length();
         if (tipoVerificacao.equals("cpf")) {
-            if (!ateMovimento.getPessoa().getCPF().equals("___.___.___-__") && count == 14 && !ateMovimento.getPessoa().getCPF().equals("")) {
-                if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getCPF()))) {
+            if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && count == 14 && !ateMovimento.getPessoa().getDocumento().equals("")) {
+                if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(ateMovimento.getPessoa().getDocumento()))) {
                     setMsgCPF("CPF inválido!");
                     return null;
                 } else {
@@ -324,7 +324,7 @@ public class AtendimentoBean {
                 setMsgCPF("");
                 return null;
             }
-            valorPesquisa = ateMovimento.getPessoa().getCPF();
+            valorPesquisa = ateMovimento.getPessoa().getDocumento();
         } else if (tipoVerificacao.equals("rg")) {
             if (ateMovimento.getPessoa().getRg().equals("")) {
                 return null;
@@ -334,15 +334,15 @@ public class AtendimentoBean {
             }
             valorPesquisa = ateMovimento.getPessoa().getRg();
         }
-        if (!ateMovimento.getPessoa().getCPF().equals("___.___.___-__") && count == 14 || !ateMovimento.getPessoa().getRg().equals("")) {
+        if (!ateMovimento.getPessoa().getDocumento().equals("___.___.___-__") && count == 14 || !ateMovimento.getPessoa().getRg().equals("")) {
             PessoaDB db = new PessoaDBToplink();
             pessoa = (Pessoa) db.pessoaDocumento(valorPesquisa);
             if (pessoa != null) {
                 ateMovimento.getPessoa().setNome(pessoa.getNome());
-                ateMovimento.getPessoa().setCPF(pessoa.getDocumento());
+                ateMovimento.getPessoa().setDocumento(pessoa.getDocumento());
                 ateMovimento.getPessoa().setTelefone(pessoa.getTelefone1());
                 if (!ateMovimento.getPessoa().getTelefone().equals("(__) ____-____")) {
-                    ateMovimento.getPessoa().setCPF(pessoa.getDocumento());
+                    ateMovimento.getPessoa().setDocumento(pessoa.getDocumento());
                 }
                 FisicaDB fisicaDB = new FisicaDBToplink();
                 fisica = (Fisica) fisicaDB.pesquisaFisicaPorPessoa(pessoa.getId());
@@ -355,7 +355,7 @@ public class AtendimentoBean {
                 setDesabilitaCamposPessoa(true);
             } else {
                 AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
-                AtePessoa atePessoaB = (AtePessoa) atendimentoDB.pessoaDocumento(valorPesquisa);
+                SisPessoa atePessoaB = (SisPessoa) atendimentoDB.pessoaDocumento(valorPesquisa);
                 setMsgCPF("");
                 if (ateMovimento == null || atePessoaB.getId() == -1) {
 //                    AtePessoa atePes = new AtePessoa();
@@ -433,11 +433,11 @@ public class AtendimentoBean {
         this.ateMovimento = ateMovimento;
     }
 
-    public AtePessoa getAtePessoa() {
+    public SisPessoa getAtePessoa() {
         return atePessoa;
     }
 
-    public void setAtePessoa(AtePessoa atePessoa) {
+    public void setAtePessoa(SisPessoa atePessoa) {
         this.atePessoa = atePessoa;
     }
 
@@ -501,11 +501,11 @@ public class AtendimentoBean {
         this.listaAteMovimento = listaAteMovimento;
     }
 
-    public List<AtePessoa> getListaAtePessoas() {
+    public List<SisPessoa> getListaAtePessoas() {
         return listaAtePessoas;
     }
 
-    public void setListaAtePessoas(List<AtePessoa> listaAtePessoas) {
+    public void setListaAtePessoas(List<SisPessoa> listaAtePessoas) {
         this.listaAtePessoas = listaAtePessoas;
     }
 

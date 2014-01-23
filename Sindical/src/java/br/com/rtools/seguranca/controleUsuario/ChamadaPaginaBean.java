@@ -504,7 +504,7 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
         return metodoGenerico(2, "academia");
     }
-    
+
     public synchronized String academiaGrade() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("academiaGradeBean");
         return metodoGenerico(2, "academiaGrade");
@@ -755,34 +755,64 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioBean");
         return metodoGenerico(2, "usuarioPerfil");
     }
-    
+
     public synchronized String alterarMovimento() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("alterarMovimentoBean");
         return metodoGenerico(2, "alterarMovimento");
     }
-    
+
     public synchronized String spc() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("spcBean");
         return metodoGenerico(2, "spc");
     }
-    
+
     public synchronized String caixa() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("caixaBean");
         return metodoGenerico(2, "caixa");
     }
-    
+
     public synchronized String agrupaTurma() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("turmaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agrupaTurmaBean");
         return metodoGenerico(2, "agrupaTurma");
     }
-    
-    
+
+    public synchronized String conviteMovimento() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteClubeBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteMovimentoBean");
+        return metodoGenerico(2, "conviteMovimento");
+    }
+
+    public synchronized String conviteServico() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteServicoBean");
+        return metodoGenerico(2, "conviteServico");
+    }
+
+    public synchronized String conviteSuspencao() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteSuspencaoBean");
+        return metodoGenerico(2, "conviteSuspencao");
+    }
+
+    public synchronized String conviteAutorizaCortesia() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteAutorizaCortesiaBean");
+        return metodoGenerico(2, "conviteAutorizaCortesia");
+    }
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     public synchronized String simples() {
+        return metodoGenerico(2, "simples");
+    }
+
+    public synchronized String conviteMotivoSuspencao() {
+        String[] lista = new String[]{"ConviteMotivoSuspencao", "Convite Motivo Suspencao"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
         return metodoGenerico(2, "simples");
     }
 
@@ -952,13 +982,13 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
-    
+
     public synchronized String movimentosReceberSocialBaixa() {
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosSocialBean");
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
-    
+
     public synchronized String academiaServicoValor() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("academiaServicoValorBean");
         return metodoGenerico(2, "academiaServicoValor");
@@ -984,6 +1014,10 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String pesquisaPessoa() {
         return metodoGenerico(1, "pesquisaPessoa");
+    }
+
+    public synchronized String pesquisaSisPessoa() {
+        return metodoGenerico(1, "pesquisaSisPessoa");
     }
 
     public synchronized String pesquisaUsuario() {
@@ -1300,11 +1334,11 @@ public class ChamadaPaginaBean implements Serializable {
     public String getControleLinksX() {
         String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
         String linkAtual = converteURL(urlDestino);
-        String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");        
+        String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         getControleLinksX(urlDestino, linkAtual, linkTeste);
         return null;
     }
-    
+
     public void getControleLinksX(String urlDestino, String linkAtual, String linkTeste) {
         try {
 //            String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();

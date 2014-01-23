@@ -59,9 +59,7 @@
                                 <f:selectItems value="#{matriculaEscolaBean.listaFTipoDocumento}" var="fTipoDocumento" itemLabel="#{fTipoDocumento.descricao}" itemValue="#{fTipoDocumento.id}"/>
                             </h:selectOneMenu>                                
                         </h:column>
-                        <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
-                            <a4j:ajax event="click" listener="#{matriculaEscolaBean.pesquisaFisica('aluno')}" />
-                        </a4j:commandButton>
+                        <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('aluno')}" immediate="true"/>
                         <h:column>
                             <h:outputLabel value=" Pesquisar Aluno " styleClass="fontePadrao" style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id == -1}" for="idPesquisarAluno"/>
                             <h:outputText id="idAluno" value=" Aluno: #{matriculaEscolaBean.matriculaEscola.aluno.nome}" styleClass="fontePadrao" style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" />
@@ -82,11 +80,9 @@
                         <h:column>
                             <h:outputText id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" styleClass="fontePadrao"/>
                             <h:outputText value=" - Pesquisar outro responsável - Pessoa Física: " styleClass="fontePadrao"  rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" />
-                            <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" >
-                                <a4j:ajax event="click" listener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
-                            </a4j:commandButton>
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
                             <h:outputText value=" - Pessoa Jurídica: " styleClass="fontePadrao"  rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" />
-                            <a4j:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                            <h:commandButton image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" style="width: 15px; height: 15px;"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
                         </h:column>
                         <h:column>
                             <br />

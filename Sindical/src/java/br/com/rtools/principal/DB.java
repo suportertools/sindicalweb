@@ -13,7 +13,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import oracle.toplink.essentials.config.CacheType;
 import oracle.toplink.essentials.config.TopLinkProperties;
-import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
+// import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 
 public class DB {
 
@@ -69,8 +69,12 @@ public class DB {
                     return null;
                 }
             } else {
-                EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
-                entidade = emf.createEntityManager();
+                try {
+                    EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
+                    entidade = emf.createEntityManager();                    
+                } catch (Exception e) {
+                    return null;
+                }
             }
         }
         return entidade;
