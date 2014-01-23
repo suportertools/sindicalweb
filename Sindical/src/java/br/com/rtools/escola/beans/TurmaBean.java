@@ -130,6 +130,12 @@ public class TurmaBean implements Serializable {
     public String editar(Turma t) throws ParseException {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         Turma turmaC = (Turma) dB.pesquisaCodigo(t.getId(), "Turma");
+        for (int i = 0; i < listaServicos.size(); i++) {
+            if (Integer.parseInt(listaServicos.get(i).getDescription()) == t.getCursos().getId()) {
+                idServicos = i;
+                break;
+            }
+        }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("turmaPesquisa", turmaC);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         SimpleDateFormat formatador = new SimpleDateFormat("HH:mm");
@@ -208,7 +214,7 @@ public class TurmaBean implements Serializable {
         idComponenteCurricular = 0;
         listaTurmaProfessor.clear();
         horaInicio = new Date();
-        horaTermino = new Date();        
+        horaTermino = new Date();
     }
 
     public void adicionarTurmaProfessor() {
@@ -357,7 +363,7 @@ public class TurmaBean implements Serializable {
     public List<Turma> getListaTurma() {
         if (listaTurma.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaTurma = salvarAcumuladoDB.listaObjeto("Turma", true);            
+            listaTurma = salvarAcumuladoDB.listaObjeto("Turma", true);
         }
         return listaTurma;
     }
@@ -427,7 +433,7 @@ public class TurmaBean implements Serializable {
         } else {
             turma.setHoraTermino(novaHora);
         }
-        validaHorarios();            
+        validaHorarios();
         return "turma";
     }
 
@@ -467,17 +473,17 @@ public class TurmaBean implements Serializable {
     public void setHoraTermino(Date horaTermino) {
         this.horaTermino = horaTermino;
     }
-    
+
     public void dataListener(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.date = DataHoje.converte(format.format(event.getObject()));
-    }    
-    
-    public void selecionaHoraInicio(SelectEvent event) {
-        this.horaInicio  = (Date) event.getObject();
     }
-    
+
+    public void selecionaHoraInicio(SelectEvent event) {
+        this.horaInicio = (Date) event.getObject();
+    }
+
     public void selecionaHoraTermino(SelectEvent event) {
-        this.horaTermino  = (Date) event.getObject();
+        this.horaTermino = (Date) event.getObject();
     }
 }

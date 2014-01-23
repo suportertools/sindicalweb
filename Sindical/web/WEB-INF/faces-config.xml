@@ -1697,5 +1697,36 @@
             <to-view-id>/agrupaTurma.jsf</to-view-id>
             <redirect/>
         </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>conviteServico</from-outcome>
+            <to-view-id>/conviteServico.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>conviteSuspencao</from-outcome>
+            <to-view-id>/conviteSuspencao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>conviteMovimento</from-outcome>
+            <to-view-id>/conviteMovimento.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>conviteAutorizaCortesia</from-outcome>
+            <to-view-id>/conviteAutorizaCortesia.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>pesquisaSisPessoa</from-outcome>
+            <to-view-id>/pesquisaSisPessoa.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
     </navigation-rule>
 </faces-config>

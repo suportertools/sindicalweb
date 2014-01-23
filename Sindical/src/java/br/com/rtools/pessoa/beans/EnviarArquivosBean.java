@@ -16,14 +16,10 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.Upload;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,9 +29,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
 
 @ManagedBean
 @SessionScoped
@@ -118,7 +112,7 @@ public class EnviarArquivosBean implements Serializable {
             for (ListaRelatorioContabilidade l : contabilidadesSelecionadas) {
                 Pessoa pessoa = l.getJuridica().getPessoa();
                 aux.add(pessoa);
-            }            
+            }
         }
         if (!isEnviar) {
             GenericaMensagem.warn("Validação", "Selecionar um destinatário!");
@@ -183,50 +177,26 @@ public class EnviarArquivosBean implements Serializable {
 
     public List getListaArquivosContabilidade() {
         if (listaArquivos.isEmpty()) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContabilidade");
-            try {
-                File files = new File(caminho);
-                File listFile[] = files.listFiles();
-                int numArq = listFile.length;
-                int i = 0;
-                while (i < numArq) {
-                    listaArquivos.add(new DataObject(listFile[i], listFile[i].getName(), i));
-                    i++;
-                }
-                if (listaArquivos.size() > 0) {
-                    setQuantidadeAnexo(listaArquivos.size());
-                } else {
-                    setQuantidadeAnexo(0);
-                }
-                itens.clear();
-            } catch (Exception e) {
-                return new ArrayList();
+            listaArquivos = Diretorio.listaArquivos("Arquivos/Anexos/Pendentes/ArquivoContabilidade");
+            if (listaArquivos.size() > 0) {
+                setQuantidadeAnexo(listaArquivos.size());
+            } else {
+                setQuantidadeAnexo(0);
             }
+            itens.clear();
         }
         return listaArquivos;
     }
 
     public List getListaArquivosContribuinte() {
         if (listaArquivos.isEmpty()) {
-            String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/Anexos/Pendentes/ArquivoContribuinte");
-            try {
-                File files = new File(caminho);
-                File listFile[] = files.listFiles();
-                int numArq = listFile.length;
-                int i = 0;
-                while (i < numArq) {
-                    listaArquivos.add(new DataObject(listFile[i], listFile[i].getName(), i));
-                    i++;
-                }
-                if (listaArquivos.size() > 0) {
-                    setQuantidadeAnexo(listaArquivos.size());
-                } else {
-                    setQuantidadeAnexo(0);
-                }
-                itens.clear();
-            } catch (Exception e) {
-                return new ArrayList();
+            listaArquivos = Diretorio.listaArquivos("Arquivos/Anexos/Pendentes/ArquivoContribuinte");
+            if (listaArquivos.size() > 0) {
+                setQuantidadeAnexo(listaArquivos.size());
+            } else {
+                setQuantidadeAnexo(0);
             }
+            itens.clear();
         }
         return listaArquivos;
     }
@@ -462,71 +432,23 @@ public class EnviarArquivosBean implements Serializable {
     public void uploadContribuinte(FileUploadEvent event) {
         ConfiguracaoUpload configuracaoUpload = new ConfiguracaoUpload();
         configuracaoUpload.setArquivo(event.getFile().getFileName());
-        configuracaoUpload.setDiretorio("Arquivos/Pendentes/ArquivoContribuinte");
+        configuracaoUpload.setDiretorio("Arquivos/Anexos/Pendentes/ArquivoContribuinte");
         configuracaoUpload.setEvent(event);
-        if(Upload.enviar(configuracaoUpload, true)) {
+        if (Upload.enviar(configuracaoUpload, true)) {
             listaArquivos.clear();
         }
-//        UploadedFile file = event.getFile();
-//        upload("ArquivoContribuinte", file);
-        getListaArquivosContabilidade();
+        getListaArquivosContribuinte();
     }
 
     public void uploadContabilidade(FileUploadEvent event) {
         ConfiguracaoUpload configuracaoUpload = new ConfiguracaoUpload();
         configuracaoUpload.setArquivo(event.getFile().getFileName());
-        configuracaoUpload.setDiretorio("Arquivos/Pendentes/ArquivoContabilidade");
+        configuracaoUpload.setDiretorio("Arquivos/Anexos/Pendentes/ArquivoContabilidade");
         configuracaoUpload.setEvent(event);
         Upload.enviar(configuracaoUpload);
-        if(Upload.enviar(configuracaoUpload)) {
+        if (Upload.enviar(configuracaoUpload)) {
             listaArquivos.clear();
-        }        
-//        UploadedFile file = event.getFile();
-//        upload("ArquivoContabilidade", file);
+        }
         getListaArquivosContabilidade();
-    }
-
-    public void upload(String tipoEnvio, UploadedFile file) {
-        HttpServletRequest request = null;
-        if (file.getFileName() == null) {
-            return;
-        }
-        String cliente = "";
-        String caminho = "";
-        if (GenericaSessao.exists("sessaoCliente")) {
-            cliente = GenericaSessao.getString("sessaoCliente");
-        }
-        if (tipoEnvio.equals("ArquivoContribuinte") || tipoEnvio.equals("ArquivoContabilidade")) {
-            caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + cliente + "/Arquivos/Anexos/");
-            if (!new File(caminho).exists()) {
-                File fl2 = new File(caminho);
-                fl2.mkdir();
-            }
-            if (!new File(caminho + "/Pendentes/").exists()) {
-                File fl2 = new File(caminho + "/Pendentes/");
-                fl2.mkdir();
-            }
-            if (!new File(caminho + "/Pendentes/" + tipoEnvio + "/").exists()) {
-                File fl2 = new File(caminho + "/Pendentes/" + tipoEnvio + "/");
-                fl2.mkdir();
-            }
-        }
-        try {
-            File fl = new File(caminho + "/Pendentes/" + tipoEnvio + "/" + file.getFileName());
-            InputStream in = file.getInputstream();
-            FileOutputStream out = new FileOutputStream(fl.getPath());
-            byte[] buf = new byte[(int) file.getSize()];
-            int count;
-            while ((count = in.read(buf)) >= 0) {
-                out.write(buf, 0, count);
-            }
-            in.close();
-            out.flush();
-            out.close();
-            listaArquivos.clear();
-        } catch (IOException e) {
-            System.out.println(e);
-        }
-
     }
 }

@@ -9,18 +9,15 @@ import br.com.rtools.financeiro.CobrancaTipo;
 import br.com.rtools.financeiro.PollingEmail;
 import br.com.rtools.financeiro.db.NotificacaoDB;
 import br.com.rtools.financeiro.db.NotificacaoDBToplink;
-import br.com.rtools.impressao.ParametroContribuintes;
 import br.com.rtools.impressao.ParametroEtiqueta;
 import br.com.rtools.impressao.ParametroNotificacao;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
-import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
@@ -32,6 +29,7 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -1053,18 +1051,18 @@ public class NotificacaoJSFBean implements Serializable {
     }
 
     public List<DataObject> getListaEmpresaAdd() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null && empresa) {
-            Juridica j = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
+        if (GenericaSessao.exists("juridicaPesquisa") && empresa) {
+            Juridica j = (Juridica) GenericaSessao.getObject("juridicaPesquisa");
 
             for (int i = 0; i < listaEmpresaAdd.size(); i++) {
                 if (listaEmpresaAdd.get(i).getArgumento0().equals(j.getId())) {
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+                     GenericaSessao.remove("juridicaPesquisa");
                     return listaEmpresaAdd;
                 }
             }
 
             listaEmpresaAdd.add(new DataObject(j.getId(), j));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+             GenericaSessao.remove("juridicaPesquisa");
             listaNotificacao.clear();
         }
         return listaEmpresaAdd;
@@ -1075,18 +1073,18 @@ public class NotificacaoJSFBean implements Serializable {
     }
 
     public List<DataObject> getListaContabilAdd() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null && !empresa) {
-            Juridica j = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
+        if (GenericaSessao.exists("juridicaPesquisa") && !empresa) {
+            Juridica j = (Juridica) GenericaSessao.getObject("juridicaPesquisa");
 
             for (int i = 0; i < listaContabilAdd.size(); i++) {
                 if (listaContabilAdd.get(i).getArgumento0().equals(j.getId())) {
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+                    GenericaSessao.remove("juridicaPesquisa");
                     return listaContabilAdd;
                 }
             }
 
             listaContabilAdd.add(new DataObject(j.getId(), j));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+            GenericaSessao.remove("juridicaPesquisa");
             listaNotificacao.clear();
         }
         return listaContabilAdd;
@@ -1102,16 +1100,18 @@ public class NotificacaoJSFBean implements Serializable {
 //        if (registro == null){
 //            registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
 //        }
-        Usuario usu = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        Usuario usu = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         if (usu == null || (usu != null && usu.getId() == -1)) {
             return false;
         }
-        List<Vector> lista = db.pollingEmail(reg.getLimiteEnvios(), ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId());
-        if (!lista.isEmpty()) {
-            habilitaNot = true;
-            quantidadeMenu = lista.size();
-        } else {
-            habilitaNot = false;
+        if (reg != null) {
+            List lista = db.pollingEmail(reg.getLimiteEnvios(), ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getId());
+            if (!lista.isEmpty()) {
+                habilitaNot = true;
+                quantidadeMenu = lista.size();
+            } else {
+                habilitaNot = false;
+            }
         }
         return habilitaNot;
     }

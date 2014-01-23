@@ -1,11 +1,14 @@
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ *//*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 package br.com.rtools.atendimento.db;
 
 import br.com.rtools.atendimento.AteMovimento;
-import br.com.rtools.atendimento.AtePessoa;
+import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -49,13 +52,13 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
     }
 
     @Override
-    public AtePessoa pessoaDocumento(String valor) {
+    public SisPessoa pessoaDocumento(String valor) {
         List list;
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         String queryString = ""
                 + "        select ate.id                                   "
-                + "          from ate_pessoa ate                           "
-                + "         where ate.ds_cpf = '" + valor + "' or              "
+                + "          from sis_pessoa ate                           "
+                + "         where ate.ds_documento = '" + valor + "' or              "
                 + "                translate(upper(ate.ds_rg),'./-', '') = translate(upper('" + valor + "'),'./-','')";
 
         try {
@@ -63,7 +66,7 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
             qry.setFirstResult(0);
             list = qry.getResultList();
             if (!list.isEmpty()) {
-                AtePessoa atePessoa = (AtePessoa) dB.pesquisaObjeto((Integer) ((List) list.get(0)).get(0), "AtePessoa");
+                SisPessoa atePessoa = (SisPessoa) dB.pesquisaObjeto((Integer) ((List) list.get(0)).get(0), "AtePessoa");
                 return atePessoa;
             } else {
                 return null;
@@ -102,7 +105,7 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
             por = " and between now() ";
         }
         if (!cpf.equals("")) {
-            strQuery = " select ate from AteMovimento ate where ate.cpf = " + cpf + " " + por;
+            strQuery = " select ate from AteMovimento ate where ate.documento = " + cpf + " " + por;
         } else {
             strQuery = " select ate from AteMovimento ate ";
         }
@@ -144,8 +147,8 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
                     porStr += " and ";
                 }
             }
-            innerPes = " inner join ate_pessoa pes on(pes.id = mov.id_ate_pessoa)";
-            porStr += " pes.ds_cpf = '" + cpf + "'";
+            innerPes = " inner join sis_pessoa pes on(pes.id = mov.id_ate_pessoa)";
+            porStr += " pes.ds_documento = '" + cpf + "'";
 
         }
         String text = " select mov.id from ate_movimento mov " + innerPes + porStr;

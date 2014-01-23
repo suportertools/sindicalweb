@@ -59,7 +59,7 @@
                                     <h:outputLabel value="CPF:" />
                                 </h:column>
                                 <h:column>
-                                    <h:inputText value="#{atendimentoBean.ateMovimento.pessoa.CPF}" maxlength="14" size="10" class="cpf" id="idCPF" disabled="#{atendimentoBean.desabilitaCamposPessoa}">
+                                    <h:inputText value="#{atendimentoBean.ateMovimento.pessoa.documento}" maxlength="14" size="10" class="cpf" id="idCPF" disabled="#{atendimentoBean.desabilitaCamposPessoa}">
                                         <a4j:ajax event="blur" listener="#{atendimentoBean.verificaCPF('cpf')}" render="idCPF idRG idNome idTelefone idEditarPessoa idMsgCPF idVerificaPessoaOposicao"/>
                                         <a4j:ajax id="idVerificaPessoaOposicao" event="change" listener="#{atendimentoBean.verificaPessoaOposicao}" render="idPessoaOposicao"/>
                                     </h:inputText>
@@ -104,7 +104,7 @@
                                     <h:outputLabel value="CPF:" />
                                 </h:column>
                                 <h:column>
-                                    <h:inputText value="#{atendimentoBean.ateMovimento.pessoa.CPF}" maxlength="14" size="10" class="cpf" />
+                                    <h:inputText value="#{atendimentoBean.ateMovimento.pessoa.documento}" maxlength="14" size="10" class="cpf" />
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="RG: " />
@@ -176,7 +176,7 @@
                                                 <f:facet name="header">
                                                     <h:outputText value="CPF"/>
                                                 </f:facet>
-                                                <h:outputLabel value="#{linha.pessoa.CPF}" styleClass="fontePadrao"/>
+                                                <h:outputLabel value="#{linha.pessoa.documento}" styleClass="fontePadrao"/>
                                             </rich:column>
                                             <rich:column style="text-align: center">
                                                 <f:facet name="header">

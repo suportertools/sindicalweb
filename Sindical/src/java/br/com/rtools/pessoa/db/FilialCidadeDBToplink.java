@@ -2,6 +2,7 @@ package br.com.rtools.pessoa.db;
 
 import br.com.rtools.pessoa.FilialCidade;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
@@ -106,6 +107,6 @@ public class FilialCidadeDBToplink extends DB implements FilialCidadeDB {
         } catch (Exception e) {
             e.getMessage();
         }
-        return null;
+        return new ArrayList();
     }
 }

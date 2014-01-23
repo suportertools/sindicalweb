@@ -78,6 +78,14 @@ public class Registro implements java.io.Serializable {
     @JoinColumn(name = "ID_SERVICO_CARTAO", referencedColumnName = "ID", nullable = false)
     @ManyToOne(fetch = FetchType.EAGER)
     private Servicos servicos;
+    @Column(name = "CONVITE_DIAS_CONVIDADO")
+    private int conviteDiasConvidado;
+    @Column(name = "CONVITE_QTDE_CONVIDADO")
+    private int conviteQuantidadeConvidado;
+    @Column(name = "CONVITE_DIAS_SOCIO")
+    private int conviteDiasSocio;
+    @Column(name = "CONVITE_QTDE_SOCIO")
+    private int conviteQuantidadeSocio;
 
     public Registro() {
         this.id = -1;
@@ -111,6 +119,10 @@ public class Registro implements java.io.Serializable {
         this.intervaloEnvios = 0;
         this.agendamentoRetroativo = new Date();
         this.servicos = new Servicos();
+        this.conviteDiasConvidado = 365;
+        this.conviteQuantidadeConvidado = 1;
+        this.conviteDiasSocio = 30;
+        this.conviteQuantidadeSocio = 10;
     }
 
     public Registro(int id,
@@ -143,7 +155,11 @@ public class Registro implements java.io.Serializable {
             int limiteEnvios,
             int intervaloEnvios,
             String agendamentoRetroativo,
-            Servicos servicos) {
+            Servicos servicos,
+            int conviteDiasConvidado,
+            int conviteQuantidadeConvidado,
+            int conviteDiasSocio,
+            int conviteQuantidadeSocio) {
 
         this.id = id;
         this.filial = filial;
@@ -176,6 +192,10 @@ public class Registro implements java.io.Serializable {
         this.intervaloEnvios = intervaloEnvios;
         this.agendamentoRetroativo = DataHoje.converte(agendamentoRetroativo);
         this.servicos = new Servicos();
+        this.conviteDiasConvidado = conviteDiasConvidado;
+        this.conviteQuantidadeConvidado = conviteQuantidadeConvidado;
+        this.conviteDiasSocio = conviteDiasSocio;
+        this.conviteQuantidadeSocio = conviteQuantidadeSocio;
     }
 
     public int getId() {
@@ -431,13 +451,13 @@ public class Registro implements java.io.Serializable {
     public void setAgendamentoRetroativo(Date agendamentoRetroativo) {
         this.agendamentoRetroativo = agendamentoRetroativo;
     }
-    
+
     public String getAgendamentoRetroativoString() {
         return DataHoje.converteData(agendamentoRetroativo);
     }
 
     public void setAgendamentoRetroativoString(String agendamentoRetroativoString) {
-        this.agendamentoRetroativo =  DataHoje.converte(agendamentoRetroativoString);
+        this.agendamentoRetroativo = DataHoje.converte(agendamentoRetroativoString);
     }
 
     public Servicos getServicos() {
@@ -446,5 +466,37 @@ public class Registro implements java.io.Serializable {
 
     public void setServicos(Servicos servicos) {
         this.servicos = servicos;
+    }
+
+    public int getConviteDiasConvidado() {
+        return conviteDiasConvidado;
+    }
+
+    public void setConviteDiasConvidado(int conviteDiasConvidado) {
+        this.conviteDiasConvidado = conviteDiasConvidado;
+    }
+
+    public int getConviteQuantidadeConvidado() {
+        return conviteQuantidadeConvidado;
+    }
+
+    public void setConviteQuantidadeConvidado(int conviteQuantidadeConvidado) {
+        this.conviteQuantidadeConvidado = conviteQuantidadeConvidado;
+    }
+
+    public int getConviteDiasSocio() {
+        return conviteDiasSocio;
+    }
+
+    public void setConviteDiasSocio(int conviteDiasSocio) {
+        this.conviteDiasSocio = conviteDiasSocio;
+    }
+
+    public int getConviteQuantidadeSocio() {
+        return conviteQuantidadeSocio;
+    }
+
+    public void setConviteQuantidadeSocio(int conviteQuantidadeSocio) {
+        this.conviteQuantidadeSocio = conviteQuantidadeSocio;
     }
 }

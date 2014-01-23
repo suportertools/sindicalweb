@@ -1,5 +1,6 @@
 package br.com.rtools.atendimento;
 
+import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
@@ -15,7 +16,7 @@ public class AteMovimento implements java.io.Serializable {
     private int id;
     @JoinColumn(name = "ID_ATE_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
-    private AtePessoa pessoa;
+    private SisPessoa pessoa;
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Filial filial;
@@ -32,7 +33,7 @@ public class AteMovimento implements java.io.Serializable {
 
     public AteMovimento() {
         this.id = -1;
-        this.pessoa = new AtePessoa();
+        this.pessoa = new SisPessoa();
         this.filial = new Filial();
         setDataEmissaoString(DataHoje.data());
         this.dataEmissao = new Date();
@@ -41,7 +42,7 @@ public class AteMovimento implements java.io.Serializable {
         this.historico = "";
     }
 
-    public AteMovimento(int id, AtePessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico) {
+    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico) {
         this.id = id;
         this.pessoa = pessoa;
         this.filial = filial;
@@ -59,11 +60,11 @@ public class AteMovimento implements java.io.Serializable {
         this.id = id;
     }
 
-    public AtePessoa getPessoa() {
+    public SisPessoa getPessoa() {
         return pessoa;
     }
 
-    public void setPessoa(AtePessoa pessoa) {
+    public void setPessoa(SisPessoa pessoa) {
         this.pessoa = pessoa;
     }
 

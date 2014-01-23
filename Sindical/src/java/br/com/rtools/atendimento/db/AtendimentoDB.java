@@ -1,7 +1,7 @@
 package br.com.rtools.atendimento.db;
 
 import br.com.rtools.atendimento.AteMovimento;
-import br.com.rtools.atendimento.AtePessoa;
+import br.com.rtools.sistema.SisPessoa;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -11,7 +11,7 @@ public interface AtendimentoDB {
 
     public boolean pessoaOposicao(String cpf);
 
-    public AtePessoa pessoaDocumento(String valor);
+    public SisPessoa pessoaDocumento(String valor);
 
     public List<AteMovimento> listaAteMovimento(String cpf, String por);
 

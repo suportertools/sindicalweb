@@ -23,11 +23,12 @@ public class TurmaDBToplink extends DB implements TurmaDB {
     @Override
     public boolean existeTurma(Turma turma) {
         try {
-            Query qry = getEntityManager().createQuery(" SELECT T FROM Turma AS T WHERE T.dtInicio = :dataInicio AND T.dtTermino = :dataTermino AND T.horaInicio = :hInicio AND T.horaTermino = :hTermino  AND T.cursos.id = :idCurso AND T.filial.id = :idFilial ");
+            Query qry = getEntityManager().createQuery(" SELECT T FROM Turma AS T WHERE T.dtInicio = :dataInicio AND T.dtTermino = :dataTermino AND T.horaInicio = :hInicio AND T.horaTermino = :hTermino  AND T.cursos.id = :idCurso AND T.filial.id = :idFilial AND T.sala = :sala ");
             qry.setParameter("dataInicio", turma.getDtInicio());
             qry.setParameter("dataTermino", turma.getDtTermino());
             qry.setParameter("hInicio", turma.getHoraInicio());
             qry.setParameter("hTermino", turma.getHoraTermino());
+            qry.setParameter("sala", turma.getSala());
             qry.setParameter("idCurso", turma.getCursos().getId());
             qry.setParameter("idFilial", turma.getFilial().getId());
             List list = qry.getResultList();

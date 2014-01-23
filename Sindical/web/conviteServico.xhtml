@@ -1,0 +1,132 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Convite Serviço</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_clube_servico_novo">
+                    <h:outputScript name="tradutor_primefaces.js" library="js" /> 
+                    <p:growl id="growl" showDetail="true"/> 
+                    <p:outputLabel value="Cadastro de Serviços para Convite" styleClass="fonteHeader"/>
+                    <c:set scope="request" var="object" value="${conviteServicoBean.conviteServico}"/>
+                    <div class="clear"></div>
+                    <p:panel id="id_panel_clube_servico">
+                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="5">
+                            <p:column>
+                                <p:outputLabel value="Serviço: " />
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="idServicos" value="#{conviteServicoBean.idServicos}">
+                                    <f:selectItems value="#{conviteServicoBean.listaServicos}"/>
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Dias da semana: " />
+                            </p:column>
+                            <p:column>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.domingo}" onLabel="Dom" offLabel="Dom" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.segunda}" onLabel="Seg" offLabel="Seg" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.terca}" onLabel="Ter" offLabel="Ter" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.quarta}" onLabel="Qua" offLabel="Qua" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.quinta}" onLabel="Qui" offLabel="Qui" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.sexta}" onLabel="Sex" offLabel="Sex" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.sabado}" onLabel="Sáb" offLabel="Sáb" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                                <p:selectBooleanButton value="#{conviteServicoBean.conviteServico.feriado}" onLabel="Feriado" offLabel="Sáb" onIcon="ui-icon-check" styleClass="margin-left-max"/>
+                            </p:column>
+                        </h:panelGrid>                        
+                        <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
+                            <p:column>
+                                <p:commandButton value="Salvar" title="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
+                                <p:commandButton value="Novo" title="Novo" action="#{conviteServicoBean.novo()}" update="id_panel_clube_servico :form_clube_servico:i_panel_servicos"/>
+                                <p:commandButton value="Excluir" title="Excluir" onclick="dgl_panel_excluir.show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
+                            </p:column>
+                        </p:panelGrid>
+                    </p:panel>
+                    <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
+                        <p:panelGrid columns="2" styleClass="sbb">
+                            <p:commandButton value="Sim" title="Salvar" action="#{conviteServicoBean.salvar()}" update="i_panel_mensagem id_panel_clube_servico :form_clube_servico:i_panel_servicos"  oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
+                            <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
+                        </p:panelGrid>
+                    </p:dialog>
+                    <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
+                        <center>
+                            <p:panelGrid columns="2" styleClass="sbb">
+                                <p:commandButton value="Sim" title="Excluir" action="#{conviteServicoBean.excluir()}" update="i_panel_mensagem id_panel_clube_servico :form_clube_servico:i_panel_servicos" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_excluir').hide();"  />
+                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide()"/>
+                            </p:panelGrid>
+                        </center>
+                    </p:dialog>
+                    <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
+                        <center>
+                            <h:outputLabel value="#{conviteServicoBean.mensagem}" id="outConfirma"/>
+                            <br /><br />
+                            <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
+                        </center>
+                    </p:dialog>
+                </h:form>
+                <h:form id="form_clube_servico">
+                    <p:panelGrid id="i_panel_servicos" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
+                        <p:dataTable value="#{conviteServicoBean.listaConviteServicos}" var="conviteServico" scrollable="true" scrollHeight="250" emptyMessage="Nenhum registro(s) encontrado(s)" >
+                            <f:facet name="header">Convite Serviços</f:facet>
+                            <p:column width="50" headerText="Serviço" styleClass="text-center"><p:commandLink value="#{conviteServico.servicos.descricao}" action="#{conviteServicoBean.editar(conviteServico)}" update=":form_clube_servico_novo:id_panel_clube_servico" /></p:column>
+                            <p:column width="50" headerText="Dom" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.domingo}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Seg" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.segunda}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Ter" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.terca}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Qua" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.quarta}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Qui" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.quinta}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Sex" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.sexta}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Sab" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.sabado}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column width="50" headerText="Feriados" styleClass="text-center">
+                                <p:selectBooleanCheckbox value="#{conviteServico.feriado}">
+                                    <p:ajax event="change" listener="#{conviteServicoBean.atualizarDiaSemana(conviteServico)}" update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" />
+                                </p:selectBooleanCheckbox>
+                            </p:column>
+                            <p:column styleClass="text-center" width="25">
+                                <p:commandButton icon="ui-icon-trash" action="#{conviteServicoBean.excluir(conviteServico)}"  disabled="#{controleAcessoBean.botaoExcluir}"  update=":form_clube_servico_novo:growl :form_clube_servico:i_panel_servicos :form_clube_servico_novo:id_panel_clube_servico" styleClass="ui-button-reset" immediate="true"/>
+                            </p:column>                             
+                        </p:dataTable>
+                    </p:panelGrid>
+                </h:form>                
+            </p:panel>
+        </f:view>
+    </h:body>
+</ui:composition>
