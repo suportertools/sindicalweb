@@ -31,6 +31,10 @@ public class Configuracao implements java.io.Serializable {
     private Date dtCadastro;
     @Column(name = "IS_ATIVO")
     private boolean ativo;
+    @Column(name = "DS_HOST", length = 300)
+    private String host;
+    @Column(name = "DS_SENHA", length = 300)
+    private String senha;
 
     public Configuracao() {
         this.id = -1;
@@ -42,9 +46,11 @@ public class Configuracao implements java.io.Serializable {
         this.acessos = 0;
         this.dtCadastro = new DataHoje().dataHoje();
         this.ativo = true;
+        this.host = "";
+        this.senha = "";
     }
 
-    public Configuracao(int id, String nomeCliente, String persistence, String caminhoSistema, String identifica, Juridica juridica, int acessos, String cadastro, boolean ativo) {
+    public Configuracao(int id, String nomeCliente, String persistence, String caminhoSistema, String identifica, Juridica juridica, int acessos, String cadastro, boolean ativo, String host, String senha) {
         this.id = id;
         this.nomeCliente = nomeCliente;
         this.persistence = persistence;
@@ -54,6 +60,8 @@ public class Configuracao implements java.io.Serializable {
         this.acessos = acessos;
         this.dtCadastro = DataHoje.converte(cadastro);
         this.ativo = ativo;
+        this.host = "";
+        this.senha = "";
     }
 
     public int getId() {
@@ -134,5 +142,21 @@ public class Configuracao implements java.io.Serializable {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
     }
 }
