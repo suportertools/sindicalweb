@@ -148,8 +148,8 @@ public class AcademiaServicoValorBean implements Serializable {
             ServicosDB db = new ServicosDBToplink();
             List list = db.pesquisaTodos(122);
             for (int i = 0; i < list.size(); i++) {
-                listaServicos.add(new SelectItem(new Integer(i),
-                        (String) ((Servicos) list.get(i)).getDescricao(),
+                listaServicos.add(new SelectItem(i,
+                        ((Servicos) list.get(i)).getDescricao(),
                         Integer.toString(((Servicos) list.get(i)).getId())));
             }
         }
@@ -173,7 +173,7 @@ public class AcademiaServicoValorBean implements Serializable {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
             List<Periodo> list = (List<Periodo>) dB.listaObjeto("Periodo", true);
             for (int i = 0; i < list.size(); i++) {
-                listaPeriodos.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listaPeriodos.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaPeriodos;
@@ -196,7 +196,7 @@ public class AcademiaServicoValorBean implements Serializable {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
             List<AcademiaGrade> list = (List<AcademiaGrade>) dB.listaObjeto("AcademiaGrade", true);
             for (int i = 0; i < list.size(); i++) {
-                listaGrades.add(new SelectItem(new Integer(i), list.get(i).getHoraInicio() + " - " + list.get(i).getHoraFim(), Integer.toString(list.get(i).getId())));
+                listaGrades.add(new SelectItem(i, list.get(i).getHoraInicio() + " - " + list.get(i).getHoraFim(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaGrades;
