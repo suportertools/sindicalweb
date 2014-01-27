@@ -1,9 +1,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
     <h:head>
         <title>Pesquisa Pessoas</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -16,7 +16,7 @@
         <f:view>
             <p:panel styleClass="wrapper" style="border: 0px;">
                 <h:form id="formPesquisaPessoa">
-                
+
                     <h:outputText value="Pesquisa Pessoas" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
@@ -24,11 +24,11 @@
                             <p:inputMask value="#{pessoaBean.descPesquisa}" size="50" mask="#{pessoaBean.mascaraPesquisa}"/>
                             <p:selectOneMenu value="#{pessoaBean.porPesquisa}">
                                 <p:ajax event="change" update="i_panel_pesquisa" />
-                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
-                            <f:selectItem itemValue="cei"      itemLabel="CEI"/>
-                            <f:selectItem itemValue="cnpj"      itemLabel="CNPJ"/>
-                            <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
-                            <f:selectItem itemValue="telefone1" itemLabel="Telefone"/>
+                                <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                                <f:selectItem itemValue="cei"      itemLabel="CEI"/>
+                                <f:selectItem itemValue="cnpj"      itemLabel="CNPJ"/>
+                                <f:selectItem itemValue="cpf"      itemLabel="CPF"/>
+                                <f:selectItem itemValue="telefone1" itemLabel="Telefone"/>
                             </p:selectOneMenu>                        
                             <p:commandButton value="Inicial" action="#{pessoaBean.acaoPesquisaInicial}" update=":formGridPesquisaPessoa:i_panel_grid" />
                             <p:commandButton value="Parcial" action="#{pessoaBean.acaoPesquisaParcial}" update=":formGridPesquisaPessoa:i_panel_grid" />
