@@ -17,12 +17,12 @@ public class Diretorio {
             boolean err = false;
             String caminhoContac = "";
             int b = 0;
-            for (int i = 0; i < s.length; i++) {
-                if (!s[i].equals("")) {
+            for (String item : s) {
+                if (!item.equals("")) {
                     if (b == 0) {
-                        caminhoContac = s[i];
+                        caminhoContac = item;
                     } else {
-                        caminhoContac = "/" + caminhoContac + "/" + s[i];
+                        caminhoContac = "/" + caminhoContac + "/" + item;
                     }
                     String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoContac);
                     if (!new File(caminho).exists()) {
@@ -73,6 +73,22 @@ public class Diretorio {
             return new ArrayList();
         }
         return listaArquivos;
+    }
+
+    public static String arquivo(String diretorio, String arquivo) {
+        if (arquivo.isEmpty()) {
+            return null;
+        }
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + diretorio +"/"+ arquivo);
+        try {
+            File files = new File(caminho);
+            if (!files.exists()) {
+                return null;
+            }
+            return caminho;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public static String getCliente() {

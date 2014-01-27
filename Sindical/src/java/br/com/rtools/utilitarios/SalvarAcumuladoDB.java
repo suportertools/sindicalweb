@@ -81,4 +81,6 @@ public interface SalvarAcumuladoDB {
     public List objectQuery(String textQuery);
     
     public List objectQuery(String textQuery, boolean singleResult);
+    
+    public void fecharTransacao();
 }
