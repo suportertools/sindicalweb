@@ -4,16 +4,13 @@ import br.com.rtools.financeiro.DescontoServicoEmpresa;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.DescontoServicoEmpresaDB;
 import br.com.rtools.financeiro.db.DescontoServicoEmpresaDBTopLink;
-import br.com.rtools.financeiro.db.ServicosDB;
-import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.pessoa.Juridica;
-import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -49,17 +46,17 @@ public class DescontoServicoEmpresaBean implements Serializable {
     public void salvar() {
         if (descontoServicoEmpresa.getJuridica().getId() == -1) {
             mensagem = "Pesquisar pessoa jurídica!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+            GenericaMensagem.warn("Validação", mensagem);
             return;
         }
         if (listaServicos.isEmpty()) {
             mensagem = "Cadastrar serviços!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+            GenericaMensagem.warn("Validação", mensagem);
             return;
         }
         if (descontoServicoEmpresa.getDesconto() <= 0) {
             mensagem = "Informar o valor do desconto!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+            GenericaMensagem.warn("Validação", mensagem);
             return;
         }
         // descontoServicoEmpresa.setDesconto(Moeda.converteUS$(desconto));
@@ -74,32 +71,32 @@ public class DescontoServicoEmpresaBean implements Serializable {
         if (descontoServicoEmpresa.getId() == -1) {
             if (descontoServicoEmpresaDB.existeDescontoServicoEmpresa(descontoServicoEmpresa)) {
                 mensagem = "Desconto já cadastrado para essa empresa!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+                GenericaMensagem.warn("Validação", mensagem);
                 return;
             }
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.inserirObjeto(descontoServicoEmpresa)) {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Registro cadastrado";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                GenericaMensagem.info("Sucesso", mensagem);
                 novo();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 descontoServicoEmpresa.setId(-1);
                 mensagem = "Erro ao atualizar este registro!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
             }
         } else {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(descontoServicoEmpresa)) {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Registro atualizado";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                GenericaMensagem.info("Sucesso", mensagem);
                 novo();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Erro ao atualizar este registro!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
             }
         }
         descontoServicoEmpresa.setJuridica(juridica);
@@ -110,7 +107,7 @@ public class DescontoServicoEmpresaBean implements Serializable {
         if (dse.getId() != -1) {
             if (dse.getDesconto() <= 0) {
                 mensagem = "Informar o valor do desconto!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+                GenericaMensagem.warn("Validação", mensagem);
                 return;
             }
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -118,11 +115,11 @@ public class DescontoServicoEmpresaBean implements Serializable {
             if (salvarAcumuladoDB.alterarObjeto(dse)) {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Desconto atualizado com sucesso";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                GenericaMensagem.info("Sucesso", mensagem);
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Erro ao atualizar este desconto!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
             }
         }
     }
@@ -161,19 +158,18 @@ public class DescontoServicoEmpresaBean implements Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.deletarObjeto(descontoServicoEmpresa)) {
                 salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Registro excluído";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                GenericaMensagem.info("Sucesso", mensagem);
                 novo();
 
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Erro ao excluir registro!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
             }
             descontoServicoEmpresa.setJuridica(juridica);
         } else {
             mensagem = "Pesquisar registro a ser excluído!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+            GenericaMensagem.warn("Erro", mensagem);
         }
     }
 
@@ -186,13 +182,13 @@ public class DescontoServicoEmpresaBean implements Serializable {
             if (salvarAcumuladoDB.deletarObjeto(dse)) {
                 salvarAcumuladoDB.comitarTransacao();
                 mensagem = "Registro excluído";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                GenericaMensagem.info("Sucesso", mensagem);
                 listaDSEPorEmpresa.clear();
                 listaServicos.clear();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Erro ao excluir registro!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
             }
         }
     }    
@@ -262,7 +258,7 @@ public class DescontoServicoEmpresaBean implements Serializable {
                 List<Servicos> list = dsedb.listaTodosServicosDisponiveis(descontoServicoEmpresa);
                 if (!list.isEmpty()) {
                     for (int i = 0; i < list.size(); i++) {
-                        listaServicos.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                        listaServicos.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
                     }
                 }
             }
