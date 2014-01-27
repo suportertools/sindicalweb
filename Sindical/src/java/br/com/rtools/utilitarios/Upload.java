@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
@@ -56,24 +58,47 @@ public class Upload {
                 }
                 return false;
             }
-            if (cu.getLarguraMaxima() > 0) {
-                if (mensagens) {
-                    //GenericaMensagem.warn("Validação", "Largura excedida. Largura máxima: " + cu.getEvent().getFile().getSize());
+            List listContentType = new ArrayList();
+            listContentType.add("PNG");
+            listContentType.add("JPG");
+            listContentType.add("JPEG");
+            listContentType.add("GIF");
+            for (Object listContentType1 : listContentType) {
+                if (cu.getEvent().getFile().getContentType().toUpperCase() == listContentType1) {
+                    if (cu.getLarguraMaxima() > 0) {
+                        if (mensagens) {
+                            GenericaMensagem.warn("Validação", "Largura excedida. Largura máxima: " + cu.getEvent().getFile().getSize());
+                        }
+                        return false;
+                    }
+                    if (cu.getAlturaMaxima() > 0) {
+                        if (mensagens) {
+                            GenericaMensagem.warn("Validação", "Altura excedida. Altura máxima: " + cu.getEvent().getFile().getSize());
+                        }
+                        return false;
+                    }
                 }
-                //return false;
-            }
-            if (cu.getAlturaMaxima() > 0) {
-                if (mensagens) {
-                    //GenericaMensagem.warn("Validação", "Altura excedida. Altura máxima: " + cu.getEvent().getFile().getSize());
-                }
-                //return false;
+                break;
             }
             File file = new File(diretorio + "/" + cu.getEvent().getFile().getFileName());
-            if (file.exists()) {
-                if (mensagens) {
-                    GenericaMensagem.warn("Validação", "Arquivo já existe no caminho específicado!");
+            if (cu.isSubstituir()) {
+                if (!cu.getRenomear().equals("")) {
+                    File novoNome = new File(diretorio+"/"+cu.getRenomear());
+                    if (novoNome.exists()) {
+                        novoNome.delete();
+                    } else {
+                        file.delete();                        
+                    }
+                } else {
+                    file.delete();                    
                 }
-                return false;
+            } else {
+                if (file.exists()) {
+                    if (mensagens) {
+                        GenericaMensagem.warn("Validação", "Arquivo já existe no caminho específicado!");
+                    }
+                    return false;
+                }
             }
             InputStream in = cu.getEvent().getFile().getInputstream();
             FileOutputStream out = new FileOutputStream(file.getPath());
@@ -85,6 +110,10 @@ public class Upload {
             in.close();
             out.flush();
             out.close();
+            if (!cu.getRenomear().equals("")) {
+                File novoNome = new File(diretorio+"/"+cu.getRenomear());
+                file.renameTo(novoNome);
+            }
             return true;
         } catch (IOException e) {
             NovoLog log = new NovoLog();

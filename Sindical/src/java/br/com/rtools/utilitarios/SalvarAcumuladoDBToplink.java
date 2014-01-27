@@ -91,6 +91,9 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
 
     @Override
     public Object pesquisaCodigo(int id, String tipo) {
+        if (id == -1) {
+            return null;
+        }
         Object result = null;
         try {
             Query qry = getEntityManager().createNamedQuery(tipo + ".pesquisaID");
@@ -124,6 +127,9 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
     
     @Override
     public Object pesquisaObjeto(int id, String tabela, String campo) {
+        if (id == -1) {
+            return null;
+        }        
         String stringCampo = "id";
         if (!campo.isEmpty()) {
             stringCampo = campo;
@@ -346,5 +352,10 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return false;
         }
         return false;
+    }
+    
+    @Override
+    public void fecharTransacao () {
+        getEntityManager().close();
     }
 }
