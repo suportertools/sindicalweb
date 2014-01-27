@@ -446,7 +446,7 @@ public class EnviarArquivosBean implements Serializable {
         configuracaoUpload.setDiretorio("Arquivos/Anexos/Pendentes/ArquivoContabilidade");
         configuracaoUpload.setEvent(event);
         Upload.enviar(configuracaoUpload);
-        if (Upload.enviar(configuracaoUpload)) {
+        if (Upload.enviar(configuracaoUpload, true)) {
             listaArquivos.clear();
         }
         getListaArquivosContabilidade();
