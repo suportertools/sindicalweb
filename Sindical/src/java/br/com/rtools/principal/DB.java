@@ -1,7 +1,10 @@
 package br.com.rtools.principal;
 
-import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.sistema.Configuracao;
+import br.com.rtools.utilitarios.GenericaRequisicao;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.GenericaString;
+import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -13,9 +16,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import oracle.toplink.essentials.config.CacheType;
 import oracle.toplink.essentials.config.TopLinkProperties;
+import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 // import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 
-public class DB {
+public class DB implements Serializable {
 
     private EntityManager entidade;
     private Statement statement;
@@ -27,42 +31,24 @@ public class DB {
 //        }
 //        return entidade;
 //    } 
-    public Statement getStatment() throws SQLException {
-        try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://192.168.1.60:5432/Rtools", "postgres", "989899");
-            if (connection != null) {
-                statement = connection.createStatement();
-                return statement;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
-
-    public void closeStatment() throws SQLException {
-        statement.getResultSet().close();
-        statement.close();
-        statement.getConnection().close();
-    }
-
     public EntityManager getEntityManager() {
         if (entidade == null) {
             if (!GenericaSessao.exists("conexao")) {
                 String cliente = (String) GenericaSessao.getString("sessaoCliente");
-                DataObject config = servidor(cliente);
+                Configuracao configuracao = servidor(cliente);
                 try {
                     Map properties = new HashMap();
-                    //EntityManagerFactory emf = null;
                     properties.put(TopLinkProperties.CACHE_TYPE_DEFAULT, CacheType.Full);
                     properties.put(TopLinkProperties.JDBC_USER, "postgres");
                     properties.put(TopLinkProperties.TRANSACTION_TYPE, "RESOURCE_LOCAL");
                     properties.put(TopLinkProperties.JDBC_DRIVER, "org.postgresql.Driver");
-                    properties.put(TopLinkProperties.JDBC_PASSWORD, config.getArgumento2().toString());
-                    properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + config.getArgumento0() + ":5432/" + config.getArgumento1().toString());
-                    EntityManagerFactory emf = Persistence.createEntityManagerFactory(config.getArgumento1().toString(), properties);
-                    //properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
-                    //emf = Persistence.createEntityManagerFactory(persist, properties);
+                    properties.put(TopLinkProperties.JDBC_PASSWORD, configuracao.getSenha());
+                    properties.put(TopLinkProperties.JDBC_URL, "jdbc:postgresql://" + configuracao.getHost() + ":5432/" + configuracao.getPersistence());
+                    EntityManagerFactory emf = Persistence.createEntityManagerFactory(configuracao.getPersistence(), properties);
+                    String createTable = GenericaString.converterNullToString(GenericaRequisicao.getParametro("createTable"));
+                    if (createTable.equals("criar")) {
+                        properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
+                    }
                     entidade = emf.createEntityManager();
                     GenericaSessao.put("conexao", emf);
                 } catch (Exception e) {
@@ -71,7 +57,7 @@ public class DB {
             } else {
                 try {
                     EntityManagerFactory emf = (EntityManagerFactory) GenericaSessao.getObject("conexao");
-                    entidade = emf.createEntityManager();                    
+                    entidade = emf.createEntityManager();
                 } catch (Exception e) {
                     return null;
                 }
@@ -80,11 +66,8 @@ public class DB {
         return entidade;
     }
 
-    // dataObject.setArgumento0(ip do servidor);
-    // dataObject.setArgumento1(base do cliente);
-    // dataObject.setArgumento2(senha);
-    public DataObject servidor(String cliente) {
-        DataObject dataObject = new DataObject();
+    public Configuracao servidor(String cliente) {
+        Configuracao configuracao = new Configuracao();
         if (cliente.equals("ComercioAraras")
                 || cliente.equals("ComercioSertaozinho")
                 || cliente.equals("FederacaoBH")
@@ -101,30 +84,35 @@ public class DB {
                 || cliente.equals("HoteleiroRP")
                 || cliente.equals("GaragistaRP")
                 || cliente.equals("MetalBatatais")) {
-            dataObject.setArgumento0("192.168.1.102");
-            dataObject.setArgumento1(cliente);
-            dataObject.setArgumento2("r#@tools");
+            configuracao.setCaminhoSistema(cliente);
+            configuracao.setPersistence(cliente);
+            configuracao.setHost("192.168.1.102");
+            configuracao.setSenha("r#@tools");
         } else if (cliente.equals("Rtools")) {
-            dataObject.setArgumento0("192.168.1.60");
-            dataObject.setArgumento1(cliente);
-            dataObject.setArgumento2("989899");
+            configuracao.setCaminhoSistema(cliente);
+            configuracao.setPersistence(cliente);
+            configuracao.setHost("192.168.1.60");
+            configuracao.setSenha("989899");
         } else if (cliente.equals("NovaBase")) {
-            dataObject.setArgumento0("192.168.1.69");
-            dataObject.setArgumento1(cliente);
-            dataObject.setArgumento2("989899");
+            configuracao.setCaminhoSistema(cliente);
+            configuracao.setPersistence(cliente);
+            configuracao.setHost("192.168.1.69");
+            configuracao.setSenha("989899");
         } else if (cliente.equals("ComercioRP")) {
-            dataObject.setArgumento0("200.152.187.241");
-            dataObject.setArgumento1("Sindical");
-            dataObject.setArgumento2("989899");
+            configuracao.setCaminhoSistema(cliente);
+            configuracao.setPersistence("Sindical");
+            configuracao.setHost("200.152.187.241");
+            configuracao.setSenha("989899");
         } else {
             if (cliente.equals("Sindical")) {
                 //cliente = "c_limeira_base";
                 cliente = "n_base_local";
             }
-            dataObject.setArgumento0("localhost");
-            dataObject.setArgumento1(cliente);
-            dataObject.setArgumento2("989899");
+            configuracao.setCaminhoSistema(cliente);
+            configuracao.setPersistence(cliente);
+            configuracao.setHost("localhost");
+            configuracao.setSenha("989899");
         }
-        return dataObject;
+        return configuracao;
     }
 }
