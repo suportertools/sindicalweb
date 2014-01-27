@@ -384,7 +384,8 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 215, 'CONVITE CLUBE', '"/Sindical/conviteClube.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 215);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 216, 'CONVITE MOTIVO SUSPENÇÃO', '"/Sindical/conviteMotivoSuspencao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 216);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 217, 'CONVITE AUTORIZA CORTESIA', '"/Sindical/conviteAutorizaCortesia.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 217);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 218, 'CONVITE SUSPENÇÃO', '"/Sindical/conviteSuspecao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 218);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 218, 'CONVITE SUSPENÇÃO', '"/Sindical/conviteSuspencao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 218);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT , 'PESQUISA PESSOA', '"/Sindical/pesquisaSisPessoa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = );
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
