@@ -66,26 +66,6 @@
         <url-pattern>/servletUpload</url-pattern>
     </servlet-mapping>
     <!-- UPLOAD -->
-    <!-- SERVLET ENVIO ARQUIVOS CONTRIBUINTE -->
-    <servlet>
-        <servlet-name>servletEnvioArquivoContribuinte</servlet-name>
-        <servlet-class>br.com.rtools.utilitarios.servletEnvioArquivoContribuinte</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>servletEnvioArquivoContribuinte</servlet-name>
-        <url-pattern>/servletEnvioArquivoContribuinte</url-pattern>
-    </servlet-mapping>
-    <!-- ENVIO ARQUIVOS CONTRIBUINTE -->
-    <!-- SERVLET ENVIO ARQUIVOS CONTABILIDADE -->
-    <servlet>
-        <servlet-name>servletEnvioArquivoContabilidade</servlet-name>
-        <servlet-class>br.com.rtools.utilitarios.servletEnvioArquivoContabilidade</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>servletEnvioArquivoContabilidade</servlet-name>
-        <url-pattern>/servletEnvioArquivoContabilidade</url-pattern>
-    </servlet-mapping>
-    <!-- ENVIO ARQUIVOS CONTABILIDADE -->
     <!-- SERVLET RETORNO -->
     <servlet>
         <servlet-name>servletRetorno</servlet-name>
