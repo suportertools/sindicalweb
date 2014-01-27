@@ -354,26 +354,30 @@ public class FilialDBToplink extends DB implements FilialDB{
     
     @Override
     public List pesquisaPessoaPatronal (String desc, String por, String como){
-        List lista = new Vector<Object>();
-        String textQuery = null;
             if (como.equals("I")){
                 desc = desc.toLowerCase().toUpperCase() + "%";
             }else{
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
             }
-            textQuery = "select patro from Patronal patro " +
-                       " where UPPER(patro.pessoa." + por + ") like :desc" +
-                       " order by patro.pessoa.nome";
+            String textQuery = "SELECT patro FROM Patronal AS PATRO WHERE UPPER(PATRO.pessoa." + por + ") LIKE :desc ORDER BY PATRO.pessoa.nome ASC";
                 try{
                     Query qry = getEntityManager().createQuery(textQuery);
-                            if (!desc.equals("%%")&& !desc.equals("%"))
-                                qry.setParameter("desc", desc);
-                            lista = qry.getResultList();
+                    if (!desc.equals("%%")&& !desc.equals("%")) {
+                        if (por.equals("documento")) {
+                            qry.setParameter("desc", desc);                            
+                        } else {
+                            qry.setParameter("desc", desc);
+                        }
+                    }
+                    List list = qry.getResultList();
+                    if (!list.isEmpty()) {
+                        return list;
+                    }
                 }
                 catch(Exception e){
-                    lista = new Vector<Object>();
+                    return new ArrayList();
                 }
-        return lista;
+        return new ArrayList();
     }   
 
 
