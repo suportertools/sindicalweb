@@ -142,7 +142,7 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
                 + "  inner join arr_repis_movimento as m  on m.id_pessoa = c.id_pessoa "
                 + "  inner join arr_repis_status    as s  on s.id = m.id_repis_status "
                 + "  inner join arr_patronal_cnae   as cp on cp.id_cnae = j.id_cnae and cp.id_patronal = " + id_patronal + "  "
-                + "  where c.dt_inativacao is null ";
+                + "  where c.dt_inativacao is null order by m.dt_emissao desc";
         try {
             Query qry = getEntityManager().createNativeQuery(text);
 
