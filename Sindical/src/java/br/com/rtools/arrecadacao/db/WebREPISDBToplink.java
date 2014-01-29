@@ -4,6 +4,7 @@ import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
 import br.com.rtools.arrecadacao.RepisMovimento;
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -218,5 +219,34 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
             return false;
         }
         return true;
+    }
+    
+    public List<RepisMovimento> listaRepisMovimento(String por, String descricao) {
+        List result = new ArrayList();
+        try {
+            String text = 
+                "SELECT rm " + 
+                "  FROM RepisMovimento rm ";
+                    
+            if (por.equals("nome"))
+                text += " WHERE rm.pessoa.nome LIKE '%"+descricao+"%'";
+            
+            Query qry = getEntityManager().createQuery(text);
+            return qry.getResultList();
+        } catch (Exception e) {
+            
+        }
+        return result;
+    }
+    
+    @Override
+    public Juridica pesquisaEscritorioDaEmpresa(int id_pessoa) {
+        try {
+            Query qry = getEntityManager().createQuery("SELECT j.contabilidade FROM Juridica j where j.pessoa.id = "+id_pessoa);
+            
+            return (Juridica) qry.getSingleResult();
+        } catch (Exception e) {
+            return new Juridica();
+        }
     }
 }
