@@ -52,6 +52,7 @@ public class WebREPISJSFBean {
     private Pessoa pessoaContribuinte = new Pessoa();
     private Pessoa pessoaContabilidade = new Pessoa();
     private Pessoa pessoaSolicitante = new Pessoa();
+    private Pessoa escritorio = new Pessoa();
     private List<SelectItem> listaComboPessoa = new Vector<SelectItem>();
     private List<SelectItem> listaComboRepisStatus = new Vector<SelectItem>();
     private List<RepisMovimento> listaRepisMovimento = new ArrayList<RepisMovimento>();
@@ -67,6 +68,8 @@ public class WebREPISJSFBean {
     private String descPesquisa = "";
     private String porPesquisa = "nome";
     private String comoPesquisa = "";
+    private String tipoPesquisa = "";
+    private String descricao = "";
     private List listaArquivosEnviados = new ArrayList();
 
     public WebREPISJSFBean() {
@@ -90,6 +93,43 @@ public class WebREPISJSFBean {
         }
     }
 
+    public String refresh(){
+        return "webLiberacaoREPIS";
+    }
+    
+    public String pesquisar(){
+        WebREPISDB db = new WebREPISDBToplink();
+        
+        //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
+        listaRepisMovimentoPatronal.clear();
+        getListaRepisMovimentoPatronal();
+        
+        List<RepisMovimento>  lista = new ArrayList<RepisMovimento>();
+        for(int i = 0; i < listaRepisMovimentoPatronal.size(); i++){
+            if (tipoPesquisa.equals("nome")){
+                if (listaRepisMovimentoPatronal.get(i).getPessoa().getNome().contains(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimentoPatronal.get(i));
+            }else if (tipoPesquisa.equals("cnpj")){
+                if (listaRepisMovimentoPatronal.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimentoPatronal.get(i));
+            }else if (tipoPesquisa.equals("protocolo")){
+                if (Integer.toString(listaRepisMovimentoPatronal.get(i).getId()).equals(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimentoPatronal.get(i));
+            }else if (tipoPesquisa.equals("status")){
+                if (listaRepisMovimentoPatronal.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimentoPatronal.get(i));
+            }else if (tipoPesquisa.equals("socilitante")){
+                if (listaRepisMovimentoPatronal.get(i).getContato().toUpperCase().contains(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimentoPatronal.get(i));
+            }
+        }
+        
+        listaRepisMovimentoPatronal.clear();
+        
+        listaRepisMovimentoPatronal.addAll(lista);
+        return "webLiberacaoREPIS";
+    }
+    
     public void limpar() {
         msg = "";
         repisMovimento = new RepisMovimento();
@@ -156,7 +196,7 @@ public class WebREPISJSFBean {
             msg = " PROCURAR SÍNDICATO! ";
             return null;
         } else {
-            if (repisMovimento.getContato().equals("")) {
+            if (repisMovimento.getContato().isEmpty()) {
                 msg = " Informar o nome do solicitante! ";
                 return null;
             }
@@ -218,6 +258,8 @@ public class WebREPISJSFBean {
                     setIdRepisStatus(i);
                 }
             }
+            WebREPISDB dbw = new WebREPISDBToplink();
+            escritorio = dbw.pesquisaEscritorioDaEmpresa(repisMovimento.getPessoa().getId()).getPessoa();
         }
         return "webLiberacaoREPIS";
     }
@@ -254,7 +296,7 @@ public class WebREPISJSFBean {
                 PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), jur.getPorte().getId());
 
                 if (lote.getId() == -1) {
-                    msg = "Lote Salarial não encontrada, contate seu sindicato!";
+                    msg = "Lote Salarial não encontrado, contate seu sindicato!";
                     return null;
                 }
 
@@ -607,5 +649,29 @@ public class WebREPISJSFBean {
 
     public void setListaArquivosEnviados(List listaArquivosEnviados) {
         this.listaArquivosEnviados = listaArquivosEnviados;
+    }
+
+    public String getTipoPesquisa() {
+        return tipoPesquisa;
+    }
+
+    public void setTipoPesquisa(String tipoPesquisa) {
+        this.tipoPesquisa = tipoPesquisa;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public Pessoa getEscritorio() {
+        return escritorio;
+    }
+
+    public void setEscritorio(Pessoa escritorio) {
+        this.escritorio = escritorio;
     }
 }
