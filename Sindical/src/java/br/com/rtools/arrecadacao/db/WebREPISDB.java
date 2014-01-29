@@ -4,6 +4,7 @@ import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
 import br.com.rtools.arrecadacao.RepisMovimento;
+import br.com.rtools.pessoa.Juridica;
 import java.util.List;
 
 public interface WebREPISDB {
@@ -31,4 +32,8 @@ public interface WebREPISDB {
     public List listaProtocolosPorPatronalCnae(int id_patronal);
 
     public boolean pesquisaCnaePermitido(int id_cnae, int id_grupo_cidade);
+    
+    public List<RepisMovimento> listaRepisMovimento(String por, String descricao);
+    
+    public Juridica pesquisaEscritorioDaEmpresa(int id_pessoa);
 }
