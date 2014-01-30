@@ -21,24 +21,24 @@ import javax.persistence.Query;
 public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
 
     @Override
-    public List<MatriculaEscola> pesquisaMatriculaEscola(String porPesquisa, String descricaoCurso, String descricaoAluno, String comoPesquisa) {
+    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa) {
         try {
             List<MatriculaEscola> list;
             String complementoQuery = "";
             Query query;
-            if (porPesquisa.equals("matriculaIndividual")) {
+            if (tipoMatricula.equals("Individual")) {
                 if (!descricaoCurso.equals("")) {
                     complementoQuery = " AND UPPER(mi.curso.descricao) LIKE :descricaoCurso ";
                 }
-                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE UPPER(mi.matriculaEscola.aluno.nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
+                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE UPPER(mi.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
             } else {
                 if (!descricaoCurso.equals("")) {
                     complementoQuery = " AND UPPER(mt.turma.cursos.descricao) LIKE :descricaoCurso ";
                 }
-                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE UPPER(mt.matriculaEscola.aluno.nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
+                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE UPPER(mt.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
             }
             if (comoPesquisa.equals("Inicial")) {
-                query.setParameter("descricaoAluno", "" + descricaoAluno.toUpperCase() + "%");
+                query.setParameter("descricaoAluno", "" + descricao.toUpperCase() + "%");
                 if (!descricaoCurso.equals("")) {
                     query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
                 }
@@ -46,17 +46,19 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
                     query.setParameter("descricaoCurso", "" + descricaoCurso.toUpperCase() + "%");
                 }
             } else if (comoPesquisa.equals("Parcial")) {
-                query.setParameter("descricaoAluno", "%" + descricaoAluno.toUpperCase() + "%");
+                query.setParameter("descricaoAluno", "%" + descricao.toUpperCase() + "%");
                 if (!descricaoCurso.equals("")) {
                     query.setParameter("descricaoCurso", "%" + descricaoCurso.toUpperCase() + "%");
                 }
             }
             list = query.getResultList();
-            return list;
+            if (!list.isEmpty()) {
+                return list;                
+            }
         } catch (Exception e) {
             e.getMessage();
-            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
@@ -159,8 +161,8 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
             Query queryMovimentos = getEntityManager().createQuery("SELECT M FROM Movimento AS M WHERE M.lote.evt.id = " + me.getEvt().getId());
             List<Movimento> listMovimentos = (List<Movimento>) queryMovimentos.getResultList();
             salvarAcumuladoDB.abrirTransacao();
-            for (int i = 0; i < listMovimentos.size(); i++) {
-                if (!salvarAcumuladoDB.deletarObjeto((Movimento) salvarAcumuladoDB.pesquisaCodigo(listMovimentos.get(i).getId(), "Movimento"))) {
+            for (Movimento listMovimento : listMovimentos) {
+                if (!salvarAcumuladoDB.deletarObjeto((Movimento) salvarAcumuladoDB.pesquisaCodigo(listMovimento.getId(), "Movimento"))) {
                     salvarAcumuladoDB.desfazerTransacao();
                     return false;
                 }
