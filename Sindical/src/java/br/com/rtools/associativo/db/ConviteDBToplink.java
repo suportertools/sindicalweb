@@ -31,9 +31,11 @@ public class ConviteDBToplink extends DB implements ConviteDB {
         return new ArrayList();
     }
 
+    @Override
     public boolean existeSisPessoaSuspensa(ConviteSuspencao cs) {
         try {
-            Query query = getEntityManager().createNativeQuery("SELECT * FROM conv_suspencao WHERE id_sis_pessoa = "+cs.getSisPessoa().getId()+" AND ( dt_fim != null AND dt_fim > CURRENT_DATE);");
+            String queryString = "SELECT * FROM conv_suspencao WHERE id_sis_pessoa = " + cs.getSisPessoa().getId() + " AND dt_fim >= CURRENT_DATE ";
+            Query query = getEntityManager().createNativeQuery(queryString);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return true;
@@ -41,5 +43,70 @@ public class ConviteDBToplink extends DB implements ConviteDB {
         } catch (Exception e) {
         }
         return false;
+    }
+
+    
+    
+    
+    @Override
+    public List<ConviteSuspencao> listaPessoasSuspensas(ConviteSuspencao cs, boolean filtro, boolean fitroPorPessoa) {
+        return listaPessoasSuspensas(cs, filtro, fitroPorPessoa, "", "", "");
+    }
+
+    @Override
+    public List<ConviteSuspencao> listaPessoasSuspensas(ConviteSuspencao cs, boolean filtro, boolean fitroPorPessoa, String descricaoPesquisa, String porPesquisa, String comoPesquisa) {
+        List list = new ArrayList();
+        Query query;
+        String queryString = "";
+        String filtroQueryPessoa = "";
+        String filtroQueryA;
+        if (!descricaoPesquisa.equals("")) {
+            if (comoPesquisa.equals("I")) {
+                filtroQueryA = "'" + descricaoPesquisa + "%'";
+            } else {
+                filtroQueryA = "'%" + descricaoPesquisa + "%'";
+            }
+            try {
+                if (porPesquisa.equals("nome")) {
+                    queryString = " SELECT CS FROM ConviteSuspencao AS CS WHERE UPPER(CS.sisPessoa.nome) LIKE " + filtroQueryA.toUpperCase() + " ORDER BY CS.sisPessoa.nome ASC, CS.dtInicio DESC ";
+                } else {
+                    queryString = " SELECT CS FROM ConviteSuspencao AS CS WHERE CS.sisPessoa.documento = '" + descricaoPesquisa + "' ORDER BY CS.sisPessoa.nome ASC, CS.dtInicio DESC   ";
+                }
+                query = getEntityManager().createQuery(queryString);
+                list = query.getResultList();
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            } catch (Exception e) {
+                return list;
+            }
+        } else {
+            if (fitroPorPessoa) {
+                if (filtro) {
+                    filtroQueryPessoa = " WHERE CS.sisPessoa.id = " + cs.getSisPessoa().getId();
+                } else {
+                    filtroQueryPessoa = " AND CS.sisPessoa.id = " + cs.getSisPessoa().getId();
+                }
+            }
+            try {
+                if (!filtro) {
+                    queryString = " SELECT CS FROM ConviteSuspencao AS CS " + filtroQueryPessoa + " ORDER BY CS.sisPessoa.nome ASC, CS.dtInicio DESC ";
+                } else {
+                    if (fitroPorPessoa) {
+                        queryString = " SELECT CS FROM ConviteSuspencao AS CS " + filtroQueryPessoa + " ORDER BY CS.sisPessoa.nome ASC, CS.dtInicio DESC ";
+                    } else {
+                        queryString = " SELECT CS FROM ConviteSuspencao AS CS WHERE CS.dtFim IS NULL " + filtroQueryPessoa + " ORDER BY CS.sisPessoa.nome ASC, CS.dtInicio DESC ";
+                    }
+                }
+                query = getEntityManager().createQuery(queryString);
+                list = query.getResultList();
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            } catch (Exception e) {
+                return list;
+            }
+        }
+        return list;
     }
 }
