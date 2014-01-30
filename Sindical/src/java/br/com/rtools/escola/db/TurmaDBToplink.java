@@ -58,4 +58,29 @@ public class TurmaDBToplink extends DB implements TurmaDB {
         }
         return false;
     }
+    
+    @Override
+    public List listaTurmaAtiva() {
+        return listaTurmaAtivaPorFilialServico(-1, -1);
+    }
+
+    @Override
+    public List listaTurmaAtivaPorFilial(int idFilial) {
+        return listaTurmaAtivaPorFilialServico(idFilial, -1);
+    }
+    
+    @Override
+    public List listaTurmaAtivaPorFilialServico(int idFilial, int idServico) {
+        try {
+            String queryFilial = idFilial > 0 ? " AND T.filial.id = "+idFilial : "";
+            String queryServico = idServico > 0 ? " AND T.cursos.id = "+idServico : "";
+            Query qry = getEntityManager().createQuery("SELECT T FROM Turma AS T WHERE T.dtTermino >= CURRENT_DATE "+queryFilial+" "+queryServico+" ORDER BY T.cursos.descricao ASC, T.sala ASC, T.descricao ASC, T.dtInicio DESC, T.horaInicio ASC ");
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
 }
