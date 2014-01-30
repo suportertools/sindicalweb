@@ -11,4 +11,11 @@ public interface TurmaDB {
     public boolean existeTurmaProfessor(TurmaProfessor turmaProfessor);
 
     public boolean existeTurma(Turma turma);
+
+    public List listaTurmaAtiva();
+
+    public List listaTurmaAtivaPorFilial(int idFilial);
+    
+    public List listaTurmaAtivaPorFilialServico(int idFilial, int idServico);
+
 }

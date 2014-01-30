@@ -2,8 +2,10 @@ package br.com.rtools.escola;
 
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.utilitarios.DataHoje;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "ESC_MATR_INDIVIDUAL")
@@ -217,5 +219,15 @@ public class MatriculaIndividual implements java.io.Serializable {
 
     public String getDataTerminoString() {
         return DataHoje.converteData(dataTermino);
+    }
+
+    public void listenerInicio(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dataInicio = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void listenerTermino(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dataTermino = DataHoje.converte(format.format(event.getObject()));
     }
 }

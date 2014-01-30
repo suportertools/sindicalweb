@@ -11,7 +11,7 @@ public interface MatriculaEscolaDB {
 
     public EntityManager getEntityManager();
 
-    public List<MatriculaEscola> pesquisaMatriculaEscola(String porPesquisa, String descricaoCurso, String descricaoAluno, String comoPesquisa);
+    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa);
 
     public MatriculaIndividual pesquisaCodigoMIndividual(int matriculaEscola);
 

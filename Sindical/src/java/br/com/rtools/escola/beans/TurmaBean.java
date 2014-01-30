@@ -12,6 +12,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -22,7 +23,6 @@ import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.primefaces.event.SelectEvent;
 
@@ -48,6 +48,10 @@ public class TurmaBean implements Serializable {
     private Date horaTermino = new Date();
 
     public void salvar() {
+        if (listaServicos.isEmpty()) {
+            mensagem = "Cadastrar serviços!";
+            return;
+        }
         if (turma.getFilial().getId() == -1) {
             mensagem = "Informar a filial! Obs: Necessário acessar o sistema usando autênticação.";
             return;
@@ -136,15 +140,15 @@ public class TurmaBean implements Serializable {
                 break;
             }
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("turmaPesquisa", turmaC);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("turmaPesquisa", turmaC);
+        GenericaSessao.put("linkClicado", true);
         SimpleDateFormat formatador = new SimpleDateFormat("HH:mm");
         this.horaInicio = formatador.parse(turmaC.getHoraInicio());
         this.horaTermino = formatador.parse(turmaC.getHoraTermino());
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
+        if (GenericaSessao.exists("urlRetorno")) {
             return "turma";
         } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            return (String) GenericaSessao.getString("urlRetorno");
         }
     }
 
@@ -152,9 +156,9 @@ public class TurmaBean implements Serializable {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (turma.getId() != -1) {
             salvarAcumuladoDB.abrirTransacao();
-            for (int i = 0; i < listaTurmaProfessor.size(); i++) {
-                if (listaTurmaProfessor.get(i).getId() != -1) {
-                    if (!salvarAcumuladoDB.deletarObjeto((TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor.get(i).getId(), "TurmaProfessor"))) {
+            for (TurmaProfessor listaTurmaProfessor1 : listaTurmaProfessor) {
+                if (listaTurmaProfessor1.getId() != -1) {
+                    if (!salvarAcumuladoDB.deletarObjeto((TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor1.getId(), "TurmaProfessor"))) {
                         salvarAcumuladoDB.desfazerTransacao();
                         mensagem = "Erro ao excluir Professores!";
                         return;
@@ -253,9 +257,7 @@ public class TurmaBean implements Serializable {
             ServicosDB db = new ServicosDBToplink();
             List list = db.pesquisaTodos(150);
             for (int i = 0; i < list.size(); i++) {
-                listaServicos.add(new SelectItem(new Integer(i),
-                        (String) ((Servicos) list.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) list.get(i)).getId())));
+                listaServicos.add(new SelectItem((int) i, (String) ((Servicos) list.get(i)).getDescricao(), Integer.toString(((Servicos) list.get(i)).getId())));
             }
         }
         return listaServicos;
@@ -270,9 +272,7 @@ public class TurmaBean implements Serializable {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<Professor> list = (List<Professor>) salvarAcumuladoDB.listaObjeto("Professor", true);
             for (int i = 0; i < list.size(); i++) {
-                listaProfessores.add(new SelectItem(new Integer(i),
-                        (String) (list.get(i).getProfessor().getNome()),
-                        Integer.toString(list.get(i).getId())));
+                listaProfessores.add(new SelectItem((int) i, (String) (list.get(i).getProfessor().getNome()), Integer.toString(list.get(i).getId())));
 
             }
         }
@@ -288,22 +288,19 @@ public class TurmaBean implements Serializable {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<ComponenteCurricular> list = (List<ComponenteCurricular>) salvarAcumuladoDB.listaObjeto("ComponenteCurricular", true);
             for (int i = 0; i < list.size(); i++) {
-                listaComponenteCurricular.add(new SelectItem(new Integer(i),
-                        (String) (list.get(i).getDescricao()),
-                        Integer.toString(list.get(i).getId())));
+                listaComponenteCurricular.add(new SelectItem((int) i, (String) (list.get(i).getDescricao()), Integer.toString(list.get(i).getId())));
             }
         }
         return listaComponenteCurricular;
     }
 
-    public void setListaComponenteCurricular(List<SelectItem> listaProfessores) {
-        this.listaProfessores = listaProfessores;
+    public void setListaComponenteCurricular(List<SelectItem> listaComponenteCurricular) {
+        this.listaComponenteCurricular = listaComponenteCurricular;
     }
 
     public Turma getTurma() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa") != null) {
-            turma = (Turma) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("turmaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("turmaPesquisa");
+        if (GenericaSessao.exists("turmaPesquisa")) {
+            turma = (Turma) GenericaSessao.getObject("turmaPesquisa", true);
         }
         if (turma.getFilial().getId() == -1) {
             getMacFilial();
@@ -384,8 +381,8 @@ public class TurmaBean implements Serializable {
     }
 
     public MacFilial getMacFilial() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
-            macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+        if (GenericaSessao.exists("acessoFilial")) {
+            macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial", true);
             msgStatusFilial = "";
         } else {
             msgStatusFilial = "Informar filial";

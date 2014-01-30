@@ -7,8 +7,10 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Moeda;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "MATR_ESCOLA")
@@ -337,4 +339,14 @@ public class MatriculaEscola implements java.io.Serializable {
     public void setValorDescontoProporcional(float valorDescontoProporcional) {
         this.valorDescontoProporcional = valorDescontoProporcional;
     }
-}
+    
+    public void listenerData(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.dataMatricula = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void listenerStatus(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        this.status = DataHoje.converte(format.format(event.getObject()));
+    }
+} 
