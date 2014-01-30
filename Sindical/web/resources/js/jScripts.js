@@ -157,7 +157,7 @@ function marcarTodosCheckbox() {
         } else {
             $(this).removeAttr("checked");
         }
-    })
+    });
 }
 
 function insereTextoA(valorBotao, idTextarea){
@@ -234,7 +234,7 @@ function mozWrap(txtarea, open, close) {
 
 function HighlightAll(theField) {
     window.status = "Conteúdo selecionado e copiado para a área de transferência!";
-    theField = theField;
+    //theField = theField;
 //    therange = theField.createTextRange();
 //    therange.execCommand("Copy");
 }
