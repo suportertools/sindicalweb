@@ -5,6 +5,8 @@ import br.com.rtools.associativo.ConviteSuspencao;
 import br.com.rtools.associativo.db.ConviteDB;
 import br.com.rtools.associativo.db.ConviteDBToplink;
 import br.com.rtools.sistema.SisPessoa;
+import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -26,16 +28,16 @@ public class ConviteSuspencaoBean implements Serializable {
     private String descricaoPesquisa = "";
     private boolean filtro = false;
     private boolean filtroPorPessoa = false;
-    private List<ConviteSuspencao> listaPessoasSuspencas = new ArrayList();
-    private List<SelectItem> listaMotivoSuspencao = new ArrayList();
-    private int idSuspencao = 0;    
-    
-    public void novo () {
+    private List<ConviteSuspencao> listaPessoasSuspencas = new ArrayList<ConviteSuspencao>();
+    private List<SelectItem> listaMotivoSuspencao = new ArrayList<SelectItem>();
+    private int idSuspencao = 0;
+
+    public void novo() {
         conviteSuspencao = new ConviteSuspencao();
         mensagem = "";
         listaPessoasSuspencas.clear();
         descricaoPesquisa = "";
-    }    
+    }
 
     public void salvar() {
         if (conviteSuspencao.getSisPessoa().getId() == -1) {
@@ -45,6 +47,18 @@ public class ConviteSuspencaoBean implements Serializable {
         if (listaMotivoSuspencao.isEmpty()) {
             mensagem = "Informar o motivo da susponção!";
             return;
+        }
+        DataHoje hoje = new DataHoje();
+        int dataHoje = DataHoje.converteDataParaInteger(DataHoje.data());
+        int dataInicio = DataHoje.converteDataParaInteger(conviteSuspencao.getInicio());
+        int dataFim = DataHoje.converteDataParaInteger(conviteSuspencao.getFim());
+        if (dataInicio < dataHoje) {
+            mensagem = "A data de inicio deve ser maior ou igual a data de hoje!";
+            return;            
+        }
+        if (dataFim < dataInicio) {
+            mensagem = "A data de fim deve ser maior ou igual a data final!";
+            return;            
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         conviteSuspencao.setConviteMotivoSuspencao((ConviteMotivoSuspencao) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaMotivoSuspencao.get(idSuspencao).getDescription()), "ConviteMotivoSuspencao"));
@@ -93,6 +107,22 @@ public class ConviteSuspencaoBean implements Serializable {
         }
     }
 
+    public void remover(ConviteSuspencao cs) {
+        if (cs.getId() != -1) {
+            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+            dB.abrirTransacao();
+            if (dB.deletarObjeto((ConviteSuspencao) dB.pesquisaObjeto(cs.getId(), "ConviteSuspencao"))) {
+                dB.comitarTransacao();
+                listaPessoasSuspencas.clear();
+                conviteSuspencao = new ConviteSuspencao();                
+                GenericaMensagem.info("Sucesso", "Registro excluído");
+            } else {
+                dB.desfazerTransacao();
+                GenericaMensagem.warn("Erro", "Ao excluir registro!");
+            }
+        }
+    }
+
     public boolean isFiltro() {
         return filtro;
     }
@@ -134,7 +164,7 @@ public class ConviteSuspencaoBean implements Serializable {
     }
 
     public ConviteSuspencao getConviteSuspencao() {
-        if(GenericaSessao.exists("sisPessoaPesquisa")) {
+        if (GenericaSessao.exists("sisPessoaPesquisa")) {
             conviteSuspencao.setSisPessoa((SisPessoa) GenericaSessao.getObject("sisPessoaPesquisa", true));
         }
         return conviteSuspencao;
@@ -161,6 +191,18 @@ public class ConviteSuspencaoBean implements Serializable {
     }
 
     public List<ConviteSuspencao> getListaPessoasSuspencas() {
+        if (listaPessoasSuspencas.isEmpty()) {
+            ConviteDB conviteDB = new ConviteDBToplink();
+            if (descricaoPesquisa.equals("")) {
+                if (conviteSuspencao.getSisPessoa().getId() != -1) {
+                    listaPessoasSuspencas = (List<ConviteSuspencao>) conviteDB.listaPessoasSuspensas(conviteSuspencao, true, true);
+                } else {
+                    listaPessoasSuspencas = (List<ConviteSuspencao>) conviteDB.listaPessoasSuspensas(conviteSuspencao, filtro, false);
+                }
+            } else {
+                listaPessoasSuspencas = (List<ConviteSuspencao>) conviteDB.listaPessoasSuspensas(conviteSuspencao, filtro, false, descricaoPesquisa, porPesquisa, comoPesquisa);
+            }
+        }
         return listaPessoasSuspencas;
     }
 
@@ -169,11 +211,13 @@ public class ConviteSuspencaoBean implements Serializable {
     }
 
     public List<SelectItem> getListaMotivoSuspencao() {
-        if(listaMotivoSuspencao.isEmpty()) {
+        if (listaMotivoSuspencao.isEmpty()) {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
             List<ConviteMotivoSuspencao> list = (List<ConviteMotivoSuspencao>) dB.listaObjeto("ConviteMotivoSuspencao", true);
-            for (int i = 0; i < list.size(); i++) {
-               listaMotivoSuspencao.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+            int i = 0;
+            for (ConviteMotivoSuspencao cms : list) {
+                listaMotivoSuspencao.add(new SelectItem(i, cms.getDescricao(), "" + cms.getId()));
+                i++;
             }
         }
         return listaMotivoSuspencao;

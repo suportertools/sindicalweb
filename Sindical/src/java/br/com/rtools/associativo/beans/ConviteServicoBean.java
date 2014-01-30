@@ -28,7 +28,7 @@ public class ConviteServicoBean implements Serializable {
 
     public void salvar() {
         if (listaServicos.isEmpty()) {
-            GenericaMensagem.warn("Validação", "Pesquisar serviço!");
+            GenericaMensagem.warn("Validação", "Cadastrar serviço!");
             return;
         }
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
@@ -37,24 +37,20 @@ public class ConviteServicoBean implements Serializable {
             dB.abrirTransacao();
             if (dB.inserirObjeto(conviteServico)) {
                 dB.comitarTransacao();
-                //GenericaMensagem.info("Sucesso", "Registro adicionado.");
                 mensagem = "Registro inserido com sucesso";
                 listaConviteServicos.clear();
             } else {
                 dB.desfazerTransacao();
-                //GenericaMensagem.warn("Erro", "Ao adicionar registro.");
                 mensagem = "Erro ao adicionar registro!";
             }
         } else {
             dB.abrirTransacao();
             if (dB.alterarObjeto(conviteServico)) {
                 dB.comitarTransacao();
-                //GenericaMensagem.info("Sucesso", "Registro atualizado.");
                 mensagem = "Registro atualizado com sucesso";
                 listaConviteServicos.clear();
             } else {
                 dB.desfazerTransacao();
-                //GenericaMensagem.warn("Erro", "Ao atualizar registro!");
                 mensagem = "Erro ao atualizar registro!";
             }
         }
@@ -84,7 +80,7 @@ public class ConviteServicoBean implements Serializable {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
             dB.abrirTransacao();
             if (dB.alterarObjeto(cs)) {
-                if(cs.getId() == conviteServico.getId()) {
+                if (cs.getId() == conviteServico.getId()) {
                     conviteServico = cs;
                 }
                 dB.comitarTransacao();
@@ -109,12 +105,10 @@ public class ConviteServicoBean implements Serializable {
             dB.abrirTransacao();
             if (dB.deletarObjeto((ConviteServico) dB.pesquisaCodigo(cs.getId(), "ConviteServico"))) {
                 dB.comitarTransacao();
-                //GenericaMensagem.info("Sucesso", "Registro excluído.");
                 mensagem = "Registro excluído com sucesso";
                 listaConviteServicos.clear();
             } else {
                 dB.desfazerTransacao();
-                //GenericaMensagem.warn("Erro", "Ao excluir registro!");
                 mensagem = "Erro ao excluir registro!";
             }
         }
@@ -167,11 +161,10 @@ public class ConviteServicoBean implements Serializable {
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            List list = db.pesquisaTodos(122);
-            for (int i = 0; i < list.size(); i++) {
-                listaServicos.add(new SelectItem(new Integer(i),
-                        (String) ((Servicos) list.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) list.get(i)).getId())));
+            List<Servicos> lista = (List<Servicos>) db.pesquisaTodos(122);
+            int i = 0;
+            for (Servicos s : lista) {
+                listaServicos.add(new SelectItem(i, s.getDescricao(), Integer.toString((s.getId()))));
             }
         }
         return listaServicos;
