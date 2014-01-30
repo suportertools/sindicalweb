@@ -7,7 +7,10 @@ import java.util.List;
 public interface ConviteDB {
 
     public List<ConviteServico> conviteServicoExiste(ConviteServico cs);
-    
+
     public boolean existeSisPessoaSuspensa(ConviteSuspencao cs);
 
+    public List<ConviteSuspencao> listaPessoasSuspensas(ConviteSuspencao cs, boolean filtro, boolean fitroPorPessoa);
+
+    public List<ConviteSuspencao> listaPessoasSuspensas(ConviteSuspencao cs, boolean filtro, boolean fitroPorPessoa, String descricaoPesquisa, String porPesquisa, String comoPesquisa);
 }
