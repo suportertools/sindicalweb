@@ -1,6 +1,5 @@
 package br.com.rtools.escola.db;
 
-import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
