@@ -33,7 +33,7 @@ public class ConviteServico implements Serializable {
     private boolean sabado;
     @Column(name = "IS_DOMINGO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean domingo;
-    @Column(name = "IS_FERIADOS", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    @Column(name = "IS_FERIADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean feriado;
 
     public ConviteServico() {
