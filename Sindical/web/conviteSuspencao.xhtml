@@ -17,27 +17,37 @@
             <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
             <h:form id="form_convite_suspencao">            
                 <p:panel styleClass="wrapper no-border">
+                    <p:growl id="growl" showDetail="true"/> 
                     <p:outputLabel value="Convite Suspenção" styleClass="fonteHeader" />
                     <c:set scope="request" var="object" value="${conviteSuspencaoBean.conviteSuspencao}"/>
                     <div style="clear: both;"></div>
-                    <p:panel id="id_panel_convite_suspencao" styleClass="no-border">
-                        <h:panelGrid columns="2" id="id_panel_novo">
+                    <p:panel id="id_panel_convite_suspencao">
+                        <h:panelGrid columns="2" id="id_panel_novo" cellpadding="5">
                             <p:commandButton icon="ui-icon-search" title="Pesquisar pessoa" action="#{chamadaPaginaBean.pesquisaSisPessoa()}" id="idPesquisarPessoa" immediate="true"/>
                             <h:column>
                                 <p:outputLabel value="PESQUISAR PESSOA" style="border-bottom: 1px dashed gray; color: gray;" for="idPesquisarPessoa" rendered="#{conviteSuspencaoBean.conviteSuspencao.sisPessoa.id == -1}"/>
                                 <p:outputLabel value="#{conviteSuspencaoBean.conviteSuspencao.sisPessoa.nome} - CNPJ/CPF: #{conviteSuspencaoBean.conviteSuspencao.sisPessoa.documento}" for="idPesquisarPessoa" rendered="#{conviteSuspencaoBean.conviteSuspencao.sisPessoa.id != -1}"/>
                             </h:column>
                             <p:outputLabel value="Motivo suspenção" for="idDataInicio"/>
-                            <p:selectOneMenu value="#{conviteSuspencaoBean.idSuspencao}" >
-                                <f:selectItems value="#{conviteSuspencaoBean.listaMotivoSuspencao}"/>
-                            </p:selectOneMenu>
-                            <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtInicio}" id="idDataInicio">
-                                <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataInicioListener}" />
-                            </p:calendar>
-                            <p:outputLabel value="Data saída:" for="idDataFim" />
-                            <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtFim}" id="idDataFim">
-                                <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataFimListener}" />
-                            </p:calendar>
+                            <h:column>
+                                <p:selectOneMenu value="#{conviteSuspencaoBean.idSuspencao}" >
+                                    <f:selectItems value="#{conviteSuspencaoBean.listaMotivoSuspencao}"/>
+                                </p:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <p:outputLabel value="Data inicio: " />
+                            </h:column>
+                            <h:column>
+                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtInicio}" id="idDataInicio" size="8" readonlyInput="true">
+                                    <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataInicioListener}" />
+                                </p:calendar>
+                                <p:outputLabel value="Data saída:" for="idDataFim" styleClass="margin-left-max"/>
+                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtFim}" id="idDataFim" styleClass="margin-left-max" size="8" readonlyInput="true">
+                                    <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataFimListener}" />
+                                </p:calendar>
+                                <h:column>
+                                </h:column>
+                            </h:column>
                             <p:outputLabel value="Obs.:" title="Observação (es)" />
                             <p:inputTextarea value="#{conviteSuspencaoBean.conviteSuspencao.sisPessoa.observacao}" style="resize: none;" cols="50" rows="5"></p:inputTextarea>
                         </h:panelGrid>
@@ -46,7 +56,7 @@
                             <p:commandButton value="Novo" action="#{conviteSuspencaoBean.novo}" update="id_panel_convite_suspencao i_painel_filtro id_acao i_grid_convite_suspencao"/>
                         </h:panelGrid>                    
                     </p:panel>
-                    <p:panel styleClass="no-border">
+                    <p:panel styleClass="margin-top-max">
                         <h:panelGrid columns="10" id="i_painel_filtro">
                             <h:outputLabel value="Filtros: " />
                             <h:selectBooleanCheckbox id="idFiltro" value="#{conviteSuspencaoBean.filtro}" valueChangeListener="#{conviteSuspencaoBean.listaPessoasSuspencas.clear()}" label="Todos" rendered="#{conviteSuspencaoBean.conviteSuspencao.sisPessoa.id == -1}" disabled="#{!conviteSuspencaoBean.descricaoPesquisa.equals('')}">
@@ -71,28 +81,28 @@
                             <p:commandButton id="botao_final" action="#{conviteSuspencaoBean.acaoPesquisaParcial}" value="Parcial" actionListener="#{conviteSuspencaoBean.listaPessoasSuspencas.clear()}" update="i_grid_convite_suspencao" disabled="#{conviteSuspencaoBean.descricaoPesquisa.equals('')}"/>
                         </h:panelGrid>
                         <p:panel styleClass="no-border" id="i_grid_convite_suspencao">
-                            <p:dataTable value="#{conviteSuspencao.listaPessoasSuspencas}" var="conviteSuspencao" scrollHeight="250" scrollable="true" styleClass="margin-top-max">
-                                <p:column headerText="ID">
-                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.id}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" />
-                                </p:column>  
+                            <p:dataTable value="#{conviteSuspencaoBean.listaPessoasSuspencas}" var="conviteSuspencao" scrollHeight="150" scrollable="true" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado">
                                 <p:column headerText="Pessoa">
-                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.sisPessoa.nome}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" />
+                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.sisPessoa.nome}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" update=":form_convite_suspencao:id_panel_novo :form_convite_suspencao:i_painel_filtro"/>
                                 </p:column>
-                                <p:column headerText="Documento">
-                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.sisPessoa.documento}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}"/>
+                                <p:column headerText="Documento" style="width: 120px" styleClass="text-center" >
+                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.sisPessoa.documento}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" update=":form_convite_suspencao:id_panel_novo :form_convite_suspencao:i_painel_filtro"/>
                                 </p:column>
-                                <p:column headerText="Data entrada">
-                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.inicio}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" />
+                                <p:column headerText="Data entrada" styleClass="text-center" style="width: 100px">
+                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.inicio}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" update=":form_convite_suspencao:id_panel_novo :form_convite_suspencao:i_painel_filtro"/>
                                 </p:column>  
-                                <p:column headerText="Data saída">
-                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.fim}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" />
+                                <p:column headerText="Data saída" styleClass="text-center" style="width: 100px">
+                                    <p:commandLink styleClass="underline-hover" value="#{conviteSuspencao.fim}" action="#{conviteSuspencaoBean.editar(conviteSuspencao)}" update=":form_convite_suspencao:id_panel_novo :form_convite_suspencao:i_painel_filtro"/>
+                                </p:column>
+                                <p:column style="width: 50px" styleClass="text-center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{conviteSuspencaoBean.remover(conviteSuspencao)}" update=":form_convite_suspencao:i_grid_convite_suspencao :form_convite_suspencao:growl :form_convite_suspencao:id_panel_novo :form_convite_suspencao:i_painel_filtro"/>
                                 </p:column>
                             </p:dataTable>
                         </p:panel>
                     </p:panel>
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
-                            <p:commandButton value="Sim" title="Salvar" action="#{conviteSuspencaoBean.salvar}" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
+                            <p:commandButton value="Sim" title="Salvar" action="#{conviteSuspencaoBean.salvar}" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" update="i_panel_mensagem id_panel_novo i_grid_convite_suspencao"/>
                             <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
                         </p:panelGrid>
                     </p:dialog>
