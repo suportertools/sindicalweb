@@ -5,7 +5,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "CONV_MOTIVO_SUSPENCAO")
-@NamedQuery(name = "ConviteMotivoSuspencao.pesquisaID", query = "SELECT CONMS FROM ConviteMotivoSuspencao CONMS WHERE CONMS.id = :pid")
+@NamedQueries({
+    @NamedQuery(name = "ConviteMotivoSuspencao.pesquisaID", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS WHERE CONMS.id = :pid"),
+    @NamedQuery(name = "ConviteMotivoSuspencao.findAll", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS ORDER BY CONMS.descricao ASC")
+})
 public class ConviteMotivoSuspencao implements Serializable {
 
     @Id
