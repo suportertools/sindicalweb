@@ -339,52 +339,52 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         return "homologacao";
     }
 
-    public String salvar() {
+    public void salvar() {
         List listDocumento;
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
             msgConfirma = "Digite o nome do Funcionário!";
-            return null;
+            return;
         }
         // SALVAR FISICA -----------------------------------------------
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));        
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
             msgConfirma = "Documento Inválido!";
-            return null;
+            return;
         }
         FisicaDB fisicaDB = new FisicaDBToplink();
         sv.abrirTransacao();
         if (fisica.getId() == -1) {
             if (!fisicaDB.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(), fisica.getDtNascimento(), fisica.getRg()).isEmpty()) {
                 msgConfirma = "Esta pessoa já esta cadastrada!";
-                return null;
+                return;
             }
             listDocumento = fisicaDB.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!listDocumento.isEmpty()) {
                 msgConfirma = "Documento já existente!";
-                return null;
+                return;
             }
             if (sv.inserirObjeto(fisica.getPessoa())) {
                 sv.inserirObjeto(fisica);
             } else {
                 msgConfirma = "Erro ao Inserir pessoa!";
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         } else {
             listDocumento = fisicaDB.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
-            for (int i = 0; i < listDocumento.size(); i++) {
-                if (!listDocumento.isEmpty() && ((Fisica) listDocumento.get(i)).getId() != fisica.getId()) {
+            for (Object listDocumento1 : listDocumento) {
+                if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
                     msgConfirma = "Documento já existente!";
-                    return null;
+                    return;
                 }
             }
             List<Fisica> fisi = fisicaDB.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(), fisica.getDtNascimento(), fisica.getRg());
             if (!fisi.isEmpty()) {
-                for (int i = 0; i < fisi.size(); i++) {
-                    if (fisi.get(i).getId() != fisica.getId()) {
+                for (Fisica fisi1 : fisi) {
+                    if (fisi1.getId() != fisica.getId()) {
                         msgConfirma = "Esta pessoa já esta cadastrada!";
-                        return null;
+                        return;
                     }
                 }
             }
@@ -393,12 +393,12 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 } else {
                     msgConfirma = "Erro ao alterar Física!";
                     sv.desfazerTransacao();
-                    return null;
+                    return;
                 }
             } else {
                 msgConfirma = "Erro ao alterar Pessoa!";
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         }
         // -------------------------------------------------------------
@@ -407,7 +407,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         if (!sv.alterarObjeto(pessoaEmpresa)) {
             msgConfirma = "Erro ao alterar Pessoa Empresa!";
             sv.desfazerTransacao();
-            return null;
+            return;
         }
         agendamento.setDemissao((Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
         agendamento.setPessoaEmpresa(pessoaEmpresa);
@@ -420,10 +420,10 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 senha.setHoraChamada("");
                 if (!sv.alterarObjeto(senha)) {
                     msgConfirma = "Erro ao atualizar Senha!";
-                    return null;
+                    return;
                 }
             }
-        }        
+        }
         int intDataHoje = DataHoje.converteDataParaInteger(DataHoje.data());
         int intDataRetroativa = DataHoje.converteDataParaInteger(registro.getAgendamentoRetroativoString());
         if (nrStatus == 2 || nrStatus == 4) {
@@ -436,11 +436,8 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
                 agendamento.setHomologador(null);
             } else {
-//                if (intDataRetroativa >= intDataHoje) {
-//                    agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
-//                } else {
-//                }
-                agendamento.setStatus((Status) sv.pesquisaCodigo(5, "Status"));                    
+                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
+                agendamento.setHomologador(null);
             }
         }
         if (sv.alterarObjeto(agendamento)) {
@@ -448,7 +445,6 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             msgConfirma = "Registro atualizado com Sucesso!";
             limpar();
         }
-        return null;
     }
 
     public void homologar() {
