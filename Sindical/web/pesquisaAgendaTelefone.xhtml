@@ -111,22 +111,22 @@
                     <p:panel styleClass="margin-top-max" id="i_datatable_resultados">
                         <p:dataTable value="#{agendaTelefoneBean.listaAgendaTelefonesx}" var="agendaTelefone" scrollable="true" scrollHeight="300" emptyMessage="Nenhum resultado encontrado">
                             <p:column styleClass="text-center" headerText="Grupo Agenda">
-                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.grupoAgenda.descricao}" styleClass="underline-hover" style="text-transform: uppercase; " update=" :form_pesquisa_agenda_telefone:i_detalhes_contato" onclick="dgl_modal_detalhes.show();" />
+                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.grupoAgenda.descricao}" styleClass="underline-hover" style="text-transform: uppercase; "/>
                             </p:column>
                             <p:column styleClass="text-center" headerText="Nome">
-                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.nome}" styleClass="underline-hover" style="text-transform: uppercase; " update=":form_pesquisa_agenda_telefone:i_detalhes_contato" onclick="dgl_modal_detalhes.show();" />
+                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.nome}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Cidade / UF">
-                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.endereco.cidade.cidade} - #{agendaTelefone.agenda.endereco.cidade.uf}" onclick="dgl_modal_detalhes.show();" styleClass="underline-hover" style="text-transform: uppercase; " update=" :form_pesquisa_agenda_telefone:i_detalhes_contato" title="#{agendaTelefone.agenda.endereco.enderecoSimplesToString}" />
+                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.endereco.cidade.cidade} - #{agendaTelefone.agenda.endereco.cidade.uf}" styleClass="underline-hover" style="text-transform: uppercase; " title="#{agendaTelefone.agenda.endereco.enderecoSimplesToString}" />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Tipo Telefone">
-                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.tipoTelefone.descricao}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="dgl_modal_detalhes.show();" update=" :form_pesquisa_agenda_telefone:i_detalhes_contato" />
+                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.tipoTelefone.descricao}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Telefone">
-                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="+#{agendaTelefone.ddi} (#{agendaTelefone.ddd}) #{agendaTelefone.telefone}" styleClass="underline-hover" style="text-transform: uppercase; " onclick="dgl_modal_detalhes.show();" update=" :form_pesquisa_agenda_telefone:i_detalhes_contato" />
+                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="+#{agendaTelefone.ddi} (#{agendaTelefone.ddd}) #{agendaTelefone.telefone}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Contato">
-                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.contato}" styleClass="underline-hover" style="text-transform: uppercase;" onclick="dgl_modal_detalhes.show();" update=":form_pesquisa_agenda_telefone:i_detalhes_contato" />
+                                <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.contato}" styleClass="underline-hover" style="text-transform: uppercase;" />
                             </p:column>
                         </p:dataTable>
                     </p:panel>
