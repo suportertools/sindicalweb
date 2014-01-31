@@ -24,6 +24,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
@@ -331,26 +332,17 @@ public class AgendaTelefoneBean implements Serializable {
                 }
             }
             List<Agenda> listAgenda = agendaDB.pesquisaAgenda(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda);
-            for (int i = 0; i < listAgenda.size(); i++) {
+            for (Agenda listAgenda1 : listAgenda) {
                 String enderecoString = "";
-                if (listAgenda.get(i).getEndereco() != null) {
-                    enderecoString = listAgenda.get(i).getEndereco().getCidade().getCidade() + " / " + listAgenda.get(i).getEndereco().getCidade().getUf();
+                if (listAgenda1.getEndereco() != null) {
+                    enderecoString = listAgenda1.getEndereco().getCidade().getCidade() + " / " + listAgenda1.getEndereco().getCidade().getUf();
                 }
                 String pessoaString = "";
-                if (listAgenda.get(i).getPessoa() != null) {
-                    pessoaString = " - " + listAgenda.get(i).getPessoa().getNome();
+                if (listAgenda1.getPessoa() != null) {
+                    pessoaString = " - " + listAgenda1.getPessoa().getNome();
                 }
-
-                dtObj = new DataObject(
-                        listAgenda.get(i), // ARGUMENTO 0 - Agenda
-                        null, // ARGUMENTO 1 - Id
-                        null, // ARGUMENTO 2 - Grupo Agenda
-                        null, // ARGUMENTO 3 - Nome
-                        enderecoString, // ARGUMENTO 4 - Cidade / Estado
-                        pessoaString // ARGUMENTO 5 - Pessoa
-                );
-
-                listaAgendas.add(dtObj);
+                dtObj = new DataObject(listAgenda1, null, null, null, enderecoString, pessoaString // ARGUMENTO 5 - Pessoa
+                );              listaAgendas.add(dtObj);
             }
         }
         return listaAgendas;
@@ -484,7 +476,7 @@ public class AgendaTelefoneBean implements Serializable {
         //return "agendaTelefone";
     }
 
-    public String visualizar(AgendaTelefone at) {
+    public void visualizar(AgendaTelefone at) {
         pessoa = new Pessoa();
         endereco = new Endereco();
         agendaTelefone = at;
@@ -499,7 +491,8 @@ public class AgendaTelefoneBean implements Serializable {
         }
         listaAgendaTelefones.clear();
         getListaAgendaTelefones();
-        return null;
+        RequestContext.getCurrentInstance().update("form_pesquisa_agenda_telefone:i_detalhes_contato");
+        RequestContext.getCurrentInstance().execute("dgl_modal_detalhes.show();");
     }
 
     public int getIdTipoTelefone() {
@@ -629,7 +622,7 @@ public class AgendaTelefoneBean implements Serializable {
             int i = 0;
             listaDDD.add(new SelectItem(i, "DDD", ""));
             for (i = 0; i < list.size(); i++) {
-                listaDDD.add(  new SelectItem( i + 1, ((List) list.get(i)).get(0).toString(), ((List) list.get(i)).get(0).toString()));
+                listaDDD.add(new SelectItem(i + 1, ((List) list.get(i)).get(0).toString(), ((List) list.get(i)).get(0).toString()));
             }
         }
         return listaDDD;
