@@ -52,6 +52,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private String statusEmpresa = "REGULAR";
     private String cepEndereco = "";
     private String strContribuinte = "";
+    private String emailEmpresa = "";
     private List listaGrid = new ArrayList();
     private List listaMovimento = new ArrayList();
     private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
@@ -158,8 +159,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         ImprimirBoleto imp = new ImprimirBoleto();
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
-        for (int i = 0; i < listaMovimento.size(); i++) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaMovimento.get(i)).get(0), "Movimento");
+        for (Object listaMovimento1 : listaMovimento) {
+            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaMovimento1).get(0), "Movimento");
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -171,7 +172,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         try {
             Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
 
-            Pessoa pessoa;
+            Pessoa pessoa = new Pessoa();
+            String emailPessoaHistorico = "";
             if (enviarPara.equals("contabilidade")) {
                 if (juridica.getContabilidade() == null) {
                     msgConfirma = "Empresa sem contabilidade";
@@ -189,6 +191,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     return null;
                 }
                 pessoa = juridica.getPessoa();
+            }
+            if (!emailEmpresa.equals("")) {
+                pessoa.setEmail1(emailEmpresa);
             }
 
             String nome = imp.criarLink(pessoa, reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
@@ -530,6 +535,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             msgAgendamento = "Fins de semana não permitido!";
             return null;
         }
+        emailEmpresa = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         Registro reg = (Registro) salvarAcumuladoDB.pesquisaObjeto(1, "Registro");
         int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(reg.getAgendamentoRetroativo()));
@@ -914,6 +920,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         imprimirPro = false;
         renderTransfere = false;
         listaHorarioTransferencia.clear();
+        emailEmpresa = "";
         return "agendamento";
     }
 
@@ -1591,5 +1598,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void setListaHorarios(List<ListaAgendamento> listaHorarios) {
         this.listaHorarios = listaHorarios;
+    }
+
+    public String getEmailEmpresa() {
+        return emailEmpresa;
+    }
+
+    public void setEmailEmpresa(String emailEmpresa) {
+        this.emailEmpresa = emailEmpresa;
     }
 }
