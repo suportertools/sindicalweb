@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -44,8 +46,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class WebREPISJSFBean {
-
+@ManagedBean
+@SessionScoped
+public class WebREPISBean {
     private Pessoa pessoa = new Pessoa();
     private Endereco endereco = new Endereco();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
@@ -72,7 +75,7 @@ public class WebREPISJSFBean {
     private String descricao = "";
     private List listaArquivosEnviados = new ArrayList();
 
-    public WebREPISJSFBean() {
+    public WebREPISBean() {
         UsuarioDB db = new UsuarioDBToplink();
         getPessoa();
         pessoaContribuinte = db.ValidaUsuarioContribuinteWeb(pessoa.getId());
@@ -128,6 +131,39 @@ public class WebREPISJSFBean {
         
         listaRepisMovimentoPatronal.addAll(lista);
         return "webLiberacaoREPIS";
+    }
+    
+    public String pesquisarPorSolicitante(){
+        WebREPISDB db = new WebREPISDBToplink();
+        
+        //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
+        listaRepisMovimento.clear();
+        getListaRepisMovimento();
+        
+        List<RepisMovimento>  lista = new ArrayList<RepisMovimento>();
+        for(int i = 0; i < listaRepisMovimento.size(); i++){
+            if (tipoPesquisa.equals("nome")){
+                if (listaRepisMovimento.get(i).getPessoa().getNome().contains(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimento.get(i));
+            }else if (tipoPesquisa.equals("cnpj")){
+                if (listaRepisMovimento.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimento.get(i));
+            }else if (tipoPesquisa.equals("protocolo")){
+                if (Integer.toString(listaRepisMovimento.get(i).getId()).equals(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimento.get(i));
+            }else if (tipoPesquisa.equals("status")){
+                if (listaRepisMovimento.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimento.get(i));
+            }else if (tipoPesquisa.equals("socilitante")){
+                if (listaRepisMovimento.get(i).getContato().toUpperCase().contains(descricao.toUpperCase()))
+                    lista.add(listaRepisMovimento.get(i));
+            }
+        }
+        
+        listaRepisMovimento.clear();
+        
+        listaRepisMovimento.addAll(lista);
+        return "webSolicitaREPIS";
     }
     
     public void limpar() {
@@ -476,17 +512,19 @@ public class WebREPISJSFBean {
     }
 
     public List<SelectItem> getListaComboPessoa() {
-        JuridicaDB dbJur = new JuridicaDBToplink();
-        getPessoa();
-        List<Juridica> select = null;
-        select = dbJur.listaContabilidadePertencente(dbJur.pesquisaJuridicaPorPessoa(pessoa.getId()).getId());
-        if (select != null) {
-            int i = 0;
-            while (i < select.size()) {
-                listaComboPessoa.add(new SelectItem(new Integer(i),
-                        (String) (select.get(i)).getPessoa().getNome(),
-                        Integer.toString((select.get(i)).getPessoa().getId())));
-                i++;
+        if (listaComboPessoa.isEmpty()){
+            JuridicaDB dbJur = new JuridicaDBToplink();
+            getPessoa();
+            List<Juridica> select = null;
+            select = dbJur.listaContabilidadePertencente(dbJur.pesquisaJuridicaPorPessoa(pessoa.getId()).getId());
+            if (select != null) {
+                int i = 0;
+                while (i < select.size()) {
+                    listaComboPessoa.add(new SelectItem(new Integer(i),
+                            (String) (select.get(i)).getPessoa().getNome(),
+                            Integer.toString((select.get(i)).getPessoa().getId())));
+                    i++;
+                }
             }
         }
         return listaComboPessoa;
