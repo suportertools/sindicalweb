@@ -26,9 +26,9 @@
                         <h:panelGrid columns="2">
                             <h:panelGrid columns="2" width="400" >
                                 <p:commandButton id="idPesquisaPatronal" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" immediate="true" title="Pesquisar Pessoa Jurídica"/>
-                                <h:column>
-                                    <h:outputLabel styleClass="fontePadrao" value="Pesquisar Pessoa Jurídica" rendered="#{registroPatronalBean.patronal.pessoa.id == -1}" for="idPesquisaSocio"/>
-                                    <h:outputText value="#{registroPatronalBean.patronal.pessoa.nome}" styleClass="fontePadraoNegrito" title="Pessoa Jurídica" style="border-bottom: 2px dashed white; height: 15px; padding-bottom: 5px;" rendered="#{registroPatronalBean.patronal.pessoa.id != -1}"/>
+                                <h:column>                                    
+                                    <p:outputLabel value="PESQUISAR PESSOA JURÍDICA" style="border-bottom: 1px dashed gray; color: gray;" for="idPesquisaPatronal" rendered="#{registroPatronalBean.patronal.pessoa.id == -1}"/>
+                                    <p:outputLabel value="#{registroPatronalBean.patronal.pessoa.nome}" for="idPesquisaPatronal" rendered="#{registroPatronalBean.patronal.pessoa.id != -1}"/>
                                 </h:column>
                                 <p:commandButton id="idPesquisaConvencao" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaConvencao}" immediate="true" title="Pesquisar Convenção"/>
                                 <h:column>
