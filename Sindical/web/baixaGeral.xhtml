@@ -1,212 +1,223 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Baixa Geral</title>
+        <title>Sindical - Baixa Geral</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formBaixaGeral">
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Baixa Geral" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                </center>
-                <div class="divMae">
-                    <div class="fontePadrao divFundo">
-                        <table>
-                            <tr>
-                                <td class="textoDireita">
-                                    <h:outputText value="Recebimento: " styleClass="fontePadrao"/>
-                                </td>
-                                <td>
-                                    <h:selectOneMenu style="margin-right: 15px;" id="cbConta" value="#{baixaGeralBean.idConta}" disabled="#{baixaGeralBean.desHabilitaConta}" rendered="#{baixaGeralBean.tipo == 'caixa'}">
-                                        <f:selectItems value="#{baixaGeralBean.listaConta}"/>
-                                    </h:selectOneMenu>
-                                    
-                                    <h:outputLabel value="#{baixaGeralBean.banco}" styleClass="fontePadraoNegrito" rendered="#{baixaGeralBean.tipo == 'banco'}"/>
-                                    
-                                </td>
-                                <td class="textoDireita">
-                                    <h:outputLabel value="Quitação: " styleClass="fontePadrao" for="idQuitacao"/>
-                                </td>
-                                <td>
-                                    <h:inputText id="idQuitacao" value="#{baixaGeralBean.quitacao}" styleClass="data"  maxlength="10" size="8" disabled="#{baixaGeralBean.desHabilitaQuitacao}">
-                                        <a4j:ajax event="blur" render="idQuitacao, idVencimento" listener="#{baixaGeralBean.alteraVencimento}" />
-                                    </h:inputText>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="textoDireita">
-                                    <h:outputText value="Pagamento " styleClass="fontePadrao"/>
-                                </td>
-                                <td>
-                                    <h:selectOneMenu  id="cbTipoServico" value="#{baixaGeralBean.idTipoDoc}" style="margin-right: 15px" onchange="submit();">
-                                        <f:selectItems value="#{baixaGeralBean.listaTipoDoc}" />
-                                    </h:selectOneMenu>
-                                </td>
-                                <td class="textoDireita">
-                                    <h:outputLabel value="Valor: " styleClass="fontePadrao" for="idValor" />
-                                </td>
-                                <td>
-                                    <h:inputText id="idValor" value="#{baixaGeralBean.valor}" maxlength="20" size="10">
-                                    <a4j:ajax event="blur" render="idValor" />
-                                    </h:inputText>
-                                </td>                                                             
-                            </tr>
-                            <tr>
-                                <td class="textoDireita">
-                                    <h:outputLabel value="Número: " styleClass="fontePadrao" for="idNumero" />
-                                </td>
-                                <td>
-                                    <h:inputText id="idNumero" value="#{baixaGeralBean.numero}" maxlength="20" onblur="somenteNumeros(this);" style="margin-right: 25px;" disabled="#{baixaGeralBean.desHabilitaNumero}"/>
-                                </td>
-                                <td class="textoDireita">
-                                    <h:outputLabel value="Vencimento: " styleClass="fontePadrao textoDireita" for="idVencimento" />
-                                </td>
-                                <td>
-                                    <h:inputText id="idVencimento" value="#{baixaGeralBean.vencimento}" styleClass="data"  maxlength="10" size="8" disabled="#{baixaGeralBean.desHabilitadoVencimento}"/>
-                                </td>
-                            </tr>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Baixa Geral" styleClass="fonteHeader" />
+                        <h:form id="formBaixaGeral">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="2" rendered="#{baixaGeralBean.listaMovimentos.size() > 0}">
+                                    <p:column>
+                                        <h:outputLabel value="Valor total para Baixa" style="font-size: 12pt!important;"/><br />
+                                        <h:outputText value="R$ #{baixaGeralBean.total}" style="background: white; font-size: 20pt!important; margin-right: 80px"/>
+                                    </p:column>
 
-                            <tr>
-                                <td class="textoDireita">
-                                    <h:outputText value="Taxa: "  styleClass="fontePadraoNegrito" rendered="#{baixaGeralBean.tipo == 'banco'}"/>
-                                </td>
-                                <td>
-                                    <h:inputText id="idTaxa" value="#{baixaGeralBean.taxa}" maxlength="20" size="10" rendered="#{baixaGeralBean.tipo == 'banco'}">
-                                        <a4j:ajax event="blur" render="idTaxa" />
-                                    </h:inputText>
-                                </td>   
-                            </tr>
-                            <tr>
-                                <td class="textoDireita">
-                                    <h:outputText value="Total: "  styleClass="fontePadraoNegrito"/>
-                                </td>
-                                <td>
-                                    <div class="divFundo" style="margin: 2px;">
-                                        <h:panelGrid columns="3">
-                                            <h:outputText value="R$ " styleClass="fontePadrao" style="font-size: 10pt;"/>
-                                            <h:outputText value="#{baixaGeralBean.total}" styleClass="fontePadrao" style="background: white; font-size: 20pt;"/>
-                                        </h:panelGrid>
-                                    </div>
-                                </td>
-                                <td colspan="4"></td>
-                            </tr>
+                                    <p:column>
+                                        <h:outputLabel value="Tipo de Recebimento" rendered="#{baixaGeralBean.tipo == 'banco' or baixaGeralBean.tipo == 'caixa'}" style="font-size: 12pt!important;"/><br />
+                                        <p:selectOneMenu style="margin-right: 20px; padding-right: 10px" value="#{baixaGeralBean.idConta}" disabled="#{baixaGeralBean.desHabilitaConta}" rendered="#{baixaGeralBean.tipo == 'caixa'}">
+                                            <f:selectItems value="#{baixaGeralBean.listaConta}"/>
+                                        </p:selectOneMenu>
+                                        <br />
+                                        <h:outputLabel value="#{baixaGeralBean.banco}" rendered="#{baixaGeralBean.tipo == 'banco'}" style="font-size: 11pt!important; font-weight: bold; margin-right: 20px"/>
+                                    </p:column>
 
-                        </table>
-                        
-                        <h:panelGrid id="idPanel" columns="1" style="background: white" rendered="#{baixaGeralBean.idTipoDoc == 1 or baixaGeralBean.idTipoDoc == 2}">
-                            <h:outputText value=" Dados do cheque " styleClass="fontePadraoPequeno" />
-                            <br />
-                            <h:panelGrid columns="8" style="background: white">
-                                <h:outputText value="Agência: " styleClass="fontePadrao" />
-                                <h:inputText value="#{baixaGeralBean.chequeRec.agencia}" size="4"/>
-                                
-                                <h:outputText value="Conta: " styleClass="fontePadrao" />
-                                <h:inputText value="#{baixaGeralBean.chequeRec.conta}" size="8" />
+                                </h:panelGrid>
 
-                                <h:outputText value="Banco: " styleClass="fontePadrao" />
-                                <h:inputText value="#{baixaGeralBean.chequeRec.banco}" size="10" maxlength="10"/>
+                                <h:panelGrid id="i_recebimento" columns="7" style="margin-top: 10px">
+                                    <p:column>
+                                        <h:outputLabel value="DT. Quitação" /><br />
+                                        <p:inputMask value="#{baixaGeralBean.quitacao}" size="8" disabled="#{baixaGeralBean.desHabilitaQuitacao}" mask="99/99/9999" style="margin-right: 10px">
+                                            <p:ajax event="change" listener="#{baixaGeralBean.alteraVencimento}" />
+                                        </p:inputMask>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Tipo de Pagamento" /><br />
+                                        <p:selectOneMenu value="#{baixaGeralBean.idTipoDoc}" style="margin-right: 10px; padding-right: 20px">
+                                            <p:ajax event="change" listener="#{baixaGeralBean.atualizaTipo}" update="i_recebimento i_cheque i_cartao"/>
+                                            <f:selectItems value="#{baixaGeralBean.listaTipoDoc}" />
+                                        </p:selectOneMenu>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Valor" /><br />                                        
+                                        <p:inputText id="i_valor" value="#{baixaGeralBean.valor}" size="10" style="margin-right: 10px;">
+                                            <p:ajax event="blur" update="i_valor" />
+                                        </p:inputText>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Número" rendered="#{!baixaGeralBean.desHabilitaNumero}"/><br />                                        
+                                        <p:inputText value="#{baixaGeralBean.numero}" rendered="#{!baixaGeralBean.desHabilitaNumero}" style="margin-right: 10px;"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputLabel value="Vencimento" rendered="#{!baixaGeralBean.desHabilitadoVencimento}"/><br />                                        
+                                        <p:inputMask value="#{baixaGeralBean.vencimento}" size="8" rendered="#{!baixaGeralBean.desHabilitadoVencimento}" mask="99/99/9999" style="margin-right: 10px;"/>
+                                    </p:column>
+
+                                    <p:column>
+                                        <h:outputText value="Taxa" rendered="#{baixaGeralBean.tipo == 'banco'}"/><br />
+                                        <p:inputText id="i_taxa" value="#{baixaGeralBean.taxa}" size="10" rendered="#{baixaGeralBean.tipo == 'banco'}" style="margin-right: 10px;">
+                                            <p:ajax event="blur" update="i_taxa" />
+                                        </p:inputText>
+                                    </p:column>
+
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Adicionar Parcela" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral"  rendered="#{baixaGeralBean.idTipoDoc == 0 or baixaGeralBean.idTipoDoc == 8}"/>
+                                        
+                                        <p:commandButton value="Adicionar Parcela Cheque" title="Continuar e Inserir dados do Cheque" onclick="i_dlg_cheque.show()" rendered="#{baixaGeralBean.idTipoDoc == 1 or baixaGeralBean.idTipoDoc == 2}"/>
+                                        
+                                        <p:commandButton value="Adicionar Parcela Cartão" title="Continuar e Inserir dados do Cartão" onclick="i_dlg_cartao.show()" rendered="#{baixaGeralBean.idTipoDoc == 3 or baixaGeralBean.idTipoDoc == 4}"/>
+                                        
+                                        <p:commandButton value="Adicionar Parcela Banco" title="Continuar e Inserir dados do Banco" onclick="i_dlg_banco.show()" rendered="#{baixaGeralBean.idTipoDoc == 5 or baixaGeralBean.idTipoDoc == 6 or baixaGeralBean.idTipoDoc == 7}"/>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:panel>
+
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            
+                            <p:dataTable var="linha" id="tbl" value="#{baixaGeralBean.lista}" rowIndexVar="index" emptyMessage="Nenhum valor adicionado.">
+                                <p:column headerText="Excluir" style="text-align: center; width: 50px">
+                                    <p:commandButton icon="ui-icon-trash" action="#{baixaGeralBean.remover(index)}" update=":formBaixaGeral:" />
+                                </p:column>
+
+                                <p:column headerText="Valor">
+                                    <h:outputText value="#{linha.argumento1}"/>
+                                </p:column>
+
+                                <p:column headerText="Pagamento">
+                                    <h:outputText value="#{linha.argumento3.descricao}"/>
+                                </p:column>
+
+                                <p:column headerText="Número do Documento">
+                                    <h:outputText value="#{linha.argumento2}"/>
+                                </p:column>
+
+                                <p:column headerText="Vencimento" style="text-align: center">
+                                    <h:outputText value="#{linha.argumento0}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <h:panelGrid>
+                                <p:commandButton value="Salvar Baixa" title="Baixar todos os valores da grid" action="#{baixaGeralBean.baixar}" oncomplete="i_dlg_s.show()" update="i_mensagem"/>
                             </h:panelGrid>
-                        </h:panelGrid>                        
-                        
-                        <a4j:commandButton value="Adicionar" action="#{baixaGeralBean.inserir}" title="Adicionar Movimento" render="tbl idValor cbConta quitacao"/>
-                        
-                        <h:panelGroup style="overflow:auto; margin-top: 20px;" layout="block">
-                            <div class="fontePadrao divFundo" style="background: white;">
-                                <h:outputText value="Movimentos à receber" styleClass="divFundo" style="margin-bottom: 15px; padding: 10px;"/>
-                                <div style="clear: both;"></div>
-                                <rich:dataTable var="linha" style="width:100%" id="tbl" iterationStatusVar="it" value="#{baixaGeralBean.lista}">
-                                    <rich:column>
-                                        <f:facet name="header"><h:outputText value="#"/></f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column>
+                            
+                            <p:dialog widgetVar="i_dlg_s" header="Baixa Concluída!" resizable="false" width="400" modal="true">
+                                <h:panelGrid id="i_mensagem" style="width: 100%">
+                                    <h:outputLabel value="#{baixaGeralBean.mensagem}" style="font-size: 12pt!important"/>
                                     
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Remover"/>
-                                        </f:facet>
-                                        <h:column>
-                                            <h:commandLink title="Remover" action="#{baixaGeralBean.remover}">
-                                                <h:graphicImage value="/Imagens/excluirp.png" style="margin-left: 15px;" alt="Excluir" title="Excluir linha"/>
-                                                <a4j:param value="#{it.index}" assignTo="#{baixaGeralBean.index}" />
-                                            </h:commandLink>
-                                        </h:column>
-                                    </rich:column>
+                                    <h:panelGrid columns="2" style="width: 100%; margin-top: 20px">
+                                        <p:commandButton ajax="false" value="OK" action="#{baixaGeralBean.retorno}" style="float: left" icon="ui-icon-close"/>       
+                                        <h:commandLink value="Imprimir Recibo" action="#{baixaGeralBean.imprimirRecibo}" style="float: right" target="_blank"/>  
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:dialog>
                                     
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Valor"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento1}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Pagamento"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento3.descricao}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Nº Documento"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento2}"/>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Vencimento"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.argumento0}"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </div>
-                        </h:panelGroup>
-                    </div>
-                    <div style="clear: both;"></div>
-                    <div style="float: left; margin-top: 15px;">
-                        <a4j:commandLink styleClass="idSalvar iLink" value="Baixar" title="Baixar" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()" render="outConfirma" action="#{baixaGeralBean.baixar}" />
-                    </div>
-                </div>
-                
-                <div id="boxes">
-                    <div id="divProcesso" class="window">
-                        <br />
-                        <center>
-                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                
-                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{baixaGeralBean.mensagem}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <h:commandLink styleClass="idNovo iLink" action="#{baixaGeralBean.imprimirRecibo}" value="Imprimir Recibo" target="_blank" style="width: 150px" title="OK"/>
-                            <h:commandLink styleClass="idNovo iLink closeModal" action="#{baixaGeralBean.retorno}" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-            </h:form>
-        </f:view>
+                            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                                <h:outputLabel value="Carregando ... Aguarde" />
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_cheque" header="Dados do Cheque" resizable="false" width="400" modal="true">
+                                <h:panelGrid id="i_cheque" style="width: 100%">
+                                    <h:panelGrid columns="4">
+                                        <p:column>
+                                            <h:outputText value="Agência" /><br />
+                                            <p:inputText value="#{baixaGeralBean.chequeRec.agencia}" size="4"/>
+                                        </p:column>
+
+                                        <p:column>
+                                            <h:outputText value="Conta" /><br />
+                                            <p:inputText value="#{baixaGeralBean.chequeRec.conta}" size="8" />
+                                        </p:column>
+
+                                        <p:column>
+                                            <h:outputText value="Banco" /><br />
+                                            <p:inputText value="#{baixaGeralBean.chequeRec.banco}" size="10" />
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <br />
+                                            <p:commandButton value="Adicionar" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral" onclick="i_dlg_cheque.hide()"/>
+                                        </p:column>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_cartao" header="Dados do Cartão" resizable="false" width="400" modal="true">
+                                <h:panelGrid id="i_cartao" style="width: 100%">
+                                    <h:panelGrid columns="2">
+                                        <p:column>
+                                            <br />
+                                            <p:selectOneMenu style="margin-right: 15px; padding-right: 15px" value="#{baixaGeralBean.idCartao}">
+                                                <f:selectItems value="#{baixaGeralBean.listaCartao}"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <br />
+                                            <p:commandButton value="Adicionar" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral" onclick="i_dlg_cartao.hide()"/>
+                                        </p:column>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_banco" header="Dados do Banco" resizable="false" modal="true">
+                                <h:panelGrid id="i_banco" style="width: 100%">
+                                    <h:panelGrid columns="2">
+                                        <p:column>
+                                            <br />
+                                            <p:selectOneMenu style="margin-right: 15px; padding-right: 15px" value="#{baixaGeralBean.idBanco}">
+                                                <f:selectItems value="#{baixaGeralBean.listaBanco}"/>
+                                            </p:selectOneMenu>
+                                        </p:column>
+                                        
+                                        <p:column>
+                                            <br />
+                                            <p:commandButton value="Adicionar" action="#{baixaGeralBean.inserir}" title="Adicionar Parcela" update="formBaixaGeral" onclick="i_dlg_banco.hide()"/>
+                                        </p:column>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
