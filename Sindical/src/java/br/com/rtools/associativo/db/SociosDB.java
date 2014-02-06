@@ -8,15 +8,7 @@ import javax.persistence.EntityManager;
 
 public interface SociosDB {
 
-    public boolean insert(Socios socios);
-
-    public boolean update(Socios socios);
-
-    public boolean delete(Socios socios);
-
     public EntityManager getEntityManager();
-
-    public Socios pesquisaCodigo(int id);
 
     public List pesquisaTodos();
 
@@ -47,4 +39,6 @@ public interface SociosDB {
     public List<SocioCarteirinha> pesquisaCarteirinhasPorSocio(int idSocios);
 
     public List pesquisaMotivoInativacao();
+    
+    public boolean socioDebito(int idPessoa);
 }

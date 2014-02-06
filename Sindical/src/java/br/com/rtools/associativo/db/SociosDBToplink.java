@@ -13,64 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class SociosDBToplink extends DB implements SociosDB {
-
-    @Override
-    public boolean insert(Socios socios) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(socios);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean update(Socios socios) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(socios);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean delete(Socios socios) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(socios);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public Socios pesquisaCodigo(int id) {
-        Socios result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Socios.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Socios) qry.getSingleResult();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return result;
-    }
 
     @Override
     public List pesquisaTodos() {
@@ -223,7 +167,7 @@ public class SociosDBToplink extends DB implements SociosDB {
             qry.setMaxResults(1);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
-                soc = (Socios) qry.getSingleResult();                
+                soc = (Socios) qry.getSingleResult();
             }
         } catch (Exception e) {
             e.getMessage();
@@ -356,7 +300,6 @@ public class SociosDBToplink extends DB implements SociosDB {
         }
         /// -----------
 
-
         // PESQUISA CATEGORIA DESCONTO -----
         textQry = "select cd "
                 + "  from CategoriaDesconto cd"
@@ -369,7 +312,6 @@ public class SociosDBToplink extends DB implements SociosDB {
             e.getMessage();
             return 0;
         }
-
 
         // PESQUISA EVE SERVICO VALOR -------------
         if (fisica.getNascimento().length() != 10) {
@@ -422,5 +364,26 @@ public class SociosDBToplink extends DB implements SociosDB {
             //e.getMessage();
             return new ArrayList();
         }
+    }
+
+    public boolean socioDebito(int idPessoa) {
+        try {
+            Query query = getEntityManager().createNativeQuery(""
+                    + "     SELECT *                                            "
+                    + "       FROM fin_movimento AS m                           "
+                    + " INNER JOIN fin_lote AS l ON l.id = m.id_lote            "
+                    + "      WHERE m.id_pessoa = " + idPessoa + "               "
+                    + "        AND dt_vencimento < NOW()                        "
+                    + "        AND id_baixa IS NULL                             "
+                    + "        AND l.is_desconto_folha IS NULL                  "
+                    + "   GROUP BY m.id_pessoa                                  "
+            );
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
 }

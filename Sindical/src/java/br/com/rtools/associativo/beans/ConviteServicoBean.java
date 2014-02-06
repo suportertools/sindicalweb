@@ -161,10 +161,11 @@ public class ConviteServicoBean implements Serializable {
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            List<Servicos> lista = (List<Servicos>) db.pesquisaTodos(122);
+            List<Servicos> lista = (List<Servicos>) db.pesquisaTodos(215);
             int i = 0;
             for (Servicos s : lista) {
                 listaServicos.add(new SelectItem(i, s.getDescricao(), Integer.toString((s.getId()))));
+                i++;
             }
         }
         return listaServicos;

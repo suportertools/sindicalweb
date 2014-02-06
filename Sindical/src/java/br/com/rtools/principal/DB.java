@@ -5,9 +5,6 @@ import br.com.rtools.utilitarios.GenericaRequisicao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
 import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +16,7 @@ import oracle.toplink.essentials.config.TopLinkProperties;
 import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 // import oracle.toplink.essentials.ejb.cmp3.EntityManagerFactoryProvider;
 
-public class DB implements Serializable {
+public class DB {
 
     private EntityManager entidade;
     private Statement statement;
@@ -105,8 +102,8 @@ public class DB implements Serializable {
             configuracao.setSenha("989899");
         } else {
             if (cliente.equals("Sindical")) {
-                cliente = "c_limeira_base";
-                //cliente = "n_base_local";
+                //cliente = "c_limeira_base";
+                cliente = "n_base_local";
             }
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);

@@ -3,8 +3,10 @@ package br.com.rtools.sistema;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.utilitarios.DataHoje;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "SIS_PESSOA")
@@ -234,6 +236,11 @@ public class SisPessoa implements java.io.Serializable {
     @Override
     public String toString() {
         return "SisPessoa{" + "id=" + id + ", nome=" + nome + ", documento=" + documento + ", rg=" + rg + ", telefone=" + telefone + ", celular=" + celular + ", email1=" + email1 + ", email2=" + email2 + ", observacao=" + observacao + ", complemento=" + complemento + ", numero=" + numero + ", sexo=" + sexo + ", tipoDocumento=" + tipoDocumento + ", endereco=" + endereco + ", dtCriacao=" + dtCriacao + ", dtNascimento=" + dtNascimento + '}';
+    }
+
+    public void selecionaDataNascimento(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dtNascimento = DataHoje.converte(format.format(event.getObject()));
     }
 
 }

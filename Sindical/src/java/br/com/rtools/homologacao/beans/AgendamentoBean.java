@@ -181,18 +181,21 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 }
 
                 if (juridica.getContabilidade().getPessoa().getEmail1().isEmpty()) {
-                    msgConfirma = "Contabilidade sem Email para envio";
-                    return null;
+                    if (emailEmpresa.equals("")) {
+                        msgConfirma = "Contabilidade sem Email para envio";
+                        return null;
+                    }              
                 }
                 pessoa = juridica.getContabilidade().getPessoa();
+                pessoa.setEmail1(emailEmpresa);
             } else {
                 if (juridica.getPessoa().getEmail1().isEmpty()) {
-                    msgConfirma = "Empresa sem Email para envio";
-                    return null;
+                    if (emailEmpresa.equals("")) {
+                        msgConfirma = "Empresa sem Email para envio";
+                        return null;                        
+                    }
                 }
                 pessoa = juridica.getPessoa();
-            }
-            if (!emailEmpresa.equals("")) {
                 pessoa.setEmail1(emailEmpresa);
             }
 
@@ -201,7 +204,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
             p.add(pessoa);
             //String[] ret = new String[2];
-            String[] ret;
+            String[] ret; 
             if (!reg.isEnviarEmailAnexo()) {
                 ret = EnviarEmail.EnviarEmailPersonalizado(reg,
                         p,
@@ -1009,7 +1012,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (!listFisica.isEmpty()) {
                 Agendamento age = db.pesquisaFisicaAgendada(listFisica.get(0).getId());
                 if (age != null) {
-                    msgConfirma = "CPF já foi agendado";
+                    msgConfirma = "CPF já foi agendado:" +age.getData() +" às "+age.getHorarios().getHora() +" h(s) ";
                     return;
                 }
 

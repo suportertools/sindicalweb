@@ -18,6 +18,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.model.DefaultScheduleEvent;
+import org.primefaces.model.ScheduleEvent;
 
 @Entity
 @Table(name = "HOM_AGENDAMENTO")
@@ -248,5 +251,15 @@ public class Agendamento implements Serializable {
         if (!(data.isEmpty())) {
             this.dtEmissao = DataHoje.converte(data);
         }
+    }
+
+    public void selectioDataEmissao(SelectEvent selectEvent) {
+        ScheduleEvent event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+        setDtEmissao(event.getStartDate());
+    }
+
+    public void selectioData(SelectEvent selectEvent) {
+        ScheduleEvent event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
+        setDtData(event.getStartDate());
     }
 }

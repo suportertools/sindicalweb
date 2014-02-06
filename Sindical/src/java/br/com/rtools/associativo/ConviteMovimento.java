@@ -18,7 +18,7 @@ public class ConviteMovimento implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "DS_OBS", length = 300, nullable = true)
+    @Column(name = "DS_OBS", length = 300)
     private String observacao;
     @JoinColumn(name = "ID_SIS_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
@@ -30,16 +30,16 @@ public class ConviteMovimento implements Serializable {
     @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_USUARIO_INATIVACAO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_USUARIO_INATIVACAO", referencedColumnName = "ID")
     @ManyToOne
     private Usuario usuarioInativacao;
-    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_EVT", referencedColumnName = "ID")
     @ManyToOne
     private Evt evt;
-    @JoinColumn(name = "ID_DEPARTAMEMTNO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_DEPARTAMEMTNO", referencedColumnName = "ID")
     @ManyToOne
     private Departamento departamento;
-    @JoinColumn(name = "ID_AUTORIZA_CORTESIA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_AUTORIZA_CORTESIA", referencedColumnName = "ID")
     @ManyToOne
     private ConviteAutorizaCortesia autorizaCortesia;
     @Column(name = "IS_CORTESIA", columnDefinition = "BOOLEAN DEFAULT FALSE")
@@ -52,6 +52,9 @@ public class ConviteMovimento implements Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
+    @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
+    @ManyToOne
+    private ConviteServico conviteServico;    
 
     public ConviteMovimento() {
         this.id = -1;
@@ -67,9 +70,10 @@ public class ConviteMovimento implements Serializable {
         this.ativo = false;
         this.dtValidade = DataHoje.dataHoje();
         this.dtEmissao = DataHoje.dataHoje();
+        this.conviteServico = new ConviteServico();
     }
 
-    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, ConviteAutorizaCortesia autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao) {
+    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, ConviteAutorizaCortesia autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico) {
         this.id = id;
         this.observacao = observacao;
         this.sisPessoa = sisPessoa;
@@ -83,6 +87,7 @@ public class ConviteMovimento implements Serializable {
         this.ativo = ativo;
         this.dtValidade = DataHoje.converte(validade);
         this.dtEmissao = DataHoje.converte(emissao);
+        this.conviteServico = conviteServico;
     }
 
     public int getId() {
@@ -208,6 +213,14 @@ public class ConviteMovimento implements Serializable {
     @Override
     public String toString() {
         return "ConviteMovimento{" + "id=" + id + ", observacao=" + observacao + ", sisPessoa=" + sisPessoa + ", pessoa=" + pessoa + ", usuario=" + usuario + ", usuarioInativacao=" + usuarioInativacao + ", evt=" + evt + ", departamento=" + departamento + ", autorizaCortesia=" + autorizaCortesia + ", cortesia=" + cortesia + ", ativo=" + ativo + ", dtValidade=" + dtValidade + ", dtEmissao=" + dtEmissao + '}';
+    }
+
+    public ConviteServico getConviteServico() {
+        return conviteServico;
+    }
+
+    public void setConviteServico(ConviteServico conviteServico) {
+        this.conviteServico = conviteServico;
     }
 
 }

@@ -1,9 +1,11 @@
 package br.com.rtools.sistema.db;
 
 import br.com.rtools.principal.DB;
+import br.com.rtools.sistema.SisPessoa;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
+import javax.persistence.TemporalType;
 
 public class SisPessoaDBToplink extends DB implements SisPessoaDB {
 
@@ -35,5 +37,32 @@ public class SisPessoaDBToplink extends DB implements SisPessoaDB {
             lista = new ArrayList();
         }
         return lista;
+    }
+
+    @Override
+    public SisPessoa sisPessoaExiste(SisPessoa sp) {
+        return sisPessoaExiste(sp, false);
+    }
+
+    @Override
+    public SisPessoa sisPessoaExiste(SisPessoa sp, boolean porDocumento) {
+        Query qry;
+        try {
+            if (porDocumento) {
+                qry = getEntityManager().createQuery("SELECT SP FROM SisPessoa AS SP WHERE SP.documento = :documento");
+                qry.setParameter("documento", sp.getDocumento());
+            } else {
+                qry = getEntityManager().createQuery("SELECT SP FROM SisPessoa AS SP WHERE SP.nome = :nome AND SP.dtNascimento = :nascimento");
+                qry.setParameter("nome", sp.getNome());
+                qry.setParameter("nascimento", sp.getDtNascimento(), TemporalType.DATE);
+            }
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return (SisPessoa) qry.getSingleResult();
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 }

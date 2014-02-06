@@ -65,7 +65,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                 } else {
                     query = " SELECT AGET.agenda FROM AgendaTelefone AS AGET WHERE UPPER(AGET.contato) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' " + queryFiltroGrupoAgendaB + "  ORDER BY AGET.contato ASC  ";
                 }
-            } else if (porPesquisa.equals("telefoneSimples")) {
+            } else if (porPesquisa.equals("telefone")) {
                 String dddString = "";
                 if (!ddd.equals("")) {
                     dddString = " AGET.ddd = '" + ddd + "' AND ";
@@ -118,7 +118,6 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         if (idGrupoAgenda > 0) {
             query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE AGET.agenda.grupoAgenda.id = " + idGrupoAgenda + " ORDER BY AGET.agenda.id DESC ";
             queryFiltroGrupoAgendaA = " AND AGET.agenda.grupoAgenda.id = " + idGrupoAgenda + " ";
-            queryFiltroGrupoAgendaB = " AND AGET.agenda.grupoAgenda.id = " + idGrupoAgenda + " ";
         }
         try {
             if (porPesquisa.equals("pessoa")) {
@@ -139,7 +138,7 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
                 } else {
                     query = " SELECT AGET FROM AgendaTelefone AS AGET WHERE UPPER(AGET.contato) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' " + queryFiltroGrupoAgendaB + "  ORDER BY AGET.contato ASC  ";
                 }
-            } else if (porPesquisa.equals("telefoneSimples")) {
+            } else if (porPesquisa.equals("telefone")) {
                 String dddString = "";
                 if (!ddd.equals("")) {
                     dddString = " AGET.ddd = '" + ddd + "' AND ";
@@ -176,6 +175,34 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
             list = qry.getResultList();
             if (!list.isEmpty()) {
                 return qry.getResultList();
+            } else {
+                String subQuery = "";
+                String subQueryFiltroGrupoAgendaA = "";
+                if (idGrupoAgenda > 0) {
+                    subQuery = " SELECT AGET FROM Agenda AS AGE WHERE AGE.grupoAgenda.id = " + idGrupoAgenda + " ORDER BY AGE.id DESC ";
+                    subQueryFiltroGrupoAgendaA = " AND AGE.grupoAgenda.id = " + idGrupoAgenda + " ";
+                }                
+                if (porPesquisa.equals("pessoa")) {
+                    if (comoPesquisa.equals("Inicial")) {
+                        subQuery = " SELECT AGE FROM Agenda AS AGE WHERE UPPER(AGE.pessoa.nome) LIKE '" + descricaoPesquisa.toUpperCase() + "%' " + subQueryFiltroGrupoAgendaA + " ORDER BY AGE.nome ASC ";
+                    } else {
+                        subQuery = " SELECT AGE FROM Agenda AS AGE WHERE UPPER(AGE.pessoa.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' " + subQueryFiltroGrupoAgendaA + " ORDER BY AGE.nome ASC ";
+                    }
+                } else if (porPesquisa.equals("nome")) {
+                    if (comoPesquisa.equals("Inicial")) {
+                        subQuery = " SELECT AGE FROM Agenda AS AGE WHERE UPPER(AGE.nome) LIKE '" + descricaoPesquisa.toUpperCase() + "%' " + subQueryFiltroGrupoAgendaA + " ORDER BY AGE.nome ASC ";
+                    } else {
+                        subQuery = " SELECT AGE FROM Agenda AS AGE WHERE UPPER(AGE.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' " + subQueryFiltroGrupoAgendaA + " ORDER BY AGE.nome ASC ";
+                    }
+                }
+                Query subQry = getEntityManager().createQuery(subQuery);
+                List<Agenda> subList = subQry.getResultList();
+                if (!subList.isEmpty()) {
+                    for (Agenda agenda : subList) {
+                        list.add(new AgendaTelefone(-1, agenda, null, "", "", "", ""));
+                    }
+                    return list;
+                }
             }
         } catch (Exception e) {
             return list;

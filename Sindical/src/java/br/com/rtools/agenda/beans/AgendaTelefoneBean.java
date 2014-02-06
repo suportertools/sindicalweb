@@ -12,8 +12,8 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.primefaces.context.RequestContext;
 
@@ -39,9 +38,7 @@ public class AgendaTelefoneBean implements Serializable {
     private List<SelectItem> listaGrupoAgendas = new ArrayList<SelectItem>();
     private List<SelectItem> listaDDD = new ArrayList<SelectItem>();
     private List<AgendaTelefone> listaAgendaTelefones = new ArrayList<AgendaTelefone>();
-    private List<AgendaTelefone> listaAgendaTelefonesx = new ArrayList<AgendaTelefone>();
-    private List listaAgendas = new ArrayList();
-    private List listaAgendaTelefone = new ArrayList();
+    private List<AgendaTelefone> listaAgendas = new ArrayList();
     private int idTipoEndereco = 0;
     private int idTipoTelefone = 0;
     private int idDDD = 0;
@@ -51,18 +48,19 @@ public class AgendaTelefoneBean implements Serializable {
     private String descricaoDDD = "";
     private String comoPesquisa = "Inicial";
     private String porPesquisa = "nome";
-    private boolean mask = false;
-    private String msgConfirma;
-    private String msgAgendaTelefone = "";
+    private String mensagem;
     private String tipoAgenda = "agendaTelefone";
+    private boolean mask = false;
     private boolean filtraPorGrupo = false;
+    private boolean visibility = false;
 
-    public void limpar() {
+    public void novo() {
         agenda = new Agenda();
         agendaTelefone = new AgendaTelefone();
         pessoa = new Pessoa();
         endereco = new Endereco();
         listaAgendaTelefones = new ArrayList<AgendaTelefone>();
+        listaAgendas.clear();
         idTipoTelefone = 0;
         idGrupoAgenda = 0;
         idTipoEndereco = 0;
@@ -72,27 +70,34 @@ public class AgendaTelefoneBean implements Serializable {
         descricaoDDD = "";
         comoPesquisa = "Inicial";
         porPesquisa = "nome";
-        msgConfirma = "";
-        msgAgendaTelefone = "";
+        mensagem = "";
+        visibility = true;
     }
 
-    public String novo() {
-        limpar();
-        return null;
+    public void openDialog() {
+        visibility = true;
     }
 
-    public String salvar() {
+    public void close() {
+        novo();
+        visibility = false;
+        RequestContext.getCurrentInstance().execute("dgl_adicionar.hide()");
+        RequestContext.getCurrentInstance().update("form_agenda_telefone:i_panel_adicionar");
+    }
+
+    public void salvar() {
         if (agenda.getNome().equals("")) {
-            msgConfirma = "Informar o nome!";
-            return null;
+            mensagem = "Informar o nome!";
+            return;
         }
+        agenda.setNome(agenda.getNome().toUpperCase());
         if (listaGrupoAgendas.isEmpty()) {
-            msgConfirma = "Informar o grupo agenda!";
-            return null;
+            mensagem = "Informar o grupo agenda!";
+            return;
         }
         if (listaTipoEnderecos.isEmpty()) {
-            msgConfirma = "Informar o tipo de endereço!";
-            return null;
+            mensagem = "Informar o tipo de endereço!";
+            return;
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         agenda.setGrupoAgenda((GrupoAgenda) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaGrupoAgendas.get(idGrupoAgenda).getDescription()), "GrupoAgenda"));
@@ -116,16 +121,17 @@ public class AgendaTelefoneBean implements Serializable {
                 agenda.setEndereco(null);
             }
             if ((agendaDB.agendaExiste(agenda)).getId() != -1) {
-                msgConfirma = "Cadastro já existe!";
-                return null;
+                mensagem = "Cadastro já existe!";
+                return;
             }
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.inserirObjeto(agenda)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msgConfirma = "Registro inserido com sucesso";
+                mensagem = "Registro inserido com sucesso";
+                listaAgendas.clear();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao inserir esse registro!";
+                mensagem = "Erro ao inserir esse registro!";
             }
         } else {
             if (endereco != null) {
@@ -136,19 +142,16 @@ public class AgendaTelefoneBean implements Serializable {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(agenda)) {
                 salvarAcumuladoDB.comitarTransacao();
-                msgConfirma = "Registro atualizado com sucesso";
+                mensagem = "Registro atualizado com sucesso";
+                listaAgendas.clear();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                msgConfirma = "Erro ao atualizar esse registro!";
+                mensagem = "Erro ao atualizar esse registro!";
             }
         }
-        listaAgendas.clear();
-        getListaAgendas();
-        return null;
     }
 
-    public String excluir() {
-        msgConfirma = "";
+    public void excluir() {
         if (agenda.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             salvarAcumuladoDB.abrirTransacao();
@@ -156,30 +159,29 @@ public class AgendaTelefoneBean implements Serializable {
                 AgendaTelefone at = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(listaAgendaTelefone1.getId(), "AgendaTelefone");
                 if (!salvarAcumuladoDB.deletarObjeto(at)) {
                     salvarAcumuladoDB.desfazerTransacao();
-                    msgConfirma = "Erro ao excluir telefones da agenda!";
-                    return null;
+                    mensagem = "Erro ao excluir telefones da agenda!";
+                    return;
                 }
             }
             agenda = (Agenda) salvarAcumuladoDB.pesquisaCodigo(agenda.getId(), "Agenda");
             if (salvarAcumuladoDB.deletarObjeto(agenda)) {
                 salvarAcumuladoDB.comitarTransacao();
-                limpar();
-                msgConfirma = "Registro excluído com sucesso";
+                novo();
+                mensagem = "Registro excluído com sucesso";
                 listaAgendas.clear();
                 agenda = new Agenda();
                 pessoa = new Pessoa();
                 endereco = new Endereco();
             } else {
-                msgConfirma = "Erro ao excluir esse registro!";
+                mensagem = "Erro ao excluir esse registro!";
                 salvarAcumuladoDB.desfazerTransacao();
             }
         }
-        return null;
     }
 
     public Pessoa getPessoa() {
-        if ((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
+        if (GenericaSessao.exists("pessoaPesquisa")) {
+            pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa", true);
             String nomeMemoria = "";
             String email1Memoria = "";
             String email2Memoria = "";
@@ -213,7 +215,8 @@ public class AgendaTelefoneBean implements Serializable {
             if (!pessoaEnderecos.isEmpty()) {
                 endereco = pessoaEnderecos.get(0).getEndereco();
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+            RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+            RequestContext.getCurrentInstance().update("form_agenda_telefone:i_panel_adicionar");
         }
         return pessoa;
     }
@@ -223,10 +226,11 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public Endereco getEndereco() {
-        if ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
-            endereco = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
+        if (GenericaSessao.exists("enderecoPesquisa")) {
+            endereco = (Endereco) GenericaSessao.getObject("enderecoPesquisa", true);
             agenda.setEndereco(endereco);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
+            RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+            RequestContext.getCurrentInstance().update("form_agenda_telefone:i_panel_adicionar");
         }
         return endereco;
     }
@@ -236,6 +240,9 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public Agenda getAgenda() {
+        if (agenda.getId() != -1) {
+            visibility = true;
+        }
         getTipoAgenda();
         return agenda;
     }
@@ -275,6 +282,7 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public List<SelectItem> getListaGrupoAgendas() {
+        listaGrupoAgendas.clear();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         List<GrupoAgenda> list = (List<GrupoAgenda>) salvarAcumuladoDB.listaObjeto("GrupoAgenda", true);
         for (int i = 0; i < list.size(); i++) {
@@ -315,103 +323,12 @@ public class AgendaTelefoneBean implements Serializable {
         this.listaAgendaTelefones = listaAgendaTelefones;
     }
 
-    public List getListaAgendas() {
-        AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
-        listaAgendas.clear();
-        DataObject dtObj;
-        if (listaAgendas.isEmpty()) {
-            int nrGrupoAgenda = 0;
-            if (filtraPorGrupo) {
-                nrGrupoAgenda = Integer.parseInt(getListaGrupoAgendas().get(idFiltroGrupoAgenda).getDescription());
-            }
-            descricaoDDD = "";
-            if (!listaDDD.isEmpty()) {
-                descricaoDDD = getListaDDD().get(idDDD).getDescription();
-                if (descricaoDDD.equals("DDD")) {
-                    descricaoDDD = "";
-                }
-            }
-            List<Agenda> listAgenda = agendaDB.pesquisaAgenda(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda);
-            for (Agenda listAgenda1 : listAgenda) {
-                String enderecoString = "";
-                if (listAgenda1.getEndereco() != null) {
-                    enderecoString = listAgenda1.getEndereco().getCidade().getCidade() + " / " + listAgenda1.getEndereco().getCidade().getUf();
-                }
-                String pessoaString = "";
-                if (listAgenda1.getPessoa() != null) {
-                    pessoaString = " - " + listAgenda1.getPessoa().getNome();
-                }
-                dtObj = new DataObject(listAgenda1, null, null, null, enderecoString, pessoaString // ARGUMENTO 5 - Pessoa
-                );              listaAgendas.add(dtObj);
-            }
-        }
-        return listaAgendas;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public List getListaAgendaTelefone() {
-        AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
-        listaAgendaTelefone.clear();
-        DataObject dtObj;
-        if (listaAgendaTelefone.isEmpty()) {
-            int nrGrupoAgenda = 0;
-            if (filtraPorGrupo) {
-                nrGrupoAgenda = Integer.parseInt(listaGrupoAgendas.get(idFiltroGrupoAgenda).getDescription());
-            }
-            descricaoDDD = "";
-            if (!listaDDD.isEmpty()) {
-                descricaoDDD = getListaDDD().get(idDDD).getDescription();
-                if (descricaoDDD.equals("DDD")) {
-                    descricaoDDD = "";
-                }
-            }
-
-            String pPesquisa = porPesquisa;
-            if (porPesquisa.equals("telefone")) {
-                pPesquisa = "telefoneSimples";
-            }
-
-            List<AgendaTelefone> listAgendaTelefones = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, pPesquisa, comoPesquisa, nrGrupoAgenda);
-            for (int i = 0; i < listAgendaTelefones.size(); i++) {
-                String enderecoString = "";
-                String enderecoCompletoString = "";
-                if (listAgendaTelefones.get(i).getAgenda().getEndereco() != null) {
-                    enderecoString = listAgendaTelefones.get(i).getAgenda().getEndereco().getCidade().getCidade() + " / " + listAgendaTelefones.get(i).getAgenda().getEndereco().getCidade().getUf();
-                }
-                String pessoaString = "";
-                if (listAgendaTelefones.get(i).getAgenda().getPessoa() != null) {
-                    pessoaString = " - " + listAgendaTelefones.get(i).getAgenda().getPessoa().getNome();
-                }
-                if (listAgendaTelefones.get(i).getAgenda().getEndereco() != null) {
-                    enderecoCompletoString = listAgendaTelefones.get(i).getAgenda().getEndereco().getEnderecoSimplesToString() + ", " + listAgendaTelefones.get(i).getAgenda().getNumero();
-                }
-                dtObj = new DataObject(
-                        i, // ARGUMENTO 0 - Indice
-                        listAgendaTelefones.get(i).getId(), // ARGUMENTO 1 - Id
-                        listAgendaTelefones.get(i).getAgenda().getGrupoAgenda().getDescricao(), // ARGUMENTO 2 - Grupo Agenda
-                        listAgendaTelefones.get(i).getAgenda().getNome(), // ARGUMENTO 3 - Nome
-                        enderecoString, // ARGUMENTO 4 - Cidade / Estado
-                        pessoaString, // ARGUMENTO 5 - Pessoa
-                        listAgendaTelefones.get(i).getTipoTelefone().getDescricao(), // ARGUMENTO 6 - Tipo Telefone
-                        " + " + listAgendaTelefones.get(i).getDdi() + " (" + listAgendaTelefones.get(i).getDdd() + ") " + listAgendaTelefones.get(i).getTelefone(), // ARGUMENTO 7 - Telefone
-                        listAgendaTelefones.get(i).getContato(), // ARGUMENTO 8 - Contato
-                        enderecoCompletoString // ARGUMENTO 9 - Endereço Completo
-                );
-                listaAgendaTelefone.add(dtObj);
-            }
-        }
-        return listaAgendaTelefone;
-    }
-
-    public void setListaAgendas(List<Agenda> listaAgendas) {
-        this.listaAgendas = listaAgendas;
-    }
-
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public String getDescricaoPesquisa() {
@@ -440,13 +357,11 @@ public class AgendaTelefoneBean implements Serializable {
         listaAgendas.clear();
     }
 
-    public String editar(Agenda a) {
-        //agenda = new Agenda();
+    public void editar(Agenda a) {
+        visibility = true;
         agenda = a;
         pessoa = new Pessoa();
         endereco = new Endereco();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agenda = (Agenda) salvarAcumuladoDB.pesquisaCodigo(agenda.getId(), "Agenda");
         if (agenda.getGrupoAgenda() != null) {
             for (int i = 0; i < listaGrupoAgendas.size(); i++) {
                 if (Integer.valueOf(listaGrupoAgendas.get(i).getDescription()) == agenda.getGrupoAgenda().getId()) {
@@ -472,8 +387,8 @@ public class AgendaTelefoneBean implements Serializable {
         listaAgendaTelefones.clear();
         getListaAgendaTelefones();
         agendaTelefone = new AgendaTelefone();
-        return null;
-        //return "agendaTelefone";
+        RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
+        RequestContext.getCurrentInstance().update("form_agenda_telefone:i_panel_adicionar");
     }
 
     public void visualizar(AgendaTelefone at) {
@@ -504,7 +419,6 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public String adicionarAgendaTelefone() {
-        msgAgendaTelefone = "";
         if (agendaTelefone.getTelefone().equals("")) {
             GenericaMensagem.warn("Validação", "Informar o número de telefone!");
             return null;
@@ -526,8 +440,8 @@ public class AgendaTelefoneBean implements Serializable {
                 salvarAcumuladoDB.abrirTransacao();
                 if (salvarAcumuladoDB.inserirObjeto(agendaTelefone)) {
                     GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
-                    listaAgendaTelefones.clear();
                     salvarAcumuladoDB.comitarTransacao();
+                    listaAgendaTelefones.clear();
                 } else {
                     GenericaMensagem.warn("Erro", "Erro ao adicionar registro");
                     salvarAcumuladoDB.desfazerTransacao();
@@ -536,8 +450,8 @@ public class AgendaTelefoneBean implements Serializable {
                 salvarAcumuladoDB.abrirTransacao();
                 if (salvarAcumuladoDB.alterarObjeto(agendaTelefone)) {
                     GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
-                    listaAgendaTelefones.clear();
                     salvarAcumuladoDB.comitarTransacao();
+                    listaAgendaTelefones.clear();
                 } else {
                     salvarAcumuladoDB.desfazerTransacao();
                     GenericaMensagem.warn("Erro", "Erro ao atualizar telefone");
@@ -549,7 +463,6 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public String excluirAgendaTelefone(AgendaTelefone at) {
-        msgAgendaTelefone = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         at = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(at.getId(), "AgendaTelefone");
         salvarAcumuladoDB.abrirTransacao();
@@ -557,6 +470,7 @@ public class AgendaTelefoneBean implements Serializable {
             salvarAcumuladoDB.comitarTransacao();
             GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
             listaAgendaTelefones.clear();
+            agendaTelefone = new AgendaTelefone();
         } else {
             salvarAcumuladoDB.comitarTransacao();
             GenericaMensagem.warn("Erro", "Falha ao excluír esse registro!");
@@ -581,14 +495,6 @@ public class AgendaTelefoneBean implements Serializable {
 
     public void setIdGrupoAgenda(int idGrupoAgenda) {
         this.idGrupoAgenda = idGrupoAgenda;
-    }
-
-    public String getMsgAgendaTelefone() {
-        return msgAgendaTelefone;
-    }
-
-    public void setMsgAgendaTelefone(String msgAgendaTelefone) {
-        this.msgAgendaTelefone = msgAgendaTelefone;
     }
 
     public int getIdFiltroGrupoAgenda() {
@@ -641,9 +547,8 @@ public class AgendaTelefoneBean implements Serializable {
     }
 
     public String getTipoAgenda() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("tipoAgendaTelefone") != null) {
-            tipoAgenda = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("tipoAgendaTelefone");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("tipoAgendaTelefone");
+        if (GenericaSessao.exists("tipoAgendaTelefone")) {
+            tipoAgenda = (String) GenericaSessao.getObject("tipoAgendaTelefone", true);
         }
         return tipoAgenda;
     }
@@ -665,10 +570,9 @@ public class AgendaTelefoneBean implements Serializable {
         this.mask = mask;
     }
 
-    public List<AgendaTelefone> getListaAgendaTelefonesx() {
-        AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
-        listaAgendaTelefonesx.clear();
-        if (listaAgendaTelefonesx.isEmpty()) {
+    public List<AgendaTelefone> getListaAgendas() {
+        if (listaAgendas.isEmpty()) {
+            AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
             int nrGrupoAgenda = 0;
             if (filtraPorGrupo) {
                 nrGrupoAgenda = Integer.parseInt(listaGrupoAgendas.get(idFiltroGrupoAgenda).getDescription());
@@ -680,29 +584,34 @@ public class AgendaTelefoneBean implements Serializable {
                     descricaoDDD = "";
                 }
             }
-
-            String pPesquisa = porPesquisa;
-            if (porPesquisa.equals("telefone")) {
-                pPesquisa = "telefoneSimples";
-            }
-
-            List<AgendaTelefone> listAgendaTelefones = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, pPesquisa, comoPesquisa, nrGrupoAgenda);
+            List<AgendaTelefone> listAgendaTelefones = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda);
             for (AgendaTelefone listAgendaTelefone : listAgendaTelefones) {
-                AgendaTelefone at = new AgendaTelefone();
-                at = listAgendaTelefone;
+                AgendaTelefone at = listAgendaTelefone;
                 if (at.getAgenda().getPessoa() == null) {
                     at.getAgenda().setPessoa(new Pessoa());
                 }
                 if (at.getAgenda().getEndereco() == null) {
                     at.getAgenda().setEndereco(new Endereco());
                 }
-                listaAgendaTelefonesx.add(at);
+                listaAgendas.add(at);
             }
         }
-        return listaAgendaTelefonesx;
+        return listaAgendas;
     }
 
-    public void setListaAgendaTelefonesx(List<AgendaTelefone> listaAgendaTelefonesx) {
-        this.listaAgendaTelefonesx = listaAgendaTelefonesx;
+    public void setListaAgendas(List<AgendaTelefone> listaAgendas) {
+        this.listaAgendas = listaAgendas;
+    }
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    public String getMascara() {
+        return Mask.getMascaraPesquisa(porPesquisa, true);
     }
 }
