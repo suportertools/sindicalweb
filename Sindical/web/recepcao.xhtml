@@ -102,7 +102,7 @@
                                     <h:column>
                                         <h:inputText size="50" value="#{recepcaoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" readonly="true" />
                                         <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
-                                        <h:inputText size="10" maxlength="10" value="#{recepcaoBean.fisica.nascimento}" styleClass="fontePadraoNegrito" readonly="true" />                                          
+                                        <h:inputText size="10" maxlength="10" value="#{recepcaoBean.fisica.nascimento}" styleClass="fontePadraoNegrito" readonly="true" />
                                     </h:column>                                    
                                     <h:column>
                                             <h:outputText value="OBSERVAÇÃO: " styleClass="fontePadrao" />
@@ -125,10 +125,6 @@
                                         <h:inputText value="#{recepcaoBean.recepcao.horaInicialFuncionario}" size="5" class="hora" />
                                     </h:column>
                                 </h:panelGrid>
-                                <!-- <h:panelGrid columns="2">
-                                    <h:outputText value="Status: " styleClass="fontePadrao"/>
-                                    <h:outputText value="# {recepcaoBean.statusEmpresa}" styleClass="fontePadraoNegrito"/>
-                                </h:panelGrid> -->
                                 <br />
                                 <h:panelGrid columns="4">
                                     <a4j:commandLink styleClass="idPesquisar iLink"  value="Atualizar" action="#{recepcaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="i_painel_mensagem" oncomplete="#{rich:component('form_recepcao:i_painel_mensagem')}.show(); return false;"/>
@@ -333,67 +329,7 @@
                             </div>
                         </h:column>                        
                     </div>
-                </center>
-                <!-- 
-                <div id="boxes">
-                    <div id="divSalvar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja gerar essa Senha?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="# {recepcaoBean.gerarSenha()}" title="Gerar uma Senha" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>       
-                
-                <div id="boxes">
-                    <div id="divExcluir" class="window" style="width: 500px; height: 250px;">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2" style="margin: 10px ">
-                                <h:outputText value="Deseja cancelar essa Homologação?" styleClass="fontePadrao"/>
-                                <div style="float: left">
-                                    <h:outputLabel value="Digite o motivo para Exclusão: " style="font-weight: bold"/>
-                                    <h:inputTextarea value="# {recepcaoBean.cancelamento.motivo}" cols="30" rows="5"> 
-
-                                    </h:inputTextarea>
-                                </div>
-                            </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" action="# {recepcaoBean.cancelarHorario()}" title="Cancelar essa Homologação" oncomplete="modalMensagem()" render="outConfirma"/>
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                            <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>  
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value=" # {recepcaoBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <h:commandLink styleClass="idNovo iLink" style="width: 160px;" value="Voltar para Lista" title="Voltar para Lista" action="# {recepcaoBean.voltar()}"/>
-                            <h:commandLink styleClass="idNovo iLink" style="width: 120px;" value="Permanecer" title="Permanecer" action="# {recepcaoBean.imprimirSenha()}"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div> -->
-                
+                </center>                
                 <rich:popupPanel id="i_painel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_salvar')}.hide();" domElementAttachment="form" header="Deseja gerar senha?">
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('i_painel_salvar')}.hide(); return false;">

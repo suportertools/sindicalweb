@@ -54,7 +54,7 @@
                                 <p:inputTextarea value="#{agendaTelefoneBean.agendaTelefone.agenda.observacao}" cols="100" rows="3"  readonly="true" scrollHeight="100"></p:inputTextarea>
                             </p:panel>
                             <p:panel header="Telefones" styleClass="margin-top-med">
-                                <p:dataTable var="telefone" value="#{agendaTelefoneBean.listaAgendaTelefones}" id="i_datatable_resultadosAgendaTelefone" styleClass="margin-top-max" scrollable="true" scrollHeight="100">
+                                <p:dataTable var="telefone" value="#{agendaTelefoneBean.listaAgendaTelefones}" id="i_datatable_resultadosAgendaTelefone" styleClass="margin-top-max" scrollable="true" scrollHeight="100" emptyMessage="Nenhum telefone cadastrado!">
                                     <p:column headerText="Tipo" style="width: 80px" styleClass="text-center">
                                         #{telefone.tipoTelefone.descricao}
                                     </p:column>
@@ -96,12 +96,12 @@
                             <p:commandButton id="idInicial" value="Inicial" action="#{agendaTelefoneBean.acaoPesquisaInicial}" update="i_datatable_resultados" />
                             <p:commandButton id="idParcial" value="Parcial" action="#{agendaTelefoneBean.acaoPesquisaParcial}" update="i_datatable_resultados" />
                             <p:outputLabel value="GRUPO: "  />
-                            <p:selectOneMenu id="idFiltroGrupoAgenda" value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
-                                <p:ajax event="change" update="idFiltroGrupoAgenda, i_datatable_resultados" />
+                            <p:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
+                                <p:ajax event="change" update="i_datatable_resultados" listener="#{agendaTelefoneBean.listaAgendas.clear()}"/>
                                 <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
                             </p:selectOneMenu>
-                            <p:selectBooleanCheckbox id="idFiltroGrupo" value="#{agendaTelefoneBean.filtraPorGrupo}" itemLabel="Filtrar por grupos">
-                                <p:ajax event="change" update="idFiltroGrupo i_datatable_resultados" />
+                            <p:selectBooleanCheckbox value="#{agendaTelefoneBean.filtraPorGrupo}" itemLabel="Filtrar por grupos">
+                                <p:ajax event="change" update="i_datatable_resultados" listener="#{agendaTelefoneBean.listaAgendas.clear()}"/>
                             </p:selectBooleanCheckbox>
                         </h:panelGrid>
                     </p:panel>
@@ -109,7 +109,7 @@
                     </h:column>
                     <div class="clear"></div>
                     <p:panel styleClass="margin-top-max" id="i_datatable_resultados">
-                        <p:dataTable value="#{agendaTelefoneBean.listaAgendaTelefonesx}" var="agendaTelefone" scrollable="true" scrollHeight="300" emptyMessage="Nenhum resultado encontrado">
+                        <p:dataTable value="#{agendaTelefoneBean.listaAgendas}" var="agendaTelefone" scrollable="true" scrollHeight="300" emptyMessage="Nenhum resultado encontrado" paginator="true" rows="15">
                             <p:column styleClass="text-center" headerText="Grupo Agenda">
                                 <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.grupoAgenda.descricao}" styleClass="underline-hover" style="text-transform: uppercase; "/>
                             </p:column>

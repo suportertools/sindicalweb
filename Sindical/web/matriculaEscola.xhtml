@@ -10,7 +10,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         
     </h:head>
-    <h:body class="divMenu">
+    <h:body>
         <f:subview id="header">
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
@@ -35,7 +35,7 @@
                             </h:column>
                             <h:column>
                                 <h:panelGrid columns="8">
-                                    <p:calendar id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatricula}" maxlength="10" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="6" title="Data da emissão">
+                                    <p:calendar id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatricula}" maxlength="10" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="6" title="Data da emissão" >
                                         <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.matriculaEscola.listenerData}" />
                                     </p:calendar>
                                     <p:outputLabel value=" Status: " />
@@ -351,22 +351,22 @@
                                     <p:column headerText="Descrição da Turma">
                                         <p:commandLink value="#{turma.descricao}" action="#{matriculaEscolaBean.selecionaTurma(turma)}" update=":form_matricula_escola:idTabela :form_matricula_escola:id_accordion_tipo:idTurmaDeta :form_matricula_escola:id_accordion_tipo:idVagasD"  oncomplete="PF('dgl_painel_seleciona_turma').hide();" />
                                     </p:column>
-                                    <p:column class="text-center" headerText="Sala">
+                                    <p:column styleClass="text-center" headerText="Sala">
                                         <p:outputLabel value="#{turma.sala}" />
                                     </p:column>
-                                    <p:column class="text-center" headerText="Data Inicio">
+                                    <p:column styleClass="text-center" headerText="Data Inicio">
                                         <p:outputLabel value="#{turma.dataInicio}" />
                                     </p:column>
-                                    <p:column class="text-center" headerText="Data Término">
+                                    <p:column styleClass="text-center" headerText="Data Término">
                                         <p:outputLabel value="#{turma.dataTermino}" />
                                     </p:column>
-                                    <p:column class="text-center" headerText="Horário">
+                                    <p:column styleClass="text-center" headerText="Horário">
                                         <p:outputLabel value="#{turma.horaInicio} às #{turma.horaTermino} h(s)" />
                                     </p:column>
-                                    <p:column class="text-center" headerText="Vagas">
+                                    <p:column styleClass="text-center" headerText="Vagas">
                                         <p:outputLabel value="#{turma.quantidade}" />
                                     </p:column>
-                                    <p:column class="text-center" headerText="Faixa etária">
+                                    <p:column styleClass="text-center" headerText="Faixa etária">
                                         <p:outputLabel value="#{turma.idadeInicial} / #{turma.idadeFim}"/>
                                     </p:column>
                                 </p:dataTable>

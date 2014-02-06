@@ -38,11 +38,11 @@
                                 <p:outputLabel value="Data inicio: " />
                             </h:column>
                             <h:column>
-                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtInicio}" id="idDataInicio" size="8" readonlyInput="true">
+                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtInicio}" id="idDataInicio" size="8" readonlyInput="true" pattern="dd/MM/yyyy">
                                     <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataInicioListener}" />
                                 </p:calendar>
                                 <p:outputLabel value="Data saída:" for="idDataFim" styleClass="margin-left-max"/>
-                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtFim}" id="idDataFim" styleClass="margin-left-max" size="8" readonlyInput="true">
+                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtFim}" id="idDataFim" styleClass="margin-left-max" size="8" readonlyInput="true" pattern="dd/MM/yyyy">
                                     <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataFimListener}" />
                                 </p:calendar>
                                 <h:column>

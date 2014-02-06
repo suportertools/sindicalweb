@@ -25,7 +25,7 @@
                             Selecione uma turma selecionando o id ou curso
                         </f:facet>
                         <p:column headerText="ID" width="25" styleClass="text-center">
-                            <p:commandLink value="#{linha.id}" action="#{turmaBean.editar(linha)}" />
+                            <p:commandLink value="#{linha.id}" action="#{turmaBean.editar(linha)}" styleClass="underline-hover"/>
                         </p:column>
                         <p:column headerText="Dt. Inicio" width="80" styleClass="text-center">
                             <h:outputText value="#{linha.dataInicio}"/>
