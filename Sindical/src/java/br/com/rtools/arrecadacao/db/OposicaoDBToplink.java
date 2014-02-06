@@ -9,7 +9,6 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
@@ -137,31 +136,29 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
 
     @Override
     public List<Oposicao> pesquisaOposicao(String descricaoPesquisa, String tipoPesquisa, String comoPesquisa) {
-
-        List<Oposicao> listaOposicaos = new ArrayList();
-
-        String queryString = "";
-
+        String filtroString = "";
         if (tipoPesquisa.equals("nome")) {
-            queryString = " WHERE UPPER(opo.oposicaoPessoa.nome) LIKE :descricaoPesquisa ";
+            filtroString = " WHERE UPPER(opo.oposicaoPessoa.nome) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("cpf")) {
-            queryString = " WHERE opo.oposicaoPessoa.cpf LIKE :descricaoPesquisa ";
+            filtroString = " WHERE opo.oposicaoPessoa.cpf LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("rgs")) {
-            queryString = " WHERE UPPER(opo.oposicaoPessoa.rg) LIKE :descricaoPesquisa ";
+            filtroString = " WHERE UPPER(opo.oposicaoPessoa.rg) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("empresa")) {
-            queryString = " WHERE UPPER(opo.juridica.pessoa.nome) LIKE :descricaoPesquisa ";
+            filtroString = " WHERE UPPER(opo.juridica.pessoa.nome) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("cnpj")) {
-            queryString = " WHERE opo.juridica.pessoa.documento LIKE :descricaoPesquisa ";
+            filtroString = " WHERE opo.juridica.pessoa.documento LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("observacao")) {
-            queryString = " WHERE UPPER(opo.observacao) LIKE :descricaoPesquisa ";
+            filtroString = " WHERE UPPER(opo.observacao) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("data")) {
-            queryString = " WHERE opo.dtEmissao = '" + DataHoje.livre(DataHoje.converte(descricaoPesquisa), "yyyy-MM-dd") + "'";
+            filtroString = " WHERE opo.dtEmissao = '" + DataHoje.livre(DataHoje.converte(descricaoPesquisa), "yyyy-MM-dd") + "'";
         } else if (tipoPesquisa.equals("todos")) {
-            queryString = "";
+            DataHoje dh = new DataHoje();
+            String dataAntiga =  dh.decrementarMeses(1, DataHoje.data());
+            filtroString = " WHERE opo.dtEmissao >= '"+dataAntiga+"' ";
         }
-
+        String queryString = " SELECT OPO FROM Oposicao AS OPO " + (filtroString) + " ORDER BY OPO.dtEmissao DESC ";
         try {
-            Query qry = getEntityManager().createQuery(" SELECT opo FROM Oposicao opo " + queryString + " ORDER BY opo.dtEmissao DESC ");
+            Query qry = getEntityManager().createQuery(queryString);
             if (!descricaoPesquisa.equals("") && !tipoPesquisa.equals("todos") && !tipoPesquisa.equals("data")) {
                 if (comoPesquisa.equals("Inicial")) {
                     qry.setParameter("descricaoPesquisa", "" + descricaoPesquisa.toUpperCase() + "%");
@@ -169,11 +166,14 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                     qry.setParameter("descricaoPesquisa", "%" + descricaoPesquisa.toUpperCase() + "%");
                 }
             }
-            listaOposicaos = qry.getResultList();
-            return listaOposicaos;
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
-            return new ArrayList<Oposicao>();
+            return new ArrayList();
         }
+        return new ArrayList();
     }
 
     @Override
@@ -195,8 +195,8 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
             query.setParameter("cpf", oposicao.getOposicaoPessoa().getCpf());
             query.setParameter("convencao", oposicao.getConvencaoPeriodo().getConvencao().getId());
             query.setParameter("grupoCidade", oposicao.getConvencaoPeriodo().getGrupoCidade().getId());
-            result = query.getResultList();
-            if (result.size() > 0) {
+            List list = query.getResultList();
+            if (list.size() > 0) {
                 return true;
             }
         } catch (Exception e) {

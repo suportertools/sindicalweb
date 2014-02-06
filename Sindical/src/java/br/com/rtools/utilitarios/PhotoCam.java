@@ -1,5 +1,6 @@
 package br.com.rtools.utilitarios;
 
+import static br.com.rtools.utilitarios.Diretorio.getCliente;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -23,14 +24,19 @@ public class PhotoCam {
             Date date = new Date();
             photo = date.toGMTString();
         }
-        String caminho = "Imagens/ArquivosCamera";
+        String caminho = "temp";
         byte[] data = captureEvent.getData();
         if (diretorio) {
-            caminho = "Imagens/ArquivosCamera/" + caminhoTemporario;
+            caminho = "temp/" + caminhoTemporario;
             Diretorio.criar(caminho);
         }
         ServletContext servletContext = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-        String newFileName = Diretorio.arquivo(caminho, photo) + ".png";
+        String newFileName = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/" + caminho +"/"+ photo +".png");
+        File f = new File(newFileName);
+
+        if (f.exists()) {
+            f.delete();
+        }
         FileImageOutputStream imageOutput;
         try {
             imageOutput = new FileImageOutputStream(new File(newFileName));

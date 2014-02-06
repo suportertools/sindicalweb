@@ -8,6 +8,8 @@ public interface ServicoValorDB {
     public List pesquisaServicoValor(int idServico);
 
     public ServicoValor pesquisaServicoValorPorPessoaFaixaEtaria(int idServico, int idPessoa);
+    
+    public ServicoValor pesquisaServicoValorPorIdade(int idServico, int idade);
 
     public float pesquisaMaiorResponsavel(int idPessoa);
 }

@@ -68,6 +68,33 @@ public class ServicoValorDBToplink extends DB implements ServicoValorDB {
         }
         return new ServicoValor();
     }
+    
+    
+    @Override
+    public ServicoValor pesquisaServicoValorPorIdade(int idServico, int idade) {
+        try {
+            String queryString = ""
+                    + "        SELECT sv.id                                                 "
+                    + "          FROM fin_servicos s                                        "
+                    + "   INNER JOIN fin_servico_valor sv ON (sv.id_servico = s.id)         "
+                    + "        WHERE s.id = " + idServico                                   
+                    + "          AND "+idade+" BETWEEN sv.nr_idade_ini AND sv.nr_idade_fim ";
+            Query qry = getEntityManager().createNativeQuery(queryString);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                List sungle = (List) qry.getSingleResult();
+                int id = Integer.parseInt(sungle.get(0).toString());
+                SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
+                ServicoValor sv = (ServicoValor) acumuladoDB.pesquisaCodigo(id, "ServicoValor");
+                return sv;
+            }
+            //return new Float[] {(new BigDecimal((Double) vector.get(0))).floatValue(),(new BigDecimal((Double) vector.get(1))).floatValue()};
+        } catch (NumberFormatException e) {
+            e.getMessage();
+        }
+        return new ServicoValor();
+    }    
+    
 
     @Override
     public float pesquisaMaiorResponsavel(int idPessoa) {

@@ -14,10 +14,10 @@ public class ConviteClube {
     public ConviteClube() {
         this.nome = "";
         this.emissao = "";;
-        this.validade = "";;
-        this.foto = "";;
-        this.barras = "";;
-        this.obs = "";;
+        this.validade = "";
+        this.foto = "";
+        this.barras = "";
+        this.obs = "";
     }
 
     public ConviteClube(String nome, String emissao, String validade, String foto, String barras, String obs) {

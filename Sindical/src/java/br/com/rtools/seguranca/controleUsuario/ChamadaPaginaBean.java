@@ -1103,6 +1103,10 @@ public class ChamadaPaginaBean implements Serializable {
     public synchronized String pesquisaSocios() {
         return metodoGenerico(1, "pesquisaSocios");
     }
+    
+    public synchronized String pesquisaSociosAtivos() {
+        return metodoGenerico(1, "pesquisaSociosAtivos");
+    }
 
     public synchronized String pesquisaAcademia() {
         return metodoGenerico(1, "pesquisaAcademia");

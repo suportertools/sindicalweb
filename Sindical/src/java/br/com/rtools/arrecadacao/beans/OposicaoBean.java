@@ -13,23 +13,30 @@ import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.ValidaDocumentos;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class OposicaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class OposicaoBean implements Serializable {
 
     private Oposicao oposicao = new Oposicao();
     private OposicaoPessoa oposicaoPessoa = new OposicaoPessoa();
     private ConvencaoPeriodo convencaoPeriodo = new ConvencaoPeriodo();
     private List<ConvencaoPeriodo> listaConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
-    private String msg = "";
-    private String msgCPF = "";
-    private String msgEmpresa = "";
+    private String mensagem = "";
+    private String mensagemCPF = "";
+    private String mensagemEmpresa = "";
     private int idIndex = 0;
     private String sexo = "M";
     private String valorPesquisa = "";
@@ -40,7 +47,7 @@ public class OposicaoJSFBean {
     private String comoPesquisa = "";
     private Socios socios = new Socios();
 
-    public String novo() {
+    public void novo() {
         oposicao = new Oposicao();
         oposicaoPessoa = new OposicaoPessoa();
         convencaoPeriodo = new ConvencaoPeriodo();
@@ -49,39 +56,36 @@ public class OposicaoJSFBean {
         idIndex = -1;
         sexo = "";
         porPesquisa = "todos";
-        setMsg("");
-        setMsgEmpresa("");
-        setMsgCPF("");
+        setMensagem("");
+        setMensagemEmpresa("");
+        setMensagemCPF("");
         setDesabilitaPessoa(false);
         valorPesquisa = "";
         setSexo("M");
-        //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("oposicaoBean", new Oposicao());
-        return "oposicao";
     }
 
-    public String salvar() {
-        setMsg("");
+    public void salvar() {
         if (oposicao.getJuridica().getId() == -1) {
-            msg = "Informar o Pessoa Jurídica!";
-            return null;
+            mensagem = "Informar o Pessoa Jurídica!";
+            return;
         }
         if (oposicao.getOposicaoPessoa().getNome().equals("")) {
-            msg = "Informar o nome da Pessoa!";
-            return null;
+            mensagem = "Informar o nome da Pessoa!";
+            return;
         }
         if (oposicao.getConvencaoPeriodo().getId() == -1) {
-            msg = "Informar o período de convenção!";
-            return null;
+            mensagem = "Informar o período de convenção!";
+            return;
         }
         if (socios.getId() != -1) {
             if (socios.getServicoPessoa().isAtivo()) {
-                msg = "CPF cadastrado como sócio, inative para salvar oposição!";
-                return null;
+                mensagem = "CPF cadastrado como sócio, inative para salvar oposição!";
+                return;
             }
         }
         if (!salvarOposicaoPessoa()) {
-            msg = "Falha ao salvar oposição pessoa!";
-            return null;
+            mensagem = "Falha ao salvar oposição pessoa!";
+            return;
         }
 
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
@@ -89,60 +93,55 @@ public class OposicaoJSFBean {
         if (oposicao.getId() == -1) {
             OposicaoDB oposicaoDB = new OposicaoDBToplink();
             if (oposicaoDB.validaOposicao(oposicao)) {
-                msg = "Oposição já cadastrada para essa pessoa para a convenção vigente!";
-                return null;
+                mensagem = "Oposição já cadastrada para essa pessoa para a convenção vigente!";
+                return;
             }
             if (dB.inserirObjeto(oposicao)) {
                 dB.comitarTransacao();
                 novo();
-                msg = "Registro salvo com sucesso.";
-                return null;
+                mensagem = "Registro salvo com sucesso.";
             } else {
                 dB.desfazerTransacao();
                 novo();
-                msg = "Falha ao salvar este registro!";
-                return null;
+                mensagem = "Falha ao salvar este registro!";
             }
         } else {
             if (dB.alterarObjeto(oposicao)) {
                 dB.comitarTransacao();
                 novo();
-                msg = "Registro atualizado com sucesso.";
-                return null;
+                mensagem = "Registro atualizado com sucesso.";
             } else {
                 dB.desfazerTransacao();
                 novo();
-                msg = "Falha ao excluir este registro!";
-                return null;
+                mensagem = "Falha ao excluir este registro!";
             }
         }
     }
 
-    public String editar(int id) {
+    public String editar(Oposicao o) {
         setDesabilitaPessoa(true);
-        oposicao = (Oposicao) getListaOposicaos().get(id);
+        oposicao = o;
         sexo = oposicao.getOposicaoPessoa().getSexo();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("oposicaoPesquisa", oposicao);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("oposicaoPesquisa");
+        GenericaSessao.put("oposicaoPesquisa", oposicao);
+        GenericaSessao.put("linkClicado", true);
+        GenericaSessao.remove("oposicaoPesquisa");
         return "oposicao";
     }
 
     public boolean salvarOposicaoPessoa() {
         if (oposicao.getOposicaoPessoa().getCpf().equals("___.___.___-__") || oposicao.getOposicaoPessoa().getCpf().equals("")) {
-            msg = "Informar o CPF!";
+            mensagem = "Informar o CPF!";
             return false;
         }
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))) {
-            msg = "CPF inválido!";
+            mensagem = "CPF inválido!";
             return false;
         }
         oposicao.getOposicaoPessoa().setSexo(sexo);
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         dB.abrirTransacao();
-        OposicaoPessoa op = new OposicaoPessoa();
         OposicaoDB oposicaoDB = new OposicaoDBToplink();
-        op = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+        OposicaoPessoa op = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
         if (op.getId() == -1) {
             if (oposicao.getOposicaoPessoa().getId() == -1) {
                 if (dB.inserirObjeto(oposicao.getOposicaoPessoa())) {
@@ -173,56 +172,52 @@ public class OposicaoJSFBean {
         return true;
     }
 
-    public String excluir(int id) {
-        setMsg("");
+    public void excluir() {
+        excluir(0);
+    }
+
+    public void excluir(int id) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         if (id > 0) {
             oposicao = (Oposicao) dB.pesquisaCodigo(id, "Oposicao");
         } else {
             oposicao = (Oposicao) dB.pesquisaCodigo(oposicao.getId(), "Oposicao");
         }
-        dB.abrirTransacao();
         if (oposicao.getId() != -1) {
+            dB.abrirTransacao();
             if (dB.deletarObjeto(oposicao)) {
                 dB.comitarTransacao();
                 novo();
-                msg = "Registro excluído com sucesso.";
-                return null;
+                mensagem = "Registro excluído com sucesso.";
             } else {
                 dB.desfazerTransacao();
                 novo();
-                msg = "Falha na exclusão do registro!";
-                return null;
+                mensagem = "Falha na exclusão do registro!";
             }
         }
-        return "oposicao";
     }
 
-    public String consultaPessoa() {
-        msgCPF = "";
+    public void consultaPessoa() {
         boolean isVerificaDocumento = false;
         if (oposicao.getOposicaoPessoa().getCpf().equals("___.___.___-__") || oposicao.getOposicaoPessoa().getCpf().equals("")) {
             isVerificaDocumento = true;
-            msgCPF = "";
         }
         if (!oposicao.getOposicaoPessoa().getRg().equals("")) {
             isVerificaDocumento = false;
         }
         if (isVerificaDocumento == true) {
-            msgCPF = "";
-            return null;
+            return;
         }
         if (oposicao.getOposicaoPessoa().getId() != -1) {
-            msgCPF = "";
-            return null;
+            return;
         }
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))) {
-            msgCPF = "CPF inválido!";
-            return null;
+            //RequestContext.getCurrentInstance().execute("PF('input_cpf').focus();");
+            GenericaMensagem.warn("Validação", "CPF inválido!");
+            return;
         }
         OposicaoDB oposicaoDB = new OposicaoDBToplink();
-        PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
-        pessoaEmpresa = oposicaoDB.pesquisaPessoaFisicaEmpresa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
+        PessoaEmpresa pessoaEmpresa = oposicaoDB.pesquisaPessoaFisicaEmpresa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
         if (pessoaEmpresa.getId() != -1) {
             if (oposicao.getJuridica().getId() == -1) {
                 oposicao.setJuridica(pessoaEmpresa.getJuridica());
@@ -256,10 +251,9 @@ public class OposicaoJSFBean {
 
         if (socios.getId() != -1) {
             if (socios.getServicoPessoa().isAtivo()) {
-                msgCPF = "CPF cadastrado como sócio, inative para salvar oposição!";
+                GenericaMensagem.warn("Validação", "CPF cadastrado como sócio, inative para salvar oposição!");
             }
         }
-        return "oposicao";
     }
 
     public void convencaoPeriodoConvencaoGrupoCidade() {
@@ -281,9 +275,9 @@ public class OposicaoJSFBean {
     public Oposicao getOposicao() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
             oposicao.setJuridica((Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa"));
-            msgEmpresa = "";
+            mensagemEmpresa = "";
             if (oposicao.getJuridica().getDtFechamento() != null) {
-                msgEmpresa = "Empresa está inátiva!";
+                mensagemEmpresa = "Empresa está inátiva!";
                 return null;
             }
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
@@ -320,28 +314,28 @@ public class OposicaoJSFBean {
         this.convencaoPeriodo = convencaoPeriodo;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public String getMsgCPF() {
-        return msgCPF;
+        return mensagemCPF;
     }
 
-    public void setMsgCPF(String msgCPF) {
-        this.msgCPF = msgCPF;
+    public void setMensagemCPF(String mensagemCPF) {
+        this.mensagemCPF = mensagemCPF;
     }
 
-    public void setMsgEmpresa(String msgEmpresa) {
-        this.msgEmpresa = msgEmpresa;
+    public void setMensagemEmpresa(String mensagemEmpresa) {
+        this.mensagemEmpresa = mensagemEmpresa;
     }
 
     public String getMsgEmpresa() {
-        return msgEmpresa;
+        return mensagemEmpresa;
     }
 
     public int getIdIndex() {
@@ -390,15 +384,16 @@ public class OposicaoJSFBean {
 
     public void acaoPesquisaInicial() {
         setComoPesquisa("Inicial");
-        listaOposicaos.clear();
     }
 
     public void acaoPesquisaParcial() {
         setComoPesquisa("Parcial");
-        listaOposicaos.clear();
     }
 
     public String getPorPesquisa() {
+        if(porPesquisa.equals("todos")) {
+            descricaoPesquisa = "";
+        }
         return porPesquisa;
     }
 
@@ -420,5 +415,9 @@ public class OposicaoJSFBean {
 
     public void setDescricaoPesquisa(String descricaoPesquisa) {
         this.descricaoPesquisa = descricaoPesquisa;
+    }
+
+    public String getMascara() {
+        return Mask.getMascaraPesquisa(porPesquisa, true);
     }
 }

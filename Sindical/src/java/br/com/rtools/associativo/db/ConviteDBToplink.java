@@ -3,6 +3,8 @@ package br.com.rtools.associativo.db;
 import br.com.rtools.associativo.ConviteServico;
 import br.com.rtools.associativo.ConviteSuspencao;
 import br.com.rtools.principal.DB;
+import br.com.rtools.sistema.SisPessoa;
+import br.com.rtools.utilitarios.DataHoje;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -45,9 +47,6 @@ public class ConviteDBToplink extends DB implements ConviteDB {
         return false;
     }
 
-    
-    
-    
     @Override
     public List<ConviteSuspencao> listaPessoasSuspensas(ConviteSuspencao cs, boolean filtro, boolean fitroPorPessoa) {
         return listaPessoasSuspensas(cs, filtro, fitroPorPessoa, "", "", "");
@@ -57,7 +56,7 @@ public class ConviteDBToplink extends DB implements ConviteDB {
     public List<ConviteSuspencao> listaPessoasSuspensas(ConviteSuspencao cs, boolean filtro, boolean fitroPorPessoa, String descricaoPesquisa, String porPesquisa, String comoPesquisa) {
         List list = new ArrayList();
         Query query;
-        String queryString = "";
+        String queryString;
         String filtroQueryPessoa = "";
         String filtroQueryA;
         if (!descricaoPesquisa.equals("")) {
@@ -109,4 +108,151 @@ public class ConviteDBToplink extends DB implements ConviteDB {
         }
         return list;
     }
+
+    public boolean pesquisaLimiteConvitesPorSocio(ConviteSuspencao cs, int quantidade) {
+        try {
+            String queryString = "SELECT * FROM conv_suspencao WHERE id_sis_pessoa = " + cs.getSisPessoa().getId() + " AND dt_fim >= CURRENT_DATE ";
+            Query query = getEntityManager().createNativeQuery(queryString);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    public boolean pesquisaLimiteConvitesPorConvidado(ConviteSuspencao cs, int quantidade) {
+        try {
+            String queryString = "SELECT * FROM conv_suspencao WHERE id_sis_pessoa = " + cs.getSisPessoa().getId() + " AND dt_fim >= CURRENT_DATE ";
+            Query query = getEntityManager().createNativeQuery(queryString);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+        }
+        return false;
+    }
+
+    @Override
+    public List pesquisaConviteMovimento(String descricaoPesquisa, String porPesquisa, String comoPesquisa) {
+        String filtroString = "";
+        if (porPesquisa.equals("nome")) {
+            filtroString = " WHERE UPPER(CM.sisPessoa.nome) LIKE :descricaoPesquisa ";
+        } else if (porPesquisa.equals("cpf")) {
+            filtroString = " WHERE CM.sisPessoa.documento LIKE :descricaoPesquisa ";
+        } else if (porPesquisa.equals("codigo")) {
+            filtroString = " WHERE CM.id = " + descricaoPesquisa;
+        } else if (porPesquisa.equals("rg")) {
+            filtroString = " WHERE UPPER(CM.sisPessoa.rg) LIKE :descricaoPesquisa ";
+        } else if (porPesquisa.equals("socio")) {
+            filtroString = " WHERE UPPER(CM.pessoa.nome) LIKE :descricaoPesquisa ";
+        } else if (porPesquisa.equals("socioCPF")) {
+            filtroString = " WHERE UPPER(CM.pessoa.documento) LIKE :descricaoPesquisa ";
+        } else if (porPesquisa.equals("todos")) {
+            DataHoje dh = new DataHoje();
+            String dataAntiga = dh.decrementarMeses(1, DataHoje.data());
+            filtroString = " WHERE CM.dtEmissao >= '" + dataAntiga + "' ";
+        }
+        String queryString = " SELECT CM FROM ConviteMovimento AS CM " + (filtroString) + " ORDER BY CM.dtEmissao DESC ";
+        try {
+            Query qry = getEntityManager().createQuery(queryString);
+            if (!porPesquisa.equals("") && !porPesquisa.equals("todos") && !porPesquisa.equals("codigo")) {
+                if (comoPesquisa.equals("Inicial")) {
+                    qry.setParameter("descricaoPesquisa", "" + descricaoPesquisa.toUpperCase() + "%");
+                } else if (comoPesquisa.equals("Parcial")) {
+                    qry.setParameter("descricaoPesquisa", "%" + descricaoPesquisa.toUpperCase() + "%");
+                }
+            }
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public boolean limiteConvitePorSocio(int quantidadeConvites, int quantidadeDias, int idPessoaSocio) {
+        try {
+            String queryString = ""
+                    + "     SELECT COUNT(*) AS qtde "
+                    + "       FROM conv_movimento "
+                    + "      WHERE id_pessoa = " + idPessoaSocio
+                    + "        AND dt_emissao >= (NOW() - INTERVAL '" + quantidadeDias + "' DAY)";
+            Query query = getEntityManager().createNativeQuery(queryString);
+            List<List> list = query.getResultList();
+            if (!list.isEmpty()) {
+                int qtde = Integer.parseInt((list.get(0)).get(0).toString());
+                if (quantidadeConvites > qtde) {
+                    return false;
+                }
+            }
+        } catch (NumberFormatException e) {
+            return true;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean limiteConviteConvidado(int quantidadeConvites, int quantidadeDias, int idSisPessoa) {
+        try {
+            String queryString = ""
+                    + "     SELECT count(*) AS qtde "
+                    + "       FROM conv_movimento "
+                    + "      WHERE id_sis_pessoa = " + idSisPessoa
+                    + "        AND dt_emissao >= (NOW() - INTERVAL '" + quantidadeDias + "' DAY)";
+            Query query = getEntityManager().createNativeQuery(queryString);            
+            List<List> list = query.getResultList();
+            if (!list.isEmpty()) {
+                int qtde = Integer.parseInt((list.get(0)).get(0).toString());
+                if (quantidadeConvites > qtde) {
+                    return false;
+                }
+            }
+        } catch (NumberFormatException e) {
+            return true;
+        }
+        return true;
+    }
+    
+    @Override
+    public boolean socio(SisPessoa s) {
+        try {
+//          ##################
+//          #     CAMPOS     #
+//          ##################
+//          # p.ds_nome      #
+//          # dt_nascimento  #
+//          # p.ds_documento #
+//          # f.ds_rg        #
+//          ##################
+            String nome = s.getNome().toUpperCase();
+            String rg = s.getRg().toUpperCase();
+            String documento = s.getDocumento();
+            String nascimento = s.getNascimento();
+            String queryString = ""
+               +"        SELECT *                                                                       "
+               +"          FROM soc_socios_vw AS s                                                      "
+               +"    INNER JOIN pes_pessoa AS p ON p.id = s.codsocio                                    "  
+               +"    INNER JOIN pes_fisica AS f ON f.id_pessoa = p.id                                   "
+               +"         WHERE (UPPER(p.ds_nome) = '"+nome+"' AND dt_nascimento = '"+nascimento+"')    "
+               +"            OR (UPPER(f.ds_rg) = '"+rg+"')                                             "
+               +"            OR (p.ds_documento = '"+documento+"')                                      "
+               +"           AND inativacao IS NULL                                                      ";
+            
+            Query query = getEntityManager().createNativeQuery(queryString);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return true;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return false;
+    }
+
 }
