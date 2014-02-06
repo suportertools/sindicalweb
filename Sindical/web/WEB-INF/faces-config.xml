@@ -40,12 +40,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>transferenciaEntreContasBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.TransferenciaEntreContasJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>contribuintesBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuintesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -140,19 +134,21 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.MovimentosReceberJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+    
+<!--
     <managed-bean>
         <managed-bean-name>baixaGeralBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.BaixaGeralJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    <!--
+
         <managed-bean>
             <managed-bean-name>arquivoBancoBean</managed-bean-name>
             <managed-bean-class>br.com.rtools.arrecadacao.beans.ArquivoBancoJSFBean</managed-bean-class>
             <managed-bean-scope>session</managed-bean-scope>
         </managed-bean>
-    -->
+-->
+
     <managed-bean>
         <managed-bean-name>extratoTelaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ExtratoTelaJSFBean</managed-bean-class>
@@ -370,13 +366,13 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.OposicaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+<!--
     <managed-bean>
         <managed-bean-name>webREPISBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.WebREPISJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+-->
     <managed-bean>
         <managed-bean-name>pisoSalarialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.PisoSalarialJSFBean</managed-bean-class>
@@ -651,18 +647,6 @@
         <navigation-case>
             <from-outcome>contribuintes</from-outcome>
             <to-view-id>/contribuintes.jsp</to-view-id>
-            <redirect/>
-        </navigation-case>
-
-        <navigation-case>
-            <from-outcome>transferenciaEntreContas</from-outcome>
-            <to-view-id>/transferenciaEntreContas.jsp</to-view-id>
-            <redirect/>
-        </navigation-case>
-
-        <navigation-case>
-            <from-outcome>pesquisaTransferencia</from-outcome>
-            <to-view-id>/pesquisaTransferencia.jsp</to-view-id>
             <redirect/>
         </navigation-case>
 
@@ -1699,6 +1683,30 @@
         </navigation-case>        
         
         <navigation-case>
+            <from-outcome>cartao</from-outcome>
+            <to-view-id>/cartao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>fechamentoCaixa</from-outcome>
+            <to-view-id>/fechamentoCaixa.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>caixaFechado</from-outcome>
+            <to-view-id>/caixaFechado.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>transferenciaEntreCaixa</from-outcome>
+            <to-view-id>/transferenciaEntreCaixa.jsf</to-view-id>
+            <redirect/>
+        </navigation-case> 
+
+        <navigation-case>
             <from-outcome>conviteServico</from-outcome>
             <to-view-id>/conviteServico.jsf</to-view-id>
             <redirect/>
@@ -1728,5 +1736,11 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>depositoBancario</from-outcome>
+            <to-view-id>/depositoBancario.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+                                     
     </navigation-rule>
 </faces-config>
