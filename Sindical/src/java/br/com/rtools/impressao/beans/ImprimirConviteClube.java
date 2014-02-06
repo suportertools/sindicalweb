@@ -144,13 +144,42 @@ public class ImprimirConviteClube implements Serializable {
         }
         Collection lista = new ArrayList<ConviteClube>();
         DataHoje dh = new DataHoje();
+        
+        List listSemana = new ArrayList();
+        if (cm.getConviteServico().isDomingo()) {
+            listSemana.add("Dom");
+        }
+        if (cm.getConviteServico().isSegunda()) {
+            listSemana.add("Seg");
+        }
+        if (cm.getConviteServico().isTerca()) {
+            listSemana.add("Ter");
+        }
+        if (cm.getConviteServico().isQuarta()) {
+            listSemana.add("Qua");
+        }
+        if (cm.getConviteServico().isQuinta()) {
+            listSemana.add("Qui");
+        }
+        if (cm.getConviteServico().isSexta()) {
+            listSemana.add("Sex");
+        }
+        if (cm.getConviteServico().isSabado()) {
+            listSemana.add("Sáb");
+        }
+        if (cm.getConviteServico().isFeriado()) {
+            listSemana.add("Feriado");
+        }
+        
         lista.add(new ConviteClube(
                 cm.getSisPessoa().getNome(),
                 cm.getEmissao(),
                 "Valido até " + dh.incrementarMeses(1, cm.getValidade()),
                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                 "00000000",
-                cm.getSisPessoa().getObservacao()
+                cm.getSisPessoa().getObservacao(),
+                ""+listSemana
+                
         ));
         return lista;
     }
