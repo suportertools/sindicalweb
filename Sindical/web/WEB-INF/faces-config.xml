@@ -362,18 +362,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>oposicaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.OposicaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-<!--
-    <managed-bean>
-        <managed-bean-name>webREPISBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.WebREPISJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
--->
-    <managed-bean>
         <managed-bean-name>pisoSalarialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.PisoSalarialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -1168,7 +1156,13 @@
 
         <navigation-case>
             <from-outcome>pesquisaSocios</from-outcome>
-            <to-view-id>/pesquisaSocios.jsp</to-view-id>
+            <to-view-id>/pesquisaSocios.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>pesquisaSociosAtivos</from-outcome>
+            <to-view-id>/pesquisaSociosAtivos.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
