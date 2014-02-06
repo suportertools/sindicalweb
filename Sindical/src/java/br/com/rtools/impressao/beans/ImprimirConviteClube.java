@@ -144,7 +144,7 @@ public class ImprimirConviteClube implements Serializable {
         }
         Collection lista = new ArrayList<ConviteClube>();
         DataHoje dh = new DataHoje();
-        
+
         List listSemana = new ArrayList();
         if (cm.getConviteServico().isDomingo()) {
             listSemana.add("Dom");
@@ -170,7 +170,7 @@ public class ImprimirConviteClube implements Serializable {
         if (cm.getConviteServico().isFeriado()) {
             listSemana.add("Feriado");
         }
-        
+
         lista.add(new ConviteClube(
                 cm.getSisPessoa().getNome(),
                 cm.getEmissao(),
@@ -178,8 +178,7 @@ public class ImprimirConviteClube implements Serializable {
                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                 "00000000",
                 cm.getSisPessoa().getObservacao(),
-                ""+listSemana
-                
+                "" + listSemana
         ));
         return lista;
     }
