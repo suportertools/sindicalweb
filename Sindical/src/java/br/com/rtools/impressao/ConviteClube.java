@@ -10,6 +10,7 @@ public class ConviteClube {
     private String foto;
     private String barras;
     private String obs;
+    private String semana;
 
     public ConviteClube() {
         this.nome = "";
@@ -17,16 +18,18 @@ public class ConviteClube {
         this.validade = "";
         this.foto = "";
         this.barras = "";
+        this.semana = "";
         this.obs = "";
     }
 
-    public ConviteClube(String nome, String emissao, String validade, String foto, String barras, String obs) {
+    public ConviteClube(String nome, String emissao, String validade, String foto, String barras, String obs, String semana) {
         this.nome = nome;
         this.emissao = emissao;
         this.validade = validade;
         this.foto = foto;
         this.barras = barras;
         this.obs = obs;
+        this.semana = semana;
     }
 
     // CONVIDADO    
@@ -79,6 +82,14 @@ public class ConviteClube {
 
     public void setObs(String obs) {
         this.obs = obs;
+    }
+
+    public String getSemana() {
+        return semana;
+    }
+
+    public void setSemana(String semana) {
+        this.semana = semana;
     }
 
 }
