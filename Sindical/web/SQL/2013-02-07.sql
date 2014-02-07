@@ -182,3 +182,6 @@ $BODY$
 ALTER FUNCTION func_idBaixa_cheque_rec(int)
   OWNER TO postgres;
   
+
+
+ALTER TABLE fin_forma_pagamento ADD COLUMN nr_taxa double precision;
