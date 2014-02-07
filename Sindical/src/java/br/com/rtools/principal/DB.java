@@ -4,7 +4,6 @@ import br.com.rtools.sistema.Configuracao;
 import br.com.rtools.utilitarios.GenericaRequisicao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
-import java.io.Serializable;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
