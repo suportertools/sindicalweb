@@ -3,14 +3,14 @@
   <persistence-unit name="ComercioAraras">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties>
-        </properties>
+    <properties>      
+    </properties>
   </persistence-unit>
   <persistence-unit name="Sindical">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-        </properties>
+    </properties>
   </persistence-unit>
   <persistence-unit name="ComercioSertaozinho">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
@@ -108,6 +108,12 @@
     <properties>
     </properties>
   </persistence-unit>
+  <persistence-unit name="ComercioRP">
+    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+    </properties>
+  </persistence-unit>
   <persistence-unit name="c_limeira_base">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
@@ -117,13 +123,13 @@
   <persistence-unit name="n_base_local">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties>      
+    <properties>
     </properties>
   </persistence-unit>
   <persistence-unit name="nova_base">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
-    <properties>
+    <properties>      
     </properties>
-  </persistence-unit>  
-</persistence>
+  </persistence-unit>
+</persistence> 
