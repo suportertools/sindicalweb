@@ -101,8 +101,8 @@ public class DB {
             configuracao.setSenha("989899");
         } else {
             if (cliente.equals("Sindical")) {
-                //cliente = "c_limeira_base";
-                cliente = "n_base_local";
+                cliente = "c_limeira_base";
+                //cliente = "n_base_local";
             }
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
