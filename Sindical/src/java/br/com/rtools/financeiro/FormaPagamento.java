@@ -45,7 +45,9 @@ public class FormaPagamento implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_CREDITO", nullable = false)
     private Date dtCredito;
-
+    @Column(name = "NR_TAXA", length = 10)
+    private float taxa;
+    
     public FormaPagamento() {
         this.id = -1;
         this.baixa = new Baixa();
@@ -60,6 +62,7 @@ public class FormaPagamento implements java.io.Serializable {
         this.tipoPagamento = new TipoPagamento();
         this.valorLiquido = 0;
         this.dtCredito = null;
+        this.taxa = taxa;
     }
 
     public FormaPagamento(int id,
@@ -74,7 +77,8 @@ public class FormaPagamento implements java.io.Serializable {
             CartaoRec cartaoRec,
             TipoPagamento tipoPagamento,
             float valorLiquido,
-            Date dtCredito) {
+            Date dtCredito,
+            float taxa) {
         this.id = id;
         this.baixa = baixa;
         this.chequeRec = chequeRec;
@@ -88,6 +92,7 @@ public class FormaPagamento implements java.io.Serializable {
         this.tipoPagamento = tipoPagamento;
         this.valorLiquido = valorLiquido;
         this.dtCredito = dtCredito;
+        this.taxa = taxa;
     }
 
     public int getId() {
@@ -192,5 +197,13 @@ public class FormaPagamento implements java.io.Serializable {
 
     public void setDtCredito(Date dtCredito) {
         this.dtCredito = dtCredito;
+    }
+
+    public float getTaxa() {
+        return taxa;
+    }
+
+    public void setTaxa(float taxa) {
+        this.taxa = taxa;
     }
 }
