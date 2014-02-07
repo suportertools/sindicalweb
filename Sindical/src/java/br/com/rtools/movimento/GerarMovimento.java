@@ -841,7 +841,9 @@ public class GerarMovimento extends DB {
                 null,
                 (TipoPagamento) sv.pesquisaCodigo(3, "TipoPagamento"),
                 valor_liquido,
-                dataCredito);
+                dataCredito,
+                0
+        );
 
         if (!sv.inserirObjeto(fp)) {
             sv.desfazerTransacao();

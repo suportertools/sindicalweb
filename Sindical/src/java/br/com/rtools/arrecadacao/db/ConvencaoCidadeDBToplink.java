@@ -142,7 +142,7 @@ public class ConvencaoCidadeDBToplink extends DB implements ConvencaoCidadeDB {
     }
 
     @Override
-    public List pesquisarGruposPorConvencao(int idConvencao) {
+    public List<GrupoCidade> pesquisarGruposPorConvencao(int idConvencao) {
         try {
             Query qry = getEntityManager().createQuery(
                     "select c.grupoCidade "
@@ -152,7 +152,7 @@ public class ConvencaoCidadeDBToplink extends DB implements ConvencaoCidadeDB {
             qry.setParameter("idCon", idConvencao);
             return (qry.getResultList());
         } catch (Exception e) {
-            return null;
+            return new ArrayList();
         }
     }
 

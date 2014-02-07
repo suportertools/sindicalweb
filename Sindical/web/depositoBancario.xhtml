@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Deposito Bancário</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Depósito Bancário" styleClass="fonteHeader" />
+                        <h:form id="formDepositoBancario">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="2">
+                                    <p:column>
+                                        <h:outputLabel value="Depositar na Conta" /><br />
+                                        <p:selectOneMenu id="i_select_conta" value="#{depositoBancarioBean.idConta}" style="width: 450px; margin-right: 15px;">
+                                            <f:selectItems value="#{depositoBancarioBean.listaConta}"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Depositar cheques abaixo" onclick="i_dlg_deposito.show()"/>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            
+                            <p:dataTable var="linha" id="tbl" value="#{depositoBancarioBean.listaCheques}" rowKey="#{linha.argumento0[0]}" selection="#{depositoBancarioBean.listaSelecionado}" emptyMessage="Nenhum cheque encontrado!">
+                                <p:column selectionMode="multiple" style="width:2%" />  
+                                
+                                <p:column headerText="Baixa" style="text-align: center">
+                                    <h:outputText value="#{linha.argumento0[1]}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Banco">
+                                    <h:outputText value="#{linha.argumento0[2]}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Agência">
+                                    <h:outputText value="#{linha.argumento0[3]}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Conta">
+                                    <h:outputText value="#{linha.argumento0[4]}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Cheque">
+                                    <h:outputText value="#{linha.argumento0[5]}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Valor">
+                                    <h:outputText value="R$ "/>
+                                    <h:outputText value="#{linha.argumento3}" style="float: right"/>
+                                </p:column>
+                                
+                                <p:column headerText="Emissão" style="text-align: center">
+                                    <h:outputText value="#{linha.argumento1}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Vencimento" style="text-align: center">
+                                    <h:outputText value="#{linha.argumento2}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Status" style="text-align: center">
+                                    <h:panelGrid columns="2" rendered="#{linha.argumento4.status.id == 8}" styleClass="sbb">
+                                        <p:selectOneMenu value="#{linha.argumento5}" style="padding-right: 15px">
+                                            <f:selectItem itemLabel="Liquidado" itemValue="0"/>
+                                            <f:selectItem itemLabel="Devolvido" itemValue="1"/>
+                                            <f:selectItem itemLabel="Sustado"   itemValue="2"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton value="Salvar" styleClass="ui-confirmdialog-yes" icon="ui-icon-disk" action="#{depositoBancarioBean.atualizarStatus(linha)}" title="Salvar status do cheque"/>       
+                                    </h:panelGrid>
+                                    
+                                    <h:outputLabel value="A DEPOSITAR" style="font-size: 11pt!important; color: black; font-weight: bold" rendered="#{linha.argumento4.status.id == 7}"/>
+                                    <h:outputLabel value="LIQUIDADO" style="font-size: 11pt!important; color: black; font-weight: bold" rendered="#{linha.argumento4.status.id == 9}"/>
+                                    <h:outputLabel value="DEVOLVIDO" style="font-size: 11pt!important; color: red; font-weight: bold" rendered="#{linha.argumento4.status.id == 10}"/>
+                                    <h:outputLabel value="SUSTADO" style="font-size: 11pt!important; color: red; font-weight: bold" rendered="#{linha.argumento4.status.id == 11}"/>
+                                </p:column>
+                            </p:dataTable>
+                            
+                            <p:dialog widgetVar="i_dlg_deposito" header="Deseja realmente depositar estes cheques" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Concluir" type="submit" styleClass="ui-confirmdialog-yes" action="#{depositoBancarioBean.depositar()}" update="formDepositoBancario" onclick="i_dlg_deposito.hide()" style="clear: both; float: left" icon="ui-icon-check" />  
+                                <p:commandButton value="Voltar"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_deposito.hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                        </h:form>
+                        
+                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                            <h:outputLabel value="Aguarde ..." />
+                        </p:dialog> 
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

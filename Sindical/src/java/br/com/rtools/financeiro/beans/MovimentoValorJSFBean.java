@@ -14,6 +14,7 @@ import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -35,6 +36,8 @@ public abstract class MovimentoValorJSFBean {
     }
 
     public abstract void carregarFolha();
+    
+    public abstract void carregarFolha(DataObject valor);
 
     public abstract void atualizaValorGrid();
 

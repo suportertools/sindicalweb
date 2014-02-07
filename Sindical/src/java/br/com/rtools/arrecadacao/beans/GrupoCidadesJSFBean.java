@@ -9,6 +9,7 @@ import br.com.rtools.arrecadacao.db.MensagemConvencaoDB;
 import br.com.rtools.arrecadacao.db.MensagemConvencaoDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
@@ -26,6 +27,11 @@ public class GrupoCidadesJSFBean {
     private Cidade cidade = new Cidade();
     private int idIndex = -1;
 
+    public void removerGrupoCidade(){
+        grupoCidades = new GrupoCidades();
+        cidade = new Cidade();
+    }
+    
     public List<GrupoCidades> getListaCidade() {
         GrupoCidadesDB dbGC = new GrupoCidadesDBToplink();
         if (listaCidade.isEmpty()) {
@@ -214,22 +220,25 @@ public class GrupoCidadesJSFBean {
         return "grupoCidades";
     }
 
-    public String inserirCidade() {
+    public void inserirCidade() {
         //GrupoCidadesDB db = new GrupoCidadesDBToplink();
         if (grupoCidades.getGrupoCidade().getId() == -1) {
             msgGrupoCidade = "Pesquise um grupo Cidades";
-            return "grupoCidades";
+            GenericaMensagem.warn("Erro", msgGrupoCidade);
+            return ;
         }
 
         if (cidade.getId() == -1) {
             msgGrupoCidade = "Pesquise uma Cidade";
-            return "grupoCidades";
+            GenericaMensagem.warn("Erro", msgGrupoCidade);
+            return ;
         }
 
         for (int i = 0; i < listaCidade.size(); i++) {
             if (listaCidade.get(i).getCidade().getId() == cidade.getId()) {
                 msgGrupoCidade = "Cidade já pertencente a um grupo!";
-                return "grupoCidades";
+                GenericaMensagem.warn("Erro", msgGrupoCidade);
+                return ;
             }
         }
 
@@ -242,28 +251,32 @@ public class GrupoCidadesJSFBean {
         gc.setCidade(cidade);
         if (!sv.inserirObjeto(gc)) {
             msgConfirma = "Erro ao salvar grupo Cidades";
-            return "grupoCidades";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return ;
         }
 
+        GenericaMensagem.info("Sucesso", "Cidade Adicionada com Sucesso!");
         listaCidade.clear();
         cidade = new Cidade();
         msgGrupoCidade = "";
+        
         sv.comitarTransacao();
-        return "grupoCidades";
     }
 
-    public String removerCidade() {
-        grupoCidades = (GrupoCidades) listaCidade.get(idIndex);
+    public String removerCidade(GrupoCidades gc) {
+        grupoCidades = gc;//(GrupoCidades) listaCidade.get(idIndex);
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
         sv.abrirTransacao();
 
         if (!sv.deletarObjeto(sv.pesquisaCodigo(grupoCidades.getId(), "GrupoCidades"))) {
             msgConfirma = "Erro ao excluir Cidade do Grupo!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         } else {
             msgConfirma = "Registro excluido com Sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
             listaCidade.clear();
             sv.comitarTransacao();
         }

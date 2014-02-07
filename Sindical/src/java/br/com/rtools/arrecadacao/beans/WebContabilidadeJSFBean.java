@@ -701,6 +701,10 @@ public class WebContabilidadeJSFBean extends MovimentoValorJSFBean {
         this.priceRef = priceRef;
     }
 
+    public void carregarFolha(DataObject data) {
+        
+    }
+    
     public void carregarFolha() {
         if (!listMovimentos.isEmpty()) {
             MovimentoDB db = new MovimentoDBToplink();

@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Cartão</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }            
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Cartões" styleClass="fonteHeader" />
+                        <h:form id="formCartao">
+                            <c:set scope="request" var="object" value="${cartaoBean.cartao}"/>
+                            
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid columns="4">
+                                    <p:column>
+                                        <h:outputLabel value="Descrição" /><br />
+                                        <p:inputText id="i_nome_cartao" value="#{cartaoBean.cartao.descricao}" size="50" />
+                                        <p:watermark value="Nome do Cartão ex. VISA / MASTERCARD" for="i_nome_cartao" />
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Dias" /><br />
+                                        <p:inputText value="#{cartaoBean.cartao.dias}" />
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Tipo" /><br />
+                                        <p:selectOneMenu value="#{cartaoBean.cartao.debitoCredito}" style="width: 100px">
+                                            <f:selectItem itemValue="D" itemLabel="Débito"/>
+                                            <f:selectItem itemValue="C" itemLabel="Crédito"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Taxa %" style="color: red"/><br />
+                                        <p:inputText value="#{cartaoBean.cartao.taxa}" />
+                                    </p:column>
+                                </h:panelGrid>
+                                
+                                <h:panelGrid id="i_panel_plano">
+                                    <p:column>
+                                        <p:commandButton value="Adicionar Plano de Contas" action="#{chamadaPaginaBean.pesquisaPlano()}" rendered="#{cartaoBean.cartao.plano5.id == -1}" update="i_panel_plano"/>
+                                        <h:outputLabel value="#{cartaoBean.cartao.plano5.numero} - #{cartaoBean.cartao.plano5.conta}" rendered="#{cartaoBean.cartao.plano5.id != -1}" style="font-size: 10pt!important; font-weight: bold; margin-right: 15px"/>
+                                        <p:commandButton icon="ui-icon-trash" action="#{cartaoBean.removerPlano()}" rendered="#{cartaoBean.cartao.plano5.id != -1 and cartaoBean.cartao.id == -1}" update="i_panel_plano" title="Remover plano Adicionado"/>
+                                        <p:commandButton value="Salvar Cartão" action="#{cartaoBean.salvar()}" rendered="#{cartaoBean.cartao.plano5.id != -1}"  disabled="#{controleAcessoBean.botaoSalvar}"  update="formCartao"  title="Salvar ou Alterar este Cartão"/>
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            
+                            <p:dataTable value="#{cartaoBean.listaCartao}" var="linha" emptyMessage="Nenhum Cartão encontrado!">
+                                <p:column headerText="Excluir" style="text-align: center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{cartaoBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formCartao" />
+                                </p:column>
+
+                                <p:column headerText="Descrição" style="text-align: center">
+                                    <p:commandButton value="#{linha.descricao}" action="#{cartaoBean.editar(linha)}" style="font-weight: bold" update=":formCartao"/>
+                                </p:column>
+
+                                <p:column headerText="Dias">
+                                    <h:outputLabel value="#{linha.dias}"/>
+                                </p:column>
+
+                                <p:column headerText="Tipo" style="text-align: center">
+                                    <h:outputLabel value="Débito" rendered="#{linha.debitoCredito == 'D'}"/>
+                                    <h:outputLabel value="Crédito" rendered="#{linha.debitoCredito == 'C'}"/>
+                                </p:column>
+
+                                <p:column headerText="Taxa">
+                                    <h:outputLabel value="#{linha.taxa}" />
+                                </p:column>
+
+                            </p:dataTable>   
+                                
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

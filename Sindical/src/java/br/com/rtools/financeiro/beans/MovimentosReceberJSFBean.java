@@ -201,6 +201,10 @@ public class MovimentosReceberJSFBean extends MovimentoValorJSFBean {
         return null;
     }
 
+    public void carregarFolha(DataObject data) {
+        
+    }
+    
     @Override
     public synchronized void carregarFolha() {
         if (!listaMovimentos.isEmpty()) {

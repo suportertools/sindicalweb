@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Sindical - Caixas Fechado</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }              
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Caixas Fechado" styleClass="fonteHeader" />
+                        <h:form id="formCaixaFechado">
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:outputLabel value="Caixas"/><br />
+                                <p:selectOneMenu value="#{caixaFechadoBean.idCaixa}" style="padding-right: 20px; margin-right: 15px">
+                                    <p:ajax event="change" update="tbl" listener="#{caixaFechadoBean.listaFechamento.clear()}"/>
+                                    <f:selectItems value="#{caixaFechadoBean.listaCaixa}"/>
+                                </p:selectOneMenu>
+                            </p:panel>
+                            
+                                                        
+                            <p:dataTable var="linha" id="tbl" value="#{caixaFechadoBean.listaFechamento}" emptyMessage="Nenhum fechamento para este caixa!">
+                                
+                                <p:column headerText="Data / Hora" style="text-align: center">
+                                    <h:outputText value="#{linha.argumento1} - #{linha.argumento2}"/>
+                                </p:column>
+                                
+                                <p:column headerText="Valor Fechamento">
+                                    <h:outputText value="R$ "/>
+                                    <h:outputText value="#{linha.argumento3}" style="float: right"/>
+                                </p:column>
+                                
+                                <p:column headerText="Valor Informado">
+                                    <h:outputText value="R$ "/>
+                                    <h:outputText value="#{linha.argumento4}" style="float: right"/>
+                                </p:column>
+                                
+                                <p:column headerText="Status" style="text-align: center">
+                                    <h:outputText value="OK" rendered="#{linha.argumento5 == 0}" style="font-weight: bold;"/>
+                                    <h:outputText value="EM FALTA" rendered="#{linha.argumento5 == 1}" style="font-weight: bold; color: #cc0000" title="O valor do fechamento é maior que o valor informado!"/>
+                                    <h:outputText value="EM SOBRA" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
+                                </p:column>
+                                
+                                <p:column headerText="..." style="text-align: center">
+                                    <h:panelGrid columns="2" styleClass="sbb">
+                                        <h:graphicImage value="Imagens/iconPrint.png" />
+                                        <p:commandLink ajax="false" value="Imprimir Relatório" title="Imprimir relatório de movimentação" target="_blank" style="font-weight: bold"/>
+                                    </h:panelGrid>
+                                </p:column>
+
+                                <p:column headerText="Opções" style="text-align: center">
+                                    <p:commandLink value="Reabrir Caixa" action="#{caixaFechadoBean.reabrir(linha)}" onclick="i_dlg_reabrir.show()"/>
+                                    <h:outputLabel value=" | " style="font-weight: bold;"/>
+                                    <p:commandLink value="Transferir Saldo" action="#{caixaFechadoBean.transferir(linha)}" onclick="i_dlg_transferir.show()"/>
+                                </p:column>
+                                
+                            </p:dataTable>
+                            
+                            <p:growl id="i_msg" showDetail="true" />  
+                            <p:dialog widgetVar="i_dlg_reabrir" header="Reabrir Caixa" resizable="false" modal="true">
+                                <h:outputLabel value="Deseja realmente reabrir este Caixa? " />
+                                                                    
+                                <h:panelGrid style="clear: both" columns="2">
+                                    <p:commandButton value="Sim" onclick="i_dlg_reabrir.hide()" action="#{caixaFechadoBean.reabrir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
+                                    <p:commandButton value="Não" onclick="i_dlg_reabrir.hide()" style="float: left" icon="ui-icon-close"/>  
+                                </h:panelGrid>
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="i_dlg_transferir" header="Transferir valor para Caixa Central" resizable="false" modal="true">
+                                <h:outputLabel value="Deseja realmente transferir valores para o Caixa Central? " />
+                                <h:panelGrid style="clear: both; margin-top: 20px" columns="2">
+                                    <p:column>
+                                        <h:outputLabel value="Valor" style="font-weight: bold"/><br />
+                                        <p:inputText value="#{caixaFechadoBean.valorTransferencia}">
+                                            <p:ajax event="change" update="@this" global="false"/>
+                                        </p:inputText>
+                                    </p:column>
+                                
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Sim" onclick="i_dlg_transferir.hide()" action="#{caixaFechadoBean.transferir()}" update="tbl i_msg" style="float: left" icon="ui-icon-check"/>  
+                                        <p:commandButton value="Não" onclick="i_dlg_transferir.hide()" style="float: left" icon="ui-icon-close"/>  
+                                    </p:column>
+                                </h:panelGrid>
+                            </p:dialog>
+                        </h:form>
+                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                            <h:outputLabel value="Aguarde ..." />
+                        </p:dialog> 
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

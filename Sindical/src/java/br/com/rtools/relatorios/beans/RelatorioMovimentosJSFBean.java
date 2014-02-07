@@ -720,6 +720,10 @@ public class RelatorioMovimentosJSFBean extends MovimentoValorJSFBean {
         }
     }
 
+    public void carregarFolha(DataObject data) {
+        
+    }
+    
     @Override
     public void carregarFolha() {
         throw new UnsupportedOperationException("Not supported yet.");

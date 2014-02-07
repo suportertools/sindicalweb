@@ -85,6 +85,7 @@ public class DataObject {
         this.argumento21 = argumento21;
         this.argumento22 = argumento22;
         this.argumento23 = argumento23;
+        this.argumento24 = argumento24;
         this.argumento25 = argumento25;
         this.argumento26 = argumento26;
         this.argumento27 = argumento27;

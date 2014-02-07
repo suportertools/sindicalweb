@@ -99,6 +99,7 @@ jQuery(function($) {
     $(".telefoneSimples").focusout(function () { var phone, element; element = $(this); element.unmask(); phone = element.val().replace(/\D/g, ''); if (phone.length > 8) { element.mask("99999-999?9"); } else { element.mask("9999-9999?9"); } });
     $(".cpf").mask("999.999.999-99");
     $(".cnpj").mask("99.999.999/9999-99");
+    $(".cnpjx").mask("99.?999.999/9999-99");
     $(".cei").mask("99.999.99999/99");
     $(".cnae").mask("9999-9/99");
     $(".mac").mask("**-**-**-**-**-**");

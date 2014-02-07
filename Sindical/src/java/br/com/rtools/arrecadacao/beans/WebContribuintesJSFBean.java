@@ -165,6 +165,10 @@ public class WebContribuintesJSFBean extends MovimentoValorJSFBean {
         }
         return listaTipoServico;
     }
+    
+    public void carregarFolha(DataObject data) {
+        
+    }
 
     public void carregarFolha() {
         if (!listMovimentos.isEmpty()) {
