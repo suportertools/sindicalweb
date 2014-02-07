@@ -285,7 +285,7 @@ public class DepositoBancarioBean implements Serializable{
                         DataHoje.converteData( (Date) result.get(i).get(7)), // DATA VENCIMENTO
                         Moeda.converteR$Float(Float.parseFloat(Double.toString((Double)result.get(i).get(8)))), // VALOR
                         cheque, // CHEQUE
-                        0
+                        null
                     )
                 );
             }
@@ -311,7 +311,7 @@ public class DepositoBancarioBean implements Serializable{
                             DataHoje.converteData( (Date) result.get(i).get(7)), // DATA VENCIMENTO
                             Moeda.converteR$Float(Float.parseFloat(Double.toString((Double)result.get(i).get(8)))), // VALOR
                             cheque, // CHEQUE
-                            0
+                            null
                         )
                     );
                 }
