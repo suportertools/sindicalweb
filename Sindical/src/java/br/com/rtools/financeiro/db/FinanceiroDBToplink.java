@@ -414,19 +414,19 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     @Override
     public List<Vector> listaDeCheques(int id_status) {
         try {
-//            Query qry = getEntityManager().createNativeQuery(
-//                    "SELECT id, func_idBaixa_cheque_rec(id) as id_baixa, ds_banco, ds_agencia, ds_conta, ds_cheque, dt_emissao, dt_vencimento " +
-//                    "  FROM fin_cheque_rec " +
-//                    " WHERE id_status = " +id_status +
-//                    "   AND dt_vencimento <= now()"
-//            );
             Query qry = getEntityManager().createNativeQuery(
-                    "SELECT c.id, func_idBaixa_cheque_rec(c.id) as id_baixa, ds_banco, ds_agencia, ds_conta, ds_cheque, dt_emissao, dt_vencimento, f.nr_valor " +
-                    "  FROM fin_cheque_rec as c " +
-                    " INNER JOIN fin_forma_pagamento as f on f.id_baixa = func_idBaixa_cheque_rec(c.id) AND f.id_cheque_rec = c.id " +
-                    " WHERE id_status in (7, 8, 9, 10, 11)" +
+                    "SELECT id, func_idBaixa_cheque_rec(id) as id_baixa, ds_banco, ds_agencia, ds_conta, ds_cheque, dt_emissao, dt_vencimento " +
+                    "  FROM fin_cheque_rec " +
+                    " WHERE id_status = " +id_status +
                     "   AND dt_vencimento <= now()"
             );
+//            Query qry = getEntityManager().createNativeQuery(
+//                    "SELECT c.id, func_idBaixa_cheque_rec(c.id) as id_baixa, ds_banco, ds_agencia, ds_conta, ds_cheque, dt_emissao, dt_vencimento, f.nr_valor " +
+//                    "  FROM fin_cheque_rec as c " +
+//                    " INNER JOIN fin_forma_pagamento as f on f.id_baixa = func_idBaixa_cheque_rec(c.id) AND f.id_cheque_rec = c.id " +
+//                    " WHERE id_status in (7, 8, 9, 10, 11)" +
+//                    "   AND dt_vencimento <= now()"
+//            );
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList<Vector>();

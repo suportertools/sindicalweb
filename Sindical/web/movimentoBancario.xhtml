@@ -34,7 +34,7 @@
                         <h:outputText value="Movimento Bancário" styleClass="fonteHeader" />
                         <h:form id="formMovimentoBancario">
                             <p:panel styleClass="fundoCinza" style="clear: both">
-                                <h:panelGrid columns="3">
+                                <h:panelGrid columns="5">
                                     <p:column>
                                         <h:outputLabel value="Contas Bancárias" /><br />
                                         <p:selectOneMenu value="#{movimentoBancarioBean.idConta}" style="margin-right: 15px;">
@@ -50,13 +50,50 @@
                                     </p:column>
                                     
                                     <p:column>
+                                        <h:outputLabel value="Tipo" /><br />
+                                        <p:selectOneMenu value="#{movimentoBancarioBean.tipo}" style="padding-right: 20px; margin-right: 15px;">
+                                            <f:selectItem itemLabel="Débito"  itemValue="debito"/>
+                                            <f:selectItem itemLabel="Crédito" itemValue="credito"/>
+                                        </p:selectOneMenu>
+                                    </p:column>
+                                    
+                                    <p:column>
                                         <h:outputLabel value="Valor" /><br />
                                         <p:inputText dir="RTL" size="10" id="i_valor" value="#{movimentoBancarioBean.valor}" >
                                             <p:ajax event="change" update="i_valor"/>
                                         </p:inputText>
                                     </p:column>
+                                    
+                                    <p:column>
+                                        <br />
+                                        <p:commandButton value="Salvar" onclick="i_dlg_s.show()"/>
+                                    </p:column>
                                 </h:panelGrid>
                             </p:panel>
+                            
+                            <p:messages id="i_msg" showDetail="true" closable="true" />  
+                            
+                            <p:dataTable var="linha" id="tbl" value="#{movimentoBancarioBean.listaMovimento}" emptyMessage="Nenhum movimento encontrado!">
+                                <p:column headerText="Status" style="text-align: center">
+                                    <h:panelGrid columns="2" rendered="#{linha.argumento4.status.id == 8}" styleClass="sbb">
+                                        <p:selectOneMenu value="#{linha.argumento5}" style="padding-right: 15px">
+                                            <f:selectItem itemLabel="Liquidado" itemValue="0"/>
+                                            <f:selectItem itemLabel="Devolvido" itemValue="1"/>
+                                            <f:selectItem itemLabel="Sustado"   itemValue="2"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton value="Salvar" styleClass="ui-confirmdialog-yes" icon="ui-icon-disk" action="#{movimentoBancarioBean.atualizarStatus(linha)}" title="Salvar status do cheque"/>       
+                                    </h:panelGrid>
+                                    
+                                    <h:outputLabel value="A DEPOSITAR" style="font-size: 11pt!important; color: black; font-weight: bold" rendered="#{linha.argumento4.status.id == 7}"/>
+                                    <h:outputLabel value="LIQUIDADO" style="font-size: 11pt!important; color: black; font-weight: bold" rendered="#{linha.argumento4.status.id == 9}"/>
+                                    <h:outputLabel value="DEVOLVIDO" style="font-size: 11pt!important; color: red; font-weight: bold" rendered="#{linha.argumento4.status.id == 10}"/>
+                                    <h:outputLabel value="SUSTADO" style="font-size: 11pt!important; color: red; font-weight: bold" rendered="#{linha.argumento4.status.id == 11}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:dialog widgetVar="i_dlg_s" header="Deseja realmente salvar este movimento" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentoBancarioBean.salvar()}" update="formMovimentoBancario" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check" />  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
                         </h:form>
                     </p:panel>
                 </f:view>
