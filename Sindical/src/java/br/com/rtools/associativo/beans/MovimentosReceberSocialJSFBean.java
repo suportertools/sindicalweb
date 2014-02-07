@@ -390,6 +390,9 @@ public class MovimentosReceberSocialJSFBean {
                 
                 listaMovimento.get(i).setArgumento8( Moeda.converteR$(String.valueOf(desc)) );
                 listaMovimento.get(i).setArgumento9( Moeda.converteR$(String.valueOf(Moeda.subtracaoValores(valor_calc, desc) )));
+            }else{
+                listaMovimento.get(i).setArgumento8( "0,00" );
+                listaMovimento.get(i).setArgumento9( Moeda.converteR$(listaMovimento.get(i).getArgumento6().toString()) );
             }
         }
     }

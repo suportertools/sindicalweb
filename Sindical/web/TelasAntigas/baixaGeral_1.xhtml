@@ -1,0 +1,224 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <h:head>
+        <title>Baixa Geral</title>
+    </h:head>
+    <h:body class="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="formBaixaGeral">
+                <center>
+                    <div class="headerPanel">
+                        <h:outputText value="Baixa Geral" styleClass="fontePanel" style="width: 100%;"/>
+                    </div>
+                </center>
+                <div class="divMae" id="iteste">
+                    <div class="fontePadrao divFundo">
+                        <table>
+                            <tr>
+                                <td class="textoDireita">
+                                    <h:outputText value="Recebimento: " styleClass="fontePadrao"/>
+                                </td>
+                                <td>
+                                    <h:selectOneMenu style="margin-right: 15px;" id="cbConta" value="#{baixaGeralBean.idConta}" disabled="#{baixaGeralBean.desHabilitaConta}" rendered="#{baixaGeralBean.tipo == 'caixa'}">
+                                        <f:selectItems value="#{baixaGeralBean.listaConta}"/>
+                                    </h:selectOneMenu>
+                                    
+                                    <h:outputLabel value="#{baixaGeralBean.banco}" styleClass="fontePadraoNegrito" rendered="#{baixaGeralBean.tipo == 'banco'}"/>
+                                    
+                                </td>
+                                <td class="textoDireita">
+                                    <h:outputLabel value="Quitação: " styleClass="fontePadrao" for="idQuitacao"/>
+                                </td>
+                                <td>
+                                    <h:inputText id="idQuitacao" value="#{baixaGeralBean.quitacao}" styleClass="data"  maxlength="10" size="8" disabled="#{baixaGeralBean.desHabilitaQuitacao}">
+                                        <a4j:ajax event="blur" render="idQuitacao, idVencimento" listener="#{baixaGeralBean.alteraVencimento}" />
+                                    </h:inputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="textoDireita">
+                                    <h:outputText value="Pagamento: " styleClass="fontePadrao"/>
+                                </td>
+                                <td>
+                                    <h:selectOneMenu  id="cbTipoServico" value="#{baixaGeralBean.idTipoDoc}" style="margin-right: 15px">
+                                        <a4j:ajax event="change" listener="#{baixaGeralBean.atualizaTipo}" render="iteste" />
+                                        <f:selectItems value="#{baixaGeralBean.listaTipoDoc}" />
+                                    </h:selectOneMenu>
+                                </td>
+                                <td class="textoDireita">
+                                    <h:outputLabel value="Valor: " styleClass="fontePadrao" for="idValor" />
+                                </td>
+                                <td>
+                                    <h:inputText id="idValor" value="#{baixaGeralBean.valor}" maxlength="20" size="10">
+                                    <a4j:ajax event="blur" render="idValor" />
+                                    </h:inputText>
+                                </td>                                                             
+                            </tr>
+                            <tr>
+                                <td class="textoDireita">
+                                    <h:outputLabel value="Número: " styleClass="fontePadrao" for="idNumero" />
+                                </td>
+                                <td>
+                                    <h:inputText id="idNumero" value="#{baixaGeralBean.numero}" maxlength="20" onblur="somenteNumeros(this);" style="margin-right: 25px;" disabled="#{baixaGeralBean.desHabilitaNumero}"/>
+                                </td>
+                                <td class="textoDireita">
+                                    <h:outputLabel value="Vencimento: " styleClass="fontePadrao textoDireita" for="idVencimento" />
+                                </td>
+                                <td>
+                                    <h:inputText id="idVencimento" value="#{baixaGeralBean.vencimento}" styleClass="data"  maxlength="10" size="8" disabled="#{baixaGeralBean.desHabilitadoVencimento}"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="textoDireita">
+                                    <h:outputText value="Taxa: "  styleClass="fontePadraoNegrito" rendered="#{baixaGeralBean.tipo == 'banco'}"/>
+                                </td>
+                                <td>
+                                    <h:inputText id="idTaxa" value="#{baixaGeralBean.taxa}" maxlength="20" size="10" rendered="#{baixaGeralBean.tipo == 'banco'}">
+                                        <a4j:ajax event="blur" render="idTaxa" />
+                                    </h:inputText>
+                                </td>   
+                            </tr>
+                            <tr>
+                                <td class="textoDireita">
+                                    <h:outputText value="Total: "  styleClass="fontePadraoNegrito"/>
+                                </td>
+                                <td>
+                                    <div class="divFundo" style="margin: 2px;">
+                                        <h:panelGrid columns="3">
+                                            <h:outputText value="R$ " styleClass="fontePadrao" style="font-size: 10pt;"/>
+                                            <h:outputText value="#{baixaGeralBean.total}" styleClass="fontePadrao" style="background: white; font-size: 20pt;"/>
+                                        </h:panelGrid>
+                                    </div>
+                                </td>
+                                <td colspan="4"></td>
+                            </tr>
+
+                        </table>
+                        
+                        <h:panelGrid id="idPanel" columns="1" style="background: white" rendered="#{baixaGeralBean.idTipoDoc == 1 or baixaGeralBean.idTipoDoc == 2}">
+                            <h:outputText value=" Dados do cheque " styleClass="fontePadraoPequeno" />
+                            <br />
+                            <h:panelGrid columns="8" style="background: white">
+                                <h:outputText value="Agência: " styleClass="fontePadrao" />
+                                <h:inputText value="#{baixaGeralBean.chequeRec.agencia}" size="4"/>
+                                
+                                <h:outputText value="Conta: " styleClass="fontePadrao" />
+                                <h:inputText value="#{baixaGeralBean.chequeRec.conta}" size="8" />
+
+                                <h:outputText value="Banco: " styleClass="fontePadrao" />
+                                <h:inputText value="#{baixaGeralBean.chequeRec.banco}" size="10" maxlength="10"/>
+                            </h:panelGrid>
+                        </h:panelGrid>                        
+                        
+                        <h:panelGrid id="i_panel_cartao" columns="1" style="background: white" rendered="#{baixaGeralBean.idTipoDoc == 3 or baixaGeralBean.idTipoDoc == 4}">
+                            <h:outputText value=" Dados do cheque " styleClass="fontePadraoPequeno" />
+                            <br />
+                            <h:panelGrid columns="8" style="background: white">
+                                <h:outputText value="Cartões: " styleClass="fontePadrao" />
+                                <h:selectOneMenu style="margin-right: 15px;" value="#{baixaGeralBean.idCartao}">
+                                    <f:selectItems value="#{baixaGeralBean.listaCartao}"/>
+                                </h:selectOneMenu>
+                            </h:panelGrid>
+                        </h:panelGrid>                        
+                        
+                        <a4j:commandButton value="Adicionar" action="#{baixaGeralBean.inserir}" title="Adicionar Movimento" render="tbl idValor cbConta quitacao"/>
+                        
+                        <h:panelGroup style="overflow:auto; margin-top: 20px;" layout="block">
+                            <div class="fontePadrao divFundo" style="background: white;">
+                                <h:outputText value="Movimentos à receber" styleClass="divFundo" style="margin-bottom: 15px; padding: 10px;"/>
+                                <div style="clear: both;"></div>
+                                <rich:dataTable var="linha" style="width:100%" id="tbl" iterationStatusVar="it" value="#{baixaGeralBean.lista}">
+                                    <rich:column>
+                                        <f:facet name="header"><h:outputText value="#"/></f:facet>
+                                        <h:outputText value="#{it.index}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Remover"/>
+                                        </f:facet>
+                                        <h:column>
+                                            <h:commandLink title="Remover" action="#{baixaGeralBean.remover}">
+                                                <h:graphicImage value="/Imagens/excluirp.png" style="margin-left: 15px;" alt="Excluir" title="Excluir linha"/>
+                                                <a4j:param value="#{it.index}" assignTo="#{baixaGeralBean.index}" />
+                                            </h:commandLink>
+                                        </h:column>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Valor"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.argumento1}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Pagamento"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.argumento3.descricao}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Nº Documento"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.argumento2}"/>
+                                    </rich:column>
+                                    
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Vencimento"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.argumento0}"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </div>
+                        </h:panelGroup>
+                    </div>
+                    <div style="clear: both;"></div>
+                    <div style="float: left; margin-top: 15px;">
+                        <a4j:commandLink styleClass="idSalvar iLink" value="Baixar" title="Baixar" onclick="modalOpcao('divProcesso');" oncomplete="fecharModalOpcao('divProcesso', true), modalMensagem()" render="outConfirma" action="#{baixaGeralBean.baixar}" />
+                    </div>
+                </div>
+                
+                <div id="boxes">
+                    <div id="divProcesso" class="window">
+                        <br />
+                        <center>
+                            <h:outputText value="Aguarde ..." styleClass="fontePadrao" style="color: white"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>                
+                
+                <div id="boxes">
+                    <div id="divMensagem" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:outputText id="outConfirma" value="#{baixaGeralBean.mensagem}" styleClass="fontePadrao"/>
+                            <br /><br />
+                            <h:commandLink styleClass="idNovo iLink" action="#{baixaGeralBean.imprimirRecibo}" value="Imprimir Recibo" target="_blank" style="width: 150px" title="OK"/>
+                            <h:commandLink styleClass="idNovo iLink closeModal" action="#{baixaGeralBean.retorno}" value="OK" title="OK"/>
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>
+            </h:form>
+        </f:view>
+    </h:body>
+</ui:composition>

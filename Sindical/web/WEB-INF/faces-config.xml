@@ -1735,6 +1735,12 @@
             <to-view-id>/depositoBancario.jsf</to-view-id>
             <redirect/>
         </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>movimentoBancario</from-outcome>
+            <to-view-id>/movimentoBancario.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
                                      
     </navigation-rule>
 </faces-config>

@@ -24,7 +24,7 @@ public interface ConvencaoCidadeDB {
 
     public ConvencaoCidade pesquisarConvencao(int idConvencao, int idGrupoCidade);
 
-    public List pesquisarGruposPorConvencao(int idConvencao);
+    public List<GrupoCidade> pesquisarGruposPorConvencao(int idConvencao);
 
     public List ListaCidadesConvencao(int idConvencao, int idGrupoCidade);
 

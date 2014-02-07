@@ -1,112 +1,86 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Cidades do Grupo</title>
+        <title>Sindical - Cidades do Grupo</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }   
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
     </h:head>
-   <f:view>
-   <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formGrupoCidades">
-                <c:set scope="request" var="object" value="${grupoCidadesBean.grupoCidades}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Cidades do Grupo" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae" style="text-align: left">
-                        <h:panelGrid columns="10">
-                            <h:column>
-                                <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar grupo de cidade"  action="#{chamadaPaginaBean.grupoCidade}" immediate="true"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Grupo de Cidade: " styleClass="fontePadrao"/>
-                                <h:outputText id="idGrupoCidade" value="#{grupoCidadesBean.grupoCidades.grupoCidade.descricao}" styleClass="fontePadraoNegrito"/>
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <h:panelGrid columns="10">
-                            <h:column>
-                                <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Cidade"  action="#{chamadaPaginaBean.cidade}" immediate="true"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="Cidade: " styleClass="fontePadrao"/>
-                                <h:inputText id="idCidade"  value="#{grupoCidadesBean.cidade.cidade}" readonly="true" />
-                            </h:column>
-                            <h:column>
-                                <a4j:commandButton render="idCidade,tbl,iMsgGrupo" image="/Imagens/novo.png" title="Adicionar" action="#{grupoCidadesBean.inserirCidade}"/>
-                            </h:column>
-                            <h:column>
-                                <a4j:commandButton render="idCidade,iMsgGrupo" image="/Imagens/excluir.png" title="Excluir" action="#{grupoCidadesBean.excluir}" immediate="true"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputText id="iMsgGrupo" value="#{grupoCidadesBean.msgGrupoCidade}" styleClass="corErro" />
-                            </h:column>
-                        </h:panelGrid>
-                        
-                        <div style="overflow:auto; height:200px;">
-                            <rich:panel>
-                                <rich:dataTable value="#{grupoCidadesBean.listaCidade}" var="linha" iterationStatusVar="it" style="width: 100%" id="tbl">
-                                    
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}"/>
-                                    </rich:column>                                    
-                                    
-                                    <rich:column styleClass="colunaPesquisa">
-                                        <f:facet name="header">
-                                            <h:outputText value="ID"/>
-                                        </f:facet>
-                                        <a4j:commandButton image="/Imagens/excluirp.png" action="#{grupoCidadesBean.removerCidade}" oncomplete="modalMensagem()" render="outConfirma, tbl" disabled="#{controleAcessoBean.botaoExcluir}">
-                                            <a4j:param value="#{it.index}" assignTo="#{grupoCidadesBean.idIndex}"/>
-                                        </a4j:commandButton>
-                                    </rich:column>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Cidades do Grupo" styleClass="fonteHeader" />
+                        <h:form id="formGrupoCidades">
+                            <c:set scope="request" var="object" value="${grupoCidadesBean.grupoCidades}"/>
+                            <p:panel styleClass="fundoCinza" style="clear: both">
+                                <h:panelGrid id="i_panel" columns="2">
+                                    <p:commandButton title="Pesquisar Grupo de Cidade"  action="#{chamadaPaginaBean.grupoCidade}" value="Pesquisar Grupo Cidade" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id == -1}"/>
+                                    <h:outputText value="Grupo Cidade: #{grupoCidadesBean.grupoCidades.grupoCidade.descricao}" style="font-weight: bold" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id != -1}"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{grupoCidadesBean.removerGrupoCidade()}" title="Remover Grupo Cidade" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id != -1}" update="i_panel i_panel_cidade tbl" style="margin-right: 20px;"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            
+                            <p:messages id="i_msg" showDetail="true" />
+                            
+                            <h:panelGrid id="i_panel_cidade">
+                                <h:panelGrid rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id != -1}" columns="5">
+                                    <p:commandButton value="Adicionar Cidade" title="Pesquisar Cidade"  action="#{chamadaPaginaBean.cidade}" rendered="#{grupoCidadesBean.cidade.id == -1}"/>
+                                    <h:outputLabel value="Cidade: #{grupoCidadesBean.cidade.cidade}" rendered="#{grupoCidadesBean.cidade.id != -1}" style="font-size: 12pt!important"/>
 
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Cidade"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.cidade.cidade}"/>
-                                    </rich:column>
+                                    <p:commandButton value="Salvar" title="Adicionar" action="#{grupoCidadesBean.inserirCidade}" rendered="#{grupoCidadesBean.cidade.id != -1}" update="tbl i_panel_cidade i_msg"/>
 
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="UF"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.cidade.uf}"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </rich:panel>
-                        </div>                        
-                    </div>
-                </center>
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{grupoCidadesBean.msgConfirma}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                 
-            </h:form>
-        </f:view>
+                                    <p:commandButton value="Remover" title="Remover" action="#{grupoCidadesBean.excluir}" rendered="#{grupoCidadesBean.cidade.id != -1}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            
+                            <p:dataTable value="#{grupoCidadesBean.listaCidade}" var="linha" id="tbl" emptyMessage="Nenhuma Cidade foi encontrada!">
+                                <p:column headerText="..." style="text-align: center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{grupoCidadesBean.removerCidade(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update="tbl :formGrupoCidades:i_msg"/>
+                                </p:column>
+                                
+                                <p:column headerText="ID" style="text-align: center">
+                                    <h:outputText value="#{linha.cidade.id}"/>
+                                </p:column>
+                                    
+                                <p:column headerText="Cidade">
+                                    <h:outputText value="#{linha.cidade.cidade}"/>
+                                </p:column>
+                                
+                                <p:column headerText="UF" style="text-align: center">
+                                    <h:outputText value="#{linha.cidade.uf}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
-   </f:view>
-</ui:composition> 
+</ui:composition>

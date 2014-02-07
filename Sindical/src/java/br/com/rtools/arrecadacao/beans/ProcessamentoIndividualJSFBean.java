@@ -23,6 +23,7 @@ import br.com.rtools.sistema.db.LinksDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -74,6 +75,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
     public ProcessamentoIndividualJSFBean() {
     }
 
+    public void removerEmpresa(){
+        juridica = new Juridica();
+    }
+    
     public void salvarEmail() {
         if (this.pessoaEnvio.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -81,9 +86,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
             if (sv.alterarObjeto(this.pessoaEnvio)) {
                 msgConfirma = "Email atualizado";
+                GenericaMensagem.info("Sucesso", msgConfirma);
                 sv.comitarTransacao();
             } else {
                 msgConfirma = "Erro ao atualizar Email";
+                GenericaMensagem.warn("Erro", msgConfirma);
                 sv.desfazerTransacao();
             }
         }
@@ -135,16 +142,19 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                     m = false;
                 }
 
-                int id_pessoa = juridica.getPessoa().getId();
+                JuridicaDB dbj = new JuridicaDBToplink();
+                Juridica jur_lista = dbj.pesquisaJuridicaPorPessoa(((Movimento) (listaMovAdd.get(i))).getPessoa().getId());
+                //int id_pessoa = juridica.getPessoa().getId();
+                int id_pessoa = ((Movimento) (listaMovAdd.get(i))).getPessoa().getId(); //juridica.getPessoa().getId();
                 int id_servico = ((Movimento) (listaMovAdd.get(i))).getServicos().getId();
                 int id_tipo_servico = ((Movimento) (listaMovAdd.get(i))).getTipoServico().getId();
                 String referencia = ((Movimento) (listaMovAdd.get(i))).getReferencia();
 
                 MovimentoDB db = new MovimentoDBToplink();
 
-                String juros = "0";
-                String multa = "0";
-                String correcao = "0";
+                String juros = "0,00";
+                String multa = "0,00";
+                String correcao = "0,00";
                 if (m) {
                     juros = Moeda.converteR$Float(Float.valueOf(Double.toString(db.funcaoJuros(id_pessoa, id_servico, id_tipo_servico, referencia))));
                     multa = Moeda.converteR$Float(Float.valueOf(Double.toString(db.funcaoMulta(id_pessoa, id_servico, id_tipo_servico, referencia))));
@@ -154,15 +164,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                 String valor_calculado = Moeda.converteR$Float(Moeda.somaValores(
                         Moeda.somaValores(Moeda.somaValores(Moeda.converteUS$(juros), Moeda.converteUS$(multa)), Moeda.converteUS$(correcao)),
                         ((Movimento) (listaMovAdd.get(i))).getValor()));
-//               movim.setJuros( Moeda.converteUS$((String)listMovimentos.get(i).getArgumento4()) );
-//                    movim.setMulta( Moeda.converteUS$((String)listMovimentos.get(i).getArgumento5()) );
-//                    movim.setCorrecao( Moeda.converteUS$((String)listMovimentos.get(i).getArgumento6()) );
-//                    //movim.setDesconto( Moeda.converteUS$((String)listMovimentos.get(i).getArgumento11()) );
-//                    movim.setValor( Moeda.converteUS$((String)listMovimentos.get(i).getArgumento12()) );
 
                 dtObject = new DataObject(new Boolean(m),
                         ((Movimento) (listaMovAdd.get(i))),
-                        juridica.getContabilidade(),
+                        jur_lista.getContabilidade(),
                         Moeda.converteR$Float(((Movimento) (listaMovAdd.get(i))).getValor()),
                         juros, // JUROS
                         multa, // MULTA
@@ -170,23 +175,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         valor_calculado, // VALOR CALCULADO
                         null,
                         null);
-//               dtObject = new DataObject(new Boolean(m),
-//                                         ((Movimento)(listaMovAdd.get(i))),
-//                                         juridica.getContabilidade(),
-//                                         Moeda.converteR$Float(((Movimento)(listaMovAdd.get(i))).getValor()),
-//                                         Moeda.converteR$Float(
-//                                             Moeda.somaValores(
-//                                                 ((Movimento)(listaMovAdd.get(i))).getValor(),
-//                                                 Moeda.somaValores(
-//                                                     ((Movimento)(listaMovAdd.get(i))).getCorrecao(),
-//                                                     Moeda.somaValores(
-//                                                         ((Movimento)(listaMovAdd.get(i))).getJuros(),
-//                                                         ((Movimento)(listaMovAdd.get(i))).getMulta()
-//                                                     )
-//                                                 )
-//                                             )
-//                                         ),
-//                                         null);
+
                 listMovimentos.add(dtObject);
                 i++;
             }
@@ -207,7 +196,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
     public synchronized String adicionarMovimento() {
         if (juridica.getId() == -1) {
-            msgConfirmaTela = " Pesquise uma empresa!";
+            msgConfirmaTela = "Pesquise uma empresa!";
+            GenericaMensagem.warn("Erro", msgConfirmaTela);
             return null;
         }
         FilialDB dbFilial = new FilialDBToplink();
@@ -223,7 +213,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         tipoServico = dbTipo.pesquisaCodigo(Integer.valueOf(getListaTipoServico().get(idTipoServico).getDescription()));
         contaCob = ctaCobraDB.pesquisaServicoCobranca(servicos.getId(), tipoServico.getId());
         if (contaCob == null) {
-            msgConfirmaTela = "  Não existe conta Cobrança para gerar!";
+            msgConfirmaTela = "Não existe conta Cobrança para gerar!";
+            GenericaMensagem.warn("Erro", msgConfirmaTela);
             return null;
         }
         Movimento movim = new Movimento();
@@ -232,7 +223,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
         if (movim != null) {
             if (movim.getBaixa() != null && movim.getBaixa().getId() != -1) {
-                msgConfirmaTela = "  Movimento já foi baixado!";
+                msgConfirmaTela = "Movimento já foi baixado!";
+                GenericaMensagem.warn("Erro", msgConfirmaTela);
                 return null;
             }
         }
@@ -242,7 +234,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                 tipoServico.getId(),
                 servicos.getId());
         if (mensagemConvencao == null) {
-            msgConfirmaTela = "   Não existe mensagem para esta referência !";
+            msgConfirmaTela = "Não existe mensagem para esta referência !";
+            GenericaMensagem.warn("Erro", msgConfirmaTela);
             return null;
         }
 
@@ -317,6 +310,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         }
                     } else {
                         msgConfirmaTela = "Esse movimento já está adicionado abaixo!";
+                        GenericaMensagem.warn("Erro", msgConfirmaTela);
                     }
                 }
                 marcados.add(true);
@@ -404,13 +398,18 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
     @Override
     public synchronized void carregarFolha() {
-        dataObject = listMovimentos.get(idIndex);
+        
+    }
+    
+    @Override
+    public synchronized void carregarFolha(DataObject linha) {
+        dataObject = linha; //listMovimentos.get(idIndex);
         if (dataObject == null) {
             return;
         }
-        Movimento movi = (Movimento) dataObject.getArgumento1();
+        Movimento movi = (Movimento) linha.getArgumento1();
         super.carregarFolha(movi);
-        dataObject.setArgumento3(movi.getValor());
+        dataObject.setArgumento3(Moeda.converteR$Float(movi.getValor()));
 
     }
 
@@ -430,8 +429,8 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         carregaList = true;
     }
 
-    public String btnExcluirMov() {
-        listMovimentos.remove(idIndex);
+    public String btnExcluirMov(int index) {
+        listMovimentos.remove(index);
         msgConfirma = "";
         return null;
     }
@@ -549,6 +548,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                 }
                 if (!empresasSemEmail.equals("")) {
                     msgConfirma = " Empresas " + empresasSemEmail + " não contém e-mail para envio!";
+                    GenericaMensagem.warn("Erro", msgConfirma);
                     return null;
                 }
 
@@ -593,8 +593,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
                     if (!ret[1].isEmpty()) {
                         msgConfirma = ret[1];
+                        GenericaMensagem.warn("Erro", msgConfirma);
                     } else {
                         msgConfirma = ret[0];
+                        GenericaMensagem.info("Sucesso", msgConfirma);
                     }
 
                     movs.clear();
@@ -656,8 +658,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
                         if (!ret[1].isEmpty()) {
                             msgConfirma = ret[1];
+                            GenericaMensagem.warn("Erro", msgConfirma);
                         } else {
                             msgConfirma = ret[0];
+                            GenericaMensagem.info("Sucesso", msgConfirma);
                         }
 
                         m.clear();
@@ -665,7 +669,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         listaVencimentos.clear();
                         p.clear();
                     } else {
-                        if (jur.getContabilidade().getPessoa().getEmail1().equals("") || jur.getContabilidade().getPessoa().getEmail1() == null) {
+                        if (jur.getContabilidade().getPessoa().getEmail1() == null || jur.getContabilidade().getPessoa().getEmail1().isEmpty()) {
                             if (empresasSemEmail.equals("")) {
                                 empresasSemEmail = jur.getContabilidade().getPessoa().getNome() + " da empresa " + jur.getPessoa().getNome();
                             } else {
@@ -705,8 +709,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         }
                         if (!ret[1].isEmpty()) {
                             msgConfirma = ret[1];
+                            GenericaMensagem.warn("Erro", msgConfirma);
                         } else {
                             msgConfirma = ret[0];
+                            GenericaMensagem.info("Sucesso", msgConfirma);
                         }
 
                         m.clear();
@@ -718,6 +724,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
             }
             if (!empresasSemEmail.equals("")) {
                 msgConfirma = msgConfirma + empresasSemEmail + " não contém e-mail para envio!";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
             return null;
         }
@@ -771,8 +778,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
             if (!ret[1].isEmpty()) {
                 msgConfirma = ret[1];
+                GenericaMensagem.warn("Erro", msgConfirma);
             } else {
                 msgConfirma = ret[0];
+                GenericaMensagem.info("Sucesso", msgConfirma);
             }
         }
     }
@@ -806,11 +815,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         return "Nenhum arquivo encontrado!";
     }
 
-    public String editarJuridica() {
+    public String editarJuridica(DataObject linha) {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         JuridicaDB db = new JuridicaDBToplink();
         Juridica jur = new Juridica();
-        jur = db.pesquisaJuridicaPorPessoa(((Movimento) listMovimentos.get(idIndex).getArgumento1()).getPessoa().getId());
+        jur = db.pesquisaJuridicaPorPessoa(((Movimento) linha.getArgumento1()).getPessoa().getId());
         ((JuridicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(jur);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
     }

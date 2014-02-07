@@ -30,8 +30,6 @@ public class ContaSaldo implements java.io.Serializable {
     @JoinColumn(name = "ID_CAIXA", referencedColumnName = "ID")
     @OneToOne
     private Caixa caixa;
-    @Column(name = "NR_VALOR_INFORMADO")
-    private float valorInformado;
 
     public ContaSaldo() {
         this.id = -1;
@@ -41,10 +39,9 @@ public class ContaSaldo implements java.io.Serializable {
         this.usuario = new Usuario();
         this.filial = new Filial();
         this.caixa = new Caixa();
-        this.valorInformado = 0;
     }
 
-    public ContaSaldo(int id, Date dtData, float saldo, Plano5 plano5, Usuario usuario, Filial filial, Caixa caixa, float valorInformado) {
+    public ContaSaldo(int id, Date dtData, float saldo, Plano5 plano5, Usuario usuario, Filial filial, Caixa caixa) {
         this.id = id;
         this.dtData = dtData;
         this.saldo = saldo;
@@ -52,7 +49,6 @@ public class ContaSaldo implements java.io.Serializable {
         this.usuario = usuario;
         this.filial = filial;
         this.caixa = caixa;
-        this.valorInformado = valorInformado;
     }
 
     public int getId() {
@@ -117,13 +113,5 @@ public class ContaSaldo implements java.io.Serializable {
 
     public void setCaixa(Caixa caixa) {
         this.caixa = caixa;
-    }
-
-    public float getValorInformado() {
-        return valorInformado;
-    }
-
-    public void setValorInformado(float valorInformado) {
-        this.valorInformado = valorInformado;
     }
 }

@@ -6,17 +6,21 @@ import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.db.*;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import org.primefaces.model.UploadedFile;
 
 public class ConvencaoJSFBean {
 
@@ -24,28 +28,97 @@ public class ConvencaoJSFBean {
     private ConvencaoCidade conCidade = new ConvencaoCidade();
     private String comoPesquisa = "P";
     private String descPesquisa = "";
-    private String msgConfirma;
-    private String msgErro;
-    //private String linkVoltar;
     private int idGrupoCidade = 0;
     private List<DataObject> listaGpCidade = new ArrayList();
-    //private boolean adicionado = false;
+    private DataObject dolinha;
     private int idIndex = -1;
     private List<Convencao> listaConvencao = new ArrayList();
+    private UploadedFile file;
 
-    public ConvencaoJSFBean() {
+
+    public void set(DataObject linha){
+        dolinha = linha;
+    }
+
+    public void upload() {
+        if (file != null) {
+            if (dolinha == null){
+                return;
+            }
+        //    FacesContext context = FacesContext.getCurrentInstance();
+            //String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
+            //File fl = new File(caminho);
+            ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
+            GrupoCidade gc = (GrupoCidade) dolinha.getArgumento0();
+
+            ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), gc.getId());
+            dolinha.setArgumento1(String.valueOf(gc.getId()) + "_" + convencao.getId());
+            cc.setCaminho(String.valueOf(gc.getId()) + "_" + convencao.getId());
+
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+
+            
+            sv.abrirTransacao();
+            if (!sv.alterarObjeto(cc)) {
+                sv.desfazerTransacao();
+                GenericaMensagem.warn("Erro", "Erro ao alterar Convenção Cidade!");
+                return;
+            }
+
+            String destino = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + String.valueOf(gc.getId()) + "_" + convencao.getId() + ".pdf");
+            File fl_destino = new File(destino);
+            try {
+                
+                InputStream in = new BufferedInputStream(file.getInputstream());
+
+
+                //O método file.getAbsolutePath() fornece o caminho do arquivo criado
+
+                //Pode ser usado para ligar algum objeto do banco ao arquivo enviado
+
+
+                FileOutputStream fout = new FileOutputStream(fl_destino);
+
+                while(in.available() != 0){
+
+                fout.write(in.read());
+
+                }
+
+                fout.close();
+                
+//                InputStream in = file.getInputstream();
+//                FileOutputStream out = new FileOutputStream(fl_destino.getPath());
+//
+//                byte[] buf = new byte[(int) file.getSize()];
+//                int count;
+//                while ((count = in.read()) >= 0) {
+//                    out.write(buf, 0, count);
+//                }
+//                in.close();
+//                out.flush();
+//                out.close();
+
+            } catch (Exception e) {
+
+            }
+            
+            GenericaMensagem.info("Sucesso", "Envio de "+file.getFileName()+" concluído!");
+            listaGpCidade.clear();
+            dolinha = null;
+        }
     }
 
     public String salvar() {
         ConvencaoDB db = new ConvencaoDBToplink();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        msgErro = "";
-        if (db.pesquisaConvencaoDesc(convencao.getDescricao()) != null) {
-            msgConfirma = "Esta convenção já existe no Sistema.";
+
+        if (convencao.getId() == -1 && db.pesquisaConvencaoDesc(convencao.getDescricao()) != null) {
+            GenericaMensagem.warn("Erro", "Esta convenção já existe no Sistema");
             return null;
         }
         if (convencao.getDescricao().equals("")) {
-            msgConfirma = "Digite uma Convenção por favor!";
+            GenericaMensagem.warn("Erro", "Digite uma Convenção por favor!");
             return null;
         }
 
@@ -54,118 +127,145 @@ public class ConvencaoJSFBean {
 
             if (!sv.inserirObjeto(convencao)) {
                 sv.desfazerTransacao();
-                msgConfirma = "Erro ao salvar Convenção!";
+                GenericaMensagem.warn("Erro", "Erro ao salvar Convenção!");
                 return null;
             }
-            msgConfirma = "Convenção salvo com Sucesso!";
+
+            GenericaMensagem.info("Sucesso", "Convenção salvo com Sucesso!");
         } else {
             if (!sv.alterarObjeto(convencao)) {
                 sv.desfazerTransacao();
-                msgConfirma = "Erro ao atualizar convenção!";
+                GenericaMensagem.warn("Erro", "Erro ao atualizar convenção!");
                 return null;
             }
-            msgConfirma = "Convenção atualizado com Sucesso!";
+            GenericaMensagem.info("Sucesso", "Convenção atualizado com Sucesso!");
         }
-        novo();
+
+        listaGpCidade = new ArrayList();
         sv.comitarTransacao();
         return null;
     }
 
-    public String adicionar() {
-        GrupoCidadeDB db = new GrupoCidadeDBToplink();
-        ConvencaoDB dbCon = new ConvencaoDBToplink();
+    public void adicionar() {
+        if (convencao.getDescricao().isEmpty()) {
+            GenericaMensagem.warn("Erro", "Digite uma Convenção!");
+            return;
+        }
+
         ConvencaoCidadeDB dbCC = new ConvencaoCidadeDBToplink();
-        List listaCidades = new ArrayList();
-        GrupoCidade gpCid = new GrupoCidade();
-        gpCid = db.pesquisaCodigo(Integer.valueOf(getListaGrupoCidade().get(idGrupoCidade).getDescription()));
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        GrupoCidade gpCid = (GrupoCidade) sv.pesquisaCodigo(Integer.valueOf(getListaGrupoCidade().get(idGrupoCidade).getDescription()), "GrupoCidade");
 
-//        if (dbCon.pesquisaConvencaoDesc(convencao.getDescricao()) != null){
-//            msgErro = "Essa convenção já existe!";
-//            return null;
-//        }
-
-        listaCidades = dbCC.ListaCidadesConvencao(convencao.getId(), Integer.valueOf(getListaGrupoCidade().get(idGrupoCidade).getDescription()));
+        List listaCidades = dbCC.ListaCidadesConvencao(convencao.getId(), gpCid.getId());
         if (!listaCidades.isEmpty()) {
-            msgErro = "Grupo com cidade já existente!";
-            return "convencao";
+            GenericaMensagem.warn("Erro", "Grupo com cidade já existente!");
+            return;
         }
 
-        if (convencao.getDescricao().equals("")) {
-            msgErro = "Digite uma Convenção!";
-            return "convencao";
+        sv.abrirTransacao();
+
+        conCidade.setConvencao(convencao);
+        conCidade.setGrupoCidade(gpCid);
+
+        if (convencao.getId() == -1) {
+            if (!sv.inserirObjeto(convencao)) {
+                GenericaMensagem.warn("Erro", "Erro ao salvar Convenção!");
+                return;
+            }
         }
 
-        if (convencao.getId() != -1) {
-            conCidade.setConvencao(convencao);
-            conCidade.setGrupoCidade(gpCid);
-            if (dbCC.insert(conCidade)) {
-                msgErro = "Adicionado!";
-            } else {
-                msgErro = "Erro ao Adicionar!";
-                return "convencao";
-            }
-            List li = dbCC.pesquisarGruposPorConvencao(convencao.getId());
-            listaGpCidade.clear();
-            for (int i = 0; i < li.size(); i++) {
-                listaGpCidade.add(new DataObject(li.get(i), ""));
-            }
-            conCidade = new ConvencaoCidade();
-        } else {
-            dbCon.insert(convencao);
-            conCidade.setConvencao(convencao);
-            conCidade.setGrupoCidade(gpCid);
-            if (dbCC.insert(conCidade)) {
-                msgErro = "Adicionado!";
-            } else {
-                msgErro = "Erro ao Adicionar!";
-                return "convencao";
-            }
-            List li = dbCC.pesquisarGruposPorConvencao(convencao.getId());
-            for (int i = 0; i < li.size(); i++) {
-                listaGpCidade.add(new DataObject(li.get(i), ""));
-            }
-
-            conCidade = new ConvencaoCidade();
+        if (!sv.inserirObjeto(conCidade)) {
+            GenericaMensagem.warn("Erro", "Erro ao salvar Convenção Cidade!");
+            return;
         }
-        return "convencao";
+
+        conCidade = new ConvencaoCidade();
+        listaGpCidade.clear();
+
+        GenericaMensagem.info("Sucesso", "Grupo Cidade adicionado!");
+        sv.comitarTransacao();
+//        List li = dbCC.pesquisarGruposPorConvencao(convencao.getId());
+//        listaGpCidade.clear();
+//        for (int i = 0; i < li.size(); i++) {
+//            listaGpCidade.add(new DataObject(li.get(i), ""));
+//        }
     }
 
-    public String btnExcluir() {
+    public void btnExcluir(DataObject linha) {
         ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-        ConvencaoCidade conv = new ConvencaoCidade();
-        GrupoCidade gpCid = new GrupoCidade();
-        gpCid = (GrupoCidade) listaGpCidade.get(idIndex).getArgumento0();
-        conv = db.pesquisarConvencao(convencao.getId(), gpCid.getId());
-        if (conv != null) {
-            if (conv.getCaminho() != null || !conv.getCaminho().isEmpty()) {
-                excluirPDF(conv.getCaminho());
-            }
+        ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), ((GrupoCidade) linha.getArgumento0()).getId());
 
-            db.getEntityManager().getTransaction().begin();
-            if (db.delete(conv)) {
-                db.getEntityManager().getTransaction().commit();
-                msgErro = "Excluido!";
-                listaGpCidade.remove(idIndex);
-            } else {
-                db.getEntityManager().getTransaction().rollback();
+        if (cc == null) {
+            return;
+        }
+
+        if (cc.getCaminho() != null || !cc.getCaminho().isEmpty()) {
+            if (!excluirPDF(cc)) {
+                return;
             }
         }
-        return "convencao";
+
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+
+        sv.abrirTransacao();
+        if (!sv.deletarObjeto(sv.pesquisaCodigo(cc.getId(), "ConvencaoCidade"))) {
+            GenericaMensagem.warn("Erro", "Não foi possível excluir Convenção Cidade");
+            sv.desfazerTransacao();
+        }
+        listaGpCidade.clear();
+        sv.comitarTransacao();
+    }
+
+    public boolean excluirPDF(ConvencaoCidade cc) {
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + cc.getCaminho() + ".pdf");
+        File fl = new File(caminho);
+        if (!fl.exists()) {
+            return true;
+        }
+
+        if (!fl.delete()) {
+            GenericaMensagem.warn("Erro", "Não foi possível excluir Arquivo PDF!");
+            return false;
+        }        
+        return true;
+    }
+
+    public void excluirApenasPDF(ConvencaoCidade cc) {
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + cc.getCaminho() + ".pdf");
+        File fl = new File(caminho);
+        if (!fl.exists()) {
+            return;
+        }
+
+        if (!fl.delete()) {
+            GenericaMensagem.warn("Erro", "Não foi possível excluir Arquivo PDF!");
+        }
+        
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        sv.abrirTransacao();
+        
+        cc.setCaminho("");
+        if (!sv.alterarObjeto(cc)) {
+            GenericaMensagem.warn("Erro", "Não foi possível alterar Convenção Cidade");
+            sv.desfazerTransacao();
+        }
+        listaGpCidade.clear();
+        sv.comitarTransacao();
     }
 
     public List getListaGpCidadeParaConvencao() {
         FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = "";
-        caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
+        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
         File fl = new File(caminho);
-        if (convencao.getId() != -1 && idIndex != -1 && !listaGpCidade.isEmpty()) {
+        if (convencao.getId() != -1 && !listaGpCidade.isEmpty()) {
             ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
             try {
                 if (fl.exists()) {
-                    GrupoCidade gc = (GrupoCidade) listaGpCidade.get(idIndex).getArgumento0();
+                    //GrupoCidade gc = (GrupoCidade) listaGpCidade.get(idIndex).getArgumento0(); AQUI
+                    GrupoCidade gc = null;
 
                     ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), gc.getId());
-                    listaGpCidade.get(idIndex).setArgumento1(String.valueOf(gc.getId()) + "_" + convencao.getId());
+                    //listaGpCidade.get(idIndex).setArgumento1(String.valueOf(gc.getId()) + "_" + convencao.getId()); AQUI
                     cc.setCaminho(String.valueOf(gc.getId()) + "_" + convencao.getId());
                     db.getEntityManager().getTransaction().begin();
                     if (!db.update(cc)) {
@@ -188,7 +288,6 @@ public class ConvencaoJSFBean {
                     out.flush();
                     out.close();
 
-
                     caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
                     fl = new File(caminho);
                     fl.delete();
@@ -204,35 +303,22 @@ public class ConvencaoJSFBean {
         return listaGpCidade;
     }
 
-    public String excluirPDF(String nome) {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + nome + ".pdf");
-        File fl = new File(caminho);
-
-        if (fl.exists()) {
+    public List<DataObject> getListaGpCidade() {
+        if (listaGpCidade.isEmpty() && convencao.getId() != -1) {
             ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
-            GrupoCidade gc = (GrupoCidade) listaGpCidade.get(idIndex).getArgumento0();
+            List<GrupoCidade> result = db.pesquisarGruposPorConvencao(convencao.getId());
 
-            ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), gc.getId());
-            listaGpCidade.get(idIndex).setArgumento1("");
-            cc.setCaminho("");
-            db.getEntityManager().getTransaction().begin();
-            if (!db.update(cc)) {
-                db.getEntityManager().getTransaction().rollback();
-                return null;
+            for (int i = 0; i < result.size(); i++) {
+                ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), result.get(i).getId());
+                listaGpCidade.add(new DataObject(result.get(i), cc));
             }
-
-            db.getEntityManager().getTransaction().commit();
-            fl.delete();
         }
-        return null;
+        return listaGpCidade;
     }
 
     public String novo() {
         convencao = new Convencao();
-        msgConfirma = "";
-        msgErro = "";
-        listaGpCidade = new ArrayList();
+        listaGpCidade.clear();
         return "convencao";
     }
 
@@ -241,19 +327,37 @@ public class ConvencaoJSFBean {
     }
 
     public String excluir() {
-        ConvencaoDB db = new ConvencaoDBToplink();
-        msgErro = "";
         if (convencao.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            convencao = db.pesquisaCodigo(convencao.getId());
-            if (db.delete(convencao)) {
-                db.getEntityManager().getTransaction().commit();
-                msgConfirma = "Convenção Excluida com Sucesso!";
-                convencao = new Convencao();
-            } else {
-                db.getEntityManager().getTransaction().rollback();
-                msgConfirma = "Convenção não pode ser Excluida!";
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+
+            convencao = (Convencao) sv.pesquisaCodigo(convencao.getId(), "Convencao");
+
+            //ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
+            //List<GrupoCidade> result = db.pesquisarGruposPorConvencao(convencao.getId());
+            sv.abrirTransacao();
+            for (int i = 0; i < listaGpCidade.size(); i++) {
+                if (!excluirPDF((ConvencaoCidade) listaGpCidade.get(i).getArgumento1())) {
+                    GenericaMensagem.warn("Erro", "Erro ao excluir Arquivos PDF!");
+                    return null;
+                }
+
+                if (!sv.deletarObjeto(sv.pesquisaCodigo(((ConvencaoCidade) listaGpCidade.get(i).getArgumento1()).getId(), "ConvencaoCidade"))) {
+                    GenericaMensagem.warn("Erro", "Convenção Cidade não pode ser excluida!");
+                    return null;
+                }
             }
+
+            if (!sv.deletarObjeto(convencao)) {
+                GenericaMensagem.warn("Erro", "Convenção não pode ser excluida!");
+                sv.desfazerTransacao();
+            }
+
+            GenericaMensagem.info("Sucesso", "Convenção excluida com Sucesso!");
+            convencao = new Convencao();
+            listaGpCidade.clear();
+            sv.comitarTransacao();
+        } else {
+            GenericaMensagem.warn("Erro", "Pesquise uma Convenção para ser excluida!");
         }
         return null;
     }
@@ -283,21 +387,21 @@ public class ConvencaoJSFBean {
     }
 
     public String editar() {
-        ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
+//        ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
         convencao = (Convencao) listaConvencao.get(idIndex);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("convencaoPesquisa", convencao);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        List<GrupoCidade> li = db.pesquisarGruposPorConvencao(convencao.getId());
+//        List<GrupoCidade> li = db.pesquisarGruposPorConvencao(convencao.getId());
         listaGpCidade.clear();
-        for (int i = 0; i < li.size(); i++) {
-            ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), li.get(i).getId());
-            if (cc.getCaminho() == null || cc.getCaminho().isEmpty()) {
-                listaGpCidade.add(new DataObject(li.get(i), ""));
-            } else {
-                listaGpCidade.add(new DataObject(li.get(i), cc.getCaminho()));
-            }
-
-        }
+//        for (int i = 0; i < li.size(); i++) {
+//            ConvencaoCidade cc = db.pesquisarConvencao(convencao.getId(), li.get(i).getId());
+//            if (cc.getCaminho() == null || cc.getCaminho().isEmpty()) {
+//                listaGpCidade.add(new DataObject(li.get(i), ""));
+//            } else {
+//                listaGpCidade.add(new DataObject(li.get(i), cc.getCaminho()));
+//            }
+//
+//        }
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
             return "convencao";
         } else {
@@ -337,22 +441,6 @@ public class ConvencaoJSFBean {
         this.convencao = convencao;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
-    public String getMsgErro() {
-        return msgErro;
-    }
-
-    public void setMsgErro(String msgErro) {
-        this.msgErro = msgErro;
-    }
-
     public ConvencaoCidade getConCidade() {
         return conCidade;
     }
@@ -367,5 +455,13 @@ public class ConvencaoJSFBean {
 
     public void setIdIndex(int idIndex) {
         this.idIndex = idIndex;
+    }
+
+    public UploadedFile getFile() {
+        return file;
+    }
+
+    public void setFile(UploadedFile file) {
+        this.file = file;
     }
 }

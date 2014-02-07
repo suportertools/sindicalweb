@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "FIN_CHEQUE_REC")
 @NamedQuery(name = "ChequeRec.pesquisaID", query = "select cr from ChequeRec cr where cr.id=:pid")
 public class ChequeRec implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -31,6 +30,9 @@ public class ChequeRec implements java.io.Serializable {
     @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
     @OneToOne
     private FStatus status;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DT_LIQUIDACAO")
+    private Date dtLiquidacao;
 
     public ChequeRec() {
         this.id = -1;
@@ -42,9 +44,10 @@ public class ChequeRec implements java.io.Serializable {
         this.setEmissao(null);
         this.setVencimento(null);
         this.status = new FStatus();
+        this.dtLiquidacao = DataHoje.dataHoje();
     }
 
-    public ChequeRec(int id, String emitente, String banco, String agencia, String conta, String cheque, String emissao, String vencimento, FStatus status) {
+    public ChequeRec(int id, String emitente, String banco, String agencia, String conta, String cheque, String emissao, String vencimento, FStatus status, Date dtLiquidacao) {
         this.id = id;
         this.emitente = emitente;
         this.banco = banco;
@@ -54,6 +57,7 @@ public class ChequeRec implements java.io.Serializable {
         this.setEmissao(emitente);
         this.setVencimento(vencimento);
         this.status = status;
+        this.dtLiquidacao = dtLiquidacao;
     }
 
     public int getId() {
@@ -142,5 +146,13 @@ public class ChequeRec implements java.io.Serializable {
 
     public void setStatus(FStatus status) {
         this.status = status;
+    }
+
+    public Date getDtLiquidacao() {
+        return dtLiquidacao;
+    }
+
+    public void setDtLiquidacao(Date dtLiquidacao) {
+        this.dtLiquidacao = dtLiquidacao;
     }
 }

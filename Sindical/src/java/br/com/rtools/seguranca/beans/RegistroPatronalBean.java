@@ -11,6 +11,7 @@ import br.com.rtools.arrecadacao.db.WebREPISDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.FilialDB;
 import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.sistema.ConfiguracaoUpload;
@@ -82,6 +83,8 @@ public class RegistroPatronalBean implements Serializable {
             }
             log.novo("Novo registro", "Mensagem patronal inserido " + patronal.getId() + " - Pessoa: " + patronal.getPessoa().getId() + " - " + patronal.getPessoa().getNome() + " - Convenção: " + patronal.getConvencao().getId() + " - " + patronal.getConvencao().getDescricao() + " - Grupo Cidade: " + patronal.getGrupoCidade().getId() + " - " + patronal.getGrupoCidade().getDescricao());
             setMensagem("Patronal salvo com Sucesso!");
+            GenericaMensagem.info("Sucesso", mensagem);
+            listaPatronal.clear();
         } else {
             if (!sv.alterarObjeto(patronal)) {
                 sv.desfazerTransacao();
@@ -92,12 +95,14 @@ public class RegistroPatronalBean implements Serializable {
             String antes = "De - Referencia: " + patro.getId() + " Pessoa: " + patro.getPessoa().getId() + " - " + patro.getPessoa().getNome() + " - Convenção: " + patro.getConvencao().getId() + " - " + patro.getConvencao().getDescricao() + " - Grupo Cidade: " + patro.getGrupoCidade().getId() + " - " + patro.getGrupoCidade().getDescricao();
             log.novo("Atualizado", antes + " - para: " + patronal.getPessoa().getId() + " - " + patronal.getPessoa().getNome() + " - Convenção: " + patronal.getConvencao().getId() + " - " + patronal.getConvencao().getDescricao() + " - Grupo Cidade: " + patronal.getGrupoCidade().getId() + " - " + patronal.getGrupoCidade().getDescricao());
             setMensagem("Patronal atualizado com Sucesso!");
+            GenericaMensagem.info ("Sucesso", mensagem);
         }
 
         for (PatronalCnae listaPatronalCnae1 : listaPatronalCnae) {
             if (listaPatronalCnae1.getId() == -1) {
                 if (!sv.inserirObjeto(listaPatronalCnae1)) {
                     mensagem = "Erro ao salvar Cnae!";
+                    GenericaMensagem.warn("Erro", mensagem);
                     sv.desfazerTransacao();
                     return;
                 }
@@ -125,6 +130,7 @@ public class RegistroPatronalBean implements Serializable {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             sv.abrirTransacao();
             if (!sv.deletarObjeto(sv.pesquisaCodigo(pc.getId(), "PatronalCnae"))) {
+                GenericaMensagem.warn("Erro", mensagem);
                 sv.desfazerTransacao();
                 GenericaMensagem.warn("Erro", "Ao excluir registro!");
                 return;
@@ -155,10 +161,17 @@ public class RegistroPatronalBean implements Serializable {
                 logoPatronal = "";
                 listaPatronal.clear();
                 listaPatronalCnae.clear();
+                setPatronal(new Patronal());
+                listaPatronalCnae.clear();
+                listaPatronal.clear();
+                cnae = new Cnae();
             } else {
                 sv.desfazerTransacao();
                 setMensagem("Patronal não pode ser excluido!");
+                GenericaMensagem.warn("Erro", mensagem);
             }
+        }else{
+            GenericaMensagem.warn("Erro", "Pesquise um Patronal para ser excluído!");
         }
         patronal = new Patronal();
     }
@@ -178,6 +191,21 @@ public class RegistroPatronalBean implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesPesquisa");
         }
         return patronal;
+    }
+    
+    public void removerJuridica(){
+        if (patronal.getId() == -1)
+            patronal.setPessoa(new Pessoa());
+    }
+    
+    public void removerConvencao(){
+        if (patronal.getId() == -1)
+            patronal.setConvencao(new Convencao());
+    }
+    
+    public void removerGrupo(){
+        if (patronal.getId() == -1)
+            patronal.setGrupoCidade(new GrupoCidade());
     }
 
     public void acaoPesquisaInicial() {
@@ -264,15 +292,21 @@ public class RegistroPatronalBean implements Serializable {
 
             if (!sv.inserirObjeto(pc)) {
                 mensagem = "Erro ao inserir patronal cnae!";
+                GenericaMensagem.warn("Erro", mensagem);
                 sv.desfazerTransacao();
                 return;
             } else {
                 mensagem = "Inserido com sucesso!";
+                GenericaMensagem.info("Sucesso", mensagem);
                 listaPatronalCnae.add(pc);
             }
             sv.comitarTransacao();
             cnae = new Cnae();
         }
+    }
+    
+    public void removerCnae(){
+        cnae = new Cnae();
     }
 
     public List<PatronalCnae> getListaPatronalCnae() {

@@ -52,7 +52,7 @@ public class ContaBancoJSFBean {
         }
 
         if (Integer.parseInt(getListaPlano5Conta().get(idPlanoContas).getDescription()) == 0) {
-            msgConfirma = "Resgistro não pode ser salvo sem Plano de Contas!";
+            msgConfirma = "Registro não pode ser salvo sem Plano de Contas!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }

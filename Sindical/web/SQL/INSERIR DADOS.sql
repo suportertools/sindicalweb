@@ -385,7 +385,13 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 216, 'CONVITE MOTIVO SUSPENÇÃO', '"/Sindical/conviteMotivoSuspencao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 216);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 217, 'CONVITE AUTORIZA CORTESIA', '"/Sindical/conviteAutorizaCortesia.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 217);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 218, 'CONVITE SUSPENÇÃO', '"/Sindical/conviteSuspencao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 218);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT , 'PESQUISA PESSOA', '"/Sindical/pesquisaSisPessoa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = );
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 219, 'TRANSFERÊNCIA ENTRE CAIXAS', '"/Sindical/transferenciaEntreCaixa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 219);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 220, 'LIBERAÇÃO REPIS', '"/Sindical/webLiberacaoREPIS.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 220);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 221, 'PESQUISA PESSOA', '"/Sindical/pesquisaSisPessoa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 221);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 222, 'CONVENÇÃO PERIODO', '"/Sindical/convencaoPeriodo.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 222);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 223, 'SOLICITAR REPIS', '"/Sindical/webSolicitaREPIS.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 223);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 224, 'DEPOSITO BANCÁRIO', '"/Sindical/depositoBancario.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 224);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 225, 'MOVIMENTO BANCÁRIO', '"/Sindical/movimentoBancario.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 225);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao

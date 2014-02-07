@@ -2,12 +2,17 @@ package br.com.rtools.financeiro.db;
 
 import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.BloqueiaServicoPessoa;
+import br.com.rtools.financeiro.Caixa;
+import br.com.rtools.financeiro.ContaSaldo;
+import br.com.rtools.financeiro.FechamentoCaixa;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.seguranca.Usuario;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import javax.persistence.EntityManager;
 
 public interface FinanceiroDB {
@@ -32,4 +37,15 @@ public interface FinanceiroDB {
     public List<BloqueiaServicoPessoa> listaBloqueiaServicoPessoas(int id_pessoa);
     public BloqueiaServicoPessoa pesquisaBloqueiaServicoPessoa(int id_pessoa, int id_servico, Date dt_inicial, Date dt_final);
     public List<Movimento> pesquisaMovimentoPorLote(int id_lote);
+    public ContaSaldo pesquisaSaldoInicial(int id_caixa);
+    public List<Caixa> listaCaixa();
+    public List listaMovimentoCaixa(int id_caixa);
+    public List<TransferenciaCaixa> listaTransferenciaEntrada(int id_caixa);
+    public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa);
+    public List<Baixa> listaBaixa(int id_fechamento_caixa);
+    public List listaFechamentoCaixaTransferencia(int id_caixa);
+    public List listaFechamentoCaixa(int id_caixa);
+    public List<TransferenciaCaixa> listaTransferencia(int id_fechamento_caixa);
+    public Caixa pesquisaCaixaUm();
+    public List<Vector> listaDeCheques(int id_status);
 }

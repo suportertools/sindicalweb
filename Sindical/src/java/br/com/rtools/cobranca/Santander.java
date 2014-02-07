@@ -83,7 +83,7 @@ public class Santander extends Cobranca {
         codigoBarras += "9";
         codigoBarras += boleto.getContaCobranca().getCodCedente();        // codigo cedente
         codigoBarras += boleto.getBoletoComposto() + this.moduloOnze(boleto.getBoletoComposto());
-        codigoBarras += "0";
+        //codigoBarras += "0";
         codigoBarras += "102";
         int z = codigoBarras.length();
         codigoBarras = codigoBarras.substring(0, 4) + this.moduloOnzeDV(codigoBarras) + codigoBarras.substring(4, codigoBarras.length());
