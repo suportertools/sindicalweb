@@ -392,7 +392,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 223, 'SOLICITAR REPIS', '"/Sindical/webSolicitaREPIS.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 223);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 224, 'DEPOSITO BANCÁRIO', '"/Sindical/depositoBancario.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 224);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 225, 'MOVIMENTO BANCÁRIO', '"/Sindical/movimentoBancario.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 225);
->> Nova Rotina -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT    , 'RELATÓRIO CONVITE CLUBE', '"/Sindical/relatorioConviteClube.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = );
+ -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 226, 'RELATÓRIO CONVITE CLUBE', '"/Sindical/relatorioConviteClube.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 226);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
@@ -933,6 +933,7 @@ INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 19,'Relatório de Homologação','/Relatorios/HOMOLOGACAO.jasper',177,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 19);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 20,'Extrato com Valor Líquido','/Relatorios/EXTRATO_ARRECADACAO_LIQUIDO.jasper',110,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 20);
 INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 21,'Contribuintes por Escritório Endereço','/Relatorios/CONTRIBUINTESPORESCRITORIO.jasper',5,'ccon.ds_uf,ccon.ds_cidade,bcon.ds_descricao,decon.ds_descricao,pecon.ds_numero,conpes.ds_nome,conpes.id,p.ds_nome','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 21);
+INSERT INTO sis_relatorios (id, ds_nome, ds_jasper, id_rotina, ds_qry_ordem, ds_qry) SELECT 22,'Convites Clube','/Relatorios/RELATORIO_CONVITES_CLUBE.jasper', 226,'','' WHERE NOT EXISTS ( SELECT id FROM sis_relatorios WHERE id = 226);
 SELECT setval('sis_relatorios_id_seq', max(id)) FROM sis_relatorios;
 
 -- seg_registro 
