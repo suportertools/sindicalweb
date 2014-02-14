@@ -249,3 +249,12 @@ ALTER TABLE pes_fisica ALTER COLUMN ds_rg TYPE character varying(20);
 -- ALTER TABLE fin_servico_pessoa DROP COLUMN id_responsavel;
 -- update: 2013-11-11
 ALTER TABLE fin_servico_pessoa ADD COLUMN id_responsavel integer;
+
+
+
+ALTER TABLE conv_movimento ADD COLUMN id_autoriza_cortesia integer;
+ALTER TABLE hom_horarios
+  ADD CONSTRAINT fk_conv_movimento_id_autoriza_cortesia FOREIGN KEY (id_autoriza_cortesia)
+     REFERENCES pes_pessoa (id) MATCH SIMPLE      
+	ON UPDATE NO ACTION 
+	ON DELETE NO ACTION;
