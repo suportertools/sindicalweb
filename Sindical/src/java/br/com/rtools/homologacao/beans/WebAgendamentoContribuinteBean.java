@@ -190,7 +190,9 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+        
+//        agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+        agendamento.setFilial( getSindicatoFilial().getFilial() );
         setAgendamentoProtocolo(agendamento);
         if (profissao.getId() == -1) {
             ProfissaoDB dbp = new ProfissaoDBToplink();
@@ -417,7 +419,8 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
                     agendamento.setData(DataHoje.converteData(data));
                     agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
-                    agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+                    //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+                    agendamento.setFilial( getSindicatoFilial().getFilial() );
                     msgAgendamento = "";
                 }
                 setAgendamentoProtocolo(agendamento);
