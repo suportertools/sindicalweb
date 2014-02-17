@@ -295,7 +295,9 @@ public class WebREPISBean {
                 }
             }
             WebREPISDB dbw = new WebREPISDBToplink();
-            escritorio = dbw.pesquisaEscritorioDaEmpresa(repisMovimento.getPessoa().getId()).getPessoa();
+            Juridica jur = dbw.pesquisaEscritorioDaEmpresa(repisMovimento.getPessoa().getId());
+            if (jur != null)
+                escritorio = jur.getPessoa();
         }
         return "webLiberacaoREPIS";
     }
