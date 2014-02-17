@@ -237,7 +237,8 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         empresa = (Juridica) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaEmpresaPertencentes().get(idSelectRadio)).getDescription()), "Juridica");
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
-        agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+        //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+        agendamento.setFilial( getSindicatoFilial().getFilial() );
         agendamentoProtocolo = agendamento;
         if (empresa.getContabilidade() != null) {
             agendamento.setTelefone(empresa.getContabilidade().getPessoa().getTelefone1());
@@ -299,7 +300,8 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
                     agendamento.setData(DataHoje.converteData(data));
                     agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
                     msgAgendamento = "";
-                    agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+                    //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
+                    agendamento.setFilial( getSindicatoFilial().getFilial() );
                     agendamentoProtocolo = agendamento;
                 }
                 break;
