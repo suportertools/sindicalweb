@@ -346,8 +346,8 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
             return null;
         }
 
-        if (reg.getMesesInadimplentesAgenda() != 0) {
-            msgConfirma = "Para efetuar esse agendamento CONTATCE o Sindicato!";
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
+            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             return null;
         }
 

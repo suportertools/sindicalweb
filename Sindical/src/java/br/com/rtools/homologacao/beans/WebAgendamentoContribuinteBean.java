@@ -213,7 +213,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             return null;
         }
 
-        if (reg.getMesesInadimplentesAgenda() != 0) {
+        if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
             msgConfirma = "Favor entrar em contato com seu Sindicato! \n clique e imprima seu relatório de débitos";
             return null;
         }
