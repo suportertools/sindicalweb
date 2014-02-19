@@ -226,8 +226,15 @@ public class WebREPISBean {
         } else {
             setPessoaSolicitante(getPessoa());
         }
+        WebREPISDB dbr = new WebREPISDBToplink();
+        if (!dbr.listaAcordoAberto(pessoaSolicitante.getId()).isEmpty()){
+            msg = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
+            return null;
+        }
+        
         HomologacaoDB db = new HomologacaoDBToplink();
         setShowProtocolo(false);
+        
         if (!db.pesquisaPessoaDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
             msg = " PROCURAR SÍNDICATO! ";
             return null;
@@ -325,7 +332,6 @@ public class WebREPISBean {
         byte[] arquivo = new byte[0];
 
         if (repisMovimento.getId() != -1) {
-            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
             try {
                 JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper"));
                 Collection vetor = new ArrayList<ParametroCertificado>();
