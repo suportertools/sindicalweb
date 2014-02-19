@@ -4,6 +4,7 @@ import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
 import br.com.rtools.arrecadacao.RepisMovimento;
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
@@ -247,6 +248,17 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
             return (Juridica) qry.getSingleResult();
         } catch (Exception e) {
             return new Juridica();
+        }
+    }
+    
+    @Override
+    public List<Movimento> listaAcordoAberto(int id_pessoa) {
+        try {
+            Query qry = getEntityManager().createQuery("SELECT m FROM Movimento m WHERE m.tipoServico.id = 4 AND m.baixa IS NULL AND m.pessoa.id = " + id_pessoa);
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Movimento>();
         }
     }
 }
