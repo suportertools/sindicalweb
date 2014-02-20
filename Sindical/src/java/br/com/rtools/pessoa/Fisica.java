@@ -291,9 +291,14 @@ public class Fisica implements java.io.Serializable {
     public void setDataFoto(String dataFoto) {
         this.dtFoto = DataHoje.converte(dataFoto);
     }
-    
+
     public void selecionaDataNascimento(SelectEvent event) {
-        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy"); 
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dtNascimento = DataHoje.converte(format.format(event.getObject()));
-    }  
+    }
+
+    @Override
+    public String toString() {
+        return "Fisica{" + "id=" + id + ", pessoa=" + pessoa + ", rg=" + rg + ", carteira=" + carteira + ", serie=" + serie + ", sexo=" + sexo + ", dtNascimento=" + dtNascimento + ", nacionalidade=" + nacionalidade + ", naturalidade=" + naturalidade + ", orgaoEmissaoRG=" + orgaoEmissaoRG + ", ufEmissaoRG=" + ufEmissaoRG + ", estadoCivil=" + estadoCivil + ", pai=" + pai + ", mae=" + mae + ", nit=" + nit + ", pis=" + pis + ", dtAposentadoria=" + dtAposentadoria + ", dtRecadastro=" + dtRecadastro + ", dtFoto=" + dtFoto + '}';
+    }
 }

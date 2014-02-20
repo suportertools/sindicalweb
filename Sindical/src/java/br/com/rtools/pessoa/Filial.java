@@ -76,4 +76,9 @@ public class Filial implements java.io.Serializable {
     public void setCentroCusto(int centroCusto) {
         this.centroCusto = centroCusto;
     }
+
+    @Override
+    public String toString() {
+        return "Filial{" + "id=" + id + ", matriz=" + matriz.getId() + ", filial=" + filial.getId() + ", centroCusto=" + centroCusto + '}';
+    }    
 }

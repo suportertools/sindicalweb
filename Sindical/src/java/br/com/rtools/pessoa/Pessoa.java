@@ -2,8 +2,10 @@ package br.com.rtools.pessoa;
 
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.*;
+import org.primefaces.event.SelectEvent;
 
 @Entity
 @Table(name = "PES_PESSOA")
@@ -208,4 +210,15 @@ public class Pessoa implements Serializable {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    public void selecionaDataCriacao(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.dtCriacao = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    @Override
+    public String toString() {
+        return "Pessoa{" + "id=" + id + ", nome=" + nome + ", tipoDocumento=" + tipoDocumento + ", obs=" + obs + ", site=" + site + ", telefone1=" + telefone1 + ", telefone2=" + telefone2 + ", telefone3=" + telefone3 + ", email1=" + email1 + ", email2=" + email2 + ", email3=" + email3 + ", documento=" + documento + ", login=" + login + ", senha=" + senha + ", dtCriacao=" + dtCriacao + '}';
+    }
+
 }
