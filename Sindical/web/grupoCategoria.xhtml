@@ -13,9 +13,9 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }            
         </style>
-        
+
         <script type="text/javascript">
-            
+
         </script>
     </h:head>
     <h:body>
@@ -29,55 +29,61 @@
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Grupo Categoria" styleClass="fonteHeader" />
-                        <h:form id="formGrupoCategoria">
+                        <h:form id="form_grupo_categoria">
                             <c:set scope="request" var="object" value="${grupoCategoriaBean.grupoCategoria}"/>
-                            <p:panel styleClass="fundoCinza" style="clear: both">
-                                <h:panelGrid columns="7">
-                                    <p:column>
-                                        <h:outputLabel value="Grupo" /><br />
-                                        <p:inputText id="idGrupo" size="50" value="#{grupoCategoriaBean.grupoCategoria.grupoCategoria}"/>
+                            <div class="clear"></div>
+                            <p:messages id="i_msg" showDetail="true" closable="true" autoUpdate="true" />
+                            <p:panel styleClass="fundoCinza margin-top-max" id="i_panel_cadastro">
+                                <p:panelGrid>
+                                    <f:facet name="header">
+                                        <p:row>
+                                            <p:column>
+                                                <h:outputLabel value="Grupo" />
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputLabel value="Matrícula"/>
+                                            </p:column>
+                                            <p:column>
+                                                <h:outputLabel value="Validade do Cartão em Meses" />
+                                            </p:column>
+                                            <p:column colspan="3"></p:column>
+                                        </p:row>
+                                    </f:facet>
+                                    <p:row>
+                                        <p:column>
+                                            <p:inputText id="idGrupo" size="50" value="#{grupoCategoriaBean.grupoCategoria.grupoCategoria}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText id="idMatricula" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrProximaMatricula}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:inputText id="idValidade" size="30" value="#{grupoCategoriaBean.grupoCategoria.nrValidadeMesCartao}" />
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandButton value="Salvar" action="#{grupoCategoriaBean.salvar()}" update="i_panel_cadastro i_tbl" title="Salvar Grupo Categoria" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandButton value="Novo" action="#{grupoCategoriaBean.novo}" update="i_panel_cadastro"/>
+                                        </p:column>
+                                        <p:column>
+                                            <p:commandButton value="Excluir" action="#{grupoCategoriaBean.excluir()}" update="i_panel_cadastro i_tbl" title="Excluir Grupo Categoria" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                        </p:column>
+                                    </p:row>
+                                </p:panelGrid>
+                            </p:panel>                            
+                            <p:panel id="i_tbl" styleClass="margin-top-max">
+                                <p:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="grupoCategoria">
+                                    <p:column headerText="Nome">
+                                        <p:commandLink value="#{grupoCategoria.grupoCategoria}" action="#{grupoCategoriaBean.editar(grupoCategoria)}" update=":form_grupo_categoria:i_panel_cadastro"/>
                                     </p:column>
-
-                                    <p:column>
-                                        <h:outputLabel value="Matrícula"/><br />
-                                        <p:inputText id="idMatricula" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrProximaMatricula}"/>
+                                    <p:column headerText="Matricula">
+                                        <h:outputText value="#{grupoCategoria.nrProximaMatricula}"/>
                                     </p:column>
-
-                                    <p:column>
-                                        <h:outputLabel value="Validade do Cartão em Meses" /><br />
-                                        <p:inputText id="idValidade" size="30" value="#{grupoCategoriaBean.grupoCategoria.nrValidadeMesCartao}"/>
+                                    <p:column headerText="Validade Meses">
+                                        <h:outputText value="#{grupoCategoria.nrValidadeMesCartao}"/>
                                     </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton value="Salvar" action="#{grupoCategoriaBean.salvar()}" update="formGrupoCategoria" title="Salvar Grupo Categoria" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton ajax="false" value="Novo" action="#{grupoCategoriaBean.novo}" />
-                                    </p:column>
-                                    
-                                    <p:column>
-                                        <br />
-                                        <p:commandButton value="Excluir" action="#{grupoCategoriaBean.excluir()}" update="formGrupoCategoria" title="Excluir Grupo Categoria" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                    </p:column>
-                                </h:panelGrid>
+                                </p:dataTable>
                             </p:panel>
-                             <p:messages id="i_msg" showDetail="true" closable="true" />  
-                            <p:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="linha" id="tbl">
-                                <p:column headerText="Nome">
-                                    <p:commandLink value="#{linha.grupoCategoria}" action="#{grupoCategoriaBean.editar(linha)}" />
-                                </p:column>
-
-                                <p:column headerText="Matricula">
-                                    <h:outputText value="#{linha.nrProximaMatricula}"/>
-                                </p:column>
-
-                                <p:column headerText="Validade Meses">
-                                    <h:outputText value="#{linha.nrValidadeMesCartao}"/>
-                                </p:column>
-                            </p:dataTable>
                         </h:form>
                     </p:panel>
                 </f:view>
