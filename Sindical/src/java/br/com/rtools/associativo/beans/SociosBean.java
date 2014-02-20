@@ -202,21 +202,13 @@ public class SociosBean implements Serializable {
             return null;
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        GrupoCategoriaDB dbGCat = new GrupoCategoriaDBToplink();
-        GrupoCategoria gpCategoria = new GrupoCategoria();
-        FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
-        MatriculaSociosDB dbMat = new MatriculaSociosDBToplink();
-        ParentescoDB dbPar = new ParentescoDBToplink();
-
-        gpCategoria = dbGCat.pesquisaCodigo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()));
-
+        MatriculaSocios msMemoria = new MatriculaSocios();
         sv.abrirTransacao();
         try {
-            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription())));
+            servicoPessoa.setTipoDocumento((FTipoDocumento) sv.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(idTipoDocumento).getDescription()), "FTipoDocumento"));
         } catch (NumberFormatException e) {
-            servicoPessoa.setTipoDocumento(dbFTipo.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(0).getDescription())));
+            servicoPessoa.setTipoDocumento((FTipoDocumento) sv.pesquisaCodigo(Integer.parseInt(getListaTipoDocumento().get(0).getDescription()), "FTipoDocumento"));
         }
-
         // NOVO REGISTRO -----------------------
         if (servicoPessoa.getId() == -1) {
             servicoPessoa.setAtivo(true);
@@ -233,31 +225,46 @@ public class SociosBean implements Serializable {
                 return null;
             }
         }
-
+        GrupoCategoria grupoCategoria = (GrupoCategoria) sv.pesquisaCodigo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()), "GrupoCategoria");
+//        if(matriculaSocios.getNrMatricula() <= grupoCategoria.getNrProximaMatricula()) {
+//            msgConfirma = "Número de matrícula deve ser menor ou igual!";
+//            return null;
+//        }
+        MatriculaSociosDB dbMat = new MatriculaSociosDBToplink();
         matriculaSocios.setCategoria(servicoCategoria.getCategoria());
         matriculaSocios.setTitular(servicoPessoa.getPessoa());
         if (matriculaSocios.getNrMatricula() <= 0) {
             // MATRICULA MENOR QUE ZERO 
-            matriculaSocios.setNrMatricula(gpCategoria.getNrProximaMatricula());
-            gpCategoria.setNrProximaMatricula(matriculaSocios.getNrMatricula() + 1);
+            matriculaSocios.setNrMatricula(grupoCategoria.getNrProximaMatricula());
+            grupoCategoria.setNrProximaMatricula(matriculaSocios.getNrMatricula() + 1);
 
-        } else if (matriculaSocios.getNrMatricula() > gpCategoria.getNrProximaMatricula()) {
+        } else if (matriculaSocios.getNrMatricula() > grupoCategoria.getNrProximaMatricula()) {
             // MATRICULA MAIOR QUE A PROXIMA DA CATEGORIA 
-            matriculaSocios.setNrMatricula(gpCategoria.getNrProximaMatricula());
-            gpCategoria.setNrProximaMatricula(matriculaSocios.getNrMatricula() + 1);
+            matriculaSocios.setNrMatricula(grupoCategoria.getNrProximaMatricula());
+            grupoCategoria.setNrProximaMatricula(matriculaSocios.getNrMatricula() + 1);
 
-        } else if (matriculaSocios.getNrMatricula() < gpCategoria.getNrProximaMatricula()
+        } else if (matriculaSocios.getNrMatricula() < grupoCategoria.getNrProximaMatricula()
                 && // MATRICULA MENOR QUE A PROXIMA DA CATEGORIA E NÃO EXISTIR UMA IGUAL 
                 dbMat.pesquisaPorNrMatricula(matriculaSocios.getNrMatricula(), servicoCategoria.getCategoria().getId()) != null) {
-            matriculaSocios.setNrMatricula(gpCategoria.getNrProximaMatricula());
-            gpCategoria.setNrProximaMatricula(matriculaSocios.getNrMatricula() + 1);
+            matriculaSocios.setNrMatricula(grupoCategoria.getNrProximaMatricula());
+            grupoCategoria.setNrProximaMatricula(matriculaSocios.getNrMatricula() + 1);
 
-        } else if (matriculaSocios.getNrMatricula() < gpCategoria.getNrProximaMatricula()
+        } else if (matriculaSocios.getNrMatricula() < grupoCategoria.getNrProximaMatricula()
                 && dbMat.pesquisaPorNrMatricula(matriculaSocios.getNrMatricula(), servicoCategoria.getCategoria().getId()) == null) {
             // MATRICULA MENOR QUE A PROXIMA DA CATEGORIA E NÃO EXISTIR
             //////////////////////////////////// NAO FAZ NADA
         }
-
+        if(matriculaSocios.getId() != -1) {
+            msMemoria = (MatriculaSocios) sv.pesquisaObjeto(matriculaSocios.getId(), "MatriculaSocios");
+        }
+        if(msMemoria.getNrMatricula() != matriculaSocios.getNrMatricula() || matriculaSocios.getNrMatricula() == 0) {
+            List list = dbMat.listaMatriculaPorGrupoNrMatricula(matriculaSocios.getCategoria().getGrupoCategoria().getId(), matriculaSocios.getNrMatricula());
+            if (!list.isEmpty()) {
+                msgConfirma = "Matrícula já existe!";
+                sv.desfazerTransacao();
+                return null;
+            }
+        }
         if (matriculaSocios.getId() == -1) {
             if (!sv.inserirObjeto(matriculaSocios)) {
                 msgConfirma = "Erro ao salvar matrícula!";
@@ -271,13 +278,12 @@ public class SociosBean implements Serializable {
                 return null;
             }
         }
-        sv.alterarObjeto(gpCategoria);
+        sv.alterarObjeto(grupoCategoria);
 
         socios.setMatriculaSocios(matriculaSocios);
         socios.setParentesco((Parentesco) sv.pesquisaCodigo(1, "Parentesco"));
         socios.setServicoPessoa(servicoPessoa);
         socios.setNrViaCarteirinha(1);
-
         if (socios.getId() == -1) {
             if (!sv.inserirObjeto(socios)) {
                 msgConfirma = "Erro ao salvar sócio!";
@@ -293,10 +299,10 @@ public class SociosBean implements Serializable {
             }
             msgConfirma = "Cadastro atualizado com sucesso!";
         }
-
         if (!listaDependentes.isEmpty()) {
             SociosDB db = new SociosDBToplink();
             ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
+            ParentescoDB dbPar = new ParentescoDBToplink();
             for (int i = 0; i < listaDependentes.size(); i++) {
                 if (((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getId() != -1) {
                     Socios socioDependente = db.pesquisaSocioPorPessoaAtivo(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
@@ -321,15 +327,13 @@ public class SociosBean implements Serializable {
                                 servicoPessoa.getTipoDocumento(),
                                 servicoPessoa.getCobranca(),
                                 servicoPessoa.isAtivo(),
-                                servicoPessoa.isBanco(), 
+                                servicoPessoa.isBanco(),
                                 ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa());
-
                         if (!sv.inserirObjeto(servicoPessoaDependente)) {
                             msgConfirma = "Erro ao salvar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
                             sv.desfazerTransacao();
                             return null;
                         }
-
                         socioDependente = new Socios(-1,
                                 matriculaSocios,
                                 servicoPessoaDependente,
@@ -358,31 +362,25 @@ public class SociosBean implements Serializable {
                         servicoPessoaDependente.setCobranca(servicoPessoa.getCobranca());
                         servicoPessoaDependente.setAtivo(servicoPessoa.isAtivo());
                         servicoPessoaDependente.setBanco(servicoPessoa.isBanco());
-
                         if (!sv.alterarObjeto(servicoPessoaDependente)) {
                             msgConfirma = "Erro ao alterar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
                             sv.desfazerTransacao();
                             return null;
                         }
-
                         socioDependente.setValidadeCarteirinha((String) ((DataObject) listaDependentes.get(i)).getArgumento3());
                         socioDependente.setServicoPessoa(servicoPessoaDependente);
                         socioDependente.setMatriculaSocios(matriculaSocios);
                         socioDependente.setNrViaCarteirinha(Integer.parseInt((String) ((DataObject) listaDependentes.get(i)).getArgumento2()));
                         socioDependente.setParentesco(parentesco);
-
                         if (!sv.alterarObjeto(socioDependente)) {
                             msgConfirma = "Erro ao salvar sócio: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
                             sv.desfazerTransacao();
                             return null;
                         }
                     }
-
                 }
             }
         }
-        //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("socioPesquisa",socios);
-        //((FisicaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setLblSocio("CADASTRO");
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
         sv.comitarTransacao();
         return null;
@@ -438,7 +436,6 @@ public class SociosBean implements Serializable {
         } else {
             servicoPessoa.setCobranca(servicoPessoa.getPessoa());
         }
-
 
         SociosDB db = new SociosDBToplink();
         if ((servicoPessoa.getId() == -1) && (db.pesquisaSocioPorPessoaAtivo(servicoPessoa.getPessoa().getId()).getId() != -1)) {
@@ -550,8 +547,8 @@ public class SociosBean implements Serializable {
             } else {
 
                 List listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
-                for (int i = 0; i < listDocumento.size(); i++) {
-                    if (!listDocumento.isEmpty() && ((Fisica) listDocumento.get(i)).getId() != dependente.getId()) {
+                for (Object listDocumento1 : listDocumento) {
+                    if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != dependente.getId()) {
                         msgConfirma = "Documento já existente!";
                         return false;
                     }
@@ -662,7 +659,6 @@ public class SociosBean implements Serializable {
         // FUNCIONANDO --
         //FisicaJSFBean fizx = (FisicaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaJSFBean());
         //fizx.setSocios(new Socios());
-
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(new Socios());
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("socioPesquisa",socios);
         return "pessoaFisica";
@@ -926,8 +922,6 @@ public class SociosBean implements Serializable {
 //            sv.desfazerTransacao();
 //        }
 
-
-
 //        try {
 //            if (dbF.pesquisaCodigoRegistro(1).isCarteirinhaDependente()){
 //                if (ImpressaoParaSocios.imprimirCarteirinha(listaAux)){
@@ -979,15 +973,15 @@ public class SociosBean implements Serializable {
                 foto);
         return null;
     }
-    
+
     public String imprimirFichaSocialVazia() {
         ImpressaoParaSocios.branco();
         return "menuSocial";
-    }  
-    
+    }
+
     public void imprimirFichaSocialBranco() {
         ImpressaoParaSocios.branco();
-    }    
+    }
 
     public String getFotoSocio() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -1006,14 +1000,10 @@ public class SociosBean implements Serializable {
 
     public List<SelectItem> getListaGrupoCategoria() {
         List<SelectItem> listaGrupoCategoria = new ArrayList<SelectItem>();
-        int i = 0;
-        GrupoCategoriaDB db = new GrupoCategoriaDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()) {
-            listaGrupoCategoria.add(new SelectItem(new Integer(i),
-                    (String) ((GrupoCategoria) select.get(i)).getGrupoCategoria(),
-                    Integer.toString(((GrupoCategoria) select.get(i)).getId())));
-            i++;
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
+        for (int i = 0; i < grupoCategorias.size(); i++) {
+            listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
         }
         return listaGrupoCategoria;
     }

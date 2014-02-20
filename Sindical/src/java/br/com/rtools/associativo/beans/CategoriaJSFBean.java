@@ -11,6 +11,8 @@ import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -33,14 +35,13 @@ public class CategoriaJSFBean {
             msgConfirma = "Digite uma categoria!";
             return null;
         }
-        GrupoCategoriaDB dbG = new GrupoCategoriaDBToplink();
         ServicoCategoriaDB dbSeC = new ServicoCategoriaDBToplink();
         ServicoCategoria servicoCategoria = new ServicoCategoria();
         ServicosDB dbS = new ServicosDBToplink();
         CategoriaDB db = new CategoriaDBToplink();
-
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         if (categoria.getId() == -1) {
-            categoria.setGrupoCategoria(dbG.pesquisaCodigo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription())));
+            categoria.setGrupoCategoria((GrupoCategoria) sadb.pesquisaObjeto(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()), "GrupoCategoria"));
             if (db.insert(categoria)) {
                 msgConfirma = "Categoria salva com Sucesso!";
                 limpar = false;
@@ -59,7 +60,7 @@ public class CategoriaJSFBean {
             }
             lista = new ArrayList();
         } else {
-            categoria.setGrupoCategoria(dbG.pesquisaCodigo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription())));
+            categoria.setGrupoCategoria((GrupoCategoria) sadb.pesquisaCodigo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()), "GrupoCategoria"));
             if (db.update(categoria)) {
                 msgConfirma = "Categoria atualizada com Sucesso!";
             } else {
@@ -151,14 +152,10 @@ public class CategoriaJSFBean {
 
     public List<SelectItem> getListaGrupoCategoria() {
         List<SelectItem> listaG = new Vector<SelectItem>();
-        int i = 0;
-        GrupoCategoriaDB db = new GrupoCategoriaDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()) {
-            listaG.add(new SelectItem(new Integer(i),
-                    (String) ((GrupoCategoria) select.get(i)).getGrupoCategoria(),
-                    Integer.toString(((GrupoCategoria) select.get(i)).getId())));
-            i++;
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        List select = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria", true);
+        for (int i =0; i < select.size(); i++) {
+            listaG.add(new SelectItem(i, (String) ((GrupoCategoria) select.get(i)).getGrupoCategoria(), ""+((GrupoCategoria) select.get(i)).getId()));
         }
         return listaG;
     }
