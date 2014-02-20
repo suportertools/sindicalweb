@@ -14,7 +14,6 @@ import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.TipoPagamento;
-import br.com.rtools.financeiro.db.ContaBancoDB;
 import br.com.rtools.financeiro.db.ContaBancoDBToplink;
 import br.com.rtools.financeiro.db.ContaRotinaDB;
 import br.com.rtools.financeiro.db.ContaRotinaDBToplink;
