@@ -5,9 +5,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "PES_TIPO_DOCUMENTO")
 @NamedQueries({
-    @NamedQuery(name = "TipoDocumento.pesquisaID",  query = "SELECT TDOC FROM TipoDocumento AS TDOC WHERE TDOC.id = :pid"),
-    @NamedQuery(name = "TipoDocumento.findAll",     query = "SELECT TDOC FROM TipoDocumento AS TDOC ORDER BY TDOC.descricao ASC "),
-    @NamedQuery(name = "TipoDocumento.findName",    query = "SELECT TDOC FROM TipoDocumento AS TDOC WHERE UPPER(TDOC.descricao) LIKE :pdescricao ORDER BY TDOC.descricao ASC ")
+    @NamedQuery(name = "TipoDocumento.pesquisaID", query = "SELECT TDOC FROM TipoDocumento AS TDOC WHERE TDOC.id = :pid"),
+    @NamedQuery(name = "TipoDocumento.findAll", query = "SELECT TDOC FROM TipoDocumento AS TDOC ORDER BY TDOC.descricao ASC "),
+    @NamedQuery(name = "TipoDocumento.findName", query = "SELECT TDOC FROM TipoDocumento AS TDOC WHERE UPPER(TDOC.descricao) LIKE :pdescricao ORDER BY TDOC.descricao ASC ")
 })
 public class TipoDocumento implements java.io.Serializable {
 
@@ -42,4 +42,10 @@ public class TipoDocumento implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    @Override
+    public String toString() {
+        return "TipoDocumento{" + "id=" + id + ", descricao=" + descricao + '}';
+    }
+
 }
