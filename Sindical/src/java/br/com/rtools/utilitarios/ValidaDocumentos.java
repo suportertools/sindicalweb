@@ -76,4 +76,31 @@ public class ValidaDocumentos {
         Integer digitoD = calcularCei(cei, pesoCEI);
         return cei.substring(11, 12).equals(String.valueOf(digitoD));
     }
+
+    public static boolean isValidoPIS(String pis) {
+        String lsMultiplicador = "3298765432";
+        int totalizador = 0;
+        int resto;
+        int multiplicando;
+        int multiplicador;
+        boolean retorno = true;
+        int digito;
+        String listaAuxiliar = pis;
+        int tamanho = listaAuxiliar.length();
+        if (tamanho != 11) {
+            retorno = false;
+        }
+        if (retorno) {
+            for (int i = 0; i < 10; i++) {
+                multiplicando = Integer.parseInt(listaAuxiliar.substring(i, i + 1));
+                multiplicador = Integer.parseInt(lsMultiplicador.substring(i, i + 1));
+                totalizador += multiplicando * multiplicador;
+            }
+            resto = 11 - totalizador % 11;
+            resto = resto == 10 || resto == 11 ? 0 : resto;
+            digito = Integer.parseInt("" + listaAuxiliar.charAt(10));
+            retorno = resto == digito;
+        }
+        return retorno;
+    }
 }
