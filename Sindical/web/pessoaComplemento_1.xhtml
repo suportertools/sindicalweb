@@ -1,0 +1,18 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui">
+    <f:view>
+        <p:outputLabel value="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(idPessoa)}" />
+        <p:outputLabel for="idDataVencimento" value="Data vencimento: " />
+        <p:selectOneMenu id="idDataVencimento" value="#{pessoaComplementoBean.diaVencimento}" styleClass="margin-left-max">
+            <p:ajax event="change" listener="#{pessoaComplementoBean.atualizar(idPessoa)}" update="idDataVencimento"/>
+            <f:selectItems value="#{pessoaComplementoBean.listaDataVencimento}" />
+        </p:selectOneMenu>
+        <p:outputLabel for="idDescontoFolha" value="Desconto em folha? " styleClass="margin-left-max"/>
+        <p:selectBooleanCheckbox id="idDescontoFolha" value="#{pessoaComplementoBean.pessoaComplemento.cobrancaBancaria}">
+            <p:ajax event="change" update="idDescontoFolha"  listener="#{pessoaComplementoBean.atualizar(idPessoa)}" />
+        </p:selectBooleanCheckbox>
+        <p:commandButton action="#{pessoaComplementoBean.atualizar(idPessoa)}" value="Atualizar" styleClass="margin-left-max"/>
+    </f:view>
+</ui:composition>

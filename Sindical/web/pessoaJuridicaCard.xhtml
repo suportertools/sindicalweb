@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <f:view>
+        <center>
+            <c:if test="#{!pessoaCardBean.getImagemJuridica('Imagens/Fotos').equals('')}">
+                <p:graphicImage value="#{pessoaCardBean.getImagemJuridica('Imagens/Fotos')}" alt="Sem foto" style="border: 3px solid gray;" width="150"/>
+            </c:if>
+        </center>
+        <f:facet name="header">
+            <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.nome}"  />
+        </f:facet>
+        <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
+            <h:outputLabel value="Fantasia:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.fantasia}"/>
+            <h:outputLabel value="Documento:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.documento}"  />
+            <h:outputLabel value="Abertura:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.abertura}"/>
+            <h:outputLabel value="Cnae:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.cnae.numero} - #{pessoaCardBean.juridica.cnae.cnae}" />
+            <h:outputLabel value="Telefone 1:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.telefone1}"  />
+            <h:outputLabel value="Telefone 2:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.telefone2}"  />
+            <h:outputLabel value="Email:"  />
+            <h:outputLabel value="#{pessoaCardBean.juridica.pessoa.email1}"  />
+        </h:panelGrid>
+        <h:panelGrid columnClasses="verticalAlignTop,verticalAlignTop">
+            <f:facet name="header">Endereço</f:facet>
+            <h:outputLabel value="#{pessoaCardBean.pessoaEndereco.endereco.enderecoToString} - Nº. #{pessoaCardBean.pessoaEndereco.numero} - #{pessoaCardBean.pessoaEndereco.complemento}" />
+        </h:panelGrid>
+    </f:view>
+</ui:composition>
