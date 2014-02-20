@@ -42,7 +42,7 @@
                         </h:panelGrid>
                     </p:panel>
                     <p:panel styleClass="margin-top-max" id="id_lista" header="Convidados">
-                        <p:dataTable value="#{conviteMovimentoBean.conviteMovimentos}" var="conviteMovimento" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado">
+                        <p:dataTable value="#{conviteMovimentoBean.conviteMovimentos}" var="conviteMovimento" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado" id="id_lista_tbl">
                             <f:facet name="footer">
                                 * Cod = Código - Selecione um convidado para editar
                             </f:facet>
@@ -95,7 +95,7 @@
                                         <p:outputLabel value="#{conviteMovimentoBean.usuario.pessoa.nome}" />
                                         <h:column></h:column>
                                         <p:selectBooleanCheckbox value="#{conviteMovimentoBean.conviteMovimento.cortesia}" itemLabel="Cortesia" disabled="#{conviteMovimentoBean.desabilitaCampos}">
-                                            <p:ajax event="change" update="idDescricaoAutoriza idComboAutoriza" />
+                                            <p:ajax event="change" update="idDescricaoAutoriza idComboAutoriza, id_calcula_valor" />
                                         </p:selectBooleanCheckbox>
                                         <h:column>
                                             <h:panelGrid id="idDescricaoAutoriza">
@@ -125,8 +125,8 @@
                                         </h:column>
                                         <p:outputLabel value="Serviço:" />
                                         <h:column>
-                                            <h:panelGrid columns="3">
-                                                <p:selectOneMenu value="#{conviteMovimentoBean.idServico}" disabled="#{conviteMovimentoBean.desabilitaCamposMovimento}">
+                                            <h:panelGrid columns="3" id="id_calcula_valor">
+                                                <p:selectOneMenu value="#{conviteMovimentoBean.idServico}" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                                     <p:ajax event="change" update="id_valor_servico" />
                                                     <f:selectItems value="#{conviteMovimentoBean.conviteServicos}" />
                                                 </p:selectOneMenu>
@@ -137,11 +137,11 @@
                                         <p:outputLabel value="CPF" />
                                         <h:column>
                                             <h:panelGrid columns="4">
-                                                <p:inputMask mask="999.999.999-99" value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.documento}" disabled="#{conviteMovimentoBean.desabilitaCamposMovimento}">
+                                                <p:inputMask mask="999.999.999-99" value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.documento}" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                                     <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
                                                 </p:inputMask>
                                                 <p:outputLabel value="Nascimento:" />
-                                                <p:calendar value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.dtNascimento}" pattern="dd/MM/yyyy" size="10" id="iData" disabled="#{conviteMovimentoBean.desabilitaCamposMovimento}">
+                                                <p:calendar value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.dtNascimento}" pattern="dd/MM/yyyy" size="10" id="iData" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                                     <p:ajax event="dateSelect" listener="#{conviteMovimentoBean.conviteMovimento.sisPessoa.selecionaDataNascimento}" />
                                                     <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
                                                 </p:calendar>
@@ -151,7 +151,7 @@
                                         <p:outputLabel value="Convidado:" />
                                         <h:column>
                                             <h:panelGrid columns="2">
-                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nome}" size="70" disabled="#{conviteMovimentoBean.desabilitaCamposMovimento}">
+                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.nome}" size="70" disabled="#{conviteMovimentoBean.desabilitaCampos}">
                                                     <p:ajax event="blur" listener="#{conviteMovimentoBean.convidadoExiste}" update="id_valor_servico"/>
                                                 </p:inputText>
                                                 <c:if test="#{conviteMovimentoBean.idadeConvidado != 0}">
@@ -167,7 +167,7 @@
                                                     <f:selectItem itemValue="F" itemLabel="Feminino"/>
                                                 </p:selectOneMenu>
                                                 <p:outputLabel value="RG:" />
-                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.rg}" />
+                                                <p:inputText value="#{conviteMovimentoBean.conviteMovimento.sisPessoa.rg}" disabled="#{conviteMovimentoBean.desabilitaCampos}"/>
                                             </h:panelGrid>
                                         </h:column>
                                         <p:outputLabel value="Telefone:" />
@@ -233,11 +233,21 @@
                                 </h:panelGrid>
                             </div>
                             <div class="clear"></div>
-                            <h:panelGrid columns="5">
+                            <h:panelGrid columns="7">
                                 <p:commandButton value="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <p:commandButton value="Novo" action="#{conviteMovimentoBean.novo}" update="out_mensagem i_panel_adicionar id_lista"/>
                                 <p:commandButton value="Excluir" onclick="dgl_panel_excluir.show()"  disabled="#{controleAcessoBean.botaoExcluir}" />
-                                <p:commandButton value="Imprimir" action="#{imprimirConviteClube.imprimir(conviteMovimentoBean.conviteMovimento)}" />
+                                <c:if test="#{conviteMovimentoBean.movimento.id != -1}">
+                                    <c:if test="#{conviteMovimentoBean.desabilitaBaixa}">
+                                        <h:commandLink action="#{imprimirConviteClube.imprimir(conviteMovimentoBean.conviteMovimento)}" target="_blank">
+                                            <p:button icon="ui-icon-print"  value="Imprimir"></p:button>
+                                        </h:commandLink>
+                                    </c:if>
+                                    <c:if test="#{!conviteMovimentoBean.desabilitaBaixa}">
+                                        <p:commandButton value="Baixar" action="#{conviteMovimentoBean.baixarMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" style="color: red;" ajax="false"/>
+                                        <p:outputLabel value="Movimento não baixado" style="color: red;"/>
+                                    </c:if>
+                                </c:if>
                                 <p:commandButton value="Sair" action="#{conviteMovimentoBean.close}" update="out_mensagem i_panel_adicionar id_lista"/>
                             </h:panelGrid>
                         </p:panel>
