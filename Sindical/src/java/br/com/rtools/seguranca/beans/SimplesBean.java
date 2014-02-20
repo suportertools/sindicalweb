@@ -4,6 +4,7 @@ import br.com.rtools.agenda.GrupoAgenda;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.associativo.Banda;
+import br.com.rtools.associativo.ConviteMotivoSuspencao;
 import br.com.rtools.associativo.GrupoConvenio;
 import br.com.rtools.associativo.GrupoEvento;
 import br.com.rtools.associativo.Midia;
@@ -323,6 +324,8 @@ public class SimplesBean implements Serializable {
             objeto = (TipoServico) new TipoServico(id, descricao);
         } else if (tipo.equals("AteOperacao")) {
             objeto = (AteOperacao) new AteOperacao(id, descricao);
+        } else if (tipo.equals("ConviteMotivoSuspencao")) {
+            objeto = (ConviteMotivoSuspencao) new ConviteMotivoSuspencao(id, descricao);
         }
     }
 
@@ -371,6 +374,8 @@ public class SimplesBean implements Serializable {
             ((TipoServico) objeto).setDescricao(descricao);
         } else if (tipo.equals("AteOperacao")) {
             ((AteOperacao) objeto).setDescricao(descricao);
+        } else if (tipo.equals("ConviteMotivoSuspencao")) {
+            ((ConviteMotivoSuspencao) objeto).setDescricao(descricao);
         }
     }
 
@@ -441,6 +446,9 @@ public class SimplesBean implements Serializable {
         } else if (obj.getClass().getSimpleName().equals("AteOperacao")) {
             descricao = ((AteOperacao) obj).getDescricao();
             id = ((AteOperacao) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("ConviteMotivoSuspencao")) {
+            descricao = ((ConviteMotivoSuspencao) obj).getDescricao();
+            id = ((ConviteMotivoSuspencao) objeto).getId();
         }
     }
 
@@ -531,6 +539,10 @@ public class SimplesBean implements Serializable {
             }
         } else if (obj.getClass().getSimpleName().equals("AteOperacao")) {
             if (((AteOperacao) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
+        } else if (obj.getClass().getSimpleName().equals("ConviteMotivoSuspencao")) {
+            if (((ConviteMotivoSuspencao) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
         }
