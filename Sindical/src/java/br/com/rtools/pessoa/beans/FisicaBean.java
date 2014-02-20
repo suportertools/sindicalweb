@@ -13,7 +13,6 @@ import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
-import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
