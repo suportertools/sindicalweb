@@ -2,62 +2,13 @@ package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
 public class MatriculaSociosDBToplink extends DB implements MatriculaSociosDB {
 
-    public boolean insert(MatriculaSocios matriculaSocios) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(matriculaSocios);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(MatriculaSocios matriculaSocios) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(matriculaSocios);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(MatriculaSocios matriculaSocios) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(matriculaSocios);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public MatriculaSocios pesquisaCodigo(int id) {
-        MatriculaSocios result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("MatriculaSocios.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (MatriculaSocios) qry.getSingleResult();
-        } catch (Exception e) {
-            e.getMessage();
-        }
-        return result;
-    }
-
+    @Override
     public MatriculaSocios pesquisaPorNrMatricula(int idGpCategoria, int nrMatricula) {
         MatriculaSocios result = null;
         try {
@@ -71,13 +22,22 @@ public class MatriculaSociosDBToplink extends DB implements MatriculaSociosDB {
         return result;
     }
 
-    public List pesquisaTodos() {
+    @Override
+    public List listaMatriculaPorGrupoNrMatricula(int grupoCategoria, int nrMatricula) {
         try {
-            Query qry = getEntityManager().createQuery("select ms from MatriculaSocios ms");
-            return (qry.getResultList());
+            String queryString = ""
+                    + "        SELECT M.nr_matricula                                      "
+                    + "          FROM matr_socios AS M                                    "
+                    + "    INNER JOIN soc_categoria AS C ON C.id = M.id_categoria         "
+                    + "         WHERE M.nr_matricula = " + nrMatricula + "                    "
+                    + "           AND C.id_grupo_categoria = " + grupoCategoria;
+            Query qry = getEntityManager().createNativeQuery(queryString);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
-            e.getMessage();
-            return null;
         }
+        return new ArrayList();
     }
 }
