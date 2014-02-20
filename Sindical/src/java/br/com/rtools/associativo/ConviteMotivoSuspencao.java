@@ -7,7 +7,8 @@ import javax.persistence.*;
 @Table(name = "CONV_MOTIVO_SUSPENCAO")
 @NamedQueries({
     @NamedQuery(name = "ConviteMotivoSuspencao.pesquisaID", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS WHERE CONMS.id = :pid"),
-    @NamedQuery(name = "ConviteMotivoSuspencao.findAll", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS ORDER BY CONMS.descricao ASC")
+    @NamedQuery(name = "ConviteMotivoSuspencao.findAll", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS ORDER BY CONMS.descricao ASC"),
+    @NamedQuery(name = "ConviteMotivoSuspencao.findName", query = "SELECT CONMS FROM ConviteMotivoSuspencao AS CONMS WHERE UPPER(CONMS.descricao) LIKE :pdescricao ORDER BY CONMS.descricao ASC ")
 })
 public class ConviteMotivoSuspencao implements Serializable {
 

@@ -13,6 +13,7 @@ import javax.persistence.*;
 
 public class ConviteServico implements Serializable {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -141,5 +142,10 @@ public class ConviteServico implements Serializable {
     public void setFeriado(boolean feriado) {
         this.feriado = feriado;
     }
+    
+    @Override
+    public String toString() {
+        return "ConviteServico{" + "id=" + id + ", servicos=" + servicos + ", segunda=" + segunda + ", terca=" + terca + ", quarta=" + quarta + ", quinta=" + quinta + ", sexta=" + sexta + ", sabado=" + sabado + ", domingo=" + domingo + ", feriado=" + feriado + '}';
+    }    
 
 }
