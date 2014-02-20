@@ -29,24 +29,45 @@
                             <p:ajax event="tabChange" listener="#{registroEmpresarialBean.onChange}"/>                            
                             <c:if test="#{registroEmpresarialBean.codigoModulo == 0}">
                                 <p:tab title="Cadastro">
-                                    <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                    <p:panelGrid columns="3" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="sbb">
                                         <p:outputLabel value="Email: "/>
-                                        <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off"/>
+                                        <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off" validatorMessage="Email inválido #{registroEmpresarialBean.registro.sisEmailResposta}" required="false" placeholder="Formato: meuemail@provedor.com">
+                                            <p:ajax event="blur" update="i_message_email" />
+                                            <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                                        </p:inputText>                                                
+                                        <p:message for="idEmail" id="i_message_email" />
                                         <p:outputLabel value="Senha: " />
                                         <h:inputSecret id="idSenha" size="15" value="#{registroEmpresarialBean.senha}" autocomplete="off"/>
+                                        <p:column />
                                         <p:outputLabel value="Confirmar Senha: " />
                                         <h:inputSecret id="idConSenha" size="15" value="#{registroEmpresarialBean.confirmaSenha}" autocomplete="off"/>
-                                        <p:column>
-                                        </p:column>
+                                        <p:column />                                        
+                                        <p:column />
                                         <p:column>
                                             <p:selectBooleanCheckbox id="i_aut" value="#{registroEmpresarialBean.registro.emailAutenticado}" itemLabel="Usar email autenticado" >
                                                 <p:ajax event="change" listener="#{registroEmpresarialBean.salvar}" update=":form_registro_empresarial:id_messages" global="true"/>
                                             </p:selectBooleanCheckbox>
                                         </p:column>
+                                        <p:column />
                                         <p:outputLabel value="Servidor Smtp: " />
                                         <p:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}"/>
+                                        <p:column />
                                         <p:outputLabel value="Url path: " />
                                         <p:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
+                                        <p:column />
+                                        <h:outputLabel value="Email Resposta: "/>
+                                        <p:column>
+                                            <p:inputText id="idEmailResposta" size="50" value="#{registroEmpresarialBean.registro.sisEmailResposta}" autocomplete="off" validatorMessage="Email resposta inválido #{registroEmpresarialBean.registro.sisEmailResposta}" required="false" placeholder="Formato: meuemail@provedor.com">
+                                                <p:ajax event="blur" update="i_message_email_resposta" />
+                                                <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                                            </p:inputText>
+                                            <div class="float-left">
+                                                <p:message for="idEmailResposta" id="i_message_email_resposta"/>
+                                            </div>
+                                        </p:column>
+                                        <p:column colspan="3">
+                                            <h:outputLabel value="Apelido/aliás dado ao e-mail principal, caso esse seja de um servidor externo." />
+                                        </p:column>
                                     </p:panelGrid>
                                 </p:tab>
                             </c:if>
@@ -261,7 +282,12 @@
                             </c:if>
                             <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 1}">
                                 <p:tab title="Financeiro">
-                                    
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel for="idDataVencimento" value="Data vencimento: " />
+                                        <p:selectOneMenu id="idDataVencimento" value="#{registroEmpresarialBean.idDiaVencimento}" styleClass="margin-left-max">
+                                            <f:selectItems value="#{registroEmpresarialBean.listaDataVencimento}" />
+                                        </p:selectOneMenu>                                        
+                                    </h:panelGrid>
                                 </p:tab>                                
                             </c:if>
                         </p:tabView>
