@@ -13,12 +13,13 @@ import br.com.rtools.homologacao.db.HomologacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
+import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -33,59 +34,76 @@ import javax.faces.model.SelectItem;
 import javax.faces.validator.ValidatorException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Part;
+import org.primefaces.component.accordionpanel.AccordionPanel;
+import org.primefaces.component.tabview.TabView;
+import org.primefaces.context.RequestContext;
+import org.primefaces.event.CaptureEvent;
+import org.primefaces.event.FileUploadEvent;
+import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
 @SessionScoped
 public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
-    private Fisica fisica;
-    private PessoaEndereco pessoaEndereco;
-    private PessoaProfissao pessoaProfissao;
-    private PessoaEmpresa pessoaEmpresa;
-    private Endereco endereco;
+    private Fisica fisica = new Fisica();
+    private PessoaEndereco pessoaEndereco = new PessoaEndereco();
+    private PessoaProfissao pessoaProfissao = new PessoaProfissao();
+    private PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
+    private Endereco endereco = new Endereco();
+    private Usuario usuario = new Usuario();
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
-    private Socios socios;
-    private String renEndereco;
-    private String indicaTab;
-    private String enderecoCompleto;
-    private String descPesquisa;
-    private String porPesquisa;
-    private String comoPesquisa;
-    private String msgConfirma;
-    private String log;
-    private String desc;
-    private String cid;
-    private String uf;
-    private String masc;
-    private String maxl;
-    private String renNovoEndereco;
-    private String enderecoCobranca;
-    private String renAbreEnd;
-    private String msgSocio;
-    private String lblSocio;
-    private String pesquisaPor;
-    private String tipo;
-    private String tipoSocio;
-    private boolean alterarEnd;
-    private boolean endResidencial;
-    private boolean fotoTemp;
-    private boolean renderJuridicaPesquisa;
-    private boolean temFoto;
-    private List listaEnd;
-    public List itens;
-    private List<DataObject> listaPessoa;
+    private Socios socios = new Socios();
+    private String renEndereco = "false";
+    private String indicaTab = "pessoal";
+    private String enderecoCompleto = "";
+    private String descPesquisa = "";
+    private String porPesquisa = "nome";
+    private String comoPesquisa = "";
+    private String mensagem = "";
+    private String log = "";
+    private String desc = "";
+    private String cid = "";
+    private String uf = "";
+    private String masc = "";
+    private String maxl = "";
+    private String renNovoEndereco = "false";
+    private String enderecoCobranca = "";
+    private String renAbreEnd = "true";
+    private String msgSocio = "";
+    private String lblSocio = "";
+    private String pesquisaPor = "";
+    private String tipo = "";
+    private String tipoSocio = "";
+    private int indexPessoaFisica = 0;
+    private String indexNovoEndereco = "";
+    private boolean alterarEnd = false;
+    private boolean endResidencial = false;
+    private boolean fotoTemp = false;
+    private boolean renderJuridicaPesquisa = false;
+    private boolean temFoto = false;
+    private List listaEnd = new ArrayList();
+    public List itens = new ArrayList();
+    private List<DataObject> listaPessoa = new ArrayList();
     private List<Fisica> listaPessoaFisica = new ArrayList<Fisica>();
-    private List<PessoaEmpresa> listaPessoaEmpresa;
-    private List<SelectItem> listaProfissoes;
-    private int idPais;
-    private int idProfissao;
-    private int idIndexEndereco;
-    private int idIndexFisica;
-    private int idIndexPessoaEmp;
+    private List<PessoaEmpresa> listaPessoaEmpresa = new ArrayList();
+    private final List<SelectItem> listaProfissoes = new ArrayList();
+    private int idPais = 11;
+    private int idProfissao = 0;
+    private int idIndexEndereco = 0;
+    private int idIndexFisica = 0;
+    private int idIndexPessoaEmp = 0;
     private Part file;
     private String fileContent = "";
+    // ALTERAÇÕES
+    private String fotoPerfil = "";
+    private String fotoArquivo = "";
+    private String fotoTempPerfil = "";
+    private String fotoTempArquivo = "";
+    private String cliente = "";
+    private boolean readyOnlineNaturalidade = true;
+    private boolean disabledNaturalidade = false;
 
-    public FisicaBean() {
+    public void novo() {
         fisica = new Fisica();
         pessoaEndereco = new PessoaEndereco();
         pessoaProfissao = new PessoaProfissao();
@@ -99,7 +117,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
-        msgConfirma = "";
+        mensagem = "";
         log = "";
         desc = "";
         cid = "";
@@ -118,11 +136,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         fotoTemp = false;
         renderJuridicaPesquisa = false;
         temFoto = false;
-        listaEnd = new ArrayList();
-        itens = new ArrayList();
-        listaPessoa = new ArrayList();
-        listaProfissoes = new ArrayList();
-        listaPessoaEmpresa = new ArrayList();
+        readyOnlineNaturalidade = true;
+        disabledNaturalidade = false;
+        listaEnd.clear();
+        itens.clear();
+        listaPessoa.clear();
+        listaProfissoes.clear();
+        listaPessoaEmpresa.clear();
         idPais = 11;
         // idProfissao = 386; ANTES ESTAVA FUNCIONANDO
         idProfissao = 0;
@@ -130,13 +150,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         idIndexFisica = 0;
         idIndexPessoaEmp = 0;
         limpaFoto();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("FisicaJSFBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
+        GenericaSessao.remove("enderecoPesquisa");
+        GenericaSessao.remove("enderecoNum");
+        GenericaSessao.remove("enderecoComp");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("FisicaBean");
+        GenericaSessao.remove("pessoaComplementoBean");
+        this.profissao = new Profissao();
+        // EDITADO POR BRUNO
+        indexPessoaFisica = 0;
+        indexNovoEndereco = "";
+        fotoPerfil = "";
+        fotoArquivo = "";
+        fotoTempPerfil = "";
+        fotoTempArquivo = "";
     }
 
     public String getEnderecoCobranca() {
@@ -165,7 +193,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return enderecoCobranca;
     }
 
-    public String salvar() {
+    public void salvar() {
         NovoLog logs = new NovoLog();
         FisicaDB db = new FisicaDBToplink();
         Pessoa pessoa = fisica.getPessoa();
@@ -178,47 +206,49 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         } else {
             fisica.setDtFoto(null);
         }
+        boolean sucesso = false;
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
+        pessoaUpper();
         if ((fisica.getPessoa().getId() == -1) && (fisica.getId() == -1)) {
             fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
 
             if (!db.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(),
                     fisica.getDtNascimento(),
                     fisica.getRg()).isEmpty()) {
-                msgConfirma = "Esta pessoa já esta cadastrada!";
-                return null;
+                mensagem = "Esta pessoa já esta cadastrada!";
+                return;
             }
 
             if (fisica.getNascimento().isEmpty() || fisica.getNascimento().length() < 10) {
-                msgConfirma = "Data de Nascimento esta inválida!";
-                return null;
+                mensagem = "Data de Nascimento esta inválida!";
+                return;
             }
 
             if (pessoa.getDocumento().equals("") || pessoa.getDocumento().equals("0")) {
                 pessoa.setDocumento("0");
             } else {
                 if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                    msgConfirma = "Documento Invalido!";
-                    return null;
+                    mensagem = "Documento Invalido!";
+                    return;
                 }
                 listDocumento = db.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
                 if (!listDocumento.isEmpty()) {
-                    msgConfirma = "Documento já existente!";
-                    return null;
+                    mensagem = "Documento já existente!";
+                    return;
                 }
             }
             if (fisica.getPessoa().getNome().equals("")) {
-                msgConfirma = "O campo nome não pode ser nulo! ";
-                return null;
+                mensagem = "O campo nome não pode ser nulo! ";
+                return;
             }
             if (salvarAcumuladoDB.inserirObjeto(pessoa)) {
                 fisica.setNacionalidade(getListaPaises().get(idPais).getLabel());
                 fisica.setPessoa(pessoa);
                 if (salvarAcumuladoDB.inserirObjeto(fisica)) {
 
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
-                    msgConfirma = "Cadastro salvo com Sucesso!";
+                    GenericaSessao.put("fisicaPesquisa", fisica);
+                    mensagem = "Cadastro salvo com Sucesso!";
                     logs.novo("Novo registro", "Pessoa fisica inserida: ID " + fisica.getId()
                             + " - Pessoa: " + fisica.getPessoa().getId()
                             + " - Nome: " + fisica.getPessoa().getNome()
@@ -226,12 +256,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                             + " - CPF: " + fisica.getPessoa().getDocumento()
                             + " - RG: " + fisica.getRg());
                     salvarAcumuladoDB.comitarTransacao();
+                    sucesso = true;
                 } else {
-                    msgConfirma = "Erro ao Salvar Pessoa Fisica!";
+                    mensagem = "Erro ao Salvar Pessoa Fisica!";
                     salvarAcumuladoDB.desfazerTransacao();
                 }
             } else {
-                msgConfirma = "Erro ao Salvar Pessoa!";
+                mensagem = "Erro ao Salvar Pessoa!";
                 salvarAcumuladoDB.desfazerTransacao();
             }
         } else {
@@ -245,29 +276,29 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 fisica.getPessoa().setDocumento("0");
             } else {
                 if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
-                    msgConfirma = "Documento Inválido!";
-                    return null;
+                    mensagem = "Documento Inválido!";
+                    return;
                 }
                 listDocumento = db.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
-                for (int i = 0; i < listDocumento.size(); i++) {
-                    if (!listDocumento.isEmpty() && ((Fisica) listDocumento.get(i)).getId() != fisica.getId()) {
-                        msgConfirma = "Documento já existente!";
-                        return null;
+                for (Object listDocumento1 : listDocumento) {
+                    if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
+                        mensagem = "Documento já existente!";
+                        return;
                     }
                 }
             }
             if (fisica.getNascimento().isEmpty() || fisica.getNascimento().length() < 10) {
-                msgConfirma = "Data de Nascimento esta inválida!";
-                return null;
+                mensagem = "Data de Nascimento esta inválida!";
+                return;
             }
             List<Fisica> fisi = db.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(),
                     fisica.getDtNascimento(),
                     fisica.getRg());
             if (!fisi.isEmpty()) {
-                for (int i = 0; i < fisi.size(); i++) {
-                    if (fisi.get(i).getId() != fisica.getId()) {
-                        msgConfirma = "Esta pessoa já esta cadastrada!";
-                        return null;
+                for (Fisica fisi1 : fisi) {
+                    if (fisi1.getId() != fisica.getId()) {
+                        mensagem = "Esta pessoa já esta cadastrada!";
+                        return;
                     }
                 }
             }
@@ -281,24 +312,33 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                         + " RG: " + fisica.getRg());
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
-                return null;
+                return;
             }
 
             if (salvarAcumuladoDB.alterarObjeto(fisica)) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
-                msgConfirma = "Cadastro atualizado com Sucesso!";
+                GenericaSessao.put("fisicaPesquisa", fisica);
+                mensagem = "Cadastro atualizado com Sucesso!";
+                sucesso = true;
                 salvarAcumuladoDB.comitarTransacao();
             } else {
-                msgConfirma = "Erro ao Atualizar!";
+                mensagem = "Erro ao Atualizar!";
                 salvarAcumuladoDB.desfazerTransacao();
             }
         }
         salvarEndereco();
         salvarPessoaEmpresa();
-        salvarImagem();
         salvarPessoaProfissao();
         limparCamposData();
-        return null;
+        if (sucesso) {
+            salvarImagem();
+        }
+    }
+
+    public void pessoaUpper() {
+        fisica.getPessoa().setNome(fisica.getPessoa().getNome().toUpperCase());
+        fisica.setRg(fisica.getRg().toUpperCase());
+        fisica.setPai(fisica.getPai().toUpperCase());
+        fisica.setMae(fisica.getMae().toUpperCase());
     }
 
     public void salvarPessoaProfissao() {
@@ -308,7 +348,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             if (fisica.getId() == -1) {
                 pessoaProfissao = new PessoaProfissao();
                 pessoaProfissao.setFisica(fisica);
-                pessoaProfissao.setProfissao((Profissao) sv.pesquisaCodigo(Integer.valueOf(listaProfissoes.get(idProfissao).getDescription()), "Profissao"));
+                pessoaProfissao.setProfissao((Profissao) sv.pesquisaCodigo(Integer.parseInt(listaProfissoes.get(idProfissao).getDescription()), "Profissao"));
 
                 sv.abrirTransacao();
                 if (!sv.inserirObjeto(pessoaProfissao)) {
@@ -317,7 +357,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     sv.comitarTransacao();
                 }
             } else {
-                pessoaProfissao.setProfissao((Profissao) sv.pesquisaCodigo(Integer.valueOf(listaProfissoes.get(idProfissao).getDescription()), "Profissao"));
+                pessoaProfissao.setProfissao((Profissao) sv.pesquisaCodigo(Integer.parseInt(listaProfissoes.get(idProfissao).getDescription()), "Profissao"));
                 if (pessoaProfissao.getId() == -1) {
                     pessoaProfissao.setFisica(fisica);
                     if (!sv.inserirObjeto(pessoaProfissao)) {
@@ -343,41 +383,38 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
-    public String novo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
-        return "pessoaFisica";
-    }
-
     public String novoOK() {
         if (fisica.getId() == -1) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
+            GenericaSessao.put("fisicaBean", new FisicaBean());
         }
         return "pessoaFisica";
     }
 
     public void salvarEndereco() {
         List endPorPessoa = getPesquisaEndPorPessoa();
-        int i = 0;
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (fisica.getId() != -1) {
             if (endPorPessoa.isEmpty()) {
-                while (i < listaEnd.size()) {
-                    pessoaEndereco = (PessoaEndereco) listaEnd.get(i);
-                    salvarAcumuladoDB.abrirTransacao();
-                    if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
-                        salvarAcumuladoDB.comitarTransacao();
-                    } else {
-                        salvarAcumuladoDB.desfazerTransacao();
-                        msgConfirma = "Erro ao Salvar Endereço!";
+                PessoaEnderecoDB pedb = new PessoaEnderecoDBToplink();
+                for (Object listaEnd1 : listaEnd) {
+                    pessoaEndereco = (PessoaEndereco) listaEnd1;
+                    PessoaEndereco pe = pedb.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), pessoaEndereco.getTipoEndereco().getId());
+                    if (pe == null) {
+                        salvarAcumuladoDB.abrirTransacao();
+                        if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
+                            salvarAcumuladoDB.comitarTransacao();
+                        } else {
+                            salvarAcumuladoDB.desfazerTransacao();
+                            mensagem = "Erro ao Salvar Endereço!";
+                        }
+                        pessoaEndereco = new PessoaEndereco();
                     }
-                    pessoaEndereco = new PessoaEndereco();
-                    i++;
                 }
             } else {
                 if (endResidencial) {
-                    for (int o = 0; o < listaEnd.size(); o++) {
+                    for (Object listaEnd1 : listaEnd) {
                         salvarAcumuladoDB.abrirTransacao();
-                        if (salvarAcumuladoDB.alterarObjeto((PessoaEndereco) listaEnd.get(o))) {
+                        if (salvarAcumuladoDB.alterarObjeto((PessoaEndereco) listaEnd1)) {
                             salvarAcumuladoDB.comitarTransacao();
                         } else {
                             salvarAcumuladoDB.desfazerTransacao();
@@ -424,80 +461,71 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return "pessoaFisica";
     }
 
-    public String excluir() {
+    public void excluir() {
         if (socios.getId() != -1) {
-            msgConfirma = "Esse cadastro esta associado, desvincule para excluir!";
-            return null;
+            mensagem = "Esse cadastro esta associado, desvincule para excluir!";
+            return;
         }
-
-        PessoaEnderecoDB dbPE = new PessoaEnderecoDBToplink();
-        PessoaProfissaoDB dbPP = new PessoaProfissaoDBToplink();
-        PessoaEmpresaDB dbEM = new PessoaEmpresaDBToplink();
-        List<PessoaEndereco> listaEndereco = dbPE.pesquisaEndPorPessoa(fisica.getPessoa().getId());
-        PessoaProfissao pp = dbPP.pesquisaProfPorFisica(fisica.getId());
-        List<PessoaEmpresa> listaPessoaEmp = dbEM.listaPessoaEmpresaTodos(fisica.getId());
         //PessoaDB dbPessoa = new PessoaDBToplink();
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        NovoLog logs = new NovoLog();
         if (fisica.getId() != -1) {
             //fisica.setPessoa(dbPessoa.pesquisaCodigo(fisica.getPessoa().getId()));
-
+            PessoaEnderecoDB dbPE = new PessoaEnderecoDBToplink();
+            List<PessoaEndereco> listaEndereco = dbPE.pesquisaEndPorPessoa(fisica.getPessoa().getId());
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             sv.abrirTransacao();
             // EXCLUI ENDEREÇO -----------------
             if (!listaEndereco.isEmpty()) {
-                for (int i = 0; i < listaEndereco.size(); i++) {
-                    if (!sv.deletarObjeto(sv.pesquisaCodigo(listaEndereco.get(i).getId(), "PessoaEndereco"))) {
+                for (PessoaEndereco listaEndereco1 : listaEndereco) {
+                    if (!sv.deletarObjeto(sv.pesquisaCodigo(listaEndereco1.getId(), "PessoaEndereco"))) {
                         sv.desfazerTransacao();
-                        msgConfirma = "Erro ao excluir endereços!";
-                        return null;
+                        mensagem = "Erro ao excluir endereços!";
+                        return;
                     }
                 }
             }
-
+            PessoaProfissaoDB dbPP = new PessoaProfissaoDBToplink();
+            PessoaProfissao pp = dbPP.pesquisaProfPorFisica(fisica.getId());
             // EXCLUI PROFISSÃO -----------------
             if (pp.getId() != -1) {
                 if (!sv.deletarObjeto(sv.pesquisaCodigo(pp.getId(), "PessoaProfissao"))) {
                     sv.desfazerTransacao();
-                    msgConfirma = "Erro ao excluir profissão!";
-                    return null;
+                    mensagem = "Erro ao excluir profissão!";
+                    return;
                 }
             }
             // EXCLUI PESSOA EMPRESA ------------
+            PessoaEmpresaDB dbEM = new PessoaEmpresaDBToplink();
+            List<PessoaEmpresa> listaPessoaEmp = dbEM.listaPessoaEmpresaTodos(fisica.getId());
             if (!listaPessoaEmp.isEmpty()) {
-                for (int i = 0; i < listaPessoaEmp.size(); i++) {
-                    if (!sv.deletarObjeto(sv.pesquisaCodigo(listaPessoaEmp.get(i).getId(), "PessoaEmpresa"))) {
+                for (PessoaEmpresa listaPessoaEmp1 : listaPessoaEmp) {
+                    if (!sv.deletarObjeto(sv.pesquisaCodigo(listaPessoaEmp1.getId(), "PessoaEmpresa"))) {
                         sv.desfazerTransacao();
-                        msgConfirma = "Erro ao excluir pessoas empresa!";
-                        return null;
+                        mensagem = "Erro ao excluir pessoas empresa!";
+                        return;
                     }
                 }
             }
-
-            excluirImagem();
-
             if (!sv.deletarObjeto(sv.pesquisaCodigo(fisica.getId(), "Fisica"))) {
                 sv.desfazerTransacao();
-                msgConfirma = "Física não pode ser excluída!";
-                return null;
+                mensagem = "Física não pode ser excluída!";
+                return;
             }
-
             if (!sv.deletarObjeto(sv.pesquisaCodigo(fisica.getPessoa().getId(), "Pessoa"))) {
                 sv.desfazerTransacao();
-                msgConfirma = "Cadastro Pessoa não pode ser excluída!";
-                return null;
+                mensagem = "Cadastro Pessoa não pode ser excluída!";
+                return;
             }
-            msgConfirma = "Cadastro Excluido com sucesso!";
             sv.comitarTransacao();
+            excluirImagem();
+            NovoLog logs = new NovoLog();
             logs.novo("Excluido", "ID: " + fisica.getId() + " - Pessoa: " + fisica.getPessoa().getId() + " - Nascimento: " + fisica.getNascimento() + " - Nome: " + fisica.getPessoa().getNome() + " - CPF: " + fisica.getPessoa().getDocumento() + " - RG: " + fisica.getRg());
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
-            //((FisicaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).fisica = new Fisica();
-            ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setMsgConfirma("Cadastro Excluido com sucesso!");
-            //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaBean");
+            //GenericaSessao.put("fisicaBean", new FisicaBean());
+            //((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setMensagem("Cadastro Excluido com sucesso!");            
+            novo();
+            mensagem = "Cadastro Excluido com sucesso!";
         } else {
-            msgConfirma = "Pesquise uma pessoa física para ser excluída!";
+            mensagem = "Pesquise uma pessoa física para ser excluída!";
         }
-        //return "pessoaFisica";
-        return null;
     }
 
     public String editarFisica(Fisica f) {
@@ -507,14 +535,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             if (fExiste.exists()) {
                 fExiste.delete();
             }
-
         }
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         PessoaProfissaoDB dbp = new PessoaProfissaoDBToplink();
         fisica = f;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaComplementoBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        GenericaSessao.remove("pessoaComplementoBean");
+        GenericaSessao.put("fisicaPesquisa", fisica);
+        String url = (String) GenericaSessao.getString("urlRetorno");
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -528,10 +555,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
             profissao = pessoaEmpresa.getFuncao();
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
+            GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+            GenericaSessao.remove("juridicaPesquisa");
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
@@ -548,26 +575,45 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
         getListaEnderecos();
         editarFisicaSocio(fisica);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
+        File perfil = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
+        if (perfil.exists()) {
+            fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
+            fotoTempPerfil = "";
+        } else {
+            fotoPerfil = "";
+            fotoTempPerfil = "";
+        }
         return url;
     }
 
-    public String editarFisicaCPF() {
+    public void existePessoaDocumento() {
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__") && fisica.getId() == -1) {
+            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
+                mensagem = "Documento Invalido!";
+                GenericaMensagem.warn("Validação", "Documento (CPF) inválido!");
+                PF.update("form:pessoa_fisica:i_tabview_fisica:id_valida_documento: " + fisica.getPessoa().getDocumento());
+                return;
+            }
             FisicaDB db = new FisicaDBToplink();
             List lista = db.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
             if (!lista.isEmpty()) {
-                editarFisicaParametro((Fisica) lista.get(0));
+                String x = editarFisicaParametro((Fisica) lista.get(0));
+                pessoaUpper();
+                RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
+                if (!listaEnd.isEmpty()) {
+                    indexNovoEndereco = "0";
+                }
             }
         }
-        return "pessoaFisica";
     }
 
     public String editarFisicaParametro(Fisica fis) {
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         fisica = fis;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        GenericaSessao.put("fisicaPesquisa", fisica);
+        String url = (String) GenericaSessao.getString("urlRetorno");
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -579,16 +625,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
             profissao = pessoaEmpresa.getFuncao();
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", pessoaEmpresa.getJuridica());
+            GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+            GenericaSessao.remove("juridicaPesquisa");
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
         getListaEnderecos();
         editarFisicaSocio(fisica);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return url;
     }
 
@@ -604,55 +650,54 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public List<PessoaEndereco> getListaEnderecos() {
-        PessoaEndereco pesEn;
         String strCompl;
         if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
             listaEnd = getPesquisaEndPorPessoa();
-            pesEn = (PessoaEndereco) (listaEnd.get(0));
-            if (pesEn.getComplemento().equals("")) {
+            PessoaEndereco pe = (PessoaEndereco) (listaEnd.get(0));
+            if (pe.getComplemento().equals("")) {
                 strCompl = " ";
             } else {
-                strCompl = " ( " + pesEn.getComplemento() + " ) ";
+                strCompl = " ( " + pe.getComplemento() + " ) ";
             }
-            enderecoCobranca = pesEn.getEndereco().getLogradouro().getDescricao() + " "
-                    + pesEn.getEndereco().getDescricaoEndereco().getDescricao() + ", " + pesEn.getNumero() + " " + pesEn.getEndereco().getBairro().getDescricao() + ","
-                    + strCompl + pesEn.getEndereco().getCidade().getCidade() + " - " + pesEn.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(pesEn.getEndereco().getCep());
+            enderecoCobranca = pe.getEndereco().getLogradouro().getDescricao() + " "
+                    + pe.getEndereco().getDescricaoEndereco().getDescricao() + ", " + pe.getNumero() + " - " + pe.getEndereco().getBairro().getDescricao() + ","
+                    + strCompl + pe.getEndereco().getCidade().getCidade() + " - " + pe.getEndereco().getCidade().getUf() + " / " + AnaliseString.mascaraCep(pe.getEndereco().getCep());
         }
         return listaEnd;
     }
 
-    public String adicionarEnderecos() {
-        TipoEnderecoDB db_tipoEndereco = new TipoEnderecoDBToplink();
-        PessoaEnderecoDB db_pesEnd = new PessoaEnderecoDBToplink();
+    /**
+     * TIPO ENDERECO PESSOA FÍSICA {1,3,4}
+     */
+    public void adicionarEnderecos() {
         endereco = new Endereco();
         String num;
         String comp;
-        int i = 0;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoNum", pessoaEndereco.getNumero());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoComp", pessoaEndereco.getComplemento());
-        List tiposEndereco = db_tipoEndereco.listaTipoEnderecoParaFisica();
-        endereco = (Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa");
+        GenericaSessao.put("enderecoNum", pessoaEndereco.getNumero());
+        GenericaSessao.put("enderecoComp", pessoaEndereco.getComplemento());
+        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+        List<TipoEndereco> tipoEnderecos = (List<TipoEndereco>) dB.pesquisaObjeto(new int[]{1, 3, 4}, "TipoEndereco");
+        endereco = (Endereco) GenericaSessao.getObject("enderecoPesquisa");
         if (endereco != null) {
             if (!alterarEnd) {
-                num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
-                comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
-                while (i < tiposEndereco.size()) {
+                num = (String) GenericaSessao.getString("enderecoNum");
+                comp = (String) GenericaSessao.getString("enderecoComp");
+                for (TipoEndereco te : tipoEnderecos) {
                     pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco) tiposEndereco.get(i));
+                    pessoaEndereco.setTipoEndereco((TipoEndereco) te);
                     pessoaEndereco.setPessoa(fisica.getPessoa());
                     pessoaEndereco.setNumero(num);
                     pessoaEndereco.setComplemento(comp);
                     listaEnd.add(pessoaEndereco);
-                    i++;
                     pessoaEndereco = new PessoaEndereco();
                 }
             } else {
-                num = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoNum");
-                comp = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoComp");
+                num = (String) GenericaSessao.getString("enderecoNum");
+                comp = (String) GenericaSessao.getString("enderecoComp");
                 if (listaEnd.isEmpty()) {
-                    for (int u = 0; u < tiposEndereco.size(); u++) {
+                    for (TipoEndereco te : tipoEnderecos) {
                         pessoaEndereco.setEndereco(endereco);
-                        pessoaEndereco.setTipoEndereco((TipoEndereco) tiposEndereco.get(u));
+                        pessoaEndereco.setTipoEndereco((TipoEndereco) te);
                         pessoaEndereco.setPessoa(fisica.getPessoa());
                         pessoaEndereco.setNumero(num);
                         pessoaEndereco.setComplemento(comp);
@@ -661,14 +706,15 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     }
                 } else if (!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 1) {
                     if (pessoaEndereco.getId() != -1) {
-                        PessoaEndereco pessoaEndeAnt = db_pesEnd.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 1);
-                        ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tiposEndereco.get(0));
+                        PessoaEnderecoDB pedb = new PessoaEnderecoDBToplink();
+                        PessoaEndereco pessoaEndeAnt = pedb.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 1);
+                        ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tipoEnderecos.get(0));
                         ((PessoaEndereco) listaEnd.get(0)).setEndereco(endereco);
                         ((PessoaEndereco) listaEnd.get(0)).setComplemento(pessoaEndereco.getComplemento());
                         ((PessoaEndereco) listaEnd.get(0)).setNumero(pessoaEndereco.getNumero());
                         for (int u = 1; u < listaEnd.size(); u++) {
                             if (comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))) {
-                                ((PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco) tiposEndereco.get(u));
+                                ((PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco) tipoEnderecos.get(u));
                                 ((PessoaEndereco) listaEnd.get(u)).setEndereco(endereco);
                                 ((PessoaEndereco) listaEnd.get(u)).setComplemento(pessoaEndereco.getComplemento());
                                 ((PessoaEndereco) listaEnd.get(u)).setNumero(pessoaEndereco.getNumero());
@@ -677,9 +723,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                         endResidencial = true;
                     } else {
                         listaEnd = new ArrayList();
-                        for (int u = 0; u < tiposEndereco.size(); u++) {
+                        for (TipoEndereco te : tipoEnderecos) {
                             pessoaEndereco.setEndereco(endereco);
-                            pessoaEndereco.setTipoEndereco((TipoEndereco) tiposEndereco.get(u));
+                            pessoaEndereco.setTipoEndereco((TipoEndereco) te);
                             pessoaEndereco.setPessoa(fisica.getPessoa());
                             pessoaEndereco.setNumero(num);
                             pessoaEndereco.setComplemento(comp);
@@ -692,7 +738,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     pessoaEndereco.setPessoa(fisica.getPessoa());
                     pessoaEndereco.setNumero(num);
                     pessoaEndereco.setComplemento(comp);
-
                     ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setEndereco(endereco);
                     ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setComplemento(pessoaEndereco.getComplemento());
                     ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setNumero(pessoaEndereco.getNumero());
@@ -703,16 +748,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             renNovoEndereco = "false";
         }
         setEnderecoCompleto("");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoNum");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoComp");
-        return "pessoaFisica";
+        GenericaSessao.remove("enderecoPesquisa");
+        GenericaSessao.remove("enderecoNum");
+        GenericaSessao.remove("enderecoComp");
     }
 
-    public String RetornarObjetoDaGrid() {
-        pessoaEndereco = (PessoaEndereco) listaEnd.get(idIndexEndereco);
-        //PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoPesquisa", pessoaEndereco.getEndereco());
+    public void editarPessoaEndereco(int index) {
+        pessoaEndereco = (PessoaEndereco) listaEnd.get(index);
+        GenericaSessao.put("enderecoPesquisa", pessoaEndereco.getEndereco());
         log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
         desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
         cid = pessoaEndereco.getEndereco().getCidade().getCidade();
@@ -721,7 +764,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         renEndereco = "false";
         setRenNovoEndereco("true");
         alterarEnd = true;
-        return "pessoaFisica";
     }
 
     public List getListaPessoaEndereco() {
@@ -762,16 +804,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return list;
     }
 
-    public String voltarEndereco() {
-        return "pessoaFisica";
-    }
-
+//    public String voltarEndereco() {
+//        return "pessoaFisica";
+//    }
     public boolean getHabilitar() {
-        if (fisica.getPessoa().getId() == -1) {
-            return true;
-        } else {
-            return false;
-        }
+        return fisica.getPessoa().getId() == -1;
     }
 
     public String excluirPessoaEndereco() {
@@ -795,18 +832,18 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setAvisoTrabalhado(false);
             if (pessoaEmpresa.getDtAdmissao() == null) {
-                msgConfirma = "Informar data de admissão!";
+                mensagem = "Informar data de admissão!";
                 return;
             }
             if (profissao.getProfissao().equals("") || profissao.getProfissao() == null) {
-                msgConfirma = "Pesquise uma função!";
+                mensagem = "Pesquise uma função!";
                 return;
             }
             pessoaEmpresa.setFuncao(profissao);
             if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().equals("")) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
                         > DataHoje.converteDataParaInteger(DataHoje.data())) {
-                    msgConfirma = "Data de Demissão maior que atual!";
+                    mensagem = "Data de Demissão maior que atual!";
                     return;
                 }
             }
@@ -818,7 +855,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             if (pessoaEmpresa.getDemissao() != null && !pessoaEmpresa.getDemissao().equals("")) {
                 pessoaEmpresa = new PessoaEmpresa();
                 profissao = new Profissao();
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+                GenericaSessao.remove("juridicaPesquisa");
                 renderJuridicaPesquisa = false;
             }
         }
@@ -853,9 +890,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             } else if (pesquisaPor.equals("socioinativo")) {
                 result2 = db.pesquisaPessoaSocioInativo(descPesquisa, porPesquisa, comoPesquisa);
             }
-            for (int i = 0; i < result2.size(); i++) {
-                listaPessoa.add(new DataObject(
-                        result2.get(i), (PessoaEmpresa) dbEmp.pesquisaPessoaEmpresaPorFisica(result2.get(i).getId())));
+            for (Fisica result21 : result2) {
+                listaPessoa.add(new DataObject(result21, (PessoaEmpresa) dbEmp.pesquisaPessoaEmpresaPorFisica(result21.getId())));
             }
         }
         return listaPessoa;
@@ -867,10 +903,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public String getRetornarEnderecoAmbos() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
-            log = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getLogradouro().getDescricao();
-            desc = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getDescricaoEndereco().getDescricao();
-            cid = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getCidade().getCidade();
-            uf = ((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa")).getCidade().getUf();
+            log = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getLogradouro().getDescricao();
+            desc = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getDescricaoEndereco().getDescricao();
+            cid = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getCidade().getCidade();
+            uf = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getCidade().getUf();
             setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
         }
         return enderecoCompleto;
@@ -895,13 +931,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public boolean comparaEndereco(PessoaEndereco pessoaEnde1, PessoaEndereco pessoaEnde2) {
         boolean compara;
         if (pessoaEnde1 != null && pessoaEnde2 != null) {
-            if ((pessoaEnde1.getEndereco().getId() == pessoaEnde2.getEndereco().getId()
+            compara = (pessoaEnde1.getEndereco().getId() == pessoaEnde2.getEndereco().getId()
                     && pessoaEnde1.getNumero().equals(pessoaEnde2.getNumero())
-                    && pessoaEnde1.getComplemento().equals(pessoaEnde2.getComplemento()))) {
-                compara = true;
-            } else {
-                compara = false;
-            }
+                    && pessoaEnde1.getComplemento().equals(pessoaEnde2.getComplemento()));
         } else {
             compara = false;
         }
@@ -971,10 +1003,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         List<SelectItem> selectPais = new ArrayList<SelectItem>();
         int i = 0;
         while (i < lista.length) {
-            selectPais.add(new SelectItem(new Integer(i), lista[i], String.valueOf(i)));
+            selectPais.add(new SelectItem(i, lista[i], String.valueOf(i)));
             i++;
         }
-//        if (selectPais != null) {
         if (fisica.getId() != -1) {
             for (i = 0; i < selectPais.size(); i++) {
                 if (selectPais.get(i).getLabel().equals(fisica.getNacionalidade())) {
@@ -982,18 +1013,15 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 }
             }
         }
-//        }
         return selectPais;
     }
 
     public List<SelectItem> getListaProfissoes() {
         if (listaProfissoes.isEmpty()) {
             ProfissaoDB db = new ProfissaoDBToplink();
-            List lista = db.pesquisaTodos();
+            List<Profissao> lista = (List<Profissao>) db.pesquisaTodos();
             for (int i = 0; i < lista.size(); i++) {
-                listaProfissoes.add(new SelectItem(new Integer(i),
-                        (String) ((Profissao) lista.get(i)).getProfissao(),
-                        Integer.toString(((Profissao) lista.get(i)).getId())));
+                listaProfissoes.add(new SelectItem(i, lista.get(i).getProfissao(), "" + lista.get(i).getId()));
             }
         }
         return listaProfissoes;
@@ -1001,17 +1029,25 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public String getCidadeNaturalidade() {
         String nat;
+        if (idPais != 11) {
+            readyOnlineNaturalidade = false;
+            disabledNaturalidade = true;
+            nat = "";
+            return nat;
+        } else {
+            readyOnlineNaturalidade = true;
+            disabledNaturalidade = false;
+        }
         Cidade cidade;
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
-            cidade = (Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa");
+        if (GenericaSessao.exists("cidadePesquisa")) {
+            cidade = (Cidade) GenericaSessao.getObject("cidadePesquisa", true);
             nat = cidade.getCidade();
             nat = nat + " - " + cidade.getUf();
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
             fisica.setNaturalidade(nat);
         }
 
         if (!fisica.getNaturalidade().isEmpty()) {
-            nat = fisica.getNaturalidade() + " <<<";
+            nat = fisica.getNaturalidade();
             return nat;
         }
 
@@ -1037,7 +1073,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         File files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/"));
         File fExiste = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg"));
         File listFile[] = files.listFiles();
-        String nome = "";
+        String nome;
         String caminho;
         //temFoto = false;
         if (fExiste.exists() && fisica.getDataFoto().isEmpty()) {
@@ -1073,65 +1109,60 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     fotoTemp = false;
                     break;
                 }
-            } catch (Exception e) {
-                continue;
+            } catch (NumberFormatException e) {
             }
         }
         return nome + ".jpg";
     }
 
     public void salvarImagem() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        if (fisica.getId() != -1) {
-            String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
-            String caminho2 = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
-            try {
-                File fl = new File(caminho);
-                File item = new File(caminho2);
-                FileInputStream in = new FileInputStream(item);
-                FileOutputStream out = new FileOutputStream(fl.getPath());
-
-                byte[] buf = new byte[(int) item.length()];
-                int count;
-                while ((count = in.read(buf)) >= 0) {
-                    out.write(buf, 0, count);
-                }
-                in.close();
-                out.flush();
-                out.close();
-            } catch (Exception e) {
-                System.out.println(e);
+        if (!Diretorio.criar("Imagens/Fotos/")) {
+            return;
+        }
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
+        boolean error = false;
+        if (!fotoTempPerfil.equals("")) {
+            File des = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
+            if (des.exists()) {
+                des.delete();
             }
+            File src = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(fotoTempPerfil));
+            boolean rename = src.renameTo(des);
+            fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
+            fotoTempPerfil = "";
+            if (!rename) {
+                error = true;
+            }
+        }
+        if (!error) {
+            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId()));
+            boolean delete = f.delete();
         }
     }
 
-//    public void upload(FileUploadEvent event){
-//        this.itens.add(event.getUploadedFile());
-//        UploadedFile item = event.getUploadedFile();
-//        FacesContext facesContext = FacesContext.getCurrentInstance();
-//        String nomeArq = "fotoTemp";
-//        fotoTemp = true;
-//        
-//        String caminho = ((ServletContext) facesContext.getExternalContext().getContext()).getRealPath("/Imagens/Fotos/");
-//        caminho = caminho + "/" + nomeArq+".jpg";
-//        try{
-//            File fl = new File(caminho);
-//            InputStream in = item.getInputStream();
-//            FileOutputStream out = new FileOutputStream(fl.getPath());
+//    public void salvarImagem() {
+//        FacesContext context = FacesContext.getCurrentInstance();
+//        if (fisica.getId() != -1) {
+//            String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
+//            String caminho2 = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
+//            try {
+//                File fl = new File(caminho);
+//                File item = new File(caminho2);
+//                FileInputStream in = new FileInputStream(item);
+//                FileOutputStream out = new FileOutputStream(fl.getPath());
 //
-//            byte[] buf = new byte[(int)item.getSize()];
-//            int count;
-//            while ((count = in.read(buf)) >= 0) {
-//                out.write(buf, 0, count);
-//            }
-//            in.close();
-//            out.flush();
-//            out.close();
-//            temFoto = true;
-//            }catch(Exception e){
-//                temFoto = false;
+//                byte[] buf = new byte[(int) item.length()];
+//                int count;
+//                while ((count = in.read(buf)) >= 0) {
+//                    out.write(buf, 0, count);
+//                }
+//                in.close();
+//                out.flush();
+//                out.close();
+//            } catch (IOException e) {
 //                System.out.println(e);
 //            }
+//        }
 //    }
     public void excluirImagemSozinha() {
         FacesContext context = FacesContext.getCurrentInstance();
@@ -1156,16 +1187,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void excluirImagem() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".jpg");
         try {
-            File fl = new File(caminho);
+            File fl = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(fisica.getPessoa().getId()) + ".png"));
             if (fl.exists()) {
                 fl.delete();
             }
-
         } catch (Exception e) {
-            System.out.println(e);
+            // System.out.println(e);
         }
     }
 
@@ -1173,9 +1201,9 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         HomologacaoDB dbAge = new HomologacaoDBToplink();
         List<Agendamento> agendas = dbAge.pesquisaAgendamentoPorPessoaEmpresa(pe.getId());
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        for (int i = 0; i < agendas.size(); i++) {
+        for (Agendamento agenda : agendas) {
             salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agendas.get(i).getId(), "Agendamento"))) {
+            if (salvarAcumuladoDB.deletarObjeto((Agendamento) salvarAcumuladoDB.pesquisaCodigo(agenda.getId(), "Agendamento"))) {
                 salvarAcumuladoDB.comitarTransacao();
             } else {
                 salvarAcumuladoDB.desfazerTransacao();
@@ -1193,21 +1221,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return null;
     }
 
-    public String removerJuridicaPesquisada() {
-        PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
+    public void removerJuridicaPesquisada() {
         if (pessoaEmpresa.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            if (db.delete(db.pesquisaCodigo(pessoaEmpresa.getId()))) {
-                db.getEntityManager().getTransaction().commit();
+            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+            dB.abrirTransacao();
+            if (dB.deletarObjeto((PessoaEmpresa) dB.pesquisaCodigo(pessoaEmpresa.getId(), "PessoaEmpresa"))) {
+                dB.comitarTransacao();
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                dB.desfazerTransacao();
             }
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
         pessoaEmpresa = new PessoaEmpresa();
         profissao = new Profissao();
         renderJuridicaPesquisa = false;
-        return "pessoaFisica";
+        RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
     }
 
     public String associarFisica() {
@@ -1216,8 +1244,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             return "pessoaFisica";
         } else {
             msgSocio = "";
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa", fisica);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaEmpresaPesquisa", pessoaEmpresa);
+            GenericaSessao.put("fisicaPesquisa", fisica);
+            GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
 
         }
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
@@ -1313,12 +1341,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.fisica = fisica;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 
     public String getRenNovoEndereco() {
@@ -1354,8 +1382,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public PessoaEmpresa getPessoaEmpresa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
-            pessoaEmpresa.setJuridica((Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa"));
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            pessoaEmpresa.setJuridica((Juridica) GenericaSessao.getObject("juridicaPesquisa"));
             renderJuridicaPesquisa = true;
         }
 
@@ -1419,9 +1447,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public Socios getSocios() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa") != null) {
-            socios = (Socios) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("socioPesquisa");
+        if (GenericaSessao.exists("socioPesquisa")) {
+            socios = (Socios) GenericaSessao.getObject("socioPesquisa", true);
         }
         return socios;
     }
@@ -1508,8 +1535,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void upload() {
         try {
-            fileContent = new Scanner(file.getInputStream())
-                    .useDelimiter("\\A").next();
+            fileContent = new Scanner(file.getInputStream()).useDelimiter("\\A").next();
         } catch (IOException e) {
             // Error handling
         }
@@ -1533,21 +1559,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void validateFile(FacesContext ctx, UIComponent comp, Object value) {
         List<FacesMessage> msgs = new ArrayList<FacesMessage>();
-        Part file = (Part) value;
-        if (file.getSize() > 1024) {
+        Part files = (Part) value;
+        if (files.getSize() > 1024) {
             msgs.add(new FacesMessage("file too big"));
         }
-        if (!"text/plain".equals(file.getContentType())) {
+        if (!"text/plain".equals(files.getContentType())) {
             msgs.add(new FacesMessage("not a text file"));
         }
         if (!msgs.isEmpty()) {
             throw new ValidatorException(msgs);
         }
-    }    
-    
-    public String getMascaraPesquisaFisica(){
+    }
+
+    public String getMascaraPesquisaFisica() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
-    }      
+    }
 
     public List<Fisica> getListaPessoaFisica() {
         if (listaPessoaFisica.isEmpty()) {
@@ -1566,7 +1592,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setListaPessoaFisica(List<Fisica> listaPessoaFisica) {
         this.listaPessoaFisica = listaPessoaFisica;
     }
-    
+
     public String pessoaEmpresaString(Fisica f) {
         String pessoaEmpresaString = "";
         PessoaEmpresaDB pessoaEmpresaDB = new PessoaEmpresaDBToplink();
@@ -1577,5 +1603,166 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
         }
         return pessoaEmpresaString;
+    }
+
+    public void novoEndereco(TabChangeEvent event) {
+        indexNovoEndereco = ((AccordionPanel) event.getComponent()).getActiveIndex();
+        abreEndereco();
+    }
+
+    public void accordion(TabChangeEvent event) {
+        indexPessoaFisica = ((TabView) event.getComponent()).getActiveIndex();
+    }
+
+    public String getIndexNovoEndereco() {
+        return indexNovoEndereco;
+    }
+
+    public void setIndexNovoEndereco(String indexNovoEndereco) {
+        this.indexNovoEndereco = indexNovoEndereco;
+    }
+
+    public int getIndexPessoaFisica() {
+        return indexPessoaFisica;
+    }
+
+    public void setIndexPessoaFisica(int indexPessoaFisica) {
+        this.indexPessoaFisica = indexPessoaFisica;
+    }
+
+    public String getFotoPerfil() {
+        return fotoPerfil;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
+    }
+//
+//    public String getFotoArquivo() {
+//        return fotoArquivo;
+//    }
+//
+//    public void setFotoArquivo(String fotoArquivo) {
+//        this.fotoArquivo = fotoArquivo;
+//    }
+
+    public String getFotoTempPerfil() {
+        return fotoTempPerfil;
+    }
+
+    public void setFotoTempPerfil(String fotoTempPerfil) {
+        this.fotoTempPerfil = fotoTempPerfil;
+    }
+
+//    public String getFotoTempArquivo() {
+//        return fotoTempArquivo;
+//    }
+//
+//    public void setFotoTempArquivo(String fotoTempArquivo) {
+//        this.fotoTempArquivo = fotoTempArquivo;
+//    }
+    public String getCliente() {
+        if (cliente.equals("")) {
+            if (GenericaSessao.exists("sessaoCliente")) {
+                return GenericaSessao.getString("sessaoCliente");
+            }
+        }
+        return cliente;
+    }
+
+    public void setCliente(String cliente) {
+        this.cliente = cliente;
+    }
+
+    public Usuario getUsuario() {
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        }
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public void capturar(CaptureEvent captureEvent) {
+        String fotoTempCaminho = "foto/" + getUsuario().getId();
+        if (PhotoCam.oncapture(captureEvent, "perfil", fotoTempCaminho, true)) {
+            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
+            if (f.exists()) {
+                fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png";
+                fotoPerfil = "";
+            } else {
+                fotoTempPerfil = "";
+            }
+        }
+        RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_perfil");
+        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
+        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
+    }
+
+    public void upload(FileUploadEvent event) {
+        String fotoTempCaminho = "foto/" + getUsuario().getId();
+        File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png"));
+        if (f.exists()) {
+            boolean delete = f.delete();
+        } else {
+            fotoTempPerfil = "";
+        }
+        ConfiguracaoUpload cu = new ConfiguracaoUpload();
+        cu.setArquivo(event.getFile().getFileName());
+        cu.setDiretorio("temp/foto/" + getUsuario().getId());
+        cu.setArquivo("perfil.png");
+        cu.setSubstituir(true);
+        cu.setRenomear("perfil.png");
+        cu.setEvent(event);
+        if (Upload.enviar(cu, true)) {
+            fotoTempPerfil = "/Cliente/" + getCliente() + "/temp/" + fotoTempCaminho + "/perfil.png";
+            fotoPerfil = "";
+        } else {
+            fotoTempPerfil = "";
+            fotoPerfil = "";
+        }
+        RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_perfil");
+
+    }
+
+    public void apagarImagem() {
+        boolean sucesso = false;
+        if (!fotoTempPerfil.equals("")) {
+            File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/temp/foto/" + getUsuario().getId() + "/perfil.png"));
+            sucesso = f.delete();
+        } else {
+            if (fisica.getId() != -1) {
+                File f = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png"));
+                sucesso = f.delete();
+            }
+        }
+        if (sucesso) {
+            fotoTempPerfil = "";
+            fotoPerfil = "";
+            RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_tabview_fisica:i_panel_perfil");
+        }
+    }
+
+    public void validaPIS() {
+        GenericaMensagem.warn("Validação", "Número do PIS inválido!");
+        ValidaDocumentos.isValidoPIS(fisica.getPis());
+    }
+
+    public boolean isReadyOnlineNaturalidade() {
+        return readyOnlineNaturalidade;
+    }
+
+    public void setReadyOnlineNaturalidade(boolean readyOnlineNaturalidade) {
+        this.readyOnlineNaturalidade = readyOnlineNaturalidade;
+    }
+
+    public boolean isDisabledNaturalidade() {
+        return disabledNaturalidade;
+    }
+
+    public void setDisabledNaturalidade(boolean disabledNaturalidad) {
+        this.disabledNaturalidade = disabledNaturalidad;
     }
 }
