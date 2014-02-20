@@ -12,10 +12,12 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import org.primefaces.component.tabview.Tab;
 import org.primefaces.event.TabChangeEvent;
@@ -30,6 +32,8 @@ public class RegistroEmpresarialBean implements Serializable {
     private String mensagem = "";
     private int codigoModulo = 0;
     private int codigoServico = -1;
+    private int idDiaVencimento = 0;
+    private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
 
     public void salvar() {
 //        if (!validacao()) {
@@ -52,6 +56,7 @@ public class RegistroEmpresarialBean implements Serializable {
         } else {
             servicos = (Servicos) sv.pesquisaObjeto(codigoServico, "Servicos");
         }
+        registro.setFinDiaVencimentoCobranca(idDiaVencimento);
         registro.setServicos(servicos);
         if (sv.alterarObjeto(registro)) {
             sv.comitarTransacao();
@@ -76,7 +81,7 @@ public class RegistroEmpresarialBean implements Serializable {
             GenericaMensagem.warn("Erro", "Ao atualizar registro!");
         }
     }
-    
+
     public boolean validacao() {
         int nrDataRetroativo = DataHoje.converteDataParaInteger(registro.getAgendamentoRetroativoString());
         int nrDataHoje = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
@@ -111,7 +116,7 @@ public class RegistroEmpresarialBean implements Serializable {
                 registro = (Registro) sv.pesquisaCodigo(1, "Registro");
                 senha = registro.getSenha();
                 if (registro.getServicos() != null) {
-                    codigoServico = registro.getServicos().getId();                    
+                    codigoServico = registro.getServicos().getId();
                 }
             }
         }
@@ -200,6 +205,32 @@ public class RegistroEmpresarialBean implements Serializable {
 
     public void setCodigoServico(int codigoServico) {
         this.codigoServico = codigoServico;
+    }
+
+    public List<SelectItem> getListaDataVencimento() {
+        if (listaDataVencimento.isEmpty()) {
+            for (int i = 1; i <= 31; i++) {
+                listaDataVencimento.add(new SelectItem(Integer.toString(i)));
+            }
+        }
+        return listaDataVencimento;
+    }
+
+    public void setListaDataVencimento(List<SelectItem> listaDataVencimento) {
+        this.listaDataVencimento = listaDataVencimento;
+    }
+
+    public int getIdDiaVencimento() {
+        for (int i = 1; i <= listaDataVencimento.size(); i++) {
+            if(registro.getFinDiaVencimentoCobranca() == i) {
+                idDiaVencimento = registro.getFinDiaVencimentoCobranca();
+            }
+        }
+        return idDiaVencimento;
+    }
+
+    public void setIdDiaVencimento(int idDiaVencimento) {
+        this.idDiaVencimento = idDiaVencimento;
     }
 
 }
