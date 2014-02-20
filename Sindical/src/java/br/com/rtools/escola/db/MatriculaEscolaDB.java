@@ -1,5 +1,6 @@
 package br.com.rtools.escola.db;
 
+import br.com.rtools.escola.EscolaAutorizados;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
@@ -28,4 +29,6 @@ public interface MatriculaEscolaDB {
     public boolean existeMatriculaIndividual(MatriculaIndividual mi);
     
     public boolean existeVagasDisponivel(MatriculaTurma mt);
+    
+    public List<EscolaAutorizados> listaPessoasAutorizas(int idMatricula);
 }
