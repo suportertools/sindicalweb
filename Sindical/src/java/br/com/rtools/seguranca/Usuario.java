@@ -6,9 +6,9 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "SEG_USUARIO")
-@NamedQueries({ 
-    @NamedQuery(name = "Usuario.pesquisaID",    query = "SELECT U FROM Usuario U WHERE U.id = :pid "), 
-    @NamedQuery(name = "Usuario.findAll",       query = "SELECT U FROM Usuario U ORDER BY U.pessoa.nome ASC, U.login ASC ")
+@NamedQueries({
+    @NamedQuery(name = "Usuario.pesquisaID", query = "SELECT U FROM Usuario U WHERE U.id = :pid "),
+    @NamedQuery(name = "Usuario.findAll", query = "SELECT U FROM Usuario U ORDER BY U.pessoa.nome ASC, U.login ASC ")
 })
 public class Usuario implements Serializable {
 
@@ -79,5 +79,10 @@ public class Usuario implements Serializable {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    @Override
+    public String toString() {
+        return "Usuario{" + "id=" + id + ", pessoa=" + pessoa + ", login=" + login + ", ativo=" + ativo + '}';
     }
 }
