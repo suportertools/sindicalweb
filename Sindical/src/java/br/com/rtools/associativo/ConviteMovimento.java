@@ -41,7 +41,7 @@ public class ConviteMovimento implements Serializable {
     private Departamento departamento;
     @JoinColumn(name = "ID_AUTORIZA_CORTESIA", referencedColumnName = "ID")
     @ManyToOne
-    private ConviteAutorizaCortesia autorizaCortesia;
+    private Pessoa autorizaCortesia;
     @Column(name = "IS_CORTESIA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean cortesia;
     @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT TRUE")
@@ -54,7 +54,7 @@ public class ConviteMovimento implements Serializable {
     private Date dtEmissao;
     @JoinColumn(name = "ID_SERVICOS", referencedColumnName = "ID")
     @ManyToOne
-    private ConviteServico conviteServico;    
+    private ConviteServico conviteServico;
 
     public ConviteMovimento() {
         this.id = -1;
@@ -65,7 +65,7 @@ public class ConviteMovimento implements Serializable {
         this.usuarioInativacao = new Usuario();
         this.evt = new Evt();
         this.departamento = new Departamento();
-        this.autorizaCortesia = new ConviteAutorizaCortesia();
+        this.autorizaCortesia = new Pessoa();
         this.cortesia = false;
         this.ativo = false;
         this.dtValidade = DataHoje.dataHoje();
@@ -73,7 +73,7 @@ public class ConviteMovimento implements Serializable {
         this.conviteServico = new ConviteServico();
     }
 
-    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, ConviteAutorizaCortesia autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico) {
+    public ConviteMovimento(int id, String observacao, SisPessoa sisPessoa, Pessoa pessoa, Usuario usuario, Usuario usuarioInativacao, Evt evt, Departamento departamento, Pessoa autorizaCortesia, boolean cortesia, boolean ativo, String validade, String emissao, ConviteServico conviteServico) {
         this.id = id;
         this.observacao = observacao;
         this.sisPessoa = sisPessoa;
@@ -154,11 +154,11 @@ public class ConviteMovimento implements Serializable {
         this.departamento = departamento;
     }
 
-    public ConviteAutorizaCortesia getAutorizaCortesia() {
+    public Pessoa getAutorizaCortesia() {
         return autorizaCortesia;
     }
 
-    public void setAutorizaCortesia(ConviteAutorizaCortesia autorizaCortesia) {
+    public void setAutorizaCortesia(Pessoa autorizaCortesia) {
         this.autorizaCortesia = autorizaCortesia;
     }
 
@@ -210,11 +210,6 @@ public class ConviteMovimento implements Serializable {
         this.dtEmissao = DataHoje.converte(emissao);
     }
 
-    @Override
-    public String toString() {
-        return "ConviteMovimento{" + "id=" + id + ", observacao=" + observacao + ", sisPessoa=" + sisPessoa + ", pessoa=" + pessoa + ", usuario=" + usuario + ", usuarioInativacao=" + usuarioInativacao + ", evt=" + evt + ", departamento=" + departamento + ", autorizaCortesia=" + autorizaCortesia + ", cortesia=" + cortesia + ", ativo=" + ativo + ", dtValidade=" + dtValidade + ", dtEmissao=" + dtEmissao + '}';
-    }
-
     public ConviteServico getConviteServico() {
         return conviteServico;
     }
@@ -223,4 +218,8 @@ public class ConviteMovimento implements Serializable {
         this.conviteServico = conviteServico;
     }
 
+    @Override
+    public String toString() {
+        return "ConviteMovimento{" + "id=" + id + ", observacao=" + observacao + ", sisPessoa=" + sisPessoa + ", pessoa=" + pessoa + ", usuario=" + usuario + ", usuarioInativacao=" + usuarioInativacao + ", evt=" + evt + ", departamento=" + departamento + ", autorizaCortesia=" + autorizaCortesia + ", cortesia=" + cortesia + ", ativo=" + ativo + ", dtValidade=" + dtValidade + ", dtEmissao=" + dtEmissao + ", conviteServico=" + conviteServico + '}';
+    }
 }
