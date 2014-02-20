@@ -38,4 +38,10 @@ public class Evt implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    @Override
+    public String toString() {
+        return "Evt{" + "id=" + id + ", descricao=" + descricao + '}';
+    }
+
 }
