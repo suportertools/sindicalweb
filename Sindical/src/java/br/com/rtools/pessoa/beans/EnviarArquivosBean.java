@@ -123,7 +123,8 @@ public class EnviarArquivosBean implements Serializable {
             aux2.add((File) ((DataObject) listaArquivos.get(i)).getArgumento0());
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        String[] retorno = EnviarEmail.EnviarEmailPersonalizado((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
+        Registro r = (Registro) salvarAcumuladoDB.pesquisaObjeto(1, "Registro");
+        String[] retorno = EnviarEmail.EnviarEmailPersonalizado(r, aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
         if (retorno[1].isEmpty()) {
             if (!listaArquivos.isEmpty()) {
                 GenericaMensagem.info("Sucesso", "Email(s) " + retorno[0]);
@@ -132,7 +133,7 @@ public class EnviarArquivosBean implements Serializable {
             }
         } else {
             msgConfirma = retorno[1];
-            GenericaMensagem.warn("Flha", "Email(s) " + retorno[1]);
+            GenericaMensagem.warn("Falha", "Email(s) " + retorno[1]);
         }
     }
 
@@ -445,7 +446,6 @@ public class EnviarArquivosBean implements Serializable {
         configuracaoUpload.setArquivo(event.getFile().getFileName());
         configuracaoUpload.setDiretorio("Arquivos/Anexos/Pendentes/ArquivoContabilidade");
         configuracaoUpload.setEvent(event);
-        Upload.enviar(configuracaoUpload);
         if (Upload.enviar(configuracaoUpload, true)) {
             listaArquivos.clear();
         }
