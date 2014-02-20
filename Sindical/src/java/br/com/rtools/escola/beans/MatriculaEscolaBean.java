@@ -40,6 +40,8 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaDB;
+import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEmpresaDB;
 import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
@@ -51,20 +53,8 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.Diretorio;
-import br.com.rtools.utilitarios.Download;
-import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.GenericaString;
-import br.com.rtools.utilitarios.HtmlToPDF;
-import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvaArquivos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import br.com.rtools.utilitarios.ValorExtenso;
-import br.com.rtools.utilitarios.db.FunctionsDB;
-import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
+import br.com.rtools.utilitarios.*;
+import br.com.rtools.utilitarios.db.*;
 import com.lowagie.text.DocumentException;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -86,6 +76,7 @@ import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.primefaces.context.RequestContext;
 import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
@@ -104,13 +95,15 @@ public class MatriculaEscolaBean implements Serializable {
     private MatriculaTurma matriculaTurma = new MatriculaTurma();
     private Pessoa pessoaAlunoMemoria = new Pessoa();
     private Pessoa pessoaResponsavelMemoria = new Pessoa();
+    private EscolaAutorizados escolaAutorizados = new EscolaAutorizados();
+    private EscolaAutorizados escolaAutorizadosDetalhes = new EscolaAutorizados();
     private MacFilial macFilial = new MacFilial();
     private Movimento movimento = new Movimento();
     private Pessoa responsavel = new Pessoa();
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
+    private Registro registro = new Registro();
     private List listaGridMEscola = new ArrayList();
     private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
-    private List<Movimento> listaMovimentos = new ArrayList<Movimento>();
     private List<FTipoDocumento> listaFTipoDocumento = new ArrayList<FTipoDocumento>();
     private List<SelectItem> listaCursosDisponiveis = new ArrayList<SelectItem>();
     private List<SelectItem> listaVendedor = new ArrayList<SelectItem>();
@@ -118,8 +111,10 @@ public class MatriculaEscolaBean implements Serializable {
     private List<SelectItem> listaMidia = new ArrayList<SelectItem>();
     private List<SelectItem> listaNumeros = new ArrayList<SelectItem>();
     private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
-    private List<Turma> listaTurma = new ArrayList<Turma>();
     private List<SelectItem> listaIndividual = new ArrayList<SelectItem>();
+    private List<Turma> listaTurma = new ArrayList<Turma>();
+    private List<Movimento> listaMovimentos = new ArrayList<Movimento>();
+    private List<EscolaAutorizados> listaEscolaAutorizadas = new ArrayList<EscolaAutorizados>();
     private List<ListaMatriculaEscola> listaMatriculaEscolas = new ArrayList<ListaMatriculaEscola>();
     private int idDiaVencimento = 0;
     private int idDiaVencimentoPessoa = 0;
@@ -146,6 +141,8 @@ public class MatriculaEscolaBean implements Serializable {
     private boolean showDescontoProporcional = false;
     private boolean ocultaBotaoSalvar = false;
     private boolean responsavelNaoSocio = false;
+    private boolean alunoFoto = false;
+    private boolean alterarPessoaComplemento = false;
     private boolean habilitaGerarParcelas = false;
     private boolean limpar = false;
     private boolean ocultaDescontoFolha = true;
@@ -168,6 +165,8 @@ public class MatriculaEscolaBean implements Serializable {
     private String valorParcelaVencimento = "";
     private String valorLiquido = "";
     private String valorTaxa = "";
+    private boolean visibility = false;
+    private int diaVencimento = 0;
 
     public String novo() {
         empresa = new Juridica();
@@ -175,6 +174,8 @@ public class MatriculaEscolaBean implements Serializable {
         vTaxa = 0;
         pessoaAlunoMemoria = new Pessoa();
         pessoaResponsavelMemoria = new Pessoa();
+        escolaAutorizados = new EscolaAutorizados();
+        escolaAutorizadosDetalhes = new EscolaAutorizados();
         responsavel = new Pessoa();
         matriculaTurma = new MatriculaTurma();
         turma = new Turma();
@@ -187,6 +188,7 @@ public class MatriculaEscolaBean implements Serializable {
         lote = new Lote();
         idFTipoDocumento = 0;
         socio = false;
+        alterarPessoaComplemento = false;
         idDiaVencimentoPessoa = 0;
         aluno = new Fisica();
         idTurma = 0;
@@ -198,6 +200,7 @@ public class MatriculaEscolaBean implements Serializable {
         idCursosDisponiveis = 0;
         idadeAluno = 0;
         idDiaVencimento = 0;
+        diaVencimento = 0;
         listaStatus.clear();
         listaVendedor.clear();
         listaProfessor.clear();
@@ -220,6 +223,7 @@ public class MatriculaEscolaBean implements Serializable {
         taxa = false;
         descontoProporcional = false;
         showDescontoProporcional = false;
+        alunoFoto = false;
         porPesquisa = "";
         comoPesquisa = "";
         mensagem = "";
@@ -230,6 +234,8 @@ public class MatriculaEscolaBean implements Serializable {
         valorParcela = "";
         valorParcelaVencimento = "";
         openModal = "";
+        visibility = false;
+        listaEscolaAutorizadas.clear();
         GenericaSessao.remove("matriculaEscolaPesquisa");
         GenericaSessao.remove("pesquisaFisicaTipo");
         GenericaSessao.remove("pesquisaFisica");
@@ -500,8 +506,7 @@ public class MatriculaEscolaBean implements Serializable {
                     OutputStream os = new FileOutputStream(filePDF);
                     HtmlToPDF.convert(matriculaContrato.getDescricao(), os);
                     os.close();
-                    Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
-                    String linha = reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName;
+                    String linha = getRegistro().getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName;
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                     response.sendRedirect(linha);
                 }
@@ -554,6 +559,11 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public void salvar() {
+        Filial fil = getMacFilial().getFilial();
+        if (fil.getId() == -1) {
+            mensagem = "Para salvar este cadastro é necessário realizar acesso com MAC Filial!";
+            return;
+        }
         if (existeMovimento()) {
             mensagem = "Não é possível atualizar essa matrícula, já possui movimentos baixados!";
             return;
@@ -785,7 +795,6 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaIndividual.setId(-1);
             }
         } else {
-            Filial fil = getMacFilial().getFilial();
             if (fil.getId() != matriculaEscola.getFilial().getId()) {
                 mensagem = "Registro não pode ser atualizado por esta filial!";
                 return;
@@ -821,6 +830,7 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public String editar(MatriculaEscola me) {
+        escolaAutorizadosDetalhes = new EscolaAutorizados();
         getListaGridMEscola().clear();
         matriculaEscola = me;
         MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
@@ -1331,8 +1341,9 @@ public class MatriculaEscolaBean implements Serializable {
         if (GenericaSessao.exists("fisicaPesquisa")) {
             MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
             if (GenericaSessao.exists("pesquisaFisicaTipo")) {
-                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo", true);
+                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo");
                 if (tipoFisica.equals("aluno")) {
+                    GenericaSessao.remove("pesquisaFisicaTipo");
                     valorTaxa = "";
                     taxa = false;
                     aluno = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
@@ -1357,16 +1368,19 @@ public class MatriculaEscolaBean implements Serializable {
                     }
                     matriculaEscola.setAluno(aluno.getPessoa());
                     matriculaEscola.setResponsavel(responsavel);
+                    atualizaPessoaComplemento(0);
                     pegarIdServico();
                     atualizaValor();
                     calculaValorLiquido();
                 } else if (tipoFisica.equals("responsavel")) {
+                    GenericaSessao.remove("pesquisaFisicaTipo");
                     Pessoa resp = ((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa();
                     FunctionsDB functionsDB = new FunctionsDBTopLink();
                     int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
                     if (idade >= 18) {
                         if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
                             matriculaEscola.setResponsavel(resp);
+                            atualizaPessoaComplemento(0);
                         }
                     } else {
                         GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
@@ -1390,6 +1404,7 @@ public class MatriculaEscolaBean implements Serializable {
             if (titularResponsavel > 0) {
                 SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                 responsavel = (Pessoa) salvarAcumuladoDB.pesquisaCodigo(titularResponsavel, "Pessoa");
+                atualizaPessoaComplemento(1);
             }
         } else {
             responsavel = new Pessoa();
@@ -1571,7 +1586,11 @@ public class MatriculaEscolaBean implements Serializable {
     public int getIdDiaVencimento() {
         if (idDiaVencimentoPessoa == 0) {
             if (matriculaEscola.getId() == -1) {
-                this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+                if (getRegistro() != null) {
+                    this.idDiaVencimento = registro.getFinDiaVencimentoCobranca();
+                } else {
+                    this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+                }
             } else {
                 this.idDiaVencimento = matriculaEscola.getDiaVencimento();
             }
@@ -1583,6 +1602,23 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setIdDiaVencimento(int idDiaVencimento) {
         this.idDiaVencimento = idDiaVencimento;
+    }
+
+    public int getDiaVencimento() {
+        if (idDiaVencimentoPessoa == 0) {
+            if (matriculaEscola.getId() == -1) {
+                this.diaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+            } else {
+                this.diaVencimento = matriculaEscola.getDiaVencimento();
+            }
+        } else {
+            this.diaVencimento = idDiaVencimentoPessoa;
+        }
+        return this.diaVencimento;
+    }
+
+    public void setDiaVencimento(int diaVencimento) {
+        this.diaVencimento = diaVencimento;
     }
 
     public List<SelectItem> getListaIndividual() {
@@ -2084,6 +2120,7 @@ public class MatriculaEscolaBean implements Serializable {
             if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("juridica", juridica.getPessoa().getId())) {
                 responsavel = juridica.getPessoa();
                 if (responsavel.getId() != -1) {
+                    atualizaPessoaComplemento(1);
                     pessoaComplemento = new PessoaComplemento();
                     pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(responsavel.getId());
                     if (pessoaComplemento != null) {
@@ -2105,6 +2142,35 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setJuridica(Juridica juridica) {
         this.juridica = juridica;
+    }
+
+    /**
+     * Tipo : 0 => Aluno / 1 => Responsável
+     *
+     * @param tipo
+     */
+    public void atualizaPessoaComplemento(int tipo) {
+        PessoaDB pdb = new PessoaDBToplink();
+        PessoaComplemento pc;
+        Pessoa p;
+        if (tipo == 0) {
+            p = matriculaEscola.getResponsavel();
+        } else {
+            p = responsavel;
+        }
+        pc = pdb.pesquisaPessoaComplementoPorPessoa(p.getId());
+        if (pc.getId() == -1) {
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            pc.setNrDiaVencimento(getRegistro().getFinDiaVencimentoCobranca());
+            pc.setCobrancaBancaria(true);
+            pc.setPessoa(p);
+            sadb.abrirTransacao();
+            if (sadb.inserirObjeto(pc)) {
+                sadb.comitarTransacao();
+            } else {
+                sadb.desfazerTransacao();
+            }
+        }
     }
 
     public boolean isOcultaBotaoSalvar() {
@@ -2285,4 +2351,173 @@ public class MatriculaEscolaBean implements Serializable {
 //        byte[] outputData = outputBuffer.array();
 //        return new String(outputData);
 //    }
+    public boolean isAlunoFoto() {
+        if (matriculaEscola.getAluno().getId() != -1) {
+            File file = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + matriculaEscola.getAluno().getId() + ".png"));
+            alunoFoto = file.exists();
+        }
+        return alunoFoto;
+    }
+
+    public void setAlunoFoto(boolean alunoFoto) {
+        this.alunoFoto = alunoFoto;
+    }
+
+    public boolean isVisibility() {
+        return visibility;
+    }
+
+    public void setVisibility(boolean visibility) {
+        this.visibility = visibility;
+    }
+
+    public void openDialog() {
+        visibility = true;
+    }
+
+    public void close() {
+        visibility = false;
+        RequestContext.getCurrentInstance().execute("dgl_adicionar.hide()");
+    }
+
+    // PESSOAS AUTORIZADAS
+    public void novaPessoaAutorizada() {
+        escolaAutorizados = new EscolaAutorizados();
+        listaEscolaAutorizadas.clear();
+    }
+
+    public void salvarPessoaAutorizada() {
+        if (matriculaEscola.getId() != -1) {
+            if (escolaAutorizados.getPessoa().getId() == -1) {
+                GenericaMensagem.warn("Validação", "Pesquisar uma pessoa!");
+                return;
+            }
+            for (EscolaAutorizados listaEscolaAutorizada : listaEscolaAutorizadas) {
+                if (listaEscolaAutorizada.getPessoa().getId() == escolaAutorizados.getPessoa().getId()) {
+                    GenericaMensagem.warn("Validação", "Pessoa já cadastrada!");
+                    return;
+                }
+            }
+            escolaAutorizados.setMatriculaEscola(matriculaEscola);
+            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+            if (escolaAutorizados.getId() == -1) {
+                dB.abrirTransacao();
+                if (dB.inserirObjeto(escolaAutorizados)) {
+                    dB.comitarTransacao();
+                    escolaAutorizados = new EscolaAutorizados();
+                    listaEscolaAutorizadas.clear();
+                    GenericaMensagem.info("Sucesso", "Pessoa adicionada com sucesso");
+                } else {
+                    GenericaMensagem.warn("Erro", "Erro ao adicionar pessoa!");
+                    dB.desfazerTransacao();
+                }
+            }
+        }
+    }
+
+    public void detalhesAutorizados(EscolaAutorizados ea) {
+        escolaAutorizadosDetalhes = ea;
+    }
+
+    public void excluirPessoaAutorizada(EscolaAutorizados ea) {
+        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+        dB.abrirTransacao();
+        if (dB.deletarObjeto((EscolaAutorizados) dB.pesquisaObjeto(ea.getId(), "EscolaAutorizados"))) {
+            dB.comitarTransacao();
+            escolaAutorizados = new EscolaAutorizados();
+            listaEscolaAutorizadas.clear();
+            GenericaMensagem.info("Sucesso", "Pessoa excluída com sucesso");
+        } else {
+            GenericaMensagem.warn("Erro", "Erro ao excluir pessoa!");
+            dB.desfazerTransacao();
+        }
+        PF.update("i_msg_autorizados");
+    }
+
+    public EscolaAutorizados getEscolaAutorizados() {
+        if (GenericaSessao.exists("fisicaPesquisa")) {
+            if (GenericaSessao.exists("pesquisaFisicaTipo")) {
+                String tipoFisica = GenericaSessao.getString("pesquisaFisicaTipo");
+                if (tipoFisica.equals("autorizada")) {
+                    GenericaSessao.remove("pesquisaFisicaTipo");
+                    escolaAutorizados.setPessoa(((Fisica) GenericaSessao.getObject("fisicaPesquisa", true)).getPessoa());
+                }
+            }
+        }
+        return escolaAutorizados;
+    }
+
+    public void setEscolaAutorizados(EscolaAutorizados escolaAutorizados) {
+        this.escolaAutorizados = escolaAutorizados;
+    }
+
+    public List<EscolaAutorizados> getListaEscolaAutorizadas() {
+        if (matriculaEscola.getId() != -1) {
+            if (listaEscolaAutorizadas.isEmpty()) {
+                MatriculaEscolaDB medb = new MatriculaEscolaDBToplink();
+                listaEscolaAutorizadas = medb.listaPessoasAutorizas(matriculaEscola.getId());
+            }
+        }
+        return listaEscolaAutorizadas;
+    }
+
+    public void setListaEscolaAutorizadas(List<EscolaAutorizados> listaEscolaAutorizadas) {
+        this.listaEscolaAutorizadas = listaEscolaAutorizadas;
+    }
+
+    public EscolaAutorizados getEscolaAutorizadosDetalhes() {
+        return escolaAutorizadosDetalhes;
+    }
+
+    public void setEscolaAutorizadosDetalhes(EscolaAutorizados escolaAutorizadosDetalhes) {
+        this.escolaAutorizadosDetalhes = escolaAutorizadosDetalhes;
+    }
+
+    public boolean isAlterarPessoaComplemento() {
+        if (matriculaEscola.getId() != -1) {
+            if (matriculaEscola.getResponsavel().getId() != -1) {
+                PessoaDB pessoaDB = new PessoaDBToplink();
+                PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(matriculaEscola.getResponsavel().getId());
+                alterarPessoaComplemento = pc.getId() != -1;
+            }
+        }
+        return alterarPessoaComplemento;
+    }
+
+    public void setAlterarPessoaComplemento(boolean alterarPessoaComplemento) {
+        this.alterarPessoaComplemento = alterarPessoaComplemento;
+    }
+
+    public void updatePessoaComplemento() {
+        if (matriculaEscola.getResponsavel().getId() != -1) {
+            PessoaDB pessoaDB = new PessoaDBToplink();
+            PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(matriculaEscola.getResponsavel().getId());
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            pc.setNrDiaVencimento(diaVencimento);
+            sadb.abrirTransacao();
+            if (sadb.alterarObjeto(pc)) {
+                matriculaEscola.setDiaVencimento(pc.getNrDiaVencimento());
+                if (sadb.alterarObjeto(matriculaEscola)) {
+                    sadb.comitarTransacao();
+                    listaMatriculaEscolas.clear();
+                } else {
+                    sadb.desfazerTransacao();
+                }
+            } else {
+                sadb.desfazerTransacao();
+            }
+        }
+    }
+
+    public Registro getRegistro() {
+        if (registro.getId() == -1) {
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            registro = (Registro) sadb.pesquisaObjeto(1, "Registro");
+        }
+        return registro;
+    }
+
+    public void setRegistro(Registro registro) {
+        this.registro = registro;
+    }
 }
