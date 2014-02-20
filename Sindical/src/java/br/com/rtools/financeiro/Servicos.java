@@ -200,4 +200,10 @@ public class Servicos implements java.io.Serializable {
     public void setPlano5(Plano5 plano5) {
         this.plano5 = plano5;
     }
+
+    @Override
+    public String toString() {
+        return "Servicos{" + "id=" + id + ", descricao=" + descricao + ", filial=" + filial + ", plano5=" + plano5 + ", departamento=" + departamento + ", validade=" + validade + ", codigo=" + codigo + ", situacao=" + situacao + ", debito=" + debito + ", alterarValor=" + alterarValor + ", adm=" + adm + ", tabela=" + tabela + ", eleicao=" + eleicao + ", agrupaBoleto=" + agrupaBoleto + '}';
+    }
+
 }
