@@ -5,8 +5,6 @@ import br.com.rtools.associativo.GrupoCategoria;
 import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.associativo.db.CategoriaDB;
 import br.com.rtools.associativo.db.CategoriaDBToplink;
-import br.com.rtools.associativo.db.GrupoCategoriaDB;
-import br.com.rtools.associativo.db.GrupoCategoriaDBToplink;
 import br.com.rtools.associativo.db.ParentescoDB;
 import br.com.rtools.associativo.db.ParentescoDBToplink;
 import br.com.rtools.endereco.Cidade;
@@ -28,6 +26,8 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -983,10 +983,10 @@ public class RelatorioSociosJSFBean {
 
     public List<DataObject> getListaGrupo() {
         if (listaGrupo.isEmpty()) {
-            GrupoCategoriaDB db = new GrupoCategoriaDBToplink();
-            List<GrupoCategoria> result = db.pesquisaTodos();
-            for (int i = 0; i < result.size(); i++) {
-                listaGrupo.add(new DataObject(true, result.get(i)));
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            List<GrupoCategoria> gcs = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria", true);
+            for (GrupoCategoria gc : gcs) {
+                listaGrupo.add(new DataObject(true, gc));
             }
         }
         return listaGrupo;
