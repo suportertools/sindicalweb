@@ -72,6 +72,8 @@ public class Registro implements java.io.Serializable {
     private int limiteEnvios;
     @Column(name = "NR_INTERVALO_ENVIOS_NOTIFICACAO")
     private int intervaloEnvios;
+    @Column(name = "FIN_DIA_VENCIMENTO_COBRANCA")
+    private int finDiaVencimentoCobranca;
     @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO ")
     @Temporal(TemporalType.DATE)
     private Date agendamentoRetroativo;
@@ -86,6 +88,8 @@ public class Registro implements java.io.Serializable {
     private int conviteDiasSocio;
     @Column(name = "CONVITE_QTDE_SOCIO")
     private int conviteQuantidadeSocio;
+    @Column(name = "SIS_EMAIL_RESPOSTA", length = 50)
+    private String sisEmailResposta;
 
     public Registro() {
         this.id = -1;
@@ -106,6 +110,7 @@ public class Registro implements java.io.Serializable {
         this.mesesInadimplentesAgenda = 0;
         this.diasBloqueiaAtrasadosWeb = 0;
         this.emailAutenticado = true;
+        this.sisEmailResposta = "";
         this.senhaHomologacao = false;
         this.documentoHomologacao = "";
         this.formaPagamentoHomologacao = "";
@@ -117,7 +122,9 @@ public class Registro implements java.io.Serializable {
         this.agendamentoWeb = false;
         this.limiteEnvios = 0;
         this.intervaloEnvios = 0;
+        this.finDiaVencimentoCobranca = 10;
         this.agendamentoRetroativo = new Date();
+//        this.financeiroDiaVencimento = 0;
         this.servicos = new Servicos();
         this.conviteDiasConvidado = 365;
         this.conviteQuantidadeConvidado = 1;
@@ -154,12 +161,14 @@ public class Registro implements java.io.Serializable {
             boolean agendamentoWeb,
             int limiteEnvios,
             int intervaloEnvios,
+            int finDiaVencimentoCobranca,
             String agendamentoRetroativo,
             Servicos servicos,
             int conviteDiasConvidado,
             int conviteQuantidadeConvidado,
             int conviteDiasSocio,
-            int conviteQuantidadeSocio) {
+            int conviteQuantidadeSocio,
+            String sisEmailResposta) {
 
         this.id = id;
         this.filial = filial;
@@ -190,12 +199,14 @@ public class Registro implements java.io.Serializable {
         this.agendamentoWeb = agendamentoWeb;
         this.limiteEnvios = limiteEnvios;
         this.intervaloEnvios = intervaloEnvios;
+        this.finDiaVencimentoCobranca = finDiaVencimentoCobranca;
         this.agendamentoRetroativo = DataHoje.converte(agendamentoRetroativo);
         this.servicos = new Servicos();
         this.conviteDiasConvidado = conviteDiasConvidado;
         this.conviteQuantidadeConvidado = conviteQuantidadeConvidado;
         this.conviteDiasSocio = conviteDiasSocio;
         this.conviteQuantidadeSocio = conviteQuantidadeSocio;
+        this.sisEmailResposta = sisEmailResposta;
     }
 
     public int getId() {
@@ -498,5 +509,21 @@ public class Registro implements java.io.Serializable {
 
     public void setConviteQuantidadeSocio(int conviteQuantidadeSocio) {
         this.conviteQuantidadeSocio = conviteQuantidadeSocio;
+    }
+
+    public int getFinDiaVencimentoCobranca() {
+        return finDiaVencimentoCobranca;
+    }
+
+    public void setFinDiaVencimentoCobranca(int finDiaVencimentoCobranca) {
+        this.finDiaVencimentoCobranca = finDiaVencimentoCobranca;
+    }
+
+    public String getSisEmailResposta() {
+        return sisEmailResposta;
+    }
+
+    public void setSisEmailResposta(String sisEmailResposta) {
+        this.sisEmailResposta = sisEmailResposta;
     }
 }
