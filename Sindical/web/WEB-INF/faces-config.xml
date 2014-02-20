@@ -241,12 +241,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>grupoCategoriaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.GrupoCategoriaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>categoriaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.CategoriaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -1741,6 +1735,12 @@
             <to-view-id>/movimentoBancario.jsf</to-view-id>
             <redirect/>
         </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>relatorioConviteClube</from-outcome>
+            <to-view-id>/relatorioConviteClube.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
                                      
     </navigation-rule>
 </faces-config>
