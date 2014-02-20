@@ -1,13 +1,10 @@
 package br.com.rtools.impressao.beans;
 
-import br.com.rtools.associativo.CVenda;
 import br.com.rtools.associativo.ConviteMovimento;
-import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.impressao.ConviteClube;
 import br.com.rtools.impressao.ParametroProtocolo;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
-import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
@@ -22,6 +19,7 @@ import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -62,6 +60,7 @@ public class ImprimirConviteClube implements Serializable {
             download.baixar();
             download.remover();
         } catch (JRException e) {
+            return;
         }
     }
 
@@ -125,7 +124,7 @@ public class ImprimirConviteClube implements Serializable {
             }
         } catch (JRException e) {
             NovoLog log = new NovoLog();
-            log.novo("Erro de envio de protocolo por e-mail:", "Mensagem: " + e.getMessage() + " - Causa: " + e.getCause() + " - Caminho: " + e.getStackTrace().toString());
+            log.novo("Erro de envio de protocolo por e-mail:", "Mensagem: " + e.getMessage());
         }
     }
 
@@ -174,11 +173,11 @@ public class ImprimirConviteClube implements Serializable {
         lista.add(new ConviteClube(
                 cm.getSisPessoa().getNome(),
                 cm.getEmissao(),
-                "Valido até " + dh.incrementarMeses(1, cm.getValidade()),
-                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                "VÁLIDO ATÉ " + dh.incrementarMeses(1, cm.getValidade()),
+                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoConvite.png"),
                 "00000000",
-                cm.getSisPessoa().getObservacao(),
-                "" + listSemana
+                GenericaString.converterNullToString(cm.getSisPessoa().getObservacao()),
+                "NO(S) DIA(S): " + listSemana
         ));
         return lista;
     }
