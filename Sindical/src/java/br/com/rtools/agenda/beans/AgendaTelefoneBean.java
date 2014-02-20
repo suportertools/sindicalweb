@@ -137,7 +137,11 @@ public class AgendaTelefoneBean implements Serializable {
             if (endereco != null) {
                 if (endereco.getId() != -1) {
                     agenda.setEndereco(endereco);
+                } else {
+                    agenda.setEndereco(null);
                 }
+            } else {
+                agenda.setEndereco(null);
             }
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(agenda)) {
