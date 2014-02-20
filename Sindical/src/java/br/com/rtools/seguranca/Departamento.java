@@ -5,9 +5,9 @@ import javax.persistence.*;
 @Entity
 @Table(name = "SEG_DEPARTAMENTO")
 @NamedQueries({
-    @NamedQuery(name = "Departamento.pesquisaID",    query = "SELECT DEP FROM Departamento DEP WHERE DEP.id = :pid"),
-    @NamedQuery(name = "Departamento.findAll",       query = "SELECT DEP FROM Departamento DEP ORDER BY DEP.descricao ASC "),
-    @NamedQuery(name = "Departamento.findName",      query = "SELECT DEP FROM Departamento DEP WHERE UPPER(DEP.descricao) LIKE :pdescricao ORDER BY DEP.descricao ASC ")
+    @NamedQuery(name = "Departamento.pesquisaID", query = "SELECT DEP FROM Departamento DEP WHERE DEP.id = :pid"),
+    @NamedQuery(name = "Departamento.findAll", query = "SELECT DEP FROM Departamento DEP ORDER BY DEP.descricao ASC "),
+    @NamedQuery(name = "Departamento.findName", query = "SELECT DEP FROM Departamento DEP WHERE UPPER(DEP.descricao) LIKE :pdescricao ORDER BY DEP.descricao ASC ")
 })
 public class Departamento implements java.io.Serializable {
 
@@ -41,5 +41,10 @@ public class Departamento implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public String toString() {
+        return "Departamento{" + "id=" + id + ", descricao=" + descricao + '}';
     }
 }
