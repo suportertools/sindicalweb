@@ -3,6 +3,7 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -18,6 +19,7 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
 
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private Pessoa pessoa = new Pessoa();
+    private Registro registro = new Registro();
     private int diaVencimento = 0;
     private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
 
@@ -72,8 +74,14 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
         if (pessoaComplemento.getId() == -1) {
             PessoaDB pessoaDB = new PessoaDBToplink();
             pessoaComplemento = pessoaDB.pesquisaPessoaComplementoPorPessoa(idPessoa);
+            if(pessoaComplemento.getId() == -1) {
+                diaVencimento = getRegistro().getFinDiaVencimentoCobranca();                
+            } else {
+                diaVencimento = pessoaComplemento.getNrDiaVencimento();                
+            }
+        } else {
+            diaVencimento = pessoaComplemento.getNrDiaVencimento();            
         }
-        diaVencimento = pessoaComplemento.getNrDiaVencimento();
         return "";
     }
 
@@ -91,5 +99,17 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
 
     public void setDiaVencimento(int diaVencimento) {
         this.diaVencimento = diaVencimento;
+    }
+
+    public Registro getRegistro() {
+        if (registro.getId() == -1) {
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            registro = (Registro) sadb.pesquisaObjeto(1, "Registro");
+        }
+        return registro;
+    }
+
+    public void setRegistro(Registro registro) {
+        this.registro = registro;
     }
 }
