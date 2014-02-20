@@ -28,6 +28,8 @@ public interface FisicaDB {
     public Fisica idFisica(Fisica des_fisica);
 
     public List pesquisaFisicaPorDoc(String doc);
+    
+    public List pesquisaFisicaPorDoc(String doc, boolean like);
 
     public List pesquisaFisicaPorDocSemLike(String doc);
 

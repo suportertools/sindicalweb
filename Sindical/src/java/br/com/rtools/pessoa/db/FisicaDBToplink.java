@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
-import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class FisicaDBToplink extends DB implements FisicaDB {
 
@@ -427,33 +426,49 @@ public class FisicaDBToplink extends DB implements FisicaDB {
 
     @Override
     public List pesquisaFisicaPorDoc(String doc) {
-        List result = new ArrayList();
-        String documento = "%" + doc + "%";
+        return pesquisaFisicaPorDoc(doc, true);
+    }
+
+    @Override
+    public List pesquisaFisicaPorDoc(String doc, boolean like) {
+        String documento = doc;
+        if (like) {
+            documento = "%" + doc + "%";
+        }
         try {
-            Query qry = getEntityManager().createQuery("select fis from Fisica fis,"
-                    + "                Pessoa pes "
-                    + " where fis.pessoa.id = pes.id"
-                    + "   and pes.documento like :Sdoc");
-            qry.setParameter("Sdoc", documento);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createQuery(
+                    "   SELECT FIS                          "
+                    + "   FROM Fisica AS FIS,               "
+                    + "        Pessoa AS PES                "
+                    + "  WHERE FIS.pessoa.id = PES.id       "
+                    + "    AND PES.documento LIKE :documento");
+            qry.setParameter("documento", documento);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
         }
-        return result;
+        return new ArrayList();
     }
 
     @Override
     public List pesquisaFisicaPorDocSemLike(String doc) {
-        List result = new ArrayList();
         try {
-            Query qry = getEntityManager().createQuery("select fis from Fisica fis,"
-                    + "                Pessoa pes "
-                    + " where fis.pessoa.id = pes.id"
-                    + "   and pes.documento like :Sdoc");
-            qry.setParameter("Sdoc", doc);
-            result = qry.getResultList();
+            Query qry = getEntityManager().createQuery(
+                    "   SELECT FIS                          "
+                    + "   FROM Fisica AS FIS,               "
+                    + "        Pessoa AS PES                "
+                    + "  WHERE FIS.pessoa.id = PES.id       "
+                    + "    AND PES.documento LIKE :documento");
+            qry.setParameter("documento", doc);
+            List list = qry.getResultList();
+            if (list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
         }
-        return result;
+        return new ArrayList();
     }
 
     @Override
@@ -465,7 +480,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + " where f.pessoa.id = :pid");
             qry.setParameter("pid", idPessoa);
             List list = qry.getResultList();
-            if(!list.isEmpty()) {
+            if (!list.isEmpty()) {
                 return (Fisica) qry.getSingleResult();
             }
         } catch (Exception e) {
