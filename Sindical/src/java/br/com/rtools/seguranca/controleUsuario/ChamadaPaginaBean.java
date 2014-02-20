@@ -776,46 +776,45 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agrupaTurmaBean");
         return metodoGenerico(2, "agrupaTurma");
     }
-    
+
     public synchronized String cartao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cartaoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaPlano");
         return metodoGenerico(2, "cartao");
     }
-    
+
     public synchronized String movimentosReceberSocial() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosSocialBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
-    
+
     public synchronized String movimentosReceberSocialBaixa() {
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentosSocialBean");
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         return metodoGenerico(2, "movimentosReceberSocial");
     }
-    
+
     public synchronized String academiaServicoValor() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("academiaServicoValorBean");
         return metodoGenerico(2, "academiaServicoValor");
     }
-    
+
     public synchronized String fechamentoCaixa() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fechamentoCaixaBean");
         return metodoGenerico(2, "fechamentoCaixa");
     }
-    
+
     public synchronized String caixaFechado() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("caixaFechadoBean");
         return metodoGenerico(2, "caixaFechado");
-    }    
-    
+    }
+
     public synchronized String transferenciaEntreCaixa() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("transferenciaEntreCaixaBean");
         return metodoGenerico(2, "transferenciaEntreCaixa");
-    }    
-    
-    	
+    }
+
     public synchronized String conviteMovimento() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteClubeBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteMovimentoBean");
@@ -839,17 +838,17 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conviteAutorizaCortesiaBean");
         return metodoGenerico(2, "conviteAutorizaCortesia");
     }
-    
+
     public synchronized String depositoBancario() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("depositoBancarioBean");
         return metodoGenerico(2, "depositoBancario");
     }
-    
+
     public synchronized String movimentoBancario() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("movimentoBancarioBean");
         return metodoGenerico(2, "movimentoBancario");
     }
-    
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1135,7 +1134,7 @@ public class ChamadaPaginaBean implements Serializable {
     public synchronized String pesquisaSocios() {
         return metodoGenerico(1, "pesquisaSocios");
     }
-    
+
     public synchronized String pesquisaSociosAtivos() {
         return metodoGenerico(1, "pesquisaSociosAtivos");
     }
@@ -1327,6 +1326,14 @@ public class ChamadaPaginaBean implements Serializable {
     public synchronized String relatorioHomologacao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioHomologacaoBean");
         return metodoGenerico(3, "relatorioHomologacao");
+    }
+
+    public synchronized String relatorioConviteClube() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioConviteClubeBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sisPessoaPesquisa");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioPesquisa");
+        return metodoGenerico(3, "relatorioConviteClube");
     }
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
