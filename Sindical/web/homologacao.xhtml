@@ -20,6 +20,7 @@
                     <c:set scope="request" var="object" value="${homologacaoBean.agendamento}"/>
                     <p:outputLabel value="Homologação" styleClass="fonteHeader"/>
                     <div class="clear"></div>
+                    <h:outputScript name="tradutor_primefaces.js" library="js" />
                     <p:panel rendered="#{homologacaoBean.renderConcluir}" styleClass="no-border" header="Data: #{homologacaoBean.agendamento.data} - Horário: #{homologacaoBean.agendamento.horarios.hora}" >
                         <p:accordionPanel id="i_panel_1" styleClass="no-border no-padding no-margin">
                             <p:tab title="Funcionário">
@@ -231,7 +232,7 @@
                                 <h:outputLabel value="Data: " />
                                 <h:column>
                                     <p:outputPanel id="calendar" layout="block">
-                                        <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" >
+                                        <p:calendar value="#{homologacaoBean.data}" pattern="dd/MM/yyyy" readonlyInput="true" navigator="true">
                                             <p:ajax event="dateSelect" update="@this, tbl" />
                                         </p:calendar>
                                     </p:outputPanel>
