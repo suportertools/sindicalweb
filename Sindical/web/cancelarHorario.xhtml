@@ -17,6 +17,7 @@
                 <p:outputLabel value="Cancelar Horários" styleClass="fonteHeader" />
                 <div style="clear: both;"></div>
                 <h:form id="form_cancelar_horario_novo">                     
+                    <h:outputScript name="tradutor_primefaces.js" library="js" />
                     <p:growl id="growl" showDetail="true"/> 
                     <c:set scope="request" var="object" value="${cancelarHorarioBean.cancelarHorario}"/>
                     <p:panel id="id_panel_cancelamento" styleClass="fundoCinza" style="clear: both">
@@ -36,7 +37,7 @@
                             <p:tab title="Dia" id="id_tab_dia"> 
                                 <p:panelGrid columns="4" id="id_panel_grid_calcula" styleClass="sbb" style="float: left;">
                                     <p:outputLabel value="Data:"  />
-                                    <p:calendar value="#{cancelarHorarioBean.data}" pattern="dd/MM/yyyy" size="8">
+                                    <p:calendar value="#{cancelarHorarioBean.data}" pattern="dd/MM/yyyy" size="8" readonlyInput="true" navigator="true">
                                         <p:ajax event="dateSelect" update="id_panel_grid_calcula, :form_cancelar_horario:i_panel_grid_horarios," listener="#{cancelarHorarioBean.dataListener}" />
                                     </p:calendar>                          
                                     <h:outputLabel value="Horários:" />
@@ -64,11 +65,11 @@
                             <p:tab title="Período" id="id_tab_periodo">  
                                 <p:panelGrid columns="2" styleClass="sbb" style="float: left;">
                                     <p:outputLabel value="Data inicial:"  />
-                                    <p:calendar value="#{cancelarHorarioBean.dataInicial}" pattern="dd/MM/yyyy" size="8">
+                                    <p:calendar value="#{cancelarHorarioBean.dataInicial}" pattern="dd/MM/yyyy" size="8" readonlyInput="true" navigator="true">
                                         <p:ajax event="dateSelect" update=":form_cancelar_horario:i_panel_grid_horarios" />
                                     </p:calendar>
                                     <p:outputLabel value="Data final:"  />
-                                    <p:calendar value="#{cancelarHorarioBean.dataFinal}" pattern="dd/MM/yyyy" size="8">
+                                    <p:calendar value="#{cancelarHorarioBean.dataFinal}" pattern="dd/MM/yyyy" size="8" readonlyInput="true" navigator="true">
                                         <p:ajax event="dateSelect" update=":form_cancelar_horario:i_panel_grid_horarios" />
                                     </p:calendar>
                                 </p:panelGrid>
