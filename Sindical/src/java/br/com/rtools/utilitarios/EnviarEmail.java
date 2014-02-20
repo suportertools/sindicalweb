@@ -9,9 +9,12 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -45,7 +48,7 @@ public class EnviarEmail {
         String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         if (!sindicato.getEmail().isEmpty()) {
             Properties props = new Properties();
-            Session session = null;
+            Session session;
             props.put("mail.host", sindicato.getSmtp());
             // --- GMAIL ---- HOTMAIL ---
             if (sindicato.isEmailAutenticado()) {
@@ -58,59 +61,57 @@ public class EnviarEmail {
                 // --- OUTROS ---
                 session = Session.getInstance(props, null);
             }
-
-            for (int i = 0; i < pessoas.size(); i++) {
-                Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(pessoas.get(i).getId());
+            for (Pessoa pessoa : pessoas) {
+                Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(pessoa.getId());
                 if (jur == null) {
                     jur = sindicato.getFilial();
                 }
-                if (!pessoas.get(i).getEmail1().isEmpty()) {
+                if (!pessoa.getEmail1().isEmpty()) {
                     try {
                         MimeMessage msg = new MimeMessage(session);
-                        msg.setFrom(new InternetAddress(sindicato.getEmail()));
-                        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(pessoas.get(i).getEmail1()));
-
+                        InternetAddress internetAddress = new InternetAddress();
+                        if (!sindicato.getSisEmailResposta().isEmpty()) {
+                            internetAddress.setPersonal(sindicato.getSisEmailResposta());
+                            msg.setFrom(internetAddress);
+                        } else {
+                            msg.setFrom(new InternetAddress(sindicato.getEmail()));
+                        }
+                        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(pessoa.getEmail1()));
                         //msg.setDescription("Sindicato Name");
                         //msg.setDisposition("Sindicato Name");
                         msg.setHeader("Sindicato Name", "Sindicato Name");
-
                         msg.setSubject(assunto);
                         msg.setContent(
                                 enviarMensagemPersonalizada(
-                                caminho,
-                                "<h2><b>" + sindicato.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
-                                + //"<p><h3>Esta é uma mensagem automática, por favor NÃO RESPONDA!! <br />" +
-                                "<p><h3>Caso queira entrar em contato envie para: <b>" + sindicato.getFilial().getPessoa().getEmail1() + "</b></h3></p><br /><br />"
-                                + "<h3>A/C</h3> <b> " + jur.getContato() + " </b> <br /><br />",
-                                conteudoHTML,
-                                arquivoAnexo));
+                                        caminho,
+                                        "<h2><b>" + sindicato.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
+                                        + //"<p><h3>Esta é uma mensagem automática, por favor NÃO RESPONDA!! <br />" +
+                                        "<p><h3>Caso queira entrar em contato envie para: <b>" + sindicato.getFilial().getPessoa().getEmail1() + "</b></h3></p><br /><br />"
+                                        + "<h3>A/C</h3> <b> " + jur.getContato() + " </b> <br /><br />",
+                                        conteudoHTML,
+                                        arquivoAnexo));
                         transport(msg);
                         //EnviarEmail.gerarHistorico(pessoas.get(i),"","Arquivos anexos");
                         try {
                             Thread.sleep(1000);
-                        } catch (Exception e) {
+                        } catch (InterruptedException e) {
                         }
                         // System.out.println("Enviado... "+ pessoas.get(i).getId()+ " - "+ pessoas.get(i).getNome());
                         retorno[0] = " Enviado com Sucesso!";
                         //return retorno;
                     } catch (AddressException e) {
                         //throw new IllegalArgumentException("Email de destinatário inválido!");
-                        retorno[1] += " " + pessoas.get(i).getEmail1() + " Email de destinatário inválido!";
-
+                        retorno[1] += " " + pessoa.getEmail1() + " Email de destinatário inválido!";
                         // System.out.println("Erro... "+ pessoas.get(i).getId()+ " - "+pessoas.get(i).getEmail1()+" email de destinatário inválido!");
-                        continue;
                     } catch (MessagingException e) {
                         //return ""+e;
-                        retorno[1] += " " + pessoas.get(i).getNome() + " " + e.getMessage();
-
-                        //System.out.println("Erro... "+ pessoas.get(i).getId()+ " - "+pessoas.get(i).getNome()+" "+e.getMessage());
-                        continue;
+                        retorno[1] += " " + pessoa.getNome() + " " + e.getMessage();
+                    } catch (UnsupportedEncodingException ex) {
+                        retorno[1] += " " + pessoa.getEmail1() + " Erro!";
                     }
                 } else {
-                    retorno[1] += " " + pessoas.get(i).getNome() + " Empresa não contém Email de contato, Contate o seu Sindicato.";
-
+                    retorno[1] += " " + pessoa.getNome() + " Empresa não contém Email de contato, Contate o seu Sindicato.";
                     //System.out.println("Erro... "+ pessoas.get(i).getId()+ " - "+pessoas.get(i).getNome()+" empresa não contém Email de contato, Contate o seu Sindicato.");
-
                 }
             }
         } else {
@@ -129,7 +130,7 @@ public class EnviarEmail {
                 if (empresa.getPessoa().getLogin() != null && empresa.getPessoa().getSenha() != null) {
                     try {
                         Properties props = new Properties();
-                        Session session = null;
+                        Session session;
                         props.put("mail.host", sindicato.getSmtp());
                         // --- AUTENTICADO ---
                         if (sindicato.isEmailAutenticado()) {
@@ -143,9 +144,14 @@ public class EnviarEmail {
                             session = Session.getInstance(props, null);
                         }
 
-
                         MimeMessage msg = new MimeMessage(session);
-                        msg.setFrom(new InternetAddress(sindicato.getEmail()));
+                        InternetAddress internetAddress = new InternetAddress();
+                        if (!sindicato.getSisEmailResposta().isEmpty()) {
+                            internetAddress.setPersonal(sindicato.getSisEmailResposta());
+                            msg.setFrom(internetAddress);
+                        } else {
+                            msg.setFrom(new InternetAddress(sindicato.getEmail()));
+                        }
                         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(empresa.getPessoa().getEmail1()));
                         msg.setSentDate(new Date());
                         msg.setSubject("Envio de Login e Senha");
@@ -162,6 +168,8 @@ public class EnviarEmail {
                         return "Email de destinatário inválido!";
                     } catch (MessagingException e) {
                         return "" + e;
+                    } catch (UnsupportedEncodingException ex) {
+                        return "Erro";
                     }
                 } else {
                     return "Empresa não contém Login e Senha, solicite a sua entrando em contado com o seu Sindicato.";
@@ -180,7 +188,7 @@ public class EnviarEmail {
         String msg = "";
         if (!sindicato.getEmail().isEmpty()) {
             Properties props = new Properties();
-            Session session = null;
+            Session session;
             props.put("mail.host", sindicato.getSmtp());
             // --- GMAIL ---- HOTMAIL ---
             if (sindicato.isEmailAutenticado()) {
@@ -193,39 +201,39 @@ public class EnviarEmail {
                 // --- OUTROS ---
                 session = Session.getInstance(props, null);
             }
-
-            for (int i = 0; i < empresas.size(); i++) {
-                if (!empresas.get(i).getPessoa().getEmail1().isEmpty()) {
-                    if (empresas.get(i).getPessoa().getLogin() != null && empresas.get(i).getPessoa().getSenha() != null) {
+            for (Juridica empresa : empresas) {
+                if (!empresa.getPessoa().getEmail1().isEmpty()) {
+                    if (empresa.getPessoa().getLogin() != null && empresa.getPessoa().getSenha() != null) {
                         try {
-
                             MimeMessage mmsg = new MimeMessage(session);
-                            mmsg.setFrom(new InternetAddress(sindicato.getEmail()));
-                            mmsg.setRecipient(Message.RecipientType.TO, new InternetAddress(empresas.get(i).getPessoa().getEmail1()));
+                            InternetAddress internetAddress = new InternetAddress();
+                            if (!sindicato.getSisEmailResposta().isEmpty()) {
+                                internetAddress.setPersonal(sindicato.getSisEmailResposta());
+                                mmsg.setFrom(internetAddress);
+                            } else {
+                                mmsg.setFrom(new InternetAddress(sindicato.getEmail()));
+                            }
+                            mmsg.setRecipient(Message.RecipientType.TO, new InternetAddress(empresa.getPessoa().getEmail1()));
                             mmsg.setSubject("Envio de Login e Senha");
-                            mmsg.setContent(enviarMensagem(caminho,
-                                    //"Esta é uma mensagem automática, por favor NÃO RESPONDA!! <br>" +
-                                    "Caso queira entrar em contato envie para: " + sindicato.getFilial().getPessoa().getEmail1(),
-                                    empresas.get(i),
-                                    sindicato));
+                            mmsg.setContent(enviarMensagem(caminho, "Caso queira entrar em contato envie para: " + sindicato.getFilial().getPessoa().getEmail1(), empresa, sindicato));
                             transport(mmsg);
-                            EnviarEmail.gerarHistorico(empresas.get(i), "Login: " + empresas.get(i).getPessoa().getLogin() + ", Senha: " + empresas.get(i).getPessoa().getSenha(), "Login e Senha");
+                            EnviarEmail.gerarHistorico(empresa, "Login: " + empresa.getPessoa().getLogin() + ", Senha: " + empresa.getPessoa().getSenha(), "Login e Senha");
                             if (msg.isEmpty()) {
                                 msg = "Enviado com Sucesso!";
                             }
                         } catch (AddressException e) {
                             //throw new IllegalArgumentException("Email de destinatário inválido!");
-                            msg += " Email de destinatário inválido! para: " + empresas.get(i).getPessoa().getEmail1() + " ";
-                            continue;
+                            msg += " Email de destinatário inválido! para: " + empresa.getPessoa().getEmail1() + " ";
                         } catch (MessagingException e) {
                             msg += " " + e;
-                            continue;
+                        } catch (UnsupportedEncodingException ex) {
+                            Logger.getLogger(EnviarEmail.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else {
                         //return "Empresa não contém Login e Senha, solicite a sua entrando em contado com o seu Sindicato.";
                     }
                 } else {
-                    msg += " Empresa " + empresas.get(i).getPessoa().getNome() + " não contém Email de contato, Contate o seu Sindicato.";
+                    msg += " Empresa " + empresa.getPessoa().getNome() + " não contém Email de contato, Contate o seu Sindicato.";
                 }
             }
         }
@@ -278,19 +286,16 @@ public class EnviarEmail {
             String conteudoHTML,
             List<File> arquivoAnexo) throws MessagingException {
         MimeMultipart multipart = new MimeMultipart("related");
-
-
         BodyPart mainPart = new MimeBodyPart();
         mainPart.setContent(conteudo + conteudoHTML, "text/html; charset=utf-8"); //Adiciona conteúdo HTML
         multipart.addBodyPart(mainPart);
-
-        for (int i = 0; i < arquivoAnexo.size(); i++) {
+        for (File arquivoAnexo1 : arquivoAnexo) {
             // PARTE QUE IRA CHAMAR O CAMINHO DO ANEXO ------
             BodyPart imagePart = new MimeBodyPart();
             imagePart.setHeader("Content-ID", "<img>"); //Adiciona a imagem do logo, seta o id como image
-            DataSource imgFds = new FileDataSource(arquivoAnexo.get(i));
+            DataSource imgFds = new FileDataSource(arquivoAnexo1);
             imagePart.setDataHandler(new DataHandler(imgFds));
-            imagePart.setFileName(arquivoAnexo.get(i).getName());
+            imagePart.setFileName(arquivoAnexo1.getName());
             multipart.addBodyPart(imagePart);
         }
         return multipart;
@@ -305,7 +310,7 @@ public class EnviarEmail {
             if (!empresa.getPessoa().getEmail1().isEmpty()) {
                 try {
                     Properties props = new Properties();
-                    Session session = null;
+                    Session session;
                     props.put("mail.host", sindicato.getSmtp());
                     // --- GMAIL ---- HOTMAIL ---
                     if (sindicato.isEmailAutenticado()) {
@@ -320,7 +325,13 @@ public class EnviarEmail {
                     }
 
                     MimeMessage msg = new MimeMessage(session);
-                    msg.setFrom(new InternetAddress(sindicato.getEmail()));
+                    InternetAddress internetAddress = new InternetAddress();
+                    if (!sindicato.getSisEmailResposta().isEmpty()) {
+                        internetAddress.setPersonal(sindicato.getSisEmailResposta());
+                        msg.setFrom(internetAddress);
+                    } else {
+                        msg.setFrom(new InternetAddress(sindicato.getEmail()));
+                    }
                     msg.setRecipient(Message.RecipientType.TO, new InternetAddress(empresa.getPessoa().getEmail1()));
                     msg.setSubject("Envio de Arquivo");
                     msg.setContent(enviarMensagemComAnexo(caminho,
@@ -338,6 +349,8 @@ public class EnviarEmail {
                     return "Email de destinatário inválido!";
                 } catch (MessagingException e) {
                     return "" + e;
+                } catch (UnsupportedEncodingException ex) {
+                    return "Erro!";
                 }
             } else {
                 return "Empresa não contém Email de contato!";
@@ -403,7 +416,7 @@ public class EnviarEmail {
     }
 
     public static void gerarHistorico(Juridica empresa, String historico, String tipo) {
-        EnvioEmails envioEmails = null;
+        EnvioEmails envioEmails;
         EnvioEmailsDB envioEmailsDB = new EnvioEmailsDBToplink();
         envioEmails = new EnvioEmails(
                 -1,
