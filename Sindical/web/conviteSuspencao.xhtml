@@ -17,7 +17,8 @@
             <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
             <h:form id="form_convite_suspencao">            
                 <p:panel styleClass="wrapper no-border">
-                    <p:growl id="growl" showDetail="true"/> 
+                    <p:growl id="growl" showDetail="true"/>
+                    <h:outputScript name="tradutor_primefaces.js" library="js" />
                     <p:outputLabel value="Convite Suspenção" styleClass="fonteHeader" />
                     <c:set scope="request" var="object" value="${conviteSuspencaoBean.conviteSuspencao}"/>
                     <div style="clear: both;"></div>
@@ -38,18 +39,18 @@
                                 <p:outputLabel value="Data inicio: " />
                             </h:column>
                             <h:column>
-                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtInicio}" id="idDataInicio" size="8" readonlyInput="true" pattern="dd/MM/yyyy">
+                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtInicio}" id="idDataInicio" size="8" readonlyInput="true" pattern="dd/MM/yyyy" navigator="true">
                                     <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataInicioListener}" />
                                 </p:calendar>
                                 <p:outputLabel value="Data saída:" for="idDataFim" styleClass="margin-left-max"/>
-                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtFim}" id="idDataFim" styleClass="margin-left-max" size="8" readonlyInput="true" pattern="dd/MM/yyyy">
+                                <p:calendar value="#{conviteSuspencaoBean.conviteSuspencao.dtFim}" id="idDataFim" styleClass="margin-left-max" size="8" readonlyInput="true" pattern="dd/MM/yyyy" navigator="true">
                                     <p:ajax event="dateSelect" listener="#{conviteSuspencaoBean.conviteSuspencao.dataFimListener}" />
                                 </p:calendar>
                                 <h:column>
                                 </h:column>
                             </h:column>
                             <p:outputLabel value="Obs.:" title="Observação (es)" />
-                            <p:inputTextarea value="#{conviteSuspencaoBean.conviteSuspencao.sisPessoa.observacao}" style="resize: none;" cols="50" rows="5"></p:inputTextarea>
+                            <p:inputTextarea value="#{conviteSuspencaoBean.conviteSuspencao.observacao}" style="resize: none;" cols="50" rows="5"></p:inputTextarea>
                         </h:panelGrid>
                         <h:panelGrid columns="2" id="id_acao" styleClass="margin-top">
                             <p:commandButton id="idBotaoSalvar" value="Salvar" onclick="dgl_panel_salvar.show();" disabled="#{controleAcessoBean.botaoSalvar}"/>
