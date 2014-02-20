@@ -112,6 +112,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private boolean ocultaParcelas = true;
     private boolean ocultaBotaoTarifaCartao = true;
     private boolean taxaCartao = false;
+    private boolean alunoFoto = false;
     private int idDiaVencimento = 0;
     private int idModalidade = 0;
     private int idPeriodoGrade = 0;
@@ -120,7 +121,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private int idFTipoDocumento = 0;
     private float vTaxa = 0;
     private float desconto = 0;
-    private float valorCartao = 0;    
+    private float valorCartao = 0;
 
     public void novo() {
         registro = new Registro();
@@ -160,6 +161,7 @@ public class MatriculaAcademiaBean implements Serializable {
         desabilitaGeracaoContrato = false;
         desabilitaDiaVencimento = false;
         ocultaParcelas = true;
+        alunoFoto = false;
         idDiaVencimento = 0;
         idModalidade = 0;
         idPeriodoGrade = 0;
@@ -195,7 +197,7 @@ public class MatriculaAcademiaBean implements Serializable {
         if (cobranca != null) {
             matriculaAcademia.getServicoPessoa().setCobranca(cobranca);
         } else {
-            matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getResponsavel());            
+            matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getResponsavel());
         }
         if (responsavel != null) {
             matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
@@ -292,6 +294,8 @@ public class MatriculaAcademiaBean implements Serializable {
         calculaValorLiquido();
         pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
         pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
+        alunoFoto = false;
+        GenericaSessao.put("linkClicado", true);
         return "academia";
     }
 
@@ -712,7 +716,7 @@ public class MatriculaAcademiaBean implements Serializable {
     public void setIdDiaVencimentoPessoa(int idDiaVencimentoPessoa) {
         this.idDiaVencimentoPessoa = idDiaVencimentoPessoa;
     }
-    
+
     public void recalcular() {
         pegarIdServico();
         atualizaValor();
@@ -746,7 +750,7 @@ public class MatriculaAcademiaBean implements Serializable {
             if (!(functionsDB.scriptSimples(calculoFormula)).isEmpty()) {
                 valor = Moeda.converteR$(functionsDB.scriptSimples(calculoFormula));
             }
-        }        
+        }
         vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);
     }
 
@@ -1497,17 +1501,17 @@ public class MatriculaAcademiaBean implements Serializable {
     public void setCobranca(Pessoa cobranca) {
         this.cobranca = cobranca;
     }
-    
+
     public String semanaResumo(String descricao) {
         descricao = descricao.substring(0, 3);
-        return descricao; 
+        return descricao;
     }
 
     public Registro getRegistro() {
         if (registro != null) {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
             registro = (Registro) dB.pesquisaObjeto(1, "Registro");
-            if(registro.getServicos() != null) {
+            if (registro.getServicos() != null) {
                 ServicoValorDB servicoValorDB = new ServicoValorDBToplink();
                 List<ServicoValor> list = (List<ServicoValor>) servicoValorDB.pesquisaServicoValor(registro.getServicos().getId());
                 if (!list.isEmpty()) {
@@ -1547,6 +1551,18 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public void setTaxaCartao(boolean taxaCartao) {
         this.taxaCartao = taxaCartao;
+    }
+
+    public boolean isAlunoFoto() {
+        if ( matriculaAcademia.getServicoPessoa().getPessoa().getId() != -1) {
+            File file = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + matriculaAcademia.getServicoPessoa().getPessoa().getId() + ".png"));
+            alunoFoto = file.exists();
+        }
+        return alunoFoto;
+    }
+
+    public void setAlunoFoto(boolean alunoFoto) {
+        this.alunoFoto = alunoFoto;
     }
 
 }
