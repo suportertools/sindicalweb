@@ -7,7 +7,8 @@ public class GenericaRequisicao {
 
     public static String getParametro(String parameter) {
         HttpServletRequest hsr = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        return hsr.getParameter(parameter);
+        String param = hsr.getParameter(parameter);
+        return param;
     }
 
 }
