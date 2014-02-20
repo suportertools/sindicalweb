@@ -37,7 +37,7 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
         }
         return false;
     }
-    
+
     @Override
     public boolean existeServicoMatriculaContrato(int idServico) {
         try {
@@ -48,11 +48,11 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
                 return true;
             }
         } catch (Exception e) {
-           
+
         }
         return false;
     }
-    
+
     @Override
     public List pesquisaTodosPorModulo(int idModulo) {
         try {
@@ -124,12 +124,12 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
     public List listaMatriculaContratoCampo(int idModulo) {
         return listaMatriculaContratoCampo(idModulo, "");
     }
-    
+
     @Override
     public List listaMatriculaContratoCampo(int idModulo, String descricaoPesquisa) {
         String filtroString = "";
         if (!descricaoPesquisa.equals("")) {
-            filtroString  = " AND UPPER(MCC.campo) LIKE '%"+descricaoPesquisa.toLowerCase().toUpperCase()+"%' ";
+            filtroString = " AND UPPER(MCC.campo) LIKE '%" + descricaoPesquisa.toLowerCase().toUpperCase() + "%' ";
         }
         List list = new ArrayList();
         String tipoPesquisaModulo = "";
@@ -167,7 +167,7 @@ public class MatriculaContratoDBToplink extends DB implements MatriculaContratoD
             return list;
         }
     }
-    
+
     @Override
     public List<Servicos> listaServicosDispiniveis() {
         List list = new ArrayList();
