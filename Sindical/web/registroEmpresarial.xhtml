@@ -1,13 +1,13 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Registro Empresarial</title>
-        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />    
     </h:head>
     <h:body>
         <f:subview id="header">
@@ -27,155 +27,243 @@
                         <f:facet name="header">Nome Empresa: #{registroEmpresarialBean.registro.filial.pessoa.nome}</f:facet>
                         <p:tabView>
                             <p:ajax event="tabChange" listener="#{registroEmpresarialBean.onChange}"/>                            
-                            <p:tab title="Cadastro" rendered="#{registroEmpresarialBean.codigoModulo == 0}">
-                                <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
-                                    <p:outputLabel value="Email: "/>
-                                    <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off"/>
-                                    <p:outputLabel value="Senha: " />
-                                    <h:inputSecret id="idSenha" size="15" value="#{registroEmpresarialBean.senha}" autocomplete="off"/>
-                                    <p:outputLabel value="Confirmar Senha: " />
-                                    <h:inputSecret id="idConSenha" size="15" value="#{registroEmpresarialBean.confirmaSenha}" autocomplete="off"/>
-                                    <p:column>
-                                    </p:column>
-                                    <p:column>
-                                        <p:selectBooleanCheckbox id="i_aut" value="#{registroEmpresarialBean.registro.emailAutenticado}" itemLabel="Usar email autenticado" >
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvar}" update=":form_registro_empresarial:id_messages" global="true"/>
-                                        </p:selectBooleanCheckbox>
-                                    </p:column>
-                                    <p:outputLabel value="Servidor Smtp: " />
-                                    <p:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}"/>
-                                    <p:outputLabel value="Url path: " />
-                                    <p:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
-                                </p:panelGrid>
-                            </p:tab>
-                            <p:tab title="Arrecadação" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">
-                                <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
-                                    <p:column>
-                                        <p:outputLabel value="Imprimir Boleto de Arrecadação até: " />
-                                    </p:column>                                        
-                                    <p:column>
-                                        <p:spinner size="5" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentes}" max="24" min="0" styleClass="margin-right"/>
-                                        <p:outputLabel value=" meses de atraso." />                                            
-                                    </p:column>                                        
-                                    <p:column>
-                                        <p:selectOneMenu value="#{registroEmpresarialBean.registro.tipoEntidade}" styleClass="text-center">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                            <f:selectItem itemValue="S" itemLabel="Sindicato"/>
-                                            <f:selectItem itemValue="F" itemLabel="Federação"/>
-                                            <f:selectItem itemValue="C" itemLabel="Confederação"/>
-                                        </p:selectOneMenu>
-                                    </p:column>                                        
-                                    <p:column>
-                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.baixaVencimento}" itemLabel="Baixar por vencimento">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                        </p:selectBooleanCheckbox>
-                                    </p:column>                                        
-                                    <p:column>
-                                    </p:column>                                        
-                                    <p:column>
-                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.enviarEmailAnexo}" itemLabel="Enviar email por Anexo">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                        </p:selectBooleanCheckbox>
-                                    </p:column>                                        
-                                    <p:column>
-                                        <p:outputLabel value="Limite para envio de Notificações:" />
-                                    </p:column>
-                                    <p:column>
-                                        <div class="clear"></div>
-                                        <p:spinner value="#{registroEmpresarialBean.registro.limiteEnvios}" min="0" size="5">
-                                            <p:ajax event="blur" listener="#{registroEmpresarialBean.salvarSemSenha}" />
-                                        </p:spinner>
-                                    </p:column>
-                                    <p:column>
-                                        <p:outputLabel value="Intervalo para envio de Notificações:" />
-                                    </p:column>
-                                    <p:column>
-                                        <br />
-                                        <p:spinner value="#{registroEmpresarialBean.registro.intervaloEnvios}" size="5" min="0"/><p:outputLabel value=" min." />
-                                    </p:column>                                    
-                                </p:panelGrid>
-                                <p:panel header="WEB Contribuinte / Contabilidade" styleClass="margin-top-max">
-                                    <p:panelGrid columns="1" styleClass="sbb">
-                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}" itemLabel="Bloqueia boletos atrasados">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages idDiasAtraso"/>
-                                        </p:selectBooleanCheckbox>
+                            <c:if test="#{registroEmpresarialBean.codigoModulo == 0}">
+                                <p:tab title="Cadastro">
+                                    <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                        <p:outputLabel value="Email: "/>
+                                        <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off"/>
+                                        <p:outputLabel value="Senha: " />
+                                        <h:inputSecret id="idSenha" size="15" value="#{registroEmpresarialBean.senha}" autocomplete="off"/>
+                                        <p:outputLabel value="Confirmar Senha: " />
+                                        <h:inputSecret id="idConSenha" size="15" value="#{registroEmpresarialBean.confirmaSenha}" autocomplete="off"/>
                                         <p:column>
-                                            <p:spinner value="#{registroEmpresarialBean.registro.diasBloqueiaAtrasadosWeb}" id="idDiasAtraso" size="2" title="Quantidades de dias permitido após o vencimento" disabled="#{!registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}" min="0" max="360" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
-                                            <p:outputLabel value=" Quantidade de dias permitido após o Vencimento na geração e impressão de Boletos via Web" style="font-size: 8pt" />
                                         </p:column>
-                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.boletoWeb}" itemLabel="Boleto WEB">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                        </p:selectBooleanCheckbox>                                      
-                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.repisWeb}" itemLabel="REPIS WEB">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                        </p:selectBooleanCheckbox>
+                                        <p:column>
+                                            <p:selectBooleanCheckbox id="i_aut" value="#{registroEmpresarialBean.registro.emailAutenticado}" itemLabel="Usar email autenticado" >
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvar}" update=":form_registro_empresarial:id_messages" global="true"/>
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:outputLabel value="Servidor Smtp: " />
+                                        <p:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}"/>
+                                        <p:outputLabel value="Url path: " />
+                                        <p:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
+                                    </p:panelGrid>
+                                </p:tab>
+                            </c:if>
+                            <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">
+                                <p:tab title="Arrecadação">
+                                    <p:panelGrid columns="2" columnClasses="text-right, text-left" styleClass="sbb">
+                                        <p:column>
+                                            <p:outputLabel value="Imprimir Boleto de Arrecadação até: " />
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:spinner size="5" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentes}" max="24" min="0" styleClass="margin-right"/>
+                                            <p:outputLabel value=" meses de atraso." />                                            
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:selectOneMenu value="#{registroEmpresarialBean.registro.tipoEntidade}" styleClass="text-center">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                                <f:selectItem itemValue="S" itemLabel="Sindicato"/>
+                                                <f:selectItem itemValue="F" itemLabel="Federação"/>
+                                                <f:selectItem itemValue="C" itemLabel="Confederação"/>
+                                            </p:selectOneMenu>
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.baixaVencimento}" itemLabel="Baixar por vencimento">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>                                        
+                                        <p:column>
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.enviarEmailAnexo}" itemLabel="Enviar email por Anexo">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>                                        
+                                        <p:column>
+                                            <p:outputLabel value="Limite para envio de Notificações:" />
+                                        </p:column>
+                                        <p:column>
+                                            <div class="clear"></div>
+                                            <p:spinner value="#{registroEmpresarialBean.registro.limiteEnvios}" min="0" size="5">
+                                                <p:ajax event="blur" listener="#{registroEmpresarialBean.salvarSemSenha}" />
+                                            </p:spinner>
+                                        </p:column>
+                                        <p:column>
+                                            <p:outputLabel value="Intervalo para envio de Notificações:" />
+                                        </p:column>
                                         <p:column>
                                             <br />
-                                            <p:outputLabel value="Mensagem de Bloqueio de Boleto"/>
-                                            <br /><br />
-                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.mensagemBloqueioBoletoWeb}" rows="5" cols="70" styleClass="no-resize">
-                                                <p:ajax event="blur" update="@this"/>
-                                            </p:inputTextarea>                                            
-                                        </p:column>
+                                            <p:spinner value="#{registroEmpresarialBean.registro.intervaloEnvios}" size="5" min="0"/><p:outputLabel value=" min." />
+                                        </p:column>                                    
                                     </p:panelGrid>
-                                </p:panel>
-                            </p:tab>
-                            <p:tab title="Associativo" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 2}">
-                                <p:panelGrid styleClass="sbb" columns="1">
-                                    <p:column>
-                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.carteirinhaDependente}" itemLabel="Emitir Dependente no verso">
-                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
-                                        </p:selectBooleanCheckbox>
-                                    </p:column>                                        
-                                    <p:column>
-                                        <p:outputLabel value="Observação da Ficha Social"/>
-                                        <div class="clear"></div>
-                                        <p:inputTextarea value="#{registroEmpresarialBean.registro.fichaSocial}" cols="75" rows="7" styleClass="no-resize margin-top-max" />
-                                    </p:column>                                        
-                                    <p:outputLabel value="Código Serviço Cartão:"/>
-                                    <p:inputText value="#{registroEmpresarialBean.codigoServico}" />
-                                </p:panelGrid>
-                            </p:tab>
-                            <p:tab title="Homologação" rendered="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 4}">
-                                <p:panelGrid columns="1" styleClass="sbb">
-                                    <p:selectBooleanCheckbox id="chkSenhaHom" value="#{registroEmpresarialBean.registro.senhaHomologacao}" itemLabel="Senha Homologação">
-                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
-                                    </p:selectBooleanCheckbox>
-                                    <p:selectBooleanCheckbox id="chkAgendaSem" value="#{registroEmpresarialBean.registro.agendarSemHorarioWeb}" itemLabel="Agendar Sem horário">
-                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
-                                    </p:selectBooleanCheckbox>                                                
-                                    <p:column>
-                                        <p:outputLabel value="Agendamento retroativo: " />
-                                        <p:calendar value="#{registroEmpresarialBean.registro.agendamentoRetroativo}" navigator="true" pattern="dd/MM/yyyy" readonlyInput="true" size="10" title="Permite agendamento retroativo até">
-                                            <p:ajax event="dateSelect" update=":form_registro_empresarial:id_messages :form_registro_empresarial:id_messages_growl" listener="#{registroEmpresarialBean.salvarSemSenha}"/>
-                                        </p:calendar>
-                                    </p:column>
-                                    <div style="clear: both;"></div>
-                                    <p:accordionPanel>
-                                        <p:tab title="Documentos Necessários Homologação">
-                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.documentoHomologacao}" cols="75" rows="7" styleClass="no-resize no-border"/>
-                                        </p:tab>
-                                        <p:tab title="Formas de Pagamento Homologação">
-                                            <p:inputTextarea value="#{registroEmpresarialBean.registro.formaPagamentoHomologacao}" cols="75" rows="7" styleClass="no-resize no-border" />                                                 
-                                        </p:tab>
-                                    </p:accordionPanel>
-                                    <p:panel header="WEB Contribuinte / Contabilidade">
-                                        <p:panelGrid columns="1">
-                                            <p:selectBooleanCheckbox id="i_agendamento_web" value="#{registroEmpresarialBean.registro.agendamentoWeb}" itemLabel="Agendamento WEB">
-                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
-                                            </p:selectBooleanCheckbox>
-                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.bloquearHomologacao}" itemLabel="Permitir agendamento para empresas em débito">
-                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages i_per"/>
+                                    <p:panel header="WEB Contribuinte / Contabilidade" styleClass="margin-top-max">
+                                        <p:panelGrid columns="1" styleClass="sbb">
+                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}" itemLabel="Bloqueia boletos atrasados">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages idDiasAtraso"/>
                                             </p:selectBooleanCheckbox>
                                             <p:column>
-                                                <p:spinner id="i_per" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentesAgenda}" disabled="#{!registroEmpresarialBean.registro.bloquearHomologacao}" title="Para habilitar este campo permita o agendamento para empresas em débito" min="0" max="24" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
-                                                <p:outputLabel value=" meses de atraso"  title="Para habilitar este campo permita o agendamento para empresas em débito"/>
-                                                <p:outputLabel value=" ( zero para meses indefinidos )" style="font-size: 8pt" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                                <p:spinner value="#{registroEmpresarialBean.registro.diasBloqueiaAtrasadosWeb}" id="idDiasAtraso" size="2" title="Quantidades de dias permitido após o vencimento" disabled="#{!registroEmpresarialBean.registro.bloqueiaAtrasadosWeb}" min="0" max="360" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                                <p:outputLabel value=" Quantidade de dias permitido após o Vencimento na geração e impressão de Boletos via Web" style="font-size: 8pt" />
+                                            </p:column>
+                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.boletoWeb}" itemLabel="Boleto WEB">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                            </p:selectBooleanCheckbox>                                      
+                                            <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.repisWeb}" itemLabel="REPIS WEB">
+                                                <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                            </p:selectBooleanCheckbox>
+                                            <p:column>
+                                                <br />
+                                                <p:outputLabel value="Mensagem de Bloqueio de Boleto"/>
+                                                <br /><br />
+                                                <p:inputTextarea value="#{registroEmpresarialBean.registro.mensagemBloqueioBoletoWeb}" rows="5" cols="70" styleClass="no-resize">
+                                                    <p:ajax event="blur" update="@this"/>
+                                                </p:inputTextarea>                                            
                                             </p:column>
                                         </p:panelGrid>
                                     </p:panel>
-                                </p:panelGrid>
-                            </p:tab> 
+                                </p:tab>
+                            </c:if>
+                            <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 2 or registroEmpresarialBean.codigoModulo == 6}">
+                                <p:tab title="Associativo">
+                                    <p:panelGrid styleClass="sbb">
+                                        <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 2}">
+                                            <p:row>
+                                                <p:column colspan="2">
+                                                    <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.carteirinhaDependente}" itemLabel="Emitir Dependente no verso">
+                                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                                    </p:selectBooleanCheckbox>
+                                                </p:column>                                        
+                                            </p:row>
+                                            <p:row>                                    
+                                                <p:column colspan="2">
+                                                    <p:outputLabel value="Observação da Ficha Social"/>
+                                                    <div class="clear"></div>
+                                                    <p:inputTextarea value="#{registroEmpresarialBean.registro.fichaSocial}" cols="75" rows="7" styleClass="no-resize margin-top-max" />
+                                                </p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Código Serviço Cartão:"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <p:inputText value="#{registroEmpresarialBean.codigoServico}" />
+                                                </p:column>
+                                            </p:row>
+                                        </c:if>
+                                        <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 2 or registroEmpresarialBean.codigoModulo == 6}">
+                                            <p:row>  
+                                                <p:column colspan="2" styleClass="ui-widget-header">  
+                                                    Clube
+                                                </p:column>  
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Convite - Dias Convidado:"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:panelGrid columns="3">
+                                                        <h:column>
+                                                            <p:slider for="cdc" maxValue="365" minValue="0" step="1"  display="cdcOutput" style="width:200px" displayTemplate="{value} Dia(s)"/> 
+                                                            <h:inputHidden id="cdc"  value="#{registroEmpresarialBean.registro.conviteDiasConvidado}" />
+                                                        </h:column>
+                                                        <h:outputText id="cdcOutput" value="#{registroEmpresarialBean.registro.conviteDiasConvidado} Dia(s)"/>  
+                                                    </h:panelGrid>
+                                                </p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Convite - Quantidade Convidado:"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:panelGrid columns="3">
+                                                        <h:column>
+                                                            <p:slider for="qcc" maxValue="50" minValue="0" step="1"  display="qccOutput" style="width:200px" displayTemplate="{value} Convite(s)"/> 
+                                                            <h:inputHidden id="qcc"  value="#{registroEmpresarialBean.registro.conviteQuantidadeConvidado}" />
+                                                        </h:column>
+                                                        <h:outputText id="qccOutput" value="#{registroEmpresarialBean.registro.conviteQuantidadeConvidado} Convite(s)"/>  
+                                                    </h:panelGrid>
+                                                </p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Convite - Dias Sócio:"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:panelGrid columns="3">
+                                                        <h:column>
+                                                            <p:slider for="cds" maxValue="365" minValue="0" step="1"  display="cdsOutput" style="width:200px" displayTemplate="{value} Dia(s)"/> 
+                                                            <h:inputHidden id="cds"  value="#{registroEmpresarialBean.registro.conviteDiasSocio}" />
+                                                        </h:column>
+                                                        <h:outputText id="cdsOutput" value="#{registroEmpresarialBean.registro.conviteDiasSocio} Dia(s)"/>  
+                                                    </h:panelGrid>
+                                                </p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>
+                                                    <p:outputLabel value="Convite - Quantidade Sócio:"/>
+                                                </p:column>
+                                                <p:column>
+                                                    <h:panelGrid columns="3">
+                                                        <h:column>
+                                                            <p:slider for="cqs" maxValue="50" minValue="0" step="1"  display="cqsOutput" style="width:200px" displayTemplate="{value} Convite(s)"/> 
+                                                            <h:inputHidden id="cqs"  value="#{registroEmpresarialBean.registro.conviteQuantidadeSocio}" />
+                                                        </h:column>
+                                                        <h:outputText id="cqsOutput" value="#{registroEmpresarialBean.registro.conviteQuantidadeSocio} Convite(s)"/>  
+                                                    </h:panelGrid>
+                                                </p:column>
+                                            </p:row>
+                                        </c:if>
+                                    </p:panelGrid>
+                                </p:tab>
+                            </c:if>
+                            <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 4}">
+                                <p:tab title="Homologação">
+                                    <p:panelGrid columns="1" styleClass="sbb">
+                                        <p:selectBooleanCheckbox id="chkSenhaHom" value="#{registroEmpresarialBean.registro.senhaHomologacao}" itemLabel="Senha Homologação">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages" />
+                                        </p:selectBooleanCheckbox>
+                                        <p:selectBooleanCheckbox id="chkAgendaSem" value="#{registroEmpresarialBean.registro.agendarSemHorarioWeb}" itemLabel="Agendar Sem horário">
+                                            <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                        </p:selectBooleanCheckbox>                                                
+                                        <p:column>
+                                            <p:outputLabel value="Agendamento retroativo: " />
+                                            <p:calendar value="#{registroEmpresarialBean.registro.agendamentoRetroativo}" navigator="true" pattern="dd/MM/yyyy" readonlyInput="true" size="10" title="Permite agendamento retroativo até">
+                                                <p:ajax event="dateSelect" update=":form_registro_empresarial:id_messages :form_registro_empresarial:id_messages_growl" listener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                            </p:calendar>
+                                        </p:column>
+                                        <div style="clear: both;"></div>
+                                        <p:accordionPanel>
+                                            <p:tab title="Documentos Necessários Homologação">
+                                                <p:inputTextarea value="#{registroEmpresarialBean.registro.documentoHomologacao}" cols="75" rows="7" styleClass="no-resize no-border"/>
+                                            </p:tab>
+                                            <p:tab title="Formas de Pagamento Homologação">
+                                                <p:inputTextarea value="#{registroEmpresarialBean.registro.formaPagamentoHomologacao}" cols="75" rows="7" styleClass="no-resize no-border" />                                                 
+                                            </p:tab>
+                                        </p:accordionPanel>
+                                        <p:panel header="WEB Contribuinte / Contabilidade">
+                                            <p:panelGrid columns="1">
+                                                <p:selectBooleanCheckbox id="i_agendamento_web" value="#{registroEmpresarialBean.registro.agendamentoWeb}" itemLabel="Agendamento WEB">
+                                                    <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                                </p:selectBooleanCheckbox>
+                                                <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.bloquearHomologacao}" itemLabel="Permitir agendamento para empresas em débito">
+                                                    <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages i_per"/>
+                                                </p:selectBooleanCheckbox>
+                                                <p:column>
+                                                    <p:spinner id="i_per" size="2" maxlength="2" value="#{registroEmpresarialBean.registro.mesesInadimplentesAgenda}" disabled="#{!registroEmpresarialBean.registro.bloquearHomologacao}" title="Para habilitar este campo permita o agendamento para empresas em débito" min="0" max="24" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                                    <p:outputLabel value=" meses de atraso"  title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                                    <p:outputLabel value=" ( zero para meses indefinidos )" style="font-size: 8pt" title="Para habilitar este campo permita o agendamento para empresas em débito"/>
+                                                </p:column>
+                                            </p:panelGrid>
+                                        </p:panel>
+                                    </p:panelGrid>
+                                </p:tab>
+                            </c:if>
+                            <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 1}">
+                                <p:tab title="Financeiro">
+                                    
+                                </p:tab>                                
+                            </c:if>
                         </p:tabView>
                     </p:panel>
                     <div style="clear: both;"></div>
