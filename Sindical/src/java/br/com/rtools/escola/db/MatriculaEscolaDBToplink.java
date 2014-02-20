@@ -1,5 +1,6 @@
 package br.com.rtools.escola.db;
 
+import br.com.rtools.escola.EscolaAutorizados;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
@@ -243,4 +244,19 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         return false;
     }
+
+    @Override
+    public List<EscolaAutorizados> listaPessoasAutorizas(int idMatricula) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT EA FROM EscolaAutorizados AS EA WHERE EA.matriculaEscola.id = :matricula");
+            query.setParameter("matricula", idMatricula);
+            List list = query.getResultList();
+            if(!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }   
 }
