@@ -21,11 +21,11 @@
                     <c:set scope="request" var="object" value="${fisicaBean.fisica}"/>
                     <div class="clear"></div>
                     <h:panelGrid id="i_panel_pessoa_fisica">
-                        <h:outputScript name="script_primefaces.js" library="js" />
-                        <h:outputScript name="tradutor_primefaces.js" library="js" />
                         <p:tabView dynamic="true" id="i_tabview_fisica" activeIndex="#{fisicaBean.indexPessoaFisica}" style="width: 990px">
                             <p:ajax event="tabChange" listener="#{fisicaBean.accordion}" /> 
                             <p:tab title="Cadastro Pessoal">                            
+                                <h:outputScript name="script_primefaces.js" library="js" />
+                                <h:outputScript name="tradutor_primefaces.js" library="js" />
                                 <p:messages id="id_valida_documento" autoUpdate="true" showSummary="true" showDetail="true" />
                                 <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
                                     <h:column>
@@ -41,12 +41,14 @@
                                                 </p:inputMask>                                        
                                             </p:column>
                                             <p:outputLabel value="Nome: "/>
-                                            <p:inputText id="i_nome" size="70"  value="#{fisicaBean.fisica.pessoa.nome}" />
+                                            <p:inputText id="i_nome" size="70"  value="#{fisicaBean.fisica.pessoa.nome}" converter="toUpperCase">
+                                                <p:ajax event="blur" update="i_nome" />
+                                            </p:inputText>
                                             <p:outputLabel value="Nascimento: "/>
                                             <h:column>
                                                 <h:panelGrid columns="5">
-                                                    <p:calendar size="10" value="#{fisicaBean.fisica.dtNascimento}" pattern="dd/MM/yyyy" yearRange="c-120:c-0" navigator="true" styleClass="data">
-                                                        <p:ajax event="dateSelect" listener="#{fisicaBean.fisica.selecionaDataNascimento}" />
+                                                    <p:calendar size="10" value="#{fisicaBean.fisica.dtNascimento}" pattern="dd/MM/yyyy" yearRange="c-120:c-0" navigator="true" onclick="$(this).mask('99/99/9999'); return null;" converterMessage="Data de nascimento inválida - Formato 01/01/1900">
+                                                        <p:ajax event="dateSelect" update="@this"  listener="#{fisicaBean.fisica.selecionaDataNascimento}" />
                                                     </p:calendar>
                                                     <p:outputLabel value="Sexo: "/>
                                                     <p:selectOneRadio id="idSexo" value="#{fisicaBean.fisica.sexo}" >
@@ -78,11 +80,17 @@
                                             </h:column>
                                             <p:outputLabel value="RG: "/>
                                             <h:column>
-                                                <p:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}" />
+                                                <p:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}">
+                                                    <f:ajax event="blur" render="@this" />
+                                                </p:inputText>
                                                 <p:outputLabel value="Órgão Emissor: " styleClass=" margin-left-max" title="Órgão emissor do RG"/>
-                                                <p:inputText id="i_oer" size="10" maxlength="30" value="#{fisicaBean.fisica.orgaoEmissaoRG}" />
-                                                <p:outputLabel value="UF Emissão: " styleClass=" margin-left-max" title="Emissão do RG"/>
-                                                <p:inputText id="i_er" size="2" maxlength="2" value="#{fisicaBean.fisica.ufEmissaoRG}" />
+                                                <p:inputText id="i_oer" size="10" maxlength="30" value="#{fisicaBean.fisica.orgaoEmissaoRG}" converter="removeNumberToUpperCase">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputText>
+                                                <p:outputLabel value="UF Emissão: " styleClass=" margin-left-max" title="Emissão do RG" />
+                                                <p:inputText id="i_er" size="2" maxlength="2" value="#{fisicaBean.fisica.ufEmissaoRG}" converter="removeNumberToUpperCase">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputText>
                                             </h:column>
                                             <p:outputLabel value="Carteira: "/>
                                             <h:column>
