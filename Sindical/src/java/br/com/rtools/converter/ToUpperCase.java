@@ -6,7 +6,7 @@ import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
 @FacesConverter("toUpperCase")
-public class ToUpperCaseConverter implements Converter {
+public class ToUpperCase implements Converter {
 
     @Override
     public String getAsString(FacesContext context, UIComponent component, Object value) {
