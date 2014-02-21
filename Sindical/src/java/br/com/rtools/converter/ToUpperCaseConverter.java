@@ -5,7 +5,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
 import javax.faces.convert.FacesConverter;
 
-@FacesConverter("toUpperCaseConverter")
+@FacesConverter("toUpperCase")
 public class ToUpperCaseConverter implements Converter {
 
     @Override
