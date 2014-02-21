@@ -95,7 +95,6 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
                 + "  LEFT JOIN fin_boleto              AS bol              ON bol.nr_ctr_boleto    = mov.nr_ctr_boleto "
                 + "  LEFT JOIN fin_conta_cobranca      AS cc               ON cc.id                = bol.id_conta_cobranca ";
 
-
         // CONDICAO -----------------------------------------------------
         if (condicao.equals("todos")) {
             textQuery = textQuery + " WHERE mov.is_ativo = true AND (pes_pend.id_tipo_endereco = 2 OR pes_pend.id_tipo_endereco IS NULL) AND (esc_pend.id_tipo_endereco = 2 OR esc_pend.id_tipo_endereco IS NULL) ";
@@ -129,10 +128,12 @@ public class RelatorioMovimentosDBToplink extends DB implements RelatorioMovimen
 
         // FILTRAR POR ESCRITÓRIOS ------------------------------------------------        
         if (!idsEsc.isEmpty()) {
-            if (!idsEsc.equals("sem")) {
-                textQuery = textQuery + " AND esc.id IN ( " + idsEsc + " )";
-            } else {
+            if (idsEsc.equals("sem")) {
                 textQuery = textQuery + " AND jur.id_contabilidade IS NULL";
+            } else if (idsEsc.equals("com")){
+                textQuery = textQuery + " AND jur.id_contabilidade IS NOT NULL";
+            }else{
+                textQuery = textQuery + " AND esc.id IN ( " + idsEsc + " )";
             }
         }
 

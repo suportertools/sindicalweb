@@ -77,6 +77,10 @@ public class OposicaoBean implements Serializable {
             mensagem = "Informar o período de convenção!";
             return;
         }
+        if (oposicao.getEmissao().isEmpty()) {
+            mensagem = "Campo emissão não pode estar vazio!";
+            return;
+        }
         if (socios.getId() != -1) {
             if (socios.getServicoPessoa().isAtivo()) {
                 mensagem = "CPF cadastrado como sócio, inative para salvar oposição!";

@@ -415,8 +415,9 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     public List<Vector> listaDeCheques(int id_status) {
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    "SELECT id, func_idBaixa_cheque_rec(id) as id_baixa, ds_banco, ds_agencia, ds_conta, ds_cheque, dt_emissao, dt_vencimento " +
-                    "  FROM fin_cheque_rec " +
+                    "SELECT c.id, func_idBaixa_cheque_rec(c.id) as id_baixa, ds_banco, ds_agencia, ds_conta, ds_cheque, dt_emissao, dt_vencimento, f.nr_valor " +
+                    "  FROM fin_cheque_rec as c " +
+                    " INNER JOIN fin_forma_pagamento as f on f.id_baixa = func_idBaixa_cheque_rec(c.id) AND f.id_cheque_rec = c.id " +
                     " WHERE id_status = " +id_status +
                     "   AND dt_vencimento <= now()"
             );
@@ -428,6 +429,36 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
 //                    "   AND dt_vencimento <= now()"
 //            );
             return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }
+    
+    @Override
+    public List<Vector> listaMovimentoBancario(int id_plano5) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT DISTINCT f.id id_forma, b.id id_baixa, b.dt_baixa as data, '' as documento, '' as historico, f.nr_valor, m.ds_es, 0.0 as saldo, ds_descricao as status, f.id_tipo_pagamento, ch.id" +
+                    "  FROM fin_lote as l " +
+                    " INNER JOIN fin_movimento as m ON m.id_lote = l.id " +
+                    " INNER JOIN fin_baixa as b ON b.id = m.id_baixa " +
+                    " INNER JOIN fin_forma_pagamento as f ON f.id_baixa = b.id " +
+                    "  LEFT JOIN fin_cheque_rec as ch ON ch.id = f.id_cheque_rec " +
+                    "  LEFT JOIN fin_status as s ON s.id = ch.id_status " +
+                    " WHERE f.id_plano5 = " +id_plano5+
+                    " ORDER BY 3"
+//                    "SELECT b.dt_baixa as data, l.ds_documento, l.ds_historico, f.nr_valor, m.ds_es, 0.0 as saldo, ds_descricao as status " +
+//                    "  FROM fin_lote as l" +
+//                    " INNER JOIN fin_movimento as m on m.id_lote = l.id" +
+//                    " INNER JOIN fin_baixa as b on b.id = m.id_baixa" +
+//                    " INNER JOIN fin_forma_pagamento as f on f.id_baixa = b.id" +
+//                    "  LEFT JOIN fin_cheque_rec as ch on ch.id = f.id_cheque_rec" +
+//                    "  LEFT JOIN fin_status as s on s.id = ch.id_status" +
+//                    " WHERE f.id_plano5 = " +id_plano5+
+//                    " ORDER BY dt_baixa"
+            );
+            return qry.getResultList();
+            
         } catch (Exception e) {
             return new ArrayList<Vector>();
         }

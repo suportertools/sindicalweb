@@ -5,6 +5,7 @@ import br.com.rtools.financeiro.ChequeRec;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FTipoDocumento;
+import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Plano5;
@@ -17,6 +18,7 @@ import br.com.rtools.financeiro.db.Plano5DBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
@@ -40,63 +43,6 @@ public class DepositoBancarioBean implements Serializable{
     private List<DataObject> listaCheques = new ArrayList<DataObject>();
     private List<DataObject> listaSelecionado = new ArrayList<DataObject>();
     
-    public void atualizarStatus(DataObject linha){
-        int index = Integer.valueOf(linha.getArgumento5().toString());
-        
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        ChequeRec cheque = (ChequeRec)linha.getArgumento4();
-        
-        sv.abrirTransacao();
-        if (index == 0){
-            // LIQUIDADO
-            cheque.setStatus((FStatus)sv.pesquisaCodigo(9, "FStatus"));
-            
-            if (!sv.alterarObjeto(cheque)){
-                sv.desfazerTransacao();
-                return;
-            }
-            
-            sv.comitarTransacao();
-        }else if (index == 1 || index == 2){
-            if (index == 1){
-                // DEVOLVIDO
-                cheque.setStatus((FStatus)sv.pesquisaCodigo(10, "FStatus"));
-            }else{
-                // SUSTADO
-                cheque.setStatus((FStatus)sv.pesquisaCodigo(11, "FStatus"));
-            }
-            
-            if (!sv.alterarObjeto(cheque)){
-                sv.desfazerTransacao();
-                return;
-            }
-            
-            Plano5 plano = (Plano5)sv.pesquisaCodigo( Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
-            float valor = Moeda.converteUS$(linha.getArgumento3().toString());
-            Baixa baixa = (Baixa)sv.pesquisaCodigo((Integer) ((Vector)linha.getArgumento0()).get(1), "Baixa");
-            
-            Lote lote = novoLote(sv, "P", plano, cheque, valor);
-            Movimento movimento = novoMovimento(sv, lote, baixa, "S");
-            
-            if (!sv.inserirObjeto(lote)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar lote saida!");
-                sv.desfazerTransacao();
-            }
-            
-            if (!sv.inserirObjeto(movimento)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar movimento saida!");
-                sv.desfazerTransacao();
-                return;
-            }
-            
-            listaCheques.clear();
-            listaSelecionado.clear();
-            sv.comitarTransacao();
-            GenericaMensagem.info("Sucesso", "Cheques depositados com Sucesso!");
-        }
-    }
-    
     public void depositar(){
         if (listaSelecionado.isEmpty()){
             GenericaMensagem.warn("Erro", "Nenhum cheque foi selecionado!");
@@ -106,46 +52,99 @@ public class DepositoBancarioBean implements Serializable{
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         
         sv.abrirTransacao();
+        
+        //Baixa baixa = (Baixa) sv.pesquisaCodigo((Integer) ((Vector)listaSelecionado.get(i).getArgumento0()).get(1), "Baixa");
+        
+        // MOVIMENTO SAIDA -----------------------------------------------------
+        // ---------------------------------------------------------------------
+        // ---------------------------------------------------------------------
+        Baixa baixa_saida = null;
+        Lote lote_saida = null;
+        Movimento movimento_saida = null;
         for (int i = 0; i < listaSelecionado.size(); i++){
-            ChequeRec cheque = (ChequeRec)listaSelecionado.get(i).getArgumento4();
+            if (baixa_saida == null){
+                baixa_saida = novaBaixa();
+                if (!sv.inserirObjeto(baixa_saida)){
+                    GenericaMensagem.warn("Erro", "Não foi possivel salvar Baixa Saida!");
+                    sv.desfazerTransacao();
+                    return;
+                }
+            }
+            
+            ChequeRec cheque = (ChequeRec) listaSelecionado.get(i).getArgumento4();
             
             if (!mensagemStatus(cheque.getStatus().getId())){
                 return;
             }
             
-            Baixa baixa = (Baixa)sv.pesquisaCodigo((Integer) ((Vector)listaSelecionado.get(i).getArgumento0()).get(1), "Baixa");
             float valor = Moeda.converteUS$(listaSelecionado.get(i).getArgumento3().toString());
             
-            // MOVIMENTO SAIDA -----------------------------------------------
-            Plano5 plano = (Plano5)sv.pesquisaCodigo(1, "Plano5");
-            Lote lote = novoLote(sv, "P", plano, cheque, valor);
-            Movimento movimento = novoMovimento(sv, lote, baixa, "S");
+            Plano5 plano = (Plano5) sv.pesquisaCodigo(1, "Plano5");
+            if (lote_saida == null){
+                lote_saida = novoLote(sv, "P", plano, cheque, valor);
+                if (!sv.inserirObjeto(lote_saida)){
+                    GenericaMensagem.warn("Erro", "Não foi possivel salvar Lote Saida!");
+                    sv.desfazerTransacao();
+                    return;
+                }
+            }
             
-            if (!sv.inserirObjeto(lote)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar lote entrada!");
+            
+            if (movimento_saida == null){
+                movimento_saida = novoMovimento(sv, lote_saida, baixa_saida, "S");
+                if (!sv.inserirObjeto(movimento_saida)){
+                    GenericaMensagem.warn("Erro", "Não foi possivel salvar Movimento Saida!");
+                    sv.desfazerTransacao();
+                    return;
+                }
+            }
+            
+            if (!sv.inserirObjeto(novaFormaPagamento(sv, baixa_saida, valor, plano, cheque) )){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Forma de Pagamento Saida!");
                 sv.desfazerTransacao();
                 return;
             }
+        }        
+        
+        // MOVIMENTO ENTRADA ---------------------------------------------------
+        // ---------------------------------------------------------------------
+        // ---------------------------------------------------------------------
+        Baixa baixa_entrada = null;
+        Lote lote_entrada = null;
+        Movimento movimento_entrada = null;
+        for (int i = 0; i < listaSelecionado.size(); i++){
+            if (baixa_entrada == null){
+                baixa_entrada = novaBaixa();
+                if (!sv.inserirObjeto(baixa_entrada)){
+                    GenericaMensagem.warn("Erro", "Não foi possivel salvar Baixa Entrada!");
+                    sv.desfazerTransacao();
+                    return;
+                }
+            }
             
-            if (!sv.inserirObjeto(movimento)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar movimento entrada!");
-                sv.desfazerTransacao();
+            ChequeRec cheque = (ChequeRec) listaSelecionado.get(i).getArgumento4();
+            
+            if (!mensagemStatus(cheque.getStatus().getId())){
                 return;
             }
             
-            // MOVIMENTO ENTRADA -------------------------------------------------
-            plano = (Plano5)sv.pesquisaCodigo( Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
-            lote = novoLote(sv, "R", plano, cheque, valor);
-            movimento = novoMovimento(sv, lote, baixa, "E");
+            float valor = Moeda.converteUS$(listaSelecionado.get(i).getArgumento3().toString());
             
-            if (!sv.inserirObjeto(lote)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar lote saida!");
-                sv.desfazerTransacao();
-                return;
+            Plano5 plano = (Plano5)sv.pesquisaCodigo( Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
+            
+            
+            if (lote_entrada == null){
+                lote_entrada = novoLote(sv, "R", plano, cheque, valor);
+                if (!sv.inserirObjeto(lote_entrada)){
+                    GenericaMensagem.warn("Erro", "Não foi possivel salvar Lote Entrada!");
+                    sv.desfazerTransacao();
+                    return;
+                }
             }
             
-            if (!sv.inserirObjeto(movimento)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar movimento saida!");
+            movimento_entrada = novoMovimento(sv, lote_entrada, baixa_entrada, "E");
+            if (!sv.inserirObjeto(movimento_entrada)){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Movimento Entrada!");
                 sv.desfazerTransacao();
                 return;
             }
@@ -153,6 +152,12 @@ public class DepositoBancarioBean implements Serializable{
             cheque.setStatus((FStatus)sv.pesquisaCodigo(8, "FStatus"));
             if (!sv.alterarObjeto(cheque)){
                 GenericaMensagem.warn("Erro", "Não foi possivel atualizar cheque!");
+                sv.desfazerTransacao();
+                return;
+            }
+            
+            if (!sv.inserirObjeto(novaFormaPagamento(sv, baixa_entrada, valor, plano, cheque) )){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Forma de Pagamento Saida!");
                 sv.desfazerTransacao();
                 return;
             }
@@ -221,6 +226,38 @@ public class DepositoBancarioBean implements Serializable{
                     0 // REPASSE AUTOMATICO
             );
     }
+    
+    public Baixa novaBaixa(){
+        return new Baixa(
+                -1, 
+                (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"), 
+                DataHoje.data(), 
+                "", 
+                0, 
+                "", 
+                null, 
+                null
+        );
+    }      
+    
+    public FormaPagamento novaFormaPagamento(SalvarAcumuladoDB sv, Baixa baixa, float valor, Plano5 plano, ChequeRec cheque){
+        return new FormaPagamento(
+                    -1, 
+                    baixa, 
+                    cheque, 
+                    null, 
+                    100, 
+                    valor, 
+                    (Filial) sv.pesquisaCodigo(1, "Filial"), 
+                    plano, 
+                    null, 
+                    null, 
+                    null, 
+                    0, 
+                    DataHoje.dataHoje(), 
+                    0
+            );
+    }  
     
     public List<SelectItem> getListaConta() {
         if (listaConta.isEmpty()) {
