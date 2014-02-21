@@ -112,12 +112,16 @@ public class MatriculaEscolaBean implements Serializable {
     private List<SelectItem> listaNumeros = new ArrayList<SelectItem>();
     private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
     private List<SelectItem> listaIndividual = new ArrayList<SelectItem>();
+    private List<SelectItem> listaDataTaxa = new ArrayList<SelectItem>();
+    private List<SelectItem> listaMesVencimento = new ArrayList<SelectItem>();
     private List<Turma> listaTurma = new ArrayList<Turma>();
     private List<Movimento> listaMovimentos = new ArrayList<Movimento>();
     private List<EscolaAutorizados> listaEscolaAutorizadas = new ArrayList<EscolaAutorizados>();
     private List<ListaMatriculaEscola> listaMatriculaEscolas = new ArrayList<ListaMatriculaEscola>();
     private int idDiaVencimento = 0;
     private int idDiaVencimentoPessoa = 0;
+    private int idDataTaxa = 0;
+    private int idMesVencimento = 0;
     private int idFTipoDocumento = 0;
     private int idIndividual = 0;
     private int idMidia = 0;
@@ -203,6 +207,8 @@ public class MatriculaEscolaBean implements Serializable {
         diaVencimento = 0;
         listaStatus.clear();
         listaVendedor.clear();
+        listaDataTaxa.clear();
+        listaMesVencimento.clear();
         listaProfessor.clear();
         listaMidia.clear();
         listaCursosDisponiveis.clear();
@@ -1105,9 +1111,11 @@ public class MatriculaEscolaBean implements Serializable {
                     }
 
                     nrCtrBoletoResp += matriculaEscola.getResponsavel().getId();
-
-                    String mes = matriculaEscola.getDataMatriculaString().substring(3, 5);
-                    String ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
+                    String mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();
+                    String mes = mesPrimeiraParcela.substring(0, 2);
+                    String ano = mesPrimeiraParcela.substring(3, 7);
+//                    String mes = matriculaEscola.getDataMatriculaString().substring(3, 5);
+//                    String ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
                     referencia = mes + "/" + ano;
 
                     if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaEscola.getDiaVencimento()) {
@@ -1183,25 +1191,26 @@ public class MatriculaEscolaBean implements Serializable {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(5, "TipoServico");
                                 valorParcelaF = vTaxa;
                                 valorDescontoAteVencimento = 0;
-                                vecimentoString = DataHoje.data();
+                                vecimentoString = listaDataTaxa.get(idDataTaxa).getDescription();
                                 isTx = insereTaxa;
                                 insereTaxa = false;
                             } else {
                                 tipoServico = (TipoServico) salvarAcumuladoDB.pesquisaCodigo(1, "TipoServico");
                                 // ALTERADO: MUDAR EM FEVEREIRO
                                 if (j == 0) {
-                                    if (isTx) {
-                                        valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela()) - vTaxa;
-                                        if (matriculaEscola.getDescontoAteVencimento() > 0) {
-                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas()) - vTaxa;
-                                        } else {
-                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
-                                        }
-                                        isTx = false;
-                                    } else {
-                                        valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
-                                        valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
-                                    }
+//                                    ADICIONAR SOMENTE SE FOR DESCONTAR A TAXA DO VALOR DA PRIMEIRA MENSALIDADE
+//                                    if (isTx) {
+//                                        valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela()) - vTaxa;
+//                                        if (matriculaEscola.getDescontoAteVencimento() > 0) {
+//                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas()) - vTaxa;
+//                                        } else {
+//                                            valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
+//                                        }
+//                                        isTx = false;
+//                                    } else {
+//                                    }
+                                    valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
+                                    valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
                                 } else {
                                     valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
                                     valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
@@ -1941,6 +1950,12 @@ public class MatriculaEscolaBean implements Serializable {
             this.taxa = false;
             this.valorTaxa = "";
         }
+        idDataTaxa = 0;
+        idMesVencimento = 0;
+        listaDataTaxa.clear();
+        listaMesVencimento.clear();
+        getListaDataTaxa();
+        getListaMesVencimento();
     }
 
     public String getValorTaxa() {
@@ -2519,5 +2534,77 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setRegistro(Registro registro) {
         this.registro = registro;
+    }
+
+    public int getIdDataTaxa() {
+        return idDataTaxa;
+    }
+
+    public void setIdDataTaxa(int idDataTaxa) {
+        this.idDataTaxa = idDataTaxa;
+    }
+
+    public int getIdMesVencimento() {
+        return idMesVencimento;
+    }
+
+    public void setIdMesVencimento(int idMesVencimento) {
+        this.idMesVencimento = idMesVencimento;
+    }
+
+    public List<SelectItem> getListaDataTaxa() {
+        if (taxa) {
+            if (listaDataTaxa.isEmpty()) {
+                idDataTaxa = 0;
+                DataHoje dh = new DataHoje();
+                for (int i = 0; i < 20; i++) {
+                    String dataTaxa = dh.incrementarDias(i, matriculaEscola.getDataMatriculaString());
+                    listaDataTaxa.add(new SelectItem(i, dataTaxa, dataTaxa));
+                    if (dataTaxa.equals(DataHoje.data())) {
+                        idDataTaxa = i;
+                    }
+                }
+            }
+        }
+        return listaDataTaxa;
+    }
+
+    public void setListaDataTaxa(List<SelectItem> listaDataTaxa) {
+        this.listaDataTaxa = listaDataTaxa;
+    }
+
+    public List<SelectItem> getListaMesVencimento() {
+        if (listaMesVencimento.isEmpty()) {
+            boolean isTaxa = false;
+            DataHoje dh = new DataHoje();
+            String data = matriculaEscola.getDataMatriculaString();
+            for (int i = 0; i < listaNumeros.size(); i++) {
+                if (i > 0) {
+                    data = dh.incrementarMeses(1, data);
+                }
+                if (!isTaxa) {
+                    int iDtMr = DataHoje.converteDataParaInteger(matriculaEscola.getDataMatriculaString());
+                    int iDtVct = DataHoje.converteDataParaInteger(data);
+                    if (taxa) {
+                        if (iDtVct > iDtMr) {
+                            idMesVencimento = i;
+                            isTaxa = true;
+                        } else {
+                            idMesVencimento = 0;                            
+                        }
+                    } else {
+                        isTaxa = true;
+                        idMesVencimento = 0;
+                    }
+                }
+                String mesAno = data.substring(3, 5) + "/" + data.substring(6, 10);
+                listaMesVencimento.add(new SelectItem(i, mesAno, mesAno));
+            }
+        }
+        return listaMesVencimento;
+    }
+
+    public void setListaMesVencimento(List<SelectItem> listaMesVencimento) {
+        this.listaMesVencimento = listaMesVencimento;
     }
 }
