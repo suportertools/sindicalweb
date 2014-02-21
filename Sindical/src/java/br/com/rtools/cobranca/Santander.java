@@ -66,58 +66,115 @@ public class Santander extends Cobranca {
         } else {
             return Integer.toString(11 - (soma % 11));
         }
+//        if (((11 - (soma % 11)) == 0) || ((11 - (soma % 11)) == 1) || ((11 - (soma % 11)) > 10)) {
+//            return "0";
+//        } else if ((11 - (soma % 11)) == 10) {
+//            return "1";
+//        } else {
+//            return Integer.toString(11 - (soma % 11));
+//        }
+//       int base = 9;  
+//       int r    = 0;  
+//       String num = composicao;
+//       
+//       int soma = 0;  
+//       int fator = 2;  
+//       String[] numeros,parcial;  
+//       numeros = new String[num.length()+1];  
+//       parcial = new String[num.length()+1];  
+//
+//       /* Separacao dos numeros */  
+//       for (int i = num.length(); i > 0; i--) {  
+//           // pega cada numero isoladamente  
+//           numeros[i] = num.substring(i-1,i);  
+//           // Efetua multiplicacao do numero pelo falor  
+//           parcial[i] = String.valueOf(Integer.parseInt(numeros[i]) * fator);  
+//           // Soma dos digitos  
+//           soma += Integer.parseInt(parcial[i]);  
+//           if (fator == base) {  
+//               // restaura fator de multiplicacao para 2  
+//               fator = 1;  
+//           }  
+//           fator++;  
+//       }  
+//
+//       /* Calculo do modulo 11 */  
+//       if (r == 0) {  
+//           soma *= 10;  
+//           int digito = soma % 11;  
+//           if (digito == 10) {  
+//               digito = 0;  
+//           }  
+//           return Integer.toString(digito);
+//       } else {  
+//           int resto = soma % 11;  
+//           return Integer.toString(resto);
+//       }          
     }
 
     @Override
     public String codigoBarras() {
-        String codigoBarras = "";
-        codigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
-        codigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
-        int i = 0;
-        int tam = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor())).length();
-        while (i != (10 - tam)) { // zeros
-            codigoBarras += "0";
-            i++;
-        }
-        codigoBarras += Moeda.limparPonto(Float.toString(movimento.getValor())); // valor
-        codigoBarras += "9";
-        codigoBarras += boleto.getContaCobranca().getCodCedente();        // codigo cedente
-        codigoBarras += boleto.getBoletoComposto() + this.moduloOnze(boleto.getBoletoComposto());
-        //codigoBarras += "0";
-        codigoBarras += "102";
-        int z = codigoBarras.length();
-        codigoBarras = codigoBarras.substring(0, 4) + this.moduloOnzeDV(codigoBarras) + codigoBarras.substring(4, codigoBarras.length());
-        return codigoBarras;
+        String iniCodigoBarras = "", fimCodigoBarras = "";
+        iniCodigoBarras = boleto.getContaCobranca().getContaBanco().getBanco().getNumero() + boleto.getContaCobranca().getMoeda(); // banco + moeda
+        
+        fimCodigoBarras += fatorVencimento(movimento.getDtVencimento());   // fator de vencimento
+        
+        String valor = Moeda.limparPonto(Moeda.converteR$Float(movimento.getValor()));
+        int tam = valor.length();
+        
+        fimCodigoBarras += "0000000000".substring(0, 10-tam) + valor; // valor
+        
+        fimCodigoBarras += "9";
+        
+        String cedente = "0000000".substring(0, 7 - boleto.getContaCobranca().getCodCedente().length()) + boleto.getContaCobranca().getCodCedente();        // codigo cedente
+        fimCodigoBarras += cedente;
+        
+        String nossoNumero = boleto.getBoletoComposto()+this.moduloOnze(boleto.getBoletoComposto());//boleto.getBoletoComposto() + calculoConstante();
+        fimCodigoBarras += "0000000000000".substring(0, 13 - nossoNumero.length()) + nossoNumero;       // nosso numero
+
+        fimCodigoBarras += "0";       // IOS -- [ 0 demais clientes ] -- [ 7 - 7% ] -- limitado a [ 9% - 9 ]
+        fimCodigoBarras += "102";
+        
+        return iniCodigoBarras + this.moduloOnzeDV(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
     }
 
     @Override
     public String representacao() {
         String codigoBarras = this.codigoBarras();
-        String swap = "";
+        //String swap = "";
         int i = 0;
-        String repNumerica = codigoBarras.substring(0, 4);
-        repNumerica += codigoBarras.substring(19, 24);
-        repNumerica += moduloDez(repNumerica);
-        repNumerica += codigoBarras.substring(24, 34);
-        repNumerica += moduloDez(codigoBarras.substring(24, 34));
-        repNumerica += codigoBarras.substring(34, 44);
-        repNumerica += moduloDez(codigoBarras.substring(34, 44));
-        repNumerica += codigoBarras.substring(4, 5);
-        swap += codigoBarras.substring(5, 19);
-        i = 0;
-        while (i < (15 - swap.length())) {
-            swap = ("0" + swap);
-            i++;
-        }
-        repNumerica += swap;
+        // PRIMEIRO GRUPO --
+        String primeiro_grupo = codigoBarras.substring(0, 4);
+        primeiro_grupo += codigoBarras.substring(19, 24);
+        primeiro_grupo += moduloDez(primeiro_grupo);
+        
+        // SEGUNDO GRUPO --
+        String segundo_grupo = codigoBarras.substring(24, 27);
+        String nossoNumero = boleto.getBoletoComposto()+this.moduloOnze(boleto.getBoletoComposto());
+        nossoNumero = "0000000000000".substring(0, 13 - nossoNumero.length()) + nossoNumero;
+        segundo_grupo += nossoNumero.substring(0, 7);
+        segundo_grupo += moduloDez(segundo_grupo);
+        
+        // TERCEIRO GRUPO --
+        String terceiro_grupo = nossoNumero.substring(7, 13);
+        terceiro_grupo += "0"; // IOS -- [ 0 demais clientes ] -- [ 7 - 7% ] -- limitado a [ 9% - 9 ]
+        terceiro_grupo += "102"; 
+        terceiro_grupo +=  moduloDez(terceiro_grupo);
+        
+        // QUARTO GRUPO
+        String quarto_grupo = codigoBarras.substring(4, 5);
+        
+        String quinto_grupo = codigoBarras.substring(5, 19);
+        
+        String repNumerica = primeiro_grupo + segundo_grupo + terceiro_grupo + quarto_grupo + quinto_grupo;
         repNumerica = repNumerica.substring(0, 5) + "."
-                + repNumerica.substring(5, 10) + " "
-                + repNumerica.substring(10, 15) + "."
-                + repNumerica.substring(15, 21) + " "
-                + repNumerica.substring(21, 26) + "."
-                + repNumerica.substring(26, 32) + " "
-                + repNumerica.substring(32, 33) + " "
-                + repNumerica.substring(34, repNumerica.length());
+                    + repNumerica.substring(5, 10) + " "
+                    + repNumerica.substring(10, 15) + "."
+                    + repNumerica.substring(15, 21) + " "
+                    + repNumerica.substring(21, 26) + "."
+                    + repNumerica.substring(26, 32) + " "
+                    + repNumerica.substring(32, 33) + " "
+                    + repNumerica.substring(33, repNumerica.length());
         return repNumerica;
     }
 

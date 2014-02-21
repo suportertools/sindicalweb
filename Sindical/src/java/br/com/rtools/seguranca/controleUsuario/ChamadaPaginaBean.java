@@ -1302,7 +1302,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String relatorioMovimentos() {
         //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("relatorioMovimentosBean")){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioMovimentosBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioMovimentoBean");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         //}
         return metodoGenerico(3, "relatorioMovimentos");

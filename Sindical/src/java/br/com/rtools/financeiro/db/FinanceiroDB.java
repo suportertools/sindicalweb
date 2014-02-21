@@ -48,4 +48,5 @@ public interface FinanceiroDB {
     public List<TransferenciaCaixa> listaTransferencia(int id_fechamento_caixa);
     public Caixa pesquisaCaixaUm();
     public List<Vector> listaDeCheques(int id_status);
+    public List<Vector> listaMovimentoBancario(int id_plano5);
 }

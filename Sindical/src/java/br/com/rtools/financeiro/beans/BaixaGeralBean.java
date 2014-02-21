@@ -258,7 +258,11 @@ public class BaixaGeralBean {
                 ch.setCheque(numero);
                 ch.setConta(chequeRec.getConta());
                 ch.setEmissao(quitacao);
-                ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
+                if (tipo.equals("caixa"))
+                    ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
+                else
+                    ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(8, "FStatus"));
+                    
                 ch.setVencimento(vencimento);
                 lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, ch, null));
             } else if (tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7) {

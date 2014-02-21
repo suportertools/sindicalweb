@@ -5,11 +5,15 @@ import br.com.rtools.financeiro.ChequeRec;
 import br.com.rtools.financeiro.CondicaoPagamento;
 import br.com.rtools.financeiro.FStatus;
 import br.com.rtools.financeiro.FTipoDocumento;
+import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.financeiro.TipoPagamento;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.db.FinanceiroDB;
+import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
@@ -17,6 +21,7 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -24,11 +29,14 @@ import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
@@ -45,40 +53,55 @@ public class MovimentoBancarioBean implements Serializable{
     public void salvar(){
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         
-        
-        
         Lote lote = null;
         Movimento movimento = null;
-        Plano5 plano = (Plano5)sv.pesquisaCodigo( Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
+        Baixa baixa = null;
+        FormaPagamento forma_pagamento = null;
+        Plano5 plano = (Plano5)sv.pesquisaCodigo(Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
         
         if (tipo.equals("debito")){
-            lote = novoLote(sv, "P", plano, null, Moeda.converteUS$(valor));
-            movimento = novoMovimento(sv, lote, null, "S");
+            baixa = novaBaixa();
+            lote = novoLote(sv, "P", plano, Moeda.converteUS$(valor));
+            movimento = novoMovimento(sv, lote, baixa, "S");
+            forma_pagamento = novaFormaPagamento(sv, baixa, Moeda.converteUS$(valor), plano, null);
         }else{
-            lote = novoLote(sv, "R", plano, null, Moeda.converteUS$(valor));
-            movimento = novoMovimento(sv, lote, null, "E");
+            baixa = novaBaixa();
+            lote = novoLote(sv, "R", plano, Moeda.converteUS$(valor));
+            movimento = novoMovimento(sv, lote, baixa, "E");
+            forma_pagamento = novaFormaPagamento(sv, baixa, Moeda.converteUS$(valor), plano, null);
         }
         
-        
         sv.abrirTransacao();
+        if (!sv.inserirObjeto(baixa)){
+            GenericaMensagem.warn("Erro", "Erro ao salvar Baixa");
+            sv.desfazerTransacao();
+            return;
+        }
+        
         if (!sv.inserirObjeto(lote)){
-            GenericaMensagem.warn("Erro", "Erro ao salvar lote");
+            GenericaMensagem.warn("Erro", "Erro ao salvar Lote");
             sv.desfazerTransacao();
             return;
         }
         
         if (!sv.inserirObjeto(movimento)){
-            GenericaMensagem.warn("Erro", "Erro ao salvar movimento");
+            GenericaMensagem.warn("Erro", "Erro ao salvar Movimento");
             sv.desfazerTransacao();
             return;
         }
         
+        if (!sv.inserirObjeto(forma_pagamento)){
+            GenericaMensagem.warn("Erro", "Erro ao salvar Forma de Pagamento");
+            sv.desfazerTransacao();
+            return;
+        }
         
+        listaMovimento.clear();
         GenericaMensagem.info("Sucesso", "Movimento salvo com Sucesso!");
-        //sv.comitarTransacao();
+        sv.comitarTransacao();
     }
     
-    public Lote novoLote(SalvarAcumuladoDB sv, String pag_rec, Plano5 plano, ChequeRec cheque, float valor){
+    public Lote novoLote(SalvarAcumuladoDB sv, String pag_rec, Plano5 plano, float valor){
         return new Lote(
                     -1,
                     (Rotina) sv.pesquisaCodigo(224, "Rotina"), // ROTINA
@@ -87,7 +110,7 @@ public class MovimentoBancarioBean implements Serializable{
                     (Pessoa)sv.pesquisaCodigo(0, "Pessoa"), // PESSOA
                     plano, // PLANO 5
                     false,// VENCER CONTABIL
-                    cheque.getCheque(), // DOCUMENTO
+                    "", // DOCUMENTO
                     valor, // VALOR
                     (Filial) sv.pesquisaCodigo(1, "Filial"), // FILIAL
                     null, // DEPARTAMENTO
@@ -136,13 +159,48 @@ public class MovimentoBancarioBean implements Serializable{
             );
     }    
     
+    public FormaPagamento novaFormaPagamento(SalvarAcumuladoDB sv, Baixa baixa, float valor, Plano5 plano, ChequeRec cheque){
+        return new FormaPagamento(
+                    -1, 
+                    baixa, 
+                    cheque, 
+                    null, 
+                    100, 
+                    valor, 
+                    (Filial) sv.pesquisaCodigo(1, "Filial"), 
+                    plano, 
+                    null, 
+                    null, 
+                    (TipoPagamento) sv.pesquisaCodigo(8, "TipoPagamento"), 
+                    0, 
+                    DataHoje.dataHoje(), 
+                    0
+            );
+    }  
+    
+    public Baixa novaBaixa(){
+        return new Baixa(
+                -1, 
+                (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"), 
+                DataHoje.data(), 
+                "", 
+                0, 
+                "", 
+                null, 
+                null
+        );
+    }    
+    
     public void atualizarStatus(DataObject linha){
-        int index = Integer.valueOf(linha.getArgumento5().toString());
+        ChequeRec cheque = (ChequeRec)linha.getArgumento5();
         
+        if (cheque == null || cheque.getId() == -1){
+            GenericaMensagem.warn("Erro", "Cheque não encontrado!");
+            return;
+        }
+        
+        int index = Integer.valueOf(linha.getArgumento4().toString());
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        ChequeRec cheque = (ChequeRec)linha.getArgumento4();
-        
         sv.abrirTransacao();
         if (index == 0){
             // LIQUIDADO
@@ -153,6 +211,8 @@ public class MovimentoBancarioBean implements Serializable{
                 return;
             }
             
+            listaMovimento.clear();
+            GenericaMensagem.info("Sucesso", "Cheque LIQUIDADO concluído!");
             sv.comitarTransacao();
         }else if (index == 1 || index == 2){
             if (index == 1){
@@ -169,27 +229,68 @@ public class MovimentoBancarioBean implements Serializable{
             }
             
             Plano5 plano = (Plano5)sv.pesquisaCodigo( Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
-            float valor = Moeda.converteUS$(linha.getArgumento3().toString());
-            Baixa baixa = (Baixa)sv.pesquisaCodigo((Integer) ((Vector)linha.getArgumento0()).get(1), "Baixa");
+            float valor = Moeda.converteUS$(linha.getArgumento2().toString());
             
-            Lote lote = novoLote(sv, "P", plano, cheque, valor);
-            Movimento movimento = novoMovimento(sv, lote, baixa, "S");
-            
-            if (!sv.inserirObjeto(lote)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar lote saida!");
-                sv.desfazerTransacao();
-            }
-            
-            if (!sv.inserirObjeto(movimento)){
-                GenericaMensagem.warn("Erro", "Não foi possivel salvar movimento saida!");
+            Baixa baixa_saida = novaBaixa();
+            if (!sv.inserirObjeto(baixa_saida)){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Baixa Saida!");
                 sv.desfazerTransacao();
                 return;
             }
             
+            
+            Lote lote_saida = novoLote(sv, "P", plano, valor);
+            if (!sv.inserirObjeto(lote_saida)){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Lote Saida!");
+                sv.desfazerTransacao();
+                return;
+            }
+            
+            
+            
+            Movimento movimento_saida = novoMovimento(sv, lote_saida, baixa_saida, "S");
+            if (!sv.inserirObjeto(movimento_saida)){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Movimento Saida!");
+                sv.desfazerTransacao();
+                return;
+            }
+            
+            
+            if (!sv.inserirObjeto(novaFormaPagamento(sv, baixa_saida, valor, plano, cheque) )){
+                GenericaMensagem.warn("Erro", "Não foi possivel salvar Forma de Pagamento Saida!");
+                sv.desfazerTransacao();
+                return;
+            }
+            
+            
+//            Baixa baixa = (Baixa)sv.pesquisaCodigo((Integer) ((Vector)linha.getArgumento0()).get(1), "Baixa");
+//            Lote lote = novoLote(sv, "P", plano, valor);
+//            Movimento movimento = novoMovimento(sv, lote, baixa, "S");
+//            
+//            if (!sv.inserirObjeto(lote)){
+//                GenericaMensagem.warn("Erro", "Não foi possivel salvar lote saida!");
+//                sv.desfazerTransacao();
+//            }
+//            
+//            if (!sv.inserirObjeto(movimento)){
+//                GenericaMensagem.warn("Erro", "Não foi possivel salvar movimento saida!");
+//                sv.desfazerTransacao();
+//                return;
+//            }
+            
             //listaCheques.clear();
             //listaSelecionado.clear();
+            listaMovimento.clear();
             sv.comitarTransacao();
-            GenericaMensagem.info("Sucesso", "Cheques depositados com Sucesso!");
+            
+            if (index == 1){
+                // DEVOLVIDO
+                GenericaMensagem.info("Sucesso", "Cheque DEVOLVIDO concluído!");
+            }else{
+                // SUSTADO
+                GenericaMensagem.info("Sucesso", "Cheque SUSTADO concluído!");
+                
+            }
         }
     }    
     
@@ -212,7 +313,7 @@ public class MovimentoBancarioBean implements Serializable{
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()){
             ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos(4);
+            List select = db.pesquisaTodos(225);
             if (!select.isEmpty()) {
                 for (int i = 0; i < select.size(); i++) {
                     listaServicos.add(new SelectItem(
@@ -260,6 +361,29 @@ public class MovimentoBancarioBean implements Serializable{
     }
 
     public List<DataObject> getListaMovimento() {
+        if (listaMovimento.isEmpty()){
+            FinanceiroDB db = new FinanceiroDBToplink();
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            
+            Plano5 plano = (Plano5)sv.pesquisaCodigo(Integer.valueOf(listaConta.get(idConta).getDescription()), "Plano5");
+            List<Vector> result = db.listaMovimentoBancario(plano.getId());
+            for (int i = 0; i < result.size(); i++){
+                ChequeRec cheque = null;
+                if (result.get(i).get(10) != null)
+                    cheque = (ChequeRec)sv.pesquisaCodigo((Integer) result.get(i).get(10), "ChequeRec");
+                
+                listaMovimento.add(
+                        new DataObject(
+                                result.get(i), 
+                                DataHoje.converteData( (Date) result.get(i).get(2)), 
+                                Moeda.converteR$Float(Float.parseFloat(Double.toString((Double)result.get(i).get(5)))),
+                                Moeda.converteR$Float(((BigDecimal)result.get(i).get(7)).floatValue() ),
+                                0,
+                                cheque
+                        )
+                );
+            }
+        }
         return listaMovimento;
     }
 

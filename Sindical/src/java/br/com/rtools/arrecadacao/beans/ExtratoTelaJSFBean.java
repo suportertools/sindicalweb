@@ -16,7 +16,6 @@ import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
-import java.math.BigDecimal;
 import java.util.*;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;

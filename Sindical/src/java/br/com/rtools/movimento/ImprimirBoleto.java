@@ -48,6 +48,7 @@ import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -201,17 +202,16 @@ public class ImprimirBoleto {
             MensagemCobranca mensagemCobranca = null;
             Historico historico = null;
 
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/BOLETO.jasper"));
+            File file_jasper = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/BOLETO.jasper"));
+            //File file_jasper = new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/teste.jasper"));
+            
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(file_jasper);
 
             while (i < lista.size()) {
                 if (lista.get(i).getBaixa() != null && lista.get(i).getBaixa().getId() != -1) {
                     break;
                 }
 
-                if (i == 224) {
-                    mensagemErroMovimento = "";
-                }
                 Boleto boletox = movDB.pesquisaBoletos(lista.get(i).getNrCtrBoleto());
                 if (boletox.getContaCobranca().getLayout().getId() == 2) {
                     swap[40] = ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/SINDICAL.jasper");
@@ -500,7 +500,7 @@ public class ImprimirBoleto {
             arquivo = JasperExportManager.exportReportToPdf(print);
             pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
 
-        } catch (Exception erro) {
+        } catch (JRException erro) {
             int x = i;
             System.err.println("O arquivo não foi gerado corretamente! Erro: " + erro.getMessage() + " " + mensagemErroMovimento);
         }
