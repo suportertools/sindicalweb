@@ -215,12 +215,12 @@
         <managed-bean-class>br.com.rtools.financeiro.beans.IndiceMensalJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
+<!--
     <managed-bean>
         <managed-bean-name>relatorioMovimentosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioMovimentosJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    </managed-bean> -->
 
     <managed-bean>
         <managed-bean-name>correcaoBean</managed-bean-name>
