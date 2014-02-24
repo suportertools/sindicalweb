@@ -13,10 +13,12 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
@@ -256,13 +258,29 @@ public class MovimentosReceberSocialJSFBean {
         List lista = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
+            MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+
+        if (macFilial == null) {
+            msgConfirma = "Não existe filial na sessão!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
+        if (macFilial.getCaixa() == null) {
+            msgConfirma = "Configurar Caixa nesta estação de trabalho!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
         if (baixado()) {
             msgConfirma = "Existem boletos baixados na lista!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (semValor()) {
             msgConfirma = "Boletos sem valor não podem ser Baixados!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -290,9 +308,11 @@ public class MovimentosReceberSocialJSFBean {
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaGeral();
             } else {
                 msgConfirma = "Nenhum boleto foi selecionado";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
             msgConfirma = "Lista vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         return null;
     }
@@ -327,16 +347,19 @@ public class MovimentosReceberSocialJSFBean {
         Movimento movimento = new Movimento();
         if (baixado()) {
             msgConfirma = "Existem boletos baixados na lista!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (semValor()) {
             msgConfirma = "Boletos sem valor não podem ser Acordados!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         
         if (acordados()) {
             msgConfirma = "Boletos do tipo Acordo não podem ser Reacordados!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (!listaMovimento.isEmpty()) {
@@ -362,9 +385,11 @@ public class MovimentosReceberSocialJSFBean {
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).acordo();
             } else {
                 msgConfirma = "Nenhum boleto foi selecionado";
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
             msgConfirma = "Lista vazia!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         return null;
     }
