@@ -340,33 +340,80 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     @Override
     public List listaFechamentoCaixaTransferencia(int id_caixa) {
         try {
-            Query qry = getEntityManager().createNativeQuery(
-                    "SELECT " +
-                    "	tc.id_caixa_entrada, tc.id_fechamento_entrada, fc.nr_valor_fechamento, fc.nr_valor_informado, fc.dt_data, fc.ds_hora " +
-                    "  FROM fin_fechamento_caixa fc " +
-                    " INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id " +
-                    " WHERE tc.id_caixa_entrada = " +id_caixa+
-                    "   AND tc.id_fechamento_entrada NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12)"+
-                    " GROUP BY " +
-                    "   tc.id_caixa_entrada, tc.id_fechamento_entrada, fc.nr_valor_fechamento, fc.nr_valor_informado, fc.dt_data, fc.ds_hora"
-            );
+            String text = 
+                    "SELECT 	tc.id_caixa_entrada, " +
+                    "        tc.id_fechamento_entrada, " +
+                    "        fc.nr_valor_fechamento, " +
+                    "        fc.nr_valor_informado, " +
+                    "        fc.dt_data, " +
+                    "        fc.ds_hora  " +
+                    "  FROM fin_fechamento_caixa fc  " +
+                    " INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id AND tc.id_caixa_entrada = " + id_caixa +
+                    " WHERE tc.id_fechamento_entrada NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
+                    " GROUP BY tc.id_caixa_entrada, " +
+                    "          tc.id_fechamento_entrada, " +
+                    "          fc.nr_valor_fechamento, " +
+                    "          fc.nr_valor_informado, " +
+                    "          fc.dt_data, " +
+                    "          fc.ds_hora " +
+                    "UNION " +
+                    "SELECT 	b.id_caixa, " +
+                    "        b.id_fechamento_caixa, " +
+                    "        fc.nr_valor_fechamento, " +
+                    "        fc.nr_valor_informado, " +
+                    "        fc.dt_data, " +
+                    "        fc.ds_hora   " +
+                    "  FROM fin_fechamento_caixa fc  " +
+                    " INNER JOIN fin_baixa b ON b.id_caixa = "+id_caixa+" AND b.id_fechamento_caixa = fc.id " +
+                    " WHERE b.id_fechamento_caixa NOT IN (SELECT id_fechamento_entrada FROM fin_transferencia_caixa WHERE id_caixa_saida = "+id_caixa+" AND id_status = 12) " +
+                    " GROUP BY b.id_caixa, " +
+                    "          b.id_fechamento_caixa, " +
+                    "          fc.nr_valor_fechamento, " +
+                    "          fc.nr_valor_informado, " +
+                    "          fc.dt_data, " +
+                    "          fc.ds_hora";            
+            Query qry = getEntityManager().createNativeQuery(text);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
         }
     }
     
+    @Override
     public List listaFechamentoCaixa(int id_caixa) {
+        String text = 
+                    "SELECT 	tc.id_caixa_entrada, " +
+                    "        tc.id_fechamento_entrada, " +
+                    "        fc.nr_valor_fechamento, " +
+                    "        fc.nr_valor_informado, " +
+                    "        fc.dt_data, " +
+                    "        fc.ds_hora  " +
+                    "  FROM fin_fechamento_caixa fc  " +
+                    " INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id AND tc.id_caixa_entrada = " + id_caixa +
+                    " GROUP BY tc.id_caixa_entrada, " +
+                    "          tc.id_fechamento_entrada, " +
+                    "          fc.nr_valor_fechamento, " +
+                    "          fc.nr_valor_informado, " +
+                    "          fc.dt_data, " +
+                    "          fc.ds_hora " +
+                    "UNION " +
+                    "SELECT 	b.id_caixa, " +
+                    "        b.id_fechamento_caixa, " +
+                    "        fc.nr_valor_fechamento, " +
+                    "        fc.nr_valor_informado, " +
+                    "        fc.dt_data, " +
+                    "        fc.ds_hora   " +
+                    "  FROM fin_fechamento_caixa fc  " +
+                    " INNER JOIN fin_baixa b ON b.id_caixa = "+id_caixa+" AND b.id_fechamento_caixa = fc.id " +
+                    " GROUP BY b.id_caixa, " +
+                    "          b.id_fechamento_caixa, " +
+                    "          fc.nr_valor_fechamento, " +
+                    "          fc.nr_valor_informado, " +
+                    "          fc.dt_data, " +
+                    "          fc.ds_hora";
+                
         try {
-            Query qry = getEntityManager().createNativeQuery(
-                    "SELECT " +
-                    "	tc.id_caixa_entrada, tc.id_fechamento_entrada, fc.nr_valor_fechamento, fc.nr_valor_informado, fc.dt_data, fc.ds_hora " +
-                    "  FROM fin_fechamento_caixa fc " +
-                    " INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id " +
-                    " WHERE tc.id_caixa_entrada = " +id_caixa+
-                    " GROUP BY " +
-                    "   tc.id_caixa_entrada, tc.id_fechamento_entrada, fc.nr_valor_fechamento, fc.nr_valor_informado, fc.dt_data, fc.ds_hora"
-            );
+            Query qry = getEntityManager().createNativeQuery(text);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();

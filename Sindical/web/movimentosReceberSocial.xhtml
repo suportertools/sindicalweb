@@ -91,18 +91,22 @@
 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" />
+                                    <p:commandButton value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" update="i_msg" />
                                 </p:column>
                                 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" />
+                                    <p:commandButton value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" update="i_msg"/>
                                 </p:column>
                                 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" rendered="#{movimentosSocialBean.porPesquisa != 'abertos'}" />
+                                    <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" rendered="#{movimentosSocialBean.porPesquisa != 'abertos'}" update="i_msg"/>
                                 </p:column>
+                            </h:panelGrid>
+                            
+                            <h:panelGrid style="clear: both; width: 100%">
+                                <p:messages id="i_msg" showDetail="true" closable="true" />  
                             </h:panelGrid>
                             
                             <p:dataTable value="#{movimentosSocialBean.listaMovimento}" var="linha" style="clear: both; font-size: 8pt!important" id="tbl" paginator="true" rows="20" emptyMessage="Nenhuma pendência foi encontrada!">
@@ -162,7 +166,9 @@
                                 </p:column>
                                 
                                 <p:column style="text-align: center;" headerText="Recibo">
-                                    <p:commandButton ajax="false" icon="ui-icon-print" action="#{movimentosSocialBean.recibo(linha.argumento1)}" rendered="#{!empty(linha.argumento10)}" title="Imprimir este Recibo"/>
+                                    <h:commandLink target="_blank" action="#{movimentosSocialBean.recibo(linha.argumento1)}" rendered="#{!empty(linha.argumento10)}" title="Imprimir este Recibo">
+                                        <p:commandButton icon="ui-icon-print"  title="Imprimir este Recibo"/>
+                                    </h:commandLink>
                                 </p:column>
                             </p:dataTable>      
                             

@@ -61,11 +61,9 @@
                                 </p:submenu>
 
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">
-                                    <p:menuitem value="Caixa / Banco" />
-                                    <p:menuitem value="Transferência" />
+                                    <p:menuitem value="Transf. Entre Caixas" onclick="i_dlg_t.show()"/>
                                     <p:menuitem value="Fechamento de Caixa" action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
-                                    <p:menuitem value="Trans. Entre Caixas" onclick="i_dlg_t.show()"/>
-                                    <p:menuitem value="Caixas Fechado"      action="#{chamadaPaginaBean.caixaFechado()}"/>
+                                    <p:menuitem value="Transf. p/ CX Central"      action="#{chamadaPaginaBean.caixaFechado()}"/>
                                     <p:menuitem value="Deposito Bancário"   action="#{chamadaPaginaBean.depositoBancario()}"/>
                                     <p:menuitem value="Movimento Bancário"   action="#{chamadaPaginaBean.movimentoBancario()}"/>
                                 </p:submenu>

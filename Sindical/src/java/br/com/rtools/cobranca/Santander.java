@@ -59,57 +59,24 @@ public class Santander extends Cobranca {
             j++;
             i--;
         }
-        if (((11 - (soma % 11)) == 0) || ((11 - (soma % 11)) == 1)) {
-            return "0";
-        } else if ((11 - (soma % 11)) > 9) {
+        int resto = (soma % 11);
+        
+        if (resto == 10){
             return "1";
-        } else {
-            return Integer.toString(11 - (soma % 11));
+        }else if (resto == 1 || resto == 0){
+            return "0";
+        }else{
+            return Integer.toString(11 - resto);
         }
-//        if (((11 - (soma % 11)) == 0) || ((11 - (soma % 11)) == 1) || ((11 - (soma % 11)) > 10)) {
+        
+        
+//        if (((11 - (soma % 11)) == 0) || ((11 - (soma % 11)) == 1)) {
 //            return "0";
 //        } else if ((11 - (soma % 11)) == 10) {
 //            return "1";
 //        } else {
 //            return Integer.toString(11 - (soma % 11));
 //        }
-//       int base = 9;  
-//       int r    = 0;  
-//       String num = composicao;
-//       
-//       int soma = 0;  
-//       int fator = 2;  
-//       String[] numeros,parcial;  
-//       numeros = new String[num.length()+1];  
-//       parcial = new String[num.length()+1];  
-//
-//       /* Separacao dos numeros */  
-//       for (int i = num.length(); i > 0; i--) {  
-//           // pega cada numero isoladamente  
-//           numeros[i] = num.substring(i-1,i);  
-//           // Efetua multiplicacao do numero pelo falor  
-//           parcial[i] = String.valueOf(Integer.parseInt(numeros[i]) * fator);  
-//           // Soma dos digitos  
-//           soma += Integer.parseInt(parcial[i]);  
-//           if (fator == base) {  
-//               // restaura fator de multiplicacao para 2  
-//               fator = 1;  
-//           }  
-//           fator++;  
-//       }  
-//
-//       /* Calculo do modulo 11 */  
-//       if (r == 0) {  
-//           soma *= 10;  
-//           int digito = soma % 11;  
-//           if (digito == 10) {  
-//               digito = 0;  
-//           }  
-//           return Integer.toString(digito);
-//       } else {  
-//           int resto = soma % 11;  
-//           return Integer.toString(resto);
-//       }          
     }
 
     @Override
@@ -135,7 +102,7 @@ public class Santander extends Cobranca {
         fimCodigoBarras += "0";       // IOS -- [ 0 demais clientes ] -- [ 7 - 7% ] -- limitado a [ 9% - 9 ]
         fimCodigoBarras += "102";
         
-        return iniCodigoBarras + this.moduloOnzeDV(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
+        return iniCodigoBarras + this.moduloOnze(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
     }
 
     @Override
