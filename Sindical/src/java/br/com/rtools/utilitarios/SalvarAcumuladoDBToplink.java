@@ -89,6 +89,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
     }
 
+    /**
+     * @deprecated @param id
+     * @param tipo
+     * @return
+     */
     @Override
     public Object pesquisaCodigo(int id, String tipo) {
         if (id == -1) {
@@ -106,37 +111,83 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
-    
+
+    /**
+     * @deprecated @param id
+     * @param tipo
+     * @return
+     */
     @Override
     public List pesquisaCodigo(int id[], String tipo) {
-        List<Object> list = new ArrayList<Object>(); 
-        Object object; 
+        List<Object> list = new ArrayList<Object>();
+        Object object;
         for (int i = 0; i < id.length; i++) {
             object = pesquisaCodigo(id[i], tipo);
-            if(object != null) {
+            if (object != null) {
                 list.add(object);
-            }   
+            }
         }
         return list;
     }
 
     @Override
-    public Object pesquisaObjeto(int id, String tabela) {
-        return pesquisaObjeto(id, tabela, "");
+    public Object pesquisaObjeto(int id, String className) {
+        return pesquisaObjeto(id, className, "");
     }
-    
+
     @Override
-    public Object pesquisaObjeto(int id, String tabela, String campo) {
+    public Object find(Object object) {
+        return find(object, null);
+    }
+
+    @Override
+    public Object find(Object object, Object objectId) {
+        if (object == null) {
+            return null;
+        }
+        if (objectId == null) {
+            int id;
+            try {
+                Class classe = object.getClass();
+                Method metodo = classe.getMethod("getId", new Class[]{});
+                id = (Integer) metodo.invoke(object, (Object[]) null);
+                if (id == -1) {
+                    return null;
+                }
+            } catch (IllegalAccessException e) {
+                return null;
+            } catch (IllegalArgumentException e) {
+                return null;
+            } catch (NoSuchMethodException e) {
+                return null;
+            } catch (SecurityException e) {
+                return null;
+            } catch (InvocationTargetException e) {
+                return null;
+            }
+            object = getEntityManager().find(object.getClass(), id);
+        } else {
+            try {
+                object = getEntityManager().find(object.getClass(), objectId);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return object;
+    }
+
+    @Override
+    public Object pesquisaObjeto(int id, String className, String field) {
         if (id == -1) {
             return null;
-        }        
+        }
         String stringCampo = "id";
-        if (!campo.isEmpty()) {
-            stringCampo = campo;
-        }        
+        if (!field.isEmpty()) {
+            stringCampo = field;
+        }
         Object result = null;
         try {
-            Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB."+stringCampo+" = " + id);
+            Query qry = getEntityManager().createQuery("SELECT OB FROM " + className + " OB WHERE OB." + stringCampo + " = " + id);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getSingleResult();
             }
@@ -145,42 +196,43 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
-    
+
     @Override
-    public List pesquisaObjeto(int id[], String tabela) {
-        return pesquisaObjeto(id, tabela, "");
-    }    
-    
+    public List pesquisaObjeto(int id[], String className) {
+        return pesquisaObjeto(id, className, "");
+    }
+
     @Override
-    public List pesquisaObjeto(int id[], String tabela, String campo) {
+    public List pesquisaObjeto(int id[], String className, String field) {
         String stringCampo = "id";
-        if (!campo.isEmpty()) {
-            stringCampo = campo;
+        if (!field.isEmpty()) {
+            stringCampo = field;
         }
-        List list = new ArrayList<Object>(); 
+        List list = new ArrayList<Object>();
         String queryPesquisaString = "";
         // Object object;
         for (int i = 0; i < id.length; i++) {
             if (i == 0) {
                 queryPesquisaString = Integer.toString(id[i]);
             } else {
-                queryPesquisaString += ", "+Integer.toString(id[i]);
+                queryPesquisaString += ", " + Integer.toString(id[i]);
             }
-            // object = pesquisaObjeto(id[i], null);
-            Query query = getEntityManager().createQuery("SELECT OB FROM " + tabela + " OB WHERE OB."+stringCampo+" IN ("+queryPesquisaString+")");
+            String queryString = "SELECT OB FROM " + className + " OB WHERE OB." + stringCampo + " IN (" + queryPesquisaString + ")";
+            Query query = getEntityManager().createQuery(queryString);
             list = query.getResultList();
-            if(list.isEmpty()) {
+            if (list.isEmpty()) {
                 return list;
             }
         }
         return list;
-    }    
+    }
 
     @Override
-    public List listaObjeto(String tabela) {
+    public List listaObjeto(String className) {
         List result = new ArrayList();
+        String queryString = "SELECT OB FROM " + className + " AS OB";
         try {
-            Query qry = getEntityManager().createQuery("SELECT OB FROM " + tabela + " AS OB");
+            Query qry = getEntityManager().createQuery(queryString);
             if (!qry.getResultList().isEmpty()) {
                 result = qry.getResultList();
             }
@@ -188,11 +240,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
-    
+
     @Override
-    public List listaObjeto(String tabela, boolean order) {
+    public List listaObjeto(String className, boolean order) {
         try {
-            Query query = getEntityManager().createNamedQuery(tabela + ".findAll");
+            Query query = getEntityManager().createNamedQuery(className + ".findAll");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
@@ -202,23 +254,23 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List pesquisaObjetoPorDescricao(String tabela, String descricao) {
         return pesquisaObjetoPorDescricao(tabela, descricao, "");
-    }    
-    
+    }
+
     @Override
     public List pesquisaObjetoPorDescricao(String tabela, String descricao, String tipoPesquisa) {
         try {
             Query query = getEntityManager().createNamedQuery(tabela + ".findName");
             if (tipoPesquisa.equals("i")) {
-                query.setParameter("pdescricao", ""+descricao.toUpperCase()+"%");                
+                query.setParameter("pdescricao", "" + descricao.toUpperCase() + "%");
             } else if (tipoPesquisa.equals("p")) {
-                query.setParameter("pdescricao", "%"+descricao.toUpperCase()+"%");                
+                query.setParameter("pdescricao", "%" + descricao.toUpperCase() + "%");
             } else if (tipoPesquisa.equals("all")) {
-                query.setParameter("pdescricao", "%"+descricao.toUpperCase()+"%");                
-                query.setParameter("pdescricao", ""+descricao.toUpperCase()+"%");
+                query.setParameter("pdescricao", "%" + descricao.toUpperCase() + "%");
+                query.setParameter("pdescricao", "" + descricao.toUpperCase() + "%");
             } else {
                 query.setParameter("pdescricao", descricao.toUpperCase());
             }
@@ -233,7 +285,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return new ArrayList();
         }
         return new ArrayList();
-    }    
+    }
 
     @Override
     public List listaObjetoGenericoOrdem(String tabela, String descricao) {
@@ -248,7 +300,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return result;
     }
-    
+
     public List listaObjetoGenericoOrdemDesc(String tabela, String descricao) {
         List result = new ArrayList();
         try {
@@ -279,12 +331,12 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             return false;
         }
     }
-    
+
     @Override
     public boolean executeQueryVetor(String textQuery) {
         try {
             List<List> valor = getEntityManager().createNativeQuery(textQuery).getResultList();
-            if ((Integer)valor.get(0).get(0) > 0) {
+            if ((Integer) valor.get(0).get(0) > 0) {
                 return true;
             } else {
                 NovoLog log = new NovoLog();
@@ -296,21 +348,21 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
             log.novo("Novo Objeto", "Exception - Message: " + e.getMessage());
             return false;
         }
-    }    
-    
+    }
+
     @Override
     public List nativeQuery(String textQuery) {
         return nativeQuery(textQuery, false);
-    }    
-    
+    }
+
     @Override
-    public List nativeQuery(String textQuery, boolean singleResult) {        
+    public List nativeQuery(String textQuery, boolean singleResult) {
         try {
             Query query = getEntityManager().createNativeQuery(textQuery);
             if (singleResult) {
                 return (List) query.getSingleResult();
             } else {
-                return  query.getResultList();
+                return query.getResultList();
             }
         } catch (Exception e) {
             NovoLog log = new NovoLog();
@@ -318,20 +370,20 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return new ArrayList();
     }
-    
+
     @Override
     public List objectQuery(String textQuery) {
         return objectQuery(textQuery, false);
     }
-    
+
     @Override
-    public List objectQuery(String textQuery, boolean singleResult) {        
+    public List objectQuery(String textQuery, boolean singleResult) {
         try {
             Query query = getEntityManager().createQuery(textQuery);
             if (singleResult) {
                 return (List) query.getSingleResult();
             } else {
-                return  query.getResultList();
+                return query.getResultList();
             }
         } catch (Exception e) {
             NovoLog log = new NovoLog();
@@ -353,9 +405,9 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         return false;
     }
-    
+
     @Override
-    public void fecharTransacao () {
+    public void fecharTransacao() {
         getEntityManager().close();
     }
 }
