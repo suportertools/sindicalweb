@@ -16,38 +16,55 @@ public interface SalvarAcumuladoDB {
 
     public void desfazerTransacao();
 
-    public Object pesquisaCodigo(int id, String tipo);
-    
     /**
-     * 
+     * @deprecated Substituir pelo método pesquisaObjeto(int id, className) e
+     * remover anotações @NamedQuery(name = "TipoEndereco.pesquisaID")
      * @param id
      * @param tipo
-     * @return 
+     * @return
      */
-    public List pesquisaCodigo(int id[], String tipo);
-    
-
-    public Object pesquisaObjeto(int id, String tabela);
-    public Object pesquisaObjeto(int id, String tabela, String campo);
+    public Object pesquisaCodigo(int id, String tipo);
 
     /**
-     * 
+     * @deprecated Substituir pelo método pesquisaObjeto(int id[], className) e
+     * remover anotações @NamedQuery(name = "TipoEndereco.pesquisaID")
      * @param id
-     * @param tabela
-     * @return 
+     * @param tipo
+     * @return
      */
-    public List pesquisaObjeto(int id[], String tabela);
-    public List pesquisaObjeto(int id[], String tabela, String campo);
-    
-    public List listaObjeto(String tabela);
+    public List pesquisaCodigo(int id[], String tipo);
+
+    public Object pesquisaObjeto(int id, String className);
+
+    public Object pesquisaObjeto(int id, String className, String field);
 
     /**
      *
-     * @param tabela/Object
+     * @param id
+     * @param className
+     * @return object
+     */
+    public List pesquisaObjeto(int id[], String className);
+
+    public List pesquisaObjeto(int id[], String className, String field);
+    
+    /**
+     * 
+     * @param object
+     * @return object
+     */
+    public Object find(Object object) ;
+    public Object find(Object object, Object objectId) ;
+
+    public List listaObjeto(String className);
+
+    /**
+     *
+     * @param className/Object
      * @param order (Default true)
      * @return
      */
-    public List listaObjeto(String tabela, boolean order);
+    public List listaObjeto(String className, boolean order);
 
     /**
      *
@@ -69,18 +86,18 @@ public interface SalvarAcumuladoDB {
     public List listaObjetoGenericoOrdem(String tabela, String descricao);
 
     public boolean executeQuery(String textQuery);
-    
+
     public boolean executeQueryVetor(String textQuery);
-    
+
     public boolean descricaoExiste(String descricao, String campo, String objeto);
-    
+
     public List nativeQuery(String textQuery);
-    
+
     public List nativeQuery(String textQuery, boolean singleResult);
-    
+
     public List objectQuery(String textQuery);
-    
+
     public List objectQuery(String textQuery, boolean singleResult);
-    
+
     public void fecharTransacao();
 }
