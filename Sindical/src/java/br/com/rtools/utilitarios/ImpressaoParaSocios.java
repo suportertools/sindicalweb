@@ -95,7 +95,8 @@ public class ImpressaoParaSocios {
                 fileB.mkdir();
             }
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(listax);
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CARTAO.jasper"));
+            File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/CARTAO.jasper"));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(file);
             JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
             byte[] arquivo = JasperExportManager.exportReportToPdf(print);
             String nomeDownload = "cartao_social_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";

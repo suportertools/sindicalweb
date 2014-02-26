@@ -63,6 +63,8 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -511,6 +513,7 @@ public class MatriculaEscolaBean implements Serializable {
                 if (success) {
                     OutputStream os = new FileOutputStream(filePDF);
                     HtmlToPDF.convert(matriculaContrato.getDescricao(), os);
+                    
                     os.close();
                     String linha = getRegistro().getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName;
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
@@ -518,8 +521,8 @@ public class MatriculaEscolaBean implements Serializable {
                 }
             } catch (IOException e) {
                 e.getMessage();
-            } catch (DocumentException e) {
-                e.getMessage();
+            } catch (com.itextpdf.text.DocumentException ex) {
+                Logger.getLogger(MatriculaEscolaBean.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
