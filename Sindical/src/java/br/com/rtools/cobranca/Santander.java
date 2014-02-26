@@ -78,6 +78,30 @@ public class Santander extends Cobranca {
 //            return Integer.toString(11 - (soma % 11));
 //        }
     }
+    
+    public String moduloOnzeDV(String composicao) {
+        int i = composicao.length();
+        int j = 2;
+        int soma = 0;
+        String m;
+        while (i > 0) {
+            if (j > 9) {
+                j = 2;
+            }
+            m = composicao.substring(i - 1, i);
+            soma += Integer.parseInt(m) * j;
+            j++;
+            i--;
+        }
+        int resto = (soma % 11);
+        
+        if (resto == 10 || resto == 1 || resto == 0){
+            return "1";
+        }else{
+            return Integer.toString(resto);
+        }
+        
+    }
 
     @Override
     public String codigoBarras() {
@@ -102,7 +126,7 @@ public class Santander extends Cobranca {
         fimCodigoBarras += "0";       // IOS -- [ 0 demais clientes ] -- [ 7 - 7% ] -- limitado a [ 9% - 9 ]
         fimCodigoBarras += "102";
         
-        return iniCodigoBarras + this.moduloOnze(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
+        return iniCodigoBarras + this.moduloOnzeDV(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
     }
 
     @Override
