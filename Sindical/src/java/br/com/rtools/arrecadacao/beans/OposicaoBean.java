@@ -387,10 +387,12 @@ public class OposicaoBean implements Serializable {
     }
 
     public void acaoPesquisaInicial() {
+        listaOposicaos.clear();
         setComoPesquisa("Inicial");
     }
 
     public void acaoPesquisaParcial() {
+        listaOposicaos.clear();
         setComoPesquisa("Parcial");
     }
 

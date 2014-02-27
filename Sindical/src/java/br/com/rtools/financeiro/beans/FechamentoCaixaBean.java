@@ -298,19 +298,26 @@ public class FechamentoCaixaBean implements Serializable{
             Caixa caixa = (Caixa)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) ,"Caixa"));
             List<Vector> lista = db.listaFechamentoCaixa(caixa.getId());
             //List<Vector> lista = db.listaFechamentoCaixaTransferencia(caixa.getId());
-            int status = 0;
             for (int i = 0; i < lista.size(); i++){
+                int status = 0;
+                float soma = 0;
                 if (Moeda.converteUS$(lista.get(i).get(2).toString()) > Moeda.converteUS$(lista.get(i).get(3).toString())){
                     status = 1;
+                    soma = Moeda.subtracaoValores(Moeda.converteUS$(lista.get(i).get(2).toString()), Moeda.converteUS$(lista.get(i).get(3).toString()));
                 }else if (Moeda.converteUS$(lista.get(i).get(2).toString()) < Moeda.converteUS$(lista.get(i).get(3).toString())){
                     status = 2;
+                    soma = Moeda.subtracaoValores(Moeda.converteUS$(lista.get(i).get(3).toString()), Moeda.converteUS$(lista.get(i).get(2).toString()));
                 }
                 listaFechamento.add(new DataObject(lista.get(i), 
                                                    DataHoje.converteData((Date)lista.get(i).get(4)), // DATA
                                                    lista.get(i).get(5).toString(), // HORA
                                                    Moeda.converteR$(lista.get(i).get(2).toString()),  // VALOR FECHAMENTO
                                                    Moeda.converteR$(lista.get(i).get(3).toString()),  // VALOR INFORMADO
-                                                   status  // STATUS
+                                                   status,// STATUS
+                                                   Moeda.converteR$Float(soma),
+                                                   null,
+                                                   null,
+                                                   null
                 )); 
             }
             

@@ -15,14 +15,23 @@
         </f:subview>
         <f:view>
             <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
-            <h:form id="form_pesquisa_oposicao">            
+                                
+                <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                    <h:outputLabel value=" ... Aguarde" />
+                </p:dialog>
+            <h:form id="form_pesquisa_oposicao">        
+                
+                
                 <p:panel styleClass="wrapper no-border">
                     <h:outputText value="Pesquisa Oposição" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                         <h:panelGrid columns="8">
                             <p:outputLabel value="Pesquisar: "/>
-                            <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" disabled="#{oposicaoBean.porPesquisa == 'todos'}"/>
+                            <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" disabled="#{oposicaoBean.porPesquisa == 'todos'}">
+                                <p:ajax event="change" update="@this" />
+                            </p:inputMask>
                             <h:outputLabel value="Por: "/>
                             <p:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}">
                                 <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{oposicaoBean.listaOposicaos.clear()}"/>
@@ -35,12 +44,18 @@
                                 <f:selectItem itemValue="rgs"           itemLabel="RG" />
                                 <f:selectItem itemValue="observacao"    itemLabel="Observação" />
                             </p:selectOneMenu>
-                            <c:if test="#{!oposicaoBean.porPesquisa.equals('todos')}">
-                                <p:commandButton id="idInicial" value="Inicial" action="#{oposicaoBean.acaoPesquisaInicial}" />
-                                <p:commandButton id="idParcial" value="Parcial" action="#{oposicaoBean.acaoPesquisaParcial}" />
+                            <c:if test="#{oposicaoBean.porPesquisa != 'todos'}">
+                                <p:commandButton id="idInicial" value="Inicial">
+                                    <p:ajax listener="#{oposicaoBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
+                                </p:commandButton>
+                                <p:commandButton id="idParcial" value="Parcial">
+                                    <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                </p:commandButton>
                             </c:if> 
-                            <c:if test="#{oposicaoBean.porPesquisa.equals('todos')}">
-                                <p:commandButton value="Atualizar" action="#{oposicaoBean.acaoPesquisaParcial}" />
+                            <c:if test="#{oposicaoBean.porPesquisa == 'todos'}">
+                                <p:commandButton value="Atualizar">
+                                    <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                </p:commandButton>
                             </c:if> 
                         </h:panelGrid>   
                     </p:panel>
@@ -85,6 +100,7 @@
                         </p:column>
                     </p:dataTable>
                 </p:panel>
+
             </h:form>                     
         </f:view>
     </h:body>

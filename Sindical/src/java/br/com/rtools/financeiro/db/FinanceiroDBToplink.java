@@ -316,7 +316,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     @Override
     public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa) {
         try {
-            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaSaida.id = "+id_caixa+" AND tc.fechamentoSaida is null");
+            Query qry = getEntityManager().createQuery("SELECT tc FROM TransferenciaCaixa tc WHERE tc.caixaSaida.id = "+id_caixa+" AND (tc.caixaEntrada.caixa <> 1) AND tc.fechamentoSaida is null");
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -382,7 +382,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     @Override
     public List listaFechamentoCaixa(int id_caixa) {
         String text = 
-                    "SELECT 	tc.id_caixa_entrada, " +
+                    "SELECT  tc.id_caixa_entrada, " +
                     "        tc.id_fechamento_entrada, " +
                     "        fc.nr_valor_fechamento, " +
                     "        fc.nr_valor_informado, " +
