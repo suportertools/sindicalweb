@@ -101,6 +101,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String cliente = "";
     private boolean readyOnlineNaturalidade = true;
     private boolean disabledNaturalidade = false;
+    private String[] imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
 
     public void novo() {
         fisica = new Fisica();
@@ -211,19 +212,22 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaUpper();
         if ((fisica.getPessoa().getId() == -1) && (fisica.getId() == -1)) {
             fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
-
             if (!db.pesquisaFisicaPorNomeNascRG(fisica.getPessoa().getNome(),
                     fisica.getDtNascimento(),
                     fisica.getRg()).isEmpty()) {
                 mensagem = "Esta pessoa já esta cadastrada!";
                 return;
             }
-
             if (fisica.getNascimento().isEmpty() || fisica.getNascimento().length() < 10) {
-                mensagem = "Data de Nascimento esta inválida!";
+                mensagem = "Data de nascimento esta inválida!";
                 return;
             }
-
+            if (!fisica.getNascimento().isEmpty()) {
+                if (!DataHoje.isDataValida(fisica.getNascimento())) {
+                    mensagem = "Data de nascimento esta inválida!";
+                    return;
+                }
+            }
             if (pessoa.getDocumento().equals("") || pessoa.getDocumento().equals("0")) {
                 pessoa.setDocumento("0");
             } else {
@@ -571,28 +575,36 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 }
             }
         }
-
         getListaEnderecos();
         editarFisicaSocio(fisica);
+        showImagemFisica();
         GenericaSessao.put("linkClicado", true);
-        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + getCliente() + "/Imagens/Fotos/");
-        File perfil = new File(arquivo + "/" + fisica.getPessoa().getId() + ".png");
-        if (perfil.exists()) {
-            fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
-            fotoTempPerfil = "";
-        } else {
-            fotoPerfil = "";
-            fotoTempPerfil = "";
-        }
         return url;
+    }
+
+    public void showImagemFisica() {
+        String caminhoTemp = "/Cliente/" + getCliente() + "/Imagens/Fotos/";
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoTemp);
+        for (String imagensTipo1 : imagensTipo) {
+            File f = new File(arquivo + "/" + fisica.getPessoa().getId() + "." + imagensTipo1);
+            if (f.exists()) {
+                fotoPerfil = caminhoTemp + "/" + fisica.getPessoa().getId() + "." + imagensTipo1;
+                fotoTempPerfil = "";
+                break;
+            } else {
+                fotoPerfil = "";
+                fotoTempPerfil = "";
+            }
+        }
     }
 
     public void existePessoaDocumento() {
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__") && fisica.getId() == -1) {
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 mensagem = "Documento Invalido!";
-                GenericaMensagem.warn("Validação", "Documento (CPF) inválido!");
+                GenericaMensagem.warn("Validação", "Documento (CPF) inválido! " + fisica.getPessoa().getDocumento());
                 PF.update("form:pessoa_fisica:i_tabview_fisica:id_valida_documento: " + fisica.getPessoa().getDocumento());
+                fisica.getPessoa().setDocumento("");
                 return;
             }
             FisicaDB db = new FisicaDBToplink();
@@ -604,6 +616,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 if (!listaEnd.isEmpty()) {
                     indexNovoEndereco = "0";
                 }
+                showImagemFisica();
             }
         }
     }
@@ -830,6 +843,15 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (fisica.getId() != -1 && pessoaEmpresa.getJuridica().getId() != -1) {
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setAvisoTrabalhado(false);
+            if(pessoaEmpresa.getDtAdmissao() != null && pessoaEmpresa.getDtDemissao() != null) {
+                int dataAdmissao = DataHoje.converteDataParaInteger(pessoaEmpresa.getAdmissao());
+                int dataDemissao = DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao());
+                if(dataDemissao <= dataAdmissao) {
+                    mensagem = "Data de demissão deve ser maior que data de admissão!";
+                    pessoaEmpresa.setDemissao(null);
+                    return;                
+                }
+            }
             if (pessoaEmpresa.getDtAdmissao() == null) {
                 mensagem = "Informar data de admissão!";
                 return;
@@ -1764,4 +1786,13 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void setDisabledNaturalidade(boolean disabledNaturalidad) {
         this.disabledNaturalidade = disabledNaturalidad;
     }
+
+    public String[] getImagensTipo() {
+        return imagensTipo;
+    }
+
+    public void setImagensTipo(String[] imagensTipo) {
+        this.imagensTipo = imagensTipo;
+    }
+
 }
