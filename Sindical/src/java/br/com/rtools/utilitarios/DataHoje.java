@@ -1,28 +1,32 @@
 package br.com.rtools.utilitarios;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 public class DataHoje {
 
     public static Date dataHoje() {
         Date dateTime = new Date();
-        //DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");  data e hora
         return dateTime;
     }
 
     public static String data() {
         Date dateTime = new Date();
-        //DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");   data e hora
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         String a = dateFormat.format(dateTime);
         return a;
     }
 
     public static String livre(Date date, String format) {
+        if (date == null) {
+            return data();
+        }
         if (format.isEmpty()) {
             format = "yyyy-MM-dd HH:mm:ss";
         }
@@ -56,7 +60,7 @@ public class DataHoje {
             try {
                 DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
                 return dateFormat.parse(data);
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 return null;
             }
         } else {
@@ -70,7 +74,7 @@ public class DataHoje {
             try {
                 DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 return dateFormat.parse(data);
-            } catch (Exception e) {
+            } catch (ParseException e) {
                 return null;
             }
         } else {
@@ -253,75 +257,68 @@ public class DataHoje {
     }
 
     public String incrementarMeses(int qtd, String data) {
-        try {
-            //int tmp = 0;
-            int c = 0;
-            int[] d = DataHoje.DataToArrayInt(data);
-            if ((d[1] + qtd) > 12) {
-                int tmp = (d[1] + qtd);
-                while (tmp > 12) {
-                    tmp -= 12;
-                    c++;
+        if (isDataValida(data)) {
+            try {
+                int c = 0;
+                int[] d = DataHoje.DataToArrayInt(data);
+                if ((d[1] + qtd) > 12) {
+                    int tmp = (d[1] + qtd);
+                    while (tmp > 12) {
+                        tmp -= 12;
+                        c++;
+                    }
+                    d[2] += c;
+                    d[1] = tmp;
+                } else {
+                    d[1] += qtd;
                 }
-                d[2] += c;
-                d[1] = tmp;
-            } else {
-                d[1] += qtd;
+                if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
+                    d[0] = qtdeDiasDoMes(d[1], d[2]);
+                }
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
             }
-
-            if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
-                d[0] = qtdeDiasDoMes(d[1], d[2]);
-            }
-
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
         }
+        return null;
     }
 
     public String decrementarMeses(int qtd, String data) {
-        try {
-            //int tmp = 0;
-            int c = 0;
-            int[] d = DataHoje.DataToArrayInt(data);
-            if ((d[1] - qtd) < 1) {
-                int tmp = (d[1] - qtd);
-                while (tmp < 1) {
-                    tmp += 12;
-                    c++;
+        if (isDataValida(data)) {
+            try {
+                int c = 0;
+                int[] d = DataHoje.DataToArrayInt(data);
+                if ((d[1] - qtd) < 1) {
+                    int tmp = (d[1] - qtd);
+                    while (tmp < 1) {
+                        tmp += 12;
+                        c++;
+                    }
+                    d[2] -= c;
+                    d[1] = tmp;
+                } else {
+                    d[1] -= qtd;
                 }
-                d[2] -= c;
-                d[1] = tmp;
-            } else {
-                d[1] -= qtd;
+                if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
+                    d[0] = qtdeDiasDoMes(d[1], d[2]);
+                }
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
             }
-
-            if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
-                d[0] = qtdeDiasDoMes(d[1], d[2]);
-            }
-
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
         }
+        return null;
     }
 
     public String decrementarSemanas(int qtd, String data) {
-        try {
-            int[] d = DataHoje.DataToArrayInt(data);
-            int[] mesA = DataToArrayInt(decrementarMeses(1, data));
-            int diasMesA = qtdeDiasDoMes(mesA[1], mesA[2]);
-            if ((d[0] - (qtd * 7)) < 1) {
-                int tmp = (qtd * 7);
-                diasMesA += d[0];
-                tmp = diasMesA - tmp;
-                d[1]--;
-                if (d[1] < 1) {
-                    d[1] = 12;
-                    d[2]--;
-                }
-                diasMesA = qtdeDiasDoMes(mesA[1], mesA[2]);
-                while (tmp > diasMesA) {
+        if (isDataValida(data)) {
+            try {
+                int[] d = DataHoje.DataToArrayInt(data);
+                int[] mesA = DataToArrayInt(decrementarMeses(1, data));
+                int diasMesA = qtdeDiasDoMes(mesA[1], mesA[2]);
+                if ((d[0] - (qtd * 7)) < 1) {
+                    int tmp = (qtd * 7);
+                    diasMesA += d[0];
                     tmp = diasMesA - tmp;
                     d[1]--;
                     if (d[1] < 1) {
@@ -329,69 +326,81 @@ public class DataHoje {
                         d[2]--;
                     }
                     diasMesA = qtdeDiasDoMes(mesA[1], mesA[2]);
+                    while (tmp > diasMesA) {
+                        tmp = diasMesA - tmp;
+                        d[1]--;
+                        if (d[1] < 1) {
+                            d[1] = 12;
+                            d[2]--;
+                        }
+                        diasMesA = qtdeDiasDoMes(mesA[1], mesA[2]);
+                    }
+                    d[0] = tmp;
+                } else {
+                    d[0] -= (qtd * 7);
                 }
-                d[0] = tmp;
-            } else {
-                d[0] -= (qtd * 7);
-            }
 
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
+            }
         }
+        return null;
     }
 
     public String incrementarSemanas(int qtd, String data) {
-        try {
-            //int tmp = 0;
-            int[] d = DataHoje.DataToArrayInt(data);
-            int dias = qtdeDiasDoMes(d[1], d[2]);
-
-            if ((d[0] + (qtd * 7)) > dias) {
-                int tmp = (qtd * 7) + d[0];
-                while (tmp >= dias) {
-                    tmp -= dias;
-                    d[1]++;
-                    if (d[1] > 12) {
-                        d[1] = 1;
-                        d[2]++;
+        if (isDataValida(data)) {
+            try {
+                int[] d = DataHoje.DataToArrayInt(data);
+                int dias = qtdeDiasDoMes(d[1], d[2]);
+                if ((d[0] + (qtd * 7)) > dias) {
+                    int tmp = (qtd * 7) + d[0];
+                    while (tmp >= dias) {
+                        tmp -= dias;
+                        d[1]++;
+                        if (d[1] > 12) {
+                            d[1] = 1;
+                            d[2]++;
+                        }
+                        dias = qtdeDiasDoMes(d[1], d[2]);
                     }
-                    dias = qtdeDiasDoMes(d[1], d[2]);
+                    d[0] = tmp;
+                } else {
+                    d[0] += (qtd * 7);
                 }
-                d[0] = tmp;
-            } else {
-                d[0] += (qtd * 7);
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
             }
-
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
         }
+        return null;
     }
 
     public String incrementarDias(int qtd, String data) {
-        try {
-            int[] d = DataHoje.DataToArrayInt(data);
-            int dias = qtdeDiasDoMes(d[1], d[2]);
-            if (qtd > dias) {
-                while (qtd >= dias) {
-                    qtd -= dias;
-                    d[1]++;
-                    if (d[1] > 12) {
-                        d[1] = 1;
-                        d[2]++;
+        if (isDataValida(data)) {
+            try {
+                int[] d = DataHoje.DataToArrayInt(data);
+                int dias = qtdeDiasDoMes(d[1], d[2]);
+                if (qtd > dias) {
+                    while (qtd >= dias) {
+                        qtd -= dias;
+                        d[1]++;
+                        if (d[1] > 12) {
+                            d[1] = 1;
+                            d[2]++;
+                        }
+                        dias = qtdeDiasDoMes(d[1], d[2]);
                     }
-                    dias = qtdeDiasDoMes(d[1], d[2]);
+                    d[0] += qtd;
+                } else {
+                    d[0] += qtd;
                 }
-                d[0] += qtd;
-            } else {
-                d[0] += qtd;
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
             }
-
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
         }
+        return null;
     }
 //    
 //    public String decrementarDias(int qtd, String data){
@@ -420,77 +429,98 @@ public class DataHoje {
 //    }
 
     public String incrementarAnos(int qtd, String data) {
-        try {
-            if (qtd <= 0) {
-                qtd = 1;
-            }
-            int[] d = DataHoje.DataToArrayInt(data);
-            d[2] = d[2] + qtd;
-            if ((d[1] == 2) && ((d[0] == 28) || (d[0] == 29))) {
-                if (isBisexto(d[2])) {
-                    d[0] = 29;
-                } else {
-                    d[0] = 28;
+        if (isDataValida(data)) {
+            try {
+                if (qtd <= 0) {
+                    qtd = 1;
                 }
+                int[] d = DataHoje.DataToArrayInt(data);
+                d[2] = d[2] + qtd;
+                if ((d[1] == 2) && ((d[0] == 28) || (d[0] == 29))) {
+                    if (isBisexto(d[2])) {
+                        d[0] = 29;
+                    } else {
+                        d[0] = 28;
+                    }
+                }
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
             }
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
         }
+        return null;
     }
 
     public String incrementarMesesUltimoDia(int qtd, String data) {
-        try {
-            //int tmp = 0;
-            int c = 0;
-            int[] d = DataHoje.DataToArrayInt("32/" + data.substring(3, 10));
-            if ((d[1] + qtd) > 12) {
-                int tmp = (d[1] + qtd);
-                while (tmp > 12) {
-                    tmp -= 12;
-                    c++;
+        if (isDataValida(data)) {
+            try {
+                int c = 0;
+                int[] d = DataHoje.DataToArrayInt("32/" + data.substring(3, 10));
+                if ((d[1] + qtd) > 12) {
+                    int tmp = (d[1] + qtd);
+                    while (tmp > 12) {
+                        tmp -= 12;
+                        c++;
+                    }
+                    d[2] += c;
+                    d[1] = tmp;
+                } else {
+                    d[1] += qtd;
                 }
-                d[2] += c;
-                d[1] = tmp;
-            } else {
-                d[1] += qtd;
-            }
 
-            if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
-                d[0] = qtdeDiasDoMes(d[1], d[2]);
-            }
+                if (d[0] > qtdeDiasDoMes(d[1], d[2])) {
+                    d[0] = qtdeDiasDoMes(d[1], d[2]);
+                }
 
-            return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
-        } catch (Exception e) {
-            return null;
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
+            }
         }
+        return null;
     }
 
-    public boolean menorData(String menor, String data) {
+    public static boolean menorData(String menor, String data) {
+        if (!isDataValida(menor) || !isDataValida(data)) {
+            return false;
+        }
         String[] d1 = DataToArrayString(menor);
         String[] d2 = DataToArrayString(data);
-        if (Integer.parseInt(d1[2] + d1[1] + d1[0]) < Integer.parseInt(d2[2] + d2[1] + d2[0])) {
-            return true;
-        }
-        return false;
+        boolean is = Integer.parseInt(d1[2] + d1[1] + d1[0]) < Integer.parseInt(d2[2] + d2[1] + d2[0]);
+        return is;
+
     }
 
-    public boolean maiorData(String maior, String data) {
+    public static boolean menorData(Date menor, Date data) {
+        return menorData(converteData(menor), converteData(data));
+    }
+
+    public static boolean maiorData(String maior, String data) {
+        if (!isDataValida(maior) || !isDataValida(data)) {
+            return false;
+        }
         String[] d1 = DataToArrayString(maior);
         String[] d2 = DataToArrayString(data);
-        if (Integer.parseInt(d1[2] + d1[1] + d1[0]) > Integer.parseInt(d2[2] + d2[1] + d2[0])) {
-            return true;
-        }
-        return false;
+        boolean is = Integer.parseInt(d1[2] + d1[1] + d1[0]) > Integer.parseInt(d2[2] + d2[1] + d2[0]);
+        return is;
     }
 
-    public boolean igualdadeData(String data1, String data2) {
+    public static boolean maiorData(Date maior, Date data) {
+        return maiorData(converteData(maior), converteData(data));
+    }
+
+    public static boolean igualdadeData(String data1, String data2) {
+        if (!isDataValida(data1) || !isDataValida(data2)) {
+            return false;
+        }
         String[] d1 = DataToArrayString(data1);
         String[] d2 = DataToArrayString(data2);
-        if (Integer.parseInt(d1[2] + d1[1] + d1[0]) == Integer.parseInt(d2[2] + d2[1] + d2[0])) {
-            return true;
-        }
-        return false;
+        boolean is = Integer.parseInt(d1[2] + d1[1] + d1[0]) == Integer.parseInt(d2[2] + d2[1] + d2[0]);
+        return is;
+    }
+
+    public static boolean igualdadeData(Date data1, Date data2) {
+        return igualdadeData(converteData(data1), converteData(data2));
     }
 
     public String mascararData(String data) {
@@ -498,33 +528,13 @@ public class DataHoje {
     }
 
     public static String hora() {
-        //StringBuilder sb = new StringBuilder();
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
         GregorianCalendar gc = new GregorianCalendar();
-
         gc.setTime(new Date());
-//        String hora = Integer.toString(d.get( GregorianCalendar.HOUR_OF_DAY )),  minuto = Integer.toString(d.get( GregorianCalendar.MINUTE )), segundo = Integer.toString(d.get( GregorianCalendar.SECOND ));
-//        if (hora.length() == 1)
-//        sb.append("0").append(hora); else
-//        sb.append(hora ); 
-//            
-//        sb.append( ":" );
-//        
-//        if (minuto.length() == 1)
-//        sb.append("0").append(minuto); else
-//        sb.append( minuto ); 
-//        
-//        sb.append( ":" );
-//        
-//        if (segundo.length() == 1)
-//        sb.append("0").append(segundo); else
-//        sb.append( segundo ); 
-
         return sdf.format(gc.getTime());
     }
 
     public static String incrementarHoraAtual(int minutos) {
-        //String result = "";
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(new Date());
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
@@ -557,61 +567,67 @@ public class DataHoje {
     }
 
     public static String horaSemPonto() {
-        //StringBuilder sb = new StringBuilder();
         SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
         GregorianCalendar gc = new GregorianCalendar();
         gc.setTime(new Date());
-//        sb.append( d.get( GregorianCalendar.HOUR_OF_DAY ) );
-//        sb.append( d.get( GregorianCalendar.MINUTE ) );
-//        sb.append( d.get( GregorianCalendar.SECOND ) );
-
         return sdf.format(gc.getTime());
     }
 
     public static String horaMinuto() {
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         GregorianCalendar gc = new GregorianCalendar();
-
         gc.setTime(new Date());
-
-//        if(d.get( Calendar.HOUR_OF_DAY ) < 9 ){
-//            sb.append("0").append (d.get(Calendar.HOUR_OF_DAY));
-//        }else{
-//            sb.append( d.get( Calendar.HOUR_OF_DAY ) );
-//        }
-//        sb.append( ":" );
-//        if(d.get( Calendar.MINUTE ) < 9 ){
-//            sb.append("0").append (d.get(Calendar.MINUTE));
-//        }else{
-//            sb.append( d.get( Calendar.MINUTE ) );
-//        }        
         return sdf.format(gc.getTime());
     }
 
     public static String colocarBarras(String data) {
-        return data.substring(0, 2) + "/"
-                + data.substring(2, 4) + "/"
-                + data.substring(4, 8);
+        if (data.isEmpty()) {
+            return "";
+        }
+        String d;
+        String m;
+        String a;
+        try {
+            d = data.substring(0, 2);
+        } catch (Exception e) {
+            d = "01";
+        }
+        try {
+            m = data.substring(2, 4);
+        } catch (Exception e) {
+            m = "01";
+        }
+        try {
+            a = data.substring(4, 8);
+        } catch (Exception e) {
+            a = "1900";
+        }
+        String newDate = d + "/" + m + "/" + a;
+        if (!isDataValida(newDate)) {
+            return "01/01/1900";
+        }
+        return newDate;
     }
 
     public static int converteDataParaInteger(String data) {
-        return Integer.parseInt(DataHoje.DataToArrayString(data)[2]
-                + DataHoje.DataToArrayString(data)[1]
-                + DataHoje.DataToArrayString(data)[0]);
+        if (isDataValida(data)) {
+            return Integer.parseInt(DataHoje.DataToArrayString(data)[2] + DataHoje.DataToArrayString(data)[1] + DataHoje.DataToArrayString(data)[0]);
+        }
+        return 0;
     }
 
     public static int converteDataParaRefInteger(String data) {
-        return Integer.parseInt(DataHoje.DataToArrayString(data)[2]
-                + DataHoje.DataToArrayString(data)[1]);
+        if (isDataValida(data)) {
+            return Integer.parseInt(DataHoje.DataToArrayString(data)[2] + DataHoje.DataToArrayString(data)[1]);
+        }
+        return 0;
     }
 
     public boolean faixaCincoAnosApos(String data) {
         int dataHoje = DataHoje.converteDataParaRefInteger(DataHoje.data());
         int dataAntes = DataHoje.converteDataParaRefInteger(decrementarMeses(60, DataHoje.data()));
         int dataM = DataHoje.converteDataParaRefInteger(data);
-
-        if ((dataM > dataAntes)
-                && (dataM <= dataHoje)) {
+        if ((dataM > dataAntes) && (dataM <= dataHoje)) {
             return true;
         } else {
             return false;
@@ -619,44 +635,41 @@ public class DataHoje {
     }
 
     public int calcularIdade(String dataNascimento) {
-//         int idade = -1;
-        String dataHoje = DataHoje.data();
-        int[] dataH = DataHoje.DataToArrayInt(dataHoje);
-        int[] dataN = DataHoje.DataToArrayInt(dataNascimento);
-        int idade = dataH[2] - dataN[2];
-        int[] novaData = DataHoje.DataToArrayInt(incrementarAnos(idade, dataNascimento));
-        if (dataH[1] < novaData[1]) {
-            idade--;
-        } else if (dataH[1] == novaData[1]) {
-            if (dataH[0] < dataH[0]) {
+        int idade = 0;
+        if (isDataValida(dataNascimento)) {
+            int dN = converteDataParaInteger(dataNascimento);
+            int dH = converteDataParaInteger(data());
+            if (dN >= dH) {
+                return 0;
+            }
+            String dataHoje = DataHoje.data();
+            int[] dataH = DataHoje.DataToArrayInt(dataHoje);
+            int[] dataN = DataHoje.DataToArrayInt(dataNascimento);
+            idade = dataH[2] - dataN[2];
+            int[] novaData = DataHoje.DataToArrayInt(incrementarAnos(idade, dataNascimento));
+            if (dataH[1] < novaData[1]) {
                 idade--;
+            } else if (dataH[1] == novaData[1]) {
+                if (dataH[0] < dataH[0]) {
+                    idade--;
+                }
             }
         }
-        //int idade = DataHoje.converteDataParaInteger(DataHoje.data()) - DataHoje.converteDataParaInteger(dataNascimento);
         return idade;
     }
 
     public int calcularIdade(Date data) {
-        String dataNascimento = DataHoje.converteData(data);
-        // int idade = -1;
-        String dataHoje = DataHoje.data();
-        int[] dataH = DataHoje.DataToArrayInt(dataHoje);
-        int[] dataN = DataHoje.DataToArrayInt(dataNascimento);
-        int idade = dataH[2] - dataN[2];
-        int[] novaData = DataHoje.DataToArrayInt(incrementarAnos(idade, dataNascimento));
-        if (dataH[1] < novaData[1]) {
-            idade--;
-        } else if (dataH[1] == novaData[1]) {
-            if (dataH[0] < dataH[0]) {
-                idade--;
-            }
+        if (data == null) {
+            return 0;
         }
-        return idade;
+        return calcularIdade(DataHoje.converteData(data));
     }
 
     public static int quantidadeMeses(Date dataInicial, Date dataFinal) {
+        if (dataInicial == null || dataFinal == null) {
+            return 0;
+        }
         final double MES_EM_MILISEGUNDOS = 30.0 * 24.0 * 60.0 * 60.0 * 1000.0;
-        //final double MES_EM_MILISEGUNDOS = 2592000000.0;            
         int numeroDeMeses = (int) (double) ((dataFinal.getTime() - dataInicial.getTime()) / MES_EM_MILISEGUNDOS);
         if (numeroDeMeses <= 0) {
             return 0;
@@ -665,8 +678,9 @@ public class DataHoje {
     }
 
     public static String validaHora(String hora) {
-//        int n1 = 0;
-//        int n2 = 0;
+        if (hora.isEmpty()) {
+            return "";
+        }
         int n1;
         int n2;
         if (hora.length() == 1) {
@@ -722,6 +736,9 @@ public class DataHoje {
      * @return
      */
     public static String dataExtenso(String data, int tipo) {
+        if (!isDataValida(data)) {
+            return "";
+        }
         String extenso;
         try {
             String dia = data.substring(0, 2);
@@ -867,7 +884,7 @@ public class DataHoje {
             } else {
                 extenso = dia + " de " + mes + " de " + ano;
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             extenso = data;
 
         }
@@ -880,5 +897,54 @@ public class DataHoje {
         calendar.setTime(date);
         int dia = calendar.get(GregorianCalendar.DAY_OF_WEEK);
         return dia;
+    }
+
+    /**
+     * Convert String with various formats into java.util.Date
+     *
+     * @param input Date as a string
+     * @return java.util.Date object if input string is parsed successfully else
+     * returns null System.out.println("10/14/2012" + " = " +
+     * dataValidaConverte("10/14/2012")); System.out.println("10-Jan-2012" + " =
+     * " + dataValidaConverte("10-Jan-2012")); System.out.println("01.03.2002" +
+     * " = " + dataValidaConverte("01.03.2002"));
+     * System.out.println("12/03/2010" + " = " +
+     * dataValidaConverte("12/03/2010")); System.out.println("19.Feb.2011" + " =
+     * " + dataValidaConverte("19.Feb.2011")); System.out.println("4/20/2012" +
+     * " = " + dataValidaConverte("4/20/2012")); System.out.println("some
+     * string" + " = " + dataValidaConverte("some string"));
+     * System.out.println("123456" + " = " + dataValidaConverte("123456"));
+     * System.out.println("null" + " = " + dataValidaConverte(null));
+     */
+    public static Date dataValidaConverte(String input) {
+        List<SimpleDateFormat> dateFormats = new ArrayList<SimpleDateFormat>();
+        dateFormats.add(new SimpleDateFormat("M/dd/yyyy"));
+        dateFormats.add(new SimpleDateFormat("dd.M.yyyy"));
+        dateFormats.add(new SimpleDateFormat("M/dd/yyyy hh:mm:ss a"));
+        dateFormats.add(new SimpleDateFormat("dd.M.yyyy hh:mm:ss a"));
+        dateFormats.add(new SimpleDateFormat("dd.MMM.yyyy"));
+        dateFormats.add(new SimpleDateFormat("dd-MMM-yyyy"));
+        dateFormats.add(new SimpleDateFormat("dd/MM/yyyy"));
+        Date date = null;
+        if (null == input) {
+            return null;
+        }
+        for (SimpleDateFormat format : dateFormats) {
+            try {
+                format.setLenient(false);
+                date = format.parse(input);
+            } catch (ParseException e) {
+                //Shhh.. try other formats
+            }
+            if (date != null) {
+                break;
+            }
+        }
+
+        return date;
+    }
+
+    public static boolean isDataValida(String input) {
+        return dataValidaConverte(input) != null;
     }
 }
