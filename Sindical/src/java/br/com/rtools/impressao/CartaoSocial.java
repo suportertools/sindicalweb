@@ -18,24 +18,6 @@ public class CartaoSocial {
     private String cpf;
     private String rg;
 
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg) {
-        this.matricula = matricula;
-        this.barras = barras;
-        this.nome = nome;
-        this.empresa = empresa;
-        this.cnpj = cnpj;
-        this.admissao = admissao;
-        this.validade = validade;
-        this.e_cidade = e_cidade;
-        this.e_uf = e_uf;
-        this.logo = logo;
-        this.imagem = imagem;
-        this.filiacao = filiacao;
-        this.profissao = profissao;
-        this.cpf = cpf;
-        this.rg = rg;
-    }
-
     public CartaoSocial() {
         this.matricula = "";
         this.barras = "";
@@ -53,7 +35,25 @@ public class CartaoSocial {
         this.cpf = "";
         this.rg = "";
     }
-
+        
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg) {
+        this.matricula = matricula;
+        this.barras = barras;
+        this.nome = nome;
+        this.empresa = empresa;
+        this.cnpj = cnpj;
+        this.admissao = admissao;
+        this.validade = validade;
+        this.e_cidade = e_cidade;
+        this.e_uf = e_uf;
+        this.logo = logo;
+        this.imagem = imagem;
+        this.filiacao = filiacao;
+        this.profissao = profissao;
+        this.cpf = cpf;
+        this.rg = rg;
+    }
+    
     public String getMatricula() {
         return matricula;
     }
@@ -172,5 +172,5 @@ public class CartaoSocial {
 
     public void setRg(String rg) {
         this.rg = rg;
-    }
+    }    
 }
