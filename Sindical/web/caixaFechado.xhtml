@@ -10,7 +10,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <style type="text/css">
-            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} a
             .ui-button { padding: 3px!important; }              
         </style>
         
@@ -57,8 +57,8 @@
                                 
                                 <p:column headerText="Status" style="text-align: center">
                                     <h:outputText value="OK" rendered="#{linha.argumento5 == 0}" style="font-weight: bold;"/>
-                                    <h:outputText value="EM FALTA" rendered="#{linha.argumento5 == 1}" style="font-weight: bold; color: #cc0000" title="O valor do fechamento é maior que o valor informado!"/>
-                                    <h:outputText value="EM SOBRA" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
+                                    <h:outputText value="EM FALTA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 1}" style="font-weight: bold; color: #cc0000" title="O valor do fechamento é maior que o valor informado!"/>
+                                    <h:outputText value="EM SOBRA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
                                 </p:column>
                                 
                                 <p:column headerText="..." style="text-align: center">

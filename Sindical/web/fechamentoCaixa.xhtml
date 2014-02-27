@@ -32,7 +32,7 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Fechamento de Caixa" styleClass="fonteHeader" />
                         <h:form id="formFechamentoCaixa">
-                            <p:panel style="clear: both; background: #ECF3FE;" rendered="false">
+                            <p:panel style="clear: both; background: #ECF3FE;">
                                 <h:panelGrid columns="1">
                                     <p:column>
                                         <h:outputLabel value="Saldo Anterior: " style="font-size: 10pt!important; font-weight: bold"/>
@@ -89,8 +89,8 @@
                                 
                                 <p:column headerText="Status" style="text-align: center">
                                     <h:outputText value="OK" rendered="#{linha.argumento5 == 0}" style="font-weight: bold;"/>
-                                    <h:outputText value="EM FALTA" rendered="#{linha.argumento5 == 1}" style="font-weight: bold; color: #cc0000" title="O valor do fechamento é maior que o valor informado!"/>
-                                    <h:outputText value="EM SOBRA" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
+                                    <h:outputText value="EM FALTA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 1}" style="font-weight: bold; color: #cc0000" title="O valor do fechamento é maior que o valor informado!"/>
+                                    <h:outputText value="EM SOBRA R$ #{linha.argumento6}" rendered="#{linha.argumento5 == 2}" style="font-weight: bold; color: #006600" title="O valor informado é maior que o valor de fechamento!"/>
                                 </p:column>
                                 
                                 <p:column headerText="..." style="text-align: center">

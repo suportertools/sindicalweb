@@ -119,11 +119,12 @@ public class CaixaFechadoBean implements Serializable{
             Caixa caixa = (Caixa)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) ,"Caixa"));
             
             List<Vector> lista = db.listaFechamentoCaixaTransferencia(caixa.getId());
-            int status = 0;
-            String valor_d = "0,00";
             for (int i = 0; i < lista.size(); i++){
+                String valor_d = "0,00";
+                int status = 0;
                 float vl_fechado = Moeda.converteUS$(lista.get(i).get(2).toString()), 
                       vl_informado = Moeda.converteUS$(lista.get(i).get(3).toString());
+                
                 if (vl_fechado > vl_informado){
                     // EM FALTA
                     status = 1;
@@ -134,7 +135,6 @@ public class CaixaFechadoBean implements Serializable{
                     status = 2;
                 }
                 
-                // TESTAR SE O VALOR PARA TRANSFERENCIA ESTA NA TELA -- AQUI
                 listaFechamento.add(new DataObject(lista.get(i), 
                                                    DataHoje.converteData((Date)lista.get(i).get(4)), // DATA
                                                    lista.get(i).get(5).toString(), // HORA
