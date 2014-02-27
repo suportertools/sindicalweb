@@ -456,14 +456,12 @@ public class FisicaDBToplink extends DB implements FisicaDB {
     public List pesquisaFisicaPorDocSemLike(String doc) {
         try {
             Query qry = getEntityManager().createQuery(
-                    "   SELECT FIS                          "
-                    + "   FROM Fisica AS FIS,               "
-                    + "        Pessoa AS PES                "
-                    + "  WHERE FIS.pessoa.id = PES.id       "
-                    + "    AND PES.documento LIKE :documento");
+                    "   SELECT FIS                           "
+                    + "   FROM Fisica AS FIS                 "
+                    + "  WHERE FIS.pessoa.documento LIKE :documento " );
             qry.setParameter("documento", doc);
             List list = qry.getResultList();
-            if (list.isEmpty()) {
+            if (!list.isEmpty()) {
                 return list;
             }
         } catch (Exception e) {
