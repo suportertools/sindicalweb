@@ -47,14 +47,17 @@ public interface SalvarAcumuladoDB {
     public List pesquisaObjeto(int id[], String className);
 
     public List pesquisaObjeto(int id[], String className, String field);
-    
+
     /**
-     * 
+     *
      * @param object
      * @return object
      */
-    public Object find(Object object) ;
-    public Object find(Object object, Object objectId) ;
+    public Object find(Object object);
+
+    public Object find(Object object, Object objectId);
+
+    public Object find(String object, int objectId);
 
     public List listaObjeto(String className);
 
