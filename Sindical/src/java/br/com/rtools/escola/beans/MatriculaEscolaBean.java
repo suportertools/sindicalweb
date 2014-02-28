@@ -318,7 +318,7 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesAnoInicialExtenso", DataHoje.dataExtenso(matriculaIndividual.getDataInicioString(), 1)));
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesAnoFinalExtenso", DataHoje.dataExtenso(matriculaIndividual.getDataTerminoString(), 1)));
             } else {
-                turmax = (Turma) salvarAcumuladoDB.find(matriculaTurma);
+                turmax = ((MatriculaTurma) salvarAcumuladoDB.find(matriculaTurma)).getTurma();
                 contratoCurso = matriculaTurma.getTurma().getCursos().getDescricao();
                 periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino()) + 1;
                 if (turmax.isSegunda()) {
