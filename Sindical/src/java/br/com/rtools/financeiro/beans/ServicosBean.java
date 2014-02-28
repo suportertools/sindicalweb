@@ -16,13 +16,16 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-//import org.primefaces.component.tabview.Tab;
-//import org.primefaces.event.TabChangeEvent;
 
-public class ServicosJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class ServicosBean implements Serializable {
 
     private Servicos servicos = new Servicos();
     private Plano5 plano5 = new Plano5();
