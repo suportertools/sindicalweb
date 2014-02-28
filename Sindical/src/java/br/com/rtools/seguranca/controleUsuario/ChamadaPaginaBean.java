@@ -1004,6 +1004,20 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "simples");
     }
 
+    public synchronized String proStatus() {
+        String[] lista = new String[]{"ProStatus", "Cadastro Protocolo Status"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return metodoGenerico(2, "simples");
+    }
+
+    public synchronized String prioridade() {
+        String[] lista = new String[]{"Prioridade", "Cadastro Prioridade"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return metodoGenerico(2, "simples");
+    }
+
     public synchronized String motivoInativacao() {
         String[] lista = new String[]{"MotivoInativacao", "Motivo de Inativação"};
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
