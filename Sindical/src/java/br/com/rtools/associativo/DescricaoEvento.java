@@ -1,22 +1,12 @@
 package br.com.rtools.associativo;
 
-import br.com.rtools.financeiro.Servicos;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "EVE_DESC_EVENTO")
-@NamedQuery(name = "DescricaoEvento.pesquisaID", query = "select de from DescricaoEvento de where de.id=:pid")
+@NamedQuery(name = "DescricaoEvento.findAll", query = "SELECT DE FROM DescricaoEvento AS DE ORDER BY DE.grupoEvento.descricao ASC, DE.descricao ASC ")
 public class DescricaoEvento implements java.io.Serializable {
-
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -25,22 +15,17 @@ public class DescricaoEvento implements java.io.Serializable {
     @JoinColumn(name = "ID_GRUPO_EVENTO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private GrupoEvento grupoEvento;
-    @JoinColumn(name = "ID_SERVICO_MOVIMENTO", referencedColumnName = "ID")
-    @ManyToOne
-    private Servicos servicoMovimento;
 
-    public DescricaoEvento(int id, String descricao, GrupoEvento grupoEvento, Servicos servicoMovimento) {
+    public DescricaoEvento(int id, String descricao, GrupoEvento grupoEvento) {
         this.id = id;
         this.descricao = descricao;
         this.grupoEvento = grupoEvento;
-        this.servicoMovimento = servicoMovimento;
     }
 
     public DescricaoEvento() {
         this.id = -1;
         this.descricao = "";
         this.grupoEvento = new GrupoEvento();
-        this.servicoMovimento = new Servicos();
     }
 
     public int getId() {
@@ -67,11 +52,8 @@ public class DescricaoEvento implements java.io.Serializable {
         this.grupoEvento = grupoEvento;
     }
 
-    public Servicos getServicoMovimento() {
-        return servicoMovimento;
-    }
-
-    public void setServicoMovimento(Servicos servicoMovimento) {
-        this.servicoMovimento = servicoMovimento;
+    @Override
+    public String toString() {
+        return "DescricaoEvento{" + "id=" + id + ", descricao=" + descricao + ", grupoEvento=" + grupoEvento + '}';
     }
 }
