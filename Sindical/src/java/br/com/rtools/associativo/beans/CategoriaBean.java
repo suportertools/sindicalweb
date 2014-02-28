@@ -18,8 +18,12 @@ import java.util.List;
 import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-public class CategoriaJSFBean {
+@ManagedBean
+@SessionScoped
+public class CategoriaBean {
 
     private Categoria categoria = new Categoria();
     private String msgConfirma = "";
