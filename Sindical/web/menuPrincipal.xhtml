@@ -9,17 +9,12 @@
         <title>Sindical - Menu Principal</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
-
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
-            .ui-selectonemenu-label .ui-inputfield{
-                
-            }
+            .ui-selectonemenu-label .ui-inputfield{}
         </style>
-
     </h:head>
-
     <h:body>
         <!-- INICIA DIV wrap e main -->
         <div id="wrapx">
@@ -28,12 +23,11 @@
                 <f:subview id="header">
                     <ui:include src="templatePrime.xhtml"/>
                 </f:subview>
-
                 <f:view>
                     <h:form id="formMenuPrincipal">
                         <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
                             <p:menubar>
-                                <p:submenu label="Segurança" icon="ui-icon-document" style="margin-right: 15px">  
+                                <p:submenu label="Segurança" icon="ui-icon-document" style="margin-right: 15px">
                                     <p:menuitem value="Usuários" action="#{chamadaPaginaBean.usuario}" />  
                                     <p:submenu label="Permissão" icon="ui-icon-contact">  
                                         <p:menuitem value="Perm. Departamento"       action="#{chamadaPaginaBean.permissaoDepartamento}" />
@@ -44,9 +38,15 @@
                                     </p:submenu>  
                                     <p:separator />  
                                     <p:menuitem value="Pesquisar Logs"                   action="#{chamadaPaginaBean.pesquisaLog}" title="Registro de atividades"  />
+                                    <c:if test="#{controleUsuarioBean.clienteString.equals('Rtools')}">
+                                        <p:submenu label="Ordem Serviço"> 
+                                            <p:menuitem value="Ordem Serviço"    />
+                                            <p:menuitem value="Prioridade" />                                            
+                                            <p:menuitem value="Status" />                                            
+                                        </p:submenu>
+                                    </c:if>
                                     <p:menuitem value="Sair do Sistema" action="#{usuarioBean.sairSistema}" /> 
                                 </p:submenu>
-
                                 <p:submenu label="Departamentos" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:menuitem value="Social"      action="#{chamadaPaginaBean.menuSocial}" />
                                     <p:menuitem value="Arrecadação" action="#{chamadaPaginaBean.menuArrecadacao}" />
@@ -58,19 +58,16 @@
                                     <p:menuitem value="Locadora"    action="#{chamadaPaginaBean.menuLocadora}" />
                                     <p:menuitem value="Atendimento" action="#{chamadaPaginaBean.menuAtendimento}" />
                                 </p:submenu>
-
                                 <p:submenu label="Sindicato" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:menuitem value="Registro Empresarial" action="#{chamadaPaginaBean.registroEmpresarial}" actionListener="#{registroEmpresarialBean.limparModulo()}" />
                                     <p:menuitem value="Registro Filial"      action="#{chamadaPaginaBean.macFilial}" />
                                     <p:menuitem value="Registro Patronal"    action="#{chamadaPaginaBean.registroPatronal}" />
                                     <p:menuitem value="Piso Salarial"        action="#{chamadaPaginaBean.pisoSalarial}" />
                                 </p:submenu>
-
                                 <p:submenu label="Suporte" icon="ui-icon-document" style="margin-right: 15px">
                                     <p:menuitem value="Manual do Sistema" />
                                     <p:menuitem value="Envie sua Mensagem" />
                                 </p:submenu>
-
                                 <p:submenu label="Ferramentas" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:submenu label="Pessoa" icon="ui-icon-contact">
                                         <p:menuitem value="Física"                action="#{chamadaPaginaBean.pessoaFisica}"/>
@@ -81,7 +78,6 @@
                                         <p:menuitem value="Profissão"             action="#{chamadaPaginaBean.profissao}"/>
                                         <p:menuitem value="Enviar E-Mails"        action="#{chamadaPaginaBean.enviarEmail}"/>
                                     </p:submenu>
-
                                     <p:submenu label="Endereço" icon="ui-icon-contact" style="margin-right: 15px">
                                         <p:menuitem value="Endereço"      action="#{chamadaPaginaBean.endereco}"/>
                                         <p:menuitem value="Bairro"        action="#{chamadaPaginaBean.bairro}"/>
@@ -90,79 +86,65 @@
                                         <p:menuitem value="Descrição"     action="#{chamadaPaginaBean.descricaoEndereco}"/>
                                         <p:menuitem value="Tipo Endereço" action="#{chamadaPaginaBean.tipoEndereco}"/>
                                     </p:submenu>
-
                                     <p:submenu label="Agenda" icon="ui-icon-document">  
                                         <p:menuitem value="Agenda Telefônica"            action="#{chamadaPaginaBean.agendaTelefone}"/>
                                         <p:menuitem value="Lista Agenda Telefônica"   action="#{chamadaPaginaBean.pesquisaAgendaTelefone}"/>
                                         <p:menuitem value="Grupo Agenda"                 action="#{chamadaPaginaBean.grupoAgenda}"/>
                                     </p:submenu>
                                 </p:submenu>
-
                                 <p:menuitem value="Relatórios" action="#{chamadaPaginaBean.relatorio}"/>
                             </p:menubar> 
                         </p:panel>
-
                         <p:panel style="border: 0px; width: 1024px; height: 550px; margin: 0 auto">
                             <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 25pt!important; float: left;  font-family: 'Cordia New'"/>
-
-                                <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px">
-                                    <h:panelGrid>
-                                        <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
-                                    </h:panelGrid>
-                                    <p:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica" style="clear: both">
-                                        <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" width="100" /><br />
-                                    </p:commandLink>   
-                                </p:panel>
-
-                                <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px; margin-left: 200px; width: 540px">
-                                    <!-- <p:poll interval="5" update="i_panel_poll" listener="# {polling.existeUsuarioSessao()}"/>  -->
-                                    <h:panelGrid id="i_panel_poll" style="float: left">
-                                        <h:outputLabel value="Sem Notificações"  styleClass="fonteExtratoTela" rendered="#{!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58"/>
-                                        <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
-                                        <br />
-                                        <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
-                                    </h:panelGrid>
-                                </p:panel>
-
-                                <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="#{!emissaoGuiasBean.listah.isEmpty()}">
-                                    <h:panelGrid  style="float: left">
-                                        <h:outputLabel value="Existem guias geradas sem baixar" styleClass="fonteExtratoTela"  style="font-size: 12pt; color: #dd3b58"/>
-                                        <br />
-                                        <p:commandLink value="clique aqui para baixar ou excluir" onclick="i_dlg_guias.show()"/>
-                                    </h:panelGrid>
-
-
-                                    <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
-                                        <p:dataTable value="#{emissaoGuiasBean.listah}" var="linha" id="tbl" emptyMessage="Nenhuma guia encontrada!">
-                                            <p:column headerText="Nome Pessoa">
-                                                <h:outputText value="#{linha.movimento.pessoa.nome}"/>
-                                            </p:column>
-                                            
-                                            <p:column headerText="Valor">
-                                                <h:outputText value="#{linha.movimento.valorBaixa}"/>
-                                            </p:column>
-                                            
-                                            <p:column headerText="">
-                                                <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
-                                            </p:column>
-                                            
-                                            <p:column headerText="">
-                                                <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
-                                            </p:column>
-                                        </p:dataTable>
-                                        <br /><br />
-                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_guias.hide()" style="float: left" />       
-                                    </p:dialog>
-                                </p:panel>
-
-                                <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">
-                                    <h:panelGrid>
-                                        <h:outputText style="font-weight: bold" value="Meus principais Acessos" />
-                                    </h:panelGrid>
-
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px">
+                                <h:panelGrid>
+                                    <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
+                                </h:panelGrid>
+                                <p:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica" style="clear: both">
+                                    <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" width="100" /><br />
+                                </p:commandLink>   
+                            </p:panel>
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px; margin-left: 200px; width: 540px">
+                                <!-- <p:poll interval="5" update="i_panel_poll" listener="# {polling.existeUsuarioSessao()}"/>  -->
+                                <h:panelGrid id="i_panel_poll" style="float: left">
+                                    <h:outputLabel value="Sem Notificações"  styleClass="fonteExtratoTela" rendered="#{!notificacaoBean.habilitaNot}" style="font-size: 12pt; color: #dd3b58"/>
+                                    <h:outputLabel value="Existem #{notificacaoBean.quantidadeMenu} notificações de cobrança para serem enviadas" rendered="#{notificacaoBean.habilitaNot}" styleClass="fonteExtratoTela" style="font-size: 12pt; color: #dd3b58"/>
                                     <br />
-
-                                    <h:panelGrid style="text-align: left;">
+                                    <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="#{!emissaoGuiasBean.listah.isEmpty()}">
+                                <h:panelGrid  style="float: left">
+                                    <h:outputLabel value="Existem guias geradas sem baixar" styleClass="fonteExtratoTela"  style="font-size: 12pt; color: #dd3b58"/>
+                                    <br />
+                                    <p:commandLink value="clique aqui para baixar ou excluir" onclick="i_dlg_guias.show()"/>
+                                </h:panelGrid>
+                                <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
+                                    <p:dataTable value="#{emissaoGuiasBean.listah}" var="linha" id="tbl" emptyMessage="Nenhuma guia encontrada!">
+                                        <p:column headerText="Nome Pessoa">
+                                            <h:outputText value="#{linha.movimento.pessoa.nome}"/>
+                                        </p:column>                                            
+                                        <p:column headerText="Valor">
+                                            <h:outputText value="#{linha.movimento.valorBaixa}"/>
+                                        </p:column>                                            
+                                        <p:column headerText="">
+                                            <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
+                                        </p:column>                                            
+                                        <p:column headerText="">
+                                            <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
+                                        </p:column>
+                                    </p:dataTable>
+                                    <br /><br />
+                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_guias.hide()" style="float: left" />
+                                </p:dialog>
+                            </p:panel>
+                            <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">
+                                <h:panelGrid>
+                                    <h:outputText style="font-weight: bold" value="Meus principais Acessos" />
+                                </h:panelGrid>
+                                <br />
+                                <h:panelGrid style="text-align: left;">
                                     <c:forEach items="#{controleUsuarioBean.listaContador}" var="linha">
                                         <h:commandLink value="#{linha.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(linha.rotina.pagina)}" style="margin-bottom: 10px; font-size: 9pt" class="listaAcesso" />
                                         <br />
@@ -170,20 +152,17 @@
                                 </h:panelGrid>
                             </p:panel>
                         </p:panel>
+                    </h:form>
+                </f:view>
 
-                        </h:form>
-                    </f:view>
-
-
-
-                    <!-- FINALIZA div wrap main -->
-                </div>
+                <!-- FINALIZA div wrap main -->
             </div>
-            <!-- FINALIZA div wrap main -->
-            <div id="footerx">
-                <f:subview id="footer">
-                    <ui:include src="templateFooter.xhtml"/>
-                </f:subview>
-            </div>
-        </h:body>
-    </html>
+        </div>
+        <!-- FINALIZA div wrap main -->
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>
+    </h:body>
+</html>
