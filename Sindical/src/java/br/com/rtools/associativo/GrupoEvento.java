@@ -5,12 +5,13 @@ import javax.persistence.*;
 @Entity
 @Table(name = "EVE_GRUPO_EVENTO")
 @NamedQueries({
-    @NamedQuery(name = "GrupoEvento.pesquisaID",  query = "SELECT GE FROM GrupoEvento AS GE WHERE GE.id = :pid"),
-    @NamedQuery(name = "GrupoEvento.findAll",     query = "SELECT GE FROM GrupoEvento AS GE ORDER BY GE.descricao ASC "),
-    @NamedQuery(name = "GrupoEvento.findName",    query = "SELECT GE FROM GrupoEvento AS GE WHERE UPPER(GE.descricao) LIKE :pdescricao ORDER BY GE.descricao ASC ")
+    @NamedQuery(name = "GrupoEvento.pesquisaID", query = "SELECT GE FROM GrupoEvento AS GE WHERE GE.id = :pid"),
+    @NamedQuery(name = "GrupoEvento.findAll", query = "SELECT GE FROM GrupoEvento AS GE ORDER BY GE.descricao ASC "),
+    @NamedQuery(name = "GrupoEvento.findName", query = "SELECT GE FROM GrupoEvento AS GE WHERE UPPER(GE.descricao) LIKE :pdescricao ORDER BY GE.descricao ASC ")
 })
 public class GrupoEvento implements java.io.Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -41,5 +42,10 @@ public class GrupoEvento implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public String toString() {
+        return "GrupoEvento{" + "id=" + id + ", descricao=" + descricao + '}';
     }
 }
