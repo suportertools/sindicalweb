@@ -23,6 +23,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.beans.JuridicaBean;
@@ -30,20 +31,23 @@ import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.pessoa.db.PessoaDB;
+import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Departamento;
+import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -52,262 +56,320 @@ import javax.faces.model.SelectItem;
 @ManagedBean
 @SessionScoped
 public class VendasCaravanaBean {
-    private Fisica fisica = new Fisica();
-    private List<DataObject> listaReserva = new ArrayList<DataObject>();
+
     private Caravana caravana = new Caravana();
-    private int idCaravana = 0;
-    private final List<SelectItem> listaCaravanaSelect = new ArrayList<SelectItem>();
-    private final List<Caravana> listaCaravana = new ArrayList<Caravana>();
-    private List<SelectItem> listaTipo = new Vector<SelectItem>();
-    private int idTipo = 0;
-    private int idAdicionar = -1;
     private CVenda vendas = new CVenda();
-    private int parcelas = 1;
-    private List<DataObject> listaParcelas = new ArrayList();
-    private String dataEntrada = DataHoje.data();
-    private final List<SelectItem> listaPoltrona = new ArrayList<SelectItem>();
     private EventoServicoValor eventoServicoValor = new EventoServicoValor();
     private EventoServico eventoServico = new EventoServico();
+    private Fisica pessoaFisica = new Fisica();
+    private Fisica fisica = new Fisica();
+    private Juridica pessoaJuridica = new Juridica();
+    private PessoaEndereco pessoaEndereco = new PessoaEndereco();
+    private final List<Caravana> listaCaravana = new ArrayList<Caravana>();
+    private final List<SelectItem> listaCaravanaSelect = new ArrayList<SelectItem>();
+    private final List<SelectItem> listaPoltrona = new ArrayList<SelectItem>();
+    private List<SelectItem> listaDataEntrada = new ArrayList<SelectItem>();
+    private List<SelectItem> listaMesVencimento = new ArrayList<SelectItem>();
+    private List<DataObject> listaParcelas = new ArrayList();
+    private List<DataObject> listaReserva = new ArrayList<DataObject>();
+    private List<SelectItem> listaTipo = new ArrayList<SelectItem>();
+    private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
+    private int idCaravana = 0;
+    private int idTipo = 0;
+    private int idAdicionar = -1;
+    private int idDataEntrada = 0;
+    private int idMesVencimento = 0;
+    private int idDiaVencimento = 0;
+    private int parcelas = 1;
+    private String dataEntrada = DataHoje.data();
     private Pessoa pessoa = new Pessoa();
     private String valorTotal = "0,00";
     private String valorPago = "0,00";
     private String valorOutras = "0,00";
     private String valorEntrada = "0,00";
-    
-    private PessoaEndereco pessoaEndereco = new PessoaEndereco();
-    private Fisica pessoaFisica = new Fisica();
-    private Juridica pessoaJuridica = new Juridica();
-    
-    public void excluir(){
-        if (vendas.getId() == -1){
+    private Registro registro = new Registro();
+
+    public void excluir() {
+        if (vendas.getId() == -1) {
             GenericaMensagem.warn("Erro", "Pesquise uma venda para ser cancelada!");
-            return ;
+            return;
         }
-        
-        List<Reservas> lr = new ArrayList();
+
+        List<Reservas> lr;
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
-        Reservas res = new Reservas();
+        Reservas res;
         sv.abrirTransacao();
-        
-        
+
         lr = db.listaReservasVenda(vendas.getId());
-        for (int i = 0; i < lr.size();i++){
-            res = (Reservas)sv.pesquisaCodigo(lr.get(i).getId(), "Reservas");
-            if (!sv.deletarObjeto(res)){
+        for (Reservas lr1 : lr) {
+            res = (Reservas) sv.pesquisaObjeto(lr1.getId(), "Reservas");
+            if (!sv.deletarObjeto(res)) {
                 GenericaMensagem.warn("Erro", "Erro ao cancelar reservas!");
                 sv.desfazerTransacao();
-                return ;
+                return;
             }
         }
-        
+
         List<Movimento> listaMovimento = db.listaMovCaravana(vendas.getResponsavel().getId(), vendas.getEvt().getId());
-        if (!listaMovimento.isEmpty()){
-            for (int i = 0; i < listaMovimento.size(); i++){
-                if (listaMovimento.get(i).getBaixa() != null){
+        if (!listaMovimento.isEmpty()) {
+            for (Movimento listaMovimento1 : listaMovimento) {
+                if (listaMovimento1.getBaixa() != null) {
                     GenericaMensagem.warn("Erro", "Reserva com parcela paga não pode ser excluída!");
                     sv.desfazerTransacao();
-                    return ;
+                    return;
                 }
             }
-            Movimento mov = new Movimento();
-            Lote lot = new Lote();
-            Evt evt = new Evt();
-            for (int i = 0; i < listaMovimento.size(); i++){
-                mov = (Movimento)sv.pesquisaCodigo(listaMovimento.get(i).getId(), "Movimento");
-                lot = (Lote)sv.pesquisaCodigo(mov.getLote().getId(), "Lote");
-                evt = (Evt)sv.pesquisaCodigo(mov.getLote().getEvt().getId(), "Evt");
-                                
-                if (!sv.deletarObjeto(mov)){
+            Movimento mov;
+            Lote lot;
+            Evt evt;
+            for (Movimento listaMovimento1 : listaMovimento) {
+                mov = (Movimento) sv.pesquisaObjeto(listaMovimento1.getId(), "Movimento");
+                lot = (Lote) sv.pesquisaObjeto(mov.getLote().getId(), "Lote");
+                evt = (Evt) sv.pesquisaObjeto(mov.getLote().getEvt().getId(), "Evt");
+                if (!sv.deletarObjeto(mov)) {
                     GenericaMensagem.warn("Erro", "Erro ao excluir movimentos!");
                     sv.desfazerTransacao();
-                    return ;
+                    return;
                 }
-                
-                if (!sv.deletarObjeto(lot)){
+                if (!sv.deletarObjeto(lot)) {
                     GenericaMensagem.warn("Erro", "Erro ao excluir Lote!");
                     sv.desfazerTransacao();
-                    return ;
+                    return;
                 }
-                
-                if (!sv.deletarObjeto(sv.pesquisaCodigo(vendas.getId(), "CVenda"))){
+                if (!sv.deletarObjeto(sv.pesquisaObjeto(vendas.getId(), "CVenda"))) {
                     GenericaMensagem.warn("Erro", "Erro ao cancelar Venda!");
                     sv.desfazerTransacao();
-                    return ;
+                    return;
                 }
-                
-                if (!sv.deletarObjeto(evt)){
+                if (!sv.deletarObjeto(evt)) {
                     GenericaMensagem.warn("Erro", "Erro ao excluir EVT!");
                     sv.desfazerTransacao();
-                    return ;
+                    return;
                 }
             }
-            
+
             GenericaMensagem.info("Sucesso", "Reserva cancelada com sucesso!");
             sv.comitarTransacao();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("vendasCaravanaBean");
         }
-     }
-    
-    public String editar(CVenda v){
+    }
+
+    public String editar(CVenda v) {
         vendas = v;
-        List<Reservas> lr = new ArrayList();
+        List<Reservas> lr;
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
         FisicaDB dbf = new FisicaDBToplink();
         EventoServicoValorDB dbe = new EventoServicoValorDBToplink();
         SociosDB dbs = new SociosDBToplink();
-        float valor = 0;
-        
-        
+        float valor;
         lr = db.listaReservasVenda(vendas.getId());
         listaReserva.clear();
-        for (int i = 0; i < lr.size(); i++){
-            valor = dbs.descontoSocioEve(lr.get(i).getPessoa().getId() , lr.get(i).getEventoServico().getServicos().getId() );
-            if (valor == 0){
-                valor = dbe.pesquisaEventoServicoValor(lr.get(i).getEventoServico().getId()).getValor();
-                listaReserva.add(new DataObject(dbf.pesquisaFisicaPorPessoa(lr.get(i).getPessoa().getId()), 0, Moeda.converteR$Float(valor), Moeda.converteR$Float(lr.get(i).getDesconto()), lr.get(i), null));
-            }else
-                listaReserva.add(new DataObject(dbf.pesquisaFisicaPorPessoa(lr.get(i).getPessoa().getId()), 0, Moeda.converteR$Float(valor), Moeda.converteR$Float(lr.get(i).getDesconto()), lr.get(i), null));
+        for (Reservas lr1 : lr) {
+            valor = dbs.descontoSocioEve(lr1.getPessoa().getId(), lr1.getEventoServico().getServicos().getId());
+            if (valor == 0) {
+                valor = dbe.pesquisaEventoServicoValor(lr1.getEventoServico().getId()).getValor();
+                listaReserva.add(new DataObject(dbf.pesquisaFisicaPorPessoa(lr1.getPessoa().getId()), 0, Moeda.converteR$Float(valor), Moeda.converteR$Float(lr1.getDesconto()), lr1, null));
+            } else {
+                listaReserva.add(new DataObject(dbf.pesquisaFisicaPorPessoa(lr1.getPessoa().getId()), 0, Moeda.converteR$Float(valor), Moeda.converteR$Float(lr1.getDesconto()), lr1, null));
+            }
         }
-        
+
         List<Movimento> listaMovimento = db.listaMovCaravana(vendas.getResponsavel().getId(), vendas.getEvt().getId());
-        
+
         listaParcelas.clear();
-        for (int i = 0; i < listaMovimento.size(); i++){
-            if (listaMovimento.get(i).getBaixa() == null)
-                listaParcelas.add(new DataObject(listaMovimento.get(i).getVencimento(), Moeda.converteR$Float(listaMovimento.get(i).getValor()), false, null, null, null));
-            else
-                listaParcelas.add(new DataObject(listaMovimento.get(i).getVencimento(), Moeda.converteR$Float(listaMovimento.get(i).getValor()), true, null, null, null));
+        for (Movimento listaMovimento1 : listaMovimento) {
+            if (listaMovimento1.getBaixa() == null) {
+                listaParcelas.add(new DataObject(listaMovimento1.getVencimento(), Moeda.converteR$Float(listaMovimento1.getValor()), false, null, null, null));
+            } else {
+                listaParcelas.add(new DataObject(listaMovimento1.getVencimento(), Moeda.converteR$Float(listaMovimento1.getValor()), true, null, null, null));
+            }
         }
-        
+
         pessoa = vendas.getResponsavel();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return "vendasCaravana";
     }
-    
-    public void atualizaValoresParcela(int index){
+
+    public void atualizaValoresParcela(int index) {
         listaParcelas.get(index).setArgumento1(Moeda.converteR$(listaParcelas.get(index).getArgumento1().toString()));
     }
-    
-    public void atualizaValoresGrid(int index){
+
+    public void atualizaValoresGrid(int index) {
         listaReserva.get(index).setArgumento2(Moeda.converteR$(listaReserva.get(index).getArgumento2().toString()));
-        if (Moeda.converteUS$(listaReserva.get(index).getArgumento3().toString()) > Moeda.converteUS$(listaReserva.get(index).getArgumento2().toString()))
+        if (Moeda.converteUS$(listaReserva.get(index).getArgumento3().toString()) > Moeda.converteUS$(listaReserva.get(index).getArgumento2().toString())) {
             listaReserva.get(index).setArgumento3(Moeda.converteR$(listaReserva.get(index).getArgumento2().toString()));
-        else
+        } else {
             listaReserva.get(index).setArgumento3(Moeda.converteR$(listaReserva.get(index).getArgumento3().toString()));
+        }
     }
-    
-    public String cadastroFisica(){
+
+    public String cadastroFisica() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
-        ((FisicaBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(pessoaFisica);
-        
+        ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(pessoaFisica);
+
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        return ((ChamadaPaginaBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaFisicaComParametros();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaFisicaComParametros();
     }
-    
-    public String cadastroJuridica(){
+
+    public String cadastroJuridica() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaBean", new JuridicaBean());
-        ((JuridicaBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(pessoaJuridica);
-        
+        ((JuridicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaBean")).editar(pessoaJuridica);
+
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        return ((ChamadaPaginaBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pessoaJuridicaComParametros();
     }
-    
-    public void salvar(){
-        if (vendas.getId() != -1){
-            GenericaMensagem.info("Sucesso", "Venda concluída!");
-            return ;
+
+    public void salvar() {
+        if (vendas.getId() != -1) {
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            sadb.abrirTransacao();
+            if (sadb.alterarObjeto(vendas)) {
+                sadb.comitarTransacao();
+                GenericaMensagem.info("Sucesso", "Venda atualizada com sucesso!");
+            } else {
+                sadb.desfazerTransacao();
+                GenericaMensagem.warn("Erro", "Erro ao atualizar esta venda!");
+            }
+            return;
         }
-        
-        if (pessoa.getId() == -1){
+
+        if (pessoa.getId() == -1) {
             GenericaMensagem.warn("Erro", "Pesquise um responsável!");
-            return ;
+            return;
         }
-        
-        if (listaReserva.isEmpty()){
+
+        if (listaReserva.isEmpty()) {
             GenericaMensagem.warn("Erro", "Não é possivel concluir nenhuma Reserva!");
-            return ;
+            return;
         }
-        
-        if (listaParcelas.isEmpty()){
+
+        if (listaParcelas.isEmpty()) {
             GenericaMensagem.warn("Erro", "Não é possivel concluir sem parcelas!");
-            return ;
+            return;
         }
         float soma = 0;
-        
-        for (int i = 0; i < listaParcelas.size(); i++){
-            soma = Moeda.somaValores( soma, Moeda.converteUS$(String.valueOf(listaParcelas.get(i).getArgumento1())) );
+
+        for (DataObject listaParcela : listaParcelas) {
+            soma = Moeda.somaValores(soma, Moeda.converteUS$(String.valueOf(listaParcela.getArgumento1())));
         }
-        
-        if (soma < Moeda.converteUS$(valorTotal)){
+
+        if (soma < Moeda.converteUS$(valorTotal)) {
             GenericaMensagem.warn("Erro", "Valor das parcelas é MENOR que o valor total");
-            return ;
+            return;
         }
-        
-        if (soma > Moeda.converteUS$(valorTotal)){
+
+        if (soma > Moeda.converteUS$(valorTotal)) {
             GenericaMensagem.warn("Erro", "Valor das parcelas é MAIOR que o valor total");
-            return ;
+            return;
         }
-            
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         Evt evt = new Evt();
-        if (!sv.inserirObjeto(evt)){
+        if (!sv.inserirObjeto(evt)) {
             GenericaMensagem.warn("Erro", "Não foi possível salvar EVT!");
             sv.desfazerTransacao();
-            return ;
+            return;
         }
-        
+
         vendas.setEvt(evt);
-        
-        if (!sv.inserirObjeto(vendas)){
+
+        if (!sv.inserirObjeto(vendas)) {
             GenericaMensagem.warn("Erro", "Não é possivel salvar venda!");
-            return ;
+            return;
         }
-        
-        for (int i = 0; i < listaReserva.size(); i++){
-            Reservas res = new Reservas(-1, vendas, ((Fisica)listaReserva.get(i).getArgumento0()).getPessoa(), 
-                                        //Integer.valueOf(listaPoltrona.get(Integer.valueOf(listaReserva.get(i).getArgumento1().toString())).getDescription()), 
-                                        Integer.valueOf(listaReserva.get(i).getArgumento1().toString()), 
-                                        Moeda.converteUS$(listaReserva.get(i).getArgumento3().toString()), ((Reservas) listaReserva.get(i).getArgumento4()).getEventoServico());
-            if (!sv.inserirObjeto(res)){
+
+        for (DataObject listaReserva1 : listaReserva) {
+            Reservas res = new Reservas(-1, vendas, ((Fisica) listaReserva1.getArgumento0()).getPessoa(), Integer.valueOf(listaReserva1.getArgumento1().toString()), Moeda.converteUS$(listaReserva1.getArgumento3().toString()), ((Reservas) listaReserva1.getArgumento4()).getEventoServico());
+            if (!sv.inserirObjeto(res)) {
                 GenericaMensagem.warn("Erro", "Não é possivel salvar venda!");
-                return ;
+                return;
             }
-            
-            listaReserva.get(i).setArgumento4(res);
+            listaReserva1.setArgumento4(res);
         }
-        
-        Lote lote = new Lote(-1, (Rotina)sv.pesquisaCodigo(142, "Rotina"), "", DataHoje.data(), pessoa, null, false, "", Moeda.converteUS$(valorTotal), (Filial)sv.pesquisaCodigo(1, "Filial"), 
-                            (Departamento)sv.pesquisaCodigo(6, "Departamento"), evt, "", null, null, null, null, false, null);
-        if (!sv.inserirObjeto(lote)){
+
+        Lote lote = new Lote(-1, (Rotina) sv.pesquisaObjeto(142, "Rotina"), "", DataHoje.data(), pessoa, null, false, "", Moeda.converteUS$(valorTotal), (Filial) sv.pesquisaObjeto(1, "Filial"),
+                (Departamento) sv.pesquisaObjeto(6, "Departamento"), evt, "", null, null, null, null, false, null);
+        if (!sv.inserirObjeto(lote)) {
             GenericaMensagem.warn("Erro", "Não foi possível salvar Lote!");
             sv.desfazerTransacao();
-            return ;
+            return;
         }
-        
-        Movimento movimento = null;
-        for (int i = 0; i < listaParcelas.size(); i++){
-            movimento = new Movimento(-1, lote, eventoServico.getaEvento().getDescricaoEvento().getServicoMovimento().getPlano5(), pessoa, eventoServico.getaEvento().getDescricaoEvento().getServicoMovimento(), 
-                                      null, (TipoServico)sv.pesquisaCodigo(1, "TipoServico"), null, Moeda.converteUS$(String.valueOf(listaParcelas.get(i).getArgumento1())), DataHoje.dataReferencia(String.valueOf(listaParcelas.get(i).getArgumento0())), String.valueOf(listaParcelas.get(i).getArgumento0()), 
-                                      parcelas, true, "", false, pessoa, pessoa, "", "", "", 0, 0, 0, 0, 0, 0, 0, null, 0);
-            
-            if (!sv.inserirObjeto(movimento)){
+
+        Movimento movimento;
+        EventoServicoValor esv;
+        String vencimento;
+        String mesPrimeiraParcela;
+        String mes;
+        String ano;
+        String referencia;
+        for (int i = 0; i < listaParcelas.size(); i++) {
+            mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();
+            mes = mesPrimeiraParcela.substring(0, 2);
+            ano = mesPrimeiraParcela.substring(3, 7);
+            referencia = mes + "/" + ano;
+            if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaVencimento) {
+                if (idDiaVencimento < 10) {
+                    vencimento = "0" + idDiaVencimento + "/" + mes + "/" + ano;
+                } else {
+                    vencimento = idDiaVencimento + "/" + mes + "/" + ano;
+                }
+            } else {
+                String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+                if (diaSwap.length() < 2) {
+                    diaSwap = "0" + diaSwap;
+                }
+                vencimento = diaSwap + "/" + mes + "/" + ano;
+            }
+            esv = (EventoServicoValor) listaReserva.get(i).getArgumento5();
+            movimento = new Movimento(-1,
+                    lote,
+                    esv.getEventoServico().getServicos().getPlano5(),
+                    pessoa,
+                    esv.getEventoServico().getServicos(),
+                    null,
+                    (TipoServico) sv.find(new TipoServico(), 1),
+                    null,
+                    Moeda.converteUS$(String.valueOf(listaParcelas.get(i).getArgumento1())),
+                    DataHoje.dataReferencia(String.valueOf(listaParcelas.get(i).getArgumento0())),
+                    String.valueOf(listaParcelas.get(i).getArgumento0()),
+                    parcelas,
+                    true,
+                    "",
+                    false,
+                    pessoa,
+                    pessoa,
+                    "",
+                    "",
+                    "",
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    null,
+                    0);
+            if (!sv.inserirObjeto(movimento)) {
                 GenericaMensagem.warn("Erro", "Não é possivel salvar movimento!");
-                return ;
+                return;
             }
         }
-        
+
         GenericaMensagem.info("Sucesso", "Reserva concluída com Sucesso!");
-        sv.comitarTransacao();
+        sv.desfazerTransacao();
     }
-    
-    public void gerarParcelas(){
-        if (parcelas < 0)
+
+    public void gerarParcelas() {
+        if (parcelas < 0) {
             return;
-        
+        }
+
         String vencs = dataEntrada;
         String vlEnt = valorEntrada;
+        float vE = Moeda.substituiVirgulaFloat(valorEntrada);
         DataHoje dh = new DataHoje();
         listaParcelas.clear();
 //        if (!listaPagos.isEmpty()){
@@ -317,56 +379,67 @@ public class VendasCaravanaBean {
 //            }
 //            vlEnt = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(vlEnt), soma));
 //        }
-        if (parcelas == 1){
+        if (parcelas == 1) {
             listaParcelas.add(new DataObject(vencs, Moeda.converteR$(valorTotal), false, null, null, null));
-        }else{
-            listaParcelas.add(new DataObject(dataEntrada, Moeda.converteR$(valorEntrada), false, null, null, null));
-            vlEnt = Moeda.converteR$Float(
-                         Moeda.divisaoValores(
+        } else {
+            if (vE > 0) {
+                listaParcelas.add(new DataObject(dataEntrada, Moeda.converteR$(valorEntrada), false, null, null, null));
+                vlEnt = Moeda.converteR$Float(
+                        Moeda.divisaoValores(
                                 Moeda.subtracaoValores(
-                                         Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(vlEnt)
-                                         //Moeda.substituiVirgulaFloat(valorAPagar), Moeda.substituiVirgulaFloat(vlEnt)
+                                        Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(vlEnt)
+                                //Moeda.substituiVirgulaFloat(valorAPagar), Moeda.substituiVirgulaFloat(vlEnt)
                                 ),
-                         parcelas - 1
-                   ));
-            for (int i = 1; i < parcelas; i++){
-                vencs = dh.incrementarMeses(1, vencs);
-                listaParcelas.add(new DataObject(vencs, Moeda.converteR$(vlEnt), false, null, null, null));
+                                parcelas - 1
+                        ));
+                for (int i = 1; i < parcelas; i++) {
+                    vencs = dh.incrementarMeses(1, vencs);
+                    listaParcelas.add(new DataObject(vencs, Moeda.converteR$(vlEnt), false, null, null, null));
+                }
+            } else {
+                float vParcela;
+                for (int i = 0; i < parcelas; i++) {
+                    vParcela = Moeda.substituiVirgulaFloat(valorTotal) / parcelas;
+                    if (i > 0) {
+                        vencs = dh.incrementarMeses(1, vencs);
+                    }
+                    listaParcelas.add(new DataObject(vencs, Moeda.converteR$("" + vParcela), false, null, null, null));
+                }
             }
         }
     }
-    
-    public void adicionarReserva(){
-        if (pessoa.getId() == -1){
+
+    public void adicionarReserva() {
+        if (pessoa.getId() == -1) {
             GenericaMensagem.warn("Erro", "Pesquise um responsável!");
             return;
         }
-        
-        if (pessoaEndereco.getId() == -1){
+
+        if (pessoaEndereco.getId() == -1) {
             GenericaMensagem.warn("Erro", "Cadastre um endereço para este responsável!");
             return;
         }
 
-        if (pessoaFisica.getId() != -1 ){
+        if (pessoaFisica.getId() != -1) {
             // VERIFICA SE PESSOA É MAIOR DE IDADE
             DataHoje dh = new DataHoje();
             int idade = dh.calcularIdade(pessoaFisica.getNascimento());
-            if (idade < 18){
+            if (idade < 18) {
                 GenericaMensagem.warn("Erro", "Esta pessoa não é maior de idade, não poderá ser responsável!");
                 return;
             }
         }
-        
-        if (listaCaravana.get(idCaravana).getId() == -1){
+
+        if (listaCaravana.get(idCaravana).getId() == -1) {
             GenericaMensagem.warn("Erro", "Erro confirmar caravana!");
             return;
         }
-        
-        if (getListaPoltrona().isEmpty()){
+
+        if (getListaPoltrona().isEmpty()) {
             GenericaMensagem.warn("Erro", "Não existe mais poltronas disponíveis!");
             return;
         }
-        
+
         //EventoServicoDB dbEs = new EventoServicoDBToplink();
         // PASSAGEIRO --- VALOR --- DESCONTO --- TIPO / VALOR
         //listaReserva.add(new DataObject(new Fisica(), 0, "0,00", "0,00", dbEs.pesquisaCodigo(Integer.valueOf(listaTipo.get(idTipo).getDescription())), eventoServico));
@@ -375,79 +448,79 @@ public class VendasCaravanaBean {
         //listaReserva.add(new DataObject(new Fisica(), 0, "0,00", "0,00", eventoServico, eventoServicoValor));
         listaReserva.add(new DataObject(new Fisica(), 0, "0,00", "0,00", re, eventoServicoValor));
     }
-    
-    public String pesquisaPassageiro(int index){
+
+    public String pesquisaPassageiro(int index) {
         idAdicionar = index;
-        return ((ChamadaPaginaBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
     }
-    
+
     public void removerPessoa() {
         pessoa = new Pessoa();
     }
-    
+
     public void removerReserva(int index, DataObject datao) {
         listaReserva.remove(index);
     }
 
-    public void atualizaCaravana(){
+    public void atualizaCaravana() {
         caravana = listaCaravana.get(idCaravana);
         listaTipo.clear();
     }
 
-    public void atualizaTipo(){
+    public void atualizaTipo() {
         listaTipo.clear();
     }
-    
-    public List getListaPesquisaVendas(){
+
+    public List getListaPesquisaVendas() {
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
         return db.pesquisaTodos();
     }
-    
-    public List<SelectItem> getListaCaravanaSelect(){
-        if (listaCaravanaSelect.isEmpty()){
+
+    public List<SelectItem> getListaCaravanaSelect() {
+        if (listaCaravanaSelect.isEmpty()) {
             CaravanaDB db = new CaravanaDBToplink();
             List<Caravana> result = db.pesquisaTodos();
-            for (int i = 0; i < result.size(); i++){
-                listaCaravanaSelect.add(new SelectItem(i, result.get(i).getDataSaida()+" - "+result.get(i).getHoraSaida()+" - "+ result.get(i).getaEvento().getDescricaoEvento().getDescricao(), String.valueOf(result.get(i).getId()) ));
+            for (int i = 0; i < result.size(); i++) {
+                listaCaravanaSelect.add(new SelectItem(i, result.get(i).getDataSaida() + " - " + result.get(i).getHoraSaida() + " - " + result.get(i).getaEvento().getDescricaoEvento().getDescricao(), String.valueOf(result.get(i).getId())));
                 listaCaravana.add(result.get(i));
             }
             caravana = listaCaravana.get(idCaravana);
         }
         return listaCaravanaSelect;
     }
-    
+
     public Fisica getFisica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null && idAdicionar == -1) {
-            fisica = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
+        if (GenericaSessao.exists("fisicaPesquisa") && idAdicionar == -1) {
+            fisica = (Fisica) GenericaSessao.getObject("fisicaPesquisa", true);
         }
+
         return fisica;
     }
 
     public void setFisica(Fisica fisica) {
         this.fisica = fisica;
     }
-    
+
     public List<SelectItem> getListaPoltrona() {
-        List<Integer> select = new ArrayList();
+        List<Integer> select;
         VendasCaravanaDB db = new VendasCaravanaDBToplink();
-        if (!listaCaravana.isEmpty() && listaPoltrona.isEmpty()){
-            SalvarAcumuladoDB  sv = new SalvarAcumuladoDBToplink();
+        if (!listaCaravana.isEmpty() && listaPoltrona.isEmpty()) {
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             //Caravana caravanax = (Caravana)sv.pesquisaCodigo(caravana.getId(), "Caravana");
-            select = db.listaPoltronasUsadas(listaCaravana.get(idCaravana).getaEvento().getId() );
-            
+            select = db.listaPoltronasUsadas(listaCaravana.get(idCaravana).getaEvento().getId());
+
             boolean adc = true;
-            String pol = "";
-            for(int i = 1; i <= listaCaravana.get(idCaravana).getQuantidadePoltronas(); i++){
-                for (int w = 0; w < select.size(); w++){
-                    if (i == select.get(w)){
+            String pol;
+            for (int i = 1; i <= listaCaravana.get(idCaravana).getQuantidadePoltronas(); i++) {
+                for (Integer select1 : select) {
+                    if (i == select1) {
                         adc = false;
                         break;
                     }
                 }
-                if (adc){
-                    pol = "000"+i;
-                    listaPoltrona.add(new SelectItem(new Integer(i), pol.substring(pol.length() - 2, pol.length()), Integer.toString(i)));
+                if (adc) {
+                    pol = "000" + i;
+                    listaPoltrona.add(new SelectItem(i, pol.substring(pol.length() - 2, pol.length()), "" + i));
                     //listaPoltrona.add(pol.substring(pol.length() - 2, pol.length()));
                 }
                 adc = true;
@@ -457,23 +530,21 @@ public class VendasCaravanaBean {
     }
 
     public List<SelectItem> getListaTipo() {
-        if (!listaCaravana.isEmpty()){
-            
-            if (listaTipo.isEmpty() && listaCaravana.get(idCaravana).getId() != -1){
-                List<EventoServico> select = new ArrayList();
+        if (!listaCaravana.isEmpty()) {
+
+            if (listaTipo.isEmpty() && listaCaravana.get(idCaravana).getId() != -1) {
+                List<EventoServico> select;
                 EventoServicoDB db = new EventoServicoDBToplink();
                 EventoServicoValorDB dbE = new EventoServicoValorDBToplink();
                 EventoServicoDB dbEs = new EventoServicoDBToplink();
-                if(listaCaravana.get(idCaravana).getId() != -1){
+                if (listaCaravana.get(idCaravana).getId() != -1) {
                     select = db.listaEventoServico(listaCaravana.get(idCaravana).getaEvento().getId());
-                    for(int i = 0; i < select.size(); i++){
-                        listaTipo.add(new SelectItem(new Integer(i),
-                                                  select.get(i).getDescricao(),
-                                                  Integer.toString(select.get(i).getId())));
+                    for (int i = 0; i < select.size(); i++) {
+                        listaTipo.add(new SelectItem(i, select.get(i).getDescricao(), "" + select.get(i).getId()));
                     }
-                    if (idTipo >= select.size())
+                    if (idTipo >= select.size()) {
                         idTipo = 0;
-
+                    }
                     eventoServico = dbEs.pesquisaCodigo(select.get(idTipo).getId());
                     eventoServicoValor = dbE.pesquisaEventoServicoValor(eventoServico.getId());
                 }
@@ -481,8 +552,8 @@ public class VendasCaravanaBean {
         }
         return listaTipo;
     }
-    
-    public String novo(){
+
+    public String novo() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("vendasCaravanaBean");
         return "vendasCaravana";
     }
@@ -502,25 +573,50 @@ public class VendasCaravanaBean {
     public CVenda getVendas() {
         return vendas;
     }
-    
+
     public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null){
-            pessoa = (Pessoa)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-            
+        if (GenericaSessao.exists("pessoaPesquisa")) {
+            idDiaVencimento = 0;
+            pessoa = (Pessoa) GenericaSessao.getObject("pessoaPesquisa", true);
+            /**
+             * Tipo : 0 => Aluno / 1 => Responsável
+             *
+             * @param tipo
+             */
+            PessoaDB pdb = new PessoaDBToplink();
+            PessoaComplemento pc;
+            Pessoa p;
+            p = pessoa;
+            pc = pdb.pesquisaPessoaComplementoPorPessoa(p.getId());
+            if (pc.getId() == -1) {
+                Registro r;
+                SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+                r = (Registro) sadb.pesquisaObjeto(1, "Registro");
+                if (r.getId() != -1) {
+                    pc.setNrDiaVencimento(r.getFinDiaVencimentoCobranca());
+                    pc.setCobrancaBancaria(true);
+                    pc.setPessoa(p);
+                    sadb.abrirTransacao();
+                    if (sadb.inserirObjeto(pc)) {
+                        sadb.comitarTransacao();
+                    } else {
+                        sadb.desfazerTransacao();
+                    }
+                }
+            }
             FisicaDB dbf = new FisicaDBToplink();
             JuridicaDB dbj = new JuridicaDBToplink();
-            
             pessoaFisica = dbf.pesquisaFisicaPorPessoa(pessoa.getId());
-            if (pessoaFisica == null){
+            if (pessoaFisica == null) {
                 pessoaJuridica = dbj.pesquisaJuridicaPorPessoa(pessoa.getId());
                 pessoaFisica = new Fisica();
-                if (pessoaJuridica == null)
+                if (pessoaJuridica == null) {
                     pessoaJuridica = new Juridica();
-            }else{
+                }
+            } else {
                 pessoaJuridica = new Juridica();
             }
-            
+
             vendas.setResponsavel(pessoa);
             vendas.setaEvento(caravana.getaEvento());
         }
@@ -535,16 +631,15 @@ public class VendasCaravanaBean {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null && idAdicionar != -1) {
             Fisica fis = (Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
             listaReserva.get(idAdicionar).setArgumento0(fis);
-            
+
             SociosDB db = new SociosDBToplink();
-            float valor = 0;
-            
+            float valor;
             //valor = db.descontoSocioEve(fis.getPessoa().getId() , eventoServico.getServicos().getId() );
-            valor = db.descontoSocioEve(fis.getPessoa().getId() , ((Reservas)listaReserva.get(idAdicionar).getArgumento4()).getEventoServico().getId());
-            if (valor == 0){
-                listaReserva.get(idAdicionar).setArgumento2(Moeda.converteR$Float(((EventoServicoValor)listaReserva.get(idAdicionar).getArgumento5()).getValor()));
+            valor = db.descontoSocioEve(fis.getPessoa().getId(), ((Reservas) listaReserva.get(idAdicionar).getArgumento4()).getEventoServico().getId());
+            if (valor == 0) {
+                listaReserva.get(idAdicionar).setArgumento2(Moeda.converteR$Float(((EventoServicoValor) listaReserva.get(idAdicionar).getArgumento5()).getValor()));
                 //listaReserva.get(idAdicionar).setArgumento3(Moeda.converteR$Float( Moeda.subtracaoValores(eventoServicoValor.getValor(), 0)));// NA VERDADE SUBTRAI PELO DESCONTO
-            }else{
+            } else {
                 listaReserva.get(idAdicionar).setArgumento2(Moeda.converteR$Float(valor));
                 //listaReserva.get(idAdicionar).setArgumento3(Moeda.converteR$Float( Moeda.subtracaoValores(valor, 0)));// NA VERDADE SUBTRAI PELO DESCONTO
             }
@@ -599,18 +694,19 @@ public class VendasCaravanaBean {
     }
 
     public String getValorTotal() {
-        if (!listaReserva.isEmpty()){
+        if (!listaReserva.isEmpty()) {
             float valor = 0;
             float desconto = 0;
-            for (int i = 0; i < listaReserva.size(); i++){
-                if ( ((Fisica)listaReserva.get(i).getArgumento0()).getId() != -1){
-                    valor = Moeda.somaValores(valor, Moeda.substituiVirgulaFloat(String.valueOf(listaReserva.get(i).getArgumento2())));
-                    desconto = Moeda.somaValores(desconto, Moeda.substituiVirgulaFloat(String.valueOf(listaReserva.get(i).getArgumento3())));
+            for (DataObject listaReserva1 : listaReserva) {
+                if (((Fisica) listaReserva1.getArgumento0()).getId() != -1) {
+                    valor = Moeda.somaValores(valor, Moeda.substituiVirgulaFloat(String.valueOf(listaReserva1.getArgumento2())));
+                    desconto = Moeda.somaValores(desconto, Moeda.substituiVirgulaFloat(String.valueOf(listaReserva1.getArgumento3())));
                 }
             }
             valorTotal = Moeda.converteR$Float(Moeda.subtracaoValores(valor, desconto));
-        }else
+        } else {
             valorTotal = "0,00";
+        }
         return valorTotal;
     }
 
@@ -619,16 +715,17 @@ public class VendasCaravanaBean {
     }
 
     public String getValorPago() {
-        if (!listaParcelas.isEmpty()){
+        if (!listaParcelas.isEmpty()) {
             float valor = 0;
-            for (int i = 0; i < listaParcelas.size(); i++){
-                if ( ((Boolean)listaParcelas.get(i).getArgumento2()) == true ){
-                    valor = Moeda.somaValores(valor, Moeda.substituiVirgulaFloat(String.valueOf(listaParcelas.get(i).getArgumento1())));
+            for (DataObject listaParcela : listaParcelas) {
+                if (((Boolean) listaParcela.getArgumento2()) == true) {
+                    valor = Moeda.somaValores(valor, Moeda.substituiVirgulaFloat(String.valueOf(listaParcela.getArgumento1())));
                 }
             }
             valorPago = Moeda.converteR$Float(valor);
-        }else
+        } else {
             valorPago = "0,00";
+        }
         return valorPago;
     }
 
@@ -637,16 +734,17 @@ public class VendasCaravanaBean {
     }
 
     public String getValorOutras() {
-        if (!listaParcelas.isEmpty()){
+        if (!listaParcelas.isEmpty()) {
             float valor = 0;
-            for (int i = 0; i < listaParcelas.size(); i++){
-                if ( ((Boolean)listaParcelas.get(i).getArgumento2()) != true ){
-                    valor = Moeda.somaValores(valor, Moeda.substituiVirgulaFloat(String.valueOf(listaParcelas.get(i).getArgumento1())));
+            for (DataObject listaParcela : listaParcelas) {
+                if (((Boolean) listaParcela.getArgumento2()) != true) {
+                    valor = Moeda.somaValores(valor, Moeda.substituiVirgulaFloat(String.valueOf(listaParcela.getArgumento1())));
                 }
             }
             valorOutras = Moeda.converteR$Float(valor);
-        }else
+        } else {
             valorOutras = "0,00";
+        }
         return valorOutras;
     }
 
@@ -658,12 +756,14 @@ public class VendasCaravanaBean {
         if (valorEntrada.isEmpty()) {
             valorEntrada = "0";
         }
-        
-        if (Moeda.converteUS$(valorEntrada) > Moeda.converteUS$(valorTotal))
+
+        if (Moeda.converteUS$(valorEntrada) > Moeda.converteUS$(valorTotal)) {
             valorEntrada = valorTotal;
-        if (Moeda.converteUS$(valorEntrada) < 0)
+        }
+        if (Moeda.converteUS$(valorEntrada) < 0) {
             valorEntrada = "0";
-        
+        }
+
         return Moeda.converteR$(valorEntrada);
     }
 
@@ -675,11 +775,12 @@ public class VendasCaravanaBean {
     }
 
     public PessoaEndereco getPessoaEndereco() {
-        if (pessoaEndereco.getId() == -1){
+        if (pessoaEndereco.getId() == -1) {
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
             pessoaEndereco = dbp.pesquisaEndPorPessoaTipo(pessoa.getId(), 4);
-            if (pessoaEndereco == null)
+            if (pessoaEndereco == null) {
                 pessoaEndereco = new PessoaEndereco();
+            }
         }
         return pessoaEndereco;
     }
@@ -702,6 +803,147 @@ public class VendasCaravanaBean {
 
     public void setPessoaJuridica(Juridica pessoaJuridica) {
         this.pessoaJuridica = pessoaJuridica;
+    }
+
+    public int getIdDataEntrada() {
+        return idDataEntrada;
+    }
+
+    public void setIdDataEntrada(int idDataEntrada) {
+        this.idDataEntrada = idDataEntrada;
+    }
+
+    public int getIdMesVencimento() {
+        return idMesVencimento;
+    }
+
+    public void setIdMesVencimento(int idMesVencimento) {
+        this.idMesVencimento = idMesVencimento;
+    }
+
+    public List<SelectItem> getListaEntrada() {
+        float vE = Moeda.substituiVirgulaFloat(valorEntrada);
+        if (vE > 0) {
+            if (listaDataEntrada.isEmpty()) {
+                idDataEntrada = 0;
+                DataHoje dh = new DataHoje();
+                String dataEntradaX;
+                for (int i = 0; i < 20; i++) {
+                    dataEntradaX = dh.incrementarDias(i, DataHoje.data());
+                    listaDataEntrada.add(new SelectItem(i, dataEntradaX, dataEntradaX));
+                    if (dataEntradaX.equals(DataHoje.data())) {
+                        idDataEntrada = i;
+                    }
+                }
+            }
+        }
+        return listaDataEntrada;
+    }
+
+    public void setListaDataEntrada(List<SelectItem> listaDataEntrada) {
+        this.listaDataEntrada = listaDataEntrada;
+    }
+
+    public List<SelectItem> getListaMesVencimento() {
+        if (listaMesVencimento.isEmpty()) {
+            boolean isTaxa = false;
+            DataHoje dh = new DataHoje();
+            String data = DataHoje.data();
+            String mesAno;
+            int iDtMr;
+            int iDtVct;
+            float vE = Moeda.substituiVirgulaFloat(valorEntrada);
+            for (int i = 0; i < parcelas; i++) {
+                if (i > 0) {
+                    data = dh.incrementarMeses(1, data);
+                }
+                if (!isTaxa) {
+                    iDtMr = DataHoje.converteDataParaInteger(DataHoje.data());
+                    iDtVct = DataHoje.converteDataParaInteger(data);
+                    if (vE > 0) {
+                        if (iDtVct > iDtMr) {
+                            idMesVencimento = i;
+                            isTaxa = true;
+                        } else {
+                            idMesVencimento = 0;
+                        }
+                    } else {
+                        isTaxa = true;
+                        idMesVencimento = 0;
+                    }
+                }
+                mesAno = data.substring(3, 5) + "/" + data.substring(6, 10);
+                listaMesVencimento.add(new SelectItem(i, mesAno, mesAno));
+            }
+        }
+        return listaMesVencimento;
+    }
+
+    public void setListaMesVencimento(List<SelectItem> listaMesVencimento) {
+        this.listaMesVencimento = listaMesVencimento;
+    }
+
+    public List<SelectItem> getListaDataVencimento() {
+        if (listaDataVencimento.isEmpty()) {
+            for (int i = 1; i <= 31; i++) {
+                listaDataVencimento.add(new SelectItem(Integer.toString(i)));
+            }
+        }
+        return listaDataVencimento;
+    }
+
+    public void setListaDataVencimento(List<SelectItem> listaDataVencimento) {
+        this.listaDataVencimento = listaDataVencimento;
+    }
+
+    public int getIdDiaVencimento() {
+        PessoaDB pessoaDB = new PessoaDBToplink();
+        if (pessoa.getId() != -1) {
+            PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(pessoa.getId());
+            if (pc.getId() == -1) {
+                if (getRegistro() != null) {
+                    this.idDiaVencimento = registro.getFinDiaVencimentoCobranca();
+                } else {
+                    this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+                }
+            } else {
+                this.idDiaVencimento = pc.getNrDiaVencimento();
+            }
+        } else {
+            this.idDiaVencimento = Integer.parseInt(DataHoje.data().substring(0, 2));
+        }
+        return idDiaVencimento;
+    }
+
+    public void setIdDiaVencimento(int idDiaVencimento) {
+        this.idDiaVencimento = idDiaVencimento;
+    }
+
+    public void updatePessoaComplemento() {
+        if (pessoa.getId() != -1) {
+            PessoaDB pessoaDB = new PessoaDBToplink();
+            PessoaComplemento pc = pessoaDB.pesquisaPessoaComplementoPorPessoa(pessoa.getId());
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            pc.setNrDiaVencimento(idDiaVencimento);
+            sadb.abrirTransacao();
+            if (sadb.alterarObjeto(pc)) {
+                sadb.comitarTransacao();
+            } else {
+                sadb.desfazerTransacao();
+            }
+        }
+    }
+
+    public Registro getRegistro() {
+        if (registro.getId() == -1) {
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            registro = (Registro) sadb.pesquisaObjeto(1, "Registro");
+        }
+        return registro;
+    }
+
+    public void setRegistro(Registro registro) {
+        this.registro = registro;
     }
 
 }
