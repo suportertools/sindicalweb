@@ -67,7 +67,9 @@
                             <h:column><h:outputLabel value="Descrição: " for="iDescricao"/></h:column>
                             <h:column>
                                 <h:panelGrid columns="3">
-                                    <p:inputText id="iDescricao" size="20" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" />
+                                    <p:inputText id="iDescricao" size="20" autocomplete="off" value="#{simplesBean.descricao}" title="Descrição" converter="toUpperCase">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>
                                 </h:panelGrid>
                             </h:column>
                         </h:panelGrid>
