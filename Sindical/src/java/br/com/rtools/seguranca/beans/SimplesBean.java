@@ -23,6 +23,7 @@ import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.suporte.ProStatus;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -376,6 +377,8 @@ public class SimplesBean implements Serializable {
             ((AteOperacao) objeto).setDescricao(descricao);
         } else if (tipo.equals("ConviteMotivoSuspencao")) {
             ((ConviteMotivoSuspencao) objeto).setDescricao(descricao);
+        } else if (tipo.equals("ProStatus")) {
+            ((ProStatus) objeto).setDescricao(descricao);
         }
     }
 
@@ -449,6 +452,9 @@ public class SimplesBean implements Serializable {
         } else if (obj.getClass().getSimpleName().equals("ConviteMotivoSuspencao")) {
             descricao = ((ConviteMotivoSuspencao) obj).getDescricao();
             id = ((ConviteMotivoSuspencao) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("ProStatus")) {
+            descricao = ((ProStatus) obj).getDescricao();
+            id = ((ProStatus) objeto).getId();
         }
     }
 
@@ -543,6 +549,10 @@ public class SimplesBean implements Serializable {
             }
         } else if (obj.getClass().getSimpleName().equals("ConviteMotivoSuspencao")) {
             if (((ConviteMotivoSuspencao) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
+        } else if (obj.getClass().getSimpleName().equals("ProStatus")) {
+            if (((ProStatus) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
         }
