@@ -30,57 +30,43 @@
                         <h:form id="formDescricaoEvento">
                             <c:set scope="request" var="object" value="${descricaoEventoBean.descricaoEvento}"/>  
                             <h:outputText value="Descrição Evento" styleClass="fonteHeader" />
-                            
-                            
-                            
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="4">
                                     <h:column>
                                         <h:outputLabel value="Descrição" /><br />
-                                        <p:inputText id="i_descricao" value="#{descricaoEventoBean.descricaoEvento.descricao}" size="50"/>
+                                        <p:inputText id="i_descricao" value="#{descricaoEventoBean.descricaoEvento.descricao}" size="50" converter="toUpperCase">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
                                         <p:watermark value="Digite o Nome do Evento" for="i_descricao"/>
                                     </h:column>
-
                                     <h:column>
                                         <h:outputLabel value="Grupos Evento" style="margin-left: 30px"/><br />
                                         <p:selectOneMenu value="#{descricaoEventoBean.idGrupoEvento}" style="margin-left: 30px; padding-right: 20px">
                                             <f:selectItems value="#{descricaoEventoBean.listaGrupoEvento}"/>
                                         </p:selectOneMenu>
                                     </h:column>
-<!--
-                                    <h:column>
-                                        <h:outputLabel value="Serviços" style="margin-left: 30px"/><br />
-                                        <p:selectOneMenu id="idServicos" value="# {descricaoEventoBean.idServicos}" style="margin-left: 30px; padding-right: 20px">
-                                            <f:selectItems value="# {descricaoEventoBean.listaServicos}"/>
-                                        </p:selectOneMenu>
-                                    </h:column>
--->
                                     <h:column>
                                         <br />
-                                        <p:commandButton action="#{descricaoEventoBean.salvar()}" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 30px" update="formDescricaoEvento"/>
+                                        <p:commandButton action="#{descricaoEventoBean.salvar()}" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" style="margin-left: 30px" />
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
-                            
-                            <p:messages id="i_msg" showDetail="true" closable="true" />  
-                            
-                            <p:dataTable value="#{descricaoEventoBean.listaDescricao}" var="linha" style="width:100%" id="tbl" emptyMessage="Nenhuma descrição foi encontrada!">
-                                <p:column headerText="Descrição">
-                                    <h:outputLabel value="#{linha.descricao}"/>
-                                </p:column>
-
-                                <p:column headerText="Grupo Evento">
-                                    <h:outputLabel value="#{linha.grupoEvento.descricao}"/>
-                                </p:column>
-<!--
-                                <p:column headerText="Serviço">
-                                    <h:outputLabel value="# {linha.servicoMovimento.descricao}" />
-                                </p:column>
--->                            
-                                <p:column style="text-align: center">
-                                    <p:commandButton action="#{descricaoEventoBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" icon="ui-icon-trash" update=":formDescricaoEvento"/>
-                                </p:column>
-                            </p:dataTable>
+                            <div class="margin">
+                                <p:messages id="i_msg" showDetail="true" closable="true"/>
+                            </div>
+                            <p:panel>
+                                <p:dataTable value="#{descricaoEventoBean.listaDescricaoEvento}" var="descricaoEvento" scrollable="true" scrollHeight="300" id="tbl" emptyMessage="Nenhum registro encotrado!">
+                                    <p:column headerText="Descrição">
+                                        <h:outputLabel value="#{descricaoEvento.descricao}"/>
+                                    </p:column>
+                                    <p:column headerText="Grupo Evento">
+                                        <h:outputLabel value="#{descricaoEvento.grupoEvento.descricao}"/>
+                                    </p:column>                          
+                                    <p:column styleClass="text-center">
+                                        <p:commandButton action="#{descricaoEventoBean.excluir(descricaoEvento)}" disabled="#{controleAcessoBean.botaoExcluir}" icon="ui-icon-trash" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
                         </h:form>
                     </p:panel>
                 </f:view>
