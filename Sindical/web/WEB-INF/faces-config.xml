@@ -58,12 +58,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>servicosBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.ServicosJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>tipoServicoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.TipoServicoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -306,28 +300,17 @@
         <managed-bean-class>br.com.rtools.associativo.beans.BandaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-<!--
-    <managed-bean>
-        <managed-bean-name>vendaBaileBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.VendaBaileJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
--->
-    <managed-bean>
-        <managed-bean-name>descricaoEventoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.DescricaoEventoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
+    <!--
+        <managed-bean>
+            <managed-bean-name>vendaBaileBean</managed-bean-name>
+            <managed-bean-class>br.com.rtools.associativo.beans.VendaBaileJSFBean</managed-bean-class>
+            <managed-bean-scope>session</managed-bean-scope>
+        </managed-bean>
+    -->
 
     <managed-bean>
         <managed-bean-name>relatorioSociosBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioSociosJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>agendaTarefaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.suporte.beans.AgendaTarefaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
