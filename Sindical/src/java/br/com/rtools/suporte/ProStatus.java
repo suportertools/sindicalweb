@@ -4,7 +4,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "PRO_STATUS")
-@NamedQuery(name = "ProStatus.pesquisaID", query = "select ps from ProStatus ps where ps.id=:pid")
 public class ProStatus implements java.io.Serializable {
 
     @Id

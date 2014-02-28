@@ -3,21 +3,10 @@ package br.com.rtools.suporte;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "PRO_PROTOCOLO")
-@NamedQuery(name = "Protocolo.pesquisaID", query = "select p from Protocolo p where p.id=:pid")
 public class Protocolo implements java.io.Serializable {
 
     @Id
