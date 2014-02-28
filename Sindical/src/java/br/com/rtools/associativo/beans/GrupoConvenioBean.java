@@ -6,7 +6,12 @@
 //import java.util.List;
 //import javax.faces.context.FacesContext;
 //
-//public class GrupoConvenioJSFBean {
+//import javax.faces.bean.ManagedBean;
+//import javax.faces.bean.SessionScoped;
+//
+//@ManagedBean
+//@SessionScoped
+// public class GrupoConvenioBean {
 //
 //    private GrupoConvenio grupoConvenio = new GrupoConvenio();
 //    private String msgConfirma;
@@ -121,4 +126,4 @@
 //    public void setDescPesquisa(String descPesquisa) {
 //        this.descPesquisa = descPesquisa;
 //    }
-//}
+// }

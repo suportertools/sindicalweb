@@ -6,8 +6,12 @@ import br.com.rtools.associativo.db.ParentescoDBToplink;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-public class ParentescoJSFBean {
+@ManagedBean
+@SessionScoped
+public class ParentescoBean {
 
     private Parentesco parentesco = new Parentesco();
     private String msgConfirma = "";
