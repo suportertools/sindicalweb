@@ -9,39 +9,7 @@ import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class InterrupcaoDBToplink extends DB implements InterrupcaoDB {
 
-    public boolean insert(Interrupcao interrupcao) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(interrupcao);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(Interrupcao interrupcao) {
-        try {
-            getEntityManager().merge(interrupcao);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    public boolean delete(Interrupcao interrupcao) {
-        try {
-            getEntityManager().remove(interrupcao);
-            getEntityManager().flush();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
+    @Override
     public Interrupcao idInterrupcao(Interrupcao des_Interrupcao) {
         Interrupcao result = null;
         try {
@@ -54,26 +22,7 @@ public class InterrupcaoDBToplink extends DB implements InterrupcaoDB {
         return result;
     }
 
-    public Interrupcao pesquisaCodigo(int id) {
-        Interrupcao result = null;
-        try {
-            Query qry = getEntityManager().createNamedQuery("Interrupcao.pesquisaID");
-            qry.setParameter("pid", id);
-            result = (Interrupcao) qry.getSingleResult();
-        } catch (Exception e) {
-        }
-        return result;
-    }
-
-    public List pesquisaTodos() {
-        try {
-            Query qry = getEntityManager().createQuery("select int from Interrupcao int order by int.interrupcao");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
+    @Override
     public List<String> pesquisaInterrupcao(String des_tipo) {
         List<String> result = null;
         try {
@@ -85,6 +34,7 @@ public class InterrupcaoDBToplink extends DB implements InterrupcaoDB {
         return result;
     }
 
+    @Override
     public List pesquisaInterrupcaoParametros(String por, String combo, String desc) {
         String textQuery = "";
         if (!desc.equals("") && !por.equals("")) {
@@ -110,6 +60,7 @@ public class InterrupcaoDBToplink extends DB implements InterrupcaoDB {
         }
     }
 
+    @Override
     public List<Interrupcao> listaInterrupcao(int idOrdemServico) {
         try {
             Query qry = getEntityManager().createQuery(
