@@ -4,7 +4,6 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "PRO_PRIORIDADE")
-@NamedQuery(name = "Prioridade.pesquisaID", query = "select p from Prioridade p where p.id=:pid")
 public class Prioridade implements java.io.Serializable {
 
     @Id

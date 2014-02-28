@@ -9,14 +9,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "PRO_INTERRUPCAO")
-@NamedQuery(name = "Interrupcao.pesquisaID", query = "select os from Interrupcao os where os.id=:pid")
 public class Interrupcao implements java.io.Serializable {
 
     @Id
