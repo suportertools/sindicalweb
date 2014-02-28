@@ -37,7 +37,7 @@
                                             <p:outputLabel value="CPF: "/>
                                             <p:column>
                                                 <p:inputMask id="idCPF" size="15" value="#{fisicaBean.fisica.pessoa.documento}" mask="999.999.999-99">
-                                                    <p:ajax event="blur" listener="#{fisicaBean.existePessoaDocumento}" />
+                                                    <p:ajax event="blur" listener="#{fisicaBean.existePessoaDocumento}" update="@this"/>
                                                 </p:inputMask>                                        
                                             </p:column>
                                             <p:outputLabel value="Nome: "/>
@@ -197,12 +197,12 @@
                                     <p:outputLabel value="#{fisicaBean.pessoaEmpresa.juridica.fantasia}" />
                                     <p:outputLabel value="Data de Admissão: "/>
                                     <h:column>                                        
-                                        <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.admissao}" mask="99/99/9999" />
+                                        <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.admissao}" mask="99/99/9999">
+                                        </p:inputMask>
                                         <p:outputLabel value="Data de Demissão: " styleClass="margin-left-max"/>
-                                        <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.demissao}" mask="99/99/9999" />                                        
+                                        <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.demissao}" mask="99/99/9999">
+                                        </p:inputMask>
                                     </h:column>
-                                    <p:outputLabel value="Data de Aposentadoria: "/>
-                                    <p:inputMask value="#{fisicaBean.fisica.aposentadoria}" mask="99/99/9999" size="10" />
                                     <h:column>
                                         <p:commandButton icon="ui-icon-search" value="Função" onclick="dgl_painel_profissao.show();" />
                                     </h:column>
@@ -264,7 +264,11 @@
                                         <p:message for="i_email_3" />
                                     </h:column>
                                     <p:outputLabel value="NIT: "/>
-                                    <p:inputMask size="30" maxlength="11" value="#{fisicaBean.fisica.nit}" mask="999.99999.99-9"/>
+                                    <h:column>
+                                        <p:inputMask size="30" maxlength="11" value="#{fisicaBean.fisica.nit}" mask="999.99999.99-9" styleClass="margin-left-max" />
+                                        <p:outputLabel value="Data de Aposentadoria: "/>
+                                        <p:inputMask value="#{fisicaBean.fisica.aposentadoria}" mask="99/99/9999" size="10" />                                    
+                                    </h:column>
                                 </h:panelGrid>
                             </p:tab>
                             <p:tab title="Histórico" disabled="true" >
