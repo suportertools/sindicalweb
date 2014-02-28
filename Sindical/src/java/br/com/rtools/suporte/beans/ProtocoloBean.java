@@ -4,16 +4,20 @@ import br.com.rtools.suporte.Protocolo;
 import br.com.rtools.suporte.db.ProtocoloDB;
 import br.com.rtools.suporte.db.ProtocoloDBToplink;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class ProtocoloJSFBean {
+@ManagedBean
+@SessionScoped
+public class ProtocoloBean {
 
     private Protocolo protocolo;
     private String comoPesquisa;
     private String descPesquisa;
     private String msgConfirma;
 
-    public ProtocoloJSFBean() {
+    public ProtocoloBean() {
         protocolo = new Protocolo();
         comoPesquisa = "";
         descPesquisa = "";
