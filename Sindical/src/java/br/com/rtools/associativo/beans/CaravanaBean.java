@@ -16,7 +16,7 @@ import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class CaravanaJSFBean {
+public class CaravanaBean {
 
     private Caravana caravana = new Caravana();
     private Servicos servicos = new Servicos();
@@ -35,11 +35,10 @@ public class CaravanaJSFBean {
 
     public String salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        DescricaoEventoDB db = new DescricaoEventoDBToplink();
         AEvento aEvento = new AEvento();
         sv.abrirTransacao();
         if (caravana.getId() == -1) {
-            aEvento.setDescricaoEvento(db.pesquisaCodigo(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription())));
+            aEvento.setDescricaoEvento((DescricaoEvento) sv.pesquisaObjeto(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription()), "DescricaoEvento"));
             if (!sv.inserirObjeto(aEvento)) {
                 msgConfirma = "Erro ao salvar Evento!";
                 GenericaMensagem.warn("Erro", msgConfirma);
@@ -60,8 +59,8 @@ public class CaravanaJSFBean {
                 return null;
             }
         } else {
-            aEvento = (AEvento) sv.pesquisaCodigo(caravana.getaEvento().getId(), "AEvento");
-            aEvento.setDescricaoEvento(db.pesquisaCodigo(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription())));
+            aEvento = (AEvento) sv.pesquisaObjeto(caravana.getaEvento().getId(), "AEvento");
+            aEvento.setDescricaoEvento((DescricaoEvento) sv.pesquisaObjeto(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription()), "DescricaoEvento"));
             if (!sv.alterarObjeto(aEvento)) {
                 msgConfirma = "Erro ao atualizar Evento!";
                 GenericaMensagem.warn("Erro", msgConfirma);
@@ -95,7 +94,7 @@ public class CaravanaJSFBean {
         if (caravana.getId() == -1) {
             AEvento aEvento = new AEvento();
             DescricaoEventoDB db = new DescricaoEventoDBToplink();
-            aEvento.setDescricaoEvento(db.pesquisaCodigo(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription())));
+            aEvento.setDescricaoEvento((DescricaoEvento) sv.pesquisaObjeto(Integer.parseInt(getListaDescricaoEvento().get(idDescricaoEvento).getDescription()), "DescricaoEvento"));
             if (!sv.inserirObjeto(aEvento)) {
                 msgConfirma = "Erro ao salvar Evento!";
                 GenericaMensagem.warn("Erro", msgConfirma);
@@ -113,7 +112,7 @@ public class CaravanaJSFBean {
         }
 
         servicos = new Servicos();
-        servicos = (Servicos) sv.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServicos).getDescription()), "Servicos");
+        servicos = (Servicos) sv.pesquisaObjeto(Integer.parseInt(getListaServicos().get(idServicos).getDescription()), "Servicos");
         float vl = 0;
 //        for (int i = 0; i < listaServicosAdd.size(); i++) {
 //            if (((Servicos) listaServicosAdd.get(i).getArgumento0()).getId() == servicos.getId()) {
@@ -157,15 +156,14 @@ public class CaravanaJSFBean {
 
     public String excluir() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        AEvento aEvento = new AEvento();
         sv.abrirTransacao();
         if (caravana.getId() != -1) {
-            caravana = (Caravana) sv.pesquisaCodigo(caravana.getId(), "Caravana");
-            aEvento = (AEvento) sv.pesquisaCodigo(caravana.getaEvento().getId(), "AEvento");
+            caravana = (Caravana) sv.pesquisaObjeto(caravana.getId(), "Caravana");
+            AEvento aEvento = (AEvento) sv.pesquisaObjeto(caravana.getaEvento().getId(), "AEvento");
             if (!listaServicosAdd.isEmpty()) {
                 DataObject dtObj = null;
-                for (int i = 0; i < listaServicosAdd.size(); i++) {
-                    dtObj = listaServicosAdd.get(i);
+                for (DataObject listaServicosAdd1 : listaServicosAdd) {
+                    dtObj = listaServicosAdd1;
                     if (!excluirServicos(sv, dtObj)) {
                         sv.desfazerTransacao();
                         msgConfirma = "Erro ao excluir lista de Serviços!";
@@ -215,8 +213,8 @@ public class CaravanaJSFBean {
     }
 
     public boolean excluirServicos(SalvarAcumuladoDB sv, DataObject dtObj) {
-        eventoServico = (EventoServico) sv.pesquisaCodigo(((EventoServico) dtObj.getArgumento1()).getId(), "EventoServico");
-        eventoServicoValor = (EventoServicoValor) sv.pesquisaCodigo(((EventoServicoValor) dtObj.getArgumento2()).getId(), "EventoServicoValor");
+        eventoServico = (EventoServico) sv.pesquisaObjeto(((EventoServico) dtObj.getArgumento1()).getId(), "EventoServico");
+        eventoServicoValor = (EventoServicoValor) sv.pesquisaObjeto(((EventoServicoValor) dtObj.getArgumento2()).getId(), "EventoServicoValor");
         if (!sv.deletarObjeto(eventoServicoValor)) {
             msgConfirma = "Erro ao Excluir evento serviço valor!";
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -237,7 +235,7 @@ public class CaravanaJSFBean {
     }
 
     public String novo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("caravanaBean", new CaravanaJSFBean());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("caravanaBean", new CaravanaBean());
         return "caravana";
     }
 
@@ -261,22 +259,23 @@ public class CaravanaJSFBean {
         List<SelectItem> result = new Vector<SelectItem>();
         List<DescricaoEvento> select = new ArrayList();
         DescricaoEventoDB db = new DescricaoEventoDBToplink();
-        if (getListaGrupoEvento().isEmpty())
+        if (getListaGrupoEvento().isEmpty()) {
             return result;
+        }
         select = db.pesquisaDescricaoPorGrupo(Integer.parseInt(getListaGrupoEvento().get(idGrupoEvento).getDescription()));
         for (int i = 0; i < select.size(); i++) {
-            result.add(new SelectItem(new Integer(i), select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+            result.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
         }
         return result;
     }
 
     public List<SelectItem> getListaGrupoEvento() {
         List<SelectItem> result = new Vector<SelectItem>();
-        List<GrupoEvento> select = new ArrayList();
         DescricaoEventoDB db = new DescricaoEventoDBToplink();
-        select = db.listaGrupoEvento();
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        List<GrupoEvento> select = (List<GrupoEvento>) sadb.listaObjeto("GrupoEvento");
         for (int i = 0; i < select.size(); i++) {
-            result.add(new SelectItem(new Integer(i), select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+            result.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
         }
         return result;
     }
@@ -287,7 +286,7 @@ public class CaravanaJSFBean {
         ServicosDB db = new ServicosDBToplink();
         List select = db.pesquisaTodos(138);
         while (i < select.size()) {
-            listaSe.add(new SelectItem(new Integer(i),
+            listaSe.add(new SelectItem(i,
                     (String) ((Servicos) select.get(i)).getDescricao(),
                     Integer.toString(((Servicos) select.get(i)).getId())));
             i++;
@@ -300,8 +299,8 @@ public class CaravanaJSFBean {
         EventoServicoValorDB dbEv = new EventoServicoValorDBToplink();
         if (caravana.getId() != -1) {
             listaServicosAdd.clear();
-            List<EventoServico> evs = new ArrayList();
-            EventoServicoValor ev = null;
+            List<EventoServico> evs;
+            EventoServicoValor ev;
             evs = dbE.listaEventoServico(caravana.getaEvento().getId());
             for (int i = 0; i < evs.size(); i++) {
                 ev = dbEv.pesquisaEventoServicoValor(evs.get(i).getId());
