@@ -2,7 +2,8 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:rich="http://richfaces.org/rich"
-      xmlns:a4j="http://richfaces.org/a4j">
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <h:head>
         <!-- <link href="#{facesContext.externalContext.requestContextPath}/estilos.css" rel="stylesheet" type="text/css"/> -->
@@ -38,62 +39,66 @@
 
                     <!-- CENTRO -->
                     <td align="center" width="40%">
-                        <!-- <h:panelGrid columns="6" rendered="true">
-                            <rich:list styleClass="menuLinksClass" var="menuLinks" value="# {chamadaPaginaBean.menuLinks}" iterationStatusVar="it">
-                                <h:graphicImage url="/Imagens/iconBack.png" styleClass="separadorLinks" title="Voltar um nível" rendered="# {menuLinks.descricao != 'Menu Principal'}"/>
-                                <h:commandLink value="# {menuLinks.descricao}" title="# {menuLinks.descricao}" action="# {chamadaPaginaBean.cliqueMenuLinks(it.index)}" rendered="# {menuLinks.ativo}" immediate="true" styleClass="fonteLinksSuporte" /> 
-                            </rich:list>
-                        </h:panelGrid>                         -->
-                        <h:panelGrid columns="6">
-                            <h:column>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento0} " action="#{chamadaPaginaBean.clickNivelLink0}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                        <c:if test="false">
+                            <h:panelGrid columns="6" rendered="true">
+                                <rich:list styleClass="menuLinksClass" var="menuLinks" value="#{chamadaPaginaBean.menuLinks}" iterationStatusVar="it">
+                                    <h:graphicImage url="/Imagens/iconBack.png" styleClass="separadorLinks" title="Voltar um nível" rendered="#{menuLinks.descricao != 'Menu Principal'}"/>
+                                    <h:commandLink value="#{menuLinks.descricao}" title="#{menuLinks.descricao}" action="#{chamadaPaginaBean.cliqueMenuLinks(it.index)}" rendered="#{menuLinks.ativo}" immediate="true" styleClass="fonteLinksSuporte" /> 
+                                </rich:list>
+                            </h:panelGrid>
+                        </c:if>
+                        <c:if test="true">
+                            <h:panelGrid columns="6">
+                                <h:column>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento0} " action="#{chamadaPaginaBean.clickNivelLink0}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render1}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento1}" action="#{chamadaPaginaBean.clickNivelLink1}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render1}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento1}" action="#{chamadaPaginaBean.clickNivelLink1}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render2}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento2}" action="#{chamadaPaginaBean.clickNivelLink2}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render2}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento2}" action="#{chamadaPaginaBean.clickNivelLink2}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render3}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento3} " action="#{chamadaPaginaBean.clickNivelLink3}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render3}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento3} " action="#{chamadaPaginaBean.clickNivelLink3}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render4}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento4} " action="#{chamadaPaginaBean.clickNivelLink4}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render4}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento4} " action="#{chamadaPaginaBean.clickNivelLink4}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render5}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento5}" action="#{chamadaPaginaBean.clickNivelLink5}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render5}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento5}" action="#{chamadaPaginaBean.clickNivelLink5}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render6}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento6}" action="#{chamadaPaginaBean.clickNivelLink6}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render6}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink  value="#{chamadaPaginaBean.dtObjectLabel.argumento6}" action="#{chamadaPaginaBean.clickNivelLink6}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render7}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento7}" action="#{chamadaPaginaBean.clickNivelLink7}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render7}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento7}" action="#{chamadaPaginaBean.clickNivelLink7}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render8}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render8}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
 
-                            <h:column>
-                                <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render9}" styleClass="separadorLinks" title="Voltar um nível"/>
-                                <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" styleClass="fonteLinksSuporte" immediate="true"/>
-                            </h:column>
-                        </h:panelGrid>
+                                <h:column>
+                                    <h:graphicImage url="/Imagens/iconBack.png" rendered="#{chamadaPaginaBean.render9}" styleClass="separadorLinks" title="Voltar um nível"/>
+                                    <h:commandLink value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" styleClass="fonteLinksSuporte" immediate="true"/>
+                                </h:column>
+                            </h:panelGrid>
+                        </c:if>
                     </td>
 
                     <!-- DIREITA -->
