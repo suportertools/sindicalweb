@@ -11,20 +11,21 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.financeiro.db.TipoServicoDB;
 import br.com.rtools.financeiro.db.TipoServicoDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
 public class MensagemConvencaoBean {
+
     private MensagemConvencao mensagemConvencao = new MensagemConvencao();
     private String msgConfirma;
     private int idGrupo;
@@ -82,34 +83,30 @@ public class MensagemConvencaoBean {
         if (comita) {
             sv.comitarTransacao();
             msgConfirma = "Registro replicado com Sucesso!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+            GenericaMensagem.info("Sucesso", msgConfirma);
         } else {
             sv.desfazerTransacao();;
             msgConfirma = "Nenhuma mensagem para Replicar!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
         return "";
     }
 
     public List<SelectItem> getListaRefReplica() {
         List<SelectItem> lista = new ArrayList<SelectItem>();
-
         List select = new ArrayList();
         select.add(Integer.valueOf(DataHoje.data().substring(6)) - 1);
         select.add(DataHoje.data().substring(6));
         for (int i = 0; i < select.size(); i++) {
-            lista.add(new SelectItem(
-                    new Integer(i),
-                    select.get(i).toString(),
-                    Integer.toString(new Integer(i))));
+            lista.add(new SelectItem(i, select.get(i).toString(), Integer.toString(i)));
         }
         return lista;
     }
 
     public MensagemConvencao getMensagemConvencao() {
         if (mensagemConvencao.getId() == -1) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("mensagemPesquisa") != null) {
-                mensagemConvencao = (MensagemConvencao) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("mensagemPesquisa");
+            if (GenericaSessao.exists("mensagemPesquisa")) {
+                mensagemConvencao = (MensagemConvencao) GenericaSessao.getObject("mensagemPesquisa");
                 getListaConvencoes();
                 //getListaConvencoes();getListaGrupoCidade();getListaServico();getListaTipoServico();getListaMensagens();
             }
@@ -127,7 +124,6 @@ public class MensagemConvencaoBean {
 //            return c;
 //        }
 //    }
-
     public void setMensagemConvencao(MensagemConvencao mensagemConvencao) {
         this.mensagemConvencao = mensagemConvencao;
     }
@@ -180,20 +176,20 @@ public class MensagemConvencaoBean {
 
         if (!mensagemConvencao.getVencimento().equals(vencimento)) {
             msgConfirma = "Este vencimento esta incorreto!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if ((mensagemConvencao.getReferencia().length() != 7)
                 && (Integer.parseInt(this.getListaTipoServico().get(idTipoServico).getDescription()) != 4)) {
             msgConfirma = "Referência esta incorreta";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
         if (DataHoje.converteData(mensagemConvencao.getDtVencimento()) == null) {
             msgConfirma = "Informe o vencimento";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
@@ -202,7 +198,7 @@ public class MensagemConvencaoBean {
                 // SE ACORDO FOR FALSO ----------------------------------------------------
                 if (mensagemConvencao.getReferencia().length() != 7 && !disAcordo) {
                     msgConfirma = "Digite uma referencia!";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                    GenericaMensagem.warn("Erro", msgConfirma);
                     return null;
                 }
 
@@ -340,10 +336,10 @@ public class MensagemConvencaoBean {
                         if ((men == null) || (men.getId() != -1)) {
                             if (db.update(lista.get(i))) {
                                 msgConfirma = "Mensagem atualizado com sucesso!";
-                                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+                                GenericaMensagem.info("Sucesso", msgConfirma);
                             } else {
                                 msgConfirma = "Ocorreu um erro ao atualizar!";
-                                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                                GenericaMensagem.warn("Erro", msgConfirma);
                             }
                         }
                     }
@@ -356,20 +352,20 @@ public class MensagemConvencaoBean {
                     if (men == null || (men.getId() == mensagemConvencao.getId())) {
                         if (db.update(mensagemConvencao)) {
                             msgConfirma = "Mensagem atualizado com sucesso!";
-                            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+                            GenericaMensagem.info("Sucesso", msgConfirma);
                         } else {
                             msgConfirma = "Ocorreu um erro ao atualizar!";
-                            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                            GenericaMensagem.warn("Erro", msgConfirma);
                         }
                     } else {
                         msgConfirma = "Mensagem já existe!";
-                        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                        GenericaMensagem.warn("Erro", msgConfirma);
                     }
                 }
             }
         } catch (Exception e) {
             msgConfirma = e.getMessage();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            GenericaMensagem.warn("Erro", msgConfirma);
         }
 //        mensagemConvencao = new MensagemConvencao();
 //        idGrupo = 0;
@@ -380,34 +376,31 @@ public class MensagemConvencaoBean {
     }
 
     private synchronized String insertMensagem(int idConv, int idGrupo, int idServ, int idTipo, String referencia, String vencimento) {
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         MensagemConvencaoDB db = new MensagemConvencaoDBToplink();
-        ConvencaoDB conDB = new ConvencaoDBToplink();
-        GrupoCidadeDB grupoDB = new GrupoCidadeDBToplink();
-        ServicosDB servDB = new ServicosDBToplink();
-        TipoServicoDB tipoDB = new TipoServicoDBToplink();
         String result = "";
-        mensagemConvencao.setConvencao(conDB.pesquisaCodigo(idConv));
-        mensagemConvencao.setGrupoCidade(grupoDB.pesquisaCodigo(idGrupo));
-        mensagemConvencao.setServicos(servDB.pesquisaCodigo(idServ));
-        mensagemConvencao.setTipoServico(tipoDB.pesquisaCodigo(idTipo));
+        mensagemConvencao.setConvencao((Convencao) sadb.find("Convencao", idConv));
+        mensagemConvencao.setGrupoCidade((GrupoCidade) sadb.find("GrupoCidade", idGrupo));
+        mensagemConvencao.setServicos((Servicos) sadb.find("Servicos", idServ));
+        mensagemConvencao.setTipoServico((TipoServico) sadb.find("TipoServico", idTipo));
         mensagemConvencao.setReferencia(referencia);
         mensagemConvencao.setVencimento(vencimento);
         MensagemConvencao menConvencao = db.verificaMensagem(idConv, idServ, idTipo, idGrupo, referencia);
         try {
             if (menConvencao == null) {
-                if (db.insert(mensagemConvencao)) {
+                sadb.abrirTransacao();
+                if (sadb.inserirObjeto(mensagemConvencao)) {
+                    sadb.comitarTransacao();
                     mensagemConvencao.setId(-1);
                     result = "Mensagem salva com Sucesso!";
                 } else {
                     result = "Erro ao salvar mensagem!";
+                    sadb.desfazerTransacao();
                 }
             } else if (menConvencao.getId() == -1) {
                 result = "Mensagem ja existe!";
             } else {
                 result = "Mensagem ja existe!";
-                //menConvencao.setMensagemCompensacao(mensagemConvencao.getMensagemCompensacao());
-                //menConvencao.setMensagemContribuinte(mensagemConvencao.getMensagemContribuinte());
-                //db.update(mensagemConvencao);
             }
         } catch (Exception e) {
         }
@@ -415,8 +408,8 @@ public class MensagemConvencaoBean {
     }
 
     public String novo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("mensagemPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("mensagemConvencaoBean");
+        GenericaSessao.remove("mensagemPesquisa");
+        GenericaSessao.remove("mensagemConvencaoBean");
 //        mensagemConvencao = new MensagemConvencao();
 //        msgConfirma = "";
 //        idGrupo = 0;
@@ -424,27 +417,27 @@ public class MensagemConvencaoBean {
 //        idServico = 0;
 //        idTipoServico = 0;
 //        vencimento = DataHoje.data();
-        
+
         mensagemConvencao.setReferencia(DataHoje.data().substring(3));
         return "mensagem";
     }
 
     public String excluir() {
-        MensagemConvencaoDB db = new MensagemConvencaoDBToplink();
         if (mensagemConvencao.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            mensagemConvencao = db.pesquisaCodigo(mensagemConvencao.getId());
-            if (db.delete(mensagemConvencao)) {
-                db.getEntityManager().getTransaction().commit();
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            mensagemConvencao = (MensagemConvencao) sadb.find(mensagemConvencao);
+            sadb.abrirTransacao();
+            if (sadb.deletarObjeto(mensagemConvencao)) {
+                sadb.comitarTransacao();
                 msgConfirma = "Mensagem Excluida com Sucesso!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
+                GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
-                db.getEntityManager().getTransaction().rollback();
+                sadb.desfazerTransacao();
                 msgConfirma = "Mensagem não pode ser Excluida!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+                GenericaMensagem.warn("Erro", msgConfirma);
             }
-        }else{
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Pesquise uma mensagem para ser Excluída!"));
+        } else {
+            GenericaMensagem.warn("Erro", "Pesquise uma mensagem para ser Excluída!");
         }
         return null;
     }
@@ -493,7 +486,6 @@ public class MensagemConvencaoBean {
         //listaMensagens.remove(listaMensagens.get(idIndex));
         msgConfirma = "";
 
-
         if (mensagemConvencao.getConvencao().getId() != -1) {
             for (int i = 0; i < getListaConvencoes().size(); i++) {
                 if (Integer.parseInt(getListaConvencoes().get(i).getDescription()) == mensagemConvencao.getConvencao().getId()) {
@@ -502,40 +494,34 @@ public class MensagemConvencaoBean {
                 }
             }
         }
-        
+
         if (mensagemConvencao.getGrupoCidade().getId() != -1) {
-            List<SelectItem> grupo = new ArrayList<SelectItem>();
-            grupo = getListaGrupoCidade();
-            for (int i = 0; i < grupo.size(); i++) {
-                if (Integer.parseInt(grupo.get(i).getDescription()) == mensagemConvencao.getGrupoCidade().getId()) {
-                    idGrupo = (Integer) grupo.get(i).getValue();
+            List<SelectItem> grupo = getListaGrupoCidade();
+            for (SelectItem grupo1 : grupo) {
+                if (Integer.parseInt(grupo1.getDescription()) == mensagemConvencao.getGrupoCidade().getId()) {
+                    idGrupo = (Integer) grupo1.getValue();
                     break;
                 }
-                i++;
             }
         }
-        
+
         if (mensagemConvencao.getTipoServico().getId() != -1) {
-            List<SelectItem> tipoServico = new ArrayList<SelectItem>();
-            tipoServico = getListaTipoServico();
-            for (int i = 0; i < tipoServico.size(); i++) {
-                if (Integer.parseInt(tipoServico.get(i).getDescription()) == mensagemConvencao.getTipoServico().getId()) {
-                    idTipoServico = (Integer) tipoServico.get(i).getValue();
+            List<SelectItem> tipoServico = getListaTipoServico();
+            for (SelectItem tipoServico1 : tipoServico) {
+                if (Integer.parseInt(tipoServico1.getDescription()) == mensagemConvencao.getTipoServico().getId()) {
+                    idTipoServico = (Integer) tipoServico1.getValue();
                     break;
                 }
-                i++;
             }
         }
-        
+
         if (mensagemConvencao.getServicos().getId() != -1) {
-            List<SelectItem> servicos = new ArrayList<SelectItem>();
-            servicos = getListaServico();
-            for (int i = 0; i < servicos.size(); i++) {
-                if (Integer.parseInt(servicos.get(i).getDescription()) == mensagemConvencao.getServicos().getId()) {
-                    idServico = (Integer) servicos.get(i).getValue();
+            List<SelectItem> servicos = getListaServico();
+            for (SelectItem servico : servicos) {
+                if (Integer.parseInt(servico.getDescription()) == mensagemConvencao.getServicos().getId()) {
+                    idServico = (Integer) servico.getValue();
                     break;
                 }
-                i++;
             }
         }
         return "mensagem";
@@ -543,60 +529,33 @@ public class MensagemConvencaoBean {
 
     public List<SelectItem> getListaConvencoes() {
         List<SelectItem> convencoes = new ArrayList<SelectItem>();
-        int i = 0;
-        ConvencaoDB db = new ConvencaoDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()) {
-            convencoes.add(new SelectItem(
-                    new Integer(i),
-                    (String) ((Convencao) select.get(i)).getDescricao(),
-                    Integer.toString(((Convencao) select.get(i)).getId())));
-            i++;
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        List<Convencao> list = (List<Convencao>) sadb.listaObjeto("Convencao");
+        for (int i = 0; i < list.size(); i++) {
+            convencoes.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
         }
-
-
-//        if (mensagemConvencao.getConvencao().getId() != -1) {
-//            for (int x = 0; x < convencoes.size(); x++) {
-//                if (Integer.parseInt(convencoes.get(x).getDescription()) == mensagemConvencao.getConvencao().getId()) {
-//                    idConvencao = (Integer) convencoes.get(x).getValue();
-//                    break;
-//                }
-//            }
-//        }
         return convencoes;
     }
 
     public List<SelectItem> getListaGrupoCidade() {
         List<SelectItem> grupo = new ArrayList<SelectItem>();
-        ConvencaoDB convencaoDB = new ConvencaoDBToplink();
         ConvencaoCidadeDB convencaoCidadeDB = new ConvencaoCidadeDBToplink();
-        Convencao convencao = convencaoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaConvencoes().get(idConvencao)).getDescription()));
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        Convencao convencao = (Convencao) sadb.find("Convencao", Integer.parseInt(((SelectItem) getListaConvencoes().get(idConvencao)).getDescription()));
         if (convencao == null) {
             return grupo;
         }
         int i = 0;
         List select = convencaoCidadeDB.pesquisarGruposPorConvencao(convencao.getId());
-
         if (select != null) {
             while (i < select.size()) {
                 grupo.add(new SelectItem(
-                        new Integer(i),
+                        i,
                         (String) ((GrupoCidade) select.get(i)).getDescricao(),
                         Integer.toString(((GrupoCidade) select.get(i)).getId())));
                 i++;
             }
         }
-
-//        if (mensagemConvencao.getGrupoCidade().getId() != -1) {
-//            i = 0;
-//            while (i < grupo.size()) {
-//                if (Integer.parseInt(grupo.get(i).getDescription()) == mensagemConvencao.getGrupoCidade().getId()) {
-//                    idGrupo = (Integer) grupo.get(i).getValue();
-//                    break;
-//                }
-//                i++;
-//            }
-//        }
         return grupo;
     }
 
@@ -607,22 +566,11 @@ public class MensagemConvencaoBean {
         List select = db.pesquisaTodosPeloContaCobranca();
         while (i < select.size()) {
             tipoServico.add(new SelectItem(
-                    new Integer(i),
+                    i,
                     (String) ((TipoServico) select.get(i)).getDescricao(),
                     Integer.toString(((TipoServico) select.get(i)).getId())));
             i++;
         }
-
-//        if (mensagemConvencao.getTipoServico().getId() != -1) {
-//            i = 0;
-//            while (i < tipoServico.size()) {
-//                if (Integer.parseInt(tipoServico.get(i).getDescription()) == mensagemConvencao.getTipoServico().getId()) {
-//                    idTipoServico = (Integer) tipoServico.get(i).getValue();
-//                    break;
-//                }
-//                i++;
-//            }
-//        }
         return tipoServico;
     }
 
@@ -633,23 +581,11 @@ public class MensagemConvencaoBean {
         List select = db.pesquisaTodosPeloContaCobranca(4);
         while (i < select.size()) {
             servicos.add(new SelectItem(
-                    new Integer(i),
+                    i,
                     (String) ((Servicos) select.get(i)).getDescricao(),
                     Integer.toString(((Servicos) select.get(i)).getId())));
             i++;
         }
-
-//        if (mensagemConvencao.getServicos().getId() != -1) {
-//            i = 0;
-//            while (i < servicos.size()) {
-//                if (Integer.parseInt(servicos.get(i).getDescription()) == mensagemConvencao.getServicos().getId()) {
-//                    idServico = (Integer) servicos.get(i).getValue();
-//                    break;
-//                }
-//                i++;
-//            }
-//        }
-
         return servicos;
     }
 
