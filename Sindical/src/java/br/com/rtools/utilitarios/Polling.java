@@ -13,7 +13,7 @@ public class Polling {
 
     public void existeUsuarioSessao() throws IOException {
         if (!GenericaSessao.exists("sessaoUsuario")) {
-            FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/indexLogin.jsf");            
+            FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/indexLogin.jsf");
         }
     }
     
