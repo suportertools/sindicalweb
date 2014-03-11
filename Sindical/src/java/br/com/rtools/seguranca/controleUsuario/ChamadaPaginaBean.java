@@ -10,16 +10,19 @@ import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.MenuLinks;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
+import org.primefaces.model.menu.MenuModel;
 
 @ManagedBean
 @SessionScoped
@@ -61,6 +64,7 @@ public class ChamadaPaginaBean implements Serializable {
     private boolean render9 = false;
     private boolean renderPesquisa = true;
     private List<Rotina> listaRotina = new ArrayList();
+    private MenuModel model;
 
     public void atualizaAcessos(String url) {
         RotinaDB db = new RotinaDBToplink();
@@ -104,7 +108,15 @@ public class ChamadaPaginaBean implements Serializable {
         Object object = null;
         try {
             object = this.getClass().getMethod(pagina).invoke(this);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
+            //e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            //e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            //e.printStackTrace();
+        } catch (SecurityException e) {
+            //e.printStackTrace();
+        } catch (InvocationTargetException e) {
             //e.printStackTrace();
         }
         return object;
@@ -1356,7 +1368,7 @@ public class ChamadaPaginaBean implements Serializable {
     // Lista Breadcrumbs e Menu url de retornos de páginas
     public String converteURLNome(String strURLNome) {
         if (strURLNome.equals("simples")) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
+            if (GenericaSessao.exists("chamadaPaginaSimples")) {
                 String[] simplesString = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples");
                 return simplesString[1];
             }
@@ -1377,6 +1389,7 @@ public class ChamadaPaginaBean implements Serializable {
         return urlDest.substring(urlDest.lastIndexOf("/") + 1, urlDest.lastIndexOf("."));
     }
 
+    @SuppressWarnings("unchecked")
     public DataObject getDtObjectLabel() {
         return dtObjectLabel;
     }
@@ -1391,24 +1404,21 @@ public class ChamadaPaginaBean implements Serializable {
     public String getControleLinksX() {
         String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
         String linkAtual = converteURL(urlDestino);
-        String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        String linkTeste = (String) GenericaSessao.getString("urlRetorno");
         getControleLinksX(urlDestino, linkAtual, linkTeste);
         return null;
     }
 
     public void getControleLinksX(String urlDestino, String linkAtual, String linkTeste) {
         try {
-//            String urlDestino = ((HttpServletRequest) (FacesContext.getCurrentInstance().getExternalContext().getRequest())).getRequestURI();
-//            String linkAtual = converteURL(urlDestino);
-//            String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (linkTeste == null) {
                 linkTeste = "";
             }
-            if (linkAtual.equals("acessoNegado") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+            if (linkAtual.equals("acessoNegado") || !GenericaSessao.exists("indicaAcesso")) {
                 carregaPg = false;
                 return;
             }
-            if (linkAtual.equals("sessaoExpirou") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+            if (linkAtual.equals("sessaoExpirou") || !GenericaSessao.exists("indicaAcesso")) {
                 carregaPg = false;
                 return;
             }
@@ -1419,27 +1429,27 @@ public class ChamadaPaginaBean implements Serializable {
             if (carregaPg) {
                 linkClicado = false;
                 boolean isNivel = false;
-                boolean acessoCadastro = (Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro");
+                boolean acessoCadastro = (Boolean) GenericaSessao.getBoolean("acessoCadastro");
                 if (nivelLink >= 0 && nivelLink <= 9) {
                     isNivel = true;
                     carregaPg = false;
                 }
                 if (nivelLink >= 3 && nivelLink <= 9) {
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                    GenericaSessao.put("acessoCadastro", false);
                 }
                 int nivel = 0;
                 switch (nivelLink) {
                     case 0:
-                        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
+                        if (((String) GenericaSessao.getString("indicaAcesso")).equals("local")) {
                             limparMenuLinks(-1);
                             menuLinks.add(new MenuLinks(0, "menuPrincipal", "Menu Principal", true));
                             isNivel = false;
-                        } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("web")) {
+                        } else if (((String) GenericaSessao.getString("indicaAcesso")).equals("web")) {
                             limparMenuLinks(-1);
                             menuLinks.add(new MenuLinks(0, "menuPrincipalAcessoWeb", "Menu Principal", true));
                             limparMenuLinks(-1);
                             isNivel = false;
-                        } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("suporteWeb")) {
+                        } else if (((String) GenericaSessao.getString("indicaAcesso")).equals("suporteWeb")) {
                             menuLinks.add(new MenuLinks(0, "menuPrincipalSuporteWeb", "Menu Principal Suporte Web", true));
                             isNivel = false;
                             dtObject.setArgumento0("menuPrincipalSuporteWeb");
@@ -1459,6 +1469,7 @@ public class ChamadaPaginaBean implements Serializable {
                     case 3:
                         if (acessoCadastro) {
                             nivel = 2;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 4;
@@ -1467,6 +1478,7 @@ public class ChamadaPaginaBean implements Serializable {
                     case 4:
                         if (acessoCadastro) {
                             nivel = 3;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 5;
@@ -1475,6 +1487,7 @@ public class ChamadaPaginaBean implements Serializable {
                     case 5:
                         if (acessoCadastro) {
                             nivel = 4;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 6;
@@ -1483,6 +1496,7 @@ public class ChamadaPaginaBean implements Serializable {
                     case 6:
                         if (acessoCadastro) {
                             nivel = 5;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 7;
@@ -1491,6 +1505,7 @@ public class ChamadaPaginaBean implements Serializable {
                     case 7:
                         if (acessoCadastro) {
                             nivel = 6;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 8;
@@ -1499,6 +1514,7 @@ public class ChamadaPaginaBean implements Serializable {
                     case 8:
                         if (acessoCadastro) {
                             nivel = 7;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 9;
@@ -1507,14 +1523,12 @@ public class ChamadaPaginaBean implements Serializable {
                     case 9:
                         if (acessoCadastro) {
                             nivel = 8;
+                            menuLinks.remove(nivel);
                         } else {
                             nivel = nivelLink;
                             nivelLink = 10;
                         }
                         break;
-                }
-                if (isNivel) {
-                    menuLinks.add(nivel, new MenuLinks(nivel, linkAtual, converteURLNome(linkAtual), true));
                 }
                 if (acessoCadastro) {
 //                    int count = 0;
@@ -1541,6 +1555,9 @@ public class ChamadaPaginaBean implements Serializable {
 //                        }
 //                    }
                 }
+                if (isNivel) {
+                    menuLinks.add(nivel, new MenuLinks(nivel, linkAtual, converteURLNome(linkAtual), true));
+                }
             } else if (linkTeste.equals(linkAtual)) {
                 for (int x = 0; x < menuLinks.size(); x++) {
                     if (menuLinks.get(x).getLink().equals(linkTeste)) {
@@ -1564,20 +1581,31 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public String getControleLinks() {
+        
+//        model = new DefaultMenuModel();
+//        
+//        DefaultMenuItem item = new DefaultMenuItem();
+//        item.setCommand("menuPrincipal");  
+//        model.addElement(item);
+//        
+//        DefaultMenuItem item2 = new DefaultMenuItem();
+//        item2.setCommand("usuario.jsf");  
+//        item2.setValue("Usuario");  
+//        model.addElement(item2); 
+        
         try {
             paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String urlDestino = paginaRequerida.getRequestURI();
             String linkAtual = converteURL(urlDestino);
-            String linkTeste = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-            //getControleLinksX(urlDestino, linkAtual, linkTeste);
+            String linkTeste = (String) GenericaSessao.getString("urlRetorno");
             if (linkTeste == null) {
                 linkTeste = "";
             }
-            if (linkAtual.equals("acessoNegado") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+            if (linkAtual.equals("acessoNegado") || GenericaSessao.getString("indicaAcesso") == null) {
                 carregaPg = false;
                 return null;
             }
-            if (linkAtual.equals("sessaoExpirou") || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+            if (linkAtual.equals("sessaoExpirou") || GenericaSessao.getString("indicaAcesso") == null) {
                 carregaPg = false;
                 return null;
             }
@@ -1588,15 +1616,15 @@ public class ChamadaPaginaBean implements Serializable {
             if (carregaPg) {
                 linkClicado = false;
                 if (nivelLink == 0) {
-                    if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
+                    if (((String) GenericaSessao.getString("indicaAcesso")).equals("local")) {
                         dtObject.setArgumento0("menuPrincipal");
                         dtObjectLabel.setArgumento0("Menu Principal");
                         limpaNivel0();
-                    } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("web")) {
+                    } else if (((String) GenericaSessao.getString("indicaAcesso")).equals("web")) {
                         dtObject.setArgumento0("menuPrincipalAcessoWeb");
                         dtObjectLabel.setArgumento0("Menu Principal");
                         limpaNivel0();
-                    } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("suporteWeb")) {
+                    } else if (((String) GenericaSessao.getString("indicaAcesso")).equals("suporteWeb")) {
                         dtObject.setArgumento0("menuPrincipalSuporteWeb");
                         dtObjectLabel.setArgumento0("Menu Principal Suporte Web");
                         limpaNivel0();
@@ -1623,12 +1651,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 3) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento2(null);
                         dtObject.setArgumento2(linkAtual);
                         dtObjectLabel.setArgumento2(null);
                         dtObjectLabel.setArgumento2(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento3(linkAtual);
                         dtObjectLabel.setArgumento3(converteURLNome(linkAtual));
@@ -1639,12 +1667,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 4) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento3(null);
                         dtObject.setArgumento3(linkAtual);
                         dtObjectLabel.setArgumento3(null);
                         dtObjectLabel.setArgumento3(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento4(linkAtual);
                         dtObjectLabel.setArgumento4(converteURLNome(linkAtual));
@@ -1655,12 +1683,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 5) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento4(null);
                         dtObject.setArgumento4(linkAtual);
                         dtObjectLabel.setArgumento4(null);
                         dtObjectLabel.setArgumento4(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento5(linkAtual);
                         dtObjectLabel.setArgumento5(converteURLNome(linkAtual));
@@ -1671,12 +1699,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 6) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento5(null);
                         dtObject.setArgumento5(linkAtual);
                         dtObjectLabel.setArgumento5(null);
                         dtObjectLabel.setArgumento5(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento6(linkAtual);
                         dtObjectLabel.setArgumento6(converteURLNome(linkAtual));
@@ -1687,12 +1715,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 7) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento6(null);
                         dtObject.setArgumento6(linkAtual);
                         dtObjectLabel.setArgumento6(null);
                         dtObjectLabel.setArgumento6(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento7(linkAtual);
                         dtObjectLabel.setArgumento7(converteURLNome(linkAtual));
@@ -1703,12 +1731,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 8) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento7(null);
                         dtObject.setArgumento7(linkAtual);
                         dtObjectLabel.setArgumento7(null);
                         dtObjectLabel.setArgumento7(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento8(linkAtual);
                         dtObjectLabel.setArgumento8(converteURLNome(linkAtual));
@@ -1719,12 +1747,12 @@ public class ChamadaPaginaBean implements Serializable {
                     return null;
                 }
                 if (nivelLink == 9) {
-                    if ((Boolean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoCadastro")) {
+                    if ((Boolean) GenericaSessao.getBoolean("acessoCadastro")) {
                         dtObject.setArgumento8(null);
                         dtObject.setArgumento8(linkAtual);
                         dtObjectLabel.setArgumento8(null);
                         dtObjectLabel.setArgumento8(converteURLNome(linkAtual));
-                        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
+                        GenericaSessao.put("acessoCadastro", false);
                     } else {
                         dtObject.setArgumento9(linkAtual);
                         dtObjectLabel.setArgumento9(converteURLNome(linkAtual));
@@ -1803,7 +1831,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel0();
         nivelLink = 1;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -1846,7 +1874,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel1();
         nivelLink = 2;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -1886,7 +1914,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel2();
         nivelLink = 3;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -1923,7 +1951,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel3();
         nivelLink = 4;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -1957,7 +1985,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel4();
         nivelLink = 5;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -1988,7 +2016,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel5();
         nivelLink = 6;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -2016,7 +2044,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel6();
         nivelLink = 7;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -2041,7 +2069,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel7();
         nivelLink = 8;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -2063,7 +2091,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel8();
         nivelLink = 9;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -2082,7 +2110,7 @@ public class ChamadaPaginaBean implements Serializable {
         limpaNivel9();
         nivelLink = 10;
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         return irPara;
     }
 
@@ -2231,7 +2259,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public String cliqueMenuLinks(int i) {
         linkClicado = true;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("linkClicado", true);
         if (menuLinks.get(i).getLink().equals("")) {
             menuLinks.get(i - 1).setIndice(i);
             return menuLinks.get(i - 1).getLink();
@@ -2239,5 +2267,9 @@ public class ChamadaPaginaBean implements Serializable {
         nivelLink = i + 1;
         menuLinks.get(i).setIndice(i);
         return menuLinks.get(i).getLink();
+    }
+
+    public MenuModel getModel() {
+        return model;
     }
 }
