@@ -108,7 +108,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             msgConfirma = "Não existem horários para esse dia da semana!";
             return null;
         }
-        Horarios h = (Horarios) sv.pesquisaCodigo(Integer.valueOf(getListaHorarioTransferencia().get(idHorarioTransferencia).getDescription()), "Horarios");
+        Horarios h = (Horarios) sv.find("Horarios", Integer.valueOf(getListaHorarioTransferencia().get(idHorarioTransferencia).getDescription()));
         agendamento.setHorarios(h);
 
         sv.abrirTransacao();
@@ -141,7 +141,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (int i = 0; i < listaMovimento.size(); i++) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaMovimento.get(i)).get(0), "Movimento");
+            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().find("Movimento", (Integer) ((List) listaMovimento.get(i)).get(0));
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -160,7 +160,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (Object listaMovimento1 : listaMovimento) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaMovimento1).get(0), "Movimento");
+            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().find("Movimento", (Integer) ((List) listaMovimento1).get(0));
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -170,7 +170,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
 
         try {
-            Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
+            Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).find("Registro", 1);
 
             Pessoa pessoa = new Pessoa();
             String emailPessoaHistorico = "";
@@ -246,9 +246,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<Status> list = (List<Status>) salvarAcumuladoDB.listaObjeto("Status");
             for (int i = 0; i < list.size(); i++) {
-                listaStatus.add(new SelectItem(new Integer(i),
-                        list.get(i).getDescricao(),
-                        Integer.toString(list.get(i).getId())));
+                listaStatus.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaStatus;
@@ -259,9 +257,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<Demissao> list = (List<Demissao>) salvarAcumuladoDB.listaObjeto("Demissao");
             for (int i = 0; i < list.size(); i++) {
-                listaDemissao.add(new SelectItem(new Integer(i),
-                        list.get(i).getDescricao(),
-                        Integer.toString(list.get(i).getId())));
+                listaDemissao.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaDemissao;
@@ -281,7 +277,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     return new ArrayList();
                 }
                 if (qnt > 0) {
-                    listaHorarioTransferencia.add(new SelectItem(new Integer(j), select.get(i).getHora() + " (" + qnt + ")", String.valueOf(select.get(i).getId())));
+                    listaHorarioTransferencia.add(new SelectItem(j, select.get(i).getHora() + " (" + qnt + ")", String.valueOf(select.get(i).getId())));
                     j++;
                 }
             }
@@ -289,230 +285,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         return listaHorarioTransferencia;
     }
 
-    public synchronized List getListaHorariosx() throws IOException {
-        listaGrid = new ArrayList();
-        List<Agendamento> ag;
-        List<Horarios> horario;
-        HomologacaoDB db = new HomologacaoDBToplink();
-        String agendador;
-        String homologador;
-        DataObject dtObj;
-
-        if (macFilial == null) {
-            return new ArrayList();
-        }
-        int idNrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
-        switch (idNrStatus) {
-            //STATUS DISPONIVEL ----------------------------------------------------------------------------------------------
-            case 1: {
-                renderedDisponivel = true;
-                int diaDaSemana = DataHoje.diaDaSemana(data);
-                horario = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), diaDaSemana);
-                strSalvar = "Agendar";
-                disabledProtocolo = false;
-                int qnt;
-                for (int i = 0; i < horario.size(); i++) {
-                    qnt = db.pesquisaQntdDisponivel(macFilial.getFilial().getId(), horario.get(i), getData());
-                    if (qnt == -1) {
-                        msgAgendamento = "Erro ao pesquisar horários disponíveis!";
-                        listaGrid.clear();
-                        break;
-                    }
-                    if (qnt > 0) {
-                        dtObj = new DataObject(horario.get(i), // ARG 0 HORA
-                                null, // ARG 1 CNPJ
-                                null, //ARG 2 NOME
-                                null, //ARG 3 HOMOLOGADOR
-                                null, // ARG 4 CONTATO
-                                null, // ARG 5 TELEFONE
-                                null, // ARG 6 USUARIO
-                                null,
-                                qnt, // ARG 8 QUANTIDADE DISPONÍVEL
-                                null);
-                        listaGrid.add(dtObj);
-                    }
-                }
-                break;
-            }
-            // ---------------------------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------------------------
-
-            // STATUS AGENDADO -----------------------------------------------------------------------------------------------
-            case 2:
-            case 7: {
-                renderedDisponivel = false;
-                if (idNrStatus == 2) {
-                    ag = db.pesquisaAgendamento(2, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-                } else {
-                    ag = db.pesquisaAgendamento(7, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-
-                }
-                strSalvar = "Atualizar";
-                disabledProtocolo = true;
-                for (int i = 0; i < ag.size(); i++) {
-                    if (ag.get(i).getAgendador() != null) {
-                        agendador = ag.get(i).getAgendador().getPessoa().getNome();
-                    } else {
-                        agendador = "** Web User **";
-                    }
-                    if (ag.get(i).getHomologador() != null) {
-                        homologador = ag.get(i).getHomologador().getPessoa().getNome();
-                    } else {
-                        homologador = "";
-                    }
-
-                    dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
-                            homologador, //ARG 3 HOMOLOGADOR
-                            ag.get(i).getContato(), // ARG 4 CONTATO
-                            ag.get(i).getTelefone(), // ARG 5 TELEFONE
-                            agendador, // ARG 6 USUARIO
-                            ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
-                            null, // ARG 8
-                            ag.get(i));// ARG 9 AGENDAMENTO
-                    listaGrid.add(dtObj);
-                }
-
-                break;
-            }
-            // ---------------------------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------------------------
-
-            // STATUS CANCELADO ----------------------------------------------------------------------------------------------
-            case 3: {
-                renderedDisponivel = false;
-                ag = db.pesquisaAgendamento(3, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-                strSalvar = "Atualizar";
-                disabledProtocolo = true;
-                for (int i = 0; i < ag.size(); i++) {
-                    if (ag.get(i).getAgendador() != null) {
-                        agendador = ag.get(i).getAgendador().getPessoa().getNome();
-                    } else {
-                        agendador = "** Web User **";
-                    }
-                    if (ag.get(i).getHomologador() != null) {
-                        homologador = ag.get(i).getHomologador().getPessoa().getNome();
-                    } else {
-                        homologador = "";
-                    }
-
-                    dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
-                            homologador, //ARG 3 HOMOLOGADOR
-                            ag.get(i).getContato(), // ARG 4 CONTATO
-                            ag.get(i).getTelefone(), // ARG 5 TELEFONE
-                            agendador, // ARG 6 USUARIO
-                            ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
-                            null, // ARG 8
-                            ag.get(i));// ARG 9 AGENDAMENTO
-                    listaGrid.add(dtObj);
-                }
-                break;
-            }
-
-            // STATUS HOMOLOGADO ----------------------------------------------------------------------------------------------
-            case 4: {
-                renderedDisponivel = false;
-                ag = db.pesquisaAgendamento(4, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-                strSalvar = "Atualizar";
-                disabledProtocolo = true;
-                for (int i = 0; i < ag.size(); i++) {
-                    if (ag.get(i).getAgendador() != null) {
-                        agendador = ag.get(i).getAgendador().getPessoa().getNome();
-                    } else {
-                        agendador = "** Web User **";
-                    }
-                    if (ag.get(i).getHomologador() != null) {
-                        homologador = ag.get(i).getHomologador().getPessoa().getNome();
-                    } else {
-                        homologador = "";
-                    }
-
-                    dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
-                            homologador, //ARG 3 HOMOLOGADOR
-                            ag.get(i).getContato(), // ARG 4 CONTATO
-                            ag.get(i).getTelefone(), // ARG 5 TELEFONE
-                            agendador, // ARG 6 USUARIO
-                            ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
-                            null, // ARG 8
-                            ag.get(i));// ARG 9 AGENDAMENTO
-                    listaGrid.add(dtObj);
-                }
-                break;
-            }
-
-            // STATUS ATENDIMENTO ---------------------------------------------------------------------------------------------
-            case 5: {
-                renderedDisponivel = false;
-                ag = db.pesquisaAgendamento(5, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-                strSalvar = "Atualizar";
-                disabledProtocolo = true;
-                for (int i = 0; i < ag.size(); i++) {
-                    if (ag.get(i).getAgendador() != null) {
-                        agendador = ag.get(i).getAgendador().getPessoa().getNome();
-                    } else {
-                        agendador = "** Web User **";
-                    }
-                    if (ag.get(i).getHomologador() != null) {
-                        homologador = ag.get(i).getHomologador().getPessoa().getNome();
-                    } else {
-                        homologador = "";
-                    }
-
-                    dtObj = new DataObject(ag.get(i).getHorarios(), // ARG 0 HORA
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getDocumento(), // ARG 1 CNPJ
-                            ag.get(i).getPessoaEmpresa().getJuridica().getPessoa().getNome(), //ARG 2 NOME
-                            homologador, //ARG 3 HOMOLOGADOR
-                            ag.get(i).getContato(), // ARG 4 CONTATO
-                            ag.get(i).getTelefone(), // ARG 5 TELEFONE
-                            agendador, // ARG 6 USUARIO
-                            ag.get(i).getPessoaEmpresa(), // ARG 7 PESSOA EMPRESA
-                            null, // ARG 8
-                            ag.get(i));// ARG 9 AGENDAMENTO
-                    listaGrid.add(dtObj);
-                }
-                break;
-            }
-            //STATUS ENCAIXE ----------------------------------------------------------------------------------------------
-            case 6: {
-                renderedDisponivel = false;
-                // horario = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId());
-                int diaDaSemana = DataHoje.diaDaSemana(data);
-                horario = db.pesquisaTodosHorariosDisponiveis(macFilial.getFilial().getId(), diaDaSemana);
-                strSalvar = "Agendar";
-                disabledProtocolo = false;
-                for (int i = 0; i < horario.size(); i++) {
-                    dtObj = new DataObject(horario.get(i), // ARG 0 HORA
-                            null, // ARG 1 CNPJ
-                            null, //ARG 2 NOME
-                            null, //ARG 3 HOMOLOGADOR
-                            null, // ARG 4 CONTATO
-                            null, // ARG 5 TELEFONE
-                            null, // ARG 6 USUARIO
-                            null,
-                            null,
-                            null);
-                    listaGrid.add(dtObj);
-                }
-                break;
-            }
-            // ---------------------------------------------------------------------------------------------------------------
-            // ---------------------------------------------------------------------------------------------------------------
-        }
-        return listaGrid;
-    }
-
     public boolean pesquisarFeriado() {
-//        FeriadosDB db = new FeriadosDBToplink();
-//
-//        listFeriados = db.pesquisarPorDataFilial(DataHoje.converteData(getData()), macFilial.getFilial());
-//        if (!listFeriados.isEmpty()) {
-//            return true;
-//        }
         FeriadosDB feriadosDB = new FeriadosDBToplink();
         if (macFilial.getFilial().getFilial().getId() != -1) {
             List<Feriados> feriados = feriadosDB.pesquisarPorDataFilialEData(DataHoje.converteData(data), macFilial.getFilial());
@@ -540,7 +313,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         }
         emailEmpresa = "";
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) salvarAcumuladoDB.pesquisaObjeto(1, "Registro");
+        Registro reg = (Registro) salvarAcumuladoDB.find("Registro", 1);
         int nrAgendamentoRetroativo = DataHoje.converteDataParaInteger(DataHoje.converteData(reg.getAgendamentoRetroativo()));
         int nrData = DataHoje.converteDataParaInteger(DataHoje.converteData(getData()));
         int nrDataHoje = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
@@ -561,8 +334,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         renderConcluir = true;
         protocolo = 0;
         if (profissao.getId() == -1) {
-            ProfissaoDB db = new ProfissaoDBToplink();
-            profissao = db.pesquisaCodigo(0);
+            profissao = (Profissao) salvarAcumuladoDB.find("Profissao", 0);
             profissao.setProfissao("");
         }
 
@@ -659,10 +431,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
         List listDocumento;
-        int ids[] = {1, 3, 4};
         imprimirPro = false;
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
+        Demissao demissao = (Demissao) sv.find("Demissao", Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -701,7 +472,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
         // SALVAR FISICA -----------------------------------------------
         sv.abrirTransacao();
-        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find("TipoDocumento", 1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
             sv.desfazerTransacao();
             msgConfirma = "Documento Inválido!";
@@ -732,8 +503,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         } else {
             listDocumento = dbFis.pesquisaFisicaPorDoc(fisica.getPessoa().getDocumento());
-            for (int i = 0; i < listDocumento.size(); i++) {
-                if (!listDocumento.isEmpty() && ((Fisica) listDocumento.get(i)).getId() != fisica.getId()) {
+            for (Object listDocumento1 : listDocumento) {
+                if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != fisica.getId()) {
                     sv.desfazerTransacao();
                     msgConfirma = "Documento já existente!";
                     return null;
@@ -743,8 +514,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                     fisica.getDtNascimento(),
                     fisica.getRg());
             if (!fisi.isEmpty()) {
-                for (int i = 0; i < fisi.size(); i++) {
-                    if (fisi.get(i).getId() != fisica.getId()) {
+                for (Fisica fisi1 : fisi) {
+                    if (fisi1.getId() != fisica.getId()) {
                         sv.desfazerTransacao();
                         msgConfirma = "Esta pessoa já esta cadastrada!";
                         return null;
@@ -784,8 +555,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             if (enderecoFisica.getEndereco().getId() != -1) {
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
+                int ids[] = {1, 3, 4};
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaCodigo(ids[i], "TipoEndereco"));
+                    pesEnd.setTipoEndereco((TipoEndereco) sv.pesquisaObjeto(ids[i], "TipoEndereco"));
                     if (!sv.inserirObjeto(pesEnd)) {
                         sv.desfazerTransacao();
                         msgConfirma = "Erro ao Inserir endereço da pessoa!";
@@ -800,12 +572,12 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             }
         } else {
             List<PessoaEndereco> ends = dbp.pesquisaEndPorPessoa(fisica.getPessoa().getId());
-            for (int i = 0; i < ends.size(); i++) {
-                ends.get(i).setComplemento(enderecoFisica.getComplemento());
-                ends.get(i).setEndereco(enderecoFisica.getEndereco());
-                ends.get(i).setNumero(enderecoFisica.getNumero());
-                ends.get(i).setPessoa(enderecoFisica.getPessoa());
-                if (!sv.alterarObjeto(ends.get(i))) {
+            for (PessoaEndereco end : ends) {
+                end.setComplemento(enderecoFisica.getComplemento());
+                end.setEndereco(enderecoFisica.getEndereco());
+                end.setNumero(enderecoFisica.getNumero());
+                end.setPessoa(enderecoFisica.getPessoa());
+                if (!sv.alterarObjeto(end)) {
                     sv.desfazerTransacao();
                     msgConfirma = "Erro ao atualizar endereço da pessoa!";
                     return null;
@@ -823,7 +595,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
+                agendamento.setStatus((Status) sv.find("Status", 2));
                 break;
             }
             case 2: {
@@ -843,7 +615,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 agendamento.setDemissao(demissao);
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
+                agendamento.setStatus((Status) sv.find("Status", 2));
                 break;
             }
         }
@@ -860,6 +632,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 msgConfirma = "Erro ao alterar Pessoa Empresa!";
                 return null;
             }
+        }
+        if(agendamento.getContato().isEmpty()) {
+            sv.desfazerTransacao();
+            msgConfirma = "Informar o nome do contato!";
+            return null;
         }
         if (agendamento.getId() == -1) {
             if (idStatusI == 1) {
@@ -929,9 +706,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public String cancelarHorario() {
         PessoaEmpresaDB dbPesEmp = new PessoaEmpresaDBToplink();
-        StatusDB dbSta = new StatusDBToplink();
-        agendamento.setStatus(dbSta.pesquisaCodigo(3));
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        agendamento.setStatus((Status) salvarAcumuladoDB.find("Status", 3));
         salvarAcumuladoDB.abrirTransacao();
         if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
             salvarAcumuladoDB.comitarTransacao();
@@ -1411,7 +1187,6 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     public String extratoTela() {
         GenericaSessao.put("pessoaPesquisa", juridica.getPessoa());
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).extratoTela();
-        // return ((chamadaPaginaJSFBean) GenericaSessao.getObject("chamadaPaginaBean")).extratoTela();
     }
 
     public String getStrContribuinte() {
@@ -1522,7 +1297,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void adicionarHorarioAlternativo() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        agendamento.setHorarios((Horarios) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaHorarioTransferencia.get(idHorarioAlternativo).getDescription()), "Horarios"));
+        agendamento.setHorarios((Horarios) salvarAcumuladoDB.find("Horarios", Integer.parseInt(listaHorarioTransferencia.get(idHorarioAlternativo).getDescription())));
         listaHorarioTransferencia.clear();
         setOcultarHorarioAlternativo(true);
     }
@@ -1547,7 +1322,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
      *
      * @return
      */
-    public List<ListaAgendamento> getListaHorarios() {
+    public List<ListaAgendamento> getListaHorarios() {      
         listaGrid = new ArrayList();
         listaHorarios.clear();
         if (macFilial == null) {
@@ -1584,11 +1359,11 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             strSalvar = "Agendar";
         } else {
             agendamentos = homologacaoDB.pesquisaAgendamento(idNrStatus, macFilial.getFilial().getId(), getData(), null, 0, 0, 0);
-            for (int i = 0; i < agendamentos.size(); i++) {
+            for (Agendamento agendamento1 : agendamentos) {
                 ListaAgendamento listaAgendamento = new ListaAgendamento();
                 Usuario u = new Usuario();
-                listaAgendamento.setAgendamento(agendamentos.get(i));
-                if (agendamentos.get(i).getAgendador() == null) {
+                listaAgendamento.setAgendamento(agendamento1);
+                if (agendamento1.getAgendador() == null) {
                     u.getPessoa().setNome("** Web User **");
                     listaAgendamento.getAgendamento().setAgendador(u);
                 }
