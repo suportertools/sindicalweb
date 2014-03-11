@@ -52,7 +52,7 @@
                                         <p:outputLabel value="Nome: " styleClass="font-color-red"/>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText size="50" value="#{homologacaoBean.fisica.pessoa.nome}">
+                                        <p:inputText size="50" value="#{homologacaoBean.fisica.pessoa.nome}" converter="toUpperCase">
                                             <p:ajax event="blur" update="@this"/>
                                         </p:inputText>
                                         <p:outputLabel value="Nascimento: " styleClass="margin-left-max"/>
@@ -104,6 +104,14 @@
                                             <p:ajax event="change" update="@this"/>
                                         </p:inputMask>
                                     </p:column>
+                                    <p:column>                                
+                                        <p:outputLabel value="Observação "  />
+                                    </p:column>                                
+                                    <p:column>                                
+                                        <p:inputTextarea cols="70" rows="2" value="#{homologacaoBean.agendamento.observacao}">
+                                            <p:ajax event="blur" update="@this"/>
+                                        </p:inputTextarea>
+                                    </p:column>                                    
                                 </p:panelGrid>
                             </p:tab>
                             <p:tab title="Empresa">
@@ -153,20 +161,15 @@
                                             <p:ajax event="change" update="@this"/>
                                         </h:inputText>
                                         <p:outputLabel value="E-mail: " styleClass="margin-left-max"/>
-                                        <h:inputText value="#{homologacaoBean.agendamento.email}" size="20">
-                                            <p:ajax event="change" update="@this"/>
-                                        </h:inputText>
+                                        <p:inputText value="#{homologacaoBean.agendamento.email}" size="20" validatorMessage="Email inválido" required="false" placeholder="Formato: meuemail@provedor.com">
+                                            <p:ajax event="blur" update="@this" />
+                                            <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                                        </p:inputText>
                                         <p:outputLabel value="Tel: " styleClass="margin-left-max"/>
                                         <p:inputMask value="#{homologacaoBean.agendamento.telefone}" size="15" maxlength="14" mask="(99) 9999-9999?9" >
                                             <p:ajax event="change" update="@this"/>
                                         </p:inputMask>
-                                    </p:column>                                
-                                    <p:column>                                
-                                        <p:outputLabel value="Observação "  />
-                                    </p:column>                                
-                                    <p:column>                                
-                                        <h:inputTextarea cols="70" rows="2" value="#{homologacaoBean.agendamento.observacao}" />
-                                    </p:column>                                
+                                    </p:column>                                                                
                                 </p:panelGrid>
                             </p:tab>
                         </p:accordionPanel>
@@ -246,7 +249,7 @@
                             </h:panelGrid>
                         </p:panel>
                         <br />
-                        <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="#{polling.habilita}" stop="#{!polling.stop}" />
+                        <p:poll id="poolMonitor" interval="5" update="poolMonitor, tbl" listener="#{polling.habilita}" />
                         <h:panelGrid columns="1" id="tbl">
                             <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" emptyMessage="Não existe resultados!">
                                 <f:facet name="footer">
