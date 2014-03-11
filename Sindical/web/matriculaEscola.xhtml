@@ -145,13 +145,13 @@
                                         <p:outputLabel value="Semana:" />
                                         <h:column>
                                             <h:panelGrid columns="7">
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.domingo}" disabled="true" onLabel="Dom" offLabel="Dom"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.segunda}" disabled="true" onLabel="Seg" offLabel="Seg"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.terca}" disabled="true" onLabel="Ter" offLabel="Ter"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quarta}" disabled="true" onLabel="Qua" offLabel="Qua"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quinta}" disabled="true" onLabel="Qui" offLabel="Qui"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sexta}" disabled="true" onLabel="Sex" offLabel="Sex"/>
-                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sabado}" disabled="true" onLabel="Sab" offLabel="Sab"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.domingo}" disabled="true" onLabel="Dom" offLabel="Dom" rendered="#{matriculaEscolaBean.turma.domingo}"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.segunda}" disabled="true" onLabel="Seg" offLabel="Seg" rendered="#{matriculaEscolaBean.turma.segunda}"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.terca}" disabled="true" onLabel="Ter" offLabel="Ter" rendered="#{matriculaEscolaBean.turma.terca}"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quarta}" disabled="true" onLabel="Qua" offLabel="Qua" rendered="#{matriculaEscolaBean.turma.quarta}"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.quinta}" disabled="true" onLabel="Qui" offLabel="Qui" rendered="#{matriculaEscolaBean.turma.quinta}"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sexta}" disabled="true" onLabel="Sex" offLabel="Sex" rendered="#{matriculaEscolaBean.turma.sexta}"/>
+                                                <p:selectBooleanButton value="#{matriculaEscolaBean.turma.sabado}" disabled="true" onLabel="Sab" offLabel="Sab" rendered="#{matriculaEscolaBean.turma.sabado}"/>
                                             </h:panelGrid>
                                         </h:column>
                                     </h:panelGrid>                                
