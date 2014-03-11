@@ -327,7 +327,7 @@ public class DataObject {
         this.argumento1 = argumento1;
         this.argumento2 = argumento2;
     }
-    
+
     public DataObject(
             Object argumento0,
             Object argumento1,
@@ -338,7 +338,7 @@ public class DataObject {
         this.argumento2 = argumento2;
         this.argumento3 = argumento3;
     }
-    
+
     public Object getArgumento0() {
         return argumento0;
     }
