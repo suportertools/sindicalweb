@@ -6,15 +6,7 @@ import javax.persistence.EntityManager;
 
 public interface ConvencaoDB {
 
-    public boolean insert(Convencao convencao);
-
-    public boolean update(Convencao convencao);
-
-    public boolean delete(Convencao convencao);
-
     public EntityManager getEntityManager();
-
-    public Convencao pesquisaCodigo(int id);
 
     public List pesquisaTodos();
 
