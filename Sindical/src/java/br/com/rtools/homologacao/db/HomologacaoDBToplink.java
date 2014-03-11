@@ -24,7 +24,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "   and a.agendador is null "
                     + "   and a.horarios is null ");
             qry.setParameter("pid", id);
-            if (!qry.getResultList().isEmpty()) {
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
                 result = (Agendamento) qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -105,8 +106,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "   and a.horarios.ativo = true"
                     + "   order by a.dtData, a.horarios.hora");
             qry.setParameter("data", data);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -126,8 +128,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "   order by a.horarios.hora");
             qry.setParameter("data", data);
             qry.setParameter("idEmpresa", idEmpresa);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -144,7 +147,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "   and a.filial.id = :idFilial"
                     + "   and a.pessoaEmpresa.juridica.pessoa.id = :idEmpresa"
                     + "   order by a.id");
-
 
             qry.setParameter("data", data);
             qry.setParameter("idEmpresa", idEmpresa);
@@ -166,8 +168,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "  from Agendamento a where a.status.id = 2"
                     + "   and a.pessoaEmpresa.juridica.pessoa.id = :idEmpresa");
             qry.setParameter("idEmpresa", idEmpresa);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -200,8 +203,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 qry.setParameter("usuario", idUsuario);
             }
             qry.setParameter("idFilial", idFilial);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -234,8 +238,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                 qry.setParameter("usuario", idUsuario);
             }
             qry.setParameter("idFilial", idFilial);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -246,7 +251,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     @Override
     public List<Agendamento> pesquisaAgendamento(int idStatus, int idFilial, Date dataInicial, Date dataFinal, int idUsuario, int idPessoaFisica, int idPessoaJuridica) {
 
-        List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         String dataCampo = "";
         String homologadorCampo = "";
         String statusCampo = "";
@@ -297,11 +301,12 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                         stringIn += " , " + ((Integer) ((List) list.get(i)).get(0)).toString();
                     }
                 }
-                Query qryListaAgendamento = getEntityManager().createQuery(" SELECT A FROM Agendamento AS A WHERE A.id IN(" + stringIn + ") ORDER BY A.dtData DESC, A.horarios.hora ASC ");
-                if (!qryListaAgendamento.getResultList().isEmpty()) {
-                    agendamentos = qryListaAgendamento.getResultList();
+                String queryString = " SELECT A FROM Agendamento AS A WHERE A.id IN(" + stringIn + ") ORDER BY A.dtData DESC, A.horarios.hora ASC ";
+                Query qryListaAgendamento = getEntityManager().createQuery(queryString);
+                List listX = qryListaAgendamento.getResultList();
+                if (!listX.isEmpty()) {
+                    return listX;
                 }
-                return agendamentos;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -311,17 +316,17 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
 
     @Override
     public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo) {
-        List<Agendamento> agendamentos = new ArrayList<Agendamento>();
         try {
             Query qry = getEntityManager().createQuery(" SELECT A FROM Agendamento AS A WHERE A.id = :id ");
             qry.setParameter("id", numeroProtocolo);
-            if (!qry.getResultList().isEmpty()) {
-                agendamentos = qry.getResultList();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
-            return agendamentos;
         } catch (Exception e) {
             return new ArrayList();
         }
+        return new ArrayList();
     }
 
     public List<Agendamento> pesquisaAtendimento(int idFilial, Date dataInicial, Date dataFinal, int idUsuario) {
@@ -349,11 +354,11 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "        AND age.id_filial = " + idFilial
                     + "   ORDER BY hor.ds_hora                                 ";
             Query qry = getEntityManager().createNativeQuery(textoQry);
-            if (!qry.getResultList().isEmpty()) {
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
                 SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-                List list = qry.getResultList();
                 for (int i = 0; i < list.size(); i++) {
-                    agendamentos.add((Agendamento) dB.pesquisaCodigo((Integer) ((List) list.get(i)).get(0), "Agendamento"));
+                    agendamentos.add((Agendamento) dB.find(new Agendamento(), (Integer) ((List) list.get(i)).get(0)));
                 }
                 return agendamentos;
             }
@@ -366,16 +371,20 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     @Override
     public List pesquisaTodos(int idFilial) {
         try {
-            Query qry = getEntityManager().createQuery("select a "
-                    + "  from Agendamento a where a.horarios is not null"
-                    + "   and a.horarios.ativo = true"
-                    + "   and a.filial.id = :idFilial"
-                    + "   order by a.horarios.hora, a.dtData DESC"
+            Query qry = getEntityManager().createQuery(""
+                    + "   SELECT A "
+                    + "     FROM Agendamento AS A "
+                    + "    WHERE A.horarios IS NOT NULL"
+                    + "      AND A.horarios.ativo = TRUE"
+                    + "      AND A.filial.id = :idFilial"
+                    + " ORDER BY A.horarios.hora, "
+                    + "          A.dtData DESC"
                     + "    ");
             qry.setParameter("idFilial", idFilial);
             qry.setMaxResults(300);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -383,33 +392,6 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         return new ArrayList();
     }
 
-//    @Override
-//    public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data) {
-//        try {
-//            String text = " select ( "
-//                    + "          (select count(*) from hom_agendamento where id_horario = " + horarios.getId() + " and id_filial = " + idFilial + " and dt_data = '" + data + "' and id_status = 2) + "
-//                    + "          (select case when (select count(*) "
-//                    + "                               from hom_cancelar_horario "
-//                    + "                              where id_horarios = " + horarios.getId() 
-//                    + "                                and id_filial = " + idFilial
-//                    + "                                and dt_data = '" + data + "'"
-//                    + "                             ) = 0 then 0 else (select nr_quantidade "
-//                    + "                                                 from hom_cancelar_horario "
-//                    + "                                                where id_horarios = " + horarios.getId() 
-//                    + "                                                  and id_filial = " + idFilial
-//                    + "                                                  and dt_data = '" + data + "'"
-//                    + "                                              )  end as quantidade) "
-//                    + "       ) qnt";
-//            Query qry = getEntityManager().createNativeQuery(text);
-//            List list = qry.getResultList();
-//            if (!list.isEmpty()) {
-//                return (Integer.valueOf(String.valueOf((Long) ((List) list.get(0)).get(0))));
-//            }
-//        } catch (EJBQLException e) {
-//            // e.printStackTrace();
-//        }
-//        return -1;
-//    }
     @Override
     public int pesquisaQntdDisponivel(int idFilial, Horarios horarios, Date data) {
         try {
@@ -502,8 +484,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + " ORDER BY h.hora");
             qry.setParameter("idFilial", idFilial);
             qry.setParameter("idDiaSemana", idDiaSemana);
-            if (!qry.getResultList().isEmpty()) {
-                return (qry.getResultList());
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             return new ArrayList();
@@ -542,7 +525,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + //"   and pesEmp.dtDemissao is null" +
                     "   and pes.documento like :Sdoc order by pesEmp.id desc");
             qry.setParameter("Sdoc", doc);
-            if (!qry.getResultList().isEmpty()) {
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
@@ -556,8 +540,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         try {
             String queryString = "SELECT id FROM fin_movimento WHERE id_pessoa = " + id_pessoa + " AND dt_vencimento < '" + vencimento + "' AND is_ativo = TRUE AND id_baixa IS NULL";
             Query qry = getEntityManager().createNativeQuery(queryString);
-            if (!qry.getResultList().isEmpty()) {
-                return qry.getResultList();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             return new ArrayList();
@@ -585,7 +570,8 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         try {
             Query qry = getEntityManager().createQuery("select o "
                     + "  from Oposicao o where o.oposicaoPessoa.cpf = '" + cpf + "' and o.juridica.id = " + id_juridica);
-            if (!qry.getResultList().isEmpty()) {
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
                 result = (Oposicao) qry.getSingleResult();
             }
         } catch (Exception e) {
@@ -603,8 +589,9 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
                     + "  from Oposicao o where o.oposicaoPessoa.cpf = '" + cpf + "' "
                     + "   and '" + referencia + "' BETWEEN CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaInicial, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaInicial, 0, 3) ) "
                     + "   and                   CONCAT( SUBSTRING(o.convencaoPeriodo.referenciaFinal, 4, 8), SUBSTRING(o.convencaoPeriodo.referenciaFinal, 0, 3) ) order by o.id desc");
-            if (!qry.getResultList().isEmpty()) {
-                result = qry.getResultList();
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
             }
         } catch (Exception e) {
             //e.printStackTrace();
@@ -764,7 +751,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             Query query = getEntityManager().createNativeQuery(" "
                     + "     SELECT id, nr_quantidade                                                "
                     + "       FROM hom_horarios                                                     "
-                    + "      WHERE TEXT(id_filial) || TEXT(id_semana) || ds_hora = TEXT("+horarios.getFilial().getId()+") || ("
+                    + "      WHERE TEXT(id_filial) || TEXT(id_semana) || ds_hora = TEXT(" + horarios.getFilial().getId() + ") || ("
                     + "            EXTRACT(                                                         "
                     + "                     DOW FROM to_date('" + dateString + "', 'DD-MM-YYYY')) + 1   "
                     + "      ) || '" + horarios.getHora() + "'");
@@ -797,5 +784,5 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return false;
     }
-    
+
 }
