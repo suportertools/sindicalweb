@@ -14,6 +14,7 @@ import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.*;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,11 +64,11 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(senha.getId(), "Senha"))) {
+        if (!sv.deletarObjeto(sv.find("Senha", senha.getId()))) {
             msgConfirma = "Erro ao excluir senha!";
             return null;
         }
-        agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
+        agendamento.setStatus((Status) sv.find("Status", 2));
         agendamento.setHomologador(null);
         if (!sv.alterarObjeto(agendamento)) {
             msgHomologacao = "Erro ao atualizar Agendamento";
@@ -119,7 +120,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             }
         }
         tipoAviso = String.valueOf(pessoaEmpresa.isAvisoTrabalhado());
-        agendamento.setStatus((Status) sv.pesquisaCodigo(5, "Status"));
+        agendamento.setStatus((Status) sv.find("Status", 5));
         agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
         sv.abrirTransacao();
         if (!sv.alterarObjeto(agendamento)) {
@@ -141,7 +142,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<Status> list = (List<Status>) salvarAcumuladoDB.pesquisaObjeto(new int[]{2, 3, 4, 5, 7}, "Status");
             for (int i = 0; i < list.size(); i++) {
-                listaStatus.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listaStatus.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaStatus;
@@ -152,7 +153,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<Demissao> list = (List<Demissao>) salvarAcumuladoDB.listaObjeto("Demissao", true);
             for (int i = 0; i < list.size(); i++) {
-                listaDemissao.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listaDemissao.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
         return listaDemissao;
@@ -173,7 +174,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         String homologador;
         DataObject dtObj;
         Usuario us = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
-        Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+        Registro reg = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
         int idUsuario;
         int idCaso = Integer.parseInt(((SelectItem) listaStatus.get(idStatus)).getDescription());
         if (idCaso <= 0) {
@@ -347,7 +348,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         }
         // SALVAR FISICA -----------------------------------------------
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) sv.find("TipoDocumento", 1));
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
             msgConfirma = "Documento Inválido!";
             return;
@@ -409,7 +410,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             sv.desfazerTransacao();
             return;
         }
-        agendamento.setDemissao((Demissao) sv.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
+        agendamento.setDemissao((Demissao) sv.find("Demissao", Integer.parseInt(((SelectItem) getListaDemissao().get(idMotivoDemissao)).getDescription())));
         agendamento.setPessoaEmpresa(pessoaEmpresa);
         HomologacaoDB homologacaoDB = new HomologacaoDBToplink();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
@@ -427,16 +428,16 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         int intDataHoje = DataHoje.converteDataParaInteger(DataHoje.data());
         int intDataRetroativa = DataHoje.converteDataParaInteger(registro.getAgendamentoRetroativoString());
         if (nrStatus == 2 || nrStatus == 4) {
-            agendamento.setStatus((Status) sv.pesquisaCodigo(nrStatus, "Status"));
+            agendamento.setStatus((Status) sv.find("Status", nrStatus));
         } else if (nrStatus == 7) {
-            agendamento.setStatus((Status) sv.pesquisaCodigo(nrStatus, "Status"));
+            agendamento.setStatus((Status) sv.find("Status", nrStatus));
             agendamento.setHomologador(null);
         } else if (nrStatus == 5) {
             if (DataHoje.converteDataParaInteger(agendamento.getData()) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
-                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
+                agendamento.setStatus((Status) sv.find("Status", 2));
                 agendamento.setHomologador(null);
             } else {
-                agendamento.setStatus((Status) sv.pesquisaCodigo(2, "Status"));
+                agendamento.setStatus((Status) sv.find("Status", 2));
                 agendamento.setHomologador(null);
             }
         }
@@ -449,7 +450,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public void homologar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        agendamento.setHomologador((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
+        agendamento.setHomologador((Usuario) GenericaSessao.getObject("sessaoUsuario"));
         agendamento.setStatus((Status) sv.pesquisaObjeto(4, "Status"));
         new Cancelamento().getAgendamento().getId();
         Cancelamento c = (Cancelamento) sv.pesquisaObjeto(agendamento.getId(), "Cancelamento", "agendamento.id");
@@ -504,7 +505,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             msgConfirma = "Erro ao salvar cancelamento";
             return null;
         }
-        agendamento.setStatus((Status) sv.pesquisaCodigo(3, "Status"));
+        agendamento.setStatus((Status) sv.find("Status", 3));
         if (!sv.alterarObjeto(agendamento)) {
             sv.desfazerTransacao();
             agendamento.setStatus(s);
@@ -542,7 +543,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         HomologacaoDB db = new HomologacaoDBToplink();
         FisicaDB dbFis = new FisicaDBToplink();
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
+        fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find("TipoDocumento", 1));
         PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(fisica.getPessoa().getDocumento());
         if (pe.getId() != -1) {
             pessoaEmpresa = pe;
@@ -773,7 +774,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             registro = new Registro();
         }
         if (registro.getId() == -1) {
-            registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+            registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
         }
         return registro;
     }
@@ -797,13 +798,19 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public List<ListaAgendamento> getListaHomologacoes() {
-        if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) > DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+        listaHomologacoes.clear();
+        try {
+            Polling polling = new Polling();
+            polling.existeUsuarioSessao();
+        } catch (IOException e) {
             return new ArrayList();
         }
         if (macFilial == null) {
             return new ArrayList();
         }
-        listaHomologacoes.clear();
+        if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) > DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
+            return new ArrayList();
+        }
         listaGrid.clear();
         listaGrid = new ArrayList();
         HomologacaoDB db = new HomologacaoDBToplink();
@@ -819,7 +826,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
             idUsuario = us.getId();
         }
         List<Agendamento> agendamentos = db.pesquisaAgendamento(idCaso, macFilial.getFilial().getId(), data, null, idUsuario, 0, 0);
-        Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+        Registro reg = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
         for (int i = 0; i < agendamentos.size(); i++) {
             ListaAgendamento listaAgendamento = new ListaAgendamento();
             listaAgendamento.setAgendamento(agendamentos.get(i));
