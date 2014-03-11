@@ -3,7 +3,7 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui"
       xmlns:ui="http://java.sun.com/jsf/facelets">
-    
+
     <h:head>
         <title>Sindical - Login beta</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
@@ -15,7 +15,7 @@
                 alert('Este navegador não é 100% compatível com nosso sistema '+
                       'podendo apresentar erros durante o processamento e transações.'+
                       '\n\ \n\Utilize navegadores compatíveis como Firefox ou Chrome. '+
-                      'Dúvidas contate o administrador ou ligue para (16) 3964-6117.');
+                        'Dúvidas contate o administrador ou ligue para (16) 3964-6117.');
             }
         </script>
     </h:head>
@@ -24,71 +24,71 @@
             #idEntrar, .idNovo {visibility: visible;}
         </style>
     <![endif]-->
-    
+
     <h:body>
         <!-- INICIA DIV wrap e main -->
-	<div id="wrapx">
-        <div id="mainx">
-        <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
-        <!-- INICIA DIV wrap e main -->
-        <h:form id="formLoginValidacao">
-            <h:inputHidden value="#{controleUsuarioBean.validacaoIndex}"/>
-        </h:form>
-        
-        <p:panel styleClass="wrapper sb" style="border: 0px; background: #dbeaeb" rendered="#{controleUsuarioBean.filialDep != null}">
-            <h:outputLabel value="Filial Cadastrada: " style="font-weight: bold"/>
-            <h:outputLabel value="#{controleUsuarioBean.filialDep}"/>
-        </p:panel>
-
-        <f:view>
-            <p:panelGrid columns="1" styleClass="wrapper sbb" style="z-index: 50">
-                <h:form id="formLogin">
-                    
-                    <h:panelGrid style="width: 1024px">
-                        <p:panel id="i_panel_login" style="border: 0px; float: left;">
-                            <h:outputLabel value="O Sindical está mudando para você..." style="font-size: 35pt!important; margin-top: 10px; font-family: 'Cordia New'"/>
-
-                            <p:imageSwitch effect="fade" style="float: left;" speed="2500" slideshowSpeed="2000">  
-                                <ui:repeat value="#{controleUsuarioBean.images}" var="image" >  
-                                    <p:graphicImage value="/Imagens/index/#{image}" width="700" height="420"/>  
-                                </ui:repeat>  
-                            </p:imageSwitch>  
-                        
-                            <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="250" style="margin-bottom: 20px; float: right"/>
-                        
-                            <p:focus context="i_panel_login"/>
-                            <br />
-
-                            <p:panelGrid columns="1" styleClass="removeBorder" style="width: 250px">
-                                <p:messages id="m_panel" closable="true" />
-                                <h:outputLabel value="Login" for="i_sis_login" />
-                                <p:inputText id="i_sis_login" style="width: 100%" value="#{controleUsuarioBean.usuario.login}" required="true" requiredMessage="Digite um Login" autocomplete="off" maxlength="20" />
-
-                                <h:outputLabel value="Senha " style="margin-bottom: 15px" for="i_sis_senha"/>
-                                <p:password id="i_sis_senha" style="width: 100%" value="#{controleUsuarioBean.usuario.senha}" required="true" requiredMessage="Digite uma Senha" autocomplete="off" maxlength="20" />
-                                <p:commandButton value="Entrar" action="#{controleUsuarioBean.validacao}" update="i_panel_login" style="float: right" />
-                            </p:panelGrid>
-
-                            <p:watermark for="i_sis_login" value="Nome do Usuário" />
-                            <p:watermark for="i_sis_senha" value="Senha" />
-                            
-                            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
-                        </p:panel>
-                    </h:panelGrid>
-                    
-                    <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                        <h:outputLabel value="Verificando Login e Senha de acesso ... Aguarde" />
-                    </p:dialog> 
+        <div id="wrapx">
+            <div id="mainx">
+                <div style="width: 100%; height: 40px; background: #ECF3FE;"></div>
+                <!-- INICIA DIV wrap e main -->
+                <h:form id="formLoginValidacao">
+                    <h:inputHidden value="#{controleUsuarioBean.validacaoIndex}"/>
                 </h:form>
-                
-            </p:panelGrid>
-        </f:view>
-                
-        <!-- FINALIZA div wrap main -->
+
+                <p:panel styleClass="wrapper sb" style="border: 0px; background: #dbeaeb" rendered="#{controleUsuarioBean.filialDep != null}">
+                    <h:outputLabel value="Filial Cadastrada: " style="font-weight: bold"/>
+                    <h:outputLabel value="#{controleUsuarioBean.filialDep}"/>
+                </p:panel>
+
+                <f:view>
+                    <p:panelGrid columns="1" styleClass="wrapper sbb" style="z-index: 50">
+                        <h:form id="formLogin">
+
+                            <h:panelGrid style="width: 1024px">
+                                <p:panel id="i_panel_login" style="border: 0px; float: left;">
+                                    <h:outputLabel value="O Sindical está mudando para você..." style="font-size: 35pt!important; margin-top: 10px; font-family: 'Cordia New'"/>
+
+                                    <p:imageSwitch effect="fade" style="float: left;" speed="2500" slideshowSpeed="2000">  
+                                        <ui:repeat value="#{controleUsuarioBean.images}" var="image" >  
+                                            <p:graphicImage value="/Imagens/index/#{image}" width="700" height="420"/>  
+                                        </ui:repeat>  
+                                    </p:imageSwitch>  
+
+                                    <h:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png" width="250" style="margin-bottom: 20px; float: right"/>
+
+                                    <p:focus context="i_panel_login"/>
+                                    <br />
+
+                                    <p:panelGrid columns="1" styleClass="removeBorder" style="width: 250px">
+                                        <p:messages id="m_panel" closable="true" />
+                                        <h:outputLabel value="Login" for="i_sis_login" />
+                                        <p:inputText id="i_sis_login" style="width: 100%" value="#{controleUsuarioBean.usuario.login}" required="true" requiredMessage="Digite um Login" autocomplete="off" maxlength="20" />
+
+                                        <h:outputLabel value="Senha " style="margin-bottom: 15px" for="i_sis_senha"/>
+                                        <p:password id="i_sis_senha" style="width: 100%" value="#{controleUsuarioBean.usuario.senha}" required="true" requiredMessage="Digite uma Senha" autocomplete="off" maxlength="20" />
+                                        <p:commandButton value="Entrar" action="#{controleUsuarioBean.validacao}" update="i_panel_login" style="float: right" />
+                                    </p:panelGrid>
+
+                                    <p:watermark for="i_sis_login" value="Nome do Usuário" />
+                                    <p:watermark for="i_sis_senha" value="Senha" />
+
+                                    <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                                </p:panel>
+                            </h:panelGrid>
+
+                            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                                <h:outputLabel value="Verificando Login e Senha de acesso ... Aguarde" />
+                            </p:dialog> 
+                        </h:form>
+
+                    </p:panelGrid>
+                </f:view>
+
+                <!-- FINALIZA div wrap main -->
+            </div>
         </div>
-        </div>
         <!-- FINALIZA div wrap main -->
-        
+
         <div id="footerx">
             <f:subview id="footer">
                 <ui:include src="templateFooter.xhtml"/>
