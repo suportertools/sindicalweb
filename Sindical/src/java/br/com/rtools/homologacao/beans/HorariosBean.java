@@ -63,19 +63,20 @@ public class HorariosBean implements Serializable {
             int soma = 0;
             int controlIntervalo = intervalo;
             horarios.setHora(strHoras + ":" + strMinutos);
-            horarios.setFilial((Filial) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), "Filial"));
-            horarios.setSemana((Semana) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaSemana().get(idSemana).getDescription()), "Semana"));
+            horarios.setFilial((Filial) acumuladoDB.find("Filial", Integer.parseInt(getListaFiliais().get(idFilial).getDescription())));
+            horarios.setSemana((Semana) acumuladoDB.find("Semana", Integer.parseInt(getListaSemana().get(idSemana).getDescription())));
             quantidade = horarios.getQuantidade();
             if (!db.pesquisaPorHorarioFilial(horarios.getFilial().getId(), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
                 msgConfirma = "Horário ja Cadastrado!";
                 return null;
             }
-            db.insert(horarios);
+            acumuladoDB.abrirTransacao();
+            if(acumuladoDB.inserirObjeto(horarios)) {
+                acumuladoDB.comitarTransacao();
+            } else {
+                acumuladoDB.desfazerTransacao();
+            }
             horarios = new Horarios();
-//                if ( Integer.parseInt(horaFinal.substring(3, 5)) < intervalo )
-//                    intFinal = (intFinal-100) + (60 - intervalo);
-//                else
-//                    intFinal = (intFinal - intervalo);
             while (intInicial < intFinal) {
                 if ((intInicial + intervalo) < intFinal) {
                     soma = Integer.parseInt(strMinutos) + intervalo;
@@ -104,9 +105,9 @@ public class HorariosBean implements Serializable {
                     intInicial = Integer.parseInt(horarios.getHora().substring(0, 2) + horarios.getHora().substring(3, 5));
                     controlIntervalo += intervalo;
                     if (horarios.getFilial().getId() == -1) {
-                        horarios.setFilial((Filial) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), "Filial"));
+                        horarios.setFilial((Filial) acumuladoDB.find("Filial", Integer.parseInt(getListaFiliais().get(idFilial).getDescription())));
                     }
-                    horarios.setSemana((Semana) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaSemana().get(idSemana).getDescription()), "Semana"));
+                    horarios.setSemana((Semana) acumuladoDB.find("Semana", Integer.parseInt(getListaSemana().get(idSemana).getDescription())));
                     // if (!db.pesquisaPorHorarioFilial(horarios.getFilial().getId(), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
                     if (!db.pesquisaPorHorarioFilial(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), horarios.getHora(), horarios.getSemana().getId()).isEmpty()) {
                         horarios = new Horarios();
@@ -114,9 +115,12 @@ public class HorariosBean implements Serializable {
                     }
 
                     horarios.setQuantidade(quantidade);
-                    if (db.insert(horarios)) {
+                    acumuladoDB.abrirTransacao();
+                    if (acumuladoDB.inserirObjeto(horarios)) {
+                        acumuladoDB.comitarTransacao();
                         msgConfirma = "Horário adicionado com sucesso!";
                     } else {
+                        acumuladoDB.desfazerTransacao();
                         msgConfirma = "Erro ao Salvar Horário!";
                     }
                     horarios = new Horarios();
@@ -141,8 +145,8 @@ public class HorariosBean implements Serializable {
                     msgConfirma = "Horário ja Cadastrado!";
                     return null;
                 }
-                horarios.setFilial((Filial) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaFiliais().get(idFilial).getDescription()), "Filial"));
-                horarios.setSemana((Semana) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaSemana().get(idSemana).getDescription()), "Semana"));
+                horarios.setFilial((Filial) acumuladoDB.find("Filial", Integer.parseInt(getListaFiliais().get(idFilial).getDescription())));
+                horarios.setSemana((Semana) acumuladoDB.find("Semana", Integer.parseInt(getListaSemana().get(idSemana).getDescription())));
                 acumuladoDB.abrirTransacao();
                 if (acumuladoDB.inserirObjeto(horarios)) {
                     acumuladoDB.comitarTransacao();
@@ -241,7 +245,6 @@ public class HorariosBean implements Serializable {
             }
             listaH.clear();
         }
-        h = new Horarios();
         return null;
     }
 
@@ -266,7 +269,7 @@ public class HorariosBean implements Serializable {
             List<Semana> result = (List<Semana>) dB.listaObjeto("Semana");
             for (int i = 0; i < result.size(); i++) {
                 listaSemana.add(
-                        new SelectItem(new Integer(i),
+                        new SelectItem(i,
                         result.get(i).getDescricao(),
                         Integer.toString(result.get(i).getId())));
             }
@@ -279,7 +282,7 @@ public class HorariosBean implements Serializable {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<Filial> select = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
             for (int i = 0; i < select.size(); i++) {
-                listaFiliais.add(new SelectItem(new Integer(i),
+                listaFiliais.add(new SelectItem(i,
                         select.get(i).getFilial().getPessoa().getDocumento() + " / " + select.get(i).getFilial().getPessoa().getNome(),
                         Integer.toString(select.get(i).getId())));
             }
