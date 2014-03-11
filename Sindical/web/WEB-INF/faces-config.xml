@@ -82,12 +82,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>grupoCidadeBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadeJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>grupoCidadesBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
