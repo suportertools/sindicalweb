@@ -72,17 +72,17 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             juridica = db.pesquisaJuridicaPorPessoa(((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb")).getId());
         }
     }
-   
+
     public List<SelectItem> getListaStatus() {
         List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
-        StatusDB db = new StatusDBToplink();
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         List select = new ArrayList();
-        select.add(db.pesquisaCodigo(1));
-        select.add(db.pesquisaCodigo(2));
+        select.add(sadb.find("Status", 1));
+        select.add(sadb.find("Status", 2));
         if (!select.isEmpty()) {
             while (i < select.size()) {
-                result.add(new SelectItem(new Integer(i),
+                result.add(new SelectItem(i,
                         (String) ((Status) select.get(i)).getDescricao(),
                         Integer.toString(((Status) select.get(i)).getId())));
                 i++;
@@ -94,13 +94,11 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
     public List<SelectItem> getListaMotivoDemissao() {
         List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
-        DemissaoDB db = new DemissaoDBToplink();
-        List select = db.pesquisaTodos();
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        List select = sadb.listaObjeto("Demissao");
         if (!select.isEmpty()) {
             while (i < select.size()) {
-                result.add(new SelectItem(new Integer(i),
-                        (String) ((Demissao) select.get(i)).getDescricao(),
-                        Integer.toString(((Demissao) select.get(i)).getId())));
+                result.add(new SelectItem(i, (String) ((Demissao) select.get(i)).getDescricao(), Integer.toString(((Demissao) select.get(i)).getId())));
                 i++;
             }
         }
@@ -190,13 +188,10 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         agendamento.setDtData(null);
         agendamento.setHorarios(null);
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        
-//        agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
-        agendamento.setFilial( getSindicatoFilial().getFilial() );
+        agendamento.setFilial(getSindicatoFilial().getFilial());
         setAgendamentoProtocolo(agendamento);
         if (profissao.getId() == -1) {
-            ProfissaoDB dbp = new ProfissaoDBToplink();
-            profissao = dbp.pesquisaCodigo(0);
+            profissao = (Profissao) salvarAcumuladoDB.find("Profissao", 0);
         }
         msgAgendamento = "";
         return "webAgendamentoContribuinte";
@@ -207,7 +202,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
         int ids[] = {1, 3, 4};
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
+        Registro reg = (Registro) salvarAcumuladoDB.find("Registro" , 1);
         if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
             msgConfirma = "Empresa não poderá agendar em Débito. Contate seu Sindicato!";
             return null;
@@ -229,7 +224,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         }
 
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
+        Demissao demissao = (Demissao) salvarAcumuladoDB.find("Demissao", Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -257,7 +252,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
         sv.abrirTransacao();
         if (fisica.getId() == -1) {
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find("TipoDocumento", 1));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 msgConfirma = "Documento Inválido!";
                 return null;
@@ -284,7 +279,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(ids[i], "TipoEndereco"));
+                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaObjeto(ids[i], "TipoEndereco"));
                     if (!sv.inserirObjeto(pesEnd)) {
                         msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         sv.desfazerTransacao();
@@ -341,10 +336,10 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
                 agendamento.setDtEmissao(DataHoje.dataHoje());
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
+                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find("Demissao", Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
                 agendamento.setHomologador(null);
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) salvarAcumuladoDB.pesquisaCodigo(2, "Status"));
+                agendamento.setStatus((Status) salvarAcumuladoDB.find("Status", 2));
                 if (sv.inserirObjeto(agendamento)) {
                     msgConfirma = "Agendamento realizado com sucesso!";
                     setAgendamentoProtocolo(agendamento);
@@ -355,7 +350,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                     return null;
                 }
             } else {
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
+                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find("Demissao", Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
                 if (sv.alterarObjeto(agendamento)) {
                     msgConfirma = "Agendamento atualizado com sucesso!";
                     setAgendamentoProtocolo(agendamento);
@@ -413,14 +408,11 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
                 } else {
                     renderBtnAgendar = true;
                     if (profissao.getId() == -1) {
-                        ProfissaoDB dbp = new ProfissaoDBToplink();
-                        profissao = dbp.pesquisaCodigo(0);
+                        profissao = (Profissao) salvarAcumuladoDB.find("Profissao", 0);
                     }
-
                     agendamento.setData(DataHoje.converteData(data));
                     agendamento.setHorarios((Horarios) ((DataObject) listaGrid.get(idIndex)).getArgumento0());
-                    //agendamento.setFilial((Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial"));
-                    agendamento.setFilial( getSindicatoFilial().getFilial() );
+                    agendamento.setFilial(getSindicatoFilial().getFilial());
                     msgAgendamento = "";
                 }
                 setAgendamentoProtocolo(agendamento);
@@ -458,7 +450,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (int i = 0; i < listaEmDebito.size(); i++) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().pesquisaCodigo((Integer) ((List) listaEmDebito.get(i)).get(0), "Movimento");
+            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().find("Movimento", (Integer) ((List) listaEmDebito.get(i)).get(0));
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -516,7 +508,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
             PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
             HomologacaoDB db = new HomologacaoDBToplink();
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find("TipoDocumento", 1));
             PessoaEmpresa pe = db.pesquisaPessoaEmpresaOutra(documento);
 
             if (pe.getId() != -1 && pe.getJuridica().getId() != juridica.getId()) {
@@ -875,7 +867,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
     public Registro getRegistro() {
         if (registro.getId() == -1) {
-            registro = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+            registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro",1 );
         }
         return registro;
     }
