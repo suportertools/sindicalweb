@@ -58,12 +58,16 @@ import br.com.rtools.utilitarios.db.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -84,165 +88,198 @@ import org.primefaces.event.TabChangeEvent;
 @SessionScoped
 public class MatriculaEscolaBean implements Serializable {
 
-    private Filial filial = new Filial();
-    private Fisica aluno = new Fisica();
-    private Juridica juridica = new Juridica();
-    private Juridica empresa = new Juridica();
-    private Lote lote = new Lote();
-    private MatriculaEscola matriculaEscola = new MatriculaEscola();
-    private Turma turma = new Turma();
-    private MatriculaContrato matriculaContrato = new MatriculaContrato();
-    private MatriculaIndividual matriculaIndividual = new MatriculaIndividual();
-    private MatriculaTurma matriculaTurma = new MatriculaTurma();
-    private Pessoa pessoaAlunoMemoria = new Pessoa();
-    private Pessoa pessoaResponsavelMemoria = new Pessoa();
-    private EscolaAutorizados escolaAutorizados = new EscolaAutorizados();
-    private EscolaAutorizados escolaAutorizadosDetalhes = new EscolaAutorizados();
-    private MacFilial macFilial = new MacFilial();
-    private Movimento movimento = new Movimento();
-    private Pessoa responsavel = new Pessoa();
-    private PessoaComplemento pessoaComplemento = new PessoaComplemento();
-    private Registro registro = new Registro();
-    private List listaGridMEscola = new ArrayList();
-    private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
-    private List<FTipoDocumento> listaFTipoDocumento = new ArrayList<FTipoDocumento>();
-    private List<SelectItem> listaCursosDisponiveis = new ArrayList<SelectItem>();
-    private List<SelectItem> listaVendedor = new ArrayList<SelectItem>();
-    private List<SelectItem> listaProfessor = new ArrayList<SelectItem>();
-    private List<SelectItem> listaMidia = new ArrayList<SelectItem>();
-    private List<SelectItem> listaNumeros = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
-    private List<SelectItem> listaIndividual = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDataTaxa = new ArrayList<SelectItem>();
-    private List<SelectItem> listaMesVencimento = new ArrayList<SelectItem>();
-    private List<Turma> listaTurma = new ArrayList<Turma>();
-    private List<Movimento> listaMovimentos = new ArrayList<Movimento>();
-    private List<EscolaAutorizados> listaEscolaAutorizadas = new ArrayList<EscolaAutorizados>();
-    private List<ListaMatriculaEscola> listaMatriculaEscolas = new ArrayList<ListaMatriculaEscola>();
-    private int diaVencimento = 0;
-    private int idDiaVencimento = 0;
-    private int idDiaVencimentoPessoa = 0;
-    private int idDataTaxa = 0;
-    private int idMesVencimento = 0;
-    private int idFTipoDocumento = 0;
-    private int idIndividual = 0;
-    private int idMidia = 0;
-    private int idTurma = 0;
-    private int idStatus = 0;
-    private int idVendedor = 0;
-    private int idProfessor = 0;
-    private int idServico = 0;
-    private int idCursosDisponiveis = 0;
-    private int idadeAluno = 0;
-    private int vagasDisponiveis = 0;
-    private float vTaxa = 0;
-    private boolean alunoFoto = false;
-    private boolean alterarPessoaComplemento = false;
-    private boolean desabilitaTurma = false;
-    private boolean desabilitaIndividual = false;
-    private boolean desabilitaCamposMovimento = false;
-    private boolean desabilitaGeracaoContrato = false;
-    private boolean desabilitaDescontoFolha = true;
-    private boolean desabilitaDiaVencimento = false;
-    private boolean desabilitaCampo = false;
-    private boolean descontoProporcional = false;
-    private boolean habilitaGerarParcelas = false;
-    private boolean limpar = false;
-    private boolean showDescontoProporcional = false;
-    private boolean ocultaBotaoSalvar = false;
-    private boolean ocultaDescontoFolha = true;
-    private boolean responsavelNaoSocio = false;
-    private boolean socio = false;
-    private boolean taxa = false;
-    private boolean visibility = false;
-    private String comoPesquisa = "";
-    private String descricao = "";
-    private String descricaoCurso = "";
-    private String msgStatusFilial = "";
-    private String mensagem = "";
-    private String msgStatusDebito = "";
-    private String msgStatusEmpresa = "";
-    private String openModal = "";
-    private String porPesquisa = "";
-    private String target = "#";
-    private String tipoMatricula = "Turma";
-    private String valor = "";
-    private String valorParcela = "";
-    private String valorDescontoProporcional = "";
-    private String valorParcelaVencimento = "";
-    private String valorLiquido = "";
-    private String valorTaxa = "";
+    private Filial filial;
+    private Fisica aluno;
+    private Juridica juridica;
+    private Juridica empresa;
+    private Lote lote;
+    private MatriculaEscola matriculaEscola;
+    private Turma turma;
+    private MatriculaContrato matriculaContrato;
+    private MatriculaIndividual matriculaIndividual;
+    private MatriculaTurma matriculaTurma;
+    private Pessoa pessoaAlunoMemoria;
+    private Pessoa pessoaResponsavelMemoria;
+    private EscolaAutorizados escolaAutorizados;
+    private EscolaAutorizados escolaAutorizadosDetalhes;
+    private MacFilial macFilial;
+    private Movimento movimento;
+    private Pessoa responsavel;
+    private PessoaComplemento pessoaComplemento;
+    private Registro registro;
+    private List listaGridMEscola;
+    private List<SelectItem> listaStatus;
+    private List<FTipoDocumento> listaFTipoDocumento;
+    private List<SelectItem> listaCursosDisponiveis;
+    private List<SelectItem> listaVendedor;
+    private List<SelectItem> listaProfessor;
+    private List<SelectItem> listaMidia;
+    private List<SelectItem> listaNumeros;
+    private List<SelectItem> listaDataVencimento;
+    private List<SelectItem> listaIndividual;
+    private List<SelectItem> listaDataTaxa;
+    private List<SelectItem> listaMesVencimento;
+    private List<Turma> listaTurma;
+    private List<Movimento> listaMovimentos;
+    private List<Movimento> listaOutrosMovimentos;
+    private List<EscolaAutorizados> listaEscolaAutorizadas;
+    private List<ListaMatriculaEscola> listaMatriculaEscolas;
+    private int diaVencimento;
+    private int idDiaVencimento;
+    private int idDiaVencimentoPessoa;
+    private int idDataTaxa;
+    private int idMesVencimento;
+    private int idFTipoDocumento;
+    private int idIndividual;
+    private int idMidia;
+    private int idTurma;
+    private int idStatus;
+    private int idVendedor;
+    private int idProfessor;
+    private int idServico;
+    private int idCursosDisponiveis;
+    private int idadeAluno;
+    private int vagasDisponiveis;
+    private float vTaxa;
+    private boolean alunoFoto;
+    private boolean alterarPessoaComplemento;
+    private boolean desabilitaTurma;
+    private boolean desabilitaIndividual;
+    private boolean desabilitaCamposMovimento;
+    private boolean desabilitaGeracaoContrato;
+    private boolean desabilitaDescontoFolha;
+    private boolean desabilitaDiaVencimento;
+    private boolean desabilitaCampo;
+    private boolean descontoProporcional;
+    private boolean habilitaGerarParcelas;
+    private boolean limpar;
+    private boolean showDescontoProporcional;
+    private boolean ocultaBotaoSalvar;
+    private boolean ocultaDescontoFolha;
+    private boolean responsavelNaoSocio;
+    private boolean socio;
+    private boolean taxa;
+    private boolean visibility;
+    private String comoPesquisa;
+    private String descricao;
+    private String descricaoCurso;
+    private String msgStatusFilial;
+    private String mensagem;
+    private String msgStatusDebito;
+    private String msgStatusEmpresa;
+    private String openModal;
+    private String porPesquisa;
+    private String target;
+    private String tipoMatricula;
+    private String valor;
+    private String valorParcela;
+    private String valorDescontoProporcional;
+    private String valorParcelaVencimento;
+    private String valorLiquido;
+    private String valorTaxa;
+
+    @PostConstruct
+    public void init() {
+        filial = new Filial();
+        aluno = new Fisica();
+        juridica = new Juridica();
+        empresa = new Juridica();
+        lote = new Lote();
+        matriculaEscola = new MatriculaEscola();
+        turma = new Turma();
+        matriculaContrato = new MatriculaContrato();
+        matriculaIndividual = new MatriculaIndividual();
+        matriculaTurma = new MatriculaTurma();
+        pessoaAlunoMemoria = new Pessoa();
+        pessoaResponsavelMemoria = new Pessoa();
+        escolaAutorizados = new EscolaAutorizados();
+        escolaAutorizadosDetalhes = new EscolaAutorizados();
+        macFilial = new MacFilial();
+        movimento = new Movimento();
+        responsavel = new Pessoa();
+        pessoaComplemento = new PessoaComplemento();
+        registro = new Registro();
+        listaGridMEscola = new ArrayList();
+        listaStatus = new ArrayList<SelectItem>();
+        listaFTipoDocumento = new ArrayList<FTipoDocumento>();
+        listaCursosDisponiveis = new ArrayList<SelectItem>();
+        listaVendedor = new ArrayList<SelectItem>();
+        listaProfessor = new ArrayList<SelectItem>();
+        listaMidia = new ArrayList<SelectItem>();
+        listaNumeros = new ArrayList<SelectItem>();
+        listaDataVencimento = new ArrayList<SelectItem>();
+        listaIndividual = new ArrayList<SelectItem>();
+        listaDataVencimento = new ArrayList<SelectItem>();
+        listaDataTaxa = new ArrayList<SelectItem>();
+        listaMesVencimento = new ArrayList<SelectItem>();
+        listaTurma = new ArrayList<Turma>();
+        listaMovimentos = new ArrayList<Movimento>();
+        listaOutrosMovimentos = new ArrayList<Movimento>();
+        listaEscolaAutorizadas = new ArrayList<EscolaAutorizados>();
+        listaMatriculaEscolas = new ArrayList<ListaMatriculaEscola>();
+        diaVencimento = 0;
+        idDiaVencimento = 0;
+        idDiaVencimentoPessoa = 0;
+        idDataTaxa = 0;
+        idMesVencimento = 0;
+        idFTipoDocumento = 0;
+        idIndividual = 0;
+        idMidia = 0;
+        idTurma = 0;
+        idStatus = 0;
+        idVendedor = 0;
+        idProfessor = 0;
+        idServico = 0;
+        idCursosDisponiveis = 0;
+        idadeAluno = 0;
+        vagasDisponiveis = 0;
+        vTaxa = 0;
+        alunoFoto = false;
+        alterarPessoaComplemento = false;
+        desabilitaTurma = false;
+        desabilitaIndividual = false;
+        desabilitaCamposMovimento = false;
+        desabilitaGeracaoContrato = false;
+        desabilitaDescontoFolha = true;
+        desabilitaDiaVencimento = false;
+        desabilitaCampo = false;
+        descontoProporcional = false;
+        habilitaGerarParcelas = false;
+        limpar = false;
+        showDescontoProporcional = false;
+        ocultaBotaoSalvar = false;
+        ocultaDescontoFolha = true;
+        responsavelNaoSocio = false;
+        socio = false;
+        taxa = false;
+        visibility = false;
+        comoPesquisa = "";
+        descricao = "";
+        descricaoCurso = "";
+        msgStatusFilial = "";
+        mensagem = "";
+        msgStatusDebito = "";
+        msgStatusEmpresa = "";
+        openModal = "";
+        porPesquisa = "";
+        target = "#";
+        tipoMatricula = "Turma";
+        valor = "";
+        valorParcela = "";
+        valorDescontoProporcional = "";
+        valorParcelaVencimento = "";
+        valorLiquido = "";
+        valorTaxa = "";
+    }
+
+    /* chamado quando outra view for chamada através do UIViewRoot.setViewId(String viewId) */
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("matriculaEscolaPesquisa");
+        GenericaSessao.remove("fisicaPesquisa");
+    }
 
     public String novo() {
-//        empresa = new Juridica();
-//        ocultaBotaoSalvar = false;
-//        vTaxa = 0;
-//        pessoaAlunoMemoria = new Pessoa();
-//        pessoaResponsavelMemoria = new Pessoa();
-//        escolaAutorizados = new EscolaAutorizados();
-//        escolaAutorizadosDetalhes = new EscolaAutorizados();
-//        responsavel = new Pessoa();
-//        matriculaTurma = new MatriculaTurma();
-//        turma = new Turma();
-//        matriculaIndividual = new MatriculaIndividual();
-//        macFilial = new MacFilial();
-//        filial = new Filial();
-//        pessoaComplemento = new PessoaComplemento();
-//        movimento = new Movimento();
-//        matriculaEscola = new MatriculaEscola();
-//        lote = new Lote();
-//        idFTipoDocumento = 0;
-//        socio = false;
-//        alterarPessoaComplemento = false;
-//        idDiaVencimentoPessoa = 0;
-//        aluno = new Fisica();
-//        idTurma = 0;
-//        idIndividual = 0;
-//        idStatus = 0;
-//        idVendedor = 0;
-//        idProfessor = 0;
-//        idMidia = 0;
-//        idCursosDisponiveis = 0;
-//        idadeAluno = 0;
-//        idDiaVencimento = 0;
-//        diaVencimento = 0;
-//        listaStatus.clear();
-//        listaVendedor.clear();
-//        listaDataTaxa.clear();
-//        listaMesVencimento.clear();
-//        listaProfessor.clear();
-//        listaMidia.clear();
-//        listaCursosDisponiveis.clear();
-//        listaNumeros.clear();
-//        listaFTipoDocumento.clear();
-//        listaDataVencimento.clear();
-//        listaTurma.clear();
-//        listaIndividual.clear();
-//        listaMatriculaEscolas.clear();
-//        listaMovimentos.clear();
-//        desabilitaTurma = false;
-//        desabilitaIndividual = false;
-//        desabilitaCamposMovimento = false;
-//        desabilitaDescontoFolha = true;
-//        limpar = false;
-//        taxa = false;
-//        desabilitaCampo = false;
-//        taxa = false;
-//        descontoProporcional = false;
-//        showDescontoProporcional = false;
-//        alunoFoto = false;
-//        porPesquisa = "";
-//        comoPesquisa = "";
-//        mensagem = "";
-//        valorTaxa = "";
-//        target = "#";
-//        valor = "";
-//        valorLiquido = "";
-//        valorParcela = "";
-//        valorParcelaVencimento = "";
-//        openModal = "";
-//        visibility = false;
-//        listaEscolaAutorizadas.clear();
         GenericaSessao.remove("matriculaEscolaBean");
         GenericaSessao.remove("matriculaEscolaPesquisa");
         GenericaSessao.remove("pesquisaFisicaTipo");
@@ -437,7 +474,7 @@ public class MatriculaEscolaBean implements Serializable {
             matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$dataMatricula", DataHoje.dataExtenso(matriculaEscola.getDataMatriculaString(), 1)));
             if (matriculaEscola.isDescontoProporcional()) {
                 FunctionsDB functionsDB = new FunctionsDBTopLink();
-                String valorTotal = functionsDB.scriptSimples(" SUM(nr_valor) FROM fin_movimento WHERE id_tipo_documento = 13 AND id_lote = " + listaMovimentos.get(0).getLote().getId());
+                String valorTotal = functionsDB.scriptSimples(" SUM(nr_valor) FROM fin_movimento WHERE id_tipo_servico = 1 AND id_lote = " + listaMovimentos.get(0).getLote().getId());
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", Moeda.converteR$Float(Float.parseFloat(valorTotal))));
             } else {
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$valorTotal", (Moeda.converteR$Float((matriculaEscola.getValorTotal())))));
@@ -513,11 +550,17 @@ public class MatriculaEscolaBean implements Serializable {
                 if (success) {
                     OutputStream os = new FileOutputStream(filePDF);
                     HtmlToPDF.convert(matriculaContrato.getDescricao(), os);
-
                     os.close();
                     String linha = getRegistro().getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/" + fileName;
                     HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-                    response.sendRedirect(linha);
+                    URL url = new URL(linha);
+                    InputStream is = url.openStream();
+                    if (is != null) {
+                        response.sendRedirect(linha);
+                    } else {
+                        //não conectou  
+                    }
+                    // FacesContext.getCurrentInstance().getExternalContext().setSessionMaxInactiveInterval(2); 
                 }
             } catch (IOException e) {
                 e.getMessage();
@@ -673,7 +716,7 @@ public class MatriculaEscolaBean implements Serializable {
         }
         NovoLog novoLog = new NovoLog();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        matriculaEscola.setEscStatus((EscStatus) sv.find(new EscStatus(), Integer.parseInt(listaStatus.get(idStatus).getDescription())));
+//        matriculaEscola.setEscStatus((EscStatus) sv.find(new EscStatus(), Integer.parseInt(listaStatus.get(idStatus).getDescription())));
         matriculaEscola.setVendedor((Vendedor) sv.find(new Vendedor(), Integer.parseInt(listaVendedor.get(idVendedor).getDescription())));
         matriculaEscola.setMidia((Midia) sv.find(new Midia(), Integer.parseInt(listaMidia.get(idMidia).getDescription())));
         matriculaEscola.setTipoDocumento((FTipoDocumento) sv.find(new FTipoDocumento(), 2));
@@ -695,6 +738,7 @@ public class MatriculaEscolaBean implements Serializable {
         matriculaEscola.setDiaVencimento(idDiaVencimento);
         sv.abrirTransacao();
         if (matriculaEscola.getId() == -1) {
+            matriculaEscola.setEscStatus((EscStatus) sv.find(new EscStatus(), 1));
             MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
             FunctionsDB functionsDB = new FunctionsDBTopLink();
             int idNumeroVagas = functionsDB.vagasEscolaTurma(matriculaTurma.getTurma().getId());
@@ -809,6 +853,10 @@ public class MatriculaEscolaBean implements Serializable {
                 mensagem = "Registro não pode ser atualizado por esta filial!";
                 return;
             }
+            if (matriculaEscola.getEscStatus().getId() == 3) {
+                mensagem = "Não é possível atualizar/salvar quando o status esta como desistente!";
+                return;
+            }
             if (sv.alterarObjeto(matriculaEscola)) {
                 if (tipoMatricula.equals("Turma")) {
                     setDesabilitaIndividual(true);
@@ -862,6 +910,12 @@ public class MatriculaEscolaBean implements Serializable {
                 break;
             }
         }
+        for (int i = 0; i < listaStatus.size(); i++) {
+            if (matriculaEscola.getEscStatus().getId() == Integer.parseInt(listaStatus.get(i).getDescription())) {
+                idStatus = i;
+                break;
+            }
+        }
         setValorString(matriculaEscola.getValorTotalString());
         if (porPesquisa.equals("matriculaIndividual")) {
             tipoMatricula = "Individual";
@@ -906,12 +960,28 @@ public class MatriculaEscolaBean implements Serializable {
         pessoaResponsavelMemoria = matriculaEscola.getResponsavel();
         pessoaAlunoMemoria = matriculaEscola.getAluno();
         analisaResponsavel();
+        String urlRetorno = "matriculaEscola";
         GenericaSessao.put("linkClicado", true);
-        return "matriculaEscola";
+        if (GenericaSessao.exists("urlRetorno")) {
+            if (!GenericaSessao.getString("urlRetorno").equals("matriculaEscola")) {
+                urlRetorno = GenericaSessao.getString("urlRetorno");
+                GenericaSessao.put("matriculaEscolaPesquisa", matriculaEscola);
+                if (tipoMatricula.equals("Individual")) {
+                    GenericaSessao.put("matriculaIndividualPesquisa", matriculaIndividual);
+                } else {
+                    GenericaSessao.put("matriculaTurmaPesquisa", matriculaTurma);
+                }
+            }
+        }
+        return urlRetorno;
     }
 
     public void excluir() {
         if (matriculaEscola.getId() != -1) {
+            if (matriculaEscola.getEscStatus().getId() == 2 || matriculaEscola.getEscStatus().getId() == 3 || matriculaEscola.getEscStatus().getId() == 4) {
+                mensagem = "Não é excluir a matrícula quando o status esta como desistente!";
+                return;
+            }
             SalvarAcumuladoDB db = new SalvarAcumuladoDBToplink();
             if (existeMovimento()) {
                 mensagem = "Não é possível excluir essa matrícula, já possui movimentos baixados!";
@@ -934,6 +1004,14 @@ public class MatriculaEscolaBean implements Serializable {
                         db.desfazerTransacao();
                         mensagem = "Falha ao excluir essa matrícula!";
                         return;
+                    }
+                }
+                if (!getListaEscolaAutorizadas().isEmpty()) {
+                    for (EscolaAutorizados ea : listaEscolaAutorizadas) {
+                        if (!db.deletarObjeto((EscolaAutorizados) db.find(ea))) {
+                            mensagem = "Falha ao as pessoas autorizadas!";
+                            return;
+                        }
                     }
                 }
                 matriculaEscola = (MatriculaEscola) db.find(matriculaEscola);
@@ -1050,6 +1128,10 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void gerarMovimento() {
         if (matriculaEscola.getId() != -1) {
+            if (matriculaEscola.getEscStatus().getId() == 3) {
+                mensagem = "Não é possível gerar movimentos quando o status esta como desistente!";
+                return;
+            }
             if (matriculaEscola.getEvt() == null) {
                 if (matriculaEscola.getAluno().getId() != pessoaAlunoMemoria.getId()) {
                     mensagem = "Salvar o novo aluno / responsável para gerar movimentos!";
@@ -1220,14 +1302,14 @@ public class MatriculaEscolaBean implements Serializable {
                                     valorParcelaF = Moeda.substituiVirgulaFloat(getValorParcela());
                                     valorDescontoAteVencimento = Moeda.divisaoValores(matriculaEscola.getDescontoAteVencimento(), (float) matriculaEscola.getNumeroParcelas());
                                 }
-                                mes = vencimento.substring(3, 5);
-                                ano = vencimento.substring(6, 10);
-                                referencia = mes + "/" + ano;
                                 if (j > 0) {
                                     vecimentoString = (new DataHoje()).incrementarMeses(j, vencimento);
                                 } else {
                                     vecimentoString = vencimento;
                                 }
+                                mes = vecimentoString.substring(3, 5);
+                                ano = vecimentoString.substring(6, 10);
+                                referencia = mes + "/" + ano;
                                 j++;
                             }
                             String nrCtrBoleto = nrCtrBoletoResp + Long.toString(DataHoje.calculoDosDias(DataHoje.converte("07/10/1997"), DataHoje.converte(vencimento)));
@@ -2004,9 +2086,14 @@ public class MatriculaEscolaBean implements Serializable {
                 if (matriculaEscola.getEvt() != null) {
                     MovimentoDB movimentoDB = new MovimentoDBToplink();
                     LoteDB loteDB = new LoteDBToplink();
-                    lote = (Lote) loteDB.pesquisaLotePorEvt(matriculaEscola.getEvt());
-                    listaMovimentos = movimentoDB.listaMovimentosDoLote(lote.getId());
-                    for (Movimento listaMovimento : listaMovimentos) {
+                    // lote = (Lote) loteDB.pesquisaLotesPorEvt(matriculaEscola.getEvt());
+                    List<Lote> lotes = (List<Lote>) loteDB.pesquisaLotesPorEvt(matriculaEscola.getEvt());
+                    List<Movimento> ms = new ArrayList<Movimento>();
+                    for (Lote lote1 : lotes) {
+                        ms.addAll(movimentoDB.listaMovimentosDoLote(lote1.getId()));
+                    }
+                    //listaMovimentos = movimentoDB.listaMovimentosDoLote(lote.getId());
+                    for (Movimento listaMovimento : ms) {
                         if (listaMovimento.getTipoServico().getId() == 5) {
                             setTaxa(true);
                             valorTaxa = Moeda.converteR$Float(listaMovimento.getValor());
@@ -2014,6 +2101,13 @@ public class MatriculaEscolaBean implements Serializable {
                         } else {
                             count++;
                             listaMovimento.setQuantidade(count);
+                        }
+//                        if (listaMovimento.isAtivo()) {
+                        if (listaMovimento.getTipoServico().getId() == 1 || listaMovimento.getTipoServico().getId() == 5) {
+                            listaMovimentos.add(listaMovimento);
+                        } else if (listaMovimento.getTipoServico().getId() == 6) {
+                            listaOutrosMovimentos.add(listaMovimento);
+//                            }
                         }
                     }
                     lote = new Lote();
@@ -2617,5 +2711,13 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setListaMesVencimento(List<SelectItem> listaMesVencimento) {
         this.listaMesVencimento = listaMesVencimento;
+    }
+
+    public List<Movimento> getListaOutrosMovimentos() {
+        return listaOutrosMovimentos;
+    }
+
+    public void setListaOutrosMovimentos(List<Movimento> listaOutrosMovimentos) {
+        this.listaOutrosMovimentos = listaOutrosMovimentos;
     }
 }

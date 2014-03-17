@@ -102,7 +102,7 @@ public class TurmaBean implements Serializable {
             turma.setHoraTermino("");
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        turma.setCursos((Servicos) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
+        turma.setCursos((Servicos) salvarAcumuladoDB.find(new Servicos(), Integer.parseInt(listaServicos.get(idServicos).getDescription())));
         TurmaDB turmaDB = new TurmaDBToplink();
         if (turma.getId() == -1) {
             if (turmaDB.existeTurma(turma)) {
@@ -133,7 +133,7 @@ public class TurmaBean implements Serializable {
 
     public String editar(Turma t) throws ParseException {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        Turma turmaC = (Turma) dB.pesquisaCodigo(t.getId(), "Turma");
+        Turma turmaC = (Turma) dB.find(t);
         for (int i = 0; i < listaServicos.size(); i++) {
             if (Integer.parseInt(listaServicos.get(i).getDescription()) == t.getCursos().getId()) {
                 idServicos = i;
@@ -146,9 +146,9 @@ public class TurmaBean implements Serializable {
         this.horaInicio = formatador.parse(turmaC.getHoraInicio());
         this.horaTermino = formatador.parse(turmaC.getHoraTermino());
         if (GenericaSessao.exists("urlRetorno")) {
-            return "turma";
-        } else {
             return (String) GenericaSessao.getString("urlRetorno");
+        } else {
+            return "turma";
         }
     }
 
@@ -158,7 +158,7 @@ public class TurmaBean implements Serializable {
             salvarAcumuladoDB.abrirTransacao();
             for (TurmaProfessor listaTurmaProfessor1 : listaTurmaProfessor) {
                 if (listaTurmaProfessor1.getId() != -1) {
-                    if (!salvarAcumuladoDB.deletarObjeto((TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(listaTurmaProfessor1.getId(), "TurmaProfessor"))) {
+                    if (!salvarAcumuladoDB.deletarObjeto((TurmaProfessor) salvarAcumuladoDB.find(listaTurmaProfessor1))) {
                         salvarAcumuladoDB.desfazerTransacao();
                         mensagem = "Erro ao excluir Professores!";
                         return;
@@ -166,7 +166,7 @@ public class TurmaBean implements Serializable {
                 }
             }
 
-            if (!salvarAcumuladoDB.deletarObjeto((Turma) salvarAcumuladoDB.pesquisaCodigo(turma.getId(), "Turma"))) {
+            if (!salvarAcumuladoDB.deletarObjeto((Turma) salvarAcumuladoDB.find(turma))) {
                 salvarAcumuladoDB.desfazerTransacao();
                 mensagem = "Erro ao excluir Turma!";
                 return;
@@ -183,7 +183,7 @@ public class TurmaBean implements Serializable {
 
     public void removerTurmaProfessor(TurmaProfessor tp) {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        tp = (TurmaProfessor) salvarAcumuladoDB.pesquisaCodigo(tp.getId(), "TurmaProfessor");
+        tp = (TurmaProfessor) salvarAcumuladoDB.find(tp);
         if (tp.getId() != -1) {
             salvarAcumuladoDB.abrirTransacao();
             if (!salvarAcumuladoDB.deletarObjeto(tp)) {
@@ -234,8 +234,8 @@ public class TurmaBean implements Serializable {
             GenericaMensagem.warn("Validação", "Cadastrar componente currícular!");
             return;
         }
-        turmaProfessor.setProfessor((Professor) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaProfessores.get(idProfessor).getDescription()), "Professor"));
-        turmaProfessor.setComponenteCurricular((ComponenteCurricular) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaComponenteCurricular.get(idComponenteCurricular).getDescription()), "ComponenteCurricular"));
+        turmaProfessor.setProfessor((Professor) salvarAcumuladoDB.find(new Professor(), Integer.parseInt(listaProfessores.get(idProfessor).getDescription())));
+        turmaProfessor.setComponenteCurricular((ComponenteCurricular) salvarAcumuladoDB.find(new ComponenteCurricular(), Integer.parseInt(listaComponenteCurricular.get(idComponenteCurricular).getDescription())));
         turmaProfessor.setTurma(turma);
         if (turmaDB.existeTurmaProfessor(turmaProfessor)) {
             GenericaMensagem.warn("Validação", "Cadastro já existe!");
