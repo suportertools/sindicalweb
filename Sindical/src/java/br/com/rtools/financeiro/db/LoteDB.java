@@ -30,4 +30,10 @@ public interface LoteDB {
     public void roolback();
 
     public Lote pesquisaLotePorEvt(Evt evt);
+    
+    public Lote pesquisaLotePorEvt(int evt);
+    
+    public List<Lote> pesquisaLotesPorEvt(Evt evt);
+    
+    public List<Lote> pesquisaLotesPorEvt(int evt);
 }
