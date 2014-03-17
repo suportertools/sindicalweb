@@ -12,15 +12,16 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
-import java.io.Serializable;
 
 public class controleAcessoWebJSFBean implements Serializable {
 
@@ -146,6 +147,9 @@ public class controleAcessoWebJSFBean implements Serializable {
             pessoa = new Pessoa();
 //           pessoaContribuinte = new Pessoa();
 //           pessoaContabilidade = new Pessoa();
+        }
+        if(pessoa != null) {
+            GenericaSessao.put("userName", pessoa.getLogin());            
         }
         return pagina;
     }

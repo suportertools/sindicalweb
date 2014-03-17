@@ -18,12 +18,14 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import org.primefaces.model.menu.MenuModel;
 
+@SuppressWarnings("serial")
 @ManagedBean
 @SessionScoped
 public class ChamadaPaginaBean implements Serializable {
@@ -64,7 +66,6 @@ public class ChamadaPaginaBean implements Serializable {
     private boolean render9 = false;
     private boolean renderPesquisa = true;
     private List<Rotina> listaRotina = new ArrayList();
-    private MenuModel model;
 
     public void atualizaAcessos(String url) {
         RotinaDB db = new RotinaDBToplink();
@@ -130,6 +131,13 @@ public class ChamadaPaginaBean implements Serializable {
         carregaPg = true;
         tipoPagina = tipo;
         atualizaAcessos('"' + "/Sindical/" + pagina + ".jsf" + '"');
+        String cliente = GenericaSessao.getString("sessaoCliente");
+        String userName = "";
+        if(GenericaSessao.exists("userName")) {
+            userName = (String) GenericaSessao.getString("userName");
+            String logaccess = " Cliente: " + cliente + " - Usuário: " + userName + " - Página: " + pagina;
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, logaccess);
+        }
         return pagina;
     }
 
@@ -861,6 +869,19 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "movimentoBancario");
     }
 
+    public synchronized String rescisaoMatricula() {
+        GenericaSessao.remove("rescisaoContratoBean");
+        GenericaSessao.remove("matriculaEscolaBean");
+        return metodoGenerico(2, "rescisaoMatricula");
+    }
+
+    public synchronized String conclusaoMatricula() {
+        GenericaSessao.remove("conclusaoMatriculaBean");
+        GenericaSessao.remove("matriculaEscolaPesquisa");
+        GenericaSessao.remove("turmaPesquisa");
+        return metodoGenerico(2, "conclusaoMatricula");
+    }
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1581,18 +1602,6 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public String getControleLinks() {
-        
-//        model = new DefaultMenuModel();
-//        
-//        DefaultMenuItem item = new DefaultMenuItem();
-//        item.setCommand("menuPrincipal");  
-//        model.addElement(item);
-//        
-//        DefaultMenuItem item2 = new DefaultMenuItem();
-//        item2.setCommand("usuario.jsf");  
-//        item2.setValue("Usuario");  
-//        model.addElement(item2); 
-        
         try {
             paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String urlDestino = paginaRequerida.getRequestURI();
@@ -2267,9 +2276,5 @@ public class ChamadaPaginaBean implements Serializable {
         nivelLink = i + 1;
         menuLinks.get(i).setIndice(i);
         return menuLinks.get(i).getLink();
-    }
-
-    public MenuModel getModel() {
-        return model;
     }
 }
