@@ -141,7 +141,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
         for (int i = 0; i < listaMovimento.size(); i++) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().find("Movimento", (Integer) ((List) listaMovimento.get(i)).get(0));
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink(); 
+            Movimento m = (Movimento) sadb.find("Movimento", (Integer) ((List) listaMovimento.get(i)).get(0));
             lista.add(m);
             listaValores.add(m.getValor());
         }
