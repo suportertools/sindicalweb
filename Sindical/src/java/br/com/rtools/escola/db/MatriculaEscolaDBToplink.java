@@ -259,4 +259,19 @@ public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
         }
         return new ArrayList();
     }   
+    
+    @Override
+    public List<MatriculaTurma> pesquisaMatriculaEscolaPorTurma(int idTurma) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT MT FROM MatriculaTurma AS MT WHERE MT.turma.id = :idTurma");
+            query.setParameter("idTurma", idTurma);
+            List list = query.getResultList();
+            if(!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();        
+    }
 }
