@@ -135,11 +135,18 @@ public class JuridicaBean implements Serializable {
             return;
         }
         if (juridicaReceita.getId() == -1) {
+            
             try {
                 System.loadLibrary("knu");  
             } catch (Exception e) {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
-            }
+                msgDocumento = "Consulta temporárimente indisponível!";
+                return;
+            } catch (UnsatisfiedLinkError e) {
+                System.out.println(e.getMessage() + " Erro Carregar Lib ");
+                msgDocumento = "Consulta temporárimente indisponível!";
+                return;
+            } 
 
             knu.ReceitaCNPJ resultado = knu.knu.receitaCNPJ(documento);
 
