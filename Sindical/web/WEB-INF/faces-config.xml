@@ -1647,7 +1647,19 @@
             <from-outcome>relatorioConviteClube</from-outcome>
             <to-view-id>/relatorioConviteClube.jsf</to-view-id>
             <redirect/>
-        </navigation-case>        
-                                     
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>rescisaoMatricula</from-outcome>
+            <to-view-id>/rescisaoMatricula.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>conclusaoMatricula</from-outcome>
+            <to-view-id>/conclusaoMatricula.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+                                             
     </navigation-rule>
 </faces-config>
