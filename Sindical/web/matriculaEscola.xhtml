@@ -332,25 +332,56 @@
                                 <p:commandButton value="Autorizadas" id="id_click" update="i_panel_adicionar" action="#{matriculaEscolaBean.openDialog}" onclick="dgl_adicionar.show();" title="Pessoas autorizadas a buscar o aluno" />
                             </h:panelGrid>
                         </h:panelGrid>
-                        <p:accordionPanel  rendered="#{matriculaEscolaBean.listaMovimentos.size() > 0}">
-                            <p:tab title="Parcelas">
-                                <p:dataTable value="#{matriculaEscolaBean.listaMovimentos}" id="tblMovimentos" var="movimento" emptyMessage="Nenhum movimento gerado" scrollable="true" scrollHeight="150">
-                                    <p:column styleClass="text-center" headerText="Vencimento" style="width: 80px;">
-                                        <p:outputLabel  value="#{movimento.vencimento}"  />
-                                    </p:column>
-                                    <p:column  styleClass="text-center" headerText="Parcela" style="width: 50px;">
-                                        <p:outputLabel  value="#{movimento.quantidade}">
-                                        </p:outputLabel >
-                                    </p:column>
-                                    <p:column styleClass="text-center" headerText="Valor (R$)" style="width: 100px;">
-                                        <p:outputLabel  value="#{movimento.valor}" />
-                                    </p:column>
-                                    <p:column  styleClass="text-center" headerText="Tipo Serviço" style="width: 100px;">
-                                        <p:outputLabel  value="#{movimento.tipoServico.descricao}"/>
-                                    </p:column>
-                                </p:dataTable>
-                            </p:tab> 
-                        </p:accordionPanel>
+                        <p:panel header="Financeiro"  rendered="#{matriculaEscolaBean.listaMovimentos.size() > 0}" id="tblMovimentos" >
+                            <p:tabView>
+                                <p:tab title="Parcelas">
+                                    <p:dataTable value="#{matriculaEscolaBean.listaMovimentos}" var="movimento" emptyMessage="Nenhum movimento gerado" scrollable="true" scrollHeight="150">
+                                        <p:column styleClass="text-center" headerText="Vencimento" style="width: 80px;">
+                                            <p:outputLabel  value="#{movimento.vencimento}"  />
+                                        </p:column>
+                                        <p:column  styleClass="text-center" headerText="Parcela" style="width: 50px;">
+                                            <p:outputLabel  value="#{movimento.quantidade}">
+                                            </p:outputLabel >
+                                        </p:column>
+                                        <p:column styleClass="text-center" headerText="Valor (R$)" style="width: 100px;">
+                                            <p:outputLabel  value="#{movimento.valor}" />
+                                        </p:column>
+                                        <p:column  styleClass="text-center" headerText="Tipo Serviço" style="width: 100px;">
+                                            <p:outputLabel  value="#{movimento.tipoServico.descricao}"/>
+                                        </p:column>
+                                        <p:column  styleClass="text-center" style="width: 25px;">
+                                            <c:if test="#{movimento.baixa != null}">
+                                                <span style="display: block; width: 15px; height: 15px; background: greenyellow;" title="Baixado"></span>
+                                            </c:if>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:tab> 
+                                <c:if test="#{matriculaEscolaBean.listaOutrosMovimentos.size() > 0}">
+                                    <p:tab title="Outros movimentos" titletip="Multas por cancelamo e outros">
+                                        <p:dataTable value="#{matriculaEscolaBean.listaOutrosMovimentos}" var="movimento" emptyMessage="Nenhum movimento gerado" scrollable="true" scrollHeight="150">
+                                            <p:column styleClass="text-center" headerText="Vencimento" style="width: 80px;">
+                                                <p:outputLabel  value="#{movimento.vencimento}"  />
+                                            </p:column>
+                                            <p:column  styleClass="text-center" headerText="Parcela" style="width: 50px;">
+                                                <p:outputLabel  value="#{movimento.quantidade}">
+                                                </p:outputLabel >
+                                            </p:column>
+                                            <p:column styleClass="text-center" headerText="Valor (R$)" style="width: 100px;">
+                                                <p:outputLabel  value="#{movimento.valor}" />
+                                            </p:column>
+                                            <p:column  styleClass="text-center" headerText="Tipo Serviço" style="width: 100px;">
+                                                <p:outputLabel  value="#{movimento.tipoServico.descricao}"/>
+                                            </p:column>
+                                            <p:column  styleClass="text-center" style="width: 25px;">
+                                                <c:if test="#{movimento.baixa != null}">
+                                                    <span style="display: block; width: 15px; height: 15px; background: greenyellow;" title="Baixado"></span>
+                                                </c:if>
+                                            </p:column>                                            
+                                        </p:dataTable>                                    
+                                    </p:tab>
+                                </c:if>
+                            </p:tabView>
+                        </p:panel>
                         <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
                             <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
                             <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
