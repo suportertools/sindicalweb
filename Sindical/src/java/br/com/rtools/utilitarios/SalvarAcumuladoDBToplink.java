@@ -68,7 +68,10 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         }
         try {
             getEntityManager().merge(objeto);
-            getEntityManager().flush();
+            if(!getEntityManager().getTransaction().isActive()) {
+                return false;
+            }
+            getEntityManager().flush();                
             return true;
         } catch (Exception e) {
             log.novo("Alterar Objeto", "Exception - Message: " + e.getMessage());
@@ -178,6 +181,11 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
 
     @Override
     public Object find(String object, int objectId) {
+        return pesquisaObjeto(objectId, object);
+    }
+    
+    @Override
+    public Object find(String object, Integer objectId) {
         return pesquisaObjeto(objectId, object);
     }
 
