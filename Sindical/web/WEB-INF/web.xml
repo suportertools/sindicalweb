@@ -7,16 +7,25 @@
     <display-name>Sindical WEB</display-name>
     
     <context-param>
+        <description>State saving method: "client" or "server" (= default) See JSF Specification 2.5.2</description> 
         <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
         <param-value>client</param-value>
     </context-param>
+    
+    <context-param>  
+        <description>Only applicable if state saving method is "server" (= default).  Defines the amount (default = 20) of the latest views are stored in session. </description>  
+        <param-name>org.apache.myfaces.NUMBER_OF_VIEWS_IN_SESSION</param-name>  
+        <param-value>40</param-value>  
+    </context-param>    
 
     <context-param>
+        <description>Projeto em estágio de desenvolvimento</description>
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
     
     <context-param>  
+        <description>Primefaces Tema Bootstrap</description>
         <param-name>primefaces.THEME</param-name>  
         <param-value>bootstrap</param-value>  
     </context-param>
@@ -107,4 +116,21 @@
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
+    <!-- ERRORS AND EXCEPTIONS -->    
+    <!-- <error-page>
+        <exception-type>javax.servlet.ServletException</exception-type>
+        <location>/index.xhtml</location>
+    </error-page>     -->
+    <error-page>
+        <exception-type>javax.faces.application.ViewExpiredException</exception-type>
+        <location>/index.xhtml</location>
+    </error-page>   
+    <!-- ERRORS AND EXCEPTIONS -->
+    <!-- LISTENERS -->
+    <listener>  
+        <listener-class>  
+            br.com.rtools.utilitarios.SessionCounter  
+        </listener-class>  
+    </listener> 
+    <!-- LISTENERS -->        
 </web-app>
