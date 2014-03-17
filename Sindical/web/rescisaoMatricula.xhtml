@@ -1,0 +1,112 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Rescisão de Contrato</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
+    </h:head>
+    <h:body>
+        <div id="wrapx">
+            <div id="mainx">
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Rescisão de Contrato" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_rescisao" onsubmit="#{rescisaoContratoBean.load}">
+                            <p:panel id="i_panel_rescisao">
+                                <c:if test="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
+                                    <h:panelGrid columns="1">
+                                        <p:commandButton icon="ui-icon-search" value="Pesquisar Matricula" action="#{chamadaPaginaBean.pesquisaMatriculaEscola}" immediate="true"/>
+                                    </h:panelGrid>
+                                </c:if>
+                                <div class="clear"></div>
+                                <h:panelGrid columns="2" styleClass="margin-top-max">
+                                    <h:outputLabel value="Detalhes: "/>
+                                    <h:outputLabel value="#{rescisaoContratoBean.descricaoServico}" />
+                                    <h:outputLabel value="Beneficiário: "/>
+                                    <h:outputLabel value="#{rescisaoContratoBean.beneficiario.nome}" />
+                                    <h:outputLabel value="Titular: "/>
+                                    <h:outputLabel value="#{rescisaoContratoBean.titular.nome}" />
+                                </h:panelGrid>
+                                <p:panel header="Movimentos em aberto" id="i_movimentos" styleClass="margin-top-max" footer="Valor total dos movimentos: R$ #{rescisaoContratoBean.valor}">
+                                    <p:dataTable value="#{rescisaoContratoBean.movimentos}" scrollable="true" scrollHeight="250" var="movimentos" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column headerText="Data geração" styleClass="text-center" width="80">
+                                        </p:column>
+                                        <p:column headerText="Data Vencimento" styleClass="text-center" width="80">
+                                            #{movimentos.vencimento}                                                                                      
+                                        </p:column>
+                                        <p:column headerText="Documento" styleClass="text-center">
+                                            #{movimentos.pessoa.documento}
+                                        </p:column>
+                                        <p:column headerText="Pessoa" styleClass="text-center">
+                                            #{movimentos.pessoa.nome}
+                                        </p:column>
+                                        <p:column headerText="Serviço" styleClass="text-center">
+                                            #{movimentos.servicos.descricao}                                                                                      
+                                        </p:column>
+                                        <p:column headerText="Valor (R$)" styleClass="text-center" width="100">
+                                            #{movimentos.valor}
+                                        </p:column>
+                                        <p:column headerText="Tipo Serviço" styleClass="text-center" width="80">
+                                            #{movimentos.tipoServico.descricao}
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:panel>
+                                <h:panelGrid columns="2" styleClass="margin-top-max">
+                                    <c:if test="#{!rescisaoContratoBean.rescindido}">
+                                        <p:commandButton value="Salvar" onclick="dlg_salvar.show();" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                    </c:if>
+                                    <c:if test="#{rescisaoContratoBean.rescindido}">
+                                        <p:commandButton value="Contrato já rescindido" disabled="true" styleClass="font-color-red"/>
+                                    </c:if>
+                                    <p:commandButton value="Novo" action="#{rescisaoContratoBean.novo}" update=":form_rescisao:" />
+                                </h:panelGrid>
+                                <p:dialog widgetVar="dlg_salvar" width="400" header="Deseja realmente rescindir este contrato?" modal="true">
+                                    <h:outputLabel value="Os movimentos vencidos deverão ser quitados! E os a vencer serão automáticamente excluídos." />
+                                    <h:panelGrid columns="2" styleClass="margin-top-max">
+                                        <p:outputLabel value="Valor multa: " />
+                                        <p:inputText value="#{rescisaoContratoBean.valorMulta}" converter="toCurrency">
+                                            <f:ajax event="blur" render="@this i_total_multa" />
+                                        </p:inputText>
+                                        <p:outputLabel value="Número de parcelas: " />
+                                        <p:inputText value="#{rescisaoContratoBean.numeroParcelas}">
+                                            <f:ajax event="blur" render="@this id_dt_mr i_total_multa" listener="#{rescisaoContratoBean.listaMesVencimento.clear()}"/>
+                                        </p:inputText>
+                                        <p:outputLabel value="Data primeiro pagamento: " />
+                                        <p:selectOneMenu value="#{rescisaoContratoBean.idMesVencimento}" id="id_dt_mr">
+                                            <f:selectItems value="#{rescisaoContratoBean.listaMesVencimento}" />
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Total a pagar:" />
+                                        <h:outputLabel value="#{rescisaoContratoBean.valorTotal}" id="i_total_multa" styleClass="font-color-red"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2" styleClass="margin-top-max">
+                                        <c:if test="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
+                                            <p:commandButton value="Sim" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();" update=":form_rescisao:" action="#{rescisaoContratoBean.rescindirMatriculaEscola}" />
+                                        </c:if>
+                                        <p:commandButton value="Não" onclick="dlg_salvar.hide();"/>
+                                    </h:panelGrid>
+                                </p:dialog>
+                                <p:dialog widgetVar="dlg_mensagem" width="400" header="Mensagem" modal="true">
+                                    <p:commandButton value="Ok" onclick="dlg_mensagem.hide();"/>
+                                </p:dialog>
+                            </p:panel>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+            </div>
+        </div>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>
