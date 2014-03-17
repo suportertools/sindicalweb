@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Recepção</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
@@ -22,116 +22,116 @@
                     <div class="headerPanel">
                         <h:outputText value="Recepção" styleClass="fontePanel" style="width: 800px"/>
                     </div>
-                   
+
                     <br />
                     <h:column rendered="#{recepcaoBean.renderConcluir}">
                         <div class="divMae divFundo" style="text-align: left; width: 900px;">
-                                <h:panelGrid columns="6">
-                                    <h:outputText value="Data: " styleClass="fontePadrao"/>
-                                    <h:outputText value=" #{recepcaoBean.agendamento.data}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" />
-                                    <h:outputText value="Horário: " styleClass="fontePadrao margin-left-max" />
-                                    <h:outputText value="#{recepcaoBean.agendamento.horarios.hora}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding"/>
-                                </h:panelGrid>
-                                <br />
-                                <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
-                                    <h:column>
-                                        <h4 class="border-radius bg-white padding">EMPRESA</h4>
-                                    </h:column>
-                                    <h:column>
-                                    </h:column>                                     
-                                    <h:column>
-                                        <h:outputText value="RAZÃO SOCIAL: " title="Nome fantasia"/>
-                                    </h:column>                                     
-                                    <h:column>
-                                        <h:outputText value="#{recepcaoBean.juridica.pessoa.nome}" class="negrito" style="border-bottom: 2px dotted white"/>
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="TELEFONE: " styleClass="fontePadrao" rendered="#{recepcaoBean.juridica.pessoa.telefone1 != '' or recepcaoBean.juridica.pessoa.telefone2 != ''}"/>
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="#{recepcaoBean.juridica.pessoa.telefone1} / #{recepcaoBean.juridica.pessoa.telefone2}" styleClass="fontePadraoNegrito" rendered="#{recepcaoBean.juridica.pessoa.telefone1 != '' or recepcaoBean.juridica.pessoa.telefone2 != ''}"/>
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="ENDEREÇO: " styleClass="fontePadrao"/>
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="#{recepcaoBean.strEndereco}" styleClass="fontePadraoNegrito"/>
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="ESCRITÓRIO: " styleClass="fontePadrao"/>                                        
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="#{recepcaoBean.juridica.contabilidade.pessoa.nome}" styleClass="fontePadraoNegrito"/>
-                                        <h:outputText value="Telefone: " styleClass="fontePadrao margin-left-max" />
-                                        <h:outputText value="#{recepcaoBean.juridica.contabilidade.pessoa.telefone1} / #{recepcaoBean.juridica.contabilidade.pessoa.telefone2}" styleClass="fontePadraoNegrito"/>
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:outputText value="Contato: " styleClass="fontePadrao"/>                                        
-                                    </h:column>                                     
-                                    <h:column>                                     
-                                        <h:inputText value="#{recepcaoBean.agendamento.contato}" size="20" styleClass="fontePadraoNegrito" readonly="true" />
-                                        <h:outputText value="E-mail: " styleClass="fontePadrao margin-left-max"/>
-                                        <h:inputText value="#{recepcaoBean.agendamento.email}" size="25" styleClass="fontePadraoNegrito " readonly="true" />                                        
-                                        <h:outputText value="Telefone: " styleClass="fontePadrao margin-left-max"/>
-                                        <h:inputText value="#{recepcaoBean.agendamento.telefone}" size="12" maxlength="14" class="telefone" styleClass="fontePadraoNegrito" readonly="true"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h4 class="border-radius bg-white padding">FUNCIONÁRIO</h4>
-                                    </h:column>
-                                    <h:column>
-                                    </h:column>                                     
-                                    <h:column>                                        
-                                        <h:outputText value="MOTIVO DEMISSÃO: " styleClass="fontePadrao"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:selectOneMenu id="idMotivoDemissao" value="#{recepcaoBean.idMotivoDemissao}" disabled="true">
-                                            <a4j:ajax event="change" render="this"/>
-                                            <f:selectItems value="#{recepcaoBean.listaMotivoDemissao}"/>
-                                        </h:selectOneMenu>
-                                    </h:column>                                    
-                                    <h:column>                                        
-                                        <h:outputText value="CPF: " styleClass="fontePadrao"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:inputText id="idCPF" value="#{recepcaoBean.fisica.pessoa.documento}" size="14" maxlength="14" class="cpf" readonly="true" />                                        
-                                    </h:column>                                     
-                                    
-                                    <h:column> 
-                                        <h:outputText value="NOME: " styleClass="fontePadraoVermelho"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:inputText size="50" value="#{recepcaoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" readonly="true" />
-                                        <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
-                                        <h:inputText size="10" maxlength="10" value="#{recepcaoBean.fisica.nascimento}" styleClass="fontePadraoNegrito" readonly="true" />
-                                    </h:column>                                    
-                                    <h:column>
-                                            <h:outputText value="OBSERVAÇÃO: " styleClass="fontePadrao" />
-                                    </h:column>
-                                    <h:column>
-                                        <h:inputTextarea cols="70" rows="3" value="#{recepcaoBean.agendamento.observacao}" />
-                                    </h:column>
-                                    <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
-                                        <h:outputText value="PREPOSTO: " styleClass="fontePadraoVermelho" />
-                                    </h:column>
-                                    <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
-                                        <h:inputText value="#{recepcaoBean.recepcao.preposto}" size="50" onblur="upperCase(this);" />
-                                    </h:column>
-                                    <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
-                                        <h:outputText value="Hora de chegada preposto: " styleClass="fontePadraoVermelho" />
-                                    </h:column>
-                                    <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
-                                        <h:inputText value="#{recepcaoBean.recepcao.horaInicialPreposto}" size="5" class="hora" />
-                                        <h:outputText value="Hora de chegada funcionário: " styleClass="fontePadraoVermelho margin-left-max" />
-                                        <h:inputText value="#{recepcaoBean.recepcao.horaInicialFuncionario}" size="5" class="hora" />
-                                    </h:column>
-                                </h:panelGrid>
-                                <br />
-                                <h:panelGrid columns="4">
-                                    <a4j:commandLink styleClass="idPesquisar iLink"  value="Atualizar" action="#{recepcaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="i_painel_mensagem" oncomplete="#{rich:component('form_recepcao:i_painel_mensagem')}.show(); return false;"/>
-                                    <a4j:commandLink styleClass="idPesquisar iLink" style="width: 120px" value="Gerar Senha" rendered="#{recepcaoBean.idStatus == 0 and recepcaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_recepcao:i_painel_salvar')}.show(); return false;" />
-                                    <a4j:commandLink styleClass="idPesquisar iLink" value="Cancelar" rendered="#{recepcaoBean.idStatus == 0}" disabled="#{controleAcessoBean.botaoExcluir}"  oncomplete="#{rich:component('form_recepcao:i_painel_excluir')}.show(); return false;" />
-                                    <h:commandLink styleClass="idExcluir iLink" value="Voltar" action="#{recepcaoBean.voltar()}"/>
-                                </h:panelGrid>
+                            <h:panelGrid columns="6">
+                                <h:outputText value="Data: " styleClass="fontePadrao"/>
+                                <h:outputText value=" #{recepcaoBean.agendamento.data}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" />
+                                <h:outputText value="Horário: " styleClass="fontePadrao margin-left-max" />
+                                <h:outputText value="#{recepcaoBean.agendamento.horarios.hora}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding"/>
+                            </h:panelGrid>
+                            <br />
+                            <h:panelGrid columns="2" columnClasses="coluna1, coluna2" cellpadding="3">
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding">EMPRESA</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>                                     
+                                <h:column>
+                                    <h:outputText value="RAZÃO SOCIAL: " title="Nome fantasia"/>
+                                </h:column>                                     
+                                <h:column>
+                                    <h:outputText value="#{recepcaoBean.juridica.pessoa.nome}" class="negrito" style="border-bottom: 2px dotted white"/>
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="TELEFONE: " styleClass="fontePadrao" rendered="#{recepcaoBean.juridica.pessoa.telefone1 != '' or recepcaoBean.juridica.pessoa.telefone2 != ''}"/>
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="#{recepcaoBean.juridica.pessoa.telefone1} / #{recepcaoBean.juridica.pessoa.telefone2}" styleClass="fontePadraoNegrito" rendered="#{recepcaoBean.juridica.pessoa.telefone1 != '' or recepcaoBean.juridica.pessoa.telefone2 != ''}"/>
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="ENDEREÇO: " styleClass="fontePadrao"/>
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="#{recepcaoBean.strEndereco}" styleClass="fontePadraoNegrito"/>
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="ESCRITÓRIO: " styleClass="fontePadrao"/>                                        
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="#{recepcaoBean.juridica.contabilidade.pessoa.nome}" styleClass="fontePadraoNegrito"/>
+                                    <h:outputText value="Telefone: " styleClass="fontePadrao margin-left-max" />
+                                    <h:outputText value="#{recepcaoBean.juridica.contabilidade.pessoa.telefone1} / #{recepcaoBean.juridica.contabilidade.pessoa.telefone2}" styleClass="fontePadraoNegrito"/>
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:outputText value="Contato: " styleClass="fontePadrao"/>                                        
+                                </h:column>                                     
+                                <h:column>                                     
+                                    <h:inputText value="#{recepcaoBean.agendamento.contato}" size="20" styleClass="fontePadraoNegrito" readonly="true" />
+                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText value="#{recepcaoBean.agendamento.email}" size="25" styleClass="fontePadraoNegrito " readonly="true" />                                        
+                                    <h:outputText value="Telefone: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText value="#{recepcaoBean.agendamento.telefone}" size="12" maxlength="14" class="telefone" styleClass="fontePadraoNegrito" readonly="true"/>
+                                </h:column>
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding">FUNCIONÁRIO</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>                                     
+                                <h:column>                                        
+                                    <h:outputText value="MOTIVO DEMISSÃO: " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:selectOneMenu id="idMotivoDemissao" value="#{recepcaoBean.idMotivoDemissao}" disabled="true">
+                                        <a4j:ajax event="change" render="this"/>
+                                        <f:selectItems value="#{recepcaoBean.listaMotivoDemissao}"/>
+                                    </h:selectOneMenu>
+                                </h:column>                                    
+                                <h:column>                                        
+                                    <h:outputText value="CPF: " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="idCPF" value="#{recepcaoBean.fisica.pessoa.documento}" size="14" maxlength="14" class="cpf" readonly="true" />                                        
+                                </h:column>                                     
+
+                                <h:column> 
+                                    <h:outputText value="NOME: " styleClass="fontePadraoVermelho"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText size="50" value="#{recepcaoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" readonly="true" />
+                                    <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText size="10" maxlength="10" value="#{recepcaoBean.fisica.nascimento}" styleClass="fontePadraoNegrito" readonly="true" />
+                                </h:column>                                    
+                                <h:column>
+                                    <h:outputText value="OBSERVAÇÃO: " styleClass="fontePadrao" />
+                                </h:column>
+                                <h:column>
+                                    <h:inputTextarea cols="70" rows="3" value="#{recepcaoBean.agendamento.observacao}" />
+                                </h:column>
+                                <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
+                                    <h:outputText value="PREPOSTO: " styleClass="fontePadraoVermelho" />
+                                </h:column>
+                                <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
+                                    <h:inputText value="#{recepcaoBean.recepcao.preposto}" size="50" onblur="upperCase(this);" />
+                                </h:column>
+                                <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
+                                    <h:outputText value="Hora de chegada preposto: " styleClass="fontePadraoVermelho" />
+                                </h:column>
+                                <h:column rendered="#{recepcaoBean.registro.senhaHomologacao}">
+                                    <h:inputText value="#{recepcaoBean.recepcao.horaInicialPreposto}" size="5" class="hora" />
+                                    <h:outputText value="Hora de chegada funcionário: " styleClass="fontePadraoVermelho margin-left-max" />
+                                    <h:inputText value="#{recepcaoBean.recepcao.horaInicialFuncionario}" size="5" class="hora" />
+                                </h:column>
+                            </h:panelGrid>
+                            <br />
+                            <h:panelGrid columns="4">
+                                <a4j:commandLink styleClass="idPesquisar iLink"  value="Atualizar" action="#{recepcaoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="i_painel_mensagem" oncomplete="#{rich:component('form_recepcao:i_painel_mensagem')}.show(); return false;"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 120px" value="Gerar Senha" rendered="#{recepcaoBean.idStatus == 0 and recepcaoBean.registro.senhaHomologacao}" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_recepcao:i_painel_salvar')}.show(); return false;" />
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Cancelar" rendered="#{recepcaoBean.idStatus == 0}" disabled="#{controleAcessoBean.botaoExcluir}"  oncomplete="#{rich:component('form_recepcao:i_painel_excluir')}.show(); return false;" />
+                                <h:commandLink styleClass="idExcluir iLink" value="Voltar" action="#{recepcaoBean.voltar()}"/>
+                            </h:panelGrid>
                         </div>
                     </h:column>
                     <div style="overflow: hidden; height: 700px; margin: 0 auto;">
@@ -300,7 +300,14 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Senha" />
                                             </f:facet>
-                                            <h:outputText value="#{linha.argumento10}"/>
+                                            <center>
+                                                <c:if test="#{!linha.argumento10.equals('')}">
+                                                    <h:commandLink action="#{senhaHomologacao.imprimir(linha.argumento9)}" target="_blank" value="#{linha.argumento10}"  title="Imprimir Senha"/>
+                                                </c:if>
+                                                <c:if test="#{linha.argumento10.equals('')}">
+                                                    <h:outputText value="#{linha.argumento10}"/>
+                                                </c:if>
+                                            </center>
                                         </rich:column>
 
                                         <rich:column rendered="#{!recepcaoBean.ocultaHomologador}">
@@ -332,7 +339,8 @@
                 </center>                
                 <rich:popupPanel id="i_painel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_salvar')}.hide();" domElementAttachment="form" header="Deseja gerar senha?">
                     <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_painel_salvar')}.hide(); return false;">
+                        <h:outputLink value="#" onclick="#{rich:component('i_painel_salvar')}.hide();
+                                            return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </h:outputLink>
                     </f:facet>
@@ -343,11 +351,11 @@
                         </h:panelGrid>
                     </center>
                 </rich:popupPanel>
-                
+
                 <rich:popupPanel id="i_painel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_painel_excluir')}.hide();" domElementAttachment="form" header="Deseja cancelar essa homologação?" width="500" height="300">
                     <f:facet name="controls">
                         <h:outputLink value="#" onclick="#{rich:component('i_painel_excluir')}.hide();
-                                return false;">
+                                            return false;">
                             <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
                         </h:outputLink>
                     </f:facet>
@@ -361,18 +369,18 @@
                         </h:panelGrid>
                     </center>
                 </rich:popupPanel>                
-                
+
                 <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" domElementAttachment="form" header="Mensagem">
                     <f:facet name="controls">
                         <h:outputLink>
-                            <h:commandLink value="X" title="Permanecer" actionListener="#{recepcaoBean.imprimirSenha()}" immediate="true" action="recepcao" onclick="#{rich:component('form_recepcao:i_painel_mensagem')}.hide();"/>
+                            <h:commandLink value="X" title="Permanecer" actionListener="#{senhaHomologacao.imprimir(recepcaoBean.agendamento)}" immediate="true" action="recepcao" onclick="#{rich:component('form_recepcao:i_painel_mensagem')}.hide();"/>
                         </h:outputLink>
                     </f:facet>
                     <center>
                         <h:outputLabel value="#{recepcaoBean.msgConfirma}" />
                         <h:panelGrid columns="2" styleClass="margin-top-maior">
                             <a4j:commandButton value="Voltar para Lista" title="Voltar para Lista" action="#{recepcaoBean.voltar()}" immediate="true" />
-                            <h:commandButton value="Permanecer" title="Permanecer" actionListener="#{recepcaoBean.imprimirSenha()}" onclick="#{rich:component('form_recepcao:i_painel_mensagem')}.hide();"/>
+                            <h:commandButton value="Permanecer" title="Permanecer" actionListener="#{senhaHomologacao.imprimir(recepcaoBean.agendamento)}" onclick="#{rich:component('form_recepcao:i_painel_mensagem')}.hide();"/>
                         </h:panelGrid>
                     </center>
                 </rich:popupPanel>                 
