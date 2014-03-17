@@ -423,7 +423,8 @@ public class ImprimirBoleto {
                 // POREM CONCATENANDO COM O DIGITO VERIFICADOR DO COD CEDENTE EX.
                 // 0242/004.136.02507-5 >>>>> FICARA : 0242/S02507-5
                 if (boletox.getContaCobranca().getLayout().getId() == 2) {
-                    codc = swap[44] + "-" + codc.substring(codc.length() - 1, codc.length());
+                    //codc = swap[44] + "-" + codc.substring(codc.length() - 1, codc.length()); 17/03/2014 -- HOMOLOGAÇÃO DE ARCERBURGO EXIRGIU A RETIRADA DESDE DV
+                    codc = swap[44];
                 }
                 vetor.add(new ParametroBoleto(
                         lista.get(i).getReferencia(), // ref (referencia)
