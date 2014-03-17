@@ -58,6 +58,8 @@ public interface SalvarAcumuladoDB {
     public Object find(Object object, Object objectId);
 
     public Object find(String object, int objectId);
+    
+    public Object find(String object, Integer objectId);
 
     public List listaObjeto(String className);
 
