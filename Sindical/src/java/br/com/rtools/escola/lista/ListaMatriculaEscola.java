@@ -3,8 +3,9 @@ package br.com.rtools.escola.lista;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
+import java.io.Serializable;
 
-public class ListaMatriculaEscola {
+public class ListaMatriculaEscola implements Serializable {
 
     private MatriculaEscola matriculaEscola;
     private MatriculaIndividual matriculaIndividual;
