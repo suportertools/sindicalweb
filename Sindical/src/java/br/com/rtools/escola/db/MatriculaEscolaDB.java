@@ -27,8 +27,11 @@ public interface MatriculaEscolaDB {
     public boolean existeMatriculaTurma(MatriculaTurma mt);
 
     public boolean existeMatriculaIndividual(MatriculaIndividual mi);
-    
+
     public boolean existeVagasDisponivel(MatriculaTurma mt);
-    
+
     public List<EscolaAutorizados> listaPessoasAutorizas(int idMatricula);
+
+    public List<MatriculaTurma> pesquisaMatriculaEscolaPorTurma(int idTurma);
+
 }
