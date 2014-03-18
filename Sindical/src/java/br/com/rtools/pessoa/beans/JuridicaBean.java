@@ -444,6 +444,9 @@ public class JuridicaBean implements Serializable {
         if (listaContribuintesInativos.isEmpty()) {
             ContribuintesInativosDB db = new ContribuintesInativosDBToplink();
             listaContribuintesInativos = db.listaContribuintesInativos(juridica.getId());
+            if(listaContribuintesInativos == null) {
+                listaContribuintesInativos = new ArrayList();
+            }
         }
         return listaContribuintesInativos;
     }
