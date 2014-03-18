@@ -3,6 +3,8 @@ package br.com.rtools.seguranca;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -525,5 +527,11 @@ public class Registro implements java.io.Serializable {
 
     public void setSisEmailResposta(String sisEmailResposta) {
         this.sisEmailResposta = sisEmailResposta;
+    }
+
+    public Registro getRegistroEmpresarial() {
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        Registro r = (Registro) sadb.find(new Registro(), 1);
+        return r;
     }
 }
