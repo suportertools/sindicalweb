@@ -158,9 +158,6 @@ public class EmissaoGuiasBean implements Serializable{
             MovimentoDB db = new MovimentoDBToplink();
             Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");            
             listah = db.pesquisaHistoricoEmissaoGuias(usuario.getId());
-            if(listah == null) {
-                listah = new ArrayList();
-            }
         }
         return listah;
     }
