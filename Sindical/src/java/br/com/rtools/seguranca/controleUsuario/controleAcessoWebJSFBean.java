@@ -2,8 +2,6 @@ package br.com.rtools.seguranca.controleUsuario;
 
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.pessoa.db.FilialDB;
-import br.com.rtools.pessoa.db.FilialDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDB;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
@@ -148,8 +146,8 @@ public class controleAcessoWebJSFBean implements Serializable {
 //           pessoaContribuinte = new Pessoa();
 //           pessoaContabilidade = new Pessoa();
         }
-        if(pessoa != null) {
-            GenericaSessao.put("userName", pessoa.getLogin());            
+        if (pessoa != null) {
+            GenericaSessao.put("userName", pessoa.getLogin());
         }
         return pagina;
     }
@@ -423,15 +421,15 @@ public class controleAcessoWebJSFBean implements Serializable {
     }
 
     public boolean getTipoLink() {
-        PessoaDB db = new PessoaDBToplink();
-        Pessoa p = new Pessoa();
-        p = db.pesquisaCodigo(1);
-        if (p.getSite().equals("")) {
-            tipoLink = false;
-        } else {
-            tipoLink = true;
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        //PessoaDB db = new PessoaDBToplink();
+        //Pessoa p = new Pessoa();
+        Pessoa p = (Pessoa) sadb.find(new Pessoa(), 1);
+        //p = db.pesquisaCodigo(1);
+        if (p != null) {
+            tipoLink = !p.getSite().equals("");
+            link = p.getSite();
         }
-        link = p.getSite();
         return tipoLink;
     }
 
@@ -441,8 +439,7 @@ public class controleAcessoWebJSFBean implements Serializable {
 
     public Registro getRegistro() {
         if (registro.getId() == -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            registro = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
+            registro = registro.getRegistroEmpresarial();
         }
         return registro;
     }
