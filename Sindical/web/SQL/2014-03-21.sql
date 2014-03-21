@@ -1,0 +1,1 @@
+ALTER TABLE seg_usuario ADD COLUMN ds_email character varying(100);
