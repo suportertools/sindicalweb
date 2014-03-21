@@ -130,7 +130,7 @@
                                 <p:panel header="Avançado">
                                     <h:panelGrid columns="2">
                                         <p:panel id="tbl_convencao" header="Convenções" style="height: 200px;">
-                                            <p:dataTable value="#{relatorioContribuintesBean.listaConvencaos}" var="convencao"  scrollHeight="220" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.convencaoSelecionada}" rowKey="#{convencao.id}">
+                                            <p:dataTable value="#{relatorioContribuintesBean.listaConvencaos}" var="convencao"  scrollHeight="120" scrollable="true" emptyMessage="Nenhum registro encontrado" selection="#{relatorioContribuintesBean.convencaoSelecionada}" rowKey="#{convencao.id}" >
                                                 <p:ajax event="rowSelectCheckbox" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
                                                 <p:ajax event="rowSelect" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
                                                 <p:ajax event="rowUnselectCheckbox" update="@this, :form_relatorio_contribuintes:id_acordion:tbl_cnae_convencaos, :form_relatorio_contribuintes:id_acordion:tbl_convencao :form_relatorio_contribuintes:id_acordion:tbl_grupos" />
