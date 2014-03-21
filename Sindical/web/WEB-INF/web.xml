@@ -30,6 +30,11 @@
         <param-value>bootstrap</param-value>  
     </context-param>
     
+    <context-param>
+        <param-name>facelets.BUFFER_SIZE</param-name>
+        <param-value>500000</param-value>
+    </context-param>    
+    
     <filter>
         <filter-name>UrlRewriteFilter</filter-name>
         <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
@@ -115,6 +120,8 @@
         <url-pattern>/*</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
+        <dispatcher>INCLUDE</dispatcher>  
+        <dispatcher>ERROR</dispatcher>         
     </filter-mapping>
     <!-- ERRORS AND EXCEPTIONS -->    
     <!-- <error-page>
