@@ -39,6 +39,21 @@ public class GenericaSessao implements Serializable{
         return string;
     }
     
+    public static String[] getStringVector(String sessionName) {
+        return getStringVector(sessionName, false);
+    }
+    
+    public static String[] getStringVector(String sessionName, boolean remove) {
+        String[] string = new String[]{};
+        if (exists(sessionName)) {
+            string = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName);
+            if (remove) {
+                remove(sessionName);
+            }
+        }
+        return string;
+    }
+    
     public static boolean getBoolean(String sessionName) {
         return getBoolean(sessionName, false);
     }
@@ -88,16 +103,12 @@ public class GenericaSessao implements Serializable{
     }
 
     public static void remove(List list) {
-        for (int i = 0; i < list.size(); i++) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(list.get(i).toString());
+        for (Object list1 : list) {
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove(list1.toString());
         }
     }
 
     public static boolean exists(String sessionName) {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(sessionName) != null;
     }
 }
