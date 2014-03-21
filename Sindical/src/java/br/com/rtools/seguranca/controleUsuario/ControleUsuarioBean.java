@@ -8,8 +8,11 @@ import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.application.FacesMessage;
@@ -24,12 +27,14 @@ import javax.servlet.http.HttpSession;
 public class ControleUsuarioBean implements Serializable {
 
     private Usuario usuario = new Usuario();
+    private Usuario usuarioSuporteTecnico = new Usuario();
     private String login = "";
     private String linkVoltar;
     private int fimURL;
     private int iniURL;
     private String paginaDestino;
     private String alerta;
+    private String emailSuporteTecnico;
     private static String cliente;
     private static String bloqueiaMenu;
     private String filial;
@@ -351,5 +356,27 @@ public class ControleUsuarioBean implements Serializable {
 
     public void setImages(List<String> images) {
         this.images = images;
+    }
+
+    public Usuario getUsuarioSuporteTecnico() {
+        if (usuarioSuporteTecnico.getId() == -1) {
+            if (GenericaSessao.exists("sessaoUsuario")) {
+                usuarioSuporteTecnico = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+                if (usuarioSuporteTecnico.getEmail().equals("")) {
+                    if (!usuarioSuporteTecnico.getPessoa().getEmail1().equals("")) {
+                        usuarioSuporteTecnico.setEmail(usuarioSuporteTecnico.getPessoa().getEmail1());
+                    } else {                        
+                        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+                        Usuario u = (Usuario) dB.find(new Usuario(), 1);
+                        usuarioSuporteTecnico.setEmail(u.getPessoa().getEmail1());
+                    }
+                }
+            }
+        }
+        return usuarioSuporteTecnico;
+    }
+
+    public void setUsuarioSuporteTecnico(Usuario usuarioSuporteTecnico) {
+        this.usuarioSuporteTecnico = usuarioSuporteTecnico;
     }
 }
