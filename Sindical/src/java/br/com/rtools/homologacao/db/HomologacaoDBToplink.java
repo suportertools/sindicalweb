@@ -538,7 +538,7 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
     @Override
     public List pesquisaPessoaDebito(int id_pessoa, String vencimento) {
         try {
-            String queryString = "SELECT id FROM fin_movimento WHERE id_pessoa = " + id_pessoa + " AND dt_vencimento < '" + vencimento + "' AND is_ativo = TRUE AND id_baixa IS NULL";
+            String queryString = "SELECT id FROM fin_movimento WHERE id_pessoa = " + id_pessoa + " AND dt_vencimento < '" + vencimento + "' AND is_ativo = TRUE AND id_baixa IS NULL ORDER BY dt_vencimento";
             Query qry = getEntityManager().createNativeQuery(queryString);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
