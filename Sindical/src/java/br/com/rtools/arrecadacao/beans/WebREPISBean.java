@@ -24,6 +24,7 @@ import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -38,7 +39,6 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -49,6 +49,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class WebREPISBean {
+
     private Pessoa pessoa = new Pessoa();
     private Endereco endereco = new Endereco();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
@@ -96,76 +97,86 @@ public class WebREPISBean {
         }
     }
 
-    public String refresh(){
+    public String refresh() {
         return "webLiberacaoREPIS";
     }
-    
-    public String pesquisar(){
+
+    public String pesquisar() {
         WebREPISDB db = new WebREPISDBToplink();
-        
+
         //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
         listaRepisMovimentoPatronal.clear();
         getListaRepisMovimentoPatronal();
-        
-        List<RepisMovimento>  lista = new ArrayList<RepisMovimento>();
-        for(int i = 0; i < listaRepisMovimentoPatronal.size(); i++){
-            if (tipoPesquisa.equals("nome")){
-                if (listaRepisMovimentoPatronal.get(i).getPessoa().getNome().contains(descricao.toUpperCase()))
+
+        List<RepisMovimento> lista = new ArrayList<RepisMovimento>();
+        for (int i = 0; i < listaRepisMovimentoPatronal.size(); i++) {
+            if (tipoPesquisa.equals("nome")) {
+                if (listaRepisMovimentoPatronal.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimentoPatronal.get(i));
-            }else if (tipoPesquisa.equals("cnpj")){
-                if (listaRepisMovimentoPatronal.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("cnpj")) {
+                if (listaRepisMovimentoPatronal.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimentoPatronal.get(i));
-            }else if (tipoPesquisa.equals("protocolo")){
-                if (Integer.toString(listaRepisMovimentoPatronal.get(i).getId()).equals(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("protocolo")) {
+                if (Integer.toString(listaRepisMovimentoPatronal.get(i).getId()).equals(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimentoPatronal.get(i));
-            }else if (tipoPesquisa.equals("status")){
-                if (listaRepisMovimentoPatronal.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("status")) {
+                if (listaRepisMovimentoPatronal.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimentoPatronal.get(i));
-            }else if (tipoPesquisa.equals("socilitante")){
-                if (listaRepisMovimentoPatronal.get(i).getContato().toUpperCase().contains(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("socilitante")) {
+                if (listaRepisMovimentoPatronal.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimentoPatronal.get(i));
+                }
             }
         }
-        
+
         listaRepisMovimentoPatronal.clear();
-        
+
         listaRepisMovimentoPatronal.addAll(lista);
         return "webLiberacaoREPIS";
     }
-    
-    public String pesquisarPorSolicitante(){
+
+    public String pesquisarPorSolicitante() {
         WebREPISDB db = new WebREPISDBToplink();
-        
+
         //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
         listaRepisMovimento.clear();
         getListaRepisMovimento();
-        
-        List<RepisMovimento>  lista = new ArrayList<RepisMovimento>();
-        for(int i = 0; i < listaRepisMovimento.size(); i++){
-            if (tipoPesquisa.equals("nome")){
-                if (listaRepisMovimento.get(i).getPessoa().getNome().contains(descricao.toUpperCase()))
+
+        List<RepisMovimento> lista = new ArrayList<RepisMovimento>();
+        for (int i = 0; i < listaRepisMovimento.size(); i++) {
+            if (tipoPesquisa.equals("nome")) {
+                if (listaRepisMovimento.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimento.get(i));
-            }else if (tipoPesquisa.equals("cnpj")){
-                if (listaRepisMovimento.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("cnpj")) {
+                if (listaRepisMovimento.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimento.get(i));
-            }else if (tipoPesquisa.equals("protocolo")){
-                if (Integer.toString(listaRepisMovimento.get(i).getId()).equals(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("protocolo")) {
+                if (Integer.toString(listaRepisMovimento.get(i).getId()).equals(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimento.get(i));
-            }else if (tipoPesquisa.equals("status")){
-                if (listaRepisMovimento.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("status")) {
+                if (listaRepisMovimento.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimento.get(i));
-            }else if (tipoPesquisa.equals("socilitante")){
-                if (listaRepisMovimento.get(i).getContato().toUpperCase().contains(descricao.toUpperCase()))
+                }
+            } else if (tipoPesquisa.equals("socilitante")) {
+                if (listaRepisMovimento.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
                     lista.add(listaRepisMovimento.get(i));
+                }
             }
         }
-        
+
         listaRepisMovimento.clear();
-        
+
         listaRepisMovimento.addAll(lista);
         return "webSolicitaREPIS";
     }
-    
+
     public void limpar() {
         msg = "";
         repisMovimento = new RepisMovimento();
@@ -218,23 +229,22 @@ public class WebREPISBean {
 //            msg = " PROCURAR SÍNDICATO! ";
 //            return null;
 //        }
-
         if (!listaComboPessoa.isEmpty()) {
             if (Integer.parseInt(listaComboPessoa.get(idPessoa).getDescription()) > 0) {
-                setPessoaSolicitante((Pessoa) sv.pesquisaObjeto(Integer.parseInt(listaComboPessoa.get(idPessoa).getDescription()), "Pessoa"));
+                setPessoaSolicitante((Pessoa) sv.find(new Pessoa(), Integer.parseInt(listaComboPessoa.get(idPessoa).getDescription())));
             }
         } else {
             setPessoaSolicitante(getPessoa());
         }
         WebREPISDB dbr = new WebREPISDBToplink();
-        if (!dbr.listaAcordoAberto(pessoaSolicitante.getId()).isEmpty()){
+        if (!dbr.listaAcordoAberto(pessoaSolicitante.getId()).isEmpty()) {
             msg = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
             return null;
         }
-        
+
         HomologacaoDB db = new HomologacaoDBToplink();
         setShowProtocolo(false);
-        
+
         if (!db.pesquisaPessoaDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
             msg = " PROCURAR SÍNDICATO! ";
             return null;
@@ -244,7 +254,7 @@ public class WebREPISBean {
                 return null;
             }
             repisMovimento.setAno(getAno());
-            repisMovimento.setRepisStatus((RepisStatus) sv.pesquisaObjeto(1, "RepisStatus"));
+            repisMovimento.setRepisStatus((RepisStatus) sv.find(new RepisStatus(), 1));
             repisMovimento.setPessoa(getPessoaSolicitante());
             repisMovimento.setDataResposta(null);
             repisMovimento.setDataEmissao(DataHoje.dataHoje());
@@ -270,9 +280,8 @@ public class WebREPISBean {
     public String btnSalvarStatus() {
         msg = "";
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
         if (repisMovimento.getId() != -1) {
-            repisMovimento.setRepisStatus((RepisStatus) sv.pesquisaObjeto(Integer.parseInt(listaComboRepisStatus.get(idRepisStatus).getDescription()), "RepisStatus"));
+            repisMovimento.setRepisStatus((RepisStatus) sv.find(new RepisStatus(), Integer.parseInt(listaComboRepisStatus.get(idRepisStatus).getDescription())));
             repisMovimento.setDataResposta(DataHoje.dataHoje());
             sv.abrirTransacao();
             if (sv.alterarObjeto(repisMovimento)) {
@@ -293,7 +302,7 @@ public class WebREPISBean {
 
     public String editar(int id) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        repisMovimento = (RepisMovimento) dB.pesquisaCodigo(listaRepisMovimentoPatronal.get(id).getId(), "RepisMovimento");
+        repisMovimento = (RepisMovimento) dB.find(new RepisMovimento(), listaRepisMovimentoPatronal.get(id).getId());
         if (repisMovimento.getId() != -1) {
             setShowPessoa(false);
             for (int i = 0; i < getListaComboRepisStatus().size(); i++) {
@@ -303,25 +312,24 @@ public class WebREPISBean {
             }
             WebREPISDB dbw = new WebREPISDBToplink();
             Juridica jur = dbw.pesquisaEscritorioDaEmpresa(repisMovimento.getPessoa().getId());
-            if (jur != null)
+            if (jur != null) {
                 escritorio = jur.getPessoa();
+            }
         }
         return "webLiberacaoREPIS";
     }
 
     public String imprimirCertificado(int id) {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        setRepisMovimento((RepisMovimento) dB.pesquisaCodigo(id, "RepisMovimento"));
+        setRepisMovimento((RepisMovimento) dB.find(new RepisMovimento(), id));
         JuridicaDB dbj = new JuridicaDBToplink();
         Juridica jur = dbj.pesquisaJuridicaPorPessoa(repisMovimento.getPessoa().getId());
         WebREPISDB dbw = new WebREPISDBToplink();
-        List<Vector> listax = dbj.listaJuridicaContribuinte(jur.getId());
-
+        List<List> listax = dbj.listaJuridicaContribuinte(jur.getId());
         if (listax.isEmpty()) {
             msg = "Empresa não contribuinte";
             return null;
         }
-
         int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
 
         Patronal patronal = dbw.pesquisaPatronalPorConvGrupo(id_convencao, id_grupo);
@@ -333,23 +341,17 @@ public class WebREPISBean {
 
         if (repisMovimento.getId() != -1) {
             try {
-                JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper"));
+                JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper")));
                 Collection vetor = new ArrayList<ParametroCertificado>();
-
-                //PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), dbj.pesquisaJuridicaPorPessoa(patronal.getPessoa().getId()).getPorte().getId());
                 PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), jur.getPorte().getId());
-
                 if (lote.getId() == -1) {
                     msg = "Lote Salarial não encontrado, contate seu sindicato!";
                     return null;
                 }
-
                 List<PisoSalarial> lista = dbw.listaPisoSalarialLote(lote.getId());
                 Juridica sindicato = dbj.pesquisaJuridicaPorPessoa(1);
-
                 PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
                 PessoaEndereco sindicato_endereco = dbe.pesquisaEndPorPessoaTipo(1, 5);
-
                 for (int i = 0; i < lista.size(); i++) {
                     BigDecimal valor = new BigDecimal(lista.get(i).getValor());
                     if (valor.toString().equals("0")) {
@@ -372,26 +374,28 @@ public class WebREPISBean {
                     }
                     vetor.add(
                             new ParametroCertificado(
-                            patronal.getPessoa().getNome(),
-                            logoCaminho,
-                            patronal.getBaseTerritorial(),
-                            sindicato.getPessoa().getNome(),
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                            repisMovimento.getPessoa().getNome(),
-                            repisMovimento.getPessoa().getDocumento(),
-                            jur.getPorte().getDescricao(),
-                            lista.get(i).getDescricao(),
-                            valor,
-                            lista.get(i).getPisoSalarialLote().getMensagem(),
-                            lista.get(i).getPisoSalarialLote().getDtValidade(),
-                            sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
-                            lista.get(i).getPisoSalarialLote().getAno(),
-                            //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
-                            //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
-                            ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
-                            String.valueOf(repisMovimento.getId()),
-                            "0000000000".substring(0, 10 - String.valueOf(repisMovimento.getId()).length()) + String.valueOf(repisMovimento.getId())));
+                                    patronal.getPessoa().getNome(),
+                                    logoCaminho,
+                                    patronal.getBaseTerritorial(),
+                                    sindicato.getPessoa().getNome(),
+                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                                    repisMovimento.getPessoa().getNome(),
+                                    repisMovimento.getPessoa().getDocumento(),
+                                    jur.getPorte().getDescricao(),
+                                    lista.get(i).getDescricao(),
+                                    valor,
+                                    lista.get(i).getPisoSalarialLote().getMensagem(),
+                                    lista.get(i).getPisoSalarialLote().getDtValidade(),
+                                    sindicato_endereco.getEndereco().getCidade().getCidade() + " - " + sindicato_endereco.getEndereco().getCidade().getUf(),
+                                    lista.get(i).getPisoSalarialLote().getAno(),
+                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoSelo.png"),
+                                    //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
+                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
+                                    ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
+                                    String.valueOf(repisMovimento.getId()),
+                                    "0000000000".substring(0, 10 - String.valueOf(repisMovimento.getId()).length()) + String.valueOf(repisMovimento.getId()),
+                                    DataHoje.dataExtenso(repisMovimento.getDataEmissaoString(), 3))
+                    );
                 }
 
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
@@ -451,9 +455,8 @@ public class WebREPISBean {
     }
 
     public Pessoa getPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb") != null) {
-            pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb");
-            //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoUsuarioAcessoWeb");
+        if (GenericaSessao.exists("sessaoUsuarioAcessoWeb")) {
+            pessoa = (Pessoa) GenericaSessao.getObject("sessaoUsuarioAcessoWeb");
         }
         return pessoa;
     }
@@ -520,7 +523,7 @@ public class WebREPISBean {
     }
 
     public List<SelectItem> getListaComboPessoa() {
-        if (listaComboPessoa.isEmpty()){
+        if (listaComboPessoa.isEmpty()) {
             JuridicaDB dbJur = new JuridicaDBToplink();
             getPessoa();
             List<Juridica> select = null;
@@ -528,7 +531,7 @@ public class WebREPISBean {
             if (select != null) {
                 int i = 0;
                 while (i < select.size()) {
-                    listaComboPessoa.add(new SelectItem(new Integer(i),
+                    listaComboPessoa.add(new SelectItem(i,
                             (String) (select.get(i)).getPessoa().getNome(),
                             Integer.toString((select.get(i)).getPessoa().getId())));
                     i++;
@@ -546,7 +549,7 @@ public class WebREPISBean {
             if (select != null) {
                 int i = 0;
                 while (i < select.size()) {
-                    listaComboRepisStatus.add(new SelectItem(new Integer(i), select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+                    listaComboRepisStatus.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
                     i++;
                 }
             }
@@ -604,8 +607,6 @@ public class WebREPISBean {
     public List<RepisMovimento> getListaRepisMovimentoPatronal() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         if (listaRepisMovimentoPatronal.isEmpty()) {
-            // Patronal patro = new Patronal();
-            //getPessoa();
             Patronal patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
             listaRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronalCnae(patro.getId());
         }
