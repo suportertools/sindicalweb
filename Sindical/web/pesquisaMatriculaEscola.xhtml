@@ -19,7 +19,7 @@
                     <h:outputText value="Pesquisa Matricula Escola" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
-                        <h:panelGrid columns="8">
+                        <h:panelGrid columns="12">
                             <h:outputLabel value="Descricao: " styleClass="fontePadraoNegrito"/>
                             <p:inputText value="#{matriculaEscolaBean.descricao}" />
                             <p:outputLabel value="Por: "/>
@@ -35,7 +35,12 @@
                                 <p:ajax event="change" update="@this" />
                                 <f:selectItem itemValue="Individual" itemLabel="Matricula Individual" />
                                 <f:selectItem itemValue="Turma"      itemLabel="Matricula Turma" />
-                            </p:selectOneMenu>                       
+                            </p:selectOneMenu>
+                            <p:outputLabel value=" Status: " />
+                            <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatusFiltro}" >
+                                <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
+                                <f:selectItem itemLabel="Todos" itemValue="5" />
+                            </p:selectOneMenu>                            
                             <p:commandButton id="idInicial" value="Inicial" action="#{matriculaEscolaBean.acaoPesquisaInicial}" actionListener="#{matriculaEscolaBean.listaMatriculaEscolas.clear()}" update=":formGridPesquisaMatrícula:i_panel_grid" />
                             <p:commandButton id="idParcial" value="Parcial" action="#{matriculaEscolaBean.acaoPesquisaParcial}" actionListener="#{matriculaEscolaBean.listaMatriculaEscolas.clear()}" update=":formGridPesquisaMatrícula:i_panel_grid" />
                         </h:panelGrid> 
@@ -64,6 +69,9 @@
                             </p:column>
                             <p:column headerText="Valor do Curso (R$)" styleClass="text-center">
                                 <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.valorTotalString}" />
+                            </p:column>
+                            <p:column headerText="Status">
+                                <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.escStatus.descricao}" />
                             </p:column>
                             <p:column headerText="Filial">
                                 <h:commandLink action="#{matriculaEscolaBean.editar(listaMatriculaEscola.matriculaEscola)}" value="#{listaMatriculaEscola.matriculaEscola.filial.filial.pessoa.nome} - CNPJ: #{listaMatriculaEscola.matriculaEscola.filial.filial.pessoa.documento}" />
