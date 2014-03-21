@@ -48,6 +48,8 @@
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento8}" action="#{chamadaPaginaBean.clickNivelLink8}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render8}" />
                         <p:menuitem value="#{chamadaPaginaBean.dtObjectLabel.argumento9}" action="#{chamadaPaginaBean.clickNivelLink9}" title="Atualiza Página" immediate="true" rendered="#{chamadaPaginaBean.render9}" />
                     </p:breadCrumb>
+                    <a href="http://www.rtools.com.br/helpdesk/ticket.php?cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Acompanhar seu Chamado Técnico">Acompanhar</a>
+                    <a href="http://www.rtools.com.br/helpdesk/index.php?a=add&amp;cliente=#{controleUsuarioBean.clienteString}&amp;nome=#{controleUsuarioBean.usuarioSuporteTecnico.pessoa.nome}&amp;email=#{controleUsuarioBean.usuarioSuporteTecnico.email}" target="_blank"  style="float: right; margin-left: 10px" title="Faça Seu Chamado Técnico">Suporte Técnico</a>
                     <h:commandLink value="Perfil" action="#{chamadaPaginaBean.usuarioPerfil}" title="Meus dados cadastrais" immediate="true" style="float: right"/>
                 </c:if>
                 <c:if test="false">
