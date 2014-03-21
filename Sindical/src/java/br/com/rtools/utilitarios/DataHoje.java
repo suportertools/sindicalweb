@@ -732,7 +732,7 @@ public class DataHoje {
      * Tipo
      *
      * @param data
-     * @param tipo 0 = dia/mes/ano/ ; 1 = mes/ano ; 2 - ano
+     * @param tipo 0 = dia extenso/mes extenso/ano extenso/ ; 1 = mes/ano ; 2 - ano; 3 - dia/mes extenso/ano extenso/
      * @return
      */
     public static String dataExtenso(String data, int tipo) {
@@ -744,100 +744,102 @@ public class DataHoje {
             String dia = data.substring(0, 2);
             String mes = data.substring(3, 5);
             String ano = data.substring(6, 10);
-            switch (Integer.parseInt(dia)) {
-                case 1:
-                    dia = "Primeiro";
-                    break;
-                case 2:
-                    dia = "Dois";
-                    break;
-                case 3:
-                    dia = "Três";
-                    break;
-                case 4:
-                    dia = "Quatro";
-                    break;
-                case 5:
-                    dia = "Cinco";
-                    break;
-                case 6:
-                    dia = "Seis";
-                    break;
-                case 7:
-                    dia = "Sete";
-                    break;
-                case 8:
-                    dia = "Oito";
-                    break;
-                case 9:
-                    dia = "Nove";
-                    break;
-                case 10:
-                    dia = "Dez";
-                    break;
-                case 11:
-                    dia = "Onze";
-                    break;
-                case 12:
-                    dia = "Doze";
-                    break;
-                case 13:
-                    dia = "Treze";
-                    break;
-                case 14:
-                    dia = "Quatorze";
-                    break;
-                case 15:
-                    dia = "Quinze";
-                    break;
-                case 16:
-                    dia = "Dezesseis";
-                    break;
-                case 17:
-                    dia = "Dezessete";
-                    break;
-                case 18:
-                    dia = "Dezoito";
-                    break;
-                case 19:
-                    dia = "Dezenove";
-                    break;
-                case 20:
-                    dia = "Vinte";
-                    break;
-                case 21:
-                    dia = "Vinte e Um";
-                    break;
-                case 22:
-                    dia = "Vinte e Dois";
-                    break;
-                case 23:
-                    dia = "Vinte e Três";
-                    break;
-                case 24:
-                    dia = "Vinte e Quatro";
-                    break;
-                case 25:
-                    dia = "Vinte e Cinco";
-                    break;
-                case 26:
-                    dia = "Vinte e Seis";
-                    break;
-                case 27:
-                    dia = "Vinte e Sete";
-                    break;
-                case 28:
-                    dia = "Vinte e Oito";
-                    break;
-                case 29:
-                    dia = "Vinte e Nove";
-                    break;
-                case 30:
-                    dia = "Trinta";
-                    break;
-                case 31:
-                    dia = "Trinta e Um";
-                    break;
+            if(tipo != 3) {                
+                switch (Integer.parseInt(dia)) {
+                    case 1:
+                        dia = "Primeiro";
+                        break;
+                    case 2:
+                        dia = "Dois";
+                        break;
+                    case 3:
+                        dia = "Três";
+                        break;
+                    case 4:
+                        dia = "Quatro";
+                        break;
+                    case 5:
+                        dia = "Cinco";
+                        break;
+                    case 6:
+                        dia = "Seis";
+                        break;
+                    case 7:
+                        dia = "Sete";
+                        break;
+                    case 8:
+                        dia = "Oito";
+                        break;
+                    case 9:
+                        dia = "Nove";
+                        break;
+                    case 10:
+                        dia = "Dez";
+                        break;
+                    case 11:
+                        dia = "Onze";
+                        break;
+                    case 12:
+                        dia = "Doze";
+                        break;
+                    case 13:
+                        dia = "Treze";
+                        break;
+                    case 14:
+                        dia = "Quatorze";
+                        break;
+                    case 15:
+                        dia = "Quinze";
+                        break;
+                    case 16:
+                        dia = "Dezesseis";
+                        break;
+                    case 17:
+                        dia = "Dezessete";
+                        break;
+                    case 18:
+                        dia = "Dezoito";
+                        break;
+                    case 19:
+                        dia = "Dezenove";
+                        break;
+                    case 20:
+                        dia = "Vinte";
+                        break;
+                    case 21:
+                        dia = "Vinte e Um";
+                        break;
+                    case 22:
+                        dia = "Vinte e Dois";
+                        break;
+                    case 23:
+                        dia = "Vinte e Três";
+                        break;
+                    case 24:
+                        dia = "Vinte e Quatro";
+                        break;
+                    case 25:
+                        dia = "Vinte e Cinco";
+                        break;
+                    case 26:
+                        dia = "Vinte e Seis";
+                        break;
+                    case 27:
+                        dia = "Vinte e Sete";
+                        break;
+                    case 28:
+                        dia = "Vinte e Oito";
+                        break;
+                    case 29:
+                        dia = "Vinte e Nove";
+                        break;
+                    case 30:
+                        dia = "Trinta";
+                        break;
+                    case 31:
+                        dia = "Trinta e Um";
+                        break;
+                }
             }
             switch (Integer.parseInt(mes)) {
                 case 1:
