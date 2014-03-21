@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -67,6 +68,11 @@ public class ChamadaPaginaBean implements Serializable {
     private boolean renderPesquisa = true;
     private List<Rotina> listaRotina = new ArrayList();
 
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("chamadaPaginaBean");
+    }
+    
     public void atualizaAcessos(String url) {
         RotinaDB db = new RotinaDBToplink();
         AtalhoDB dba = new AtalhoDBToplink();
@@ -1278,7 +1284,7 @@ public class ChamadaPaginaBean implements Serializable {
     // CHAMADA DE MENUS ------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
-    public synchronized String menuPrincipal() {
+    public synchronized String menuPrincipal() {        
         return metodoGenerico(0, "menuPrincipal");
     }
 
@@ -1835,8 +1841,12 @@ public class ChamadaPaginaBean implements Serializable {
 
 //NIVEL LINK 0 -----------------------------------------------------------------
 //------------------------------------------------------------------------------
-    public String clickNivelLink0() {
+    public String clickNivelLink0() {        
+        GenericaSessao.remove("chamadaPaginaBean");
         String irPara = (String) dtObject.getArgumento0();
+        if(irPara == null) {
+            irPara = "menuPrincipal";
+        }
         limpaNivel0();
         nivelLink = 1;
         linkClicado = true;
