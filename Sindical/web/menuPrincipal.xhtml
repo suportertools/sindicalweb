@@ -121,20 +121,22 @@
                                     <p:commandLink value="clique aqui para baixar ou excluir" onclick="i_dlg_guias.show()"/>
                                 </h:panelGrid>
                                 <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
-                                    <p:dataTable value="#{emissaoGuiasBean.listah}" var="linha" id="tbl" emptyMessage="Nenhuma guia encontrada!">
-                                        <p:column headerText="Nome Pessoa">
-                                            <h:outputText value="#{linha.movimento.pessoa.nome}"/>
-                                        </p:column>                                            
-                                        <p:column headerText="Valor">
-                                            <h:outputText value="#{linha.movimento.valorBaixa}"/>
-                                        </p:column>                                            
-                                        <p:column headerText="">
-                                            <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
-                                        </p:column>                                            
-                                        <p:column headerText="">
-                                            <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
-                                        </p:column>
-                                    </p:dataTable>
+                                    <c:if test="#{emissaoGuiasBean.listah != null}">
+                                        <p:dataTable value="#{emissaoGuiasBean.listah}" var="linha" id="tbl" emptyMessage="Nenhuma guia encontrada!">
+                                            <p:column headerText="Nome Pessoa">
+                                                <h:outputText value="#{linha.movimento.pessoa.nome}"/>
+                                            </p:column>                                            
+                                            <p:column headerText="Valor">
+                                                <h:outputText value="#{linha.movimento.valorBaixa}"/>
+                                            </p:column>                                            
+                                            <p:column headerText="">
+                                                <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
+                                            </p:column>                                            
+                                            <p:column headerText="">
+                                                <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
+                                            </p:column>
+                                        </p:dataTable>
+                                    </c:if>
                                     <br /><br />
                                     <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_guias.hide()" style="float: left" />
                                 </p:dialog>
