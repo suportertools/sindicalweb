@@ -24,6 +24,8 @@ public class Usuario implements Serializable {
     private String senha;
     @Column(name = "IS_ATIVO")
     private boolean ativo;
+    @Column(name = "DS_EMAIL", length = 255)
+    private String email;
 
     public Usuario() {
         this.id = -1;
@@ -31,14 +33,16 @@ public class Usuario implements Serializable {
         this.login = "";
         this.senha = "";
         this.ativo = false;
+        this.email = "";
     }
 
-    public Usuario(int id, Pessoa pessoa, String login, String senha, boolean ativo) {
+    public Usuario(int id, Pessoa pessoa, String login, String senha, boolean ativo, String email) {
         this.id = id;
         this.pessoa = pessoa;
         this.login = login;
         this.senha = senha;
         this.ativo = ativo;
+        this.email = email;
     }
 
     public int getId() {
@@ -83,6 +87,14 @@ public class Usuario implements Serializable {
 
     @Override
     public String toString() {
-        return "Usuario{" + "id=" + id + ", pessoa=" + pessoa + ", login=" + login + ", ativo=" + ativo + '}';
+        return "Usuario{" + "id=" + id + ", pessoa=" + pessoa + ", login=" + login + ", ativo=" + ativo + ", email=" + email + '}';
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
