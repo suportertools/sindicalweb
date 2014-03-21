@@ -10,6 +10,7 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.ServicoValor;
 import br.com.rtools.financeiro.db.LoteDB;
 import br.com.rtools.financeiro.db.LoteDBToplink;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.PessoaComplemento;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -21,21 +22,38 @@ import javax.persistence.Query;
 public class MatriculaEscolaDBToplink extends DB implements MatriculaEscolaDB {
 
     @Override
-    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa) {
+    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial) {
         try {
             List<MatriculaEscola> list;
             String complementoQuery = "";
             Query query;
+            String queryString = "";
             if (tipoMatricula.equals("Individual")) {
                 if (!descricaoCurso.equals("")) {
                     complementoQuery = " AND UPPER(mi.curso.descricao) LIKE :descricaoCurso ";
                 }
-                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE UPPER(mi.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
+                if(filial != null) {
+                    if(filial.getId() != -1) {
+                        queryString = " mi.matriculaEscola.filial.id = " + filial.getId() + " AND ";
+                    }
+                }
+                if(filtroStatus != 0 && filtroStatus != 5) {
+                    queryString += " mi.matriculaEscola.escStatus.id = "+ filtroStatus + " AND ";
+                }
+                query = getEntityManager().createQuery(" SELECT mi.matriculaEscola FROM MatriculaIndividual mi WHERE " +queryString+ " UPPER(mi.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mi.matriculaEscola.habilitado = true " + complementoQuery);
             } else {
                 if (!descricaoCurso.equals("")) {
                     complementoQuery = " AND UPPER(mt.turma.cursos.descricao) LIKE :descricaoCurso ";
                 }
-                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE UPPER(mt.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
+                if(filial != null) {
+                    if(filial.getId() != -1) {
+                        queryString = " mt.matriculaEscola.filial.id = " + filial.getId() + " AND ";
+                    }
+                }
+                if(filtroStatus != 0 && filtroStatus != 5) {
+                    queryString += " mt.matriculaEscola.escStatus.id = "+ filtroStatus + " AND ";
+                }
+                query = getEntityManager().createQuery(" SELECT mt.matriculaEscola FROM MatriculaTurma mt WHERE " +queryString+ " UPPER(mt.matriculaEscola."+porPesquisa+".nome) LIKE :descricaoAluno AND mt.matriculaEscola.habilitado = true " + complementoQuery);
             }
             if (comoPesquisa.equals("Inicial")) {
                 query.setParameter("descricaoAluno", "" + descricao.toUpperCase() + "%");

@@ -4,6 +4,7 @@ import br.com.rtools.escola.EscolaAutorizados;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
 import br.com.rtools.escola.MatriculaTurma;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.PessoaComplemento;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -12,7 +13,7 @@ public interface MatriculaEscolaDB {
 
     public EntityManager getEntityManager();
 
-    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa);
+    public List<MatriculaEscola> pesquisaMatriculaEscola(String tipoMatricula, String descricaoCurso, String descricao, String comoPesquisa, String porPesquisa, int filtroStatus, Filial filial);
 
     public MatriculaIndividual pesquisaCodigoMIndividual(int matriculaEscola);
 
