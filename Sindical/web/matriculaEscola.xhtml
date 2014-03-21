@@ -40,7 +40,7 @@
                                                 <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.matriculaEscola.listenerData}" />
                                             </p:calendar>
                                             <p:outputLabel value=" Status: " />
-                                            <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatus}" >
+                                            <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatus}" disabled="true">
                                                 <f:selectItems value="#{matriculaEscolaBean.listaStatus}" />
                                             </p:selectOneMenu>
                                             <p:outputLabel value=" Vencimento: "/>
