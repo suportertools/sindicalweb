@@ -134,6 +134,7 @@ public class MatriculaEscolaBean implements Serializable {
     private int idMidia;
     private int idTurma;
     private int idStatus;
+    private int idStatusFiltro;
     private int idVendedor;
     private int idProfessor;
     private int idServico;
@@ -227,6 +228,7 @@ public class MatriculaEscolaBean implements Serializable {
         idMidia = 0;
         idTurma = 0;
         idStatus = 0;
+        idStatusFiltro = 5;
         idVendedor = 0;
         idProfessor = 0;
         idServico = 0;
@@ -888,6 +890,7 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public String editar(MatriculaEscola me) {
+        idStatusFiltro = 5;
         escolaAutorizadosDetalhes = new EscolaAutorizados();
         getListaGridMEscola().clear();
         matriculaEscola = me;
@@ -1858,7 +1861,11 @@ public class MatriculaEscolaBean implements Serializable {
         if (!descricaoCurso.isEmpty() || !descricao.isEmpty()) {
             if (listaMatriculaEscolas.isEmpty()) {
                 MatriculaEscolaDB dB = new MatriculaEscolaDBToplink();
-                List<MatriculaEscola> list = dB.pesquisaMatriculaEscola(tipoMatricula, descricaoCurso, descricao, comoPesquisa, porPesquisa);
+                int idStatusI = idStatusFiltro;
+                if(idStatusI != 5) {
+                    idStatusI = Integer.parseInt(listaStatus.get(idStatusFiltro).getDescription());
+                }
+                List<MatriculaEscola> list = dB.pesquisaMatriculaEscola(tipoMatricula, descricaoCurso, descricao, comoPesquisa, porPesquisa, idStatusI, MacFilial.getAcessoFilial().getFilial());
                 MatriculaIndividual mIndividual = null;
                 MatriculaTurma mTurma = null;
                 for (MatriculaEscola listaMatriculaEscola : list) {
@@ -2719,5 +2726,13 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setListaOutrosMovimentos(List<Movimento> listaOutrosMovimentos) {
         this.listaOutrosMovimentos = listaOutrosMovimentos;
+    }
+
+    public int getIdStatusFiltro() {
+        return idStatusFiltro;
+    }
+
+    public void setIdStatusFiltro(int idStatusFiltro) {
+        this.idStatusFiltro = idStatusFiltro;
     }
 }

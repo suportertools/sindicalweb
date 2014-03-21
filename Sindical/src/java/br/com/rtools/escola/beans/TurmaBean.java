@@ -382,7 +382,7 @@ public class TurmaBean implements Serializable {
 
     public MacFilial getMacFilial() {
         if (GenericaSessao.exists("acessoFilial")) {
-            macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial", true);
+            macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
             msgStatusFilial = "";
         } else {
             msgStatusFilial = "Informar filial";
