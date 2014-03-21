@@ -23,9 +23,10 @@ public class ParametroCertificado {
     private String patLogoFundo;
     private String certificado;
     private String barras;
+    private String emissao;
 
     public ParametroCertificado(String patNome, String patLogo, String patBaseTerr, String sinNome, String sinLogo, String empNome, String empDoc, String empPorte, String descPisoSal, BigDecimal valorPisoSal, String mensagem,
-            Date validade, String sinCidade, int ano, String patLogoSelo, String patLogoFundo, String certificado, String barras) {
+            Date validade, String sinCidade, int ano, String patLogoSelo, String patLogoFundo, String certificado, String barras, String emissao) {
         this.patNome = patNome;
         this.patLogo = patLogo;
         this.patBaseTerr = patBaseTerr;
@@ -44,6 +45,7 @@ public class ParametroCertificado {
         this.patLogoFundo = patLogoFundo;
         this.certificado = certificado;
         this.barras = barras;
+        this.emissao = emissao;
     }
 
     public String getPatNome() {
@@ -188,5 +190,13 @@ public class ParametroCertificado {
 
     public void setBarras(String barras) {
         this.barras = barras;
+    }
+
+    public String getEmissao() {
+        return emissao;
+    }
+
+    public void setEmissao(String emissao) {
+        this.emissao = emissao;
     }
 }
