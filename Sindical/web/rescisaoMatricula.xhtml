@@ -21,6 +21,7 @@
                         <h:outputText value="Rescisão de Contrato" styleClass="fonteHeader" />
                         <div class="clear"></div>
                         <h:form id="form_rescisao" onsubmit="#{rescisaoContratoBean.load}">
+                            <c:set scope="request" var="object" value="${conclusaoMatriculaBean.matriculaEscola}"/>
                             <p:panel id="i_panel_rescisao">
                                 <c:if test="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
                                     <h:panelGrid columns="1">
@@ -39,6 +40,7 @@
                                 <p:panel header="Movimentos em aberto" id="i_movimentos" styleClass="margin-top-max" footer="Valor total dos movimentos: R$ #{rescisaoContratoBean.valor}">
                                     <p:dataTable value="#{rescisaoContratoBean.movimentos}" scrollable="true" scrollHeight="250" var="movimentos" emptyMessage="Nenhum registro encontrado!">
                                         <p:column headerText="Data geração" styleClass="text-center" width="80">
+                                            #{rescisaoContratoBean.dataGeracao}
                                         </p:column>
                                         <p:column headerText="Data Vencimento" styleClass="text-center" width="80">
                                             #{movimentos.vencimento}                                                                                      
