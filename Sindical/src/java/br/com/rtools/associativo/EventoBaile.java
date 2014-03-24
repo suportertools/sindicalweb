@@ -17,6 +17,8 @@ public class EventoBaile implements java.io.Serializable {
     private AEvento evento;
     @Column(name = "NR_MESAS", nullable = true)
     private int quantidadeMesas;
+    @Column(name = "NR_CONVITES", nullable = true)
+    private int quantidadeConvites;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_DATA", nullable = false)
     private Date data;
@@ -32,15 +34,17 @@ public class EventoBaile implements java.io.Serializable {
         this.data = null;
         this.horaInicio = "";
         this.horaFim = "";
+        this.quantidadeConvites = 0;
     }
 
-    public EventoBaile(int id, AEvento evento, int quantidadeMesas, Date data, String horaInicio, String horaFim) {
+    public EventoBaile(int id, AEvento evento, int quantidadeMesas, Date data, String horaInicio, String horaFim, int quantidadeConvites) {
         this.id = id;
         this.evento = evento;
         this.quantidadeMesas = quantidadeMesas;
         this.data = data;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
+        this.quantidadeConvites = quantidadeConvites;
     }
 
     public int getId() {
@@ -103,5 +107,13 @@ public class EventoBaile implements java.io.Serializable {
         if (!(data.isEmpty())) {
             this.setData(DataHoje.converte(data));
         }
+    }
+
+    public int getQuantidadeConvites() {
+        return quantidadeConvites;
+    }
+
+    public void setQuantidadeConvites(int quantidadeConvites) {
+        this.quantidadeConvites = quantidadeConvites;
     }
 }
