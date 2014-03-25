@@ -1,12 +1,15 @@
 package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.SisEmailProtocolo;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -30,15 +33,14 @@ public class RegistroEmpresarialBean implements Serializable {
     private String senha = "";
     private String confirmaSenha = "";
     private String mensagem = "";
+    private String emailTeste = "";
     private int codigoModulo = 0;
     private int codigoServico = -1;
     private int idDiaVencimento = 0;
+    private int idSisEmailProtocolo = 0;
     private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
 
     public void salvar() {
-//        if (!validacao()) {
-//            return;
-//        }        
         if (codigoModulo == 0) {
             if (!senha.isEmpty()) {
                 if (!senha.equals(confirmaSenha)) {
@@ -56,6 +58,7 @@ public class RegistroEmpresarialBean implements Serializable {
         } else {
             servicos = (Servicos) sv.pesquisaObjeto(codigoServico, "Servicos");
         }
+        registro.setSisEmailProtocolo((SisEmailProtocolo) sv.find(new SisEmailProtocolo(), Integer.parseInt(getListaSisEmailProtocolo().get(idSisEmailProtocolo).getDescription())));
         registro.setFinDiaVencimentoCobranca(idDiaVencimento);
         registro.setServicos(servicos);
         if (sv.alterarObjeto(registro)) {
@@ -68,9 +71,6 @@ public class RegistroEmpresarialBean implements Serializable {
     }
 
     public void salvarSemSenha() {
-//        if (!validacao()) {
-//            return;
-//        }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         if (sv.alterarObjeto(registro)) {
@@ -222,7 +222,7 @@ public class RegistroEmpresarialBean implements Serializable {
 
     public int getIdDiaVencimento() {
         for (int i = 1; i <= listaDataVencimento.size(); i++) {
-            if(registro.getFinDiaVencimentoCobranca() == i) {
+            if (registro.getFinDiaVencimentoCobranca() == i) {
                 idDiaVencimento = registro.getFinDiaVencimentoCobranca();
             }
         }
@@ -231,6 +231,48 @@ public class RegistroEmpresarialBean implements Serializable {
 
     public void setIdDiaVencimento(int idDiaVencimento) {
         this.idDiaVencimento = idDiaVencimento;
+    }
+
+    public int getIdSisEmailProtocolo() {
+        return idSisEmailProtocolo;
+    }
+
+    public void setIdSisEmailProtocolo(int idSisEmailProtocolo) {
+        this.idSisEmailProtocolo = idSisEmailProtocolo;
+    }
+
+    public List<SelectItem> getListaSisEmailProtocolo() {
+        List<SelectItem> selectItems = new ArrayList();
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        List<SisEmailProtocolo> seps = (List<SisEmailProtocolo>) sadb.listaObjeto("SisEmailProtocolo");
+        for (int i = 0; i < seps.size(); i++) {
+            selectItems.add(new SelectItem(i, seps.get(i).getDescricao(), "" + seps.get(i).getId()));
+        }
+        return selectItems;
+    }
+
+    public void enviarEmailTeste() {
+        if (emailTeste.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Informar e-mail!");
+            return;
+        }
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        Juridica juridica = (Juridica) sadb.find(new Juridica(), 1);
+        juridica.getPessoa().setEmail1(emailTeste);
+        String msgEmail = EnviarEmail.EnviarEmailTeste(emailTeste);
+        if (msgEmail.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Erro ao enviar mensagem!");
+            return;
+        }
+        GenericaMensagem.info("Sucesso", msgEmail);
+    }
+
+    public String getEmailTeste() {
+        return emailTeste;
+    }
+
+    public void setEmailTeste(String emailTeste) {
+        this.emailTeste = emailTeste;
     }
 
 }
