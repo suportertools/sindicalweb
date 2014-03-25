@@ -49,8 +49,25 @@
                                             </p:selectBooleanCheckbox>
                                         </p:column>
                                         <p:column />
-                                        <p:outputLabel value="Servidor Smtp: " />
-                                        <p:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}"/>
+                                        <h:column>
+                                            <h:panelGrid columns="1">
+                                                <p:outputLabel value="Servidor Smtp: " />
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <h:column>
+                                            <h:panelGrid columns="3">
+                                                <p:inputText size="30" value="#{registroEmpresarialBean.registro.smtp}" />
+                                                <p:outputLabel value="Porta: " />
+                                                <p:inputText size="3" value="#{registroEmpresarialBean.registro.sisEmailPorta}" styleClass="text-center" >
+                                                    <f:ajax event="change" render="@this" />
+                                                </p:inputText>
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <p:column />
+                                        <p:outputLabel value="Servidor Protocolo: " />
+                                        <p:selectOneMenu value="#{registroEmpresarialBean.idSisEmailProtocolo}" >
+                                            <f:selectItems value="#{registroEmpresarialBean.listaSisEmailProtocolo}" />
+                                        </p:selectOneMenu>
                                         <p:column />
                                         <p:outputLabel value="Url path: " />
                                         <p:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
@@ -69,6 +86,7 @@
                                             <h:outputLabel value="Apelido/aliás dado ao e-mail principal, caso esse seja de um servidor externo." />
                                         </p:column>
                                     </p:panelGrid>
+                                    <p:commandButton value="Testar Email" onclick="dlg_test_mail.show()" type="button"/>
                                 </p:tab>
                             </c:if>
                             <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">
@@ -317,6 +335,14 @@
                             <br /><br />
                             <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="dgl_painel_mensagem.hide()" style="float: left;" icon="ui-icon-close"/>
                         </center>
+                    </p:dialog>
+                    <p:dialog widgetVar="dlg_test_mail" modal="true" resizable="false" header="Enviar email teste">
+                        <p:messages autoUpdate="true" showDetail="true" closable="true" id="i_panel_email_test" /> 
+                        <h:panelGrid columns="3" styleClass="margin-top-max">
+                            <p:outputLabel value="Email teste:" />
+                            <p:inputText value="#{registroEmpresarialBean.emailTeste}" />
+                            <p:commandButton action="#{registroEmpresarialBean.enviarEmailTeste}" value="Enviar" update="i_panel_email_test"/>
+                        </h:panelGrid>
                     </p:dialog>
                 </h:form>
             </p:panel>
