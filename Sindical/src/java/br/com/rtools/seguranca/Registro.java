@@ -92,6 +92,11 @@ public class Registro implements java.io.Serializable {
     private int conviteQuantidadeSocio;
     @Column(name = "SIS_EMAIL_RESPOSTA", length = 50)
     private String sisEmailResposta;
+    @Column(name = "SIS_EMAIL_PORTA")
+    private int sisEmailPorta;
+    @JoinColumn(name = "ID_EMAIL_PROTOCOLO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private SisEmailProtocolo sisEmailProtocolo;
 
     public Registro() {
         this.id = -1;
@@ -132,6 +137,8 @@ public class Registro implements java.io.Serializable {
         this.conviteQuantidadeConvidado = 1;
         this.conviteDiasSocio = 30;
         this.conviteQuantidadeSocio = 10;
+        this.sisEmailPorta = 25;
+        this.sisEmailProtocolo = new SisEmailProtocolo();
     }
 
     public Registro(int id,
@@ -170,7 +177,9 @@ public class Registro implements java.io.Serializable {
             int conviteQuantidadeConvidado,
             int conviteDiasSocio,
             int conviteQuantidadeSocio,
-            String sisEmailResposta) {
+            String sisEmailResposta,
+            int sisEmailPorta,
+            SisEmailProtocolo sisEmailProtocolo) {
 
         this.id = id;
         this.filial = filial;
@@ -209,6 +218,8 @@ public class Registro implements java.io.Serializable {
         this.conviteDiasSocio = conviteDiasSocio;
         this.conviteQuantidadeSocio = conviteQuantidadeSocio;
         this.sisEmailResposta = sisEmailResposta;
+        this.sisEmailPorta = sisEmailPorta;
+        this.sisEmailProtocolo = sisEmailProtocolo;
     }
 
     public int getId() {
@@ -533,5 +544,21 @@ public class Registro implements java.io.Serializable {
         SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         Registro r = (Registro) sadb.find(new Registro(), 1);
         return r;
+    }
+
+    public int getSisEmailPorta() {
+        return sisEmailPorta;
+    }
+
+    public void setSisEmailPorta(int sisEmailPorta) {
+        this.sisEmailPorta = sisEmailPorta;
+    }
+
+    public SisEmailProtocolo getSisEmailProtocolo() {
+        return sisEmailProtocolo;
+    }
+
+    public void setSisEmailProtocolo(SisEmailProtocolo sisEmailProtocolo) {
+        this.sisEmailProtocolo = sisEmailProtocolo;
     }
 }
