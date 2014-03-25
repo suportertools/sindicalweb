@@ -416,6 +416,7 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String registroEmpresarial() {
+        GenericaSessao.remove("registroEmpresarialBean");
         return metodoGenerico(2, "registroEmpresarial");
     }
 
