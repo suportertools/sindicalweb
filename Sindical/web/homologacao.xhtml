@@ -161,10 +161,12 @@
                                             <p:ajax event="change" update="@this"/>
                                         </h:inputText>
                                         <p:outputLabel value="E-mail: " styleClass="margin-left-max"/>
-                                        <p:inputText value="#{homologacaoBean.agendamento.email}" size="20" validatorMessage="Email inválido" required="false" placeholder="Formato: meuemail@provedor.com">
-                                            <p:ajax event="blur" update="@this" />
-                                            <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
-                                        </p:inputText>
+                                        <h:column>
+                                            <p:inputText value="#{homologacaoBean.agendamento.email}" size="20" validatorMessage="Email inválido" required="false" placeholder="Formato: meuemail@provedor.com" >
+                                                <p:ajax event="blur" update="@this" />
+                                                <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                                            </p:inputText>
+                                        </h:column>
                                         <p:outputLabel value="Tel: " styleClass="margin-left-max"/>
                                         <p:inputMask value="#{homologacaoBean.agendamento.telefone}" size="15" maxlength="14" mask="(99) 9999-9999?9" >
                                             <p:ajax event="change" update="@this"/>
@@ -220,8 +222,11 @@
                             </p:panelGrid>
                         </center>
                     </p:dialog>                    
-                    <p:dialog id="i_painel_mensagem" widgetVar="dgl_painel_mensagem" modal="true" width="300" height="100" header="Mensagem" closable="true">
-                        <p:outputLabel value="#{homologacaoBean.msgConfirma}" />
+                    <p:dialog widgetVar="dgl_painel_mensagem" modal="true" width="400" height="100" header="Mensagem" closable="true">
+                        <h:panelGrid id="i_painel_mensagem">
+                            <p:messages autoUpdate="true" showDetail="true" showSummary="true" />
+                            <p:outputLabel value="#{homologacaoBean.msgConfirma}" />
+                        </h:panelGrid> 
                         <br /><br />
                         <p:commandButton value="OK" title="Ok" action="homologacao" />
                     </p:dialog>
