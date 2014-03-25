@@ -47,19 +47,24 @@ public class EnviarEmail {
         FacesContext context = FacesContext.getCurrentInstance();
         String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         if (!sindicato.getEmail().isEmpty()) {
-            Properties props = new Properties();
-            Session session;
-            props.put("mail.host", sindicato.getSmtp());
-            // --- GMAIL ---- HOTMAIL ---
-            if (sindicato.isEmailAutenticado()) {
-                props.put("mail.smtp.auth", "true"); // Usa uma conta autenticada
-                props.put("mail.smtp.starttls.enable", "true");
-
-                Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
-                session = Session.getInstance(props, auth);
-            } else {
-                // --- OUTROS ---
-                session = Session.getInstance(props, null);
+//            Properties props = new Properties();
+//            Session session;
+//            props.put("mail.host", sindicato.getSmtp());
+//            // --- GMAIL ---- HOTMAIL ---
+//            if (sindicato.isEmailAutenticado()) {
+//                props.put("mail.smtp.auth", "true"); // Usa uma conta autenticada
+//                props.put("mail.smtp.starttls.enable", "true");
+//
+//                Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
+//                session = Session.getInstance(props, auth);
+//            } else {
+//                // --- OUTROS ---
+//                session = Session.getInstance(props, null);
+//            }
+            Session session = configureSession(sindicato.getSmtp(), sindicato.getSisEmailPorta(), sindicato.getEmail(), sindicato.getSenha(), sindicato.isEmailAutenticado(), sindicato.getSisEmailProtocolo().getId());
+            if (session == null) {
+                retorno[1] = "Não foi possível realizar autenticação!";
+                return retorno;
             }
             for (Pessoa pessoa : pessoas) {
                 Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(pessoa.getId());
@@ -77,8 +82,6 @@ public class EnviarEmail {
                             msg.setFrom(new InternetAddress(sindicato.getEmail()));
                         }
                         msg.setRecipient(Message.RecipientType.TO, new InternetAddress(pessoa.getEmail1()));
-                        //msg.setDescription("Sindicato Name");
-                        //msg.setDisposition("Sindicato Name");
                         msg.setHeader("Sindicato Name", "Sindicato Name");
                         msg.setSubject(assunto);
                         msg.setContent(
@@ -129,21 +132,10 @@ public class EnviarEmail {
             if (!empresa.getPessoa().getEmail1().isEmpty()) {
                 if (empresa.getPessoa().getLogin() != null && empresa.getPessoa().getSenha() != null) {
                     try {
-                        Properties props = new Properties();
-                        Session session;
-                        props.put("mail.host", sindicato.getSmtp());
-                        // --- AUTENTICADO ---
-                        if (sindicato.isEmailAutenticado()) {
-                            props.put("mail.smtp.auth", "true"); //Usa uma conta autenticada
-                            props.put("mail.smtp.starttls.enable", "true");
-
-                            Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
-                            session = Session.getInstance(props, auth);
-                        } else {
-                            // --- SEM AUTENTIFICACAO ---
-                            session = Session.getInstance(props, null);
+                        Session session = configureSession(sindicato.getSmtp(), sindicato.getSisEmailPorta(), sindicato.getEmail(), sindicato.getSenha(), sindicato.isEmailAutenticado(), sindicato.getSisEmailProtocolo().getId());
+                        if (session == null) {
+                            return "Não foi possível realizar autenticação!";
                         }
-
                         MimeMessage msg = new MimeMessage(session);
                         InternetAddress internetAddress = new InternetAddress();
                         if (!sindicato.getSisEmailResposta().isEmpty()) {
@@ -187,23 +179,27 @@ public class EnviarEmail {
         String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png");
         String msg = "";
         if (!sindicato.getEmail().isEmpty()) {
-            Properties props = new Properties();
-            Session session;
-            props.put("mail.host", sindicato.getSmtp());
-            // --- GMAIL ---- HOTMAIL ---
-            if (sindicato.isEmailAutenticado()) {
-                props.put("mail.smtp.auth", "true"); //Usa uma conta autenticada
-                props.put("mail.smtp.starttls.enable", "true");
-
-                Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
-                session = Session.getInstance(props, auth);
-            } else {
-                // --- OUTROS ---
-                session = Session.getInstance(props, null);
-            }
+//            Properties props = new Properties();
+//            Session session;
+//            props.put("mail.host", sindicato.getSmtp());
+//            // --- GMAIL ---- HOTMAIL ---
+//            if (sindicato.isEmailAutenticado()) {
+//                props.put("mail.smtp.auth", "true"); //Usa uma conta autenticada
+//                props.put("mail.smtp.starttls.enable", "true");
+//
+//                Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
+//                session = Session.getInstance(props, auth);
+//            } else {
+//                // --- OUTROS ---
+//                session = Session.getInstance(props, null);
+//            }
             for (Juridica empresa : empresas) {
                 if (!empresa.getPessoa().getEmail1().isEmpty()) {
                     if (empresa.getPessoa().getLogin() != null && empresa.getPessoa().getSenha() != null) {
+                        Session session = configureSession(sindicato.getSmtp(), sindicato.getSisEmailPorta(), sindicato.getEmail(), sindicato.getSenha(), sindicato.isEmailAutenticado(), sindicato.getSisEmailProtocolo().getId());
+                        if (session == null) {
+                            return "Não foi possível realizar autenticação!";
+                        }
                         try {
                             MimeMessage mmsg = new MimeMessage(session);
                             InternetAddress internetAddress = new InternetAddress();
@@ -309,21 +305,24 @@ public class EnviarEmail {
         if (!sindicato.getEmail().isEmpty()) {
             if (!empresa.getPessoa().getEmail1().isEmpty()) {
                 try {
-                    Properties props = new Properties();
-                    Session session;
-                    props.put("mail.host", sindicato.getSmtp());
-                    // --- GMAIL ---- HOTMAIL ---
-                    if (sindicato.isEmailAutenticado()) {
-                        props.put("mail.smtp.auth", "true"); //Usa uma conta autenticada
-                        props.put("mail.smtp.starttls.enable", "true");
-
-                        Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
-                        session = Session.getInstance(props, auth);
-                    } else {
-                        // --- OUTROS ---
-                        session = Session.getInstance(props, null);
+//                    Properties props = new Properties();
+//                    Session session;
+//                    props.put("mail.host", sindicato.getSmtp());
+//                    // --- GMAIL ---- HOTMAIL ---
+//                    if (sindicato.isEmailAutenticado()) {
+//                        props.put("mail.smtp.auth", "true"); //Usa uma conta autenticada
+//                        props.put("mail.smtp.starttls.enable", "true");
+//
+//                        Authenticator auth = new myauth(sindicato.getEmail(), sindicato.getSenha());
+//                        session = Session.getInstance(props, auth);
+//                    } else {
+//                        // --- OUTROS ---
+//                        session = Session.getInstance(props, null);
+//                    }
+                    Session session = configureSession(sindicato.getSmtp(), sindicato.getSisEmailPorta(), sindicato.getEmail(), sindicato.getSenha(), sindicato.isEmailAutenticado(), sindicato.getSisEmailProtocolo().getId());
+                    if (session == null) {
+                        return "Não foi possível realizar autenticação!";
                     }
-
                     MimeMessage msg = new MimeMessage(session);
                     InternetAddress internetAddress = new InternetAddress();
                     if (!sindicato.getSisEmailResposta().isEmpty()) {
@@ -399,6 +398,56 @@ public class EnviarEmail {
         return multipart;
     }
 
+    // ENVIAR EMAIL DE SENHA  ------------------------------------------------------------------------------------------------------
+    //-------------------------------------------------------------------------------------------------------------------------
+    public synchronized static String EnviarEmailTeste(String email) {
+        Registro r = new Registro().getRegistroEmpresarial();
+        if (r == null) {
+            return "Informar registro!";
+        }
+        if (email.isEmpty()) {
+            return "Informar e-mail!";
+        }
+        if (r.getEmail().isEmpty() || r.getSenha().isEmpty()) {
+            return "Informar login!";
+        }
+        try {
+            Session session = configureSession(r.getSmtp(), r.getSisEmailPorta(), r.getEmail(), r.getSenha(), r.isEmailAutenticado(), r.getSisEmailProtocolo().getId());
+            if (session == null) {
+                return "Não foi possível realizar autenticação!";
+            }
+            MimeMessage msg = new MimeMessage(session);
+            InternetAddress internetAddress = new InternetAddress();
+            if (!r.getSisEmailResposta().isEmpty()) {
+                internetAddress.setPersonal(r.getSisEmailResposta());
+                msg.setFrom(internetAddress);
+            } else {
+                msg.setFrom(new InternetAddress(r.getEmail()));
+            }
+            String html = "";
+            html += "<html><body style='background-color: white'>";
+            html += "<h2><b>" + r.getFilial().getPessoa().getNome() + "</b></h2><br /><br />";
+            html += "<p>Emails teste: " + email + "</p>";
+            html += "<br /><br />";
+            html += "</body></html>";
+            MimeMultipart multipart = new MimeMultipart("related");
+            BodyPart mainPart = new MimeBodyPart();
+            mainPart.setContent(html, "text/html; charset=utf-8"); //Adiciona conteúdo HTML
+            multipart.addBodyPart(mainPart);
+            msg.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
+            msg.setSubject("Teste Email Sistema Sindical");
+            msg.setContent(multipart);
+            Transport.send(msg);
+            return "Enviado com Sucesso.";
+        } catch (AddressException e) {
+            return "Email de destinatário inválido!";
+        } catch (MessagingException e) {
+            return "" + e;
+        } catch (UnsupportedEncodingException ex) {
+            return "Erro";
+        }
+    }
+
     public static class myauth extends Authenticator {
 
         String UserName = null;
@@ -426,5 +475,33 @@ public class EnviarEmail {
                 tipo);
         envioEmailsDB.insert(envioEmails);
 
+    }
+
+    private static Session configureSession(String host, int port, final String email, final String password, boolean auth, int protocol) {
+        try {
+            Properties properties = new Properties();
+            properties.put("mail.smtp.host", host);
+            if (port == 0) {
+                port = 25;
+            }
+            properties.put("mail.smtp.port", "" + port);
+            if (protocol == 2) {
+                properties.put("mail.smtp.starttls.enable", "true");
+            }
+            // --- AUTH ---
+            if (auth) {
+                properties.put("mail.smtp.auth", "true");
+                return Session.getInstance(properties, new javax.mail.Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(email, password);
+                    }
+                });
+            }
+            // --- NO AUTH ---
+            return Session.getInstance(properties, null);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
