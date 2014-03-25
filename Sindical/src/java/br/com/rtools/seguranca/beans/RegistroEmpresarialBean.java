@@ -17,6 +17,8 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -29,16 +31,35 @@ import org.primefaces.event.TabChangeEvent;
 @SessionScoped
 public class RegistroEmpresarialBean implements Serializable {
 
-    private Registro registro = new Registro();
-    private String senha = "";
-    private String confirmaSenha = "";
-    private String mensagem = "";
-    private String emailTeste = "";
-    private int codigoModulo = 0;
-    private int codigoServico = -1;
-    private int idDiaVencimento = 0;
-    private int idSisEmailProtocolo = 0;
-    private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
+    private Registro registro;
+    private String senha;
+    private String confirmaSenha;
+    private String mensagem;
+    private String emailTeste;
+    private int codigoModulo;
+    private int codigoServico;
+    private int idDiaVencimento;
+    private int idSisEmailProtocolo;
+    private List<SelectItem> listaDataVencimento;
+
+    @PostConstruct
+    public void init() {
+        registro = new Registro();
+        senha = "";
+        confirmaSenha = "";
+        mensagem = "";
+        emailTeste = "";
+        codigoModulo = 0;
+        codigoServico = -1;
+        idDiaVencimento = 0;
+        idSisEmailProtocolo = 0;
+        listaDataVencimento = new ArrayList<SelectItem>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("registroEmpresarialBean");
+    }
 
     public void salvar() {
         if (codigoModulo == 0) {
@@ -113,11 +134,18 @@ public class RegistroEmpresarialBean implements Serializable {
         if (registro != null) {
             if (registro.getId() == -1) {
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-                registro = (Registro) sv.pesquisaCodigo(1, "Registro");
+                registro = (Registro) sv.find(new Registro(), 1);
                 senha = registro.getSenha();
                 if (registro.getServicos() != null) {
                     codigoServico = registro.getServicos().getId();
                 }
+                List<SelectItem> list = getListaSisEmailProtocolo();
+                for(int i = 0; i < list.size(); i++) {
+                    if(registro.getSisEmailProtocolo().getId() == Integer.parseInt(list.get(i).getDescription())) {
+                        idSisEmailProtocolo = i;
+                        break;
+                    }
+                }                
             }
         }
         return registro;
