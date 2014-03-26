@@ -5,6 +5,7 @@ import br.com.rtools.financeiro.BloqueiaServicoPessoa;
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaSaldo;
 import br.com.rtools.financeiro.FechamentoCaixa;
+import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
@@ -49,4 +50,11 @@ public interface FinanceiroDB {
     public Caixa pesquisaCaixaUm();
     public List<Vector> listaDeCheques(int id_status);
     public List<Vector> listaMovimentoBancario(int id_plano5);
+    public List<TransferenciaCaixa> listaTransferenciaDinheiro(int id_fechamento_caixa, int id_caixa);
+    public List<TransferenciaCaixa> listaTransferenciaDinheiroEntrada(int id_fechamento_caixa, int id_caixa);
+    public List<TransferenciaCaixa> listaTransferenciaDinheiroSaida(int id_fechamento_caixa, int id_caixa);
+    public List<FormaPagamento> listaTransferenciaFormaPagamento(int id_fechamento_caixa, int id_caixa);
+    public List<Vector> pesquisaSaldoAtual(int id_caixa);
+    public List<Vector> pesquisaSaldoAtualRelatorio(int id_caixa, int id_fechamento);
+    public List<Vector> pesquisaUsuarioFechamento(int id_fechamento);
 }

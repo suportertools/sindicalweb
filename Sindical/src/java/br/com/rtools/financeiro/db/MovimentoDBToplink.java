@@ -1033,6 +1033,9 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + " CASE WHEN pce2.id_endereco=pce.id_endereco THEN x.qtde  ELSE 0 END as qtde "
                     // + " p.ds_email1 email_empresa,p_contabil.ds_email1 email_contabil,pj.is_email_escritorio,length(rtrim(p.ds_email1))
                     + "  from fin_movimento as m  "
+                    // ADICIONEI LOTE AQUI -- CASO FICAR PESADO TIRAR --
+                    //+ " inner join fin_lote as l on (l.id = m.id_lote)  "
+                    
                     + " inner join arr_contribuintes_vw contr on (m.id_pessoa = contr.id_pessoa)  "
                     + " inner join pes_pessoa p          on (p.id = contr.id_pessoa)    "
                     + " inner join pes_juridica as pj on pj.id=contr.id_juridica "
@@ -1070,7 +1073,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                     + " and contr.id_pessoa not in (select bl.id_pessoa from fin_bloqueia_servico_pessoa bl where bl.is_impressao is false and bl.id_servicos = " + idServico + " and '15/09/2013' >= bl.dt_inicio and '15/09/2013' <= bl.dt_fim)"
                     + " and m.ds_es = 'E' "
                     + " and m.id_tipo_Servico = " + idTipoServico
-                    + " and m.dt_Vencimento in " + datas + " order by escritorio,razao;";
+                    + " and m.dt_Vencimento in " + datas + 
+                    " order by escritorio,razao;";
 
             qry = getEntityManager().createNativeQuery(textQry);
             List listaBoletos = qry.getResultList();

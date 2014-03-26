@@ -397,6 +397,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 228, 'MATRÍCULA CONCLUSÃO', '"/Sindical/conclusaoMatricula.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 228);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 229, 'BAILE > INDIVIDUAL', '"/Sindical/baileIndividual.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 229);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 230, 'BAILE > MESA', '"/Sindical/bailemesa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 230);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 231, 'LANÇAMENTO FINANCEIRO', '"/Sindical/lancamentoFinanceiro.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 231);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao

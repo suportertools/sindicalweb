@@ -35,6 +35,8 @@ public class FechamentoCaixa implements java.io.Serializable {
     private Usuario usuario;
     @Column(name = "NR_VALOR_FECHAMENTO")
     private float valorFechamento;
+    @Column(name = "NR_SALDO_ATUAL")
+    private float saldoAtual;
 
     public FechamentoCaixa() {
         this.id = -1;
@@ -43,15 +45,17 @@ public class FechamentoCaixa implements java.io.Serializable {
         this.valorInformado = 0;
         this.usuario = new Usuario();
         this.valorFechamento = 0;
+        this.saldoAtual = 0;
     }
     
-    public FechamentoCaixa(int id, Date dtData, String hora, float valorInformado, Caixa caixa, Usuario usuario, Filial filial, float valorFechamento) {
+    public FechamentoCaixa(int id, Date dtData, String hora, float valorInformado, Caixa caixa, Usuario usuario, Filial filial, float valorFechamento, float saldoAtual) {
         this.id = id;
         this.dtData = dtData;
         this.hora = hora;
         this.valorInformado = valorInformado;
         this.usuario = usuario;
         this.valorFechamento = valorFechamento;
+        this.saldoAtual = saldoAtual;
     }
 
     public int getId() {
@@ -114,5 +118,13 @@ public class FechamentoCaixa implements java.io.Serializable {
 
     public void setValorFechamento(float valorFechamento) {
         this.valorFechamento = valorFechamento;
+    }
+
+    public float getSaldoAtual() {
+        return saldoAtual;
+    }
+
+    public void setSaldoAtual(float saldoAtual) {
+        this.saldoAtual = saldoAtual;
     }
 }

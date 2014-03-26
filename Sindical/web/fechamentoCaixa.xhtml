@@ -32,11 +32,12 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Fechamento de Caixa" styleClass="fonteHeader" />
                         <h:form id="formFechamentoCaixa">
-                            <p:panel style="clear: both; background: #ECF3FE;">
+                            <p:panel id="i_saldo_atual" style="clear: both; background: #ECF3FE;">
                                 <h:panelGrid columns="1">
                                     <p:column>
                                         <h:outputLabel value="Saldo Anterior: " style="font-size: 10pt!important; font-weight: bold"/>
-                                        <h:outputLabel value="#{fechamentoCaixaBean.saldoAnterior}" style="font-size: 12pt!important"/>
+                                        <h:outputLabel value="#{fechamentoCaixaBean.saldoAtual}" style="font-size: 12pt!important"/>
+                                        <h:outputLabel value=" ( ATENÇÃO ) Este valor não entra na soma do FECHAMENTO CAIXA" style="font-size: 8pt!important; color: red" rendered="false"/>
                                     </p:column>
                                 </h:panelGrid>
                             </p:panel>
@@ -96,7 +97,7 @@
                                 <p:column headerText="..." style="text-align: center">
                                     <h:panelGrid columns="2" styleClass="sbb">
                                         <h:graphicImage value="Imagens/iconPrint.png" />
-                                        <p:commandLink ajax="false" value="Imprimir Relatório" title="Imprimir relatório de movimentação" target="_blank" style="font-weight: bold"/>
+                                        <p:commandLink ajax="false" value="Imprimir Relatório" action="#{fechamentoCaixaBean.imprimir(linha)}" title="Imprimir Relatório de Movimentação" target="_BLANK" style="font-weight: bold"/>
                                     </h:panelGrid>
                                 </p:column>
 
@@ -111,7 +112,7 @@
                                 <p:messages id="i_msg" showDetail="true" />  
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
                                     <p:commandButton value="OK" onclick="i_dlg_c.hide()" style="float: left" icon="ui-icon-check"/>  
-                                    <h:commandLink value="Imprimir Relatório" style="float: right; font-size: 10pt!important; font-weight: bold" target="_blank" />       
+                                    <h:commandLink value="Imprimir Relatório" action="#{fechamentoCaixaBean.imprimir(null)}" style="float: right; font-size: 10pt!important; font-weight: bold"/>
                                 </h:panelGrid>
                             </p:dialog>
                             

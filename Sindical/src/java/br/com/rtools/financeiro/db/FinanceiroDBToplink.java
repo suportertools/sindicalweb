@@ -6,6 +6,7 @@ import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.BloqueiaServicoPessoa;
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaSaldo;
+import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.principal.DB;
@@ -410,7 +411,8 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "          fc.nr_valor_fechamento, " +
                     "          fc.nr_valor_informado, " +
                     "          fc.dt_data, " +
-                    "          fc.ds_hora";
+                    "          fc.ds_hora " +
+                    " ORDER BY 5 desc, 6 desc";
                 
         try {
             Query qry = getEntityManager().createNativeQuery(text);
@@ -452,6 +454,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     public Caixa pesquisaCaixaUm() {
         try {
             Query qry = getEntityManager().createQuery("select c from Caixa c where c.caixa = 1");
+            qry.setMaxResults(1);
             return (Caixa)qry.getSingleResult();
         } catch (Exception e) {
             return new Caixa();
@@ -493,7 +496,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                     "  LEFT JOIN fin_cheque_rec as ch ON ch.id = f.id_cheque_rec " +
                     "  LEFT JOIN fin_status as s ON s.id = ch.id_status " +
                     " WHERE f.id_plano5 = " +id_plano5+
-                    " ORDER BY 3"
+                    " ORDER BY 3 desc"
 //                    "SELECT b.dt_baixa as data, l.ds_documento, l.ds_historico, f.nr_valor, m.ds_es, 0.0 as saldo, ds_descricao as status " +
 //                    "  FROM fin_lote as l" +
 //                    " INNER JOIN fin_movimento as m on m.id_lote = l.id" +
@@ -511,4 +514,145 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
         }
     }
     
+    @Override
+    public List<TransferenciaCaixa> listaTransferenciaDinheiro(int id_fechamento_caixa, int id_caixa) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "SELECT tc "
+                  + "  FROM TransferenciaCaixa tc "
+                  + " WHERE tc.fechamentoEntrada.id = " +id_fechamento_caixa
+                  + "   AND tc.caixaEntrada.id = " + id_caixa
+            );
+            return qry.getResultList();
+            
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<TransferenciaCaixa> listaTransferenciaDinheiroEntrada(int id_fechamento_caixa, int id_caixa) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "SELECT tc "
+                  + "  FROM TransferenciaCaixa tc "
+                  + " WHERE tc.fechamentoEntrada.id = " +id_fechamento_caixa
+                  + "   AND tc.caixaEntrada.id = " + id_caixa
+            );
+            return qry.getResultList();
+            
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<TransferenciaCaixa> listaTransferenciaDinheiroSaida(int id_fechamento_caixa, int id_caixa) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "SELECT tc "
+                  + "  FROM TransferenciaCaixa tc "
+                  + " WHERE tc.fechamentoSaida.id = " +id_fechamento_caixa
+                  + "   AND tc.caixaSaida.id = " + id_caixa
+            );
+            return qry.getResultList();
+            
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<FormaPagamento> listaTransferenciaFormaPagamento(int id_fechamento_caixa, int id_caixa) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "SELECT fp "
+                  + "  FROM FormaPagamento fp "
+                  + " WHERE fp.baixa.id IN ( "
+                  + "   SELECT b.id FROM Baixa b WHERE b.caixa.id = "+id_caixa+" AND b.fechamentoCaixa.id = "+id_fechamento_caixa
+                  + " ) "
+            );
+            return qry.getResultList();
+            
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<Vector> pesquisaSaldoAtual(int id_caixa) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor	" +
+                    "	  FROM fin_fechamento_caixa fc " +
+                    "	 INNER JOIN fin_baixa b ON b.id_fechamento_caixa = fc.id " +
+                    "	 WHERE b.id_caixa = " + id_caixa +
+                    "	 GROUP BY fc.id " +
+                    " UNION " +
+                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor " +
+                    "	  FROM fin_fechamento_caixa fc " +
+                    "	 INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id " +
+                    "	 WHERE tc.id_caixa_entrada = " +id_caixa +
+                    "	 GROUP BY fc.id " +
+                    "	 ORDER BY 1 DESC LIMIT 1"
+//                    "select max(x.id), sum(x.valor) from " +
+//                    "	( " +
+//                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor" +
+//                    "	  FROM fin_fechamento_caixa fc" +
+//                    "	 INNER JOIN fin_baixa b ON b.id_fechamento_caixa = fc.id" +
+//                    "	 WHERE b.id_caixa = " + id_caixa +
+//                    "	 GROUP BY fc.id " +
+//                    " UNION " +
+//                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor" +
+//                    "	  FROM fin_fechamento_caixa fc" +
+//                    "	 INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id" +
+//                    "	 WHERE tc.id_caixa_entrada = " + id_caixa +
+//                    "	 GROUP BY fc.id" +
+//                    "	) as x"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }
+    
+    @Override
+    public List<Vector> pesquisaSaldoAtualRelatorio(int id_caixa, int id_fechamento) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor	" +
+                    "	  FROM fin_fechamento_caixa fc " +
+                    "	 INNER JOIN fin_baixa b ON b.id_fechamento_caixa = fc.id " +
+                    "	 WHERE b.id_caixa = " + id_caixa + " AND fc.id < " + id_fechamento +
+                    "	 GROUP BY fc.id " +
+                    " UNION " +
+                    "	SELECT max(fc.id) as id, fc.nr_saldo_atual as valor " +
+                    "	  FROM fin_fechamento_caixa fc " +
+                    "	 INNER JOIN fin_transferencia_caixa tc ON tc.id_fechamento_entrada = fc.id " +
+                    "	 WHERE tc.id_caixa_entrada = " +id_caixa + " AND fc.id < " + id_fechamento +
+                    "	 GROUP BY fc.id " +
+                    "	 ORDER BY 1 DESC LIMIT 1"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }
+    
+    @Override
+    public List<Vector> pesquisaUsuarioFechamento(int id_fechamento) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT p.ds_nome " +
+                    "  FROM fin_baixa b " +
+                    " INNER JOIN seg_usuario u on u.id = b.id_usuario " +
+                    " INNER JOIN pes_pessoa p on p.id = u.id_pessoa " +
+                    " WHERE id_fechamento_caixa  = " +id_fechamento+
+                    " GROUP BY p.ds_nome "
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }
 }

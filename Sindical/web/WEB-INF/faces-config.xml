@@ -1660,6 +1660,12 @@
             <to-view-id>/conclusaoMatricula.jsf</to-view-id>
             <redirect/>
         </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>lancamentoFinanceiro</from-outcome>
+            <to-view-id>/lancamentoFinanceiro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
                                              
     </navigation-rule>
 </faces-config>
