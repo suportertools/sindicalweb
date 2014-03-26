@@ -53,6 +53,7 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
+@SuppressWarnings("serial")
 @ManagedBean
 @SessionScoped
 public class VendasCaravanaBean {
@@ -103,7 +104,7 @@ public class VendasCaravanaBean {
 
         lr = db.listaReservasVenda(vendas.getId());
         for (Reservas lr1 : lr) {
-            res = (Reservas) sv.pesquisaObjeto(lr1.getId(), "Reservas");
+            res = (Reservas) sv.find(lr1);
             if (!sv.deletarObjeto(res)) {
                 GenericaMensagem.warn("Erro", "Erro ao cancelar reservas!");
                 sv.desfazerTransacao();
@@ -124,9 +125,9 @@ public class VendasCaravanaBean {
             Lote lot;
             Evt evt;
             for (Movimento listaMovimento1 : listaMovimento) {
-                mov = (Movimento) sv.pesquisaObjeto(listaMovimento1.getId(), "Movimento");
-                lot = (Lote) sv.pesquisaObjeto(mov.getLote().getId(), "Lote");
-                evt = (Evt) sv.pesquisaObjeto(mov.getLote().getEvt().getId(), "Evt");
+                mov = (Movimento) sv.find(listaMovimento1);
+                lot = (Lote) sv.find(mov.getLote());
+                evt = (Evt) sv.find(mov.getLote().getEvt());
                 if (!sv.deletarObjeto(mov)) {
                     GenericaMensagem.warn("Erro", "Erro ao excluir movimentos!");
                     sv.desfazerTransacao();
@@ -137,7 +138,7 @@ public class VendasCaravanaBean {
                     sv.desfazerTransacao();
                     return;
                 }
-                if (!sv.deletarObjeto(sv.pesquisaObjeto(vendas.getId(), "CVenda"))) {
+                if (!sv.deletarObjeto(sv.find(vendas))) {
                     GenericaMensagem.warn("Erro", "Erro ao cancelar Venda!");
                     sv.desfazerTransacao();
                     return;
@@ -152,6 +153,9 @@ public class VendasCaravanaBean {
             GenericaMensagem.info("Sucesso", "Reserva cancelada com sucesso!");
             sv.comitarTransacao();
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("vendasCaravanaBean");
+            return;
+        } else {
+            
         }
     }
 
@@ -267,6 +271,7 @@ public class VendasCaravanaBean {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         Evt evt = new Evt();
+        evt.setDescricao("Vendas Caravana");
         if (!sv.inserirObjeto(evt)) {
             GenericaMensagem.warn("Erro", "Não foi possível salvar EVT!");
             sv.desfazerTransacao();
@@ -281,7 +286,12 @@ public class VendasCaravanaBean {
         }
 
         for (DataObject listaReserva1 : listaReserva) {
-            Reservas res = new Reservas(-1, vendas, ((Fisica) listaReserva1.getArgumento0()).getPessoa(), Integer.valueOf(listaReserva1.getArgumento1().toString()), Moeda.converteUS$(listaReserva1.getArgumento3().toString()), ((Reservas) listaReserva1.getArgumento4()).getEventoServico());
+            Reservas res = new Reservas(-1, 
+                    vendas, 
+                    ((Fisica) listaReserva1.getArgumento0()).getPessoa(), 
+                    Integer.valueOf(listaReserva1.getArgumento1().toString()), 
+                    Moeda.converteUS$(listaReserva1.getArgumento3().toString()), 
+                    ((Reservas) listaReserva1.getArgumento4()).getEventoServico());
             if (!sv.inserirObjeto(res)) {
                 GenericaMensagem.warn("Erro", "Não é possivel salvar venda!");
                 return;
@@ -289,45 +299,27 @@ public class VendasCaravanaBean {
             listaReserva1.setArgumento4(res);
         }
 
-        Lote lote = new Lote(-1, (Rotina) sv.pesquisaObjeto(142, "Rotina"), "", DataHoje.data(), pessoa, null, false, "", Moeda.converteUS$(valorTotal), (Filial) sv.pesquisaObjeto(1, "Filial"),
-                (Departamento) sv.pesquisaObjeto(6, "Departamento"), evt, "", null, null, null, null, false, null);
+        Lote lote = new Lote(-1, (Rotina) sv.find(new Rotina(), 142), "", DataHoje.data(), pessoa, null, false, "", Moeda.converteUS$(valorTotal), (Filial) sv.pesquisaObjeto(1, "Filial"),
+                (Departamento) sv.find(new Departamento(), 6), evt, "", null, null, null, null, false, null);
         if (!sv.inserirObjeto(lote)) {
-            GenericaMensagem.warn("Erro", "Não foi possível salvar Lote!");
+            GenericaMensagem.warn("Erro", "Não foi possível salvar Lote!"); 
             sv.desfazerTransacao();
             return;
         }
-
         Movimento movimento;
         EventoServicoValor esv;
-        String vencimento;
-        String mesPrimeiraParcela;
-        String mes;
-        String ano;
-        String referencia;
         for (int i = 0; i < listaParcelas.size(); i++) {
-            mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();
-            mes = mesPrimeiraParcela.substring(0, 2);
-            ano = mesPrimeiraParcela.substring(3, 7);
-            referencia = mes + "/" + ano;
-            if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaVencimento) {
-                if (idDiaVencimento < 10) {
-                    vencimento = "0" + idDiaVencimento + "/" + mes + "/" + ano;
-                } else {
-                    vencimento = idDiaVencimento + "/" + mes + "/" + ano;
-                }
-            } else {
-                String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
-                if (diaSwap.length() < 2) {
-                    diaSwap = "0" + diaSwap;
-                }
-                vencimento = diaSwap + "/" + mes + "/" + ano;
-            }
-            esv = (EventoServicoValor) listaReserva.get(i).getArgumento5();
+//            if(listaReserva.get(i).getArgumento6() == null) {
+//                GenericaMensagem.warn("Erro", "Não foi possível salvar parcela nº"+ i+1 + " deste movimento!");
+//                sv.desfazerTransacao();
+//                return;
+//            }
+//            esv = (EventoServicoValor) listaReserva.get(0).getArgumento6();
             movimento = new Movimento(-1,
                     lote,
-                    esv.getEventoServico().getServicos().getPlano5(),
+                    eventoServico.getServicos().getPlano5(), //esv.getEventoServico().getServicos().getPlano5(),
                     pessoa,
-                    esv.getEventoServico().getServicos(),
+                    eventoServico.getServicos(), //esv.getEventoServico().getServicos(),
                     null,
                     (TipoServico) sv.find(new TipoServico(), 1),
                     null,
@@ -359,7 +351,7 @@ public class VendasCaravanaBean {
         }
 
         GenericaMensagem.info("Sucesso", "Reserva concluída com Sucesso!");
-        sv.desfazerTransacao();
+        sv.comitarTransacao();
     }
 
     public void gerarParcelas() {
@@ -372,13 +364,7 @@ public class VendasCaravanaBean {
         float vE = Moeda.substituiVirgulaFloat(valorEntrada);
         DataHoje dh = new DataHoje();
         listaParcelas.clear();
-//        if (!listaPagos.isEmpty()){
-//            float soma = 0;
-//            for (int i = 0; i < listaPagos.size(); i++){
-//                soma = Moeda.somaValores(soma, listaPagos.get(i).getValor());
-//            }
-//            vlEnt = Moeda.converteR$Float(Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(vlEnt), soma));
-//        }
+        String vencimento = dataVencimento();
         if (parcelas == 1) {
             listaParcelas.add(new DataObject(vencs, Moeda.converteR$(valorTotal), false, null, null, null));
         } else {
@@ -386,27 +372,56 @@ public class VendasCaravanaBean {
                 listaParcelas.add(new DataObject(dataEntrada, Moeda.converteR$(valorEntrada), false, null, null, null));
                 vlEnt = Moeda.converteR$Float(
                         Moeda.divisaoValores(
-                                Moeda.subtracaoValores(
-                                        Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(vlEnt)
+                                Moeda.subtracaoValores(Moeda.substituiVirgulaFloat(valorTotal), Moeda.substituiVirgulaFloat(vlEnt)
                                 //Moeda.substituiVirgulaFloat(valorAPagar), Moeda.substituiVirgulaFloat(vlEnt)
                                 ),
                                 parcelas - 1
                         ));
                 for (int i = 1; i < parcelas; i++) {
-                    vencs = dh.incrementarMeses(1, vencs);
-                    listaParcelas.add(new DataObject(vencs, Moeda.converteR$(vlEnt), false, null, null, null));
+                    if (i > 1) {
+                        vencimento = dh.incrementarMeses(1, vencimento);
+                    }
+                    listaParcelas.add(new DataObject(vencimento, Moeda.converteR$(vlEnt), false, null, null, null));
                 }
             } else {
                 float vParcela;
                 for (int i = 0; i < parcelas; i++) {
                     vParcela = Moeda.substituiVirgulaFloat(valorTotal) / parcelas;
                     if (i > 0) {
-                        vencs = dh.incrementarMeses(1, vencs);
+                        vencimento = dh.incrementarMeses(1, vencimento);
                     }
-                    listaParcelas.add(new DataObject(vencs, Moeda.converteR$("" + vParcela), false, null, null, null));
+                    listaParcelas.add(new DataObject(vencimento, Moeda.converteR$("" + vParcela), false, null, null, null));
                 }
             }
         }
+    }
+
+    public String dataVencimento() {
+        String dataVencimento;
+        String mesPrimeiraParcela;
+        String mes;
+        String ano;
+        if(!listaMesVencimento.isEmpty()) {
+            mesPrimeiraParcela = listaMesVencimento.get(idMesVencimento).getDescription();            
+        } else {
+            mesPrimeiraParcela = DataHoje.dataReferencia(DataHoje.data());
+        }
+        mes = mesPrimeiraParcela.substring(0, 2);
+        ano = mesPrimeiraParcela.substring(3, 7);
+        if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaVencimento) {
+            if (idDiaVencimento < 10) {
+                dataVencimento = "0" + idDiaVencimento + "/" + mes + "/" + ano;
+            } else {
+                dataVencimento = idDiaVencimento + "/" + mes + "/" + ano;
+            }
+        } else {
+            String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+            if (diaSwap.length() < 2) {
+                diaSwap = "0" + diaSwap;
+            }
+            dataVencimento = diaSwap + "/" + mes + "/" + ano;
+        }
+        return dataVencimento;
     }
 
     public void adicionarReserva() {
@@ -591,7 +606,7 @@ public class VendasCaravanaBean {
             if (pc.getId() == -1) {
                 Registro r;
                 SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-                r = (Registro) sadb.pesquisaObjeto(1, "Registro");
+                r = (Registro) sadb.find("Registro", 1);
                 if (r.getId() != -1) {
                     pc.setNrDiaVencimento(r.getFinDiaVencimentoCobranca());
                     pc.setCobrancaBancaria(true);
@@ -846,14 +861,34 @@ public class VendasCaravanaBean {
 
     public List<SelectItem> getListaMesVencimento() {
         if (listaMesVencimento.isEmpty()) {
+            int dE = DataHoje.converteDataParaInteger(dataEntrada);
             boolean isTaxa = false;
+            String data;
             DataHoje dh = new DataHoje();
-            String data = DataHoje.data();
+            data = DataHoje.data();
+            int dH = DataHoje.converteDataParaInteger(data);
+            int dtVecto = 0;
+            float vE = Moeda.substituiVirgulaFloat(valorEntrada);
+            if(vE > 0) {
+                //dtVecto = Integer.parseInt(dataEntrada.substring(0, 2));
+                data = dh.incrementarMeses(1, data);
+            } else {
+                data = DataHoje.data();
+            }
+//            if (dE >= dH && dtVecto > idDiaVencimento && vE > 0) {
+//                data = dh.incrementarMeses(1, data);
+//            } else if (dE >= dH && dtVecto > idDiaVencimento) {
+//                data = dh.incrementarMeses(1, data);
+//            } else {
+//            }
             String mesAno;
             int iDtMr;
             int iDtVct;
-            float vE = Moeda.substituiVirgulaFloat(valorEntrada);
-            for (int i = 0; i < parcelas; i++) {
+            int qtdeParcelas = parcelas;
+            if(parcelas < 6) {
+                qtdeParcelas = 6;
+            }
+            for (int i = 0; i < qtdeParcelas; i++) {
                 if (i > 0) {
                     data = dh.incrementarMeses(1, data);
                 }
@@ -937,7 +972,7 @@ public class VendasCaravanaBean {
     public Registro getRegistro() {
         if (registro.getId() == -1) {
             SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            registro = (Registro) sadb.pesquisaObjeto(1, "Registro");
+            registro = (Registro) sadb.find("Registro", 1);
         }
         return registro;
     }
