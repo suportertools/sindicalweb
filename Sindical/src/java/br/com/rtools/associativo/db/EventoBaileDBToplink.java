@@ -6,11 +6,12 @@ import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class EventoBaileDBToplink extends DB implements EventoBaileDB {
+
+    @Override
     public List pesquisaTodosAtuais(Date data) {
         try {
             Query qry = getEntityManager().createQuery(
@@ -42,7 +43,7 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
 
     @Override
     public AEndereco pesquisaEnderecoEvento(int idEvento) {
-        AEndereco aEndereco = new AEndereco();
+        AEndereco aEndereco;
         try {
             Query qry = getEntityManager().createQuery(
                     "select ev "
@@ -58,7 +59,7 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
 
     @Override
     public List pesquisaEventoDescricao(String desc, String como) {
-        List lista = new Vector<Object>();
+        List lista;
         String textQuery = null;
         if (como.equals("P")) {
             desc = "%" + desc.toLowerCase().toUpperCase() + "%";
@@ -76,14 +77,14 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
             }
             lista = qry.getResultList();
         } catch (EJBQLException e) {
-            lista = new Vector<Object>();
+            lista = new ArrayList();
         }
         return lista;
     }
-    
+
     @Override
     public List listaBaileMapa(int id_baile) {
-        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = "+id_baile;
+        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = " + id_baile;
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             return qry.getResultList();
@@ -93,13 +94,39 @@ public class EventoBaileDBToplink extends DB implements EventoBaileDB {
     }
     
     @Override
-    public EventoBaileMapa pesquisaMesaBaile(int id_baile, int mesa) {
-        String textQuery = "select ebm from EventoBaileMapa ebm where ebm.eventoBaile.id = "+id_baile+" and ebm.mesa = "+mesa;
+    public List listaBaileMapaDisponiveis(int id_baile) {
+        String textQuery = "SELECT ebm FROM EventoBaileMapa ebm WHERE ebm.eventoBaile.id = " + id_baile + " AND ebm.id NOT IN(SELECT EM.eventoBaileMapa.id FROM EveMesa AS EM )" ;
         try {
             Query qry = getEntityManager().createQuery(textQuery);
-            return (EventoBaileMapa)qry.getSingleResult();
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+
+    @Override
+    public EventoBaileMapa pesquisaMesaBaile(int id_baile, int mesa) {
+        String textQuery = "SELECT EBM FROM EventoBaileMapa AS EBM WHERE EBM.eventoBaile.id = " + id_baile + " AND EBM.mesa = " + mesa;
+        try {
+            Query qry = getEntityManager().createQuery(textQuery);
+            return (EventoBaileMapa) qry.getSingleResult();
         } catch (Exception e) {
             return new EventoBaileMapa();
         }
+    }
+
+    @Override
+    public List listaMesasEvento(int idEventoBaile) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT M FROM Mesa AS M WHERE M.eventoBaileMapa.eventoBaile.id = :idEventoBaile");
+            query.setParameter("idEventoBaile", idEventoBaile);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
     }
 }
