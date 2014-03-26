@@ -72,7 +72,7 @@
 
                             <p:panel style="clear: both; border: 0px;" styleClass="fundoCinza">
 
-                                <h:panelGrid columns="5" style="clear: both; border: 0px;">
+                                <h:panelGrid columns="6" style="clear: both; border: 0px;">
                                     <p:column>
                                         <h:outputLabel value="Data" /><br />
                                         <p:inputMask value="#{baileBean.eventoBaile.dataString}" size="8" mask="99/99/9999"/>
@@ -95,6 +95,11 @@
                                     <p:column>
                                         <h:outputLabel value="Qnt de Mesas" style="margin-left: 30px"/><br />
                                         <p:inputText value="#{baileBean.eventoBaile.quantidadeMesas}" size="6" maxlength="5" style="margin-left: 30px"/>
+                                    </p:column>
+                                    
+                                    <p:column>
+                                        <h:outputLabel value="Qnt de Convites" style="margin-left: 30px"/><br />
+                                        <p:inputText value="#{baileBean.eventoBaile.quantidadeConvites}" size="6" maxlength="5" style="margin-left: 30px"/>
                                     </p:column>
                                     
                                     <p:column>
@@ -205,41 +210,66 @@
                                 <p:commandButton ajax="false" value="Novo" action="#{baileBean.novo()}" />
                                 <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="i_dlg_e.show()" title="Excluir"/>
                                 <p:commandButton ajax="false" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaBaile()}"/>
-                                <p:commandButton value="Criar Mapa" onclick="i_dlg_mapa.show()" rendered="#{baileBean.eventoBaile.id != -1}"/>
+                                <p:commandButton value="Criar Mapa" onclick="i_dlg_mapa_x.show()" rendered="#{baileBean.eventoBaile.id != -1}"/>
                             </h:panelGrid>
 
                             <p:dialog widgetVar="i_dlg_s" header="Deseja Salvar este Baile" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.salvar()}" update="formBaile :formBaileComp" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.salvar()}" update="formBaile" onclick="i_dlg_s.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Deseja Excluir este Baile" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile :formBaileComp" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{baileBean.excluir()}" update="formBaile" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
                             
+                            <!-- BRUNO - TELA PROVISÓRIA -->
+                            <p:dialog widgetVar="i_dlg_mapa_x" header="Novo mapa do Baile" width="600" modal="true" height="800" closable="true">
+                                <p:panel id="i_mesas">
+                                    <h:panelGrid columns="4">
+                                        <p:outputLabel value="Número da mesa: " />
+                                        <p:selectOneMenu value="#{baileBean.idNrMesa}">
+                                            <f:selectItems value="#{baileBean.listaMesasDisponiveis}" />
+                                        </p:selectOneMenu>                                    
+                                        <p:commandButton value="Adicionar mesa" action="#{baileBean.salvarMesa(false)}" update="i_mesas" rendered="false"/>
+                                        <p:commandButton value="Adicionar todas" action="#{baileBean.salvarMesa(true)}" update="i_mesas"/>
+                                    </h:panelGrid>                           
+                                    <p:dataTable value="#{baileBean.listaMesas}" scrollable="true" scrollHeight="300" var="eventoBaileMapa" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column headerText="ID" width="15">
+                                            <p:outputLabel value="#{eventoBaileMapa.id}" />
+                                        </p:column>
+                                        <p:column headerText="Mesa">
+                                            <p:outputLabel value="#{eventoBaileMapa.mesa}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:panel>
+                            </p:dialog>
                         </h:form>
                         
+                        
+                        <!-- CLAUDEMIR -->
+                        <!-- 
                         <p:dialog widgetVar="i_dlg_mapa" header="Novo mapa do Baile" resizable="false" width="900" modal="true" height="800">
-                            <!-- O CONTEUDO DESSE MODAL DE MAPA ESTA NO ARQUIVO  rascunho.txt EM AREA DE TRABALHO, CONTINUAR POR ELE -->
+                            < ! - - O CONTEUDO DESSE MODAL DE MAPA ESTA NO ARQUIVO  rascunho.txt EM AREA DE TRABALHO, CONTINUAR POR ELE - -  >
                             <h:form id="formBaileMapa" enctype="multipart/form-data">
-                                <p:fileUpload fileUploadListener="#{baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
+                                <p:fileUpload fileUploadListener="# {baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
                                               update=":formBaile:i_msg :formBaileComp:i_img" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpeg|png)$/" />
                             </h:form>
                             <h:form id="formBaileComp">
-                                <h:graphicImage id="i_img" url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute;" width="750"/>
+                                <h:graphicImage id="i_img" url="/Cliente/# {controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute;" width="750"/>
                                 
                             </h:form>
                             
                         </p:dialog> 
+                        - - >
                         
-                        <h:form id="formBaileMesa">
+                        < ! - - <h:form id="formBaileMesa">
                             <p:dialog widgetVar="i_dlg_mesa" header="Adicionar Mesa" modal="true" resizable="false" width="300">
                                 <h:outputLabel value="Número da Mesa" /><br /><br />
-                                <p:inputText size="2" value="#{baileBean.nrMesa}" />
-                                <p:commandButton value="OK" action="#{baileBean.salvarMesa()}" update=":formBaileComp formBaileMesa" oncomplete="i_dlg_mesa.hide()"/>
+                                <p:inputText size="2" value="# {baileBean.nrMesa}" />
+                                <p:commandButton value="OK" action="# {baileBean.salvarMesa()}" update=":formBaileComp formBaileMesa" oncomplete="i_dlg_mesa.hide()"/>
                             </p:dialog>
-                        </h:form>
+                        </h:form> -->
                     </p:panel>
                 </f:view>
 
