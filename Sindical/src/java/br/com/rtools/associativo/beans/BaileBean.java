@@ -9,21 +9,20 @@ import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -35,7 +34,8 @@ import org.primefaces.model.UploadedFile;
 
 @ManagedBean
 @SessionScoped
-public class BaileBean implements Serializable{
+public class BaileBean implements Serializable {
+
     private EventoBaile eventoBaile = new EventoBaile();
     private EventoBanda eventoBanda = new EventoBanda();
     private EventoServico eventoServico = new EventoServico();
@@ -49,6 +49,7 @@ public class BaileBean implements Serializable{
     private int idDescricaoEvento = 0;
     private int idServicos = 0;
     private int nrMesa = 0;
+    private int idNrMesa = 0;
     private List<Integer> listaQuantidade = new ArrayList();
     private List<EventoBanda> listaEventoBanda = new ArrayList();
     private List<EventoBaile> listaEventoBaile = new ArrayList();
@@ -56,6 +57,7 @@ public class BaileBean implements Serializable{
     private List<SelectItem> listaComboBanda = new ArrayList();
     private List<SelectItem> listaComboServicos = new ArrayList();
     private List<SelectItem> listaComboDescricaoEvento = new ArrayList();
+    private List<SelectItem> listaMesasDisponiveis = new ArrayList();
     private String msgConfirma = "";
     private String comoPesquisa = "I";
     private String descPesquisa = "";
@@ -65,104 +67,118 @@ public class BaileBean implements Serializable{
     DataHoje dataHoje = new DataHoje();
     private List<EventoBaileMapa> listaMesas = new ArrayList();
     private EventoBaileMapa ebmSelecionado = new EventoBaileMapa();
-    
-    
-    public void uploadMapa(FileUploadEvent event){
-        UploadedFile uploadedFile = event.getFile(); 
-        
-        try{
-            //InputStream in = new BufferedInputStream(uploadedFile.getInputstream());
+
+    public void uploadMapa(FileUploadEvent event) {
+        UploadedFile uploadedFile = event.getFile();
+        try {
             InputStream in = new BufferedInputStream(uploadedFile.getInputstream());
             String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Mapas");
-            //File arquivo = new File(pathPasta+"/"+event.getFile().getFileName());
-            File arquivo = new File(pathPasta+"/"+"mapa_baile.jpg");
-            
+            File arquivo = new File(pathPasta + "/" + "mapa_baile.jpg");
             FileOutputStream fout = new FileOutputStream(arquivo);
-            while(in.available() != 0){
+            while (in.available() != 0) {
                 fout.write(in.read());
             }
             fout.close();
-        }catch(Exception e){
-            
-        }
+        } catch (IOException e) {
 
+        }
     }
 
-    
-    
-    public void excluirMesa(EventoBaileMapa ebm){
+    public void excluirMesa(EventoBaileMapa ebm) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
         sv.abrirTransacao();
-        
-        if (!sv.deletarObjeto( sv.pesquisaCodigo(ebm.getId(), "EventoBaileMapa")) ){
+        if (!sv.deletarObjeto(sv.find("EventoBaileMapa", ebm.getId()))) {
             sv.desfazerTransacao();
             GenericaMensagem.warn("Erro!", "Não foi possível excluir esta mesa!");
-        }else{
+        } else {
             GenericaMensagem.info("Sucesso!", "Mesa excluída com sucesso!");
             sv.comitarTransacao();
         }
-        
         listaMesas.clear();
     }
-    
-    public void salvarMesa(){
-        if (eventoBaile.getId() != -1){
+
+    public void salvarMesa(boolean all) {
+        if (eventoBaile.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            EventoBaileMapa ebm = new EventoBaileMapa();
+            EventoBaileDB eventoBaileDB = new EventoBaileDBToplink();
             sv.abrirTransacao();
-            
-            for (int i = 0; i < listaMesas.size(); i++){
-                if (listaMesas.get(i).getId() == -1){
-                    if (!listaMesas.get(i).getPosicao().isEmpty()){
-                        listaMesas.get(i).setMesa(nrMesa);
-                        sv.inserirObjeto(listaMesas.get(i));
+            if (all) {
+                boolean err = false;
+                for (int i = 0; i < listaMesasDisponiveis.size(); i++) {
+                    if(((EventoBaileMapa) eventoBaileDB.pesquisaMesaBaile(eventoBaile.getId(), Integer.parseInt(listaMesasDisponiveis.get(i).getDescription()))).getId() != -1) {
+                        ebm.setMesa(Integer.parseInt(listaMesasDisponiveis.get(i).getDescription()));
+                        ebm.setEventoBaile(eventoBaile);
+                        if (!sv.inserirObjeto(ebm)) {
+                            err = true;
+                            break;
+                        }
+                        ebm = new EventoBaileMapa();                        
                     }
                 }
+                if (err) {
+                    sv.desfazerTransacao();
+                } else {
+                    sv.comitarTransacao();
+                    idNrMesa = 0;
+                    nrMesa = 0;
+                    listaMesasDisponiveis.clear();
+                    listaMesas.clear();
+                }
+            } else {
+                ebm.setMesa(Integer.parseInt(listaMesasDisponiveis.get(idNrMesa).getDescription()));
+                ebm.setEventoBaile(eventoBaile);
+                if (sv.inserirObjeto(ebm)) {
+                    sv.comitarTransacao();
+                    idNrMesa = 0;
+                    nrMesa = 0;
+                    listaMesasDisponiveis.clear();
+                    listaMesas.clear();
+                } else {
+                    sv.desfazerTransacao();
+                }
             }
-                    
-            sv.comitarTransacao();
-            nrMesa = 0;
-            //listaMesas.clear();
+            sv.fecharTransacao();
         }
     }
-    
+
     // excluir
-    public void onDrop(DragDropEvent event) {  
-        
+    public void onDrop(DragDropEvent event) {
+
         HttpServletRequest http = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         Cookie[] cookies = http.getCookies();
-        
-        for (int i = 0; i < cookies.length; i++){
-            if (cookies[i].getName().equals("mesa_left")){
+
+        for (int i = 0; i < cookies.length; i++) {
+            if (cookies[i].getName().equals("mesa_left")) {
                 mesaLeft = cookies[i].getValue();
             }
-            
-            if (cookies[i].getName().equals("mesa_top")){
+
+            if (cookies[i].getName().equals("mesa_top")) {
                 mesaTop = cookies[i].getValue();
             }
         }
-        
-        EventoBaileMapa ebm = (EventoBaileMapa) event.getData();  
-  
-        if (eventoBaile.getId() != -1){
+
+        EventoBaileMapa ebm = (EventoBaileMapa) event.getData();
+
+        if (eventoBaile.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             sv.abrirTransacao();
-            
+
             EventoBaileDB db = new EventoBaileDBToplink();
             EventoBaileMapa result = db.pesquisaMesaBaile(eventoBaile.getId(), ebm.getMesa());
-            
-            if (result.getId() != -1){
-                result.setPosicao(" position: relative; left: "+mesaLeft+"px; top: "+mesaTop+"px");
-                if(!sv.alterarObjeto(result)){
+
+            if (result.getId() != -1) {
+                result.setPosicao(" position: relative; left: " + mesaLeft + "px; top: " + mesaTop + "px");
+                if (!sv.alterarObjeto(result)) {
                     sv.desfazerTransacao();
                     return;
                 }
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(result.getMesa() + " atualizada", "Posição: " + event.getDropId()));
-            }else{
-                if (!sv.inserirObjeto(new EventoBaileMapa(-1, eventoBaile, ebm.getMesa(), " position: relative; left: "+mesaLeft+"px; top: "+mesaTop+"px"))){
+            } else {
+                if (!sv.inserirObjeto(new EventoBaileMapa(-1, eventoBaile, ebm.getMesa(), " position: relative; left: " + mesaLeft + "px; top: " + mesaTop + "px"))) {
                     sv.desfazerTransacao();
                     return;
-                }else{
+                } else {
 
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(ebm.getMesa() + " adicionada", "Posição: " + event.getDropId()));
                 }
@@ -171,21 +187,24 @@ public class BaileBean implements Serializable{
             listaMesas.clear();
         }
     }
-    
-    public void adicionarMesa(EventoBaileMapa ebm){
-        
+
+    public void adicionarMesa(EventoBaileMapa ebm) {
+
     }
-    
+
     public List<EventoBaileMapa> getListaMesas() {
-        if (listaMesas.isEmpty()){
-            EventoBaileDB db = new EventoBaileDBToplink();
-            for (int i = 0; i < 425; i++){
-                EventoBaileMapa result = db.pesquisaMesaBaile(eventoBaile.getId(), listaMesas.get(i).getMesa());
-                if (result.getId() == -1){
-                    listaMesas.add(new EventoBaileMapa(-1, eventoBaile, 0, "i_"+i));
-                }else{
-                    listaMesas.add(result);
-                }
+        if (listaMesas.isEmpty()) {
+            if(eventoBaile.getId() != -1) {
+                EventoBaileDB db = new EventoBaileDBToplink();
+                listaMesas = db.listaBaileMapa(eventoBaile.getId());
+//                for (int i = 0; i < 425; i++) {
+//                    EventoBaileMapa result = db.pesquisaMesaBaile(eventoBaile.getId(), listaMesas.get(i).getMesa());
+//                    if (result.getId() == -1) {
+//                        listaMesas.add(new EventoBaileMapa(-1, eventoBaile, 0, "i_" + i));
+//                    } else {
+//                        listaMesas.add(result);
+//                    }
+//                }
             }
         }
         return listaMesas;
@@ -193,30 +212,27 @@ public class BaileBean implements Serializable{
 
     public void setListaMesas(List<EventoBaileMapa> listaMesas) {
         this.listaMesas = listaMesas;
-    }    
-    
-    public void removerEndereco(){
-        if (endereco.getId() == -1){
-            endereco  = new AEndereco();
-        }else{
+    }
+
+    public void removerEndereco() {
+        if (endereco.getId() == -1) {
+            endereco = new AEndereco();
+        } else {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            
             sv.abrirTransacao();
-            if (!sv.deletarObjeto(sv.pesquisaCodigo(endereco.getId(), "AEndereco"))){
+            if (!sv.deletarObjeto(sv.find("AEndereco", endereco.getId()))) {
                 GenericaMensagem.warn("Erro", "Não foi possível excluir este endereço!");
                 sv.desfazerTransacao();
                 return;
             }
-            
             endereco = new AEndereco();
             sv.comitarTransacao();
         }
     }
-    
+
     public EventoBaile getEventoBaile() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
-            endereco.setEndereco((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa"));
-            endereco.setEndereco((Endereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa"));
+        if (GenericaSessao.exists("enderecoPesquisa")) {
+            endereco.setEndereco((Endereco) GenericaSessao.getObject("enderecoPesquisa", true));
         }
         return eventoBaile;
     }
@@ -226,7 +242,7 @@ public class BaileBean implements Serializable{
     }
 
     public String novo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("baileBean");
+        GenericaSessao.remove("baileBean");
         return "baile";
     }
 
@@ -241,19 +257,19 @@ public class BaileBean implements Serializable{
         }
     }
 
-    public boolean validaSalvar(){
+    public boolean validaSalvar() {
         if (eventoBaile.getDataString().equals("")) {
             msgConfirma = "Informar data do evento!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return false;
         }
-        
+
         if (eventoBaile.getHoraInicio().equals("")) {
             msgConfirma = "Necessário preencher a hora inicial do evento!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return false;
         }
-        
+
         if (eventoBaile.getHoraFim().equals("")) {
             msgConfirma = "Necessário preencher a hora final do evento!";
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -276,49 +292,48 @@ public class BaileBean implements Serializable{
         }
         return true;
     }
-    
+
     public String salvar() {
-        if (!validaSalvar()){
+        if (!validaSalvar()) {
             return null;
         }
-        
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        evento.setDescricaoEvento(((DescricaoEvento) sv.pesquisaCodigo(Integer.parseInt(listaComboDescricaoEvento.get(idDescricaoEvento).getDescription()), "DescricaoEvento")));
+
+        evento.setDescricaoEvento(((DescricaoEvento) sv.find("DescricaoEvento", Integer.parseInt(listaComboDescricaoEvento.get(idDescricaoEvento).getDescription()))));
         sv.abrirTransacao();
-        
+
         if (evento.getId() == -1) {
-            if (!dataHoje.maiorData(eventoBaile.getDataString(), DataHoje.converteData(dataHoje.dataHoje()))) {
+            if (!DataHoje.maiorData(eventoBaile.getDataString(), DataHoje.converteData(DataHoje.dataHoje()))) {
                 msgConfirma = "Data do evento deve ser superior a data de hoje!";
                 GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
             }
-            
-            
+
             if (!sv.inserirObjeto(evento)) {
                 sv.desfazerTransacao();
                 msgConfirma = "Falha ao inserir Evento!";
                 GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
             }
-            
+
             eventoBaile.setEvento(evento);
             endereco.setEvento(evento);
-            
+
             if (!sv.inserirObjeto(eventoBaile)) {
                 sv.desfazerTransacao();
                 msgConfirma = "Falha ao inserir Evento Baile!";
                 GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
             }
-            
+
             if (!sv.inserirObjeto(endereco)) {
                 sv.desfazerTransacao();
                 msgConfirma = "Falha ao inserir o endereço!";
-                GenericaMensagem.warn("Erro", msgConfirma); 
+                GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
-            } 
-                    
+            }
+
             listaMesas.clear();
             msgConfirma = "Registro inserido com sucesso";
             GenericaMensagem.info("Sucesso", msgConfirma);
@@ -330,22 +345,22 @@ public class BaileBean implements Serializable{
                 GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
             }
-                
+
             if (!sv.alterarObjeto(eventoBaile)) {
                 sv.desfazerTransacao();
                 msgConfirma = "Falha ao atualizar Evento Baile";
                 GenericaMensagem.warn("Erro", msgConfirma);
                 return null;
             }
-                
-            if (endereco.getId() != -1){
+
+            if (endereco.getId() != -1) {
                 if (!sv.alterarObjeto(endereco)) {
                     sv.desfazerTransacao();
                     msgConfirma = "Falha ao atualizar o Endereço!";
                     GenericaMensagem.warn("Erro", msgConfirma);
                     return null;
                 }
-            }else{
+            } else {
                 endereco.setEvento(evento);
                 if (!sv.inserirObjeto(endereco)) {
                     sv.desfazerTransacao();
@@ -354,7 +369,7 @@ public class BaileBean implements Serializable{
                     return null;
                 }
             }
-            
+
             listaMesas.clear();
             msgConfirma = "Registro atualizado com sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);
@@ -364,27 +379,26 @@ public class BaileBean implements Serializable{
     }
 
     public String editar(EventoBaile eve) {
-        eventoBaile = eve; //(EventoBaile) listaEventoBaile.get(idIndex);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("eventoBandaPesquisa", eventoBaile);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        eventoBaile = eve;
+        GenericaSessao.put("eventoBandaPesquisa", eventoBaile);
+        GenericaSessao.put("linkClicado", true);
         descPesquisa = "";
         EventoBaileDB eventoBaileDB = new EventoBaileDBToplink();
         evento = eventoBaile.getEvento();
         endereco = eventoBaileDB.pesquisaEnderecoEvento(eventoBaile.getEvento().getId());
-        return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        return (String) GenericaSessao.getString("urlRetorno");
     }
 
     public String excluir() {
-        if (evento.getId() == -1){
+        if (evento.getId() == -1) {
             msgConfirma = "Pesquise um Baile para ser excluído!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        
-        
+
         for (int i = 0; i < listaEventoBanda.size(); i++) {
             if (!excluirBanda(listaEventoBanda.get(i).getId(), sv)) {
                 msgConfirma = "Banda do Evento não podem ser excluídas!";
@@ -401,38 +415,38 @@ public class BaileBean implements Serializable{
                 return null;
             }
         }
-        endereco = (AEndereco) sv.pesquisaCodigo(endereco.getId(), "AEndereco");
+        endereco = (AEndereco) sv.find(endereco);
         if (!sv.deletarObjeto(endereco)) {
             msgConfirma = "Endereço Baile não pode ser excluído!";
             GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
-        eventoBaile = (EventoBaile) sv.pesquisaCodigo(eventoBaile.getId(), "EventoBaile");
+        eventoBaile = (EventoBaile) sv.find(eventoBaile);
         if (!sv.deletarObjeto(eventoBaile)) {
             msgConfirma = "Evento Baile não pode ser excluído! ";
             GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
-        evento = (AEvento) sv.pesquisaCodigo(eventoBaile.getEvento().getId(), "AEvento");
+        evento = (AEvento) sv.find(eventoBaile.getEvento());
         if (!sv.deletarObjeto(evento)) {
             msgConfirma = "Evento não pode ser excluído! ";
             GenericaMensagem.warn("Erro", msgConfirma);
             sv.desfazerTransacao();
             return null;
         }
-        
+
         msgConfirma = "Evento excluído com sucesso!";
         GenericaMensagem.info("Sucesso", msgConfirma);
         sv.comitarTransacao();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("baileBean");
+        GenericaSessao.remove("baileBean");
         return null;
     }
 
     public String adicionarServico() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        eventoServico.setServicos(((Servicos) sv.pesquisaCodigo(Integer.parseInt(listaComboServicos.get(idServicos).getDescription()), "Servicos")));
+        eventoServico.setServicos(((Servicos) sv.find("Servicos", Integer.parseInt(listaComboServicos.get(idServicos).getDescription()))));
         if (Integer.parseInt(listaComboServicos.get(idServicos).getDescription()) == 0
                 || Integer.parseInt(listaComboServicos.get(idServicos).getDescription()) == -1) {
             msgConfirma = "Escolha um serviço válido!";
@@ -454,16 +468,16 @@ public class BaileBean implements Serializable{
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
-        if (evento.getId() == -1){
+
+        if (evento.getId() == -1) {
             msgConfirma = "Salve este Baile antes de Adicionar Serviços!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
+
         eventoServicoValor.setId(-1);
         if (eventoServicoValor.getId() == -1) {
-            
+
             sv.abrirTransacao();
             eventoServico.setaEvento(evento);
             if (sv.inserirObjeto(eventoServico)) {
@@ -506,10 +520,10 @@ public class BaileBean implements Serializable{
     }
 
     public boolean excluirEventoServico(int id, SalvarAcumuladoDB sv) {
-        eventoServicoValor = (EventoServicoValor) sv.pesquisaCodigo(id, "EventoServicoValor");
+        eventoServicoValor = (EventoServicoValor) sv.find("EventoServicoValor", id);
         if (eventoServicoValor.getId() != -1) {
             if (sv.deletarObjeto(eventoServicoValor)) {
-                eventoServico = (EventoServico) sv.pesquisaCodigo(eventoServicoValor.getEventoServico().getId(), "EventoServico");
+                eventoServico = (EventoServico) sv.find("EventoServico", eventoServicoValor.getEventoServico().getId());
                 if (sv.deletarObjeto(eventoServico)) {
                     return true;
                 } else {
@@ -525,8 +539,7 @@ public class BaileBean implements Serializable{
     public String adicionarBanda() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         EventoBandaDB db = new EventoBandaDBToplink();
-        Banda banda = new Banda();
-        banda = (Banda) sv.pesquisaCodigo(Integer.parseInt(listaComboBanda.get(idBanda).getDescription()), "Banda");
+        Banda banda = (Banda) sv.find("Banda", Integer.parseInt(listaComboBanda.get(idBanda).getDescription()));
         for (int i = 0; i < listaEventoBanda.size(); i++) {
             if (listaEventoBanda.get(i).getBanda().getId() == banda.getId()) {
                 msgConfirma = "Banda já cadastrada para esse Evento";
@@ -565,13 +578,9 @@ public class BaileBean implements Serializable{
     }
 
     public boolean excluirBanda(int id, SalvarAcumuladoDB sv) {
-        eventoBanda = (EventoBanda) sv.pesquisaCodigo(id, "EventoBanda");
+        eventoBanda = (EventoBanda) sv.find("EventoBanda", id);
         if (eventoBanda.getId() != -1) {
-            if (sv.deletarObjeto(eventoBanda)) {
-                return true;
-            } else {
-                return false;
-            }
+            return sv.deletarObjeto(eventoBanda);
         }
         return false;
     }
@@ -655,11 +664,10 @@ public class BaileBean implements Serializable{
     public List<SelectItem> getListaComboBanda() {
         if (listaComboBanda.isEmpty()) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            List<Banda> select = new ArrayList<Banda>();
-            select = sv.listaObjeto("Banda");
-            if (!select.isEmpty()) {
-                for (int i = 0; i < select.size(); i++) {
-                    listaComboBanda.add(new SelectItem(new Integer(i), select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+            List<Banda> list = sv.listaObjeto("Banda");
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    listaComboBanda.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
                 }
             }
         }
@@ -667,24 +675,26 @@ public class BaileBean implements Serializable{
     }
 
     public void setListaComboBanda(List<SelectItem> listaComboBanda) {
-        this.setListaComboBanda(listaComboBanda);
+        this.listaComboBanda = listaComboBanda;
     }
 
     public List<SelectItem> getListaComboServicos() {
         int i = 0, j = 0;
         listaComboServicos.clear();
+        int idServicos;
+        if (!eventoServico.isMesa()) {
+            idServicos = 230;
+        } else {
+            idServicos = 229;
+        }
         ServicosDB db = new ServicosDBToplink();
-        List<Servicos> select = db.pesquisaTodos(139);
+        List<Servicos> select = db.pesquisaTodos(idServicos);
         if (!select.isEmpty()) {
             while (i < select.size()) {
-                if ((!eventoServico.isMesa() && (select.get(i).getId() == 12) || (select.get(i).getId() == 13))
-                        || (eventoServico.isMesa()) && ((select.get(i).getId() == 14) || (select.get(i).getId() == 15))) {
-                    listaComboServicos.add(new SelectItem(
-                            new Integer(j),
-                            (String) (select.get(i)).getDescricao(),
-                            Integer.toString((select.get(i)).getId())));
-                    j++;
-                }
+                //if ((!eventoServico.isMesa() && (select.get(i).getId() == 12) || (select.get(i).getId() == 13)) || (eventoServico.isMesa()) && ((select.get(i).getId() == 14) || (select.get(i).getId() == 15))) {
+                listaComboServicos.add(new SelectItem(i, (String) (select.get(i)).getDescricao(), Integer.toString((select.get(i)).getId())));
+                //j++;
+                //}
                 i++;
             }
         }
@@ -692,17 +702,16 @@ public class BaileBean implements Serializable{
     }
 
     public void setListaComboServicos(List<SelectItem> listaComboServicos) {
-        this.setListaComboServicos(listaComboServicos);
+        this.listaComboServicos = listaComboServicos;
     }
 
     public List<SelectItem> getListaComboDescricaoEvento() {
         if (listaComboDescricaoEvento.isEmpty()) {
-            List<DescricaoEvento> select = new ArrayList();
             DescricaoEventoDB db = new DescricaoEventoDBToplink();
-            select = db.pesquisaDescricaoPorGrupo(1);
-            if (!select.isEmpty()) {
-                for (int i = 0; i < select.size(); i++) {
-                    listaComboDescricaoEvento.add(new SelectItem(new Integer(i), select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+            List<DescricaoEvento> list = db.pesquisaDescricaoPorGrupo(1);
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    listaComboDescricaoEvento.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
                 }
             }
         }
@@ -710,7 +719,7 @@ public class BaileBean implements Serializable{
     }
 
     public void setListaComboDescricaoEvento(List<SelectItem> listaComboDescricaoEvento) {
-        this.setListaComboDescricaoEvento(listaComboDescricaoEvento);
+        this.listaComboDescricaoEvento = listaComboDescricaoEvento;
     }
 
     public String getMsgConfirma() {
@@ -746,7 +755,7 @@ public class BaileBean implements Serializable{
     }
 
     public void setListaEventoBanda(List<EventoBanda> listaEventoBanda) {
-        this.setListaEventoBanda(listaEventoBanda);
+        this.listaEventoBanda = listaEventoBanda;
     }
 
     public List<EventoBaile> getListaEventoBaile() {
@@ -820,8 +829,8 @@ public class BaileBean implements Serializable{
     }
 
     public List<Integer> getListaQuantidade() {
-        if (listaQuantidade.isEmpty()){
-            for (int i = 1; i < 426; i++){
+        if (listaQuantidade.isEmpty()) {
+            for (int i = 1; i < 426; i++) {
                 listaQuantidade.add(i);
             }
         }
@@ -854,6 +863,41 @@ public class BaileBean implements Serializable{
 
     public void setEbmSelecionado(EventoBaileMapa ebmSelecionado) {
         this.ebmSelecionado = ebmSelecionado;
+    }
+
+    public List<SelectItem> getListaMesasDisponiveis() {
+        if (listaMesasDisponiveis.isEmpty()) {
+            if(eventoBaile.getId() != -1) {
+//                EventoBaileDB eventoBaileDB = new EventoBaileDBToplink();
+//                List<EventoBaileMapa> list = (List<EventoBaileMapa>) eventoBaileDB.listaBaileMapa(eventoBaile.getId());                
+                int j = 1;
+                for (int i = 0; i < eventoBaile.getQuantidadeMesas(); i++) {
+//                    boolean existe = false;
+//                    for (int x = 0; x < list.size(); x++) {
+//                        if(list.get(x).getMesa() == j) {
+//                            existe = true;
+//                        }
+//                    }
+//                    if(!existe) {
+//                    }
+                    listaMesasDisponiveis.add(new SelectItem(i, "Mesa " + j, ""+j));                            
+                    j++;                    
+                }
+            }
+        }
+        return listaMesasDisponiveis;
+    }
+
+    public void setListaMesasDisponiveis(List<SelectItem> listaMesasDisponiveis) {
+        this.listaMesasDisponiveis = listaMesasDisponiveis;
+    }
+
+    public int getIdNrMesa() {
+        return idNrMesa;
+    }
+
+    public void setIdNrMesa(int idNrMesa) {
+        this.idNrMesa = idNrMesa;
     }
 
 }
