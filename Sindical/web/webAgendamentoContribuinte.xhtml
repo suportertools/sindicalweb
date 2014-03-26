@@ -150,7 +150,7 @@
                                 
                                 <h:panelGrid columns="7">
                                     <h:outputText value="CPF: " styleClass="fontePadraoVermelho"/>
-                                    <h:inputText id="idCPF" value="#{webAgendamentoContribuinteBean.fisica.pessoa.documento}" size="14" class="cpf">
+                                    <h:inputText id="idCPF" value="#{webAgendamentoContribuinteBean.fisica.pessoa.documento}" size="14" styleClass="cpf">
                                         <a4j:ajax event="blur" listener="#{webAgendamentoContribuinteBean.pesquisarFuncionarioCPF}" render="@form" oncomplete="modalMensagem()"/>
                                     </h:inputText>
                                     <h:outputText value="Funcionário: " styleClass="fontePadraoVermelho"/>
@@ -205,11 +205,11 @@
                                 
                                 <h:panelGrid columns="4">
                                     <h:outputText value="Admissão: " styleClass="fontePadrao"/>
-                                    <h:inputText size="10" class="data" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.admissao}" styleClass="fontePadraoNegrito">
+                                    <h:inputText size="10" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.admissao}" styleClass="fontePadraoNegrito data">
                                         <a4j:ajax event="change" render="this"/>
                                     </h:inputText>
                                     <h:outputText value="Demissão: " styleClass="fontePadraoVermelho"/>
-                                    <h:inputText size="10" class="data" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.demissao}" styleClass="fontePadraoNegrito">
+                                    <h:inputText size="10" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.demissao}" styleClass="fontePadraoNegrito data">
                                         <a4j:ajax event="change" render="this" />
                                     </h:inputText>
                                 </h:panelGrid>
@@ -350,10 +350,7 @@
                                             <f:facet name="header">
                                                 <h:outputText value="Id"/>
                                             </f:facet>
-
-                                            <a4j:commandLink id="linkPro" action="#{webAgendamentoContribuinteBean.editar}" value="#{linha.id}" render="idProf,idFuncao" oncomplete="fecharModal()">
-                                                <a4j:param value="#{it.index}" assignTo="#{webAgendamentoContribuinteBean.idIndexProf}" />
-                                            </a4j:commandLink>
+                                            <a4j:commandLink id="linkPro" action="#{webAgendamentoContribuinteBean.editar(linha)}" value="#{linha.id}" render="idProf,idFuncao" oncomplete="fecharModal()" />
                                         </rich:column>
 
                                         <rich:column style="text-align: center;">

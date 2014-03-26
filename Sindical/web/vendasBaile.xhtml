@@ -50,7 +50,7 @@
                             </p:panel>
                             <br />
                             <h:panelGrid columns="2">
-                                <p:commandLink value="Vender Mesa" style="font-size: 12pt!important" onclick="i_dlg_mapa.show()"/>
+                                <p:commandLink value="Vender Mesa" style="font-size: 12pt!important" onclick="i_dlg_mapa_x.show()"/>
                                 <p:commandLink value="Vender Convite" style="font-size: 12pt!important; margin-left: 30px;" onclick="i_dlg_mapa.show()"/>
                             </h:panelGrid>
 
@@ -59,40 +59,50 @@
                                 <p:inputTextarea value="#{vendaBaileBean.venda.obs}" style="width: 100%"/>
                             </h:panelGrid>
 
-                            <p:dialog id="i_dialog" widgetVar="i_dlg_mapa" header="Mapa de Lugares" resizable="false" width="1000" modal="true" height="800">
+                            <!-- <p:dialog id="i_dialog_x" widgetVar="i_dlg_mapa_x" header="Mapa de Lugares" resizable="false" width="1000" modal="true" height="800">
+
+                            </p:dialog> -->
+
+                            <!-- <p:dialog id="i_dialog" widgetVar="i_dlg_mapa" header="Mapa de Lugares" resizable="false" width="1000" modal="true" height="800" rendered="true">
                                 <h:form id="formBaileMapa" enctype="multipart/form-data">
-                                    <p:fileUpload fileUploadListener="#{baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar"
-                                                  sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" disabled="true"/>
+                                    <p:fileUpload fileUploadListener="# {baileBean.uploadMapa}" mode="advanced" dragDropSupport="false" label="Procurar" uploadLabel="Enviar" cancelLabel="Cancelar" sizeLimit="100000" fileLimit="3" allowTypes="/(\.|\/)(gif|jpe?g|png)$/" disabled="true"/>
                                 </h:form>
                                 <h:form id="formBaileMesas">
                                     <p:panel header="Mesas Disponíveis" style="width: 130px; float: left; position: absolute; z-index: 200; height: 700px">  
-                                        <p:dataGrid id="i_mesas_disponiveis" value="#{vendaBaileBean.listaMesas}" var="linha" columns="3" emptyMessage="Defina uma quantidade de Mesa!" style="width: 130px; float: left" styleClass="sb">  
-                                            <p:column rendered="#{linha.id == -1}">  
+                                        <p:dataGrid id="i_mesas_disponiveis" value="# {vendaBaileBean.listaMesa}" var="linha" columns="3" emptyMessage="Defina uma quantidade de Mesa!" style="width: 130px; float: left" styleClass="sb">  
+                                            <p:column rendered="# {linha.id == -1}">  
                                                 <h:panelGrid id="i_mesa" styleClass="fundoCinza" style="padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; cursor: pointer">
-                                                    <h:outputLabel value="#{linha.mesa}" style="font-size: 8pt!important; cursor: pointer"/>
+                                                    <h:outputLabel value="# {linha.mesa}" style="font-size: 8pt!important; cursor: pointer"/>
                                                 </h:panelGrid>
                                                 <p:draggable for="i_mesa" revert="true" scope="0" disabled="true" /> 
                                             </p:column>
 
-                                            <p:column rendered="#{linha.id != -1}">  
-                                                <h:panelGrid  styleClass="fundoCinza ui-draggable" style="#{vendaBaileBean.retornaStatus(linha)}padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; #{linha.posicao}; cursor: pointer">
-                                                    <p:ajax event="click" listener="#{vendaBaileBean.adicionarMesa(linha)}" update="i_mesas_disponiveis :formVendasBaileTbl:tbl"/>
-                                                    <h:outputLabel value="#{linha.mesa}" style="font-size: 8pt!important; cursor: pointer"/>
+                                            <p:column rendered="# {linha.id != -1}">  
+                                                <h:panelGrid  styleClass="fundoCinza ui-draggable" style="# {vendaBaileBean.retornaStatus(linha)}padding: 1px; border: 1px solid black; height: 20px; width: 20px; text-align: center; # {linha.posicao}; cursor: pointer">
+                                                    <p:ajax event="click" listener="# {vendaBaileBean.adicionarMesa(linha)}" update="i_mesas_disponiveis :formVendasBaileTbl:tbl"/>
+                                                    <h:outputLabel value="# {linha.mesa}" style="font-size: 8pt!important; cursor: pointer" />
                                                 </h:panelGrid>
                                             </p:column>
                                         </p:dataGrid>  
                                     </p:panel>
 
-                                    <h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute; margin-left:150px;" width="750"/>
+                                    <h:graphicImage url="/Cliente/ # {controleUsuarioBean.clienteString}/Imagens/Mapas/mapa_baile.jpg" style="position: absolute; margin-left:150px;" width="750"/>
                                 </h:form>
-                            </p:dialog>
+                            </p:dialog> -->
 
                         </h:form>
 
                         <h:form id="formVendasBaileTbl">
-                            <p:dataTable value="#{vendaBaileBean.listaMesa}" var="linha" id="tbl" emptyMessage="Nenhuma mesa adicionada!">
+                            <h:panelGrid columns="6">
+                                <p:outputLabel value="Mesa: " />
+                                <p:selectOneMenu value="#{vendaBaileBean.idMesaBaile}">
+                                    <f:selectItems value="#{vendaBaileBean.listaMesasBaile}" />
+                                </p:selectOneMenu>
+                                <p:commandButton action="#{vendaBaileBean.adicionarMesa}" value="Adicionar" update="tbl" />
+                            </h:panelGrid>                          
+                            <p:dataTable value="#{vendaBaileBean.listaMesa}" var="mesa" id="tbl" emptyMessage="Nenhuma mesa adicionada!" styleClass="margin-top-max">
                                 <p:column headerText="Serviços">
-                                    <h:outputLabel value="#{linha.eventoBaileMapa.eventoBaile.evento.descricaoEvento.servicoMovimento.descricao}" />
+                                    <h:outputLabel value="#{mesa.eventoBaileMapa.eventoBaile.evento.descricaoEvento.descricao}" />
                                 </p:column>
 
                                 <p:column headerText="Valor">
@@ -100,11 +110,11 @@
                                 </p:column>
 
                                 <p:column headerText="Mesa" style="text-align: center">
-                                    <h:outputLabel value="#{linha.eventoBaileMapa.mesa}" />
+                                    <h:outputLabel value="#{mesa.eventoBaileMapa.mesa}" />
                                 </p:column>
 
                                 <p:column style="text-align: center">
-                                    <p:commandButton action="#{vendaBaileBean.removerMesa(linha)}" icon="ui-icon-trash" update="tbl :formVendasBaile:i_dialog"/>
+                                    <p:commandButton action="#{vendaBaileBean.removerMesa(mesa.eventoBaileMapa)}" icon="ui-icon-trash" update=":formVendasBaileTbl:"/>
                                 </p:column>                                    
                             </p:dataTable>
                             <br />
