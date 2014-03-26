@@ -1,13 +1,18 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Envio de e-mail - Contabilidade</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            
+        </style>
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
@@ -41,49 +46,82 @@
                             </p:dataTable>
                         </h:panelGrid>
                     </p:dialog>
+                    
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
                     <h:outputText value="Envio de e-mail - Contabilidade" styleClass="fonteHeader"/>
+                    
                     <div class="clear"></div>
+                    
                     <h:panelGrid id="id_panel_grid">
                         <p:panel styleClass="margin-top-max">
                             <h:panelGrid columns="4" cellpadding="5">
                                 <p:outputLabel value="Assunto: " for="id_email_assunto" />
-                                <p:inputText id="id_email_assunto" size="120" value="#{enviarArquivosBean.mensagem.assunto}"/>
+                                <p:inputText id="id_email_assunto" size="110" value="#{enviarArquivosBean.mensagem.assunto}"/>
                                 <p:commandButton value="Anexar arquivos" type="button" onclick="dgl_upload.show();" id="id_btn_uploads"/>
                                 <p:commandButton value="Anexos (#{enviarArquivosBean.listaArquivosContabilidade.size()})" type="button" onclick="dgl_anexos.show();" id="id_btn_anexo"/>
                             </h:panelGrid>
                         </p:panel>
+                        
                         <h:panelGrid columns="2">
                             <p:column>
-                                <p:panel header="Destinatários" style="width: 600px; height: 330px;" styleClass="margin-top-max" id="id_destinatarios">
-                                    <p:dataTable scrollable="true" value="#{enviarArquivosBean.listaContabilidade}" var="lista" scrollHeight="250" emptyMessage="Nenhuma contabilidade encontrado" selection="#{enviarArquivosBean.empresaSelecionada}"  rowKey="#{lista.juridica.id}" >
-                                        <f:facet name="footer">
-                                            Total de empresas: #{enviarArquivosBean.listaContabilidade.size()} -  Itens selecionados: <h:outputText id="id_quantdade" value="#{enviarArquivosBean.quantidadeAnexo}" />
-                                        </f:facet> 
-                                        <p:ajax event="rowSelectCheckbox" update="id_quantdade" />
-                                        <p:ajax event="rowSelect" update="id_quantdade"/>
-                                        <p:ajax event="rowUnselectCheckbox" update="id_quantdade"/>
-                                        <p:ajax event="rowUnselect" update="id_quantdade"/>
-                                        <p:ajax event="toggleSelect" process="@this" update="id_quantdade" />
+                                <p:panel id="i_panel" header="Destinatários" style="width: 600px; height: 360px;" styleClass="margin-top-max">
+                                    <p:commandButton value="Todas Contabilidades" action="#{enviarArquivosBean.todasContabilidade()}" update="i_panel"/>
+                                    <p:commandButton value="Adicionar à Lista" oncomplete="i_dlg_pesquisa.show()" update="i_panel"/>
+
+                                    <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContabilidade}" var="lista" scrollHeight="250" emptyMessage="Nenhuma contabilidade encontrado" selection="#{enviarArquivosBean.empresaSelecionada}"  rowKey="#{lista.juridica.id}" >
+                                        <p:ajax event="rowSelect" update=":form_relatorio_contabilidade:i_panel"/>
+                                        <p:ajax event="rowSelectCheckbox" update=":form_relatorio_contabilidade:i_panel"/>
+                                        <p:ajax event="rowUnselect" update=":form_relatorio_contabilidade:i_panel"/>
+                                        <p:ajax event="rowUnselectCheckbox" update=":form_relatorio_contabilidade:i_panel"/>
+                                        <p:ajax event="toggleSelect" update=":form_relatorio_contabilidade:i_panel"/>
+
                                         <p:column selectionMode="multiple" width="20" styleClass="text-center"/>
+
                                         <p:column headerText="Documento">#{lista.juridica.pessoa.documento}</p:column>
                                         <p:column headerText="Nome">#{lista.juridica.pessoa.nome}</p:column>
                                         <p:column headerText="Telefone">#{lista.juridica.pessoa.telefone1}</p:column>
                                         <p:column headerText="E-mail"><h:outputText title="#{lista.juridica.pessoa.email1}" value="#{lista.juridica.pessoa.email1}"/> </p:column>
                                         <p:column headerText="Qtde. Empresas" styleClass="text-center"><h:outputText value="#{lista.quantidade}"/> </p:column>
                                     </p:dataTable>
+                                    <br />
+                                    <h:outputLabel value="Total de empresas: #{enviarArquivosBean.listaContabilidade.size()} -  Itens selecionados: #{enviarArquivosBean.quantidadeAnexo}" style="font-size: 12pt!important; font-weight: bold; margin-top: 20px"/>
                                 </p:panel>
                             </p:column>
+                                        
                             <p:column>
-                                <p:panel header="Mensagem e anexos" style="width: 380px; height: 330px;" styleClass="margin-top-max">
+                                <p:panel header="Mensagem e anexos" style="width: 380px; height: 360px;" styleClass="margin-top-max">
                                     <p:editor width="350" controls="bold italic underline strikethrough" value="#{enviarArquivosBean.mensagem.mensagem}"/>
                                 </p:panel>
                             </p:column>
                         </h:panelGrid>
-                        <h:panelGrid columns="2" styleClass="margin-top">
+
+                        <h:panelGrid columns="2" style="margin-top: 20px">
                             <p:commandButton value="Enviar" action="#{enviarArquivosBean.enviarArquivos('contabilidade')}" update="id_messages_growl" />
-                            <p:commandButton value="Novo" action="#{enviarArquivosBean.novaContabilidade}" update="id_panel_grid"/>
+                            <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novaContabilidade}" />
                         </h:panelGrid>
+
+                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+
+                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                            <h:outputLabel value="... Aguarde ..." />
+                        </p:dialog> 
+
+                        <p:dialog modal="true" widgetVar="i_dlg_pesquisa" header="Pesquisar Específica" width="500">
+                            <p:inputText id="i_pesquisa" value="#{enviarArquivosBean.descricao}" size="50"/>
+                            <p:commandButton value="Pesquisar" action="#{enviarArquivosBean.filtrar()}" update="tbl_pesquisa"/>
+                            <p:watermark value="CNPJ / Nome" for="i_pesquisa"/>
+                            <p:dataTable id="tbl_pesquisa" value="#{enviarArquivosBean.listaContabilidadePesquisa}" var="linha" scrollHeight="250" scrollWidth="300" emptyMessage="Nenhuma contabilidade encontrada!">
+                                <p:column headerText="CNPJ - Nome">
+                                    <h:outputLabel value="#{linha.juridica.pessoa.documento} - " />
+                                    <h:outputLabel value="#{linha.juridica.pessoa.nome}"/>
+                                </p:column>
+                                                                
+                                <p:column headerText="...">
+                                    <p:commandButton action="#{enviarArquivosBean.adicionarContabilidade(linha)}" value="Adicionar" update=":form_relatorio_contabilidade:i_panel"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog> 
+
                     </h:panelGrid>
                 </h:form>
             </p:panel>

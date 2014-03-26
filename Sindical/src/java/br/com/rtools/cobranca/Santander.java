@@ -68,17 +68,9 @@ public class Santander extends Cobranca {
         }else{
             return Integer.toString(11 - resto);
         }
-        
-        
-//        if (((11 - (soma % 11)) == 0) || ((11 - (soma % 11)) == 1)) {
-//            return "0";
-//        } else if ((11 - (soma % 11)) == 10) {
-//            return "1";
-//        } else {
-//            return Integer.toString(11 - (soma % 11));
-//        }
     }
     
+    @Override
     public String moduloOnzeDV(String composicao) {
         int i = composicao.length();
         int j = 2;
@@ -98,11 +90,10 @@ public class Santander extends Cobranca {
         if (resto == 10 || resto == 1 || resto == 0){
             return "1";
         }else{
-            return Integer.toString(resto);
+            return Integer.toString(11 - resto);
         }
-        
     }
-
+    
     @Override
     public String codigoBarras() {
         String iniCodigoBarras = "", fimCodigoBarras = "";
@@ -120,20 +111,18 @@ public class Santander extends Cobranca {
         String cedente = "0000000".substring(0, 7 - boleto.getContaCobranca().getCodCedente().length()) + boleto.getContaCobranca().getCodCedente();        // codigo cedente
         fimCodigoBarras += cedente;
         
-        String nossoNumero = boleto.getBoletoComposto()+this.moduloOnze(boleto.getBoletoComposto());//boleto.getBoletoComposto() + calculoConstante();
+        String nossoNumero = boleto.getBoletoComposto() + this.moduloOnze(boleto.getBoletoComposto());//boleto.getBoletoComposto() + calculoConstante();
         fimCodigoBarras += "0000000000000".substring(0, 13 - nossoNumero.length()) + nossoNumero;       // nosso numero
 
         fimCodigoBarras += "0";       // IOS -- [ 0 demais clientes ] -- [ 7 - 7% ] -- limitado a [ 9% - 9 ]
         fimCodigoBarras += "102";
         
-        return iniCodigoBarras + this.moduloOnzeDV(iniCodigoBarras+fimCodigoBarras) + fimCodigoBarras;
+        return iniCodigoBarras + this.moduloOnzeDV(iniCodigoBarras + fimCodigoBarras) + fimCodigoBarras;
     }
 
     @Override
     public String representacao() {
         String codigoBarras = this.codigoBarras();
-        //String swap = "";
-        int i = 0;
         // PRIMEIRO GRUPO --
         String primeiro_grupo = codigoBarras.substring(0, 4);
         primeiro_grupo += codigoBarras.substring(19, 24);
@@ -155,6 +144,7 @@ public class Santander extends Cobranca {
         // QUARTO GRUPO
         String quarto_grupo = codigoBarras.substring(4, 5);
         
+        // QUINTO GRUPO --
         String quinto_grupo = codigoBarras.substring(5, 19);
         
         String repNumerica = primeiro_grupo + segundo_grupo + terceiro_grupo + quarto_grupo + quinto_grupo;

@@ -46,34 +46,112 @@ public class EnviarArquivosBean implements Serializable {
     private List cnaeSelecionado = new ArrayList<Cnae>();
     private ListaRelatorioContabilidade[] empresaSelecionada = null;
     private Juridica[] contribuinteSelecionado = null;
+    
     private List<ListaRelatorioContabilidade> listaContabilidades = new ArrayList<ListaRelatorioContabilidade>();
+    private List<ListaRelatorioContabilidade> listaContabilidadesPesquisa = new ArrayList<ListaRelatorioContabilidade>();
+    
     private List<Juridica> listaContribuintes = new ArrayList<Juridica>();
+    private List<Juridica> listaContribuintesPesquisa = new ArrayList<Juridica>();
+    
     private List itens = new ArrayList();
     private List listaArquivos = new ArrayList();
     private boolean chkMarcaTodos = false;
     private boolean item = false;
+    private boolean adicionar = false;
     private String assunto = "";
     private String msgConfirma = "";
     private String conteudoHTML = "";
     private int quantidadeAnexo = 0;
 
-    public void novoContribuinte() {
-        convencaoSelecionada = null;
-        cnaeSelecionado = null;
-        grupoCidadeSelecionada = null;
-        convencaos = null;
-        grupoCidades = null;
-        cnaes = null;
+    private String descricao = "";
+    
+    /* EMPRESA */
+    public void todasEmpresa(){
         listaContribuintes.clear();
-        contribuinteSelecionado = null;
-        listaArquivos.clear();
-        novo();
+        adicionar = false;
+    }
+    
+    public void adicionarEmpresa(Juridica linha){
+        if (!adicionar){
+            listaContribuintes.clear();
+            listaContribuintes.add(linha);
+            adicionar = true;
+        }else{
+            listaContribuintes.add(linha);
+        }
+    }
+        
+    public void filtrarEmpresa(){
+        listaContribuintesPesquisa.clear();
+        
+        List<Juridica> lista = new ArrayList();
+        getListaContribuintesPesquisa();
+        
+        for (int i = 0; i < listaContribuintesPesquisa.size(); i++){
+            if (listaContribuintesPesquisa.get(i).getPessoa().getNome().toUpperCase().contains(descricao.toUpperCase()) || 
+                listaContribuintesPesquisa.get(i).getPessoa().getDocumento().toUpperCase().contains(descricao.toUpperCase()) )
+                lista.add(listaContribuintesPesquisa.get(i));
+            
+            if (lista.size() == 10){
+                break;
+            }
+        }
+        if (lista.isEmpty())
+            descricao = "";
+        
+        listaContribuintesPesquisa.clear();
+        listaContribuintesPesquisa.addAll(lista);
+    }
+    
+    /* FIM EMPRESA */
+    
+    /* CONTABILIDADE */
+    public void todasContabilidade(){
+        listaContabilidades.clear();
+        adicionar = false;
+    }
+    
+    public void adicionarContabilidade(ListaRelatorioContabilidade linha){
+        if (!adicionar){
+            listaContabilidades.clear();
+            listaContabilidades.add(linha);
+            adicionar = true;
+        }else{
+            listaContabilidades.add(linha);
+        }
+    }
+    
+    public void filtrar(){
+        listaContabilidadesPesquisa.clear();
+        
+        List<ListaRelatorioContabilidade> lista = new ArrayList();
+        getListaContabilidadePesquisa();
+        
+        for (int i = 0; i < listaContabilidadesPesquisa.size(); i++){
+            if (listaContabilidadesPesquisa.get(i).getJuridica().getPessoa().getNome().toUpperCase().contains(descricao.toUpperCase()) || 
+                listaContabilidadesPesquisa.get(i).getJuridica().getPessoa().getDocumento().toUpperCase().contains(descricao.toUpperCase()) )
+                lista.add(listaContabilidadesPesquisa.get(i));
+            if (lista.size() == 10){
+                break;
+            }
+        }
+        if (lista.isEmpty())
+            descricao = "";
+        
+        listaContabilidadesPesquisa.clear();
+        listaContabilidadesPesquisa.addAll(lista);
     }
 
-    public void novaContabilidade(String tipoNovo) {
-        listaContabilidades.clear();
-        listaArquivos.clear();
-        novo();
+    public String novaContabilidade() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enviarArquivosBean" , new EnviarArquivosBean());
+        return "enviarArquivosContabilidade";
+    }
+    /* FIM CONTABILIDADE */
+    
+    
+    public String novoContribuinte() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enviarArquivosBean" , new EnviarArquivosBean());
+        return "enviarArquivosContribuinte";
     }
 
     public void novo() {
@@ -156,8 +234,7 @@ public class EnviarArquivosBean implements Serializable {
     }
 
     public List<ListaRelatorioContabilidade> getListaContabilidade() {
-        listaContabilidades.clear();
-        if (listaContabilidades.isEmpty()) {
+        if (listaContabilidades.isEmpty() && !adicionar) {
             EnviarArquivosDB db = new EnviarArquivosDBToplink();
             List lista = db.pesquisaContabilidades();
             for (int i = 0; i < lista.size(); i++) {
@@ -174,6 +251,26 @@ public class EnviarArquivosBean implements Serializable {
 
     public void setListaContabilidade(List<ListaRelatorioContabilidade> listaContabilidades) {
         this.listaContabilidades = listaContabilidades;
+    }
+    
+    public List<ListaRelatorioContabilidade> getListaContabilidadePesquisa() {
+        if (listaContabilidadesPesquisa.isEmpty() && !descricao.isEmpty()) {
+            EnviarArquivosDB db = new EnviarArquivosDBToplink();
+            List lista = db.pesquisaContabilidades();
+            for (int i = 0; i < lista.size(); i++) {
+                ListaRelatorioContabilidade listaRelatorioContabilidade = new ListaRelatorioContabilidade();
+                listaRelatorioContabilidade.setJuridica(db.pesquisaCodigo((Integer) ((List) lista.get(i)).get(0)));
+                String string = ((List) lista.get(i)).get(3).toString();
+                int quantidade = Integer.parseInt(string);
+                listaRelatorioContabilidade.setQuantidade(quantidade);
+                listaContabilidadesPesquisa.add(listaRelatorioContabilidade);
+            }
+        }
+        return listaContabilidadesPesquisa;
+    }
+
+    public void setListaContabilidadePesquisa(List<ListaRelatorioContabilidade> listaContabilidadesPesquisa) {
+        this.listaContabilidadesPesquisa = listaContabilidadesPesquisa;
     }
 
     public List getListaArquivosContabilidade() {
@@ -250,6 +347,9 @@ public class EnviarArquivosBean implements Serializable {
         if (contribuinteSelecionado != null) {
             quantidadeAnexo = this.contribuinteSelecionado.length;
         }
+        if (empresaSelecionada != null) {
+            quantidadeAnexo = this.empresaSelecionada.length;
+        }
         return quantidadeAnexo;
     }
 
@@ -273,10 +373,8 @@ public class EnviarArquivosBean implements Serializable {
         this.mensagem = mensagem;
     }
 
-    public List<Juridica> getListaContribuinte() {
-        getListaArquivosContribuinte();
-        listaContribuintes.clear();
-        if (listaContribuintes.isEmpty()) {
+    public List<Juridica> getListaContribuintes() {
+        if (listaContribuintes.isEmpty() && !adicionar) {
             EnviarArquivosDB db = new EnviarArquivosDBToplink();
             List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId());
             for (int i = 0; i < list.size(); i++) {
@@ -285,6 +383,18 @@ public class EnviarArquivosBean implements Serializable {
             }
         }
         return listaContribuintes;
+    }
+    
+    public List<Juridica> getListaContribuintesPesquisa() {
+        if (listaContribuintesPesquisa.isEmpty() && !descricao.isEmpty()) {
+            EnviarArquivosDB db = new EnviarArquivosDBToplink();
+            List list = db.pesquisaContribuintes(convencoesSelecionadasId(), gruposCidadeSelecionadosId(), cnaesSelecionadosId());
+            for (int i = 0; i < list.size(); i++) {
+                Juridica juridica = db.pesquisaCodigo((Integer) ((List) list.get(i)).get(0));
+                listaContribuintesPesquisa.add(juridica);
+            }
+        }
+        return listaContribuintesPesquisa;
     }
 
     public Map<String, Integer> getConvencaos() {
@@ -450,5 +560,21 @@ public class EnviarArquivosBean implements Serializable {
             listaArquivos.clear();
         }
         getListaArquivosContabilidade();
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public boolean isAdicionar() {
+        return adicionar;
+    }
+
+    public void setAdicionar(boolean adicionar) {
+        this.adicionar = adicionar;
     }
 }

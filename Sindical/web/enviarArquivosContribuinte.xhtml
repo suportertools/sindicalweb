@@ -8,6 +8,12 @@
     <h:head>
         <title>Envio de e-mail - Contribuintes</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }
+            
+            
+        </style>
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
@@ -28,7 +34,7 @@
             </h:form>
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_relatorio_contribuintes">            
-                    <p:dialog  widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true">
+                    <p:dialog widgetVar="dgl_anexos" modal="true" width="400" height="300" header="Anexos" closable="true">
                         <h:panelGrid id="id_grid_uploads" style="width: 350px">
                             <p:dataTable value="#{enviarArquivosBean.listaArquivosContribuinte}" var="lista" emptyMessage="Nenhum arquivo encontrado">
                                 <f:facet name="header">Arquivos anexados (#{enviarArquivosBean.listaArquivosContribuinte.size()})</f:facet>
@@ -43,68 +49,101 @@
                     </p:dialog>
                     <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
                     <h:outputText value="Envio de e-mail - Contribuintes" styleClass="fonteHeader"/>
+                    
                     <div class="clear"></div>
+                    
                     <h:panelGrid id="id_panel_grid">
                         <p:panel header="Filtro">
-                            <h:panelGrid columns="6" cellpadding="5">
+                            <h:panelGrid id="i_panel_filtro" columns="6" cellpadding="5">
                                 <p:outputLabel value="Convenção: " />
                                 <p:selectCheckboxMenu label="Selecionar convenção" value="#{enviarArquivosBean.convencaoSelecionada}">
-                                    <p:ajax event="toggleSelect" update="id_grupo_cidade id_cna_convencao id_destinatarios" />
-                                    <p:ajax event="change" update="id_grupo_cidade id_cna_convencao id_destinatarios" />
+                                    <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" />
+                                    <p:ajax event="change" update="i_panel_filtro i_panel" />
                                     <f:selectItems value="#{enviarArquivosBean.convencaos}" />
                                 </p:selectCheckboxMenu>
                                 <p:outputLabel value="Grupo cidade:"/>
-                                <p:selectCheckboxMenu label="Selecionar grupo cidade"  id="id_grupo_cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
-                                    <p:ajax event="toggleSelect" update="id_destinatarios" />
-                                    <p:ajax event="change" update="id_destinatarios"  />
+                                <p:selectCheckboxMenu label="Selecionar grupo cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
+                                    <p:ajax event="toggleSelect" update="i_panel" />
+                                    <p:ajax event="change" update="i_panel"  />
                                     <f:selectItems value="#{enviarArquivosBean.grupoCidades}" />
                                 </p:selectCheckboxMenu>
                                 <p:outputLabel value="Cnae conveção" />
-                                <p:selectCheckboxMenu label="Selecionar cnae convenção" id="id_cna_convencao" value="#{enviarArquivosBean.cnaeSelecionado}" disabled="#{enviarArquivosBean.cnaes == null}">
-                                    <p:ajax event="toggleSelect" update="id_destinatarios" />
-                                    <p:ajax event="change" update="id_destinatarios" />
+                                <p:selectCheckboxMenu label="Selecionar cnae convenção" value="#{enviarArquivosBean.cnaeSelecionado}" disabled="#{enviarArquivosBean.cnaes == null}">
+                                    <p:ajax event="toggleSelect" update="i_panel" />
+                                    <p:ajax event="change" update="i_panel" />
                                     <f:selectItems value="#{enviarArquivosBean.cnaes}" />
                                 </p:selectCheckboxMenu>
                             </h:panelGrid>
                         </p:panel>
+                        
                         <p:panel styleClass="margin-top-max">
                             <h:panelGrid columns="4" cellpadding="5">
                                 <p:outputLabel value="Assunto: " for="id_email_assunto" />
-                                <p:inputText id="id_email_assunto" size="120" value="#{enviarArquivosBean.mensagem.assunto}"/>
+                                <p:inputText id="id_email_assunto" size="110" value="#{enviarArquivosBean.mensagem.assunto}"/>
                                 <p:commandButton value="Anexar arquivos" type="button" onclick="dgl_upload.show();" id="id_btn_uploads"/>
                                 <p:commandButton value="Anexos (#{enviarArquivosBean.listaArquivosContabilidade.size()})" type="button" onclick="dgl_anexos.show();" id="id_btn_anexo"/>
                             </h:panelGrid>
                         </p:panel>
+                        
                         <h:panelGrid columns="2">
                             <p:column>
-                                <p:panel header="Destinatários" style="width: 600px; height: 330px;" styleClass="margin-top-max" id="id_destinatarios">
-                                    <p:dataTable scrollable="true" value="#{enviarArquivosBean.listaContribuinte}" var="juridica" scrollHeight="250" emptyMessage="Nenhum contribuinte encontrado" selection="#{enviarArquivosBean.contribuinteSelecionado}"  rowKey="#{juridica.id}" >
-                                        <f:facet name="footer">
-                                            Total de empresas: #{enviarArquivosBean.listaContribuinte.size()} -  Itens selecionados: <h:outputText id="id_quantdade" value="#{enviarArquivosBean.quantidadeAnexo}" />
-                                        </f:facet> 
-                                        <p:ajax event="rowSelectCheckbox" update="id_quantdade" />
-                                        <p:ajax event="rowSelect" update="id_quantdade"/>
-                                        <p:ajax event="rowUnselectCheckbox" update="id_quantdade"/>
-                                        <p:ajax event="rowUnselect" update="id_quantdade"/>
-                                        <p:ajax event="toggleSelect" process="@this" update="id_quantdade" />
+                                <p:panel id="i_panel" header="Destinatários" style="width: 600px; height: 360px;" styleClass="margin-top-max">
+                                    <p:commandButton value="Todas Empresas" action="#{enviarArquivosBean.todasEmpresa()}" update="i_panel"/>
+                                    <p:commandButton value="Adicionar à Lista" oncomplete="i_dlg_pesquisa.show()" update="i_panel"/>
+                                    
+                                    <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContribuintes}" var="juridica" scrollHeight="250" emptyMessage="Nenhum contribuinte encontrado" selection="#{enviarArquivosBean.contribuinteSelecionado}"  rowKey="#{juridica.id}" >
+                                        <p:ajax event="rowSelect" update=":form_relatorio_contribuintes:i_panel"/>
+                                        <p:ajax event="rowSelectCheckbox" update=":form_relatorio_contribuintes:i_panel"/>
+                                        <p:ajax event="rowUnselect" update=":form_relatorio_contribuintes:i_panel"/>
+                                        <p:ajax event="rowUnselectCheckbox" update=":form_relatorio_contribuintes:i_panel"/>
+                                        <p:ajax event="toggleSelect" update=":form_relatorio_contribuintes:i_panel"/>
+                                        
                                         <p:column selectionMode="multiple" width="20" styleClass="text-center"/>
+                                        
                                         <p:column headerText="Documento">#{juridica.pessoa.documento}</p:column>
                                         <p:column headerText="Nome">#{juridica.pessoa.nome}</p:column>
                                         <p:column headerText="Telefone">#{juridica.pessoa.telefone1}</p:column>
                                         <p:column headerText="E-mail"><h:outputText title="#{juridica.pessoa.email1}" value="#{juridica.pessoa.email1}"/> </p:column>
                                     </p:dataTable>
+                                    <br /><br />
+                                    <h:outputLabel value="Total de empresas: #{enviarArquivosBean.listaContribuintes.size()} -  Itens selecionados: #{enviarArquivosBean.quantidadeAnexo}" style="font-size: 12pt!important; font-weight: bold; margin-top: 20px"/>
                                 </p:panel>
                             </p:column>
+                                        
                             <p:column>
-                                <p:panel header="Mensagem e anexos" style="width: 380px; height: 330px;" styleClass="margin-top-max">
+                                <p:panel header="Mensagem e anexos" style="width: 380px; height: 360px;" styleClass="margin-top-max">
                                     <p:editor width="350" controls="bold italic underline strikethrough" value="#{enviarArquivosBean.mensagem.mensagem}"/>
                                 </p:panel>
                             </p:column>
                         </h:panelGrid>
-                        <h:panelGrid columns="2" styleClass="margin-top">
-                            <p:commandButton value="Enviar" action="#{enviarArquivosBean.enviarArquivos('contribuinte')}" update="id_messages_growl" />                            
-                            <p:commandButton value="Novo" action="#{enviarArquivosBean.novaContabilidade}" update="id_panel_grid"/>
+                        
+                        <h:panelGrid columns="2" style="margin-top: 20px">
+                            <p:commandButton value="Enviar" action="#{enviarArquivosBean.enviarArquivos('contribuinte')}" update="id_messages_growl" />
+                            <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novoContribuinte()}" />
                         </h:panelGrid>
+                        
+                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+
+                        <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                            <h:outputLabel value="... Aguarde ..." />
+                        </p:dialog> 
+
+                        <p:dialog modal="true" widgetVar="i_dlg_pesquisa" header="Pesquisar Específica" width="500">
+                            <p:inputText id="i_pesquisa" value="#{enviarArquivosBean.descricao}" size="50"/>
+                            <p:commandButton value="Pesquisar" action="#{enviarArquivosBean.filtrarEmpresa()}" update="tbl_pesquisa"/>
+                            <p:watermark value="CNPJ / Nome" for="i_pesquisa"/>
+                            <p:dataTable id="tbl_pesquisa" value="#{enviarArquivosBean.listaContribuintesPesquisa}" var="linha" scrollHeight="250" scrollWidth="300" emptyMessage="Nenhuma empresa encontrada!">
+                                <p:column headerText="CNPJ - Nome">
+                                    <h:outputLabel value="#{linha.pessoa.documento} - " />
+                                    <h:outputLabel value="#{linha.pessoa.nome}"/>
+                                </p:column>
+                                                                
+                                <p:column headerText="...">
+                                    <p:commandButton action="#{enviarArquivosBean.adicionarEmpresa(linha)}" value="Adicionar" update=":form_relatorio_contribuintes:i_panel"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:dialog> 
+
                     </h:panelGrid>
                 </h:form>
             </p:panel>

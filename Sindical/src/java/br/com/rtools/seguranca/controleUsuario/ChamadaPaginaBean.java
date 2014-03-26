@@ -888,6 +888,11 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("turmaPesquisa");
         return metodoGenerico(2, "conclusaoMatricula");
     }
+    
+    public synchronized String lancamentoFinanceiro() {
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("lancamentoFinanceiroBean");
+        return metodoGenerico(2, "lancamentoFinanceiro");
+    }    
 
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------

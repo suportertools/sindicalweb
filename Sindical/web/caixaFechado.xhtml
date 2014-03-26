@@ -6,7 +6,7 @@
                 xmlns:p="http://primefaces.org/ui">
 
     <h:head>
-        <title>Sindical - Caixas Fechado</title>
+        <title>Sindical - Transf. p/ CX Central</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
         <style type="text/css">
@@ -28,7 +28,7 @@
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
-                        <h:outputText value="Caixas Fechado" styleClass="fonteHeader" />
+                        <h:outputText value="Transf. p/ CX Central" styleClass="fonteHeader" />
                         <h:form id="formCaixaFechado">
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:outputLabel value="Caixas"/><br />
@@ -38,7 +38,8 @@
                                 </p:selectOneMenu>
                             </p:panel>
                             
-                                                        
+                           <p:messages id="i_msg" showDetail="true" />  
+                           
                             <p:dataTable var="linha" id="tbl" value="#{caixaFechadoBean.listaFechamento}" emptyMessage="Nenhum fechamento para este caixa!">
                                 
                                 <p:column headerText="Data / Hora" style="text-align: center">
@@ -64,7 +65,7 @@
                                 <p:column headerText="..." style="text-align: center">
                                     <h:panelGrid columns="2" styleClass="sbb">
                                         <h:graphicImage value="Imagens/iconPrint.png" />
-                                        <p:commandLink ajax="false" value="Imprimir Relatório" title="Imprimir relatório de movimentação" target="_blank" style="font-weight: bold"/>
+                                        <p:commandLink ajax="false" value="Imprimir Relatório" title="Imprimir relatório de movimentação" action="#{caixaFechadoBean.imprimir(linha)}" style="font-weight: bold"/>
                                     </h:panelGrid>
                                 </p:column>
 
@@ -76,7 +77,7 @@
                                 
                             </p:dataTable>
                             
-                            <p:growl id="i_msg" showDetail="true" />  
+                            <p:growl id="i_msg_g" showDetail="true" />  
                             <p:dialog widgetVar="i_dlg_reabrir" header="Reabrir Caixa" resizable="false" modal="true">
                                 <h:outputLabel value="Deseja realmente reabrir este Caixa? " />
                                                                     
