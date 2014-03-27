@@ -451,7 +451,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     public void homologar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         agendamento.setHomologador((Usuario) GenericaSessao.getObject("sessaoUsuario"));
-        agendamento.setStatus((Status) sv.pesquisaObjeto(4, "Status"));
+        agendamento.setStatus((Status) sv.find(new Status() ,4));
         new Cancelamento().getAgendamento().getId();
         Cancelamento c = (Cancelamento) sv.pesquisaObjeto(agendamento.getId(), "Cancelamento", "agendamento.id");
         sv.abrirTransacao();
@@ -856,8 +856,9 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
                 listaAgendamento.setHabilitaAlteracao(false);
             }
             if (agendamentos.get(i).getAgendador() == null) {
-                u.getPessoa().setNome("** Web User **");
-                agendamentos.get(i).setAgendador(u);
+                listaAgendamento.setUsuarioAgendador("** Web User **");
+            } else {
+                listaAgendamento.setUsuarioAgendador(agendamentos.get(i).getAgendador().getPessoa().getNome());
             }
             listaHomologacoes.add(listaAgendamento);
         }

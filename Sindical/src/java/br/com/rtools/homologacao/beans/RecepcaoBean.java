@@ -1108,8 +1108,9 @@ public class RecepcaoBean implements Serializable {
                 listaAgendamento.setHabilitaAlteracao(false);
             }
             if (agendamentos.get(i).getAgendador() == null) {
-                u.getPessoa().setNome("** Web User **");
-                agendamentos.get(i).setAgendador(u);
+                listaAgendamento.setUsuarioAgendador("** Web User **");
+            } else {
+                listaAgendamento.setUsuarioAgendador(agendamentos.get(i).getAgendador().getPessoa().getNome());
             }
             listaRecepcaos.add(listaAgendamento);
         }
