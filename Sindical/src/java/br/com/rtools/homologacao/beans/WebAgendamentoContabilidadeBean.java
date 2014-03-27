@@ -340,12 +340,11 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
 
     public String salvar() {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Registro reg = (Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro");
+        Registro reg = (Registro) salvarAcumuladoDB.find(new Registro(), 1);
         if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
             msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             return null;
         }
-
         if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
             msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             return null;
@@ -362,7 +361,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         }
         int ids[] = {1, 3, 4};
         DataHoje dataH = new DataHoje();
-        Demissao demissao = (Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao");
+        Demissao demissao = (Demissao) salvarAcumuladoDB.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()));
         if (!pessoaEmpresa.getDemissao().isEmpty() && pessoaEmpresa.getDemissao() != null) {
             if (demissao.getId() == 1) {
                 if (DataHoje.converteDataParaInteger(pessoaEmpresa.getDemissao())
@@ -390,7 +389,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
 
         salvarAcumuladoDB.abrirTransacao();
         if (fisica.getId() == -1) {
-            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.find(new TipoDocumento(), 1));
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
                 msgConfirma = "Documento Inválido!";
                 return null;
@@ -417,7 +416,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
                 enderecoFisica.setPessoa(fisica.getPessoa());
                 PessoaEndereco pesEnd = enderecoFisica;
                 for (int i = 0; i < ids.length; i++) {
-                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(ids[i], "TipoEndereco"));
+                    pesEnd.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaObjeto(ids[i], "TipoEndereco"));
                     if (!salvarAcumuladoDB.inserirObjeto(pesEnd)) {
                         msgConfirma = "Erro ao Inserir endereço da pessoa!";
                         salvarAcumuladoDB.desfazerTransacao();
@@ -447,9 +446,13 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
         }
 
         if (pessoaEmpresa.getId() == -1) {
+            Profissao p =  profissao;
+            if(p == null) {
+                p = (Profissao) salvarAcumuladoDB.find(new Profissao(), 0);
+            }
             pessoaEmpresa.setFisica(fisica);
             pessoaEmpresa.setJuridica(empresa);
-            pessoaEmpresa.setFuncao(profissao);
+            pessoaEmpresa.setFuncao(p);
             pessoaEmpresa.setAvisoTrabalhado(Boolean.valueOf(tipoAviso));
             if (!salvarAcumuladoDB.inserirObjeto(pessoaEmpresa)) {
                 msgConfirma = "Erro ao Pessoa Empresa!";
@@ -474,11 +477,11 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
             if (agendamento.getId() == -1) {
                 agendamento.setAgendador(null);
                 agendamento.setRecepcao(null);
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
+                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
                 agendamento.setHomologador(null);
                 agendamento.setDtEmissao(DataHoje.dataHoje());
                 agendamento.setPessoaEmpresa(pessoaEmpresa);
-                agendamento.setStatus((Status) salvarAcumuladoDB.pesquisaCodigo(2, "Status"));
+                agendamento.setStatus((Status) salvarAcumuladoDB.find(new Status(), 2));
                 if (salvarAcumuladoDB.inserirObjeto(agendamento)) {
                     msgConfirma = "Agendamento realizado com sucesso";
                     agendamentoProtocolo = agendamento;
@@ -486,10 +489,11 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
                 } else {
                     msgConfirma = "Erro ao salvar protocolo!";
                     salvarAcumuladoDB.desfazerTransacao();
+                    agendamento.setId(-1);
                     return null;
                 }
             } else {
-                agendamento.setDemissao((Demissao) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription()), "Demissao"));
+                agendamento.setDemissao((Demissao) salvarAcumuladoDB.find(new Demissao(), Integer.parseInt(((SelectItem) getListaMotivoDemissao().get(idMotivoDemissao)).getDescription())));
                 if (salvarAcumuladoDB.alterarObjeto(agendamento)) {
                     msgConfirma = "Agendamento atualizado com sucesso";
                     agendamentoProtocolo = agendamento;
