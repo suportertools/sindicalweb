@@ -10,7 +10,7 @@ public class AStatus implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "DS_DESCRICAO", nullable = true)
+    @Column(name = "DS_DESCRICAO", nullable = true, unique = true)
     private String descricao;
 
     public AStatus() {
