@@ -16,7 +16,7 @@ public class CobrancaTipo implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 100)
+    @Column(name = "DS_DESCRICAO", length = 100, unique = true)
     private String descricao;
 
     public CobrancaTipo() {
