@@ -9,19 +9,22 @@ public class ListaAgendamento {
     private Senha senha;
     private boolean habilitaAlteracao;
     private int quantidade;
+    private String usuarioAgendador;
 
     public ListaAgendamento() {
         this.agendamento = new Agendamento();
         this.senha = new Senha();
         this.habilitaAlteracao = false;
         this.quantidade = 0;
+        this.usuarioAgendador = "";
     }
 
-    public ListaAgendamento(Agendamento agendamento, Senha senha, boolean habilitaAlteracao, int quantidade) {
+    public ListaAgendamento(Agendamento agendamento, Senha senha, boolean habilitaAlteracao, int quantidade, String usuarioAgendador) {
         this.agendamento = agendamento;
         this.senha = senha;
         this.habilitaAlteracao = habilitaAlteracao;
         this.quantidade = quantidade;
+        this.usuarioAgendador = usuarioAgendador;
     }
 
     public Agendamento getAgendamento() {
@@ -39,8 +42,8 @@ public class ListaAgendamento {
     public void setSenha(Senha senha) {
         this.senha = senha;
     }
-    
-    public Senha mostrarSenha(){
+
+    public Senha mostrarSenha() {
         Senha senha2 = null;
         if (agendamento.getId() != -1) {
             HomologacaoDB db = new HomologacaoDBToplink();
@@ -63,5 +66,13 @@ public class ListaAgendamento {
 
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
+    }
+
+    public String getUsuarioAgendador() {
+        return usuarioAgendador;
+    }
+
+    public void setUsuarioAgendador(String usuarioAgendador) {
+        this.usuarioAgendador = usuarioAgendador;
     }
 }
