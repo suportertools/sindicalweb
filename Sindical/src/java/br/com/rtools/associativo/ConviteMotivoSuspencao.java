@@ -15,7 +15,7 @@ public class ConviteMotivoSuspencao implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 255, nullable = false)
+    @Column(name = "DS_DESCRICAO", length = 255, nullable = false, unique = true)
     private String descricao;
 
     public ConviteMotivoSuspencao() {
