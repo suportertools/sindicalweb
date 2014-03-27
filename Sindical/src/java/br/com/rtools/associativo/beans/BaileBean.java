@@ -866,12 +866,14 @@ public class BaileBean implements Serializable {
     }
 
     public List<SelectItem> getListaMesasDisponiveis() {
-        if (listaMesasDisponiveis.isEmpty()) {
-            if(eventoBaile.getId() != -1) {
-//                EventoBaileDB eventoBaileDB = new EventoBaileDBToplink();
-//                List<EventoBaileMapa> list = (List<EventoBaileMapa>) eventoBaileDB.listaBaileMapa(eventoBaile.getId());                
-                int j = 1;
-                for (int i = 0; i < eventoBaile.getQuantidadeMesas(); i++) {
+        listaMesasDisponiveis.clear();
+        int qm = 1;
+        if(eventoBaile.getQuantidadeMesas() > 0) {
+            qm = eventoBaile.getQuantidadeMesas();
+        }
+        //if (listaMesasDisponiveis.isEmpty()) {
+            int j = 1;
+            for (int i = 0; i < qm; i++) {
 //                    boolean existe = false;
 //                    for (int x = 0; x < list.size(); x++) {
 //                        if(list.get(x).getMesa() == j) {
@@ -880,11 +882,14 @@ public class BaileBean implements Serializable {
 //                    }
 //                    if(!existe) {
 //                    }
-                    listaMesasDisponiveis.add(new SelectItem(i, "Mesa " + j, ""+j));                            
-                    j++;                    
-                }
+                listaMesasDisponiveis.add(new SelectItem(i, "Mesa " + j, ""+j));                            
+                j++;                    
+//            if(eventoBaile.getId() != -1) {
+//                EventoBaileDB eventoBaileDB = new EventoBaileDBToplink();
+//                List<EventoBaileMapa> list = (List<EventoBaileMapa>) eventoBaileDB.listaBaileMapa(eventoBaile.getId());                
+//                }
             }
-        }
+        //}
         return listaMesasDisponiveis;
     }
 
