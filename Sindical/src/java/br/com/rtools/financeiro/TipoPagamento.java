@@ -10,7 +10,7 @@ public class TipoPagamento implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @Column(name = "DS_DESCRICAO", length = 20)
+    @Column(name = "DS_DESCRICAO", length = 20, unique = true)
     private String descricao;
 
     public TipoPagamento() {
