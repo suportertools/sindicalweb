@@ -18,7 +18,7 @@ public class Usuario implements Serializable {
     @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @OneToOne(fetch = FetchType.EAGER)
     private Pessoa pessoa;
-    @Column(name = "DS_LOGIN", length = 15, nullable = false)
+    @Column(name = "DS_LOGIN", length = 15, nullable = false, unique = true)
     private String login;
     @Column(name = "DS_SENHA", length = 6, nullable = false)
     private String senha;
