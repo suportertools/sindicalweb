@@ -132,8 +132,8 @@ public class ChamadaPaginaBean implements Serializable {
     public String metodoGenerico(int tipo, String pagina) {
         paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         urlAtual = converteURL(paginaRequerida.getRequestURI());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", urlAtual);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("urlRetorno", urlAtual);
+        GenericaSessao.put("linkClicado", true);
         carregaPg = true;
         tipoPagina = tipo;
         atualizaAcessos('"' + "/Sindical/" + pagina + ".jsf" + '"');
