@@ -154,12 +154,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>controleAcessoWeb</managed-bean-name>
-        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleAcessoWebJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>webContribuintesBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContribuintesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -305,6 +299,7 @@
     </managed-bean>
     
     <navigation-rule>
+        
         <navigation-case>
             <from-outcome>contrato</from-outcome>
             <to-view-id>/contrato.jsp</to-view-id>
@@ -1664,6 +1659,12 @@
         <navigation-case>
             <from-outcome>lancamentoFinanceiro</from-outcome>
             <to-view-id>/lancamentoFinanceiro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>relatorioEscola</from-outcome>
+            <to-view-id>/relatorioEscola.jsf</to-view-id>
             <redirect/>
         </navigation-case>
                                              
