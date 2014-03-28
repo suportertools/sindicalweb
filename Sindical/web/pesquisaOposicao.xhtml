@@ -14,15 +14,14 @@
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form rendered="#{controleAcessoBean.validacao}"></h:form>
-                                
-                <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
-                <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                    <h:outputLabel value=" ... Aguarde" />
-                </p:dialog>
+
+            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                <h:outputLabel value=" ... Aguarde" />
+            </p:dialog>
             <h:form id="form_pesquisa_oposicao">        
-                
-                
+
+
                 <p:panel styleClass="wrapper no-border">
                     <h:outputText value="Pesquisa Oposição" styleClass="fonteHeader" />
                     <div class="clear"></div>
