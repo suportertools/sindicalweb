@@ -1388,11 +1388,19 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String relatorioConviteClube() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioConviteClubeBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sisPessoaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioPesquisa");
+        GenericaSessao.remove("relatorioConviteClubeBean");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("sisPessoaPesquisa");
+        GenericaSessao.remove("usuarioPesquisa");
         return metodoGenerico(3, "relatorioConviteClube");
+    }
+    
+    public synchronized String relatorioEscola() {
+        GenericaSessao.remove("relatorioEscolaBean");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("sisPessoaPesquisa");
+        GenericaSessao.remove("usuarioPesquisa");
+        return metodoGenerico(3, "relatorioEscola");
     }
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
