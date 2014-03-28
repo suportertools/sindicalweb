@@ -2,95 +2,70 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Usuário Perfil</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body styleClass="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formUsuarioPerfil" onsubmit="#{usuarioBean.usuarioPerfil}">
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="USUÁRIO PERFIL" styleClass="fontePanel" style="width: 100%" />
-                    </div>
-                </center>
-                <rich:panel styleClass="divMae divPainelModal" style="float: left; ">
-                    <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                        <h:column>
-                            <h:outputLabel value="Login: " styleClass="fontePadrao"/>
-                        </h:column>
-                        <h:column>
-                            <h:outputText value="#{usuarioBean.usuario.login}"/>
-                        </h:column>                       
-                        <h:column>
-                            <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
-                        </h:column>
-                        <h:column>
-                            <h:outputText value="#{usuarioBean.usuario.pessoa.nome}"/>
-                        </h:column>
-                    </h:panelGrid>
-                    <h:panelGrid columns="4" styleClass="margin-top-maior">
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Alterar senha" oncomplete="#{rich:component('formUsuarioPerfil:divNovaSenha')}.show(); return false;" style="width: 150px"/>
-                    </h:panelGrid>
-                </rich:panel>
-                <rich:popupPanel id="divNovaSenha" modal="true" resizeable="true" onmaskclick="#{rich:component('divNovaSenha')}.hide();" domElementAttachment="form">
-                    <f:facet name="header">
-                        <h:outputText value="Alterar senha"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('divNovaSenha')}.hide();
-                                return false;">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid id="idPainelNovaSenha" columns="2" columnClasses="coluna1, coluna2">
-                            <h:column>
-                                <h:outputLabel value="ANTIGA: " styleClass="fontePadrao" />
-                            </h:column>
-                            <h:column>
-                                <h:inputSecret value="#{usuarioBean.senhaAntiga}" autocomplete="off" styleClass="fontePadrao" />
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="NOVA: " styleClass="fontePadrao" />
-                            </h:column>
-                            <h:column>
-                                <h:inputSecret value="#{usuarioBean.senhaNova}" autocomplete="off" styleClass="fontePadrao" />
-                            </h:column>                       
-                        </h:panelGrid>                        
-                        <h:panelGrid columns="2" styleClass="margin-top">
-                            <a4j:commandLink styleClass="idNovo iLink" value="Alterar" title="Alterar" action="#{usuarioBean.salvarSenhaUsuarioPerfil()}" render="divMensagem" oncomplete="#{rich:component('formUsuarioPerfil:divNovaSenha')}.hide(); #{rich:component('formUsuarioPerfil:divMensagem')}.show(); return false;" />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Voltar" title="Voltar" oncomplete="#{rich:component('formUsuarioPerfil:divNovaSenha')}.hide(); return false;"/>
-                        </h:panelGrid>
-                    </center>
-                </rich:popupPanel>
-                <rich:popupPanel id="divMensagem" modal="true" resizeable="true">
-                    <f:facet name="header">
-                        <h:outputText value="Mensagem"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('divMensagem')}.hide();
-                                return false;">
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Usuário Perfil" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_usuario_perfil" onsubmit="#{usuarioBean.usuarioPerfil}">
+                            <p:panel>
+                                <h:panelGrid columns="2">
+                                    <h:outputLabel value="Login: " styleClass="fontePadrao"/>
+                                    <h:outputText value="#{usuarioBean.usuario.login}"/>
+                                    <h:outputLabel value="Nome: " styleClass="fontePadrao"/>
+                                    <h:outputText value="#{usuarioBean.usuario.pessoa.nome}"/>
+                                    <h:outputLabel value="Email: " styleClass="fontePadrao"/>
+                                    <h:outputText value="#{usuarioBean.usuario.email}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="4" styleClass="margin-top-max">
+                                    <p:commandButton value="Alterar senha" onclick="dlg_senha.show();" type="button"/>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:dialog id="divNovaSenha" modal="true" widgetVar="dlg_senha" header="Alterar Senha">
+                                <h:panelGrid id="idPainelNovaSenha" columns="2">
+                                    <p:outputLabel value="E-mail:" />
+                                    <p:inputText value="#{usuarioBean.usuario.email}"/>
+                                    <p:outputLabel value="Antiga: " />
+                                    <p:inputText value="#{usuarioBean.senhaAntiga}" autocomplete="off" type="password"/>
+                                    <p:outputLabel value="Nova: "  />
+                                    <p:inputText value="#{usuarioBean.senhaNova}" autocomplete="off" type="password" />
+                                </h:panelGrid>                        
+                                <h:panelGrid columns="2" styleClass="margin-top">
+                                    <p:commandButton value="Alterar" title="Alterar" action="#{usuarioBean.salvarSenhaUsuarioPerfil()}" update=":form_usuario_perfil:" oncomplete="PF('dlg_senha').hide(); PF('dlg_mensagem').show();" />
+                                    <p:commandButton value="Voltar" title="Voltar" onclick="dlg_senha.hide();"/>
+                                </h:panelGrid>
+                            </p:dialog>
+                            <p:dialog id="divMensagem" widgetVar="dlg_mensagem" modal="true" header="mensagem">
+                                <h:outputText value="#{usuarioBean.mensagem}" styleClass="fontePadrao"/>                            
+                                <p:commandButton value="Voltar" title="Voltar" onclick="dlg_senha.hide();" update=":form_usuario_perfil:"/>
+                            </p:dialog>                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:outputText value="#{usuarioBean.mensagem}" styleClass="fontePadrao"/>                            
-                        <br /><br />
-                        <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Salvar" render="idPainelNovaSenha" oncomplete="#{rich:component('formUsuarioPerfil:divMensagem')}.hide(); #{rich:component('formUsuarioPerfil:divNovaSenha')}.show(); return false;" />
-                    </center>
-                </rich:popupPanel>                
-            </h:form>
-        </f:view>
-        <div style="clear: both;"></div>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>        
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
