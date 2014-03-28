@@ -11,9 +11,11 @@ import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
@@ -21,7 +23,6 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
-import java.io.Serializable;
 
 @ManagedBean
 @SessionScoped
@@ -61,12 +62,12 @@ public class ControleAcessoBean implements Serializable {
     public String getValidacao() throws IOException {
         paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         urlDestino = paginaRequerida.getRequestURI();
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso") == null) {
+        if (!GenericaSessao.exists("indicaAcesso")) {
             redirectAcessoNegado();
             return null;
         }
-        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("local")) {
-            if (urlDestino.endsWith("usuarioPerfil.jsf")) {
+        if (GenericaSessao.getString("indicaAcesso").equals("local")) {
+            if (urlDestino.equals("/Sindical/usuarioPerfil.jsf")) {
                 return null;
             }
             if ((!verificarUsuario()) || !verificarPermissaoUsuario()) {
@@ -76,7 +77,7 @@ public class ControleAcessoBean implements Serializable {
                 controleInterno(urlDestino);
                 return null;
             }
-        } else if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("indicaAcesso")).equals("web")) {
+        } else if (GenericaSessao.getString("indicaAcesso").equals("web")) {
             if ((!verificarUsuarioAcessoWeb()) || !verificarTipoPagina()) {
                 redirectAcessoNegado();
             } else {
@@ -104,12 +105,12 @@ public class ControleAcessoBean implements Serializable {
     }
 
     public void redirectAcessoNegado() throws IOException {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null || FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuarioAcessoWeb") != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "acessoNegado");
-            FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/acessoNegado.jsf");
+        if (GenericaSessao.exists("sessaoUsuario") || GenericaSessao.exists("sessaoUsuarioAcessoWeb")) {
+            GenericaSessao.put("urlRetorno", "acessoNegado");
+            FacesContext.getCurrentInstance().getExternalContext().dispatch("acessoNegado.jsf"); 
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "sessaoExpirou");
-            FacesContext.getCurrentInstance().getExternalContext().redirect("/Sindical/sessaoExpirou.jsf");
+            GenericaSessao.put("urlRetorno", "sessaoExpirou");
+            FacesContext.getCurrentInstance().getExternalContext().dispatch("sessaoExpirou.jsf"); 
         }
     }
 
