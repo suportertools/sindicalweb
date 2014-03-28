@@ -38,6 +38,12 @@
                                 <h:inputText size="20" autocomplete="off" value="#{usuarioBean.usuario.login}"/>
                             </h:column>
                             <h:column>
+                                <h:outputLabel value="EMAIL:  " styleClass="fontePadrao"/>
+                            </h:column>
+                            <h:column>
+                                <h:inputText size="50" autocomplete="off" value="#{usuarioBean.usuario.email}"/>
+                            </h:column>
+                            <h:column>
                                 <h:outputLabel value="SENHA: " styleClass="fontePadrao" rendered="#{usuarioBean.disSenha}"/>
                             </h:column>
                             <h:column>
