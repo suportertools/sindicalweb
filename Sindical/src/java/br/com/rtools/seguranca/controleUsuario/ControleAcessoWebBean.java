@@ -17,11 +17,15 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpSession;
 
-public class controleAcessoWebJSFBean implements Serializable {
+@ManagedBean
+@SessionScoped
+public class ControleAcessoWebBean implements Serializable {
 
     private Registro registro = new Registro();
     private Pessoa pessoa = new Pessoa();

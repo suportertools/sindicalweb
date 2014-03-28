@@ -361,7 +361,7 @@ public class ControleUsuarioBean implements Serializable {
         if (usuarioSuporteTecnico.getId() == -1) {
             if (GenericaSessao.exists("sessaoUsuario")) {
                 usuarioSuporteTecnico = (Usuario) GenericaSessao.getObject("sessaoUsuario");
-                if (usuarioSuporteTecnico.getEmail().equals("")) {
+                if (usuarioSuporteTecnico.getEmail().isEmpty()) {
                     if (!usuarioSuporteTecnico.getPessoa().getEmail1().equals("")) {
                         usuarioSuporteTecnico.setEmail(usuarioSuporteTecnico.getPessoa().getEmail1());
                     } else {                        
