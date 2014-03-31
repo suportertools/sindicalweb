@@ -1325,10 +1325,16 @@
             <to-view-id>/centroComercial.jsf</to-view-id>
             <redirect/>
         </navigation-case>
-
+        
         <navigation-case>
             <from-outcome>indexLogin</from-outcome>
             <to-view-id>/indexLogin.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>indexLoginExpirou</from-outcome>
+            <to-view-id>/indexLoginExpirou.jsf</to-view-id>
             <redirect/>
         </navigation-case>
 
@@ -1669,4 +1675,9 @@
         </navigation-case>
                                              
     </navigation-rule>
+    
+    <lifecycle>
+        <phase-listener>br.com.rtools.filters.AuthorizationListener</phase-listener>
+    </lifecycle>
+    
 </faces-config>
