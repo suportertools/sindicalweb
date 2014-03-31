@@ -1,18 +1,19 @@
 package br.com.rtools.financeiro;
 
 import br.com.rtools.sistema.Cor;
+import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "FIN_PRODUTO")
-@NamedQuery(name = "Produto.pesquisaID", query = "SELECT P FROM Produto AS P WHERE P.id = :pid")
 public class Produto implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
     @Column(name = "DS_DESCRICAO", length = 100, nullable = false)
     private String descricao;
     @Column(name = "DS_MARCA", length = 100)
@@ -35,7 +36,7 @@ public class Produto implements Serializable {
     private int estoqueMaximo;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_CADASTRO")
-    private Date cadastro;
+    private Date dtCadastro;
     @JoinColumn(name = "ID_GRUPO", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private ProdutoGrupo produtoGrupo;
@@ -50,9 +51,25 @@ public class Produto implements Serializable {
     private Cor cor;
 
     public Produto() {
+        this.id = -1;
+        this.descricao = "";
+        this.marca = "";
+        this.fabricante = "";
+        this.sabor = "";
+        this.medida = "";
+        this.barras = "";
+        this.quantidadeEmbalagem = 0;
+        this.estoque = 0;
+        this.estoqueMinimo = 0;
+        this.estoqueMaximo = 0;
+        this.dtCadastro = new Date();
+        this.produtoGrupo = new ProdutoGrupo();
+        this.produtoSubGrupo = new ProdutoSubGrupo();
+        this.produtoUnidade = new ProdutoUnidade();
+        this.cor = new Cor();
     }
 
-    public Produto(long id, String descricao, String marca, String fabricante, String sabor, String medida, String barras, int quantidadeEmbalagem, int estoque, int estoqueMinimo, int estoqueMaximo, Date cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
+    public Produto(int id, String descricao, String marca, String fabricante, String sabor, String medida, String barras, int quantidadeEmbalagem, int estoque, int estoqueMinimo, int estoqueMaximo, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
         this.id = id;
         this.descricao = descricao;
         this.marca = marca;
@@ -64,18 +81,18 @@ public class Produto implements Serializable {
         this.estoque = estoque;
         this.estoqueMinimo = estoqueMinimo;
         this.estoqueMaximo = estoqueMaximo;
-        this.cadastro = cadastro;
+        this.dtCadastro = DataHoje.converte(cadastro);
         this.produtoGrupo = produtoGrupo;
         this.produtoSubGrupo = produtoSubGrupo;
         this.produtoUnidade = produtoUnidade;
         this.cor = cor;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -159,12 +176,12 @@ public class Produto implements Serializable {
         this.estoqueMaximo = estoqueMaximo;
     }
 
-    public Date getCadastro() {
-        return cadastro;
+    public Date geDttCadastro() {
+        return dtCadastro;
     }
 
-    public void setCadastro(Date cadastro) {
-        this.cadastro = cadastro;
+    public void setDtCadastro(Date dtCadastro) {
+        this.dtCadastro = dtCadastro;
     }
 
     public ProdutoGrupo getProdutoGrupo() {
@@ -198,4 +215,13 @@ public class Produto implements Serializable {
     public void setCor(Cor cor) {
         this.cor = cor;
     }
+
+    public String getCadastro() {
+        return DataHoje.converteData(dtCadastro);
+    }
+
+    public void setCadastro(String cadastro) {
+        this.dtCadastro = DataHoje.converte(cadastro);
+    }
+
 }
