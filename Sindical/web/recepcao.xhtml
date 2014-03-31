@@ -93,7 +93,7 @@
                                     <h:outputText value="CPF: " styleClass="fontePadrao"/>
                                 </h:column>
                                 <h:column>
-                                    <h:inputText id="idCPF" value="#{recepcaoBean.fisica.pessoa.documento}" size="14" maxlength="14" class="cpf" readonly="true" />                                        
+                                    <h:inputText id="idCPF" value="#{recepcaoBean.fisica.pessoa.documento}" size="14" maxlength="14" readonly="true" styleClass="cpf"/>
                                 </h:column>                                     
 
                                 <h:column> 
@@ -193,7 +193,7 @@
                                     </h:selectBooleanCheckbox>
                                 </h:panelGrid>
                             </div>
-                            <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" action="#{polling.existeUsuarioSessao()}"/>
+                            <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
                             <div class="clear"></div>
                             <div style="overflow:auto; height: 550px;">
                                 <h:panelGrid columns="1">
