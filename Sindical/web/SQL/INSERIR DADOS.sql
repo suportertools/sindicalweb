@@ -398,6 +398,10 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 229, 'BAILE > INDIVIDUAL', '"/Sindical/baileIndividual.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 229);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 230, 'BAILE > MESA', '"/Sindical/bailemesa.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 230);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 231, 'LANÇAMENTO FINANCEIRO', '"/Sindical/lancamentoFinanceiro.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 231);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 232, 'PRODUTO UNIDADE', '"/Sindical/produtoUnidade.jsf"', 'ProdutoUnidade', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 232);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 233, 'PRODUTO GRUPO', '"/Sindical/produtoGrupo.jsf"', 'ProdutoGrupo', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 233);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 234, 'PRODUTO SUBGRUPO', '"/Sindical/produtoSubGrupo.jsf"', 'ProdutoSubGrupo', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 234);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 235, 'PRODUTO', '"/Sindical/produto.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 235);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
