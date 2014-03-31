@@ -1673,6 +1673,12 @@
             <to-view-id>/relatorioEscola.jsf</to-view-id>
             <redirect/>
         </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>produto</from-outcome>
+            <to-view-id>/produto.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
                                              
     </navigation-rule>
     
