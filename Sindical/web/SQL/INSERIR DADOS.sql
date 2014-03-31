@@ -402,6 +402,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 233, 'PRODUTO GRUPO', '"/Sindical/produtoGrupo.jsf"', 'ProdutoGrupo', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 233);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 234, 'PRODUTO SUBGRUPO', '"/Sindical/produtoSubGrupo.jsf"', 'ProdutoSubGrupo', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 234);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 235, 'PRODUTO', '"/Sindical/produto.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 235);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 236, 'COR', '"/Sindical/cor.jsf"', 'Cor', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 236);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
