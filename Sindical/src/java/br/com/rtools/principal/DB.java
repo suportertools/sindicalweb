@@ -79,7 +79,8 @@ public class DB {
                 || cliente.equals("ExtrativaSP")
                 || cliente.equals("HoteleiroRP")
                 || cliente.equals("GaragistaRP")
-                || cliente.equals("MetalBatatais")) {
+                || cliente.equals("MetalBatatais")
+                || cliente.equals("SeaacFranca")) {
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
             configuracao.setHost("192.168.1.102");
