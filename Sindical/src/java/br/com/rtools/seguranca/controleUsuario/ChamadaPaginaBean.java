@@ -72,7 +72,7 @@ public class ChamadaPaginaBean implements Serializable {
     public void destroy() {
         GenericaSessao.remove("chamadaPaginaBean");
     }
-    
+
     public void atualizaAcessos(String url) {
         RotinaDB db = new RotinaDBToplink();
         AtalhoDB dba = new AtalhoDBToplink();
@@ -139,7 +139,7 @@ public class ChamadaPaginaBean implements Serializable {
         atualizaAcessos('"' + "/Sindical/" + pagina + ".jsf" + '"');
         String cliente = GenericaSessao.getString("sessaoCliente");
         String userName = "";
-        if(GenericaSessao.exists("userName")) {
+        if (GenericaSessao.exists("userName")) {
             userName = (String) GenericaSessao.getString("userName");
             String logaccess = " Cliente: " + cliente + " - Usuário: " + userName + " - Página: " + pagina;
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, logaccess);
@@ -888,11 +888,16 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("turmaPesquisa");
         return metodoGenerico(2, "conclusaoMatricula");
     }
-    
+
     public synchronized String lancamentoFinanceiro() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("lancamentoFinanceiroBean");
         return metodoGenerico(2, "lancamentoFinanceiro");
-    }    
+    }
+
+    public synchronized String produto() {
+        GenericaSessao.remove("produtoBean");
+        return metodoGenerico(2, "produto");
+    }
 
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1079,6 +1084,27 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String atendimentoOperacao() {
         String[] lista = new String[]{"AteOperacao", "Atendimento Operação"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return metodoGenerico(2, "simples");
+    }
+
+    public synchronized String produtoUnidade() {
+        String[] lista = new String[]{"ProdutoUnidade", "Produto Unidade"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return metodoGenerico(2, "simples");
+    }
+
+    public synchronized String produtoGrupo() {
+        String[] lista = new String[]{"ProdutoGrupo", "Produto Grupo"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return metodoGenerico(2, "simples");
+    }
+
+    public synchronized String produtoSubGrupo() {
+        String[] lista = new String[]{"ProdutoSubGrupo", "Produto SubGrupo"};
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
         return metodoGenerico(2, "simples");
@@ -1290,7 +1316,7 @@ public class ChamadaPaginaBean implements Serializable {
     // CHAMADA DE MENUS ------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
-    public synchronized String menuPrincipal() {        
+    public synchronized String menuPrincipal() {
         return metodoGenerico(0, "menuPrincipal");
     }
 
@@ -1394,7 +1420,7 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("usuarioPesquisa");
         return metodoGenerico(3, "relatorioConviteClube");
     }
-    
+
     public synchronized String relatorioEscola() {
         GenericaSessao.remove("relatorioEscolaBean");
         GenericaSessao.remove("fisicaPesquisa");
@@ -1855,10 +1881,10 @@ public class ChamadaPaginaBean implements Serializable {
 
 //NIVEL LINK 0 -----------------------------------------------------------------
 //------------------------------------------------------------------------------
-    public String clickNivelLink0() {        
+    public String clickNivelLink0() {
         GenericaSessao.remove("chamadaPaginaBean");
         String irPara = (String) dtObject.getArgumento0();
-        if(irPara == null) {
+        if (irPara == null) {
             irPara = "menuPrincipal";
         }
         limpaNivel0();
