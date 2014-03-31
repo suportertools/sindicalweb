@@ -114,6 +114,12 @@
     <properties>
     </properties>
   </persistence-unit>
+  <persistence-unit name="SeaacFranca">
+    <provider>oracle.toplink.essentials.PersistenceProvider</provider>
+    <exclude-unlisted-classes>false</exclude-unlisted-classes>
+    <properties>
+    </properties>
+  </persistence-unit>
   <persistence-unit name="c_limeira_base">
     <provider>oracle.toplink.essentials.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
