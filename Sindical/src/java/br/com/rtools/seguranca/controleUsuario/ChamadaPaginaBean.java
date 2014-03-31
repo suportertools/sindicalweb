@@ -1110,6 +1110,13 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "simples");
     }
 
+    public synchronized String cor() {
+        String[] lista = new String[]{"Cor", "Cores"};
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return metodoGenerico(2, "simples");
+    }
+
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
