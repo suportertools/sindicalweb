@@ -139,5 +139,5 @@
             br.com.rtools.utilitarios.SessionCounter  
         </listener-class>  
     </listener> 
-    <!-- LISTENERS -->        
+    <!-- LISTENERS -->
 </web-app>
