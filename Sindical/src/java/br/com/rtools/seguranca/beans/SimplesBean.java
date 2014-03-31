@@ -14,6 +14,9 @@ import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Logradouro;
 import br.com.rtools.escola.ComponenteCurricular;
 import br.com.rtools.financeiro.Indice;
+import br.com.rtools.financeiro.ProdutoGrupo;
+import br.com.rtools.financeiro.ProdutoSubGrupo;
+import br.com.rtools.financeiro.ProdutoUnidade;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.locadoraFilme.Genero;
 import br.com.rtools.logSistema.NovoLog;
@@ -24,6 +27,7 @@ import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.suporte.ProStatus;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -74,9 +78,7 @@ public class SimplesBean implements Serializable {
         if (listaRotinaCombo.isEmpty()) {
             listaRotina = db.pesquisaTodosSimples();
             while (i < getListaRotina().size()) {
-                listaRotinaCombo.add(new SelectItem(
-                        new Integer(i),
-                        getListaRotina().get(i).getRotina()));
+                listaRotinaCombo.add(new SelectItem(i, getListaRotina().get(i).getRotina()));
                 i++;
             }
         }
@@ -141,10 +143,10 @@ public class SimplesBean implements Serializable {
     public String editar(Object o) {
         objeto = o;
         editaObjeto(objeto);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("simplesPesquisa", objeto);
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        GenericaSessao.put("linkClicado", true);
+        if (GenericaSessao.exists("urlRetorno") && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).substring(0, 4).equals("menu")) {
+            GenericaSessao.put("simplesPesquisa", objeto);
+            return (String) GenericaSessao.getString("urlRetorno");
         }
         return null;
     }
@@ -244,13 +246,13 @@ public class SimplesBean implements Serializable {
     }
 
     public String[] getSessoes() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cadastroSimples") != null) {
-            sessoes = (String[]) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cadastroSimples");
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaSimples") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("chamadaPaginaSimples");
+        if (GenericaSessao.exists("cadastroSimples")) {
+            sessoes = (String[]) GenericaSessao.getStringVector("cadastroSimples");
+            if (GenericaSessao.exists("chamadaPaginaSimples")) {
+                GenericaSessao.remove("chamadaPaginaSimples");
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("chamadaPaginaSimples", sessoes);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cadastroSimples");
+            GenericaSessao.put("chamadaPaginaSimples", sessoes);
+            GenericaSessao.remove("cadastroSimples");
         }
         return sessoes;
     }
@@ -259,7 +261,7 @@ public class SimplesBean implements Serializable {
         this.sessoes = sessoes;
     }
 
-    public void converteObjeto(String tipo)  {
+    public void converteObjeto(String tipo) {
 //        for (int i = 0; i < getListImports().size(); i++) {
 //           try {
 //                String o = getListImports().get(i).toString()+"."+sessoes[0];
@@ -280,7 +282,7 @@ public class SimplesBean implements Serializable {
 //                 return null;
 //            }
 //        }
-        
+
         if (tipo.equals("Bairro")) {
             objeto = (Bairro) new Bairro(id, descricao);
         } else if (tipo.equals("Logradouro")) {
@@ -327,6 +329,12 @@ public class SimplesBean implements Serializable {
             objeto = (AteOperacao) new AteOperacao(id, descricao);
         } else if (tipo.equals("ConviteMotivoSuspencao")) {
             objeto = (ConviteMotivoSuspencao) new ConviteMotivoSuspencao(id, descricao);
+        } else if (tipo.equals("ProdutoUnidade")) {
+            objeto = (ProdutoUnidade) new ProdutoUnidade(id, descricao);
+        } else if (tipo.equals("ProdutoGrupo")) {
+            objeto = (ProdutoGrupo) new ProdutoGrupo(id, descricao);
+        } else if (tipo.equals("ProdutoSubGrupo")) {
+            objeto = (ProdutoSubGrupo) new ProdutoSubGrupo(id, descricao);
         }
     }
 
@@ -379,10 +387,16 @@ public class SimplesBean implements Serializable {
             ((ConviteMotivoSuspencao) objeto).setDescricao(descricao);
         } else if (tipo.equals("ProStatus")) {
             ((ProStatus) objeto).setDescricao(descricao);
+        } else if (tipo.equals("ProdutoUnidade")) {
+            ((ProdutoUnidade) objeto).setDescricao(descricao);
+        } else if (tipo.equals("ProdutoGrupo")) {
+            ((ProdutoGrupo) objeto).setDescricao(descricao);
+        } else if (tipo.equals("ProdutoSubGrupo")) {
+            ((ProdutoSubGrupo) objeto).setDescricao(descricao);
         }
     }
 
-    public void editaObjeto(Object obj) {    
+    public void editaObjeto(Object obj) {
         if (obj.getClass().getSimpleName().equals("Bairro")) {
             descricao = ((Bairro) obj).getDescricao();
             id = ((Bairro) objeto).getId();
@@ -455,6 +469,15 @@ public class SimplesBean implements Serializable {
         } else if (obj.getClass().getSimpleName().equals("ProStatus")) {
             descricao = ((ProStatus) obj).getDescricao();
             id = ((ProStatus) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("ProdutoUnidade")) {
+            descricao = ((ProdutoUnidade) obj).getDescricao();
+            id = ((ProdutoUnidade) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("ProdutoGrupo")) {
+            descricao = ((ProdutoGrupo) obj).getDescricao();
+            id = ((ProdutoGrupo) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("ProdutoSubGrupo")) {
+            descricao = ((ProdutoSubGrupo) obj).getDescricao();
+            id = ((ProdutoSubGrupo) objeto).getId();
         }
     }
 
@@ -555,6 +578,18 @@ public class SimplesBean implements Serializable {
             if (((ProStatus) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
+        } else if (obj.getClass().getSimpleName().equals("ProdutoUnidade")) {
+            if (((ProdutoUnidade) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
+        } else if (obj.getClass().getSimpleName().equals("ProdutoGrupo")) {
+            if (((ProdutoGrupo) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
+        } else if (obj.getClass().getSimpleName().equals("ProdutoSubGrupo")) {
+            if (((ProdutoSubGrupo) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
         }
         return false;
     }
@@ -584,7 +619,7 @@ public class SimplesBean implements Serializable {
     public void setPesquisaLista(String pesquisaLista) {
         this.pesquisaLista = pesquisaLista;
     }
-    }
+}
 //                Class cls = Class.forName(sessoes[0]);
 //
 //                Class partypes[] = new Class[2];
