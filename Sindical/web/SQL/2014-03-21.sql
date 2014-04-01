@@ -40,3 +40,6 @@ ALTER TABLE seg_registro
 ALTER TABLE seg_registro ADD COLUMN sis_email_porta integer;
 -- UPDATE seg_registro SET sis_email_porta = 25;
 
+
+
+-- CONSTRAINT xxxx UNIQUE (ds_descricao, ds_historico, id)
