@@ -1,0 +1,309 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Produtos</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:form id="form_produto">
+                            <c:set scope="request" var="object" value="${produtoBean.produto}" />
+
+                            <!-- TELA CADASTRO -->
+
+                            <h:outputText value="Produtos" styleClass="fonteHeader" />
+                            <div class="clear"></div>
+                            <h:panelGrid columns="2">
+                                <p:outputLabel value="Descrição:" />
+                                <p:inputText value="#{produtoBean.produto.descricao}" converter="toUpperCase">
+                                    <p:ajax event="change" update="@this" />
+                                </p:inputText>
+                                <h:column>
+                                    <h:panelGrid>
+                                        <p:outputLabel value="Grupo:" />
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="5" id="i_panel_grid_1">
+                                        <c:if test="#{produtoBean.listaGrupos.size() > 0}">
+                                            <p:selectOneMenu value="#{produtoBean.indices[0]}" >
+                                                <f:selectItems value="#{produtoBean.listaGrupos}" />
+                                            </p:selectOneMenu>
+                                        </c:if>
+                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_grupo.show();" type="button"/>
+                                        <p:outputLabel value="SubGrupo:" />
+                                        <c:if test="#{produtoBean.listaSubGrupos.size() > 0}">
+                                            <p:selectOneMenu value="#{produtoBean.indices[1]}">
+                                                <f:selectItems value="#{produtoBean.listaSubGrupos}" />
+                                            </p:selectOneMenu>
+                                        </c:if>
+                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_subgrupo.show();" type="button"/>
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid>
+                                        <p:outputLabel value="Unidade:" />
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="5" id="i_panel_grid_2">
+                                        <c:if test="#{produtoBean.listaUnidades.size() > 0}">
+                                            <p:selectOneMenu value="#{produtoBean.indices[2]}">
+                                                <f:selectItems value="#{produtoBean.listaUnidades}" />
+                                            </p:selectOneMenu>
+                                        </c:if>
+                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_unidade.show();" type="button"/>
+                                        <p:outputLabel value="Cor:" />
+                                        <c:if test="#{produtoBean.listaCores.size() > 0}">
+                                            <p:selectOneMenu value="#{produtoBean.indices[3]}" >
+                                                <f:selectItems value="#{produtoBean.listaCores}" />
+                                            </p:selectOneMenu>
+                                        </c:if>
+                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_nova_cor.show();" type="button"/>
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid>
+                                        <p:outputLabel value="Marca:" />
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="5">                                
+                                        <p:inputText value="#{produtoBean.produto.marca}" converter="toUpperCase">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="Fabricante: " />
+                                        <p:inputText value="#{produtoBean.produto.fabricante}" converter="toUpperCase">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                    </h:panelGrid>
+                                </h:column>                                  
+                                <h:column>
+                                    <h:panelGrid>
+                                        <p:outputLabel value="Sabor:" />
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="5">
+                                        <p:inputText value="#{produtoBean.produto.sabor}" converter="toUpperCase">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="Medida: " />
+                                        <p:inputText value="#{produtoBean.produto.medida}" converter="toUpperCase">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                    </h:panelGrid>
+                                </h:column>
+                            </h:panelGrid>
+
+                            <!-- // TELA CADASTRO -->
+
+                            <!-- TELA ESTOQUE -->
+
+                            <c:if test="#{produtoBean.produto.id != -1}">
+                                <p:panel header="Estoque por Filial" id="i_tela_estoque" styleClass="margin-top-max">
+                                    <p:messages  autoUpdate="true" showDetail="true" />
+                                    <p:panelGrid styleClass="margin-top-max">
+                                        <p:row>
+                                            <p:column>
+                                                <p:outputLabel value="Filial:" />
+                                            </p:column>
+                                            <p:column>
+                                                <c:if test="#{produtoBean.listaFilial.size() > 0}">
+                                                    <p:selectOneMenu value="#{produtoBean.indices[5]}" disabled="#{produtoBean.estoque.id != -1}">
+                                                        <f:selectItems value="#{produtoBean.listaFilial}" />
+                                                    </p:selectOneMenu>
+                                                </c:if>                                                        
+                                            </p:column>
+                                            <p:column>
+                                                <p:outputLabel value="Tipo: " />
+                                            </p:column>
+                                            <p:column>
+                                                <c:if test="#{produtoBean.listaTipo.size() > 0}">
+                                                    <p:selectOneMenu value="#{produtoBean.indices[4]}" disabled="#{produtoBean.estoque.id != -1}">
+                                                        <f:selectItems value="#{produtoBean.listaTipo}" />
+                                                    </p:selectOneMenu>
+                                                </c:if>                                                        
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                    <p:panelGrid styleClass="margin-top-max">
+                                        <p:row>
+                                            <p:column>
+                                                <p:outputLabel value="Custo médio: " />
+                                            </p:column>
+                                            <p:column>
+                                                <p:inputText value="#{produtoBean.custoMedio}" converter="toCurrency">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputText>
+                                            </p:column>
+                                            <p:column>
+                                                <p:outputLabel value="Estoque: " />
+                                            </p:column>
+                                            <p:column>
+                                                <p:inputText value="#{produtoBean.estoque.estoque}" size="1" maxlength="4"/>
+                                                <p:outputLabel value="Estoque Máximo: " styleClass="margin-left-max"/>
+                                                <p:inputText value="#{produtoBean.estoque.estoqueMinimo}" size="1" maxlength="4"/>
+                                                <p:outputLabel value="Estoque Mínimo: "  styleClass="margin-left-max"/>
+                                                <p:inputText value="#{produtoBean.estoque.estoqueMaximo}" size="1" maxlength="4"/>
+                                            </p:column>
+                                            <p:column colspan="2">
+                                                <p:selectBooleanCheckbox value="#{produtoBean.estoque.ativo}" itemLabel="Ativo"/>
+                                            </p:column>
+                                            <p:column>
+                                                <c:if test="#{produtoBean.estoque.id == -1}">
+                                                    <p:commandButton value="Adicionar" action="#{produtoBean.addProdutoEstoque()}" update="i_tela_estoque" title="Adicionar/Atualizar"/>
+                                                </c:if>
+                                                <c:if test="#{produtoBean.estoque.id != -1}">
+                                                    <p:commandButton value="Atualizar" action="#{produtoBean.addProdutoEstoque()}" update="i_tela_estoque" title="Adicionar/Atualizar"/>
+                                                </c:if>
+                                            </p:column>
+                                        </p:row>
+                                    </p:panelGrid>
+                                    <p:dataTable value="#{produtoBean.listaEstoque}" var="estoque" styleClass="margin-top-max" scrollable="true" scrollHeight="150" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column width="25" styleClass="text-center">
+                                            <p:commandButton icon="ui-icon-link" action="#{produtoBean.editEstoque(estoque)}" update=":form_produto:i_tela_estoque" title="Editar registro"/>
+                                        </p:column>
+                                        <p:column headerText="Filial">
+                                            #{estoque.filial.filial.pessoa.nome}
+                                        </p:column>
+                                        <p:column headerText="Tipo" width="150" styleClass="text-center">
+                                            #{estoque.estoqueTipo.descricao}
+                                        </p:column>
+                                        <p:column headerText="Est." width="50" styleClass="text-center">
+                                            #{estoque.estoque}
+                                        </p:column>
+                                        <p:column headerText="Min." width="50" styleClass="text-center">
+                                            #{estoque.estoqueMinimo}
+                                        </p:column>
+                                        <p:column headerText="Max." width="50" styleClass="text-center">
+                                            #{estoque.estoqueMaximo}
+                                        </p:column>
+                                        <p:column headerText="Custo Médio (R$)" width="100" styleClass="text-center">
+                                            #{estoque.custoMedio}
+                                        </p:column>
+                                        <p:column width="25" styleClass="text-center">
+                                            <p:commandButton icon="ui-icon-trash" action="#{produtoBean.deleteEstoque(estoque)}" update=":form_produto:i_tela_estoque" title="Remover registro"/>
+                                        </p:column>                                        
+                                        <f:facet name="footer">
+                                            * Est = Estoque; Min. = Estoque Mínimo; Max = Estoque Máximo
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:panel>                                        
+                            </c:if>
+
+                            <!-- // TELA ESTOQUE -->                            
+
+                            <!-- AÇÕES -->
+
+                            <h:panelGrid styleClass="margin-top-max" columns="4">
+                                <p:commandButton value="Salvar" onclick="dlg_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <p:commandButton value="Novo" action="#{produtoBean.clear()}" update=":form_produto:" />
+                                <p:commandButton value="Excluir" type="button" onclick="dlg_excluir.show()" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaProduto()}"/>
+                            </h:panelGrid>
+
+                            <p:dialog widgetVar="dlg_salvar" modal="true" width="400" header="Deseja salvar este registro?">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" action="#{produtoBean.save}" update=":form_produto:" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();"/>
+                                        <p:commandButton value="Não" onclick="dlg_salvar.hide();"/>
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+
+                            <p:dialog widgetVar="dlg_excluir" modal="true" width="400" header="Deseja excluir este registro?" resizable="false">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" action="#{produtoBean.delete()}" update=":form_produto:" oncomplete="PF('dlg_excluir').hide(); PF('dlg_mensagem').show();"/>
+                                        <p:commandButton value="Não" onclick="dlg_excluir.hide();"/>
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+
+                            <p:dialog widgetVar="dlg_mensagem" modal="true" width="400" header="Mensagem" resizable="false">
+                                <h:panelGrid id="i_mensagem">
+                                    <p:outputLabel value="#{produtoBean.mensagem}" />
+                                </h:panelGrid>
+                                <f:facet name="footer">
+                                    <p:commandButton value="Ok" onclick="dlg_mensagem.hide();"/>
+                                </f:facet>
+                            </p:dialog> 
+
+                            <!-- // AÇÕES -->
+
+                            <!-- CADASTROS COMPLEMENTARES -->
+
+                            <p:dialog widgetVar="dlg_novo_produto_grupo" modal="true" width="400" header="Produto Grupo">
+                                <p:messages id="i_msg_produto_grupo" autoUpdate="true" showDetail="true" />
+                                <h:panelGrid id="i_produto_grupo" columns="3">
+                                    <p:outputLabel value="Descrição" />
+                                    <p:inputText value="#{produtoBean.produtoGrupo.descricao}" converter="toUpperCase">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>
+                                    <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoGrupo}" update="i_msg_produto_grupo i_produto_grupo i_panel_grid_1" />
+                                </h:panelGrid>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_novo_produto_subgrupo" modal="true" width="400" header="Produto SubGrupo">
+                                <p:messages id="i_msg_produto_subgrupo" autoUpdate="true" showDetail="true" />
+                                <h:panelGrid id="i_produto_subgrupo" columns="3">
+                                    <p:outputLabel value="Descrição" />
+                                    <p:inputText value="#{produtoBean.produtoSubGrupo.descricao}" converter="toUpperCase">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>                                        
+                                    <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoSubGrupo}" update="i_msg_produto_subgrupo i_produto_subgrupo i_panel_grid_1" immediate="true"/>
+                                </h:panelGrid>
+                            </p:dialog> 
+
+                            <p:dialog widgetVar="dlg_novo_produto_unidade" modal="true" width="400" header="Produto Unidade">
+                                <p:messages id="i_msg_produto_unidade" autoUpdate="true" showDetail="true" />
+                                <h:panelGrid id="i_produto_unidade" columns="3">
+                                    <p:outputLabel value="Descrição" />
+                                    <p:inputText value="#{produtoBean.produtoUnidade.descricao}" converter="toUpperCase">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>                                        
+                                    <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoUnidade}" update="i_msg_produto_unidade i_produto_unidade i_panel_grid_2" />
+                                </h:panelGrid>
+                            </p:dialog> 
+                            <p:dialog widgetVar="dlg_nova_cor" modal="true" width="400" header="Produto Cor">
+                                <p:messages id="i_msg_cor" autoUpdate="true" showDetail="true" />
+                                <h:panelGrid id="i_cor" columns="3">
+                                    <p:outputLabel value="Descrição" />
+                                    <p:inputText value="#{produtoBean.cor.descricao}" converter="toUpperCase">
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText>                                        
+                                    <p:commandButton value="Adicionar" action="#{produtoBean.saveCor}" update="i_msg_cor i_cor i_panel_grid_2" />
+                                </h:panelGrid>
+                            </p:dialog>
+
+                            <!-- // CADASTROS COMPLEMENTARES -->
+
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

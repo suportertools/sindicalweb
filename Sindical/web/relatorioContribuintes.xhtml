@@ -126,6 +126,19 @@
                                     </p:panel>
                                 </p:panel>
                             </p:tab>
+                            <p:tab title="Data">
+                                <p:panel header="Data">
+                                    <h:panelGrid id="i_datas" columns="4">
+                                        <p:inputMask value="#{relatorioContribuintesBean.dataCadastroInicial}" mask="99/99/9999" size="8">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputMask> à 
+                                        <p:inputMask value="#{relatorioContribuintesBean.dataCadastroFinal}" mask="99/99/9999" size="8">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputMask>
+                                        <p:commandButton value="Limpar datas" title="Limpar datas" action="#{relatorioContribuintesBean.limparData}" styleClass="margin-top-max" update="i_datas"/>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
                             <p:tab title="Avançado">
                                 <p:panel header="Avançado">
                                     <h:panelGrid columns="2">
