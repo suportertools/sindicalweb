@@ -28,17 +28,17 @@ public class GrupoCategoriaBean {
             return;
         }
         grupoCategoria.setGrupoCategoria(grupoCategoria.getGrupoCategoria().toUpperCase());
-        if(!listaGrupoCategoria.isEmpty()) {
-            for (GrupoCategoria listaGrupoCategoria1 : listaGrupoCategoria) {
-                if (listaGrupoCategoria1.getGrupoCategoria().equals(grupoCategoria.getGrupoCategoria())) {
-                    GenericaMensagem.warn("Validação", "Grupo categoria já existe!");
-                    PF.update("form_grupo_categoria:i_msg");
-                    return;
-                }
-            }
-        }
         dB.abrirTransacao();
         if (grupoCategoria.getId() == -1) {
+            if(!listaGrupoCategoria.isEmpty()) {
+                for (GrupoCategoria listaGrupoCategoria1 : listaGrupoCategoria) {
+                    if (listaGrupoCategoria1.getGrupoCategoria().equals(grupoCategoria.getGrupoCategoria())) {
+                        GenericaMensagem.warn("Validação", "Grupo categoria já existe!");
+                        PF.update("form_grupo_categoria:i_msg");
+                        return;
+                    }
+                }
+            }
             if (dB.inserirObjeto(grupoCategoria)) {
                 dB.comitarTransacao();
                 GenericaMensagem.info("Sucesso", "Grupo salvo com sucesso!");
