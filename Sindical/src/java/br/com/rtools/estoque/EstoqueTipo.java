@@ -1,4 +1,4 @@
-package br.com.rtools.financeiro;
+package br.com.rtools.estoque;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -11,12 +11,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FIN_PRODUTO_GRUPO")
+@Table(name = "EST_TIPO")
 @NamedQueries({
-    @NamedQuery(name = "ProdutoGrupo.findAll", query = "SELECT PG FROM ProdutoGrupo AS PG ORDER BY PG.descricao ASC "),
-    @NamedQuery(name = "ProdutoGrupo.findName", query = "SELECT PG FROM ProdutoGrupo AS PG WHERE UPPER(PG.descricao) LIKE :pdescricao ORDER BY PG.descricao ASC ")
+    @NamedQuery(name = "EstoqueTipo.findAll", query = "SELECT ET FROM EstoqueTipo AS ET ORDER BY ET.descricao ASC "),
+    @NamedQuery(name = "EstoqueTipo.findName", query = "SELECT ET FROM EstoqueTipo AS ET WHERE UPPER(ET.descricao) LIKE :pdescricao ORDER BY ET.descricao ASC ")
 })
-public class ProdutoGrupo implements Serializable {
+public class EstoqueTipo implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -25,12 +25,12 @@ public class ProdutoGrupo implements Serializable {
     @Column(name = "DS_DESCRICAO", length = 100, nullable = false, unique = true)
     private String descricao;
 
-    public ProdutoGrupo() {
+    public EstoqueTipo() {
         this.id = -1;
         this.descricao = "";
     }
 
-    public ProdutoGrupo(int id, String descricao) {
+    public EstoqueTipo(int id, String descricao) {
         this.id = id;
         this.descricao = descricao;
     }
@@ -49,5 +49,10 @@ public class ProdutoGrupo implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public String toString() {
+        return "EstoqueTipo{" + "id=" + id + ", descricao=" + descricao + '}';
     }
 }

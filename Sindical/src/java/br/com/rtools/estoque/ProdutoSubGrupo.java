@@ -1,4 +1,4 @@
-package br.com.rtools.financeiro;
+package br.com.rtools.estoque;
 
 import java.io.Serializable;
 import javax.persistence.Column;
@@ -11,7 +11,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FIN_PRODUTO_SUBGRUPO")
+@Table(name = "EST_SUBGRUPO")
 @NamedQueries({
     @NamedQuery(name = "ProdutoSubGrupo.findAll", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG ORDER BY PSG.descricao ASC "),
     @NamedQuery(name = "ProdutoSubGrupo.findName", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG WHERE UPPER(PSG.descricao) LIKE :pdescricao ORDER BY PSG.descricao ASC ")
@@ -49,5 +49,10 @@ public class ProdutoSubGrupo implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public String toString() {
+        return "ProdutoSubGrupo{" + "id=" + id + ", descricao=" + descricao + '}';
     }
 }

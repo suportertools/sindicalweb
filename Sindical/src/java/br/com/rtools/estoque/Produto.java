@@ -1,4 +1,4 @@
-package br.com.rtools.financeiro;
+package br.com.rtools.estoque;
 
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.utilitarios.DataHoje;
@@ -7,7 +7,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_PRODUTO")
+@Table(name = "EST_PRODUTO")
 public class Produto implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,14 +26,10 @@ public class Produto implements Serializable {
     private String medida;
     @Column(name = "DS_BARRAS", length = 25)
     private String barras;
-    @Column(name = "NR_QTDE_EMBALAGEM")
+    @Column(name = "DS_OBS", length = 5000)
+    private String observacao;
+    @Column(name = "NR_QTDE_EMBALAGEM", columnDefinition = "INTEGER DEFAULT 0")
     private int quantidadeEmbalagem;
-    @Column(name = "NR_ESTOQUE")
-    private int estoque;
-    @Column(name = "NR_ESTOQUE_MINIMO")
-    private int estoqueMinimo;
-    @Column(name = "NR_ESTOQUE_MAXIMO")
-    private int estoqueMaximo;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_CADASTRO")
     private Date dtCadastro;
@@ -58,10 +54,8 @@ public class Produto implements Serializable {
         this.sabor = "";
         this.medida = "";
         this.barras = "";
+        this.observacao = "";
         this.quantidadeEmbalagem = 0;
-        this.estoque = 0;
-        this.estoqueMinimo = 0;
-        this.estoqueMaximo = 0;
         this.dtCadastro = new Date();
         this.produtoGrupo = new ProdutoGrupo();
         this.produtoSubGrupo = new ProdutoSubGrupo();
@@ -69,18 +63,16 @@ public class Produto implements Serializable {
         this.cor = new Cor();
     }
 
-    public Produto(int id, String descricao, String marca, String fabricante, String sabor, String medida, String barras, int quantidadeEmbalagem, int estoque, int estoqueMinimo, int estoqueMaximo, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
+    public Produto(int id, String descricao, String marca, String fabricante, String sabor, String medida, String observacao, String barras, int quantidadeEmbalagem, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
         this.id = id;
         this.descricao = descricao;
         this.marca = marca;
         this.fabricante = fabricante;
         this.sabor = sabor;
         this.medida = medida;
+        this.observacao = observacao;
         this.barras = barras;
         this.quantidadeEmbalagem = quantidadeEmbalagem;
-        this.estoque = estoque;
-        this.estoqueMinimo = estoqueMinimo;
-        this.estoqueMaximo = estoqueMaximo;
         this.dtCadastro = DataHoje.converte(cadastro);
         this.produtoGrupo = produtoGrupo;
         this.produtoSubGrupo = produtoSubGrupo;
@@ -152,30 +144,6 @@ public class Produto implements Serializable {
         this.quantidadeEmbalagem = quantidadeEmbalagem;
     }
 
-    public int getEstoque() {
-        return estoque;
-    }
-
-    public void setEstoque(int estoque) {
-        this.estoque = estoque;
-    }
-
-    public int getEstoqueMinimo() {
-        return estoqueMinimo;
-    }
-
-    public void setEstoqueMinimo(int estoqueMinimo) {
-        this.estoqueMinimo = estoqueMinimo;
-    }
-
-    public int getEstoqueMaximo() {
-        return estoqueMaximo;
-    }
-
-    public void setEstoqueMaximo(int estoqueMaximo) {
-        this.estoqueMaximo = estoqueMaximo;
-    }
-
     public Date geDttCadastro() {
         return dtCadastro;
     }
@@ -222,6 +190,19 @@ public class Produto implements Serializable {
 
     public void setCadastro(String cadastro) {
         this.dtCadastro = DataHoje.converte(cadastro);
+    }
+
+    public String getObservacao() {
+        return observacao;
+    }
+
+    public void setObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
+    @Override
+    public String toString() {
+        return "Produto{" + "id=" + id + ", descricao=" + descricao + ", marca=" + marca + ", fabricante=" + fabricante + ", sabor=" + sabor + ", medida=" + medida + ", barras=" + barras + ", observacao=" + observacao + ", quantidadeEmbalagem=" + quantidadeEmbalagem + ", dtCadastro=" + dtCadastro + ", produtoGrupo=" + produtoGrupo + ", produtoSubGrupo=" + produtoSubGrupo + ", produtoUnidade=" + produtoUnidade + ", cor=" + cor + '}';
     }
 
 }
