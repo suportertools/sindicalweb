@@ -16,7 +16,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Cor.findAll", query = "SELECT C FROM Cor AS C ORDER BY C.descricao ASC "),
     @NamedQuery(name = "Cor.findName", query = "SELECT C FROM Cor AS C WHERE UPPER(C.descricao) LIKE :pdescricao ORDER BY C.descricao ASC ")
 })
-public class Cor implements Serializable{
+public class Cor implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -49,5 +49,10 @@ public class Cor implements Serializable{
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public String toString() {
+        return "Cor{" + "id=" + id + ", descricao=" + descricao + '}';
     }
 }
