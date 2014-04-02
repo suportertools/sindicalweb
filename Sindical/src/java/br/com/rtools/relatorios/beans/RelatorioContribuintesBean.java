@@ -28,6 +28,7 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,14 +47,16 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-@ManagedBean 
-@SessionScoped 
+@ManagedBean
+@SessionScoped
 public class RelatorioContribuintesBean implements Serializable {
 
     private String radioOrdem = "razao";
     private String radioCidades = "todas";
     private String radioEscritorios = "todos";
     private String radioCentroComercial = "nenhum";
+    private String dataCadastroInicial = "";
+    private String dataCadastroFinal = "";
 //    private String comboCondicao = "contribuintes";
     private String comboCondicao = "ativos";
     private boolean chkConvencao = true;
@@ -80,9 +83,9 @@ public class RelatorioContribuintesBean implements Serializable {
     private List<CentroComercial> listaCentrosComerciais = new ArrayList<CentroComercial>();
     private CentroComercial[] centroComercialSelecionado;
     private List<CnaeConvencao> listaCnaeConvencaos = new ArrayList<CnaeConvencao>();
-    private CnaeConvencao[] cnaeConvencaoSelecionado;    
+    private CnaeConvencao[] cnaeConvencaoSelecionado;
     List<SelectItem> listaTipoRelatorios = new ArrayList<SelectItem>();
-    List<SelectItem> listaTipoEndereco = new ArrayList<SelectItem>();    
+    List<SelectItem> listaTipoEndereco = new ArrayList<SelectItem>();
 
     public void visualizar() {
         String escritorio = "";
@@ -103,7 +106,7 @@ public class RelatorioContribuintesBean implements Serializable {
         TipoEndereco tipoEndereco = (TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoEndereco.get(idTipoEndereco).getDescription()), "TipoEndereco");
         // CONDICAO DO RELATORIO -----------------------------------------------------------
         String condicao = comboCondicao;
-        
+
         // ESCRITORIO DO RELATORIO -----------------------------------------------------------
         if (radioEscritorios.equals("todos")) {
             escritorio = "todos";
@@ -157,8 +160,8 @@ public class RelatorioContribuintesBean implements Serializable {
                         centroComercialSelecionados += "," + Integer.toString(centroComercial.getId());
                     }
                     icc++;
-                }           
-            }              
+                }
+            }
             if (centros.length() > 0) {
                 idsEnderecos = dbContri.listaCentros(centroComercialSelecionados);
                 for (int i = 0; i < idsEnderecos.size(); i++) {
@@ -186,41 +189,41 @@ public class RelatorioContribuintesBean implements Serializable {
                     gruposCidadesSelecionados += "," + Integer.toString(grupoCidade.getId());
                 }
                 icc++;
-            }           
+            }
         }
         // CNAES DO RELATORIO -----------------------------------------------------------
         String cnaeConvencaoSelecionados = "";
         if (cnaeConvencaoSelecionado != null) {
             int icc = 0;
-            for (CnaeConvencao cnaeConvencao  : cnaeConvencaoSelecionado) {
+            for (CnaeConvencao cnaeConvencao : cnaeConvencaoSelecionado) {
                 if (icc == 0) {
                     cnaeConvencaoSelecionados = Integer.toString(cnaeConvencao.getCnae().getId());
                 } else {
                     cnaeConvencaoSelecionados += "," + Integer.toString(cnaeConvencao.getCnae().getId());
                 }
                 icc++;
-            }           
+            }
         }
-        
+
         // CONVENÇÕES DO RELATORIO -----------------------------------------------------------
         String convencoesSelecionadas = "";
         if (convencaoSelecionada != null) {
             int ic = 0;
-            for (Convencao convencao  : convencaoSelecionada) {
+            for (Convencao convencao : convencaoSelecionada) {
                 if (ic == 0) {
                     convencoesSelecionadas = Integer.toString(convencao.getId());
                 } else {
                     convencoesSelecionadas += "," + Integer.toString(convencao.getId());
                 }
                 ic++;
-            }           
+            }
         }
         Juridica sindicato = dbJur.pesquisaCodigo(1);
         PessoaEndereco endSindicato = dbPesEnd.pesquisaEndPorPessoaTipo(1, 3);
         @SuppressWarnings("UseOfObsoleteCollectionType")
         List<List> result = new ArrayList();
         if (convencaoSelecionada != null) {
-            result = dbContri.listaRelatorioContribuintes(relatorios, idEmails, condicao, escritorio, radioCidades, cidades, radioOrdem, cnaeConvencaoSelecionados, tipoEndereco.getId(), enderecos, radioCentroComercial, numeros, gruposCidadesSelecionados, bairros, convencoesSelecionadas);
+            result = dbContri.listaRelatorioContribuintes(relatorios, idEmails, condicao, escritorio, radioCidades, cidades, radioOrdem, cnaeConvencaoSelecionados, tipoEndereco.getId(), enderecos, radioCentroComercial, numeros, gruposCidadesSelecionados, bairros, convencoesSelecionadas, dataCadastroInicial, dataCadastroFinal);
         }
         if (result.isEmpty()) {
             GenericaMensagem.info("Sistema", "Não existem registros para o relatório selecionado");
@@ -229,8 +232,7 @@ public class RelatorioContribuintesBean implements Serializable {
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
             Collection listaContrs = new ArrayList<ParametroContribuintes>();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
             try {
                 for (int i = 0; i < result.size(); i++) {
                     listaContrs.add(new ParametroContribuintes(((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
@@ -336,7 +338,7 @@ public class RelatorioContribuintesBean implements Serializable {
         }
         return cidades;
     }
-    
+
     public List<SelectItem> getListaTipoRelatorios() {
         if (listaTipoRelatorios.isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
@@ -346,8 +348,8 @@ public class RelatorioContribuintesBean implements Serializable {
             }
         }
         return listaTipoRelatorios;
-    }    
-    
+    }
+
     public List<SelectItem> getListaTipoEndereco() {
         if (listaTipoEndereco.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
@@ -357,7 +359,7 @@ public class RelatorioContribuintesBean implements Serializable {
             }
         }
         return listaTipoEndereco;
-    }    
+    }
 
     public List<SelectItem> getListaContabilidades() {
         List<SelectItem> contabilidades = new Vector<SelectItem>();
@@ -738,8 +740,8 @@ public class RelatorioContribuintesBean implements Serializable {
                 i++;
             }
             RelatorioContribuintesDB db = new RelatorioContribuintesDBToplink();
-            listaCnaeConvencaos = db.pesquisarCnaeConvencaoPorConvencao(ids);              
-        }     
+            listaCnaeConvencaos = db.pesquisarCnaeConvencaoPorConvencao(ids);
+        }
         return listaCnaeConvencaos;
     }
 
@@ -753,5 +755,26 @@ public class RelatorioContribuintesBean implements Serializable {
 
     public void setCnaeConvencaoSelecionado(CnaeConvencao[] cnaeConvencaoSelecionado) {
         this.cnaeConvencaoSelecionado = cnaeConvencaoSelecionado;
+    }
+
+    public String getDataCadastroInicial() {
+        return dataCadastroInicial;
+    }
+
+    public void setDataCadastroInicial(String dataCadastroInicial) {
+        this.dataCadastroInicial = dataCadastroInicial;
+    }
+
+    public String getDataCadastroFinal() {
+        return dataCadastroFinal;
+    }
+
+    public void setDataCadastroFinal(String dataCadastroFinal) {
+        this.dataCadastroFinal = dataCadastroFinal;
+    }
+
+    public void limparData() {
+        this.dataCadastroInicial = "";
+        this.dataCadastroFinal = "";
     }
 }
