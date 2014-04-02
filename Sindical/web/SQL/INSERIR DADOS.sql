@@ -403,6 +403,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 234, 'PRODUTO SUBGRUPO', '"/Sindical/produtoSubGrupo.jsf"', 'ProdutoSubGrupo', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 234);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 235, 'PRODUTO', '"/Sindical/produto.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 235);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 236, 'COR', '"/Sindical/cor.jsf"', 'Cor', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 236);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 237, 'PESQUISAR PRODUTOS', '"/Sindical/pesquisaProduto.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 237);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- arr_motivo_inativacao
@@ -984,3 +985,8 @@ INSERT INTO sis_email_protocolo (id, ds_descricao) SELECT 1,'NENHUMA' WHERE NOT 
 INSERT INTO sis_email_protocolo (id, ds_descricao) SELECT 2,'STARTTLS' WHERE NOT EXISTS ( SELECT id FROM sis_email_protocolo WHERE id = 2);
 INSERT INTO sis_email_protocolo (id, ds_descricao) SELECT 3,'SSL/TLS' WHERE NOT EXISTS ( SELECT id FROM sis_email_protocolo WHERE id = 3);
 SELECT setval('sis_email_protocolo_id_seq', max(id)) FROM sis_email_protocolo;
+
+
+INSERT INTO est_tipo (id, ds_descricao) SELECT 1,'CONSUMO' WHERE NOT EXISTS ( SELECT id FROM est_tipo WHERE id = 1);
+INSERT INTO est_tipo (id, ds_descricao) SELECT 2,'VENDAS' WHERE NOT EXISTS ( SELECT id FROM est_tipo WHERE id = 2);
+SELECT setval('est_tipo_id_seq', max(id)) FROM est_tipo;
