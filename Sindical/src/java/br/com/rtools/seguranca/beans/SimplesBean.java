@@ -14,9 +14,9 @@ import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Logradouro;
 import br.com.rtools.escola.ComponenteCurricular;
 import br.com.rtools.financeiro.Indice;
-import br.com.rtools.financeiro.ProdutoGrupo;
-import br.com.rtools.financeiro.ProdutoSubGrupo;
-import br.com.rtools.financeiro.ProdutoUnidade;
+import br.com.rtools.estoque.ProdutoGrupo;
+import br.com.rtools.estoque.ProdutoSubGrupo;
+import br.com.rtools.estoque.ProdutoUnidade;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.locadoraFilme.Genero;
 import br.com.rtools.logSistema.NovoLog;
@@ -27,6 +27,7 @@ import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.suporte.ProStatus;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -479,6 +480,8 @@ public class SimplesBean implements Serializable {
             descricao = ((ProdutoSubGrupo) obj).getDescricao();
             id = ((ProdutoSubGrupo) objeto).getId();
         }
+        Dao dao = new Dao();
+        objeto = dao.rebind(objeto);
     }
 
     public boolean comparaObjeto(Object obj) {
