@@ -1090,30 +1090,25 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String produtoUnidade() {
-        String[] lista = new String[]{"ProdutoUnidade", "Produto Unidade"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("ProdutoUnidade", "Produto Unidade");
     }
 
     public synchronized String produtoGrupo() {
-        String[] lista = new String[]{"ProdutoGrupo", "Produto Grupo"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("ProdutoGrupo", "Produto Grupo");
     }
 
     public synchronized String produtoSubGrupo() {
-        String[] lista = new String[]{"ProdutoSubGrupo", "Produto SubGrupo"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("ProdutoSubGrupo", "Produto SubGrupo");
     }
 
     public synchronized String cor() {
-        String[] lista = new String[]{"Cor", "Cores"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
+        return simples("Cor", "Cores");
+    }
+
+    public String simples(String object, String title) {
+        String[] lista = new String[]{object, title};
+        GenericaSessao.put("cadastroSimples", lista);
+        GenericaSessao.remove("simplesBean");
         return metodoGenerico(2, "simples");
     }
 
@@ -1315,6 +1310,10 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String pesquisaDescontoServicoEmpresa() {
         return metodoGenerico(1, "pesquisaDescontoServicoEmpresa");
+    }
+
+    public synchronized String pesquisaProduto() {
+        return metodoGenerico(1, "pesquisaProduto");
     }
 
     //------------------------------------------------------------------------------------------------------------
