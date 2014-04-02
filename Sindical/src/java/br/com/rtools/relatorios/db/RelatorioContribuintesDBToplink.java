@@ -52,7 +52,8 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
 
     @Override
     public List listaRelatorioContribuintes(Relatorios relatorios, String emails, String condicao, String escritorio, String tipoPCidade, String cidade, String ordem, String cnaes,
-            int idTipoEndereco, String idEndereco, String cTipo, String dsNumero, String idGrupos, String bairros, String convencoes) {
+            int idTipoEndereco, String idEndereco, String cTipo, String dsNumero, String idGrupos, String bairros, String convencoes,
+            String dataCadastroInicial, String dataCadastroFinal) {
         List result = new ArrayList();
         String textQuery = "";
         try {
@@ -172,11 +173,16 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
 
             // CONVENÇÃO
             if (convencoes.length() != 0) {
-                textQuery += " AND j.id IN (select c.id_juridica from arr_contribuintes_vw c where id_convencao in ("+convencoes+")) ";
+                textQuery += " AND j.id IN (select c.id_juridica from arr_contribuintes_vw c where id_convencao in (" + convencoes + ")) ";
             }
             // CNAES
             if (cnaes.length() != 0) {
                 textQuery += " and j.id_cnae in ( " + cnaes + " ) ";
+            }
+
+            // DATA
+            if (!dataCadastroInicial.isEmpty()) {
+                textQuery += " and p.dt_criacao between '" + dataCadastroInicial + "' and '" + dataCadastroFinal + "' ";
             }
             // ORDEM ------------------------------------------------------------------------
             if (relatorios.getQryOrdem() == null || relatorios.getQryOrdem().isEmpty()) {
@@ -198,8 +204,9 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
             List list = qry.getResultList();
             if (!list.isEmpty()) {
                 return list;
-            }            
+            }
         } catch (Exception e) {
+            return result;
         }
         return result;
     }
@@ -313,7 +320,6 @@ public class RelatorioContribuintesDBToplink extends DB implements RelatorioCont
                 textQuery = textQuery + " order by j.contabilidade.pessoa.nome,"
                         + "          j.pessoa.nome";
             }
-
 
             qry = getEntityManager().createQuery(textQuery);
             result = qry.getResultList();
