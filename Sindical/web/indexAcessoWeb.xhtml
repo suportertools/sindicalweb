@@ -22,7 +22,7 @@
             <h:form id="formLogin">
                 <input type="hidden" value="#{controleUsuarioBean.validaIndex}" />
                 <center>                    
-                    <a href="#{controleAcessoWeb.linkSite}" style="color:white"><h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png"/></a>
+                    <a href="#{controleAcessoWebBean.linkSite}" style="color:white"><h:graphicImage url="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoCliente.png"/></a>
                     <br /><br />
                     <h:panelGrid>
                         <rich:panel style=" -webkit-border-radius: 15px; -moz-border-radius: 15px; border-radius: 15px; -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;">
@@ -31,47 +31,47 @@
                             </div> 
                             <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
                                 <rich:column><h:outputLabel value="Login: " styleClass="fontePadrao"/></rich:column>
-                                <rich:column><h:inputText id="login" size="20" value="#{controleAcessoWeb.pessoa.login}" autocomplete="off">
+                                <rich:column><h:inputText id="login" size="20" value="#{controleAcessoWebBean.pessoa.login}" autocomplete="off">
                                         <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
                                 </rich:column>
                                 <rich:column><h:outputLabel value="Senha: " styleClass="fontePadrao"/></rich:column>
                                 <rich:column>
-                                    <h:inputSecret size="20" value="#{controleAcessoWeb.pessoa.senha}" autocomplete="off" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formLogin:entrar')}.onclick();}"/>
-                                    <a4j:commandLink styleClass="idNovo iLink" id="entrar" value="Entrar" action="#{controleAcessoWeb.validacao}" render="outErro"/>
+                                    <h:inputSecret size="20" value="#{controleAcessoWebBean.pessoa.senha}" autocomplete="off" onkeypress="if ( event.keyCode === 13 ){#{rich:element('formLogin:entrar')}.onclick();}"/>
+                                    <a4j:commandLink styleClass="idNovo iLink" id="entrar" value="Entrar" action="#{controleAcessoWebBean.validacao}" render="outErro"/>
                                 </rich:column>
                             </h:panelGrid>
-                            <h:outputText id="outErro" value="#{controleAcessoWeb.msgLoginInvalido}" styleClass="corErro"/>
+                            <h:outputText id="outErro" value="#{controleAcessoWebBean.msgLoginInvalido}" styleClass="corErro"/>
                             <h:panelGrid>
-                                <h:commandLink value="Esqueci a Senha" action="#{controleAcessoWeb.esqueciASenha}" styleClass="iLink fontePadrao" style="text-decoration: underline"/>
-                                <rich:panel  rendered="#{controleAcessoWeb.renEsqueci}">
+                                <h:commandLink value="Esqueci a Senha" action="#{controleAcessoWebBean.esqueciASenha}" styleClass="iLink fontePadrao" style="text-decoration: underline"/>
+                                <rich:panel  rendered="#{controleAcessoWebBean.renEsqueci}">
                                     <h:panelGrid columns="2">
                                         <h:outputText value="E-mail: " styleClass="fontePadrao"/>
-                                        <h:inputText value="#{controleAcessoWeb.email}"/>
+                                        <h:inputText value="#{controleAcessoWebBean.email}"/>
                                     </h:panelGrid>
                                     <h:panelGrid columns="5">
                                         <h:outputLabel value="Tipo Pesquisa:" styleClass="fontePadrao"/>
-                                        <h:selectOneMenu id="iTipo" value="#{controleAcessoWeb.strTipoPesquisa}" onchange="submit();">
+                                        <h:selectOneMenu id="iTipo" value="#{controleAcessoWebBean.strTipoPesquisa}" onchange="submit();">
                                             <f:selectItem itemValue="cnpj" itemLabel="CNPJ"/>
                                             <f:selectItem itemValue="cpf"  itemLabel="CPF"/>
                                             <f:selectItem itemValue="cei"  itemLabel="CEI"/>
                                             <f:selectItem itemValue="nome" itemLabel="Nome"/>
                                         </h:selectOneMenu>
-                                        <h:inputText id="idInput" value="#{controleAcessoWeb.descPesquisa}" class="#{controleAcessoWeb.strTipoPesquisa}"/>
-                                        <h:commandButton id="iI" value="Inicial" action="#{controleAcessoWeb.inicial}" rendered="#{controleAcessoWeb.strTipoPesquisa == 'nome'}"/>
-                                        <h:commandButton id="iP" value="Parcial" action="#{controleAcessoWeb.parcial}" rendered="#{controleAcessoWeb.strTipoPesquisa == 'nome'}"/>
+                                        <h:inputText id="idInput" value="#{controleAcessoWebBean.descPesquisa}" class="#{controleAcessoWebBean.strTipoPesquisa}"/>
+                                        <h:commandButton id="iI" value="Inicial" action="#{controleAcessoWebBean.inicial}" rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}"/>
+                                        <h:commandButton id="iP" value="Parcial" action="#{controleAcessoWebBean.parcial}" rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}"/>
                                     </h:panelGrid>
-                                    <h:panelGrid id="idEmp" columns="2" rendered="#{controleAcessoWeb.strTipoPesquisa == 'nome'}">
+                                    <h:panelGrid id="idEmp" columns="2" rendered="#{controleAcessoWebBean.strTipoPesquisa == 'nome'}">
                                         <h:outputLabel value="Empresas: " styleClass="fontePadrao"/>
-                                        <h:selectOneMenu id="iJuridica" value="#{controleAcessoWeb.idJuridica}">
+                                        <h:selectOneMenu id="iJuridica" value="#{controleAcessoWebBean.idJuridica}">
                                             <a4j:ajax event="change" render="iJuridica, idInput"/>
-                                            <f:selectItems value="#{controleAcessoWeb.listaEmpresa}"/>
+                                            <f:selectItems value="#{controleAcessoWebBean.listaEmpresa}"/>
                                         </h:selectOneMenu>
                                     </h:panelGrid>
 
                                     <h:panelGrid>
-                                        <h:commandButton value="Solicitar Login e Senha" action="#{controleAcessoWeb.enviarEmail}"/>
-                                        <h:outputText id="idErr" styleClass="corErro" value="#{controleAcessoWeb.msgEmail}"/>
+                                        <h:commandButton value="Solicitar Login e Senha" action="#{controleAcessoWebBean.enviarEmail}"/>
+                                        <h:outputText id="idErr" styleClass="corErro" value="#{controleAcessoWebBean.msgEmail}"/>
                                     </h:panelGrid>
                                 </rich:panel>
                             </h:panelGrid>
