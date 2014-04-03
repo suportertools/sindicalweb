@@ -1,6 +1,5 @@
 package br.com.rtools.estoque;
 
-import br.com.rtools.financeiro.Lote;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -18,9 +17,9 @@ public class Pedido implements Serializable {
     private float valorUnitario;
     @Column(name = "NR_DESCONTO_UNITARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private float descontoUnitario;
-    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
+    @JoinColumn(name = "ID_PEDIDO_LOTE", referencedColumnName = "ID")
     @OneToOne
-    private Lote lote;
+    private PedidoLote pedidoLote;
     @JoinColumn(name = "ID_PRODUTO", referencedColumnName = "ID")
     @OneToOne
     private Produto produto;
@@ -33,17 +32,17 @@ public class Pedido implements Serializable {
         this.estoque = 0;
         this.valorUnitario = 0;
         this.descontoUnitario = 0;
-        this.lote = new Lote();
+        this.pedidoLote = new PedidoLote();
         this.produto = new Produto();
         this.estoqueTipo = new EstoqueTipo();
     }
 
-    public Pedido(int id, int estoque, float valorUnitario, float descontoUnitario, Lote lote, Produto produto, EstoqueTipo estoqueTipo) {
+    public Pedido(int id, int estoque, float valorUnitario, float descontoUnitario, PedidoLote pedidoLote, Produto produto, EstoqueTipo estoqueTipo) {
         this.id = id;
         this.estoque = estoque;
         this.valorUnitario = valorUnitario;
         this.descontoUnitario = descontoUnitario;
-        this.lote = lote;
+        this.pedidoLote = pedidoLote;
         this.produto = produto;
         this.estoqueTipo = estoqueTipo;
     }
@@ -80,12 +79,12 @@ public class Pedido implements Serializable {
         this.descontoUnitario = descontoUnitario;
     }
 
-    public Lote getLote() {
-        return lote;
+    public PedidoLote getPedidoLote() {
+        return pedidoLote;
     }
 
-    public void setLote(Lote lote) {
-        this.lote = lote;
+    public void setPedidoLote(PedidoLote pedidoLote) {
+        this.pedidoLote = pedidoLote;
     }
 
     public Produto getProduto() {
@@ -106,7 +105,7 @@ public class Pedido implements Serializable {
 
     @Override
     public String toString() {
-        return "Pedido{" + "id=" + id + ", estoque=" + estoque + ", valorUnitario=" + valorUnitario + ", descontoUnitario=" + descontoUnitario + ", lote=" + lote + ", produto=" + produto + ", estoqueTipo=" + estoqueTipo + '}';
+        return "Pedido{" + "id=" + id + ", estoque=" + estoque + ", valorUnitario=" + valorUnitario + ", descontoUnitario=" + descontoUnitario + ", pedidoPedidoLote=" + pedidoLote + ", produto=" + produto + ", estoqueTipo=" + estoqueTipo + '}';
     }
 
 }
