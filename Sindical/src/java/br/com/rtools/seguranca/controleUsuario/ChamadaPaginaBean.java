@@ -73,6 +73,23 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("chamadaPaginaBean");
     }
 
+    // NOVO MÉTODO - EM ESTUDO
+//    public synchronized String chamadaMenu(String pagina) {
+//        return metodoGenerico(0, pagina);
+//    }
+    public synchronized String pesquisa(String pagina) {
+        return metodoGenerico(1, pagina);
+    }
+
+    public synchronized String pagina(String pagina) {
+        GenericaSessao.remove(pagina + "Bean");
+        return metodoGenerico(2, pagina);
+    }
+
+    public synchronized String paginaSimples(String objeto, String titulo) {
+        return simples(objeto, titulo);
+    }
+
     public void atualizaAcessos(String url) {
         RotinaDB db = new RotinaDBToplink();
         AtalhoDB dba = new AtalhoDBToplink();
@@ -176,6 +193,7 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "pessoaFisica");
     }
 
+    // FIM NOVO MÉTODO - EM ESTUDO
     public synchronized String pessoaFisicaComParametros() {
         return metodoGenerico(2, "pessoaFisica");
     }
@@ -899,6 +917,10 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "produto");
     }
 
+    public synchronized String pedido() {
+        return metodoGenerico(2, "pedido");
+    }
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -908,185 +930,110 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String conviteMotivoSuspencao() {
-        String[] lista = new String[]{"ConviteMotivoSuspencao", "Convite Motivo Suspencao"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("ConviteMotivoSuspencao", "Convite Motivo Suspencao");
     }
 
     public synchronized String logradouro() {
-        String[] lista = new String[]{"Logradouro", "Logradouro"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Logradouro", "Logradouro");
     }
 
     public synchronized String descricaoEndereco() {
-        String[] lista = new String[]{"DescricaoEndereco", "Descrição do Endereço"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("DescricaoEndereco", "Descrição do Endereço");
     }
 
     public synchronized String bairro() {
-        String[] lista = new String[]{"Bairro", "Bairro"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Bairro", "Bairro");
     }
 
     public synchronized String tipoEndereco() {
-        String[] lista = new String[]{"TipoEndereco", "Tipo de Endereço"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("TipoEndereco", "Tipo de Endereço");
     }
 
     public synchronized String tipoDocumento() {
-        String[] lista = new String[]{"TipoDocumento", "Tipo de Documento"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("TipoDocumento", "Tipo de Documento");
     }
 
     public synchronized String grupoAgenda() {
-        String[] lista = new String[]{"GrupoAgenda", "Grupo Agenda"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("GrupoAgenda", "Grupo Agenda");
     }
 
     public synchronized String evento() {
-        String[] lista = new String[]{"Evento", "Evento"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("eventoBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", SEGURANCA);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        GenericaSessao.remove("eventoBean");
+        GenericaSessao.put("idModulo", SEGURANCA);
+        return simples("Evento", "Evento");
     }
 
     public synchronized String modulo() {
-        String[] lista = new String[]{"Modulo", "Modulo"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("moduloBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", SEGURANCA);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        GenericaSessao.remove("moduloBean");
+        GenericaSessao.put("idModulo", SEGURANCA);
+        return simples("Modulo", "Modulo");
     }
 
     public synchronized String departamento() {
-        String[] lista = new String[]{"Departamento", "Departamento"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("departamentoBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", SEGURANCA);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        GenericaSessao.remove("departamentoBean");
+        GenericaSessao.put("idModulo", SEGURANCA);
+        return simples("Departamento", "Departamento");
     }
 
     public synchronized String grupoCidade() {
-        String[] lista = new String[]{"GrupoCidade", "Grupo Cidade"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("GrupoCidade", "Grupo Cidade");
     }
 
     public synchronized String genero() {
-        String[] lista = new String[]{"Genero", "Gênero"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        return metodoGenerico(2, "simples");
+        GenericaSessao.remove("pessoaPesquisa");
+        return simples("Genero", "Gênero");
     }
 
     public synchronized String midia() {
-        String[] lista = new String[]{"Midia", "Mídia"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Midia", "Mídia");
     }
 
     public synchronized String tipoCentroComercial() {
-        String[] lista = new String[]{"TipoCentroComercial", "Tipo Centro Comercial"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("TipoCentroComercial", "Tipo Centro Comercial");
     }
 
     public synchronized String grupoConvenio() {
-        String[] lista = new String[]{"GrupoConvenio", "Grupo Convênio"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("GrupoConvenio", "Grupo Convênio");
     }
 
     public synchronized String componenteCurricular() {
-        String[] lista = new String[]{"ComponenteCurricular", "Componente Curricular"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("ComponenteCurricular", "Componente Curricular");
     }
 
     public synchronized String indice() {
-        String[] lista = new String[]{"Indice", "Indice"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Indice", "Indice");
     }
 
     public synchronized String grupoEvento() {
-        String[] lista = new String[]{"GrupoEvento", "Grupo Evento"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("GrupoEvento", "Grupo Evento");
     }
 
     public synchronized String bandas() {
-        String[] lista = new String[]{"Banda", "Cadastro Bandas"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Banda", "Cadastro Bandas");
     }
 
     public synchronized String nivel() {
-        String[] lista = new String[]{"Nivel", "Cadastro Níveis"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Nivel", "Cadastro Níveis");
     }
 
     public synchronized String proStatus() {
-        String[] lista = new String[]{"ProStatus", "Cadastro Protocolo Status"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("ProStatus", "Cadastro Protocolo Status");
     }
 
     public synchronized String prioridade() {
-        String[] lista = new String[]{"Prioridade", "Cadastro Prioridade"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("Prioridade", "Cadastro Prioridade");
     }
 
     public synchronized String motivoInativacao() {
-        String[] lista = new String[]{"MotivoInativacao", "Motivo de Inativação"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("MotivoInativacao", "Motivo de Inativação");
     }
 
     public synchronized String tipoServico() {
-        String[] lista = new String[]{"TipoServico", "Tipo Serviço"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("TipoServico", "Tipo Serviço");
     }
 
     public synchronized String atendimentoOperacao() {
-        String[] lista = new String[]{"AteOperacao", "Atendimento Operação"};
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cadastroSimples", lista);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesBean");
-        return metodoGenerico(2, "simples");
+        return simples("AteOperacao", "Atendimento Operação");
     }
 
     public synchronized String produtoUnidade() {
@@ -1316,6 +1263,10 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(1, "pesquisaProduto");
     }
 
+    public synchronized String pesquisaPedido() {
+        return metodoGenerico(1, "pesquisaPedido");
+    }
+
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------
@@ -1327,47 +1278,47 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String menuSocial() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", SOCIAL);
+        GenericaSessao.put("idModulo", SOCIAL);
         return metodoGenerico(0, "menuSocial");
     }
 
     public synchronized String menuArrecadacao() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", ARRECADACAO);
+        GenericaSessao.put("idModulo", ARRECADACAO);
         return metodoGenerico(0, "menuArrecadacao");
     }
 
     public synchronized String menuFinanceiro() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", FINANCEIRO);
+        GenericaSessao.put("idModulo", FINANCEIRO);
         return metodoGenerico(0, "menuFinanceiro");
     }
 
     public synchronized String menuHomologacao() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", HOMOLOGACAO);
+        GenericaSessao.put("idModulo", HOMOLOGACAO);
         return metodoGenerico(0, "menuHomologacao");
     }
 
     public synchronized String menuAcademia() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", ACADEMIA);
+        GenericaSessao.put("idModulo", ACADEMIA);
         return metodoGenerico(0, "menuAcademia");
     }
 
     public synchronized String menuEscola() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", ESCOLA);
+        GenericaSessao.put("idModulo", ESCOLA);
         return metodoGenerico(0, "menuEscola");
     }
 
     public synchronized String menuClube() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", CLUBE);
+        GenericaSessao.put("idModulo", CLUBE);
         return metodoGenerico(0, "menuClube");
     }
 
     public synchronized String menuLocadora() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", LOCADORA);
+        GenericaSessao.put("idModulo", LOCADORA);
         return metodoGenerico(0, "menuLocadora");
     }
 
     public synchronized String menuAtendimento() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("idModulo", ATENDIMENTO);
+        GenericaSessao.put("idModulo", ATENDIMENTO);
         return metodoGenerico(0, "menuAtendimento");
     }
 
