@@ -86,6 +86,11 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, pagina);
     }
 
+    public synchronized String pagina(String pagina, String bean) {
+        GenericaSessao.remove(bean + "Bean");
+        return metodoGenerico(2, pagina);
+    }
+
     public synchronized String paginaSimples(String objeto, String titulo) {
         return simples(objeto, titulo);
     }
