@@ -189,10 +189,10 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         return pesquisaObjeto(objectId, object);
     }
 
-    @Override
-    public Object find(Object object, long objectId) {
-        return find(objectId, object);
-    }
+//    @Override
+//    public Object find(Object object, long objectId) {
+//        return find(objectId, object);
+//    }
 
     @Override
     public Object pesquisaObjeto(int id, String className, String field) {
