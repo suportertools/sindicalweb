@@ -1685,7 +1685,13 @@
             <to-view-id>/pesquisaProduto.jsf</to-view-id>
             <redirect/>
         </navigation-case>
-                                             
+        
+        <navigation-case>
+            <from-outcome>pedido</from-outcome>
+            <to-view-id>/pedido.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
     </navigation-rule>
     
     <lifecycle>
