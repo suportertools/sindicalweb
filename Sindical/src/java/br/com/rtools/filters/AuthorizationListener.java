@@ -14,7 +14,12 @@ public class AuthorizationListener implements PhaseListener {
         FacesContext facesContext = event.getFacesContext();
         String currentPage = facesContext.getViewRoot().getViewId();
 
-        boolean isLoginPage = (currentPage.lastIndexOf("indexLogin.xhtml") > -1 || currentPage.lastIndexOf("indexLoginExpirou.xhtml") > -1);
+        boolean isLoginPage = 
+                (
+                currentPage.lastIndexOf("indexLogin.xhtml") > -1 || 
+                currentPage.lastIndexOf("indexLoginExpirou.xhtml") > -1 ||
+                currentPage.lastIndexOf("indexAcessoWeb.xhtml") > -1
+                );
         HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
         Object currentUser = session.getAttribute("userName");
         if (!isLoginPage && currentUser == null) {
