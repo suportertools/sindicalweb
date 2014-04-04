@@ -1,5 +1,7 @@
 package br.com.rtools.estoque;
 
+import br.com.rtools.financeiro.Lote;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -12,14 +14,14 @@ public class Pedido implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "NR_QUANTIDADE", columnDefinition = "INTEGER DEFAULT 0")
-    private int estoque;
+    private int quantidade;
     @Column(name = "NR_VALOR_UNITARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private float valorUnitario;
     @Column(name = "NR_DESCONTO_UNITARIO", columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private float descontoUnitario;
-    @JoinColumn(name = "ID_PEDIDO_LOTE", referencedColumnName = "ID")
+    @JoinColumn(name = "ID_LOTE", referencedColumnName = "ID")
     @OneToOne
-    private PedidoLote pedidoLote;
+    private Lote lote;
     @JoinColumn(name = "ID_PRODUTO", referencedColumnName = "ID")
     @OneToOne
     private Produto produto;
@@ -29,20 +31,20 @@ public class Pedido implements Serializable {
 
     public Pedido() {
         this.id = -1;
-        this.estoque = 0;
+        this.quantidade = 0;
         this.valorUnitario = 0;
         this.descontoUnitario = 0;
-        this.pedidoLote = new PedidoLote();
+        this.lote = new Lote();
         this.produto = new Produto();
         this.estoqueTipo = new EstoqueTipo();
     }
 
-    public Pedido(int id, int estoque, float valorUnitario, float descontoUnitario, PedidoLote pedidoLote, Produto produto, EstoqueTipo estoqueTipo) {
+    public Pedido(int id, int quantidade, float valorUnitario, float descontoUnitario, Lote lote, Produto produto, EstoqueTipo estoqueTipo) {
         this.id = id;
-        this.estoque = estoque;
+        this.quantidade = quantidade;
         this.valorUnitario = valorUnitario;
         this.descontoUnitario = descontoUnitario;
-        this.pedidoLote = pedidoLote;
+        this.lote = lote;
         this.produto = produto;
         this.estoqueTipo = estoqueTipo;
     }
@@ -55,12 +57,12 @@ public class Pedido implements Serializable {
         this.id = id;
     }
 
-    public int getEstoque() {
-        return estoque;
+    public int getQuantidade() {
+        return quantidade;
     }
 
-    public void setEstoque(int estoque) {
-        this.estoque = estoque;
+    public void setQuantidade(int quantidade) {
+        this.quantidade = quantidade;
     }
 
     public float getValorUnitario() {
@@ -79,12 +81,12 @@ public class Pedido implements Serializable {
         this.descontoUnitario = descontoUnitario;
     }
 
-    public PedidoLote getPedidoLote() {
-        return pedidoLote;
+    public Lote getLote() {
+        return lote;
     }
 
-    public void setPedidoLote(PedidoLote pedidoLote) {
-        this.pedidoLote = pedidoLote;
+    public void setLote(Lote lote) {
+        this.lote = lote;
     }
 
     public Produto getProduto() {
@@ -103,9 +105,25 @@ public class Pedido implements Serializable {
         this.estoqueTipo = estoqueTipo;
     }
 
+    public String getValorUnitarioString() {
+        return Moeda.converteR$Float(valorUnitario);
+    }
+
+    public void setValorUnitarioString(String valorUnitarioString) {
+        this.valorUnitario = Moeda.substituiVirgulaFloat(valorUnitarioString);
+    }
+
+    public String getDescontoUnitarioString() {
+        return Moeda.converteR$Float(descontoUnitario);
+    }
+
+    public void setDescontoUnitarioString(String descontoUnitarioString) {
+        this.descontoUnitario = Moeda.substituiVirgulaFloat(descontoUnitarioString);
+    }
+
     @Override
     public String toString() {
-        return "Pedido{" + "id=" + id + ", estoque=" + estoque + ", valorUnitario=" + valorUnitario + ", descontoUnitario=" + descontoUnitario + ", pedidoPedidoLote=" + pedidoLote + ", produto=" + produto + ", estoqueTipo=" + estoqueTipo + '}';
+        return "Pedido{" + "id=" + id + ", quantidade=" + quantidade + ", valorUnitario=" + valorUnitario + ", descontoUnitario=" + descontoUnitario + ", lote=" + lote + ", produto=" + produto + ", estoqueTipo=" + estoqueTipo + '}';
     }
 
 }
