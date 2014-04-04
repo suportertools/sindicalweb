@@ -165,7 +165,7 @@ public class ProdutoBean implements Serializable {
             }
         }
         GenericaSessao.put("linkClicado", true);
-        if (GenericaSessao.exists("urlRetorno")) {
+        if (!GenericaSessao.exists("urlRetorno")) {
             return "produto";
         } else {
             GenericaSessao.put("pesquisaProduto", produto);
