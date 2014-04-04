@@ -34,38 +34,38 @@
                 </f:subview>
                 <f:view>
                     <h:form id="formMenuFinanceiro">
-                        <p:panel style="border: 0px; width: 1024px; margin: 0 auto">
+                        <p:panel style="border: 0px; width: 1024px; margin: 0 auto; height: 400px">
                             <p:menubar >
                                 <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px!important">
                                     <p:submenu label="Pessoa">
-                                        <p:menuitem value="Física"          action="#{chamadaPaginaBean.pessoaFisica}" />
-                                        <p:menuitem value="Juridica"        action="#{chamadaPaginaBean.pessoaJuridica}" />
+                                        <p:menuitem value="Física"              action="#{chamadaPaginaBean.pessoaFisica}" />
+                                        <p:menuitem value="Juridica"            action="#{chamadaPaginaBean.pessoaJuridica}" />
                                     </p:submenu>
-                                    <p:menuitem value="Plano Contas"           action="#{chamadaPaginaBean.plano}" />
-                                    <p:menuitem value="Conta Banco"            action="#{chamadaPaginaBean.contaBanco}" />
-                                    <p:menuitem value="Conta Cobrança"         action="#{chamadaPaginaBean.contaCobranca}" />
-                                    <p:menuitem value="Serv Conta Cobrança" action="#{chamadaPaginaBean.servicoContaCobranca}" />
+                                    <p:menuitem value="Plano Contas"            action="#{chamadaPaginaBean.plano}" />
+                                    <p:menuitem value="Conta Banco"             action="#{chamadaPaginaBean.contaBanco}" />
+                                    <p:menuitem value="Conta Cobrança"          action="#{chamadaPaginaBean.contaCobranca}" />
+                                    <p:menuitem value="Serv Conta Cobrança"     action="#{chamadaPaginaBean.servicoContaCobranca}" />
                                     <p:submenu label="Índices">
-                                        <p:menuitem value="Índice"                 action="#{chamadaPaginaBean.indice}" />
-                                        <p:menuitem value="Índice Mensal"          action="#{chamadaPaginaBean.indiceMensal}" />
+                                        <p:menuitem value="Índice"              action="#{chamadaPaginaBean.indice}" />
+                                        <p:menuitem value="Índice Mensal"       action="#{chamadaPaginaBean.indiceMensal}" />
                                     </p:submenu>
                                     <p:submenu label="Serviços">
-                                        <p:menuitem value="Serviço"                action="#{chamadaPaginaBean.servicos}" />
-                                        <p:menuitem value="Tipo de Serviço"        action="#{chamadaPaginaBean.tipoServico}" />
-                                        <p:menuitem value="Bloqueio Serviços"      action="#{chamadaPaginaBean.bloqueioServicos}" />
-                                        <p:menuitem value="Serviço Rotina"         action="#{chamadaPaginaBean.servicoRotina}" />
+                                        <p:menuitem value="Serviço"             action="#{chamadaPaginaBean.servicos}" />
+                                        <p:menuitem value="Tipo de Serviço"     action="#{chamadaPaginaBean.tipoServico}" />
+                                        <p:menuitem value="Bloqueio Serviços"   action="#{chamadaPaginaBean.bloqueioServicos}" />
+                                        <p:menuitem value="Serviço Rotina"      action="#{chamadaPaginaBean.servicoRotina}" />
                                     </p:submenu>
                                     <p:submenu label="Produtos">
-                                        <p:menuitem value="Produto"   action="#{chamadaPaginaBean.produto}"/>
-                                        <p:menuitem value="Produto Unidade"   action="#{chamadaPaginaBean.produtoUnidade}"/>
-                                        <p:menuitem value="Produto Grupo"   action="#{chamadaPaginaBean.produtoGrupo}"/>
-                                        <p:menuitem value="Produto SubGrupo"   action="#{chamadaPaginaBean.produtoSubGrupo}"/>
-                                        <p:menuitem value="Produto SubGrupo"   action="#{chamadaPaginaBean.produtoSubGrupo}"/>
-                                        <p:menuitem value="Produto Cor"   action="#{chamadaPaginaBean.cor}"/>
+                                        <p:menuitem value="Produto"             action="#{chamadaPaginaBean.pagina('produto')}" />
+                                        <p:menuitem value="Produto Unidade"     action="#{chamadaPaginaBean.produtoUnidade}"/>
+                                        <p:menuitem value="Produto Grupo"       action="#{chamadaPaginaBean.produtoGrupo}"/>
+                                        <p:menuitem value="Produto SubGrupo"    action="#{chamadaPaginaBean.produtoSubGrupo}"/>
+                                        <p:menuitem value="Produto Cor"         action="#{chamadaPaginaBean.cor}"/>
+                                        <p:menuitem value="Pedido"              action="#{chamadaPaginaBean.pagina('pedido')}" />
                                     </p:submenu>                                    
-                                    <p:menuitem value="Correção"               action="#{chamadaPaginaBean.correcao}" />
-                                    <p:menuitem value="Caixa"                  action="#{chamadaPaginaBean.caixa()}" />
-                                    <p:menuitem value="Cartão Bancário"        action="#{chamadaPaginaBean.cartao()}" />
+                                    <p:menuitem value="Correção"                action="#{chamadaPaginaBean.correcao}" />
+                                    <p:menuitem value="Caixa"                   action="#{chamadaPaginaBean.caixa()}" />
+                                    <p:menuitem value="Cartão Bancário"         action="#{chamadaPaginaBean.cartao()}" />
                                 </p:submenu>
 
                                 <p:submenu label="Movimento" icon="ui-icon-document" style="margin-right: 15px">
