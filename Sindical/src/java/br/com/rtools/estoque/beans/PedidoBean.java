@@ -31,6 +31,7 @@ public class PedidoBean implements Serializable {
     private String valorUnitarioPedido;
     private String quantidadePedido;
     private boolean modalPedido;
+    private float valorTotal;
 
     @PostConstruct
     public void init() {
@@ -43,6 +44,7 @@ public class PedidoBean implements Serializable {
         valorUnitarioPedido = "0,00";
         quantidadePedido = "0";
         modalPedido = false;
+        valorTotal = 0;
     }
 
     @PreDestroy
@@ -236,5 +238,18 @@ public class PedidoBean implements Serializable {
 
     public void setModalPedido(boolean modalPedido) {
         this.modalPedido = modalPedido;
+    }
+
+    public float getValorTotal() {
+        float valor = 0;
+        for (Pedido listaPedido : listaPedidos) {
+            valor += listaPedido.getValorUnitario();
+        }
+        valorTotal = valor;
+        return valorTotal;
+    }
+
+    public void setValorTotal(float valorTotal) {
+        this.valorTotal = valorTotal;
     }
 }
