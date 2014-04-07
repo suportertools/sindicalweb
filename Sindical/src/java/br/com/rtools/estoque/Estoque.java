@@ -1,6 +1,7 @@
 package br.com.rtools.estoque;
 
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -129,6 +130,14 @@ public class Estoque implements Serializable {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public String getCustoMedioString() {
+        return Moeda.converteR$Float(custoMedio);
+    }
+
+    public void setCustoMedioString(String custoMedioString) {
+        this.custoMedio = Moeda.converteUS$(custoMedioString);
     }
 
     @Override
