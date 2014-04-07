@@ -156,7 +156,7 @@
                                                     <p:column>
                                                         <h:panelGrid columns="2">
                                                             <p:inputText value="#{agendaTelefoneBean.agendaTelefone.contato}"  maxlength="500" size="28" placeholder="Nome do contato"/>
-                                                            <p:commandButton value="Adicionar" action="#{agendaTelefoneBean.adicionarAgendaTelefone()}" title="Adicionar/atualizar telefone" rendered="#{agendaTelefoneBean.agenda.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"  update="tbl_agenda_telefone messages_telefone" />                                                        
+                                                            <p:commandButton value="Adicionar" action="#{agendaTelefoneBean.adicionarAgendaTelefone()}" title="Adicionar/atualizar telefone" rendered="#{agendaTelefoneBean.agenda.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"  update="tbl_agenda_telefone messages_telefone i_panel_cadastro_telefone" />
                                                         </h:panelGrid>
                                                     </p:column>
                                                 </p:row>
