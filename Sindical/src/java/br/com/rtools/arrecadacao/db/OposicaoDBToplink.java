@@ -5,6 +5,7 @@ import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.OposicaoPessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.principal.DB;
+import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -153,8 +154,8 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
             filtroString = " WHERE opo.dtEmissao = '" + DataHoje.livre(DataHoje.converte(descricaoPesquisa), "yyyy-MM-dd") + "'";
         } else if (tipoPesquisa.equals("todos")) {
             DataHoje dh = new DataHoje();
-            String dataAntiga =  dh.decrementarMeses(1, DataHoje.data());
-            filtroString = " WHERE opo.dtEmissao >= '"+dataAntiga+"' ";
+            String dataAntiga = dh.decrementarMeses(1, DataHoje.data());
+            filtroString = " WHERE opo.dtEmissao >= '" + dataAntiga + "' ";
         }
         String queryString = " SELECT OPO FROM Oposicao AS OPO " + (filtroString) + " ORDER BY OPO.dtEmissao DESC ";
         try {
@@ -203,5 +204,82 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String refInicial, String refFinal, Relatorios r) {
+        try {
+            List listQuery = new ArrayList();
+            String queryEmissao = "";
+            String queryReferencia = "";
+            String queryString = ""
+                    + "    SELECT O.dt_emissao                AS emissao,       "
+                    + "           T.ds_descricao              AS tipo,          "
+                    + "           PES.ds_documento            AS documento,     "
+                    + "           PES.ds_nome                 AS empresa,       "
+                    + "           P.ds_nome                   AS funcionario,   "
+                    + "           P.ds_sexo                   AS sexo,          "
+                    + "           P.ds_cpf                    AS cpf,           "
+                    + "           P.ds_rg                     AS rg,            "
+                    + "           PC.ds_referencia_inicial    AS ref_i,         "
+                    + "           PC.ds_referencia_final      AS ref_f          "
+                    + "      FROM arr_oposicao                AS O              "
+                    + "INNER JOIN arr_oposicao_pessoa         AS P      ON O.id_oposicao_pessoa = P.id          "
+                    + "INNER JOIN arr_convencao_periodo       AS PC     ON PC.id    =   O.id_convencao_periodo  "
+                    + "INNER JOIN pes_juridica                AS J      ON J.id     =   O.id_juridica           "
+                    + "INNER JOIN pes_pessoa                  AS PES    ON PES.id   =   J.id_pessoa             "
+                    + "INNER JOIN pes_tipo_documento          AS T      ON T.id     =   PES.id_tipo_documento   ";
+
+            if (idEmpresa > 0) {
+                listQuery.add(" PES.id =  ");
+            }
+            if (idFuncionario > 0) {
+                listQuery.add(" O.id_oposicao_pessoa = " + idFuncionario);
+            }
+            if (!emissaoInicial.equals("")) {
+                listQuery.add(" O.id_juridica = " + idEmpresa);
+            }
+            if (!emissaoFinal.equals("")) {
+                queryEmissao = " O.dt_emissao = '" + emissaoInicial + "'";
+            }
+            if (!emissaoInicial.equals("") && !emissaoFinal.equals("")) {
+                queryEmissao = " O.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "' ";
+            }
+            if (!refInicial.equals("")) {
+                queryReferencia = " PC.ds_referencia_inicial BETWEEN '" + refInicial + "' AND '" + refInicial + "' ";
+            }
+            if (!refFinal.equals("")) {
+                queryReferencia = " PC.ds_referencia_final BETWEEN '" + refFinal + "' AND '" + refFinal + "' ";
+            }
+            if (!queryEmissao.isEmpty()) {
+                listQuery.add(queryEmissao);
+            }
+            if (!queryReferencia.isEmpty()) {
+                listQuery.add(queryReferencia);
+            }
+            for (int i = 0; i < listQuery.size(); i++) {
+                if (i == 0) {
+                    queryString += " WHERE " + listQuery.get(i).toString() + " ";
+                } else {
+                    queryString += " AND " + listQuery.get(i).toString() + " ";
+                }
+            }
+            String orderQuery = " O.dt_emissao ASC, PES.ds_nome ASC, P.ds_nome ASC ";
+            if (r != null) {
+                if (r.getId() != -1) {
+                    if (!r.getQryOrdem().isEmpty()) {
+                        orderQuery = r.getQryOrdem();
+                    }
+                }
+            }
+            Query query = getEntityManager().createNativeQuery(queryString + " ORDER BY " + orderQuery);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
     }
 }
