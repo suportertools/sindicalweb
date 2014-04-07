@@ -2,7 +2,7 @@
 <faces-config version="2.2"
               xmlns="http://xmlns.jcp.org/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">   
     <managed-bean>
         <managed-bean-name>filialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.FilialJSFBean</managed-bean-class>
@@ -1689,6 +1689,12 @@
         <navigation-case>
             <from-outcome>pedido</from-outcome>
             <to-view-id>/pedido.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>#{navigationRules.param}</from-outcome>
+            <to-view-id>/#{navigationRules.param}</to-view-id>
             <redirect/>
         </navigation-case>
         
