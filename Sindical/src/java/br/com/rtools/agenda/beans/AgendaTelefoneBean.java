@@ -102,16 +102,16 @@ public class AgendaTelefoneBean implements Serializable {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         agenda.setGrupoAgenda((GrupoAgenda) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaGrupoAgendas.get(idGrupoAgenda).getDescription()), "GrupoAgenda"));
         agenda.setTipoEndereco((TipoEndereco) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaTipoEnderecos.get(idTipoEndereco).getDescription()), "TipoEndereco"));
+        if (pessoa != null) {
+            if (pessoa.getId() != -1) {
+                agenda.setPessoa(pessoa);
+            }
+        }
+        if (agenda.getPessoa().getId() == -1) {
+            agenda.setPessoa(null);
+        }
         if (agenda.getId() == -1) {
             AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
-            if (pessoa != null) {
-                if (pessoa.getId() != -1) {
-                    agenda.setPessoa(pessoa);
-                }
-            }
-            if (agenda.getPessoa().getId() == -1) {
-                agenda.setPessoa(null);
-            }
             if (endereco != null) {
                 if (endereco.getId() != -1) {
                     agenda.setEndereco(endereco);
