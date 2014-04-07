@@ -194,7 +194,7 @@
                                             #{estoque.estoqueMaximo}
                                         </p:column>
                                         <p:column headerText="Custo Médio (R$)" width="100" styleClass="text-center">
-                                            #{estoque.custoMedio}
+                                            #{estoque.custoMedioString}
                                         </p:column>
                                         <p:column width="25" styleClass="text-center">
                                             <p:commandButton icon="ui-icon-trash" action="#{produtoBean.deleteEstoque(estoque)}" update=":form_produto:i_tela_estoque" title="Remover registro"/>
