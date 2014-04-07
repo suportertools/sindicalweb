@@ -17,16 +17,18 @@ public class Diretorio {
             boolean err = false;
             String caminhoContac = "";
             int b = 0;
+            String caminho = "";
             for (String item : s) {
                 if (!item.equals("")) {
                     if (b == 0) {
                         caminhoContac = item;
+                        caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/"+caminhoContac);
                     } else {
                         caminhoContac = "/" + caminhoContac + "/" + item;
+                        caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoContac);
                     }
-                    String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("");
-                    if (!new File(caminho+caminhoContac).exists()) {
-                        File file = new File(caminho+caminhoContac);
+                    if (!new File(caminho).exists()) {
+                        File file = new File(caminho);
                         if (!file.mkdir()) {
                             err = false;
                             break;
