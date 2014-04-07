@@ -129,7 +129,12 @@ public class OposicaoBean implements Serializable {
         GenericaSessao.put("oposicaoPesquisa", oposicao);
         GenericaSessao.put("linkClicado", true);
         GenericaSessao.remove("oposicaoPesquisa");
-        return "oposicao";
+        String urlRetorno = "oposicao";
+        if (GenericaSessao.exists("urlRetorno")) {
+            GenericaSessao.put("oposicaoPesquisaPor", porPesquisa);
+            urlRetorno = GenericaSessao.getString("urlRetorno");
+        }
+        return urlRetorno;
     }
 
     public boolean salvarOposicaoPessoa() {
@@ -397,7 +402,7 @@ public class OposicaoBean implements Serializable {
     }
 
     public String getPorPesquisa() {
-        if(porPesquisa.equals("todos")) {
+        if (porPesquisa.equals("todos")) {
             descricaoPesquisa = "";
         }
         return porPesquisa;
