@@ -24,9 +24,9 @@ public class Diretorio {
                     } else {
                         caminhoContac = "/" + caminhoContac + "/" + item;
                     }
-                    String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoContac);
-                    if (!new File(caminho).exists()) {
-                        File file = new File(caminho);
+                    String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("");
+                    if (!new File(caminho+caminhoContac).exists()) {
+                        File file = new File(caminho+caminhoContac);
                         if (!file.mkdir()) {
                             err = false;
                             break;
