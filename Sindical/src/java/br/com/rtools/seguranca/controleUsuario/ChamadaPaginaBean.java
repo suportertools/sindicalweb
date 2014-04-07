@@ -14,6 +14,7 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.MenuLinks;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.IOException;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -81,14 +82,16 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(1, pagina);
     }
 
-    public synchronized String pagina(String pagina) {
+    public synchronized void pagina(String pagina) throws IOException {
         GenericaSessao.remove(pagina + "Bean");
-        return metodoGenerico(2, pagina);
+        String redirect = metodoGenerico(2, pagina);
+        FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
     }
 
-    public synchronized String pagina(String pagina, String bean) {
+    public synchronized void pagina(String pagina, String bean) throws IOException {
         GenericaSessao.remove(bean + "Bean");
-        return metodoGenerico(2, pagina);
+        String redirect = metodoGenerico(2, pagina);
+        FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
     }
 
     public synchronized String paginaSimples(String objeto, String titulo) {
