@@ -28,9 +28,9 @@
                             <p:dialog widgetVar="dlg_pedido" width="1024" modal="true" visible="#{pedidoBean.modalPedido}" header="Itens da nota">
                                 <p:ajax event="close" listener="#{pedidoBean.closeModalPedido()}" update="@this"/>
                                 <h:panelGrid id="i_grid_pedido">
-                                    
+
                                     <!-- TELA CADASTRO -->
-                                    
+
                                     <p:messages autoUpdate="true" showSummary="true" showDetail="true" id="i_message_pedido"/>
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Pesquisar" icon="ui-icon-search" title="Pesquisar Produto" action="#{chamadaPaginaBean.pesquisaProduto()}" />
@@ -76,6 +76,7 @@
                                             <p:commandButton icon="ui-icon-trash" action="#{pedidoBean.removeItemPedido(index)}" update=":form_pedido:" title="Remover registro"/>
                                         </p:column>
                                         <f:facet name="footer">                                    
+                                            Valor total: #{pedidoBean.valorTotal}
                                         </f:facet>
                                     </p:dataTable>
 
