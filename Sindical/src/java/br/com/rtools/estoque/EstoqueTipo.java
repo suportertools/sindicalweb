@@ -1,5 +1,6 @@
 package br.com.rtools.estoque;
 
+import br.com.rtools.utilitarios.BaseEntity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "EstoqueTipo.findAll", query = "SELECT ET FROM EstoqueTipo AS ET ORDER BY ET.descricao ASC "),
     @NamedQuery(name = "EstoqueTipo.findName", query = "SELECT ET FROM EstoqueTipo AS ET WHERE UPPER(ET.descricao) LIKE :pdescricao ORDER BY ET.descricao ASC ")
 })
-public class EstoqueTipo implements Serializable {
+public class EstoqueTipo implements BaseEntity, Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -35,6 +36,7 @@ public class EstoqueTipo implements Serializable {
         this.descricao = descricao;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -55,4 +57,31 @@ public class EstoqueTipo implements Serializable {
     public String toString() {
         return "EstoqueTipo{" + "id=" + id + ", descricao=" + descricao + '}';
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + this.id;
+        hash = 29 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final EstoqueTipo other = (EstoqueTipo) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
+            return false;
+        }
+        return true;
+    }
+
 }
