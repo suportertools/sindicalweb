@@ -14,7 +14,7 @@ public class AteMovimento implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_ATE_PESSOA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_SIS_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private SisPessoa pessoa;
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID", nullable = false)
