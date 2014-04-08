@@ -40,7 +40,7 @@
                                         <p:selectBooleanButton value="#{relatorioOposicaoBean.porPeridoEmissao}" onLabel="Emissão - Edição" offLabel="Emissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.porOposicao}" onLabel="Empresa - Edição" offLabel="Empresa - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.porOposicao}" onLabel="Oposição - Edição" offLabel="Oposição - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{relatorioOposicaoBean.porPeridoConvencao}" onLabel="P. Convenção - Edição" offLabel="P. Convenção - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
@@ -62,14 +62,19 @@
                                                 </p:calendar>
                                                 <p:outputLabel value=" até" />
                                                 <p:calendar value="#{relatorioOposicaoBean.dataFinal}" pattern="dd/MM/yyyy"  size="10" navigator="true">
-                                                    <p:ajax event="dateSelect" listener="#{relatorioOposicaoBean.selecionaDataInicial}" />
+                                                    <p:ajax event="dateSelect" listener="#{relatorioOposicaoBean.selecionaDataFinal}" />
                                                 </p:calendar>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioOposicaoBean.close('periodoEmissao')}" title="Remover filtro"/>
                                             </h:panelGrid>
                                         </h:column>
                                     </c:if>
                                     <c:if test="#{relatorioOposicaoBean.porOposicao}">
-                                        <p:commandButton action="#{chamadaPaginaBean.pesquisaOposicao}"  icon="ui-icon-search" />
+                                        <h:column>
+                                            <p:outputLabel value="#{relatorioOposicaoBean.descPorPesquisa}" style="text-transform: uppercase; font-weight: bold; color: red; size: 14pt;" />
+                                        </h:column>
+                                        <h:column>
+                                        </h:column>
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisaOposicao}"  icon="ui-icon-search" value="Pesquisar Oposição"/>
                                         <h:column>
                                             <h:panelGrid columns="2">
                                                 <h:column>
@@ -78,14 +83,14 @@
                                                     </c:if>
                                                     <c:if test="#{relatorioOposicaoBean.oposicao.id != -1}">
                                                         <c:if test="#{relatorioOposicaoBean.porPesquisa == 'empresa' || relatorioOposicaoBean.porPesquisa == 'cnpj'}">
-                                                            <p:outputLabel value="#{relatorioOposicaoBean.oposicao.juridica.pessoa.nome} - Documento: #{relatorioOposicaoBean.oposicao.juridica.pessoa.documento}" for="idOposicao"/>
+                                                            <p:outputLabel value="#{relatorioOposicaoBean.oposicao.juridica.pessoa.nome} - Documento: #{relatorioOposicaoBean.oposicao.juridica.pessoa.documento}" />
                                                         </c:if>                                                        
                                                         <c:if test="#{relatorioOposicaoBean.porPesquisa == 'rgs' || relatorioOposicaoBean.porPesquisa == 'cpf' || relatorioOposicaoBean.porPesquisa == 'nome'}">
-                                                            <p:outputLabel value="#{relatorioOposicaoBean.oposicao.oposicaoPessoa.nome} - Documento: #{relatorioOposicaoBean.oposicao.oposicaoPessoa.cpf}" for="idOposicao"/>
+                                                            <p:outputLabel value="#{relatorioOposicaoBean.oposicao.oposicaoPessoa.nome} - Documento: #{relatorioOposicaoBean.oposicao.oposicaoPessoa.cpf}" />
                                                         </c:if>                                                        
                                                     </c:if>
                                                 </h:column>
-                                                <p:commandButton icon="ui-icon-close" action="#{relatorioOposicaoBean.close('funcionario')}" title="Remover filtro"/>
+                                                <p:commandButton icon="ui-icon-close" action="#{relatorioOposicaoBean.close('oposicao')}" title="Remover filtro"/>
                                             </h:panelGrid>
                                         </h:column>
                                     </c:if>
@@ -93,9 +98,13 @@
                                         <p:outputLabel value="Período Convenção" />
                                         <h:column>
                                             <h:panelGrid columns="4">
-                                                <p:inputMask mask="99/9999" value="#{relatorioOposicaoBean.referenciaInicial}" />
+                                                <p:inputMask mask="99/9999" value="#{relatorioOposicaoBean.referenciaInicial}">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputMask>
                                                 até
-                                                <p:inputMask mask="99/9999" value="#{relatorioOposicaoBean.referenciaFinal}" />
+                                                <p:inputMask mask="99/9999" value="#{relatorioOposicaoBean.referenciaFinal}">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputMask>
                                                 <p:commandButton icon="ui-icon-close" action="#{relatorioOposicaoBean.close('periodoConvencao')}" title="Remover filtro"/>
                                             </h:panelGrid>
                                         </h:column>
@@ -111,7 +120,7 @@
                             </p:panel>
                         </h:column>
                     </h:panelGrid>
-                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioOposicaoBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" />
+                    <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" action="#{relatorioOposicaoBean.visualizar()}" ajax="false" styleClass="margin-top-max" update="id_messages_growl" actionListener="#{relatorioOposicaoBean.parametroOposicao.clear()}" />
                 </h:form>
             </p:panel>
         </f:view>
