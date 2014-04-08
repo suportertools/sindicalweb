@@ -60,6 +60,7 @@ public class RelatorioOposicaoBean implements Serializable {
     private List<ParametroOposicao> parametroOposicao;
     private int[] index;
     private String porPesquisa;
+    private String descPorPesquisa;
 
     @PostConstruct
     public void init() {
@@ -80,6 +81,7 @@ public class RelatorioOposicaoBean implements Serializable {
         index = new int[1];
         index[0] = 0;
         porPesquisa = "";
+        descPorPesquisa = "";
     }
 
     @PreDestroy
@@ -98,6 +100,7 @@ public class RelatorioOposicaoBean implements Serializable {
         if (relatorios == null) {
             return;
         }
+        String detalheRelatorio = "";
         if (parametroOposicao.isEmpty()) {
             OposicaoDB oposicaoDB = new OposicaoDBToplink();
             int pPessoaOposicaoI = 0;
@@ -106,7 +109,6 @@ public class RelatorioOposicaoBean implements Serializable {
             String pFStringI = "";
             String pRefIStringI = "";
             String pRefFStringI = "";
-            String detalheRelatorio;
             List listDetalhePesquisa = new ArrayList();
             if (porPesquisa.equals("rgs") || porPesquisa.equals("nome") || porPesquisa.equals("cpf")) {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
@@ -130,28 +132,31 @@ public class RelatorioOposicaoBean implements Serializable {
                 pRefFStringI = referenciaFinal;
                 listDetalhePesquisa.add(" Periodo Convenção entre " + pRefIStringI + " e " + pRefFStringI);
             }
-            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, pRefIStringI, pRefIStringI, relatorios);
+            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, pRefIStringI, pRefFStringI, relatorios);
             if (listDetalhePesquisa.isEmpty()) {
-                detalheRelatorio = "Pesquisar todos registros!";
+                detalheRelatorio += "Pesquisar todos registros!";
             } else {
-                detalheRelatorio = "Pesquisar registros por: ";
+                detalheRelatorio += "Pesquisar registros por: ";
                 for (int i = 0; i < listDetalhePesquisa.size(); i++) {
                     if (i == 0) {
-                        detalheRelatorio = listDetalhePesquisa.get(i).toString();
+                        detalheRelatorio += listDetalhePesquisa.get(i).toString();
                     } else {
                         detalheRelatorio += "," + listDetalhePesquisa.get(i).toString();
                     }
                 }
             }
+            String dt = "";
+            String dat = "";
             for (Object list1 : list) {
+                dt = GenericaString.converterNullToString(((List) list1).get(0));
                 ParametroOposicao po
                         = new ParametroOposicao(
                                 detalheRelatorio,
-                                GenericaString.converterNullToString(((List) list1).get(0)), // Emissao
+                                dt, // Emissao
                                 GenericaString.converterNullToString(((List) list1).get(1)), // Tipo Documento
                                 GenericaString.converterNullToString(((List) list1).get(2)), // Documento
                                 GenericaString.converterNullToString(((List) list1).get(3)), // Empresa
-                                GenericaString.converterNullToString(((List) list1).get(4)), // Funcioário
+                                GenericaString.converterNullToString(((List) list1).get(4)).toUpperCase(), // Funcioário
                                 GenericaString.converterNullToString(((List) list1).get(5)), // Sexo
                                 GenericaString.converterNullToString(((List) list1).get(6)), // CPF
                                 GenericaString.converterNullToString(((List) list1).get(7)), // RG
@@ -172,9 +177,9 @@ public class RelatorioOposicaoBean implements Serializable {
         }
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
             try {
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) null);
+                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroOposicao);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
                 String nomeDownload = "relatorio_oposicao_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
@@ -277,10 +282,14 @@ public class RelatorioOposicaoBean implements Serializable {
     }
 
     public Oposicao getOposicao() {
-        if (GenericaSessao.exists("pesquisaOposicao")) {
-            oposicao = (Oposicao) GenericaSessao.getObject("pesquisaOposicao", true);
+        if (GenericaSessao.exists("oposicaoPesquisa")) {
+            oposicao = (Oposicao) GenericaSessao.getObject("oposicaoPesquisa", true);
             if (GenericaSessao.exists("oposicaoPesquisaPor")) {
                 porPesquisa = GenericaSessao.getString("oposicaoPesquisaPor", true);
+                if (porPesquisa.equals("todos") || porPesquisa.equals("data") || porPesquisa.equals("observacao")) {
+                    oposicao = new Oposicao();
+                    porPesquisa = "";
+                }
             }
         }
         return oposicao;
@@ -384,5 +393,24 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public void setOposicaos(List<Oposicao> oposicaos) {
         this.oposicaos = oposicaos;
+    }
+
+    public String getDescPorPesquisa() {
+        String tp = porPesquisa;
+        if (porPesquisa.equals("todos")) {
+            descPorPesquisa = "NENHUM FILTO SELECIONADO.";
+        } else if (porPesquisa.equals("rgs") || porPesquisa.equals("cpf") || porPesquisa.equals("nome")) {
+            if (porPesquisa.equals("rgs")) {
+                tp = "RG";
+            }
+            descPorPesquisa = "PESQUISA FUNCIONÁRIO POR: " + tp.toUpperCase();
+        } else if (porPesquisa.equals("cnpj") || porPesquisa.equals("empresa")) {
+            descPorPesquisa = "PESQUISA EMPRESA POR: " + tp.toUpperCase();
+        }
+        return descPorPesquisa;
+    }
+
+    public void setDescPorPesquisa(String descPorPesquisa) {
+        this.descPorPesquisa = descPorPesquisa;
     }
 }
