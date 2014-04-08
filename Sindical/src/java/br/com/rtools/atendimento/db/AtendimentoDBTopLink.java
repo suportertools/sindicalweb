@@ -147,7 +147,7 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
                     porStr += " and ";
                 }
             }
-            innerPes = " inner join sis_pessoa pes on(pes.id = mov.id_ate_pessoa)";
+            innerPes = " inner join sis_pessoa pes on(pes.id = mov.id_sis_pessoa)";
             porStr += " pes.ds_documento = '" + cpf + "'";
 
         }
