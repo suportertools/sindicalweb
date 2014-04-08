@@ -72,10 +72,10 @@ CREATE TABLE ate_movimento
   ds_hora character varying(5),
   dt_emissao date,
   id_filial integer NOT NULL,
-  id_ate_pessoa integer NOT NULL,
+  id_sis_pessoa integer NOT NULL,
   id_operacao integer NOT NULL,
   CONSTRAINT ate_movimento_pkey PRIMARY KEY (id),
-  CONSTRAINT fk_ate_movimento_id_ate_pessoa FOREIGN KEY (id_ate_pessoa)
+  CONSTRAINT fk_ate_movimento_id_sis_pessoa FOREIGN KEY (id_sis_pessoa)
       REFERENCES sis_pessoa (id) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT fk_ate_movimento_id_filial FOREIGN KEY (id_filial)
