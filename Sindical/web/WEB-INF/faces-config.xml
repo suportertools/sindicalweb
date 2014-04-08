@@ -1693,10 +1693,17 @@
         </navigation-case>
         
         <navigation-case>
+            <from-outcome>relatorioOposicao</from-outcome>
+            <to-view-id>/relatorioOposicao.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <!-- 
+        <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
             <to-view-id>/#{navigationRules.param}</to-view-id>
             <redirect/>
-        </navigation-case>
+        </navigation-case> -->
         
     </navigation-rule>
     
