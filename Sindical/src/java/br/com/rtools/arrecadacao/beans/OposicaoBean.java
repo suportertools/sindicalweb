@@ -128,7 +128,6 @@ public class OposicaoBean implements Serializable {
         sexo = oposicao.getOposicaoPessoa().getSexo();
         GenericaSessao.put("oposicaoPesquisa", oposicao);
         GenericaSessao.put("linkClicado", true);
-        GenericaSessao.remove("oposicaoPesquisa");
         String urlRetorno = "oposicao";
         if (GenericaSessao.exists("urlRetorno")) {
             GenericaSessao.put("oposicaoPesquisaPor", porPesquisa);
