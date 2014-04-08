@@ -82,16 +82,18 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(1, pagina);
     }
 
-    public synchronized void pagina(String pagina) throws IOException {
+    public synchronized String pagina(String pagina) throws IOException {
         GenericaSessao.remove(pagina + "Bean");
         String redirect = metodoGenerico(2, pagina);
-        FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
+        //FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
+        return redirect;
     }
 
-    public synchronized void pagina(String pagina, String bean) throws IOException {
+    public synchronized String pagina(String pagina, String bean) throws IOException {
         GenericaSessao.remove(bean + "Bean");
         String redirect = metodoGenerico(2, pagina);
-        FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
+        //FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
+        return redirect;
     }
 
     public synchronized String paginaSimples(String objeto, String titulo) {
