@@ -92,20 +92,11 @@
                     <div style="width: 90%; margin-left: 5%; margin-right: 5%; height:260px; overflow:auto;">
                         <br />
                         <rich:dataTable var="linha" value="#{enderecoBean.listaEndereco}" iterationStatusVar="it" style="width:100%" id="tbl">
-                            <rich:column style="text-align: center;">
-                                <f:facet name="header">
-                                    <h:outputText value="#"/>
-                                </f:facet>
-                                <h:outputText value="#{it.index}"/>
-                            </rich:column>
-
                             <rich:column styleClass="colunaPesquisa">
                                 <f:facet name="header">
                                     <h:outputText value="ID"/>
                                 </f:facet>
-                                <a4j:commandLink action="#{enderecoBean.editar}" value="#{linha.id}">
-                                    <a4j:param value="#{it.index}" assignTo="#{enderecoBean.idIndex}" />
-                                </a4j:commandLink>
+                                <a4j:commandLink action="#{enderecoBean.editar(linha)}" value="#{linha.id}" />
                             </rich:column>                            
 
                             <rich:column>
