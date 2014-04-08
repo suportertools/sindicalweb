@@ -12,6 +12,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -38,8 +39,8 @@ public class EnderecoBean implements Serializable {
     private int idLogradouro;
     private int idCidade;
     private String porPesquisa;
-    private String msgConfirma = "";
-    private boolean limpar = false;
+    private String mensagem = "";
+    private boolean limpar;
 
     public EnderecoBean() {
         endereco = new Endereco();
@@ -51,6 +52,9 @@ public class EnderecoBean implements Serializable {
         porPesquisa = "";
         listaLogradouro = new ArrayList();
         listaCidade = new ArrayList();
+        mensagem = "";
+        limpar = false;
+        idLogradouro = 0;
         getListaCidade();
         getListaLogradouro();
     }
@@ -73,50 +77,43 @@ public class EnderecoBean implements Serializable {
     }
 
     public String endereco() {
-        //return ((chamadaPaginaJSFBean)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).endereco();
     }
 
-    public String salvar() throws Exception {
-        msgConfirma = "";
+    public void salvar() throws Exception {
+        mensagem = "";
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         EnderecoDB db = new EnderecoDBToplink();
         NovoLog log = new NovoLog();
-        Logradouro logradouro = (Logradouro) sv.pesquisaCodigo(Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription()), "Logradouro");
+        Logradouro logradouro = (Logradouro) sv.find(new Logradouro(), Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription()));
         endereco.setLogradouro(logradouro);
-
         if (endereco.getDescricaoEndereco().getId() == -1) {
-            msgConfirma = "O campo Descrição Endereço deve ser preenchido!";
-            return null;
+            mensagem = "O campo Descrição Endereço deve ser preenchido!";
+            return;
         }
-
         if (endereco.getCidade().getId() == -1) {
-            msgConfirma = "O campo Cidade deve ser preenchido!";
-            return null;
+            mensagem = "O campo Cidade deve ser preenchido!";
+            return;
         }
-
         if (endereco.getBairro().getId() == -1) {
-            msgConfirma = "O campo Bairro deve ser preenchido!";
-            return null;
+            mensagem = "O campo Bairro deve ser preenchido!";
+            return;
         }
-
         if (endereco.getLogradouro() == null) {
-            msgConfirma = "O campo Logradouro está inválido!";
-            return null;
+            mensagem = "O campo Logradouro está inválido!";
+            return;
         }
-
         String cep = "";
         if (!endereco.getCep().equals("")) {
             cep = endereco.getCep().substring(0, 5);
             cep = cep + endereco.getCep().substring(6, 9);
             endereco.setCep(cep);
         }
-
         Endereco e;
         if (endereco.getId() == -1) {
             e = endereco;
         } else {
-            e = (Endereco) sv.pesquisaCodigo(endereco.getId(), "Endereco");
+            e = (Endereco) sv.find(new Endereco(), endereco.getId());
         }
         List<Endereco> listend = db.pesquisaEndereco(endereco.getDescricaoEndereco().getId(),
                 endereco.getCidade().getId(),
@@ -125,60 +122,62 @@ public class EnderecoBean implements Serializable {
         if (!listend.isEmpty()) {
             for (int i = 0; i < listend.size(); i++) {
                 if (listend.get(i).getCep().equals(endereco.getCep()) && listend.get(i).getFaixa().equals(endereco.getFaixa())) {
-                    msgConfirma = "Endereço já Existente no Sistema!";
-                    return null;
+                    mensagem = "Endereço já Existente no Sistema!";
+                    return;
                 }
             }
         }
-
         sv.abrirTransacao();
         if (endereco.getId() == -1) {
             if (sv.inserirObjeto(endereco)) {
                 sv.comitarTransacao();
-                msgConfirma = "Endereço salvo com Sucesso!";
+                mensagem = "Endereço salvo com Sucesso!";
                 log.novo("Novo registro", "Endereco inserido " + endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") - " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
             } else {
                 sv.desfazerTransacao();
-                msgConfirma = "Erro ao Salvar!";
+                mensagem = "Erro ao Salvar!";
             }
         } else {
             if (sv.alterarObjeto(endereco)) {
                 sv.comitarTransacao();
                 String antes = "De: " + e.getId() + " - " + e.getLogradouro().getDescricao() + " " + e.getDescricaoEndereco().getDescricao() + ", " + e.getFaixa() + " - " + e.getBairro().getDescricao() + " (" + e.getBairro().getId() + ") " + e.getCidade().getCidade() + " (" + e.getCidade().getId() + ") - " + e.getCidade().getUf();
                 log.novo("Atualizado", antes + " - para: " + endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
-                msgConfirma = "Endereço atualizado com Sucesso!";
+                mensagem = "Endereço atualizado com Sucesso!";
             } else {
                 sv.desfazerTransacao();
-                msgConfirma = "Erro ao Salvar!";
+                mensagem = "Erro ao Salvar!";
             }
         }
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoPesquisa", endereco);
-        return null;
     }
 
     public String editar() {
-        endereco = (Endereco) listaEndereco.get(getIdIndex());
-        //for(int i = 0; i < (listaLogradouro.size()); i++){
-        //    if(Integer.valueOf( listaLogradouro.get(i).getDescription() ) == endereco.getLogradouro().getId()){
-        //        idLogradouro = i;
-        //        break;
-        //    }
-        //}
-        String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        Endereco e = (Endereco) listaEndereco.get(getIdIndex());
+        return editar(e);
+    }
+
+    public String editar(Endereco e) {
+        endereco = e;
+        for (int i = 0; i < (listaLogradouro.size()); i++) {
+            if (Integer.parseInt(listaLogradouro.get(i).getDescription()) == endereco.getLogradouro().getId()) {
+                idLogradouro = i;
+                break;
+            }
+        }
+        String url = (String) GenericaSessao.getString("urlRetorno");
+        GenericaSessao.put("linkClicado", true);
         if (url != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoPesquisa", endereco);
+            GenericaSessao.put("enderecoPesquisa", endereco);
             return url;
         }
         return "endereco";
     }
 
-    public String novo() {
+    public void novo() {
         endereco = new Endereco();
         listaEndereco.clear();
         listaLogradouro.clear();
         limpar = true;
-        return "endereco";
     }
 
     public void limpar() {
@@ -187,39 +186,37 @@ public class EnderecoBean implements Serializable {
         }
     }
 
-    public String excluir() {
+    public void excluir() {
         if (endereco.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             NovoLog log = new NovoLog();
             sv.abrirTransacao();
-            endereco = (Endereco) sv.pesquisaCodigo(endereco.getId(), "Endereco");
+            endereco = (Endereco) sv.find(endereco);
             if (sv.deletarObjeto(endereco)) {
                 sv.comitarTransacao();
-                limpar = true;
-                msgConfirma = "Endereço excluido com Sucesso!";
+                mensagem = "Endereço excluido com Sucesso!";
                 log.novo("Excluido", endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
+                novo();
             } else {
                 sv.desfazerTransacao();
-                msgConfirma = "Endereço não pode ser excluido!";
+                mensagem = "Endereço não pode ser excluido!";
             }
         }
-        return null;
     }
 
     public Endereco getEndereco() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa") != null) {
+        if (GenericaSessao.exists("simplesPesquisa")) {
             try {
-                Bairro bairro = (Bairro) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa");
+                Bairro bairro = (Bairro) GenericaSessao.getObject("simplesPesquisa");
                 endereco.setBairro(bairro);
             } catch (Exception e) {
-                DescricaoEndereco descricaoEndereco = (DescricaoEndereco) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa");
+                DescricaoEndereco descricaoEndereco = (DescricaoEndereco) GenericaSessao.getObject("simplesPesquisa");
                 endereco.setDescricaoEndereco(descricaoEndereco);
             }
+            GenericaSessao.remove("simplesPesquisa");
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesPesquisa");
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
-            endereco.setCidade((Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
+        if (GenericaSessao.exists("cidadePesquisa")) {
+            endereco.setCidade((Cidade) GenericaSessao.getObject("cidadePesquisa", true));
         }
         return endereco;
     }
@@ -241,7 +238,7 @@ public class EnderecoBean implements Serializable {
             EnderecoDB db = new EnderecoDBToplink();
             List<Logradouro> select = db.pesquisaTodosOrdenado();
             for (int i = 0; i < select.size(); i++) {
-                listaLogradouro.add(new SelectItem(new Integer(i), (String) select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
+                listaLogradouro.add(new SelectItem(i, (String) select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
                 if (select.get(i).getDescricao().equals("Rua")) {
                     idLogradouro = i;
                 }
@@ -274,7 +271,7 @@ public class EnderecoBean implements Serializable {
             List select = db.pesquisaCidadeObj(cidadeBase.getUf());
 
             for (int i = 0; i < select.size(); i++) {
-                listaCidade.add(new SelectItem(new Integer(i), (String) ((Cidade) select.get(i)).getCidade(), Integer.toString(((Cidade) select.get(i)).getId())));
+                listaCidade.add(new SelectItem(i, (String) ((Cidade) select.get(i)).getCidade(), Integer.toString(((Cidade) select.get(i)).getId())));
                 if (Integer.parseInt(listaCidade.get(i).getDescription()) == cidadeBase.getId()) {
                     idCidade = i;
                 }
@@ -378,11 +375,11 @@ public class EnderecoBean implements Serializable {
         this.cidadeBase = cidadeBase;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMensagem() {
+        return mensagem;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMensagem(String mensagem) {
+        this.mensagem = mensagem;
     }
 }
