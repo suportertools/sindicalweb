@@ -49,14 +49,17 @@
                                                 <h:panelGrid columns="5">
                                                     <p:calendar size="10" value="#{fisicaBean.fisica.dtNascimento}" pattern="dd/MM/yyyy" yearRange="c-120:c-0" navigator="true" onclick="$(this).mask('99/99/9999'); return null;" converterMessage="Data de nascimento inválida - Formato 01/01/1900">
                                                         <p:ajax event="dateSelect" update="@this"  listener="#{fisicaBean.fisica.selecionaDataNascimento}" />
+                                                        <p:ajax event="change" update="@this"  />
                                                     </p:calendar>
                                                     <p:outputLabel value="Sexo: "/>
                                                     <p:selectOneRadio id="idSexo" value="#{fisicaBean.fisica.sexo}" >
+                                                        <p:ajax event="change" update="@this"/>
                                                         <f:selectItem itemValue="F" itemLabel="F"/>
                                                         <f:selectItem itemValue="M" itemLabel="M"/>
                                                     </p:selectOneRadio>
                                                     <p:outputLabel value="Estado Civil: " styleClass=" margin-left"/>
                                                     <p:selectOneMenu id="i_estado" value="#{fisicaBean.fisica.estadoCivil}">
+                                                        <p:ajax event="change" update="@this"/>
                                                         <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
                                                         <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
                                                         <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
@@ -69,18 +72,26 @@
                                                 </h:panelGrid>
                                             </h:column>
                                             <p:outputLabel value="Pai: "/>
-                                            <p:inputText id="i_pai" size="70"  maxlength="100" value="#{fisicaBean.fisica.pai}" />
+                                            <p:inputText id="i_pai" size="70"  maxlength="100" value="#{fisicaBean.fisica.pai}" converter="toUpperCase">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
                                             <p:outputLabel value="Mãe: "/>
-                                            <p:inputText id="idmae" size="70"  maxlength="100" value="#{fisicaBean.fisica.mae}" />
+                                            <p:inputText id="idmae" size="70"  maxlength="100" value="#{fisicaBean.fisica.mae}" converter="toUpperCase">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
                                             <p:outputLabel value="Telefone: "/>
                                             <h:column>
-                                                <p:inputMask mask="(99) 9999-9999" id="i_teledone1" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone1}" />
+                                                <p:inputMask mask="(99) 9999-9999" id="i_teledone1" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone1}" converter="toUpperCase">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputMask>
                                                 <p:outputLabel value="Celular: " styleClass="margin-left-max"/>
-                                                <p:inputText id="i_celular" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone3}" styleClass="ddd_telefone"/>
+                                                <p:inputText id="i_celular" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone3}" styleClass="ddd_telefone">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputText>
                                             </h:column>
                                             <p:outputLabel value="RG: "/>
                                             <h:column>
-                                                <p:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}">
+                                                <p:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}" converter="toUpperCase">
                                                     <f:ajax event="blur" render="@this" />
                                                 </p:inputText>
                                                 <p:outputLabel value="Órgão Emissor: " styleClass=" margin-left-max" title="Órgão emissor do RG"/>
@@ -94,11 +105,17 @@
                                             </h:column>
                                             <p:outputLabel value="Carteira: "/>
                                             <h:column>
-                                                <p:inputText id="i_carteira" size="8" maxlength="9" value="#{fisicaBean.fisica.carteira}"/>
+                                                <p:inputText id="i_carteira" size="8" maxlength="9" value="#{fisicaBean.fisica.carteira}">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputText>
                                                 <p:outputLabel value="Série: " styleClass=" margin-left-max"/>
-                                                <p:inputText id="idserie" size="3" maxlength="15" value="#{fisicaBean.fisica.serie}"/>
+                                                <p:inputText id="idserie" size="3" maxlength="15" value="#{fisicaBean.fisica.serie}">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputText>
                                                 <p:outputLabel value="Recadastro: " styleClass=" margin-left-max"/>
-                                                <p:inputMask id="idRecadastro" size="10" value="#{fisicaBean.fisica.recadastro}" mask="99/99/9999" />
+                                                <p:inputMask id="idRecadastro" size="10" value="#{fisicaBean.fisica.recadastro}" mask="99/99/9999">
+                                                    <p:ajax event="blur" update="@this" />
+                                                </p:inputMask>
                                                 <p:commandButton icon="ui-icon-refresh" title="clique para data de hoje" action="#{fisicaBean.hojeRecadastro}" update="idRecadastro" styleClass=" margin-left-max"/>
                                             </h:column>
                                             <p:outputLabel value="Nacionalidade: "/>
@@ -125,6 +142,7 @@
                                             <p:outputLabel value="Profissão:"/>
                                             <h:column>
                                                 <p:selectOneMenu value="#{fisicaBean.idProfissao}" style="width: 300px;">
+                                                    <p:ajax event="change" update="@this"/>
                                                     <f:selectItems value="#{fisicaBean.listaProfissoes}"/>
                                                 </p:selectOneMenu>
                                             </h:column>
@@ -359,9 +377,9 @@
                             <p:commandButton value="Extrato" rendered="#{fisicaBean.fisica.id != -1}" />
                         </h:panelGrid>                        
                         <!-- PESQUISAR PROFISSAO -->
-                        <p:dialog modal="true" width="600" height="400" widgetVar="dgl_painel_profissao" closable="true" header="Pesquisar">
+                        <p:dialog modal="true" width="650" height="400" widgetVar="dgl_painel_profissao" closable="true" header="Pesquisar">
                             <p:panel id="i_painel_profissao" styleClass="no-border">
-                                <h:panelGrid columns="6">
+                                <h:panelGrid columns="7">
                                     <h:outputLabel value="Profissão: " />
                                     <h:inputText id="idProf" size="20" value="#{fisicaBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
                                     <p:commandButton value="Inicial" action="#{fisicaBean.inicial}" update="i_tbl_prof" />
@@ -371,6 +389,7 @@
                                         <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
                                         <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
                                     </p:selectOneMenu>
+                                    <p:commandButton value="Cadastro" action="#{chamadaPaginaBean.profissao}" icon="ui-icon-plus" title="Cadastrar nova profissão"/>
                                 </h:panelGrid>
                                 <p:panel id="i_tbl_prof" styleClass="margin-top-max no-border">
                                     <p:dataTable var="profissao" value="#{fisicaBean.listaProfissao}" scrollHeight="300" scrollable="true" emptyMessage="Nenhum registro encotrado">
