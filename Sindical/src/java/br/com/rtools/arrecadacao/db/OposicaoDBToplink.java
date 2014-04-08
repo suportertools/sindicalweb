@@ -213,17 +213,17 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
             String queryEmissao = "";
             String queryReferencia = "";
             String queryString = ""
-                    + "    SELECT O.dt_emissao                AS emissao,       "
-                    + "           T.ds_descricao              AS tipo,          "
-                    + "           PES.ds_documento            AS documento,     "
-                    + "           PES.ds_nome                 AS empresa,       "
-                    + "           P.ds_nome                   AS funcionario,   "
-                    + "           P.ds_sexo                   AS sexo,          "
-                    + "           P.ds_cpf                    AS cpf,           "
-                    + "           P.ds_rg                     AS rg,            "
-                    + "           PC.ds_referencia_inicial    AS ref_i,         "
-                    + "           PC.ds_referencia_final      AS ref_f          "
-                    + "      FROM arr_oposicao                AS O              "
+                    + "    SELECT TO_CHAR(O.dt_emissao, 'DD/MM/YYYY') AS emissao,"
+                    + "           T.ds_descricao              AS tipo,           "
+                    + "           PES.ds_documento            AS documento,      "
+                    + "           UPPER(PES.ds_nome)          AS empresa,        "
+                    + "           UPPER(P.ds_nome)            AS funcionario,    "
+                    + "           P.ds_sexo                   AS sexo,           "
+                    + "           P.ds_cpf                    AS cpf,            "
+                    + "           P.ds_rg                     AS rg,             "
+                    + "           PC.ds_referencia_inicial    AS ref_i,          "
+                    + "           PC.ds_referencia_final      AS ref_f           "
+                    + "      FROM arr_oposicao                AS O               "
                     + "INNER JOIN arr_oposicao_pessoa         AS P      ON O.id_oposicao_pessoa = P.id          "
                     + "INNER JOIN arr_convencao_periodo       AS PC     ON PC.id    =   O.id_convencao_periodo  "
                     + "INNER JOIN pes_juridica                AS J      ON J.id     =   O.id_juridica           "
@@ -231,25 +231,27 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                     + "INNER JOIN pes_tipo_documento          AS T      ON T.id     =   PES.id_tipo_documento   ";
 
             if (idEmpresa > 0) {
-                listQuery.add(" PES.id =  ");
+                listQuery.add(" O.id_juridica =  "+idEmpresa);
             }
             if (idFuncionario > 0) {
                 listQuery.add(" O.id_oposicao_pessoa = " + idFuncionario);
             }
             if (!emissaoInicial.equals("")) {
-                listQuery.add(" O.id_juridica = " + idEmpresa);
-            }
-            if (!emissaoFinal.equals("")) {
                 queryEmissao = " O.dt_emissao = '" + emissaoInicial + "'";
             }
             if (!emissaoInicial.equals("") && !emissaoFinal.equals("")) {
                 queryEmissao = " O.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "' ";
             }
+            String refInicialS = refInicial.substring(3, 7)+""+refInicial.substring(0, 2);
+            String refFinalS = refFinal.substring(3, 7)+""+refFinal.substring(0, 2);
             if (!refInicial.equals("")) {
-                queryReferencia = " PC.ds_referencia_inicial BETWEEN '" + refInicial + "' AND '" + refInicial + "' ";
+                queryReferencia = "'"+refInicialS+"'  >= (SUBSTRING(pc.ds_referencia_inicial,4,4)||SUBSTRING(pc.ds_referencia_inicial,0,3)) ";                
             }
-            if (!refFinal.equals("")) {
-                queryReferencia = " PC.ds_referencia_final BETWEEN '" + refFinal + "' AND '" + refFinal + "' ";
+            if (!refFinal.equals("") && !refFinal.equals(refInicial)) {
+                if(!queryReferencia.isEmpty()) {
+                    queryReferencia += " AND "; 
+                }
+                queryReferencia = "'"+refFinalS+"'  <= (SUBSTRING(pc.ds_referencia_final,4,4)||SUBSTRING(pc.ds_referencia_final,0,3)) ";
             }
             if (!queryEmissao.isEmpty()) {
                 listQuery.add(queryEmissao);
