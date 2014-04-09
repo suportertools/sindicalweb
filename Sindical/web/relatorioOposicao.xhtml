@@ -57,7 +57,7 @@
                                         <p:outputLabel value="Período Emissão" />
                                         <h:column>
                                             <h:panelGrid columns="4">
-                                                <p:calendar value="#{relatorioOposicaoBean.dataInicial}" pattern="dd/MM/yyyy" size="10" navigator="true">
+                                                <p:calendar value="#{relatorioOposicaoBean.dataInicial}" pattern="dd/MM/yyyy" size="10" navigator="true" onclick="$(this).mask('99/99/9999'); return null;">
                                                     <p:ajax event="dateSelect" listener="#{relatorioOposicaoBean.selecionaDataInicial}" />
                                                 </p:calendar>
                                                 <p:outputLabel value=" até" />
