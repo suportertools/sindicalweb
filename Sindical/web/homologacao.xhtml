@@ -51,7 +51,7 @@
                                         <p:outputLabel value="Nome: " styleClass="font-color-red"/>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText size="50" value="#{homologacaoBean.fisica.pessoa.nome}" converter="toUpperCase">
+                                        <p:inputText size="50" value="#{homologacaoBean.fisica.pessoa.nome}" converter="#{toUpperCase}">
                                             <p:ajax event="blur" update="@this"/>
                                         </p:inputText>
                                         <p:outputLabel value="Nascimento: " styleClass="margin-left-max"/>

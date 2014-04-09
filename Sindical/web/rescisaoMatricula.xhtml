@@ -75,7 +75,7 @@
                                     <h:outputLabel value="Os movimentos vencidos deverão ser quitados! E os a vencer serão automáticamente excluídos." />
                                     <h:panelGrid columns="2" styleClass="margin-top-max">
                                         <p:outputLabel value="Valor multa: " />
-                                        <p:inputText value="#{rescisaoContratoBean.valorMulta}" converter="toCurrency">
+                                        <p:inputText value="#{rescisaoContratoBean.valorMulta}" converter="#{toCurrency}">
                                             <f:ajax event="blur" render="@this i_total_multa" />
                                         </p:inputText>
                                         <p:outputLabel value="Número de parcelas: " />

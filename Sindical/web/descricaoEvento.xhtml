@@ -34,7 +34,7 @@
                                 <h:panelGrid columns="4">
                                     <h:column>
                                         <h:outputLabel value="Descrição" /><br />
-                                        <p:inputText id="i_descricao" value="#{descricaoEventoBean.descricaoEvento.descricao}" size="50" converter="toUpperCase">
+                                        <p:inputText id="i_descricao" value="#{descricaoEventoBean.descricaoEvento.descricao}" size="50" converter="#{toUpperCase}">
                                             <p:ajax event="blur" update="@this" />
                                         </p:inputText>
                                         <p:watermark value="Digite o Nome do Evento" for="i_descricao"/>
