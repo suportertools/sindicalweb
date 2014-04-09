@@ -36,7 +36,7 @@
                                 <h:column>
                                     Lista
                                 </h:column>
-                                <p:selectOneMenu value="#{baixaProdutoConsumoBean.selectedEstoqueTipo}" converter="entityConverter">
+                                <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.estoqueTipo}" converter="#{entityConverter}">
                                     <p:ajax event="change" update="@this" />
                                     <f:selectItems value="#{baixaProdutoConsumoBean.estoqueTipos}" var="estoqueTipo" itemValue="#{estoqueTipo}" itemLabel="#{estoqueTipo.descricao}" />
                                 </p:selectOneMenu>
