@@ -1,8 +1,10 @@
 package br.com.rtools.estoque.beans;
 
+import br.com.rtools.estoque.EstoqueSaidaConsumo;
 import br.com.rtools.estoque.EstoqueTipo;
 import br.com.rtools.estoque.Produto;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -14,12 +16,14 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class BaixaProdutoConsumoBean {
 
+    private EstoqueSaidaConsumo estoqueSaidaConsumo;
     private Produto produto;
     private EstoqueTipo selectedEstoqueTipo;
     private List<EstoqueTipo> estoqueTipos;
 
     @PostConstruct
     public void init() {
+        estoqueSaidaConsumo = new EstoqueSaidaConsumo();
         produto = new Produto();
         selectedEstoqueTipo = new EstoqueTipo();
         estoqueTipos = new ArrayList<EstoqueTipo>();
@@ -27,7 +31,8 @@ public class BaixaProdutoConsumoBean {
 
     @PreDestroy
     public void destroy() {
-
+        GenericaSessao.remove("baixaProdutoConsumoBean");
+        GenericaSessao.remove("produtoPesquisa");
     }
 
     public void baixar() {
@@ -60,5 +65,13 @@ public class BaixaProdutoConsumoBean {
 
     public void setSelectedEstoqueTipo(EstoqueTipo selectedEstoqueTipo) {
         this.selectedEstoqueTipo = selectedEstoqueTipo;
+    }
+
+    public EstoqueSaidaConsumo getEstoqueSaidaConsumo() {
+        return estoqueSaidaConsumo;
+    }
+
+    public void setEstoqueSaidaConsumo(EstoqueSaidaConsumo estoqueSaidaConsumo) {
+        this.estoqueSaidaConsumo = estoqueSaidaConsumo;        
     }
 }
