@@ -29,7 +29,7 @@
                             <div class="clear"></div>
                             <h:panelGrid columns="2">
                                 <p:outputLabel value="Descrição:" />
-                                <p:inputText value="#{produtoBean.produto.descricao}" converter="toUpperCase">
+                                <p:inputText value="#{produtoBean.produto.descricao}" converter="#{toUpperCase}">
                                     <p:ajax event="change" update="@this" />
                                 </p:inputText>
                                 <h:column>
@@ -86,11 +86,11 @@
                                 </h:column>
                                 <h:column>
                                     <h:panelGrid columns="5">                                
-                                        <p:inputText value="#{produtoBean.produto.marca}" converter="toUpperCase">
+                                        <p:inputText value="#{produtoBean.produto.marca}" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" />
                                         </p:inputText>
                                         <p:outputLabel value="Fabricante: " />
-                                        <p:inputText value="#{produtoBean.produto.fabricante}" converter="toUpperCase">
+                                        <p:inputText value="#{produtoBean.produto.fabricante}" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" />
                                         </p:inputText>
                                     </h:panelGrid>
@@ -102,11 +102,11 @@
                                 </h:column>
                                 <h:column>
                                     <h:panelGrid columns="5">
-                                        <p:inputText value="#{produtoBean.produto.sabor}" converter="toUpperCase">
+                                        <p:inputText value="#{produtoBean.produto.sabor}" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" />
                                         </p:inputText>
                                         <p:outputLabel value="Medida: " />
-                                        <p:inputText value="#{produtoBean.produto.medida}" converter="toUpperCase">
+                                        <p:inputText value="#{produtoBean.produto.medida}" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" />
                                         </p:inputText>
                                     </h:panelGrid>
@@ -150,7 +150,7 @@
                                                 <p:outputLabel value="Custo médio: " />
                                             </p:column>
                                             <p:column>
-                                                <p:inputText value="#{produtoBean.custoMedio}" converter="toCurrency">
+                                                <p:inputText value="#{produtoBean.custoMedio}" converter="#{toCurrency}">
                                                     <p:ajax event="blur" update="@this" />
                                                 </p:inputText>
                                             </p:column>
@@ -255,7 +255,7 @@
                                 <p:messages id="i_msg_produto_grupo" autoUpdate="true" showDetail="true" />
                                 <h:panelGrid id="i_produto_grupo" columns="3">
                                     <p:outputLabel value="Descrição" />
-                                    <p:inputText value="#{produtoBean.produtoGrupo.descricao}" converter="toUpperCase">
+                                    <p:inputText value="#{produtoBean.produtoGrupo.descricao}" converter="#{toUpperCase}">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputText>
                                     <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoGrupo}" update="i_msg_produto_grupo i_produto_grupo i_panel_grid_1" />
@@ -265,7 +265,7 @@
                                 <p:messages id="i_msg_produto_subgrupo" autoUpdate="true" showDetail="true" />
                                 <h:panelGrid id="i_produto_subgrupo" columns="3">
                                     <p:outputLabel value="Descrição" />
-                                    <p:inputText value="#{produtoBean.produtoSubGrupo.descricao}" converter="toUpperCase">
+                                    <p:inputText value="#{produtoBean.produtoSubGrupo.descricao}" converter="#{toUpperCase}">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputText>                                        
                                     <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoSubGrupo}" update="i_msg_produto_subgrupo i_produto_subgrupo i_panel_grid_1" immediate="true"/>
@@ -276,7 +276,7 @@
                                 <p:messages id="i_msg_produto_unidade" autoUpdate="true" showDetail="true" />
                                 <h:panelGrid id="i_produto_unidade" columns="3">
                                     <p:outputLabel value="Descrição" />
-                                    <p:inputText value="#{produtoBean.produtoUnidade.descricao}" converter="toUpperCase">
+                                    <p:inputText value="#{produtoBean.produtoUnidade.descricao}" converter="#{toUpperCase}">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputText>                                        
                                     <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoUnidade}" update="i_msg_produto_unidade i_produto_unidade i_panel_grid_2" />
@@ -286,7 +286,7 @@
                                 <p:messages id="i_msg_cor" autoUpdate="true" showDetail="true" />
                                 <h:panelGrid id="i_cor" columns="3">
                                     <p:outputLabel value="Descrição" />
-                                    <p:inputText value="#{produtoBean.cor.descricao}" converter="toUpperCase">
+                                    <p:inputText value="#{produtoBean.cor.descricao}" converter="#{toUpperCase}">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputText>                                        
                                     <p:commandButton value="Adicionar" action="#{produtoBean.saveCor}" update="i_msg_cor i_cor i_panel_grid_2" />

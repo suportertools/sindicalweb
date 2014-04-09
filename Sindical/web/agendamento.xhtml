@@ -88,7 +88,7 @@
                                 </h:column>
                                 <h:outputText value="NOME: " styleClass="fontePadraoVermelho margin-left-max"/>
                                 <h:column>
-                                    <h:inputText id="iFuncionario" size="50" value="#{agendamentoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" converter="toUpperCase">
+                                    <h:inputText id="iFuncionario" size="50" value="#{agendamentoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
                                         <f:ajax event="blur" render="@this" />
                                     </h:inputText>
                                     <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
@@ -218,7 +218,7 @@
                                     <h:outputText value="Contato: " styleClass="fontePadrao"/>
                                 </h:column>
                                 <h:column>
-                                    <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="20" styleClass="fontePadraoNegrito" converter="toUpperCase">
+                                    <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="20" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
                                         <f:ajax event="blur" render="@this"  />
                                     </h:inputText>
                                     <h:outputText value="E-mail: " styleClass="fontePadrao margin-left-max"/>

@@ -65,7 +65,7 @@
                                 <p:inputTextarea cols="90" rows="3" value="#{recepcaoBean.agendamento.observacao}" />
                                 <c:if test="#{recepcaoBean.registro.senhaHomologacao}">
                                     <h:outputText value="Preposto: " style="color: red;"/>
-                                    <p:inputText value="#{recepcaoBean.recepcao.preposto}" size="50" converter="toUpperCase">
+                                    <p:inputText value="#{recepcaoBean.recepcao.preposto}" size="50" converter="#{toUpperCase}">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputText>
                                     <p:outputLabel value="Hora de chegada preposto: " style="color: red;"/>
@@ -154,7 +154,7 @@
                                     <f:selectItems value="#{recepcaoBean.listaStatus}"/>
                                 </p:selectOneMenu>
                                 <p:outputLabel for="idNrProtocolo" value=" Número do Protocolo: "  style="margin-left: 20px"   />
-                                <p:inputText id="idNrProtocolo" value="#{recepcaoBean.numeroProtocolo}" size="2" title="Digite o número do protocolo gerado no agendamento" converter="thisNumber" disabled="#{recepcaoBean.desabilitaPesquisaProtocolo}">
+                                <p:inputText id="idNrProtocolo" value="#{recepcaoBean.numeroProtocolo}" size="2" title="Digite o número do protocolo gerado no agendamento" converter="#{thisNumber}" disabled="#{recepcaoBean.desabilitaPesquisaProtocolo}">
                                     <p:ajax event="blur" update="@this" />
                                 </p:inputText>
                                 <p:commandButton icon="ui-icon-search" update="tbl" title="Pesquisa por número de protocolo" disabled="#{recepcaoBean.desabilitaPesquisaProtocolo}"/>                                    

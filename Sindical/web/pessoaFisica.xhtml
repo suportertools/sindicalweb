@@ -41,7 +41,7 @@
                                                 </p:inputMask>                                        
                                             </p:column>
                                             <p:outputLabel value="Nome: "/>
-                                            <p:inputText id="i_nome" size="70"  value="#{fisicaBean.fisica.pessoa.nome}" converter="toUpperCase">
+                                            <p:inputText id="i_nome" size="70"  value="#{fisicaBean.fisica.pessoa.nome}" converter="#{toUpperCase}">
                                                 <p:ajax event="blur" update="i_nome" />
                                             </p:inputText>
                                             <p:outputLabel value="Nascimento: "/>
@@ -72,16 +72,16 @@
                                                 </h:panelGrid>
                                             </h:column>
                                             <p:outputLabel value="Pai: "/>
-                                            <p:inputText id="i_pai" size="70"  maxlength="100" value="#{fisicaBean.fisica.pai}" converter="toUpperCase">
+                                            <p:inputText id="i_pai" size="70"  maxlength="100" value="#{fisicaBean.fisica.pai}" converter="#{toUpperCase}">
                                                 <p:ajax event="blur" update="@this" />
                                             </p:inputText>
                                             <p:outputLabel value="Mãe: "/>
-                                            <p:inputText id="idmae" size="70"  maxlength="100" value="#{fisicaBean.fisica.mae}" converter="toUpperCase">
+                                            <p:inputText id="idmae" size="70"  maxlength="100" value="#{fisicaBean.fisica.mae}" converter="#{toUpperCase}">
                                                 <p:ajax event="blur" update="@this" />
                                             </p:inputText>
                                             <p:outputLabel value="Telefone: "/>
                                             <h:column>
-                                                <p:inputMask mask="(99) 9999-9999" id="i_teledone1" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone1}" converter="toUpperCase">
+                                                <p:inputMask mask="(99) 9999-9999" id="i_teledone1" size="20" maxlength="10" value="#{fisicaBean.fisica.pessoa.telefone1}" converter="#{toUpperCase}">
                                                     <p:ajax event="blur" update="@this" />
                                                 </p:inputMask>
                                                 <p:outputLabel value="Celular: " styleClass="margin-left-max"/>
@@ -91,15 +91,15 @@
                                             </h:column>
                                             <p:outputLabel value="RG: "/>
                                             <h:column>
-                                                <p:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}" converter="toUpperCase">
+                                                <p:inputText id="i_rg" size="20" maxlength="20" value="#{fisicaBean.fisica.rg}" converter="#{toUpperCase}">
                                                     <f:ajax event="blur" render="@this" />
                                                 </p:inputText>
                                                 <p:outputLabel value="Órgão Emissor: " styleClass=" margin-left-max" title="Órgão emissor do RG"/>
-                                                <p:inputText id="i_oer" size="10" maxlength="30" value="#{fisicaBean.fisica.orgaoEmissaoRG}" converter="removeNumberToUpperCase">
+                                                <p:inputText id="i_oer" size="10" maxlength="30" value="#{fisicaBean.fisica.orgaoEmissaoRG}" converter="#{removeNumberToUpperCase}">
                                                     <p:ajax event="blur" update="@this" />
                                                 </p:inputText>
                                                 <p:outputLabel value="UF Emissão: " styleClass=" margin-left-max" title="Emissão do RG" />
-                                                <p:inputText id="i_er" size="2" maxlength="2" value="#{fisicaBean.fisica.ufEmissaoRG}" converter="removeNumberToUpperCase">
+                                                <p:inputText id="i_er" size="2" maxlength="2" value="#{fisicaBean.fisica.ufEmissaoRG}" converter="#{removeNumberToUpperCase}">
                                                     <p:ajax event="blur" update="@this" />
                                                 </p:inputText>
                                             </h:column>
