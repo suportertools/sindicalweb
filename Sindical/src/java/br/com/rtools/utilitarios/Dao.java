@@ -286,4 +286,23 @@ public class Dao extends DB {
         }
         return new ArrayList();
     }
+
+    public List listQuery(String className, String find, String[] params) {
+        try {
+            Query query = getEntityManager().createNamedQuery(className + "." + find);
+            int y = 1;
+            for (String param : params) {
+                query.setParameter("p" + y, param);
+                y++;
+            }
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            Logger.getLogger(Dao.class.getName()).log(Level.WARNING, e.getMessage());
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
 }
