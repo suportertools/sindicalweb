@@ -1,23 +1,17 @@
 package br.com.rtools.converter;
 
 import br.com.rtools.utilitarios.BaseEntity;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-//import javax.faces.convert.FacesConverter;
 
 /**
  * @see www.rponte.com.br/2008/07/26/entity-converters-pra-da-e-vender/
  * @author rtools
  */
 @ManagedBean
-//@FacesConverter
 public class EntityConverter implements Converter {
 
     @Override
