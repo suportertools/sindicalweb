@@ -122,7 +122,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return oposicaoPessoa;
     }
 
-    @Override
+    @Override 
     public List<Vector> pesquisaPessoaConvencaoGrupoCidade(int id) {
         List<Vector> vetor = new ArrayList();
         String queryString = " SELECT id_convencao, id_grupo_cidade from arr_contribuintes_vw where dt_inativacao is null and id_juridica = " + id;
@@ -236,18 +236,18 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
             if (idFuncionario > 0) {
                 listQuery.add(" O.id_oposicao_pessoa = " + idFuncionario);
             }
-            if (!emissaoInicial.equals("")) {
+            if (!emissaoInicial.equals("")){ 
                 queryEmissao = " O.dt_emissao = '" + emissaoInicial + "'";
             }
             if (!emissaoInicial.equals("") && !emissaoFinal.equals("")) {
                 queryEmissao = " O.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "' ";
             }
-            String refInicialS = refInicial.substring(3, 7)+""+refInicial.substring(0, 2);
-            String refFinalS = refFinal.substring(3, 7)+""+refFinal.substring(0, 2);
             if (!refInicial.equals("")) {
+                String refInicialS = refInicial.substring(3, 7)+""+refInicial.substring(0, 2);
                 queryReferencia = "'"+refInicialS+"'  >= (SUBSTRING(pc.ds_referencia_inicial,4,4)||SUBSTRING(pc.ds_referencia_inicial,0,3)) ";                
             }
             if (!refFinal.equals("") && !refFinal.equals(refInicial)) {
+                String refFinalS = refFinal.substring(3, 7)+""+refFinal.substring(0, 2);
                 if(!queryReferencia.isEmpty()) {
                     queryReferencia += " AND "; 
                 }
