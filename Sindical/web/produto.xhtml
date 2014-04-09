@@ -41,6 +41,7 @@
                                     <h:panelGrid columns="5" id="i_panel_grid_1">
                                         <c:if test="#{produtoBean.listaGrupos.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[0]}" >
+                                                <p:ajax event="change" update="i_panel_grid_1" listener="#{produtoBean.listaSubGrupos.clear()}" />
                                                 <f:selectItems value="#{produtoBean.listaGrupos}" />
                                             </p:selectOneMenu>
                                         </c:if>
