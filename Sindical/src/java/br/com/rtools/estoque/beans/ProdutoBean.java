@@ -221,11 +221,13 @@ public class ProdutoBean implements Serializable {
     }
 
     public List<SelectItem> getListaSubGrupos() {
-        if (listaSelectItem[1].isEmpty()) {
-            Dao dao = new Dao();
-            List<ProdutoSubGrupo> list = (List<ProdutoSubGrupo>) dao.list(new ProdutoSubGrupo(), true);
-            for (int i = 0; i < list.size(); i++) {
-                listaSelectItem[1].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+        if (!listaSelectItem[0].isEmpty()) {
+            if (listaSelectItem[1].isEmpty()) {
+                Dao dao = new Dao();                
+                List<ProdutoSubGrupo> list = (List<ProdutoSubGrupo>) dao.listQuery(new ProdutoSubGrupo(), "findGrupo", new Object[]{getListaGrupos().get(indices[0]).getDescription()});
+                for (int i = 0; i < list.size(); i++) {
+                    listaSelectItem[1].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+                }
             }
         }
         if (!listaSelectItem[1].isEmpty()) {
@@ -405,11 +407,17 @@ public class ProdutoBean implements Serializable {
             return;
         }
         ProdutoDao produtoDao = new ProdutoDao();
+        Dao dao = new Dao();
+        produtoSubGrupo.setProdutoGrupo((ProdutoGrupo) dao.find(new ProdutoGrupo(), Integer.parseInt(getListaGrupos().get(indices[0]).getDescription())));
         if (produtoDao.existeProdutoSubGrupo(produtoSubGrupo.getDescricao())) {
             GenericaMensagem.warn("Validação", "Produto SubGrupo já cadastrado!");
             return;
         }
-        saveSubItens(produtoSubGrupo);
+        if (dao.save(produtoSubGrupo, true)) {
+            GenericaMensagem.info("Sucesso", "Registro inserido som sucesso");
+        } else {
+            GenericaMensagem.warn("Erro", "Ao inserir registro!");
+        }
         produtoSubGrupo = new ProdutoSubGrupo();
         listaSelectItem[1].clear();
     }
