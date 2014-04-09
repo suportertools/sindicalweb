@@ -1054,10 +1054,6 @@ public class ChamadaPaginaBean implements Serializable {
         return simples("ProdutoGrupo", "Produto Grupo");
     }
 
-    public synchronized String produtoSubGrupo() {
-        return simples("ProdutoSubGrupo", "Produto SubGrupo");
-    }
-
     public synchronized String cor() {
         return simples("Cor", "Cores");
     }
