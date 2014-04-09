@@ -1,7 +1,11 @@
 package br.com.rtools.converter;
 
 import br.com.rtools.utilitarios.BaseEntity;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
@@ -27,24 +31,20 @@ public class EntityConverter implements Converter {
     @Override
     public String getAsString(FacesContext ctx, UIComponent component, Object value) {
 
-        if (value != null
-                && !"".equals(value)) {
-
+        if (value != null && !"".equals(value)) {
             BaseEntity entity = (BaseEntity) value;
-
             // adiciona item como atributo do componente  
             this.addAttribute(component, entity);
-
             int codigo = entity.getId();
             if (codigo != -1) {
                 return String.valueOf(codigo);
             }
         }
-        String valueReturn; 
+        String valueReturn;
         try {
-            valueReturn = (String) value;            
+            valueReturn = (String) value;
         } catch (Exception e) {
-            valueReturn = value+"";
+            valueReturn = value + "";
         }
         return valueReturn;
     }
