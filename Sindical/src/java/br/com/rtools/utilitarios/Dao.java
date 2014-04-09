@@ -331,6 +331,18 @@ public class Dao extends DB {
         return new ArrayList();
     }
 
+    /**
+     * Exemplo 1: liveList(SELECT U FROM User AS U); Set nativeQuery = true
+     * Exemplo 2: liveList(select * from user as u, true); Set maxResults = 5
+     * Exemplo 3: liveList(SELECT U FROM User AS U, true, 5) Caso não encontre
+     * nenhum resultado retorna uma lista vazia; Se houver algum erro retorna
+     * lista vazia;
+     *
+     * @param queryString
+     * @param nativeQuery
+     * @param maxResults
+     * @return List
+     */
     public List liveList(String queryString) {
         return liveList(queryString, false, 0);
     }
@@ -360,6 +372,16 @@ public class Dao extends DB {
         return new ArrayList();
     }
 
+    /**
+     * Exemplo 1: liveSingle(SELECT U FROM User AS U); Set nativeQuery = true
+     * Exemplo 2: liveSingle(select * from user as u, true); Retorna somente um
+     * resultado, se houver mais de um retornará null; Caso não encontre nenhum
+     * resultado retorna null;
+     *
+     * @param queryString
+     * @param nativeQuery
+     * @return Object
+     */
     public Object liveSingle(String queryString) {
         return liveSingle(queryString, false);
     }
