@@ -6,7 +6,7 @@ import br.com.rtools.arrecadacao.OposicaoPessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.relatorios.Relatorios;
 import java.util.List;
-import java.util.Vector;
+import java.util.Vector; 
 
 public interface OposicaoDB {
 
