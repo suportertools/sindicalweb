@@ -30,17 +30,68 @@
                         <h:outputText value="Baixa de Produtos (Consumo)" styleClass="fonteHeader" />
                         <div class="clear"></div>
                         <h:form id="form_saida_consumo">
-                            <h:panelGrid columns="2">
-                                <p:commandButton value="Pesquisar Produtos" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaProduto')}" />
-                                <p:column />
+                            <c:set scope="request" var="object" value="${baixaProdutoConsumoBean.estoqueSaidaConsumo}"/>
+                            <p:panel styleClass="fundoCinza" header="Filial: ">
+                                <h:panelGrid columns="2">
+                                    <h:column>
+                                        <p:outputLabel value="Filial Destino:" />
+                                    </h:column>
+                                    <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.filialEntrada}" converter="#{entityConverter}">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{baixaProdutoConsumoBean.filiais}" var="filial" itemValue="#{filial}" itemLabel="#{filial.filial.pessoa.nome}" />
+                                    </p:selectOneMenu>
+                                    <h:column>
+                                        <p:outputLabel value="Departamento:" />
+                                    </h:column>
+                                    <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.departamento}" converter="#{entityConverter}">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{baixaProdutoConsumoBean.departamentos}" var="departamento" itemValue="#{departamento}" itemLabel="#{departamento.descricao}" />
+                                    </p:selectOneMenu>
+                                </h:panelGrid>                                
+                                <h:panelGrid styleClass="fundoCinza" columns="1">
+                                    <p:commandButton value="Pesquisar Produtos" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaProduto')}" />
+                                </h:panelGrid>
+                            </p:panel>
+                            <h:panelGrid columns="2" columnClasses="verticalAlignTop" width="1000" styleClass="margin-top-max">
+                                <f:facet name="footer">
+                                    <p:commandButton value="Baixar" type="button" onclick="dlg_baixar.show()" />
+                                </f:facet>
                                 <h:column>
-                                    Lista
+                                    <p:panel header="Filial Entrada">
+                                        <h:panelGrid columns="2">
+                                            <h:column>
+                                                <p:outputLabel value="Filial Destino:" />
+                                            </h:column>
+                                            <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.filialEntrada}" converter="#{entityConverter}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItems value="#{baixaProdutoConsumoBean.filiais}" var="filial" itemValue="#{filial}" itemLabel="#{filial.filial.pessoa.nome}" />
+                                            </p:selectOneMenu>
+                                            <h:column>
+                                                <p:outputLabel value="Departamento:" />
+                                            </h:column>
+                                            <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.departamento}" converter="#{entityConverter}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItems value="#{baixaProdutoConsumoBean.departamentos}" var="departamento" itemValue="#{departamento}" itemLabel="#{departamento.descricao}" />
+                                            </p:selectOneMenu>
+                                        </h:panelGrid>
+                                    </p:panel>
                                 </h:column>
-                                <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.estoqueTipo}" converter="#{entityConverter}">
-                                    <p:ajax event="change" update="@this" />
-                                    <f:selectItems value="#{baixaProdutoConsumoBean.estoqueTipos}" var="estoqueTipo" itemValue="#{estoqueTipo}" itemLabel="#{estoqueTipo.descricao}" />
-                                </p:selectOneMenu>
                             </h:panelGrid>
+                            <p:dialog widgetVar="dlg_baixar" header="Deseja baixar este produto?" width="400" modal="true">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" action="#{baixaProdutoConsumoBean.baixar}" oncomplete="PF('dlg_baixar').hide(); PF('dlg_mensagem').show();" />
+                                        <p:commandButton value="Não" onclick="dlg_baixar.hide();" />
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Ok" onclick="dlg_mensagem.hide();" />
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
                         </h:form>
                     </p:panel>
                 </f:view>
