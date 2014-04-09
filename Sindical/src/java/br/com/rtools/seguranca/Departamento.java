@@ -1,5 +1,7 @@
 package br.com.rtools.seguranca;
 
+import br.com.rtools.utilitarios.BaseEntity;
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +11,7 @@ import javax.persistence.*;
     @NamedQuery(name = "Departamento.findAll", query = "SELECT DEP FROM Departamento DEP ORDER BY DEP.descricao ASC "),
     @NamedQuery(name = "Departamento.findName", query = "SELECT DEP FROM Departamento DEP WHERE UPPER(DEP.descricao) LIKE :pdescricao ORDER BY DEP.descricao ASC ")
 })
-public class Departamento implements java.io.Serializable {
+public class Departamento implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
