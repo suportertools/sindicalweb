@@ -287,12 +287,37 @@ public class Dao extends DB {
         return new ArrayList();
     }
 
-    public List listQuery(String className, String find, String[] params) {
+    /**
+     * Exemplo 1: @NamedQuery(name = "Object.find", query = "SELECT O FROM
+     * Object AS O WHERE O.id = :p1") Uso: listQuery(Object, find, {1}) Exemplo
+     * 2 @NamedQuery(name = "Object.find", query = "SELECT O FROM Object AS O
+     * WHERE O.id = :p1 AND O.description = :p2") Uso: listQuery(Object, find,
+     * {1, 'Feliz'})
+     *
+     * @param className (Nome do objeto)
+     * @param find (Nome da NamedQuery dentro do objeto)
+     * @param params (Cria se parâmetros organizados para realizar a consulta)
+     *
+     * @return List
+     */
+    public List listQuery(Object className, String find, Object[] params) {
+        return listQuery(className.getClass().getSimpleName(), find, params);
+    }
+
+    public List listQuery(String className, String find, Object[] params) {
         try {
             Query query = getEntityManager().createNamedQuery(className + "." + find);
             int y = 1;
-            for (String param : params) {
-                query.setParameter("p" + y, param);
+            for (Object param : params) {
+                if (Types.isInteger(param)) {
+                    query.setParameter("p" + y, Integer.parseInt((String) param));
+                } else if (Types.isFloat(param)) {
+                    query.setParameter("p" + y, Float.parseFloat((String) param));
+                } else if (Types.isDouble(param)) {
+                    query.setParameter("p" + y, Double.parseDouble((String) param));
+                } else {
+                    query.setParameter("p" + y, (String) param);
+                }
                 y++;
             }
             List list = query.getResultList();
@@ -304,5 +329,59 @@ public class Dao extends DB {
             return new ArrayList();
         }
         return new ArrayList();
+    }
+
+    public List liveList(String queryString) {
+        return liveList(queryString, false, 0);
+    }
+
+    public List liveList(String queryString, boolean nativeQuery) {
+        return liveList(queryString, nativeQuery, 0);
+    }
+
+    public List liveList(String queryString, boolean nativeQuery, int maxResults) {
+        try {
+            Query query;
+            if (nativeQuery) {
+                query = getEntityManager().createNativeQuery(queryString);
+            } else {
+                query = getEntityManager().createQuery(queryString);
+            }
+            if (maxResults > 0) {
+                query.setMaxResults(maxResults);
+            }
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    public Object liveSingle(String queryString) {
+        return liveSingle(queryString, false);
+    }
+
+    public Object liveSingle(String queryString, boolean nativeQuery) {
+        try {
+            Query query;
+            if (nativeQuery) {
+                query = getEntityManager().createNativeQuery(queryString);
+            } else {
+                query = getEntityManager().createQuery(queryString);
+            }
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                if (list.size() == 1) {
+                    return query.getSingleResult();
+                }
+                return null;
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 }
