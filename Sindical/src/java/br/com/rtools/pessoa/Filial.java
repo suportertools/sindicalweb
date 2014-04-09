@@ -1,5 +1,7 @@
 package br.com.rtools.pessoa;
 
+import br.com.rtools.utilitarios.BaseEntity;
+import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -7,17 +9,19 @@ import javax.persistence.*;
  * <strong>Filial</strong></p>
  * <p>
  * <strong>Definição:</strong> Estabelecimento dependente de outro.</p>
- * <p><strong>Importante:</strong> Utilizar filiais somente caso houver um endereçamento diferente da sede!</p>
+ * <p>
+ * <strong>Importante:</strong> Utilizar filiais somente caso houver um
+ * endereçamento diferente da sede!</p>
+ *
  * @author rtools
  */
-
 @Entity
 @Table(name = "PES_FILIAL")
 @NamedQueries({
-    @NamedQuery(name = "Filial.pesquisaID",    query = "SELECT FIL FROM Filial AS FIL WHERE FIL.id = :pid"),
-    @NamedQuery(name = "Filial.findAll",       query = "SELECT FIL FROM Filial AS FIL ORDER BY FIL.filial.pessoa.nome ASC ")
+    @NamedQuery(name = "Filial.pesquisaID", query = "SELECT FIL FROM Filial AS FIL WHERE FIL.id = :pid"),
+    @NamedQuery(name = "Filial.findAll", query = "SELECT FIL FROM Filial AS FIL ORDER BY FIL.filial.pessoa.nome ASC ")
 })
-public class Filial implements java.io.Serializable {
+public class Filial implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -80,5 +84,5 @@ public class Filial implements java.io.Serializable {
     @Override
     public String toString() {
         return "Filial{" + "id=" + id + ", matriz=" + matriz.getId() + ", filial=" + filial.getId() + ", centroCusto=" + centroCusto + '}';
-    }    
+    }
 }
