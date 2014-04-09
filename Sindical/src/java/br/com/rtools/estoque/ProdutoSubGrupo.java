@@ -1,5 +1,6 @@
 package br.com.rtools.estoque;
 
+import br.com.rtools.utilitarios.BaseEntity;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,9 +20,10 @@ import javax.persistence.UniqueConstraint;
 )
 @NamedQueries({
     @NamedQuery(name = "ProdutoSubGrupo.findAll", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG ORDER BY PSG.produtoGrupo.descricao ASC, PSG.descricao ASC "),
-    @NamedQuery(name = "ProdutoSubGrupo.findName", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG WHERE UPPER(PSG.descricao) LIKE :pdescricao ORDER BY PSG.produtoGrupo.descricao ASC, PSG.descricao ASC ")
+    @NamedQuery(name = "ProdutoSubGrupo.findName", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG WHERE UPPER(PSG.descricao) LIKE :pdescricao ORDER BY PSG.produtoGrupo.descricao ASC, PSG.descricao ASC "),
+    @NamedQuery(name = "ProdutoSubGrupo.findGrupo", query = "SELECT PSG FROM ProdutoSubGrupo AS PSG WHERE PSG.produtoGrupo.id = :p1 ORDER BY PSG.produtoGrupo.descricao ASC, PSG.descricao ASC ")
 })
-public class ProdutoSubGrupo implements Serializable {
+public class ProdutoSubGrupo implements BaseEntity, Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
