@@ -1,11 +1,11 @@
 package br.com.rtools.converter;
 
+import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 
-@FacesConverter("removeNumberToUpperCase")
+@ManagedBean
 public class RemoveNumberToUpperCase implements Converter {
 
     @Override
@@ -15,7 +15,7 @@ public class RemoveNumberToUpperCase implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        if(value != null) {
+        if (value != null) {
             String somenteLetras = value.replaceAll("[^a-zA-Z]", "");
             return somenteLetras.toUpperCase();
         }

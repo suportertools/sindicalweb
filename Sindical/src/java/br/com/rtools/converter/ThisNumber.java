@@ -1,11 +1,11 @@
 package br.com.rtools.converter;
 
+import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 
-@FacesConverter("thisNumber")
+@ManagedBean
 public class ThisNumber implements Converter {
 
     @Override

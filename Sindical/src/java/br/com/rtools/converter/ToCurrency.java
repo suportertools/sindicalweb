@@ -1,12 +1,12 @@
 package br.com.rtools.converter;
 
 import br.com.rtools.utilitarios.Moeda;
+import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
 
-@FacesConverter("toCurrency")
+@ManagedBean
 public class ToCurrency implements Converter {
 
     @Override
@@ -16,12 +16,12 @@ public class ToCurrency implements Converter {
 
     @Override
     public Object getAsObject(FacesContext context, UIComponent component, String value) {
-        if(value != null ) {
+        if (value != null) {
             if (value.isEmpty()) {
                 value = "0";
             }
             String somenteLetras = value.replaceAll("[^a-zA-Z]", "");
-            if(somenteLetras.length() > 0) {
+            if (somenteLetras.length() > 0) {
                 return null;
             }
             return Moeda.converteR$(value);
