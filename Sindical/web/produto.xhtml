@@ -51,7 +51,9 @@
                                                 <f:selectItems value="#{produtoBean.listaSubGrupos}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_subgrupo.show();" type="button"/>
+                                        <c:if test="#{produtoBean.listaGrupos.size() > 0}">
+                                            <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_subgrupo.show();" type="button"/>
+                                        </c:if>
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
