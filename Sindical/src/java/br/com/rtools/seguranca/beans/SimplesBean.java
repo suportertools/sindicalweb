@@ -334,8 +334,6 @@ public class SimplesBean implements Serializable {
             objeto = (ProdutoUnidade) new ProdutoUnidade(id, descricao);
         } else if (tipo.equals("ProdutoGrupo")) {
             objeto = (ProdutoGrupo) new ProdutoGrupo(id, descricao);
-        } else if (tipo.equals("ProdutoSubGrupo")) {
-            objeto = (ProdutoSubGrupo) new ProdutoSubGrupo(id, descricao);
         }
     }
 
@@ -392,8 +390,6 @@ public class SimplesBean implements Serializable {
             ((ProdutoUnidade) objeto).setDescricao(descricao);
         } else if (tipo.equals("ProdutoGrupo")) {
             ((ProdutoGrupo) objeto).setDescricao(descricao);
-        } else if (tipo.equals("ProdutoSubGrupo")) {
-            ((ProdutoSubGrupo) objeto).setDescricao(descricao);
         }
     }
 
@@ -476,9 +472,6 @@ public class SimplesBean implements Serializable {
         } else if (obj.getClass().getSimpleName().equals("ProdutoGrupo")) {
             descricao = ((ProdutoGrupo) obj).getDescricao();
             id = ((ProdutoGrupo) objeto).getId();
-        } else if (obj.getClass().getSimpleName().equals("ProdutoSubGrupo")) {
-            descricao = ((ProdutoSubGrupo) obj).getDescricao();
-            id = ((ProdutoSubGrupo) objeto).getId();
         }
         Dao dao = new Dao();
         objeto = dao.rebind(objeto);
