@@ -2,12 +2,18 @@ package br.com.rtools.converter;
 
 import br.com.rtools.utilitarios.BaseEntity;
 import java.util.Map;
+import javax.faces.bean.ManagedBean;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.convert.FacesConverter;
+//import javax.faces.convert.FacesConverter;
 
-@FacesConverter("entityConverter")
+/**
+ * @see www.rponte.com.br/2008/07/26/entity-converters-pra-da-e-vender/
+ * @author rtools
+ */
+@ManagedBean
+//@FacesConverter
 public class EntityConverter implements Converter {
 
     @Override
@@ -34,8 +40,13 @@ public class EntityConverter implements Converter {
                 return String.valueOf(codigo);
             }
         }
-
-        return (String) value;
+        String valueReturn; 
+        try {
+            valueReturn = (String) value;            
+        } catch (Exception e) {
+            valueReturn = value+"";
+        }
+        return valueReturn;
     }
 
     protected void addAttribute(UIComponent component, BaseEntity o) {
