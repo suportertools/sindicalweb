@@ -10,10 +10,6 @@ import javax.persistence.*;
 public class EstoqueSaidaConsumo implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -33,7 +29,7 @@ public class EstoqueSaidaConsumo implements Serializable {
     @OneToOne
     private Departamento departamento;
     @Column(name = "NR_QTDE", columnDefinition = "INTEGER DEFAULT 0")
-    private float quantidade;
+    private int quantidade;
 
     public EstoqueSaidaConsumo() {
         this.id = -1;
@@ -45,7 +41,7 @@ public class EstoqueSaidaConsumo implements Serializable {
         this.quantidade = 0;
     }
 
-    public EstoqueSaidaConsumo(int id, Produto produto, EstoqueTipo estoqueTipo, Filial filialSaida, Filial filialEntrada, Departamento departamento, float quantidade) {
+    public EstoqueSaidaConsumo(int id, Produto produto, EstoqueTipo estoqueTipo, Filial filialSaida, Filial filialEntrada, Departamento departamento, int quantidade) {
         this.id = id;
         this.produto = produto;
         this.estoqueTipo = estoqueTipo;
@@ -103,11 +99,11 @@ public class EstoqueSaidaConsumo implements Serializable {
         this.departamento = departamento;
     }
 
-    public float getQuantidade() {
+    public int getQuantidade() {
         return quantidade;
     }
 
-    public void setQuantidade(float quantidade) {
+    public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
 
