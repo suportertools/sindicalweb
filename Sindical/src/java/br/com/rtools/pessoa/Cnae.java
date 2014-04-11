@@ -55,4 +55,39 @@ public class Cnae implements Serializable {
     public void setNumero(String numero) {
         this.numero = numero;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 53 * hash + this.id;
+        hash = 53 * hash + (this.cnae != null ? this.cnae.hashCode() : 0);
+        hash = 53 * hash + (this.numero != null ? this.numero.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Cnae other = (Cnae) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.cnae == null) ? (other.cnae != null) : !this.cnae.equals(other.cnae)) {
+            return false;
+        }
+        if ((this.numero == null) ? (other.numero != null) : !this.numero.equals(other.numero)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Cnae{" + "id=" + id + ", cnae=" + cnae + ", numero=" + numero + '}';
+    }
 }

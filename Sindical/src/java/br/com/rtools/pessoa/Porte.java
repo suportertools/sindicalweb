@@ -38,4 +38,36 @@ public class Porte implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 79 * hash + this.id;
+        hash = 79 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Porte other = (Porte) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Porte{" + "id=" + id + ", descricao=" + descricao + '}';
+    }
+
 }

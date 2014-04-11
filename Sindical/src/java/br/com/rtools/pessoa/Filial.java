@@ -49,6 +49,7 @@ public class Filial implements BaseEntity, Serializable {
         this.centroCusto = centroCusto;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -79,6 +80,40 @@ public class Filial implements BaseEntity, Serializable {
 
     public void setCentroCusto(int centroCusto) {
         this.centroCusto = centroCusto;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 29 * hash + this.id;
+        hash = 29 * hash + (this.matriz != null ? this.matriz.hashCode() : 0);
+        hash = 29 * hash + (this.filial != null ? this.filial.hashCode() : 0);
+        hash = 29 * hash + this.centroCusto;
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Filial other = (Filial) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.matriz != other.matriz && (this.matriz == null || !this.matriz.equals(other.matriz))) {
+            return false;
+        }
+        if (this.filial != other.filial && (this.filial == null || !this.filial.equals(other.filial))) {
+            return false;
+        }
+        if (this.centroCusto != other.centroCusto) {
+            return false;
+        }
+        return true;
     }
 
     @Override
