@@ -85,12 +85,16 @@
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
-                                    <h:panelGrid columns="5">                                
+                                    <h:panelGrid columns="7">                                
                                         <p:inputText value="#{produtoBean.produto.marca}" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" />
                                         </p:inputText>
                                         <p:outputLabel value="Fabricante: " />
                                         <p:inputText value="#{produtoBean.produto.fabricante}" converter="#{toUpperCase}">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="Produto: " />
+                                        <p:inputText value="#{produtoBean.produto.modelo}" converter="#{toUpperCase}">
                                             <p:ajax event="change" update="@this" />
                                         </p:inputText>
                                     </h:panelGrid>

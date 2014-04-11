@@ -28,34 +28,63 @@
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
                         <h:panelGrid columns="8">
                             <p:outputLabel value="Pesquisar: "/>
-                            <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" disabled="#{oposicaoBean.porPesquisa == 'todos'}">
-                                <p:ajax event="change" update="@this" />
-                            </p:inputMask>
+                            <c:if test="#{!oposicaoBean.removeFiltro}">
+                                <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" disabled="#{oposicaoBean.porPesquisa == 'todos'}">
+                                    <p:ajax event="change" update="@this" />
+                                </p:inputMask>
+                            </c:if>
+                            <c:if test="#{oposicaoBean.removeFiltro}">
+                                <p:inputMask mask="#{oposicaoBean.mascara}" value="#{oposicaoBean.descricaoPesquisa}" >
+                                    <p:ajax event="change" update="@this" />
+                                </p:inputMask>
+                            </c:if>
                             <h:outputLabel value="Por: "/>
-                            <p:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}">
-                                <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{oposicaoBean.listaOposicaos.clear()}"/>
-                                <f:selectItem itemValue="todos"         itemLabel="Todos" />
-                                <f:selectItem itemValue="nome"          itemLabel="Nome" />
-                                <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
-                                <f:selectItem itemValue="data"          itemLabel="Emissão" />
-                                <f:selectItem itemValue="cnpj"          itemLabel="CNPJ" />
-                                <f:selectItem itemValue="cpf"           itemLabel="CPF" />
-                                <f:selectItem itemValue="rgs"           itemLabel="RG" />
-                                <f:selectItem itemValue="observacao"    itemLabel="Observação" />
-                            </p:selectOneMenu>
-                            <c:if test="#{oposicaoBean.porPesquisa != 'todos'}">
+                            <c:if test="#{!oposicaoBean.removeFiltro}">
+                                <p:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}">
+                                    <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{oposicaoBean.listaOposicaos.clear()}"/>
+                                    <f:selectItem itemValue="todos"         itemLabel="Todos" />
+                                    <f:selectItem itemValue="nome"          itemLabel="Nome" />
+                                    <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
+                                    <f:selectItem itemValue="data"          itemLabel="Emissão" />
+                                    <f:selectItem itemValue="cnpj"          itemLabel="CNPJ" />
+                                    <f:selectItem itemValue="cpf"           itemLabel="CPF" />
+                                    <f:selectItem itemValue="rgs"           itemLabel="RG" />
+                                    <f:selectItem itemValue="observacao"    itemLabel="Observação"  />
+                                </p:selectOneMenu>
+                            </c:if>
+                            <c:if test="#{oposicaoBean.removeFiltro}">
+                                <p:selectOneMenu id="idTipoClasse" value="#{oposicaoBean.porPesquisa}">
+                                    <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{oposicaoBean.listaOposicaos.clear()}"/>
+                                    <f:selectItem itemValue="nome"          itemLabel="Nome" />
+                                    <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
+                                    <f:selectItem itemValue="cnpj"          itemLabel="CNPJ" />
+                                    <f:selectItem itemValue="cpf"           itemLabel="CPF" />
+                                    <f:selectItem itemValue="rgs"           itemLabel="RG" />
+                                </p:selectOneMenu>
+                            </c:if>
+                            <c:if test="#{!oposicaoBean.removeFiltro}">
+                                <c:if test="#{oposicaoBean.porPesquisa != 'todos'}">
+                                    <p:commandButton id="idInicial" value="Inicial">
+                                        <p:ajax listener="#{oposicaoBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
+                                    </p:commandButton>
+                                    <p:commandButton id="idParcial" value="Parcial">
+                                        <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                    </p:commandButton>
+                                </c:if> 
+                                <c:if test="#{oposicaoBean.porPesquisa == 'todos'}">
+                                    <p:commandButton value="Atualizar">
+                                        <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                    </p:commandButton>
+                                </c:if>
+                            </c:if>
+                            <c:if test="#{oposicaoBean.removeFiltro}">
                                 <p:commandButton id="idInicial" value="Inicial">
                                     <p:ajax listener="#{oposicaoBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
                                 </p:commandButton>
                                 <p:commandButton id="idParcial" value="Parcial">
                                     <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
-                                </p:commandButton>
-                            </c:if> 
-                            <c:if test="#{oposicaoBean.porPesquisa == 'todos'}">
-                                <p:commandButton value="Atualizar">
-                                    <p:ajax listener="#{oposicaoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
-                                </p:commandButton>
-                            </c:if> 
+                                </p:commandButton>                                
+                            </c:if>
                         </h:panelGrid>   
                     </p:panel>
                 </p:panel>

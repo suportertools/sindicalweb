@@ -8,14 +8,7 @@
     <h:head>
         <title>Baixa de Produtos (Consumo)</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
-        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
-        <style type="text/css">
-
-        </style>
-
-        <script type="text/javascript">
-
-        </script>
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
@@ -27,71 +20,198 @@
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
-                        <h:outputText value="Baixa de Produtos (Consumo)" styleClass="fonteHeader" />
-                        <div class="clear"></div>
                         <h:form id="form_saida_consumo">
+                            <h:outputText value="Baixa de Produtos (Consumo)" styleClass="fonteHeader" />
+                            <div class="clear"></div>
                             <c:set scope="request" var="object" value="${baixaProdutoConsumoBean.estoqueSaidaConsumo}"/>
-                            <p:panel styleClass="fundoCinza" header="Filial: ">
-                                <h:panelGrid columns="2">
-                                    <h:column>
-                                        <p:outputLabel value="Filial Destino:" />
-                                    </h:column>
-                                    <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.filialEntrada}" converter="#{entityConverter}">
-                                        <p:ajax event="change" update="@this" />
-                                        <f:selectItems value="#{baixaProdutoConsumoBean.filiais}" var="filial" itemValue="#{filial}" itemLabel="#{filial.filial.pessoa.nome}" />
-                                    </p:selectOneMenu>
-                                    <h:column>
-                                        <p:outputLabel value="Departamento:" />
-                                    </h:column>
-                                    <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.departamento}" converter="#{entityConverter}">
-                                        <p:ajax event="change" update="@this" />
-                                        <f:selectItems value="#{baixaProdutoConsumoBean.departamentos}" var="departamento" itemValue="#{departamento}" itemLabel="#{departamento.descricao}" />
-                                    </p:selectOneMenu>
-                                </h:panelGrid>                                
-                                <h:panelGrid styleClass="fundoCinza" columns="1">
-                                    <p:commandButton value="Pesquisar Produtos" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaProduto')}" />
-                                </h:panelGrid>
-                            </p:panel>
-                            <h:panelGrid columns="2" columnClasses="verticalAlignTop" width="1000" styleClass="margin-top-max">
-                                <f:facet name="footer">
-                                    <p:commandButton value="Baixar" type="button" onclick="dlg_baixar.show()" />
-                                </f:facet>
-                                <h:column>
-                                    <p:panel header="Filial Entrada">
+                            <c:if test="#{baixaProdutoConsumoBean.filial.id == -1}">
+                                <h:outputText value="- Informação: Realizar acesso com filial!" styleClass="fonteHeader" />
+                                <h:outputText value="- Dúvidas contate o administrador do sistema." styleClass="fonteHeader" />
+                            </c:if>
+                            <c:if test="#{baixaProdutoConsumoBean.filial.id != -1}">
+                                <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="true"/>
+                                <p:panel styleClass="fundoCinza margin-top-max">
+                                    <f:facet name="header">
                                         <h:panelGrid columns="2">
-                                            <h:column>
-                                                <p:outputLabel value="Filial Destino:" />
-                                            </h:column>
-                                            <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.filialEntrada}" converter="#{entityConverter}">
-                                                <p:ajax event="change" update="@this" />
-                                                <f:selectItems value="#{baixaProdutoConsumoBean.filiais}" var="filial" itemValue="#{filial}" itemLabel="#{filial.filial.pessoa.nome}" />
-                                            </p:selectOneMenu>
-                                            <h:column>
-                                                <p:outputLabel value="Departamento:" />
-                                            </h:column>
-                                            <p:selectOneMenu value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.departamento}" converter="#{entityConverter}">
-                                                <p:ajax event="change" update="@this" />
-                                                <f:selectItems value="#{baixaProdutoConsumoBean.departamentos}" var="departamento" itemValue="#{departamento}" itemLabel="#{departamento.descricao}" />
-                                            </p:selectOneMenu>
+                                            <p:column>
+                                                <strong>Minha Filial:</strong> #{baixaProdutoConsumoBean.filial.filial.pessoa.nome}
+                                            </p:column>
                                         </h:panelGrid>
-                                    </p:panel>
-                                </h:column>
-                            </h:panelGrid>
-                            <p:dialog widgetVar="dlg_baixar" header="Deseja baixar este produto?" width="400" modal="true">
-                                <f:facet name="footer">
-                                    <h:panelGrid columns="2">
-                                        <p:commandButton value="Sim" action="#{baixaProdutoConsumoBean.baixar}" oncomplete="PF('dlg_baixar').hide(); PF('dlg_mensagem').show();" />
-                                        <p:commandButton value="Não" onclick="dlg_baixar.hide();" />
-                                    </h:panelGrid>
-                                </f:facet>
-                            </p:dialog>
-                            <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true">
-                                <f:facet name="footer">
-                                    <h:panelGrid columns="2">
-                                        <p:commandButton value="Ok" onclick="dlg_mensagem.hide();" />
-                                    </h:panelGrid>
-                                </f:facet>
-                            </p:dialog>
+                                    </f:facet>
+                                    <h:panelGrid columns="2" columnClasses="verticalAlignTop">
+                                        <h:column>                                            
+                                            <h:panelGrid>
+                                                <p:outputLabel value="Filial Destino:" />
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <h:column>
+                                            <h:panelGrid columns="3">
+                                                <p:selectOneMenu value="#{baixaProdutoConsumoBean.selectedFilialDestino}" converter="#{entityConverter}">
+                                                    <p:ajax event="change" update="@this" />
+                                                    <f:selectItems value="#{baixaProdutoConsumoBean.listFiliais}" var="filial" itemValue="#{filial}" itemLabel="#{filial.filial.pessoa.nome}" />
+                                                </p:selectOneMenu>
+                                                <p:outputLabel value="Departamento:" />
+                                                <p:selectOneMenu value="#{baixaProdutoConsumoBean.selectedDepartamento}" converter="#{entityConverter}">
+                                                    <p:ajax event="change" update="@this" immediate="true"/>
+                                                    <f:selectItems value="#{baixaProdutoConsumoBean.listDepartamentos}" var="departamento" itemValue="#{departamento}" itemLabel="#{departamento.descricao}" />
+                                                </p:selectOneMenu>
+                                            </h:panelGrid>
+                                        </h:column>
+                                        <p:commandButton value="Produto:" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaProduto')}" styleClass="margin-top-max" title="Pesquisar Produto"/>
+                                        <p:column>
+                                            <p:panel header="#{baixaProdutoConsumoBean.produto.descricao}" styleClass="margin-top-max" rendered="#{baixaProdutoConsumoBean.produto.id != -1}">
+                                                <p:panelGrid>
+                                                    <f:facet name="header">
+                                                        <p:row>
+                                                            <p:column>
+                                                                Grupo
+                                                            </p:column>
+                                                            <p:column>
+                                                                SubGrupo
+                                                            </p:column>
+                                                            <p:column>
+                                                                Marca
+                                                            </p:column>
+                                                            <p:column>
+                                                                Unidade
+                                                            </p:column>
+                                                            <p:column>
+                                                                Sabor
+                                                            </p:column>
+                                                            <p:column>
+                                                                Medida
+                                                            </p:column>
+                                                        </p:row>
+                                                    </f:facet>
+                                                    <p:row>
+                                                        <p:column>
+                                                            #{baixaProdutoConsumoBean.produto.produtoSubGrupo.produtoGrupo.descricao}
+                                                        </p:column>
+                                                        <p:column>
+                                                            #{baixaProdutoConsumoBean.produto.produtoSubGrupo.descricao}
+                                                        </p:column>
+                                                        <p:column>
+                                                            #{baixaProdutoConsumoBean.produto.marca}            
+                                                        </p:column>
+                                                        <p:column>
+                                                            #{baixaProdutoConsumoBean.produto.produtoUnidade.descricao}
+                                                        </p:column>
+                                                        <p:column>
+                                                            #{baixaProdutoConsumoBean.produto.sabor}
+                                                        </p:column>
+                                                        <p:column>
+                                                            #{baixaProdutoConsumoBean.produto.medida}
+                                                        </p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:panelGrid styleClass="margin-top-max">
+                                                    <f:facet name="header">
+                                                        <p:row>
+                                                            <p:column colspan="4">Estoque</p:column>
+                                                        </p:row>
+                                                        <p:row>
+                                                            <p:column>
+                                                                Atual
+                                                            </p:column>
+                                                            <p:column>
+                                                                Restante
+                                                            </p:column>
+                                                            <p:column>
+                                                                Mínimo
+                                                            </p:column>
+                                                            <p:column>
+                                                                Máximo
+                                                            </p:column>
+                                                        </p:row>
+                                                    </f:facet>
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:inputText readonly="true" value="#{baixaProdutoConsumoBean.estoque.estoque}" styleClass="text-center bold font-size-16 input-text-min"  />
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:inputText readonly="true" value="#{baixaProdutoConsumoBean.quantidadeEstoque}" styleClass="text-center bold font-size-16 input-text-min" id="i_input_e1" style="#{baixaProdutoConsumoBean.color}}"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:inputText readonly="true" value="#{baixaProdutoConsumoBean.estoque.estoqueMinimo}"  styleClass="text-center bold font-size-16 input-text-min"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:inputText readonly="true" value="#{baixaProdutoConsumoBean.estoque.estoqueMaximo}"  styleClass="text-center bold font-size-16 input-text-min"/>
+                                                        </p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                            </p:panel>
+                                        </p:column>
+                                        <p:column>
+                                            <h:panelGrid>
+                                                <p:outputLabel value="Quantidade:" styleClass="margin-top-max"/>
+                                            </h:panelGrid>
+                                        </p:column>
+                                        <p:column>
+                                            <h:panelGrid columns="2">
+                                                <h:column>
+                                                    <p:spinner value="#{baixaProdutoConsumoBean.estoqueSaidaConsumo.quantidade}" stepFactor="1" size="5" min="0" disabled="#{baixaProdutoConsumoBean.produto.id == -1}" max="#{baixaProdutoConsumoBean.quantidadeEstoque}">
+                                                        <p:ajax update="i_input_e1" listener="#{baixaProdutoConsumoBean.removeQuantidadeEstoque}"/>
+                                                    </p:spinner>
+                                                </h:column>
+                                                <h:column>
+                                                    <p:commandButton icon="ui-icon-plus" widgetVar="btn_search_product" value="Adicionar" action="#{baixaProdutoConsumoBean.addItem()}" update=":form_saida_consumo:"  title="Adicionar produto a lista" disabled="#{baixaProdutoConsumoBean.produto.id == -1}" />
+                                                </h:column>
+                                            </h:panelGrid>
+                                        </p:column>
+                                        <f:facet name="footer">
+                                            <p:commandButton value="Novo" action="#{baixaProdutoConsumoBean.destroy()}" update=":form_saida_consumo:"  styleClass="margin-top-max" title="Adicionar produto a lista" />
+                                        </f:facet>
+                                    </h:panelGrid>                                
+                                </p:panel>
+                                <p:tabView styleClass="margin-top-max" widgetVar="i_tab">
+                                    <p:tab title="A baixar" id="i_tab_1">
+                                        <p:dataTable value="#{baixaProdutoConsumoBean.listEstoqueSaidaConsumoAdd}" scrollable="true" scrollHeight="300" paginator="true" rows="15" emptyMessage="Adicionar registros" var="esc" rowIndexVar="index">
+                                            <f:facet name="header">
+                                                <p:commandButton value="Baixar Produtos" onclick="dlg_baixar.show()" title="Baixar Produtos" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                            </f:facet>
+                                            <f:facet name="footer">
+                                                <p:commandButton value="Baixar Produtos" onclick="dlg_baixar.show()" title="Baixar Produtos" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                            </f:facet>
+                                            <p:column headerText="Lançamento">#{esc.lancamento}</p:column>
+                                            <p:column headerText="Produto">#{esc.produto.descricao}</p:column>
+                                            <p:column headerText="Departameto">#{esc.departamento.descricao}</p:column>
+                                            <p:column headerText="Filial">#{esc.filialEntrada.filial.fantasia}</p:column>
+                                            <p:column headerText="Quantidade">#{esc.quantidade}</p:column>
+                                            <p:column width="25">
+                                                <p:commandButton icon="ui-icon-trash" action="#{baixaProdutoConsumoBean.removeItem(index)}" update=":form_saida_consumo:" />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:tab>
+                                    <p:tab title="Baixados">
+                                        <p:dataTable value="#{baixaProdutoConsumoBean.listEstoqueSaidaConsumo}" scrollable="true" scrollHeight="300" paginator="true" rows="15" emptyMessage="Nenhum registro encontrado" var="esc">
+                                            <p:column headerText="Lançamento">#{esc.lancamento}</p:column>
+                                            <p:column headerText="Departameto">#{esc.departamento.descricao}</p:column>
+                                            <p:column headerText="Produto">#{esc.produto.descricao}</p:column>
+                                            <p:column headerText="Filial">#{esc.filialEntrada.filial.fantasia}</p:column>
+                                            <p:column headerText="Quantidade">#{esc.quantidade}</p:column>
+                                            <p:column width="25">
+                                                <p:commandButton icon="ui-icon-trash" action="#{baixaProdutoConsumoBean.removeItem(esc)}" update=":form_saida_consumo:" />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:tab>
+                                </p:tabView>                            
+                                <p:dialog widgetVar="dlg_baixar" header="Deseja baixar este produto?" width="400" modal="true">
+                                    <f:facet name="footer">
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton value="Sim" action="#{baixaProdutoConsumoBean.baixar}" oncomplete="PF('dlg_baixar').hide(); PF('dlg_mensagem').show();" update=":form_saida_consumo:"/>
+                                            <p:commandButton value="Não" onclick="dlg_baixar.hide();" />
+                                        </h:panelGrid>
+                                    </f:facet>
+                                </p:dialog>
+                                <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true">
+                                    #{baixaProdutoConsumoBean.message}
+                                    <f:facet name="footer">
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton value="Ok" onclick="dlg_mensagem.hide();" />
+                                        </h:panelGrid>
+                                    </f:facet>
+                                </p:dialog>
+                            </c:if>
                         </h:form>
                     </p:panel>
                 </f:view>

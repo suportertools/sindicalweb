@@ -14,11 +14,6 @@
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-
-            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
-            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
-                <h:outputLabel value=" ... Aguarde" />
-            </p:dialog>
             <h:form id="form_pesquisa_produto">
                 <p:panel styleClass="wrapper no-border">
                     <h:outputText value="Pesquisar Produtos" styleClass="fonteHeader" />
@@ -33,10 +28,10 @@
                             <p:selectOneMenu id="idTipoClasse">                                
                             </p:selectOneMenu>
                             <p:commandButton id="idInicial" value="Inicial">
-                                <p:ajax listener="#{produtoBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
+                                <p:ajax listener="#{produtoBean.acaoPesquisaInicial}" update=":form_pesquisa_produto:"/>
                             </p:commandButton>
                             <p:commandButton id="idParcial" value="Parcial">
-                                <p:ajax listener="#{produtoBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                <p:ajax listener="#{produtoBean.acaoPesquisaParcial}" update=":form_pesquisa_produto:"/>
                             </p:commandButton>
                         </h:panelGrid>   
                     </p:panel>
