@@ -84,7 +84,7 @@ public class MacFilial implements java.io.Serializable {
     public void setMesa(int mesa) {
         this.mesa = mesa;
     }
-        
+
     public static MacFilial getAcessoFilial() {
         MacFilial macFilial = new MacFilial();
         if (GenericaSessao.exists("acessoFilial")) {
