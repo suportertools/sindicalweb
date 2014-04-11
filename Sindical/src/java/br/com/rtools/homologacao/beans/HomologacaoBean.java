@@ -797,7 +797,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         this.cancelamento = cancelamento;
     }
 
-    public List<ListaAgendamento> getListaHomologacoes() {
+    public synchronized List<ListaAgendamento> getListaHomologacoes() {
         listaHomologacoes.clear();
         try {
             Polling polling = new Polling();
