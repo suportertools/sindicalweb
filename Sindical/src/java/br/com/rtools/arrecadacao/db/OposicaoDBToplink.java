@@ -122,7 +122,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
         return oposicaoPessoa;
     }
 
-    @Override 
+    @Override
     public List<Vector> pesquisaPessoaConvencaoGrupoCidade(int id) {
         List<Vector> vetor = new ArrayList();
         String queryString = " SELECT id_convencao, id_grupo_cidade from arr_contribuintes_vw where dt_inativacao is null and id_juridica = " + id;
@@ -207,7 +207,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
     }
 
     @Override
-    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String refInicial, String refFinal, Relatorios r) {
+    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r) {
         try {
             List listQuery = new ArrayList();
             String queryEmissao = "";
@@ -231,27 +231,20 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                     + "INNER JOIN pes_tipo_documento          AS T      ON T.id     =   PES.id_tipo_documento   ";
 
             if (idEmpresa > 0) {
-                listQuery.add(" O.id_juridica =  "+idEmpresa);
+                listQuery.add(" O.id_juridica =  " + idEmpresa);
             }
             if (idFuncionario > 0) {
                 listQuery.add(" O.id_oposicao_pessoa = " + idFuncionario);
             }
-            if (!emissaoInicial.equals("")){ 
+            if (!emissaoInicial.equals("")) {
                 queryEmissao = " O.dt_emissao = '" + emissaoInicial + "'";
             }
             if (!emissaoInicial.equals("") && !emissaoFinal.equals("")) {
                 queryEmissao = " O.dt_emissao BETWEEN '" + emissaoInicial + "' AND '" + emissaoFinal + "' ";
             }
-            if (!refInicial.equals("")) {
-                String refInicialS = refInicial.substring(3, 7)+""+refInicial.substring(0, 2);
-                queryReferencia = "'"+refInicialS+"'  >= (SUBSTRING(pc.ds_referencia_inicial,4,4)||SUBSTRING(pc.ds_referencia_inicial,0,3)) ";                
-            }
-            if (!refFinal.equals("") && !refFinal.equals(refInicial)) {
-                String refFinalS = refFinal.substring(3, 7)+""+refFinal.substring(0, 2);
-                if(!queryReferencia.isEmpty()) {
-                    queryReferencia += " AND "; 
-                }
-                queryReferencia = "'"+refFinalS+"'  <= (SUBSTRING(pc.ds_referencia_final,4,4)||SUBSTRING(pc.ds_referencia_final,0,3)) ";
+
+            if (!convencaoPeriodo.isEmpty()) {
+                listQuery.add(" O.id_convencao_periodo IN (" + convencaoPeriodo + ")");
             }
             if (!queryEmissao.isEmpty()) {
                 listQuery.add(queryEmissao);
@@ -275,6 +268,20 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                 }
             }
             Query query = getEntityManager().createNativeQuery(queryString + " ORDER BY " + orderQuery);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List<ConvencaoPeriodo> listaConvencaoPeriodoPorOposicao() {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT O.convencaoPeriodo FROM Oposicao AS O GROUP BY O.convencaoPeriodo ORDER BY O.convencaoPeriodo.referenciaFinal DESC, O.convencaoPeriodo.referenciaFinal DESC");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;

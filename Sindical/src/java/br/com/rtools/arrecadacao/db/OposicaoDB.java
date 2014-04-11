@@ -6,7 +6,7 @@ import br.com.rtools.arrecadacao.OposicaoPessoa;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.relatorios.Relatorios;
 import java.util.List;
-import java.util.Vector; 
+import java.util.Vector;
 
 public interface OposicaoDB {
 
@@ -28,5 +28,7 @@ public interface OposicaoDB {
 
     public boolean validaOposicao(Oposicao oposicao);
 
-    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String refInicial, String refFinal, Relatorios r);
+    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r);
+
+    public List<ConvencaoPeriodo> listaConvencaoPeriodoPorOposicao();
 }
