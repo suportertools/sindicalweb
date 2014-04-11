@@ -46,6 +46,7 @@ public class OposicaoBean implements Serializable {
     private String descricaoPesquisa = "";
     private String comoPesquisa = "";
     private Socios socios = new Socios();
+    private boolean removeFiltro = false;
 
     public void novo() {
         oposicao = new Oposicao();
@@ -381,6 +382,11 @@ public class OposicaoBean implements Serializable {
     public List<Oposicao> getListaOposicaos() {
         OposicaoDB oposicaoDB = new OposicaoDBToplink();
         if (listaOposicaos.isEmpty()) {
+            if(removeFiltro) {
+                if(porPesquisa.equals("todos")) {
+                    return new ArrayList();
+                }
+            }
             listaOposicaos = oposicaoDB.pesquisaOposicao(descricaoPesquisa, porPesquisa, comoPesquisa);
         }
         return listaOposicaos;
@@ -429,5 +435,16 @@ public class OposicaoBean implements Serializable {
 
     public String getMascara() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
+    }
+
+    public boolean isRemoveFiltro() {
+        if (GenericaSessao.exists("removeFiltro")) {
+            removeFiltro = GenericaSessao.getBoolean("removeFiltro", true);
+        }
+        return removeFiltro;
+    }
+
+    public void setRemoveFiltro(boolean removeFiltro) {
+        this.removeFiltro = removeFiltro;
     }
 }
