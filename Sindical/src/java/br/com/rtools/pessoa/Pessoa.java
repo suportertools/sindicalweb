@@ -217,6 +217,84 @@ public class Pessoa implements Serializable {
     }
 
     @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 79 * hash + this.id;
+        hash = 79 * hash + (this.nome != null ? this.nome.hashCode() : 0);
+        hash = 79 * hash + (this.tipoDocumento != null ? this.tipoDocumento.hashCode() : 0);
+        hash = 79 * hash + (this.obs != null ? this.obs.hashCode() : 0);
+        hash = 79 * hash + (this.site != null ? this.site.hashCode() : 0);
+        hash = 79 * hash + (this.telefone1 != null ? this.telefone1.hashCode() : 0);
+        hash = 79 * hash + (this.telefone2 != null ? this.telefone2.hashCode() : 0);
+        hash = 79 * hash + (this.telefone3 != null ? this.telefone3.hashCode() : 0);
+        hash = 79 * hash + (this.email1 != null ? this.email1.hashCode() : 0);
+        hash = 79 * hash + (this.email2 != null ? this.email2.hashCode() : 0);
+        hash = 79 * hash + (this.email3 != null ? this.email3.hashCode() : 0);
+        hash = 79 * hash + (this.documento != null ? this.documento.hashCode() : 0);
+        hash = 79 * hash + (this.login != null ? this.login.hashCode() : 0);
+        hash = 79 * hash + (this.senha != null ? this.senha.hashCode() : 0);
+        hash = 79 * hash + (this.dtCriacao != null ? this.dtCriacao.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Pessoa other = (Pessoa) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.nome == null) ? (other.nome != null) : !this.nome.equals(other.nome)) {
+            return false;
+        }
+        if (this.tipoDocumento != other.tipoDocumento && (this.tipoDocumento == null || !this.tipoDocumento.equals(other.tipoDocumento))) {
+            return false;
+        }
+        if ((this.obs == null) ? (other.obs != null) : !this.obs.equals(other.obs)) {
+            return false;
+        }
+        if ((this.site == null) ? (other.site != null) : !this.site.equals(other.site)) {
+            return false;
+        }
+        if ((this.telefone1 == null) ? (other.telefone1 != null) : !this.telefone1.equals(other.telefone1)) {
+            return false;
+        }
+        if ((this.telefone2 == null) ? (other.telefone2 != null) : !this.telefone2.equals(other.telefone2)) {
+            return false;
+        }
+        if ((this.telefone3 == null) ? (other.telefone3 != null) : !this.telefone3.equals(other.telefone3)) {
+            return false;
+        }
+        if ((this.email1 == null) ? (other.email1 != null) : !this.email1.equals(other.email1)) {
+            return false;
+        }
+        if ((this.email2 == null) ? (other.email2 != null) : !this.email2.equals(other.email2)) {
+            return false;
+        }
+        if ((this.email3 == null) ? (other.email3 != null) : !this.email3.equals(other.email3)) {
+            return false;
+        }
+        if ((this.documento == null) ? (other.documento != null) : !this.documento.equals(other.documento)) {
+            return false;
+        }
+        if ((this.login == null) ? (other.login != null) : !this.login.equals(other.login)) {
+            return false;
+        }
+        if ((this.senha == null) ? (other.senha != null) : !this.senha.equals(other.senha)) {
+            return false;
+        }
+        if (this.dtCriacao != other.dtCriacao && (this.dtCriacao == null || !this.dtCriacao.equals(other.dtCriacao))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     public String toString() {
         return "Pessoa{" + "id=" + id + ", nome=" + nome + ", tipoDocumento=" + tipoDocumento + ", obs=" + obs + ", site=" + site + ", telefone1=" + telefone1 + ", telefone2=" + telefone2 + ", telefone3=" + telefone3 + ", email1=" + email1 + ", email2=" + email2 + ", email3=" + email3 + ", documento=" + documento + ", login=" + login + ", senha=" + senha + ", dtCriacao=" + dtCriacao + '}';
     }

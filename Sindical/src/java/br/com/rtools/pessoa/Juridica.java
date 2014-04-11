@@ -1,13 +1,14 @@
 package br.com.rtools.pessoa;
 
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PES_JURIDICA")
 @NamedQuery(name = "Juridica.pesquisaID", query = "select jur from Juridica jur where jur.id=:pid")
-public class Juridica implements java.io.Serializable {
+public class Juridica implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,7 +41,7 @@ public class Juridica implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_FECHAMENTO")
     private Date dtFechamento;
-    @Column(name = "IS_EMAIL_ESCRITORIO")
+    @Column(name = "IS_EMAIL_ESCRITORIO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean emailEscritorio;
 
     public Juridica() {
@@ -206,4 +207,80 @@ public class Juridica implements java.io.Serializable {
     public void setEmailEscritorio(boolean emailEscritorio) {
         this.emailEscritorio = emailEscritorio;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + this.id;
+        hash = 29 * hash + (this.pessoa != null ? this.pessoa.hashCode() : 0);
+        hash = 29 * hash + (this.fantasia != null ? this.fantasia.hashCode() : 0);
+        hash = 29 * hash + (this.cnae != null ? this.cnae.hashCode() : 0);
+        hash = 29 * hash + (this.contabilidade != null ? this.contabilidade.hashCode() : 0);
+        hash = 29 * hash + (this.inscricaoEstadual != null ? this.inscricaoEstadual.hashCode() : 0);
+        hash = 29 * hash + (this.inscricaoMunicipal != null ? this.inscricaoMunicipal.hashCode() : 0);
+        hash = 29 * hash + (this.contato != null ? this.contato.hashCode() : 0);
+        hash = 29 * hash + (this.responsavel != null ? this.responsavel.hashCode() : 0);
+        hash = 29 * hash + (this.porte != null ? this.porte.hashCode() : 0);
+        hash = 29 * hash + (this.dtAbertura != null ? this.dtAbertura.hashCode() : 0);
+        hash = 29 * hash + (this.dtFechamento != null ? this.dtFechamento.hashCode() : 0);
+        hash = 29 * hash + (this.emailEscritorio ? 1 : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Juridica other = (Juridica) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.pessoa != other.pessoa && (this.pessoa == null || !this.pessoa.equals(other.pessoa))) {
+            return false;
+        }
+        if ((this.fantasia == null) ? (other.fantasia != null) : !this.fantasia.equals(other.fantasia)) {
+            return false;
+        }
+        if (this.cnae != other.cnae && (this.cnae == null || !this.cnae.equals(other.cnae))) {
+            return false;
+        }
+        if (this.contabilidade != other.contabilidade && (this.contabilidade == null || !this.contabilidade.equals(other.contabilidade))) {
+            return false;
+        }
+        if ((this.inscricaoEstadual == null) ? (other.inscricaoEstadual != null) : !this.inscricaoEstadual.equals(other.inscricaoEstadual)) {
+            return false;
+        }
+        if ((this.inscricaoMunicipal == null) ? (other.inscricaoMunicipal != null) : !this.inscricaoMunicipal.equals(other.inscricaoMunicipal)) {
+            return false;
+        }
+        if ((this.contato == null) ? (other.contato != null) : !this.contato.equals(other.contato)) {
+            return false;
+        }
+        if ((this.responsavel == null) ? (other.responsavel != null) : !this.responsavel.equals(other.responsavel)) {
+            return false;
+        }
+        if (this.porte != other.porte && (this.porte == null || !this.porte.equals(other.porte))) {
+            return false;
+        }
+        if (this.dtAbertura != other.dtAbertura && (this.dtAbertura == null || !this.dtAbertura.equals(other.dtAbertura))) {
+            return false;
+        }
+        if (this.dtFechamento != other.dtFechamento && (this.dtFechamento == null || !this.dtFechamento.equals(other.dtFechamento))) {
+            return false;
+        }
+        if (this.emailEscritorio != other.emailEscritorio) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Juridica{" + "id=" + id + ", pessoa=" + pessoa + ", fantasia=" + fantasia + ", cnae=" + cnae + ", contabilidade=" + contabilidade + ", inscricaoEstadual=" + inscricaoEstadual + ", inscricaoMunicipal=" + inscricaoMunicipal + ", contato=" + contato + ", responsavel=" + responsavel + ", porte=" + porte + ", dtAbertura=" + dtAbertura + ", dtFechamento=" + dtFechamento + ", emailEscritorio=" + emailEscritorio + '}';
+    }
+
 }

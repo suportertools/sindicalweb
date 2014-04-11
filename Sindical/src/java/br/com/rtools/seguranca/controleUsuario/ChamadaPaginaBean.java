@@ -729,6 +729,7 @@ public class ChamadaPaginaBean implements Serializable {
     public synchronized String oposicao() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("oposicaoBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("removeFiltro");
         return metodoGenerico(2, "oposicao");
     }
 

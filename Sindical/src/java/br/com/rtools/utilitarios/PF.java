@@ -31,7 +31,10 @@ public class PF {
      * @param string
      */
     public static void execute(String string) {
-        RequestContext.getCurrentInstance().execute(string);
+        try {
+            RequestContext.getCurrentInstance().execute(string);            
+        } catch (Exception e) {
+        }
     }
 
     /**

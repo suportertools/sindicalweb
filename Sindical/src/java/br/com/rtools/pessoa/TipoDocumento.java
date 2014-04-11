@@ -1,5 +1,7 @@
 package br.com.rtools.pessoa;
 
+import br.com.rtools.utilitarios.BaseEntity;
+import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
@@ -9,7 +11,7 @@ import javax.persistence.*;
     @NamedQuery(name = "TipoDocumento.findAll", query = "SELECT TDOC FROM TipoDocumento AS TDOC ORDER BY TDOC.descricao ASC "),
     @NamedQuery(name = "TipoDocumento.findName", query = "SELECT TDOC FROM TipoDocumento AS TDOC WHERE UPPER(TDOC.descricao) LIKE :pdescricao ORDER BY TDOC.descricao ASC ")
 })
-public class TipoDocumento implements java.io.Serializable {
+public class TipoDocumento implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +29,7 @@ public class TipoDocumento implements java.io.Serializable {
         this.descricao = descricao;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -41,6 +44,32 @@ public class TipoDocumento implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 17 * hash + this.id;
+        hash = 17 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final TipoDocumento other = (TipoDocumento) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package br.com.rtools.relatorios.beans;
 
+import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.db.OposicaoDB;
 import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
@@ -8,6 +9,7 @@ import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.Download;
@@ -15,7 +17,6 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.SalvaArquivos;
-import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,10 +55,9 @@ public class RelatorioOposicaoBean implements Serializable {
     private String indexAccordion;
     private Date dataInicial;
     private Date dataFinal;
-    private String referenciaInicial;
-    private String referenciaFinal;
     private List<SelectItem>[] listSelectItem;
     private List<ParametroOposicao> parametroOposicao;
+    private List<ConvencaoPeriodo> listConvencaoPeriodos;
     private int[] index;
     private String porPesquisa;
     private String descPorPesquisa;
@@ -73,13 +73,14 @@ public class RelatorioOposicaoBean implements Serializable {
         indexAccordion = "Simples";
         dataInicial = DataHoje.dataHoje();
         dataFinal = DataHoje.dataHoje();
-        referenciaInicial = DataHoje.dataReferencia(DataHoje.data());
-        referenciaFinal = DataHoje.dataReferencia(DataHoje.data());
-        listSelectItem = new ArrayList[1];
+        listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<SelectItem>();
+        listSelectItem[1] = new ArrayList<SelectItem>();
         parametroOposicao = new ArrayList<ParametroOposicao>();
-        index = new int[1];
+        listConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
+        index = new int[2];
         index[0] = 0;
+        index[1] = 0;
         porPesquisa = "";
         descPorPesquisa = "";
     }
@@ -88,7 +89,9 @@ public class RelatorioOposicaoBean implements Serializable {
     public void destroy() {
         GenericaSessao.remove("relatorioOposicaoBean");
         GenericaSessao.remove("oposicaoPesquisa");
+        GenericaSessao.remove("oposicaoBean");
         GenericaSessao.remove("oposicaoPesquisaPor");
+        GenericaSessao.remove("removeFiltro");
     }
 
     public void visualizar() {
@@ -107,8 +110,7 @@ public class RelatorioOposicaoBean implements Serializable {
             int pEmpresaI = 0;
             String pIStringI = "";
             String pFStringI = "";
-            String pRefIStringI = "";
-            String pRefFStringI = "";
+            String referencia = "";
             List listDetalhePesquisa = new ArrayList();
             if (porPesquisa.equals("rgs") || porPesquisa.equals("nome") || porPesquisa.equals("cpf")) {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
@@ -128,11 +130,15 @@ public class RelatorioOposicaoBean implements Serializable {
                 listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
             }
             if (porPeridoConvencao) {
-                pRefIStringI = referenciaInicial;
-                pRefFStringI = referenciaFinal;
-                listDetalhePesquisa.add(" Periodo Convenção entre " + pRefIStringI + " e " + pRefFStringI);
+                for (int i = 0; i < listConvencaoPeriodos.size(); i++) {
+                    if (i == 0) {
+                        referencia = "" + listConvencaoPeriodos.get(i).getId();
+                    } else {
+                        referencia += "," + listConvencaoPeriodos.get(i).getId();
+                    }
+                }
             }
-            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, pRefIStringI, pRefFStringI, relatorios);
+            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios);
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
@@ -213,6 +219,20 @@ public class RelatorioOposicaoBean implements Serializable {
         return listSelectItem[0];
     }
 
+    public List<SelectItem> getListaReferencias() {
+        if (listSelectItem[1].isEmpty()) {
+            OposicaoDB oposicaoDB = new OposicaoDBToplink();
+            List<ConvencaoPeriodo> list = (List<ConvencaoPeriodo>) oposicaoDB.listaConvencaoPeriodoPorOposicao();
+            for (int i = 0; i < list.size(); i++) {
+                listSelectItem[1].add(new SelectItem(i, list.get(i).getReferenciaFinal() + " - " + list.get(i).getReferenciaInicial() + " - Grupo Cidade: " +list.get(i).getGrupoCidade().getDescricao()  + " - Convenção: " +list.get(i).getConvencao().getDescricao(), "" + list.get(i).getId()));
+            }
+            if (listSelectItem[1].isEmpty()) {
+                listSelectItem[1] = new ArrayList<SelectItem>();
+            }
+        }
+        return listSelectItem[1];
+    }
+
     public String getTipoRelatorio() {
         return tipoRelatorio;
     }
@@ -247,8 +267,8 @@ public class RelatorioOposicaoBean implements Serializable {
             dataFinal = DataHoje.dataHoje();
         }
         if (!porPeridoConvencao) {
-            referenciaInicial = DataHoje.dataReferencia(DataHoje.data());
-            referenciaFinal = DataHoje.dataReferencia(DataHoje.data());
+            listSelectItem[0].clear();
+            listConvencaoPeriodos.clear();
         }
         if (!porOposicao) {
             oposicao = new Oposicao();
@@ -266,9 +286,9 @@ public class RelatorioOposicaoBean implements Serializable {
             dataFinal = DataHoje.dataHoje();
             porPeridoEmissao = false;
         } else if (close.equals("periodoConvencao")) {
-            referenciaInicial = DataHoje.dataReferencia(DataHoje.data());
-            referenciaFinal = DataHoje.dataReferencia(DataHoje.data());
+            listSelectItem[1].clear();
             porPeridoConvencao = false;
+            listConvencaoPeriodos.clear();
         }
         RequestContext.getCurrentInstance().update("form_relatorio:id_panel");
     }
@@ -290,6 +310,7 @@ public class RelatorioOposicaoBean implements Serializable {
                     oposicao = new Oposicao();
                     porPesquisa = "";
                 }
+                GenericaSessao.remove("removeFiltro");
             }
         }
         return oposicao;
@@ -363,22 +384,6 @@ public class RelatorioOposicaoBean implements Serializable {
         this.porPeridoConvencao = porPeridoConvencao;
     }
 
-    public String getReferenciaInicial() {
-        return referenciaInicial;
-    }
-
-    public void setReferenciaInicial(String referenciaInicial) {
-        this.referenciaInicial = referenciaInicial;
-    }
-
-    public String getReferenciaFinal() {
-        return referenciaFinal;
-    }
-
-    public void setReferenciaFinal(String referenciaFinal) {
-        this.referenciaFinal = referenciaFinal;
-    }
-
     public List<ParametroOposicao> getParametroOposicao() {
         return parametroOposicao;
     }
@@ -412,5 +417,37 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public void setDescPorPesquisa(String descPorPesquisa) {
         this.descPorPesquisa = descPorPesquisa;
+    }
+
+    public void removeFiltro() {
+        GenericaSessao.put("removeFiltro", true);
+    }
+
+    public void addReferencia() {
+        Dao dao = new Dao();
+        int id = Integer.parseInt(getListaReferencias().get(index[1]).getDescription());
+        for (ConvencaoPeriodo lcp : listConvencaoPeriodos) {
+            if (id == lcp.getId()) {
+                return;
+            }
+        }
+        listConvencaoPeriodos.add((ConvencaoPeriodo) dao.find(new ConvencaoPeriodo(), Integer.parseInt(getListaReferencias().get(index[1]).getDescription())));
+    }
+
+    public void removeReferencia(int index) {
+        for (int i = 0; i < listConvencaoPeriodos.size(); i++) {
+            if (index == i) {
+                listConvencaoPeriodos.remove(i);
+                return;
+            }
+        }
+    }
+
+    public List<ConvencaoPeriodo> getListConvencaoPeriodos() {
+        return listConvencaoPeriodos;
+    }
+
+    public void setListConvencaoPeriodos(List<ConvencaoPeriodo> listConvencaoPeriodos) {
+        this.listConvencaoPeriodos = listConvencaoPeriodos;
     }
 }
