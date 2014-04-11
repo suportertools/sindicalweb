@@ -1,7 +1,10 @@
 package br.com.rtools.estoque.dao;
 
 import br.com.rtools.estoque.Estoque;
+import br.com.rtools.estoque.EstoqueSaidaConsumo;
+import br.com.rtools.estoque.EstoqueTipo;
 import br.com.rtools.estoque.Produto;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
 import java.util.List;
@@ -101,6 +104,37 @@ public class ProdutoDao extends DB {
         try {
             Query q = getEntityManager().createQuery("SELECT E FROM Estoque AS E WHERE E.produto.id = :p1 ORDER BY E.filial.filial.pessoa.nome ASC, E.estoqueTipo.descricao ASC");
             q.setParameter("p1", p.getId());
+            List list = q.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
+
+    public Estoque listaEstoquePorProdutoFilial(Produto p, Filial l) {
+        try {
+            Query q = getEntityManager().createQuery("SELECT E FROM Estoque AS E WHERE E.produto.id = :p1 AND E.filial.id = :p2 ORDER BY E.filial.filial.pessoa.nome");
+            q.setParameter("p1", p.getId());
+            q.setParameter("p2", l.getId());
+            List list = q.getResultList();
+            if (!list.isEmpty()) {
+                return (Estoque) q.getSingleResult();
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public List<EstoqueSaidaConsumo> listaEstoqueSaidaConsumoProdutoTipo(int produto, int estoqueTipo, String orderLancamento, String orderDepartamento, String orderProduto, String orderQuantidade, String orderFilial) {
+        if (produto == -1) {
+            return new ArrayList();
+        }
+        try {
+            Query q = getEntityManager().createQuery("SELECT ESC FROM EstoqueSaidaConsumo AS ESC WHERE ESC.produto.id = :p1 AND ESC.estoqueTipo.id = :p2 ORDER BY ESC.dtLancamento " + orderLancamento + ", ESC.departamento.descricao " + orderDepartamento + ", ESC.produto.descricao " + orderProduto + ", ESC.filialSaida.filial.pessoa.nome " + orderFilial + "");
+            q.setParameter("p1", produto);
+            q.setParameter("p2", estoqueTipo);
             List list = q.getResultList();
             if (!list.isEmpty()) {
                 return list;

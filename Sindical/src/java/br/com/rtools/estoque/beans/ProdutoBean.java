@@ -75,7 +75,7 @@ public class ProdutoBean implements Serializable {
 
     @PreDestroy
     public void destroy() {
-        GenericaSessao.remove("produtoBean");
+        GenericaSessao.remove("produtoBean"); 
     }
 
     public void clear() {
@@ -164,12 +164,13 @@ public class ProdutoBean implements Serializable {
                 break;
             }
         }
+        listaEstoque.clear();
         GenericaSessao.put("linkClicado", true);
-        if (!GenericaSessao.exists("urlRetorno")) {
-            return "produto";
-        } else {
-            GenericaSessao.put("pesquisaProduto", produto);
+        if (GenericaSessao.exists("urlRetorno")) {
+            GenericaSessao.put("produtoPesquisa", produto);
             return GenericaSessao.getString("urlRetorno");
+        } else {
+            return "produto";
         }
     }
 
