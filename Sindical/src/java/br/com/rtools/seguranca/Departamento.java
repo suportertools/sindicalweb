@@ -29,6 +29,7 @@ public class Departamento implements BaseEntity, Serializable {
         this.descricao = descricao;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -43,6 +44,32 @@ public class Departamento implements BaseEntity, Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + this.id;
+        hash = 37 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Departamento other = (Departamento) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
+            return false;
+        }
+        return true;
     }
 
     @Override
