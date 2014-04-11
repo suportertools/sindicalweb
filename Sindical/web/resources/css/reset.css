@@ -88,6 +88,11 @@ div.wrapper { width: 1024px; margin: 0 auto;}
 .z-index-fifteen {z-index: 15}
 .z-index-twenty {z-index: 20}
 .z-index-twenty-five {z-index: 25}
+.font-size-8 {font-size: 8pt!important;}
+.font-size-10 {font-size: 10pt!important;}
+.font-size-12 {font-size: 12pt!important;}
+.font-size-14 {font-size: 14pt!important;}
+.font-size-16 {font-size: 16pt!important;}
 .font-color-gray {color: gray!important;}
 .font-color-white {color: white!important;}
 .font-color-black {color: black!important;}
@@ -96,6 +101,10 @@ div.wrapper { width: 1024px; margin: 0 auto;}
 .no-border {border: 0!important;}
 .no-resize {resize: none;}
 .verticalAlignTop {vertical-align: top!important;}
+.bold {font-weight: bold!important;}
+.input-text-min {width: 100%!important; height: 30px;}
+.input-text-med {width: 100%!important; height: 40px;}
+.input-text-max {width: 100%!important; height: 50px;}
 
 // Imagens
 
