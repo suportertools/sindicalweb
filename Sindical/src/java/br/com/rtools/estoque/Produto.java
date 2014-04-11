@@ -16,6 +16,8 @@ public class Produto implements Serializable {
     private int id;
     @Column(name = "DS_DESCRICAO", length = 100, nullable = false)
     private String descricao;
+    @Column(name = "DS_MODELO", length = 100)
+    private String modelo;
     @Column(name = "DS_MARCA", length = 100)
     private String marca;
     @Column(name = "DS_FABRICANTE", length = 100)
@@ -49,6 +51,7 @@ public class Produto implements Serializable {
     public Produto() {
         this.id = -1;
         this.descricao = "";
+        this.modelo = "";
         this.marca = "";
         this.fabricante = "";
         this.sabor = "";
@@ -63,9 +66,10 @@ public class Produto implements Serializable {
         this.cor = new Cor();
     }
 
-    public Produto(int id, String descricao, String marca, String fabricante, String sabor, String medida, String observacao, String barras, int quantidadeEmbalagem, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
+    public Produto(int id, String descricao, String modelo, String marca, String fabricante, String sabor, String medida, String observacao, String barras, int quantidadeEmbalagem, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
         this.id = id;
         this.descricao = descricao;
+        this.modelo = modelo;
         this.marca = marca;
         this.fabricante = fabricante;
         this.sabor = sabor;
@@ -94,6 +98,14 @@ public class Produto implements Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
     }
 
     public String getMarca() {
@@ -202,7 +214,6 @@ public class Produto implements Serializable {
 
     @Override
     public String toString() {
-        return "Produto{" + "id=" + id + ", descricao=" + descricao + ", marca=" + marca + ", fabricante=" + fabricante + ", sabor=" + sabor + ", medida=" + medida + ", barras=" + barras + ", observacao=" + observacao + ", quantidadeEmbalagem=" + quantidadeEmbalagem + ", dtCadastro=" + dtCadastro + ", produtoGrupo=" + produtoGrupo + ", produtoSubGrupo=" + produtoSubGrupo + ", produtoUnidade=" + produtoUnidade + ", cor=" + cor + '}';
+        return "Produto{" + "id=" + id + ", descricao=" + descricao + ", modelo=" + modelo + ", marca=" + marca + ", fabricante=" + fabricante + ", sabor=" + sabor + ", medida=" + medida + ", barras=" + barras + ", observacao=" + observacao + ", quantidadeEmbalagem=" + quantidadeEmbalagem + ", dtCadastro=" + dtCadastro + ", produtoGrupo=" + produtoGrupo + ", produtoSubGrupo=" + produtoSubGrupo + ", produtoUnidade=" + produtoUnidade + ", cor=" + cor + '}';
     }
-
 }

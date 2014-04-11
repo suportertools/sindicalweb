@@ -47,6 +47,7 @@ public class ProdutoSubGrupo implements BaseEntity, Serializable {
         this.descricao = descricao;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -69,6 +70,36 @@ public class ProdutoSubGrupo implements BaseEntity, Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 47 * hash + this.id;
+        hash = 47 * hash + (this.produtoGrupo != null ? this.produtoGrupo.hashCode() : 0);
+        hash = 47 * hash + (this.descricao != null ? this.descricao.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ProdutoSubGrupo other = (ProdutoSubGrupo) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.produtoGrupo != other.produtoGrupo && (this.produtoGrupo == null || !this.produtoGrupo.equals(other.produtoGrupo))) {
+            return false;
+        }
+        if ((this.descricao == null) ? (other.descricao != null) : !this.descricao.equals(other.descricao)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

@@ -2,14 +2,17 @@ package br.com.rtools.estoque.beans;
 
 import br.com.rtools.estoque.Estoque;
 import br.com.rtools.estoque.EstoqueSaidaConsumo;
+import br.com.rtools.estoque.EstoqueTipo;
 import br.com.rtools.estoque.Produto;
 import br.com.rtools.estoque.dao.ProdutoDao;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.PF;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -21,70 +24,148 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class BaixaProdutoConsumoBean {
 
+    private Departamento selectedDepartamento;
+    private Estoque estoque;
     private Filial filial;
+    private Filial selectedFilialDestino;
     private Produto produto;
     private EstoqueSaidaConsumo estoqueSaidaConsumo;
-    private List<EstoqueSaidaConsumo> listEstoqueSaidaConsumo;
-    private List<Filial> filiais;
-    private List<Estoque> listEstoque;
-    private List<Departamento> departamentos;
+    private List<Departamento> listDepartamentos;
+    private List<EstoqueSaidaConsumo>[] listEstoqueSaidaConsumo;
+    private List<Filial> listFiliais;
+    private String message;
+    private int quantidadeEstoque;
+    private int nrEstoque;
+    private String color;
 
     @PostConstruct
     public void init() {
-        filial = new Filial();
+        selectedDepartamento = new Departamento();
+        estoque = new Estoque();
+        filial = MacFilial.getAcessoFilial().getFilial();
+        selectedFilialDestino = new Filial();
         produto = new Produto();
         estoqueSaidaConsumo = new EstoqueSaidaConsumo();
-        listEstoqueSaidaConsumo = new ArrayList<EstoqueSaidaConsumo>();
-        filiais = new ArrayList<Filial>();
-        listEstoque = new ArrayList<Estoque>();
-        departamentos = new ArrayList<Departamento>();
+        listDepartamentos = new ArrayList<Departamento>();
+        listEstoqueSaidaConsumo = new ArrayList[2];
+        listEstoqueSaidaConsumo[0] = new ArrayList<EstoqueSaidaConsumo>();
+        listEstoqueSaidaConsumo[1] = new ArrayList<EstoqueSaidaConsumo>();
+        listFiliais = new ArrayList<Filial>();
+        message = "";
+        quantidadeEstoque = 0;
+        nrEstoque = 0;
+        color = "";
     }
 
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("baixaProdutoConsumoBean");
+        GenericaSessao.remove("produtoBean");
         GenericaSessao.remove("produtoPesquisa");
     }
 
     public void baixar() {
-
+        Dao dao = new Dao();
+        dao.openTransaction();
+        boolean err = false;
+        for (EstoqueSaidaConsumo esc : listEstoqueSaidaConsumo[0]) {
+            if (!dao.save(esc)) {
+                err = true;
+            }
+        }
+        // update est_estoque set nr_estoque=nr_estoque-(qtde da saida) where id_tipo=1 and id_filial=(filial saida) and id_produto = (produto selecionado)
+        if (err) {
+            dao.rollback();
+            message = "Erro ao baixar produtos do estoque!";
+        } else {
+            estoque.setEstoque(quantidadeEstoque);
+            if (dao.update(estoque)) {
+                dao.commit();
+                message = "Baixa realizada com sucesso!";
+                listEstoqueSaidaConsumo[0].clear();
+                listEstoqueSaidaConsumo[1].clear();
+            } else {
+                dao.rollback();
+                message = "Erro ao baixar produtos do estoque!";
+            }
+        }
     }
 
     public void addItem() {
-        if (filiais.isEmpty()) {
-            GenericaMensagem.warn("Validação", "Cadastrar filiais! Falar com administrador do sistema.");
+        if (filial.getId() == -1) {
+            GenericaMensagem.error("Validação", "Acessar o sistema com Filial!");
             return;
         }
-        if (estoqueSaidaConsumo.getQuantidade() == 0) {
-            GenericaMensagem.warn("Validação", "Informar uma quantidade válida!");
+        estoqueSaidaConsumo.setFilialSaida(filial);
+        if (listFiliais.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Cadastrar Filiais! Falar com administrador do sistema.");
             return;
         }
-        for (EstoqueSaidaConsumo esc : listEstoqueSaidaConsumo) {
+        if (produto.getId() == -1) {
+            GenericaMensagem.warn("Validação", "Pesquisar um produto!");
+            return;
+        }
+        if (!estoque.isAtivo()) {
+            GenericaMensagem.warn("Validação", "Produto está inátivado!");
+            return;
+        }
+        estoqueSaidaConsumo.setProduto(produto);
+        estoqueSaidaConsumo.setDepartamento(selectedDepartamento);
+        estoqueSaidaConsumo.setFilialEntrada(selectedFilialDestino);
+        Dao dao = new Dao();
+        dao.openTransaction();
+        estoqueSaidaConsumo.setEstoqueTipo((EstoqueTipo) dao.find(new EstoqueTipo(), 1));
+        dao.commit();
+        for (EstoqueSaidaConsumo esc : listEstoqueSaidaConsumo[0]) {
             if (esc.getFilialSaida().getId() == esc.getFilialSaida().getId()
                     && esc.getFilialEntrada().getId() == estoqueSaidaConsumo.getFilialEntrada().getId()
                     && esc.getProduto().getId() == estoqueSaidaConsumo.getProduto().getId()
                     && esc.getDepartamento().getId() == estoqueSaidaConsumo.getDepartamento().getId()) {
                 GenericaMensagem.warn("Validação", "Item já adicionado a lista!");
+                return;
+            }
+        }
+        if (estoqueSaidaConsumo.getQuantidade() == 0) {
+            GenericaMensagem.warn("Validação", "Informar uma quantidade válida!");
+            return;
+        }
+        listEstoqueSaidaConsumo[0].add(estoqueSaidaConsumo);
+        estoqueSaidaConsumo = new EstoqueSaidaConsumo();
+    }
+
+    public void removeItem(int index) {
+        for (int i = 0; i < listEstoqueSaidaConsumo[0].size(); i++) {
+            if (i == index) {
+                listEstoqueSaidaConsumo[0].remove(i);
+                removeQuantidadeEstoque();
                 break;
             }
         }
     }
 
-    public void removeItem(int index) {
-        for (int i = 0; i < listEstoqueSaidaConsumo.size(); i++) {
-            if (i == index) {
-                if (listEstoqueSaidaConsumo.get(i).getId() != -1) {
-                    Dao dao = new Dao();
-                    if (dao.delete(index, true)) {
-                        GenericaMensagem.warn("Sucesso", "Registro excluído");
-                    } else {
-                        GenericaMensagem.warn("Erro", "Ao excluir excluído");
-                    }
+    public void removeItem(EstoqueSaidaConsumo esc) {
+        Dao dao = new Dao();
+        dao.openTransaction();
+        if (esc.getLancamento().equals(DataHoje.data())) {
+            if (dao.delete(dao.find(esc))) {
+                estoque.setEstoque(estoque.getEstoque() + esc.getQuantidade());
+                if (!dao.update(estoque)) {
+                    dao.rollback();
+                    GenericaMensagem.warn("Erro", "Ao excluir excluído");
+                    return;
                 }
-                listEstoqueSaidaConsumo.remove(i);
-                break;
+                GenericaMensagem.warn("Sucesso", "Registro excluído");
+                dao.commit();
+                ProdutoDao produtoDao = new ProdutoDao();
+                estoque = (Estoque) produtoDao.listaEstoquePorProdutoFilial(produto, filial);
+                quantidadeEstoque = estoque.getEstoque();
+                nrEstoque = estoque.getEstoque();
+            } else {
+                dao.rollback();
+                GenericaMensagem.warn("Erro", "Ao excluir excluído");
             }
-
+            listEstoqueSaidaConsumo[1].clear();
+            removeQuantidadeEstoque();
         }
     }
 
@@ -96,42 +177,54 @@ public class BaixaProdutoConsumoBean {
         this.estoqueSaidaConsumo = estoqueSaidaConsumo;
     }
 
-    public List<Filial> getFiliais() {
-        if (filiais.isEmpty()) {
+    public List<Filial> getListFiliais() {
+        if (listFiliais.isEmpty()) {
             Dao dao = new Dao();
-            filiais = (List<Filial>) dao.list("Filial", true);
+            listFiliais = (List<Filial>) dao.list("Filial", true);
         }
-        return filiais;
+        return listFiliais;
     }
 
-    public void setFiliais(List<Filial> filiais) {
-        this.filiais = filiais;
+    public void setListFiliais(List<Filial> listFiliais) {
+        this.listFiliais = listFiliais;
     }
 
-    public List<Departamento> getDepartamentos() {
-        if (departamentos.isEmpty()) {
+    public List<Departamento> getListDepartamentos() {
+        if (listDepartamentos.isEmpty()) {
             Dao dao = new Dao();
-            departamentos = (List<Departamento>) dao.list("Departamento", true);
+            listDepartamentos = (List<Departamento>) dao.list("Departamento", true);
         }
-        return departamentos;
+        return listDepartamentos;
     }
 
-    public void setDepartamentos(List<Departamento> departamentos) {
-        this.departamentos = departamentos;
+    public void setListDepartamentos(List<Departamento> listDepartamentos) {
+        this.listDepartamentos = listDepartamentos;
+    }
+
+    public List<EstoqueSaidaConsumo> getListEstoqueSaidaConsumoAdd() {
+        if (listEstoqueSaidaConsumo[0].isEmpty()) {
+            listEstoqueSaidaConsumo[0] = new ArrayList();
+        }
+        return listEstoqueSaidaConsumo[0];
+    }
+
+    public void setListEstoqueSaidaConsumoAdd(List<EstoqueSaidaConsumo> listEstoqueSaidaConsumo) {
+        this.listEstoqueSaidaConsumo[0] = listEstoqueSaidaConsumo;
     }
 
     public List<EstoqueSaidaConsumo> getListEstoqueSaidaConsumo() {
-        return listEstoqueSaidaConsumo;
+        if (listEstoqueSaidaConsumo[1].isEmpty()) {
+            ProdutoDao produtoDao = new ProdutoDao();
+            listEstoqueSaidaConsumo[1].addAll(produtoDao.listaEstoqueSaidaConsumoProdutoTipo(estoque.getProduto().getId(), 1, "DESC", "ASC", "ASC", "ASC", "ASC"));
+        }
+        return listEstoqueSaidaConsumo[1];
     }
 
     public void setListEstoqueSaidaConsumo(List<EstoqueSaidaConsumo> listEstoqueSaidaConsumo) {
-        this.listEstoqueSaidaConsumo = listEstoqueSaidaConsumo;
+        this.listEstoqueSaidaConsumo[1] = listEstoqueSaidaConsumo;
     }
 
     public Filial getFilial() {
-        if (filial.getId() == -1) {
-            filial = MacFilial.getAcessoFilial().getFilial();
-        }
         return filial;
     }
 
@@ -143,24 +236,126 @@ public class BaixaProdutoConsumoBean {
         if (GenericaSessao.exists("produtoPesquisa")) {
             Produto p = (Produto) GenericaSessao.getObject("produtoPesquisa");
             if (!p.equals(produto)) {
-                listEstoque.clear();
+                estoqueSaidaConsumo = new EstoqueSaidaConsumo();
+                estoque = new Estoque();
                 produto = p;
                 ProdutoDao produtoDao = new ProdutoDao();
-                listEstoque = (List<Estoque>) produtoDao.listaEstoquePorProduto(produto);
+                estoque = (Estoque) produtoDao.listaEstoquePorProdutoFilial(produto, filial);
+                if(estoque != null) {
+                    quantidadeEstoque = estoque.getEstoque();
+                    nrEstoque = estoque.getEstoque();
+                } else {
+                    estoque = new Estoque();
+                    quantidadeEstoque = 0;
+                    nrEstoque = 0;
+                }
+                removeQuantidadeEstoque();
             }
         }
         return produto;
+    }
+
+    public int quantidadeRestanteFilial() {
+        int estoqueUsado = 0;
+        for (int i = 0; i < getListEstoqueSaidaConsumo().size(); i++) {
+            estoqueUsado += listEstoqueSaidaConsumo[0].get(i).getQuantidade();
+        }
+        int estoqueAtual = estoque.getEstoque() - estoqueUsado;
+        if (estoqueAtual >= 0) {
+            return estoqueAtual;
+        }
+        return estoqueAtual;
     }
 
     public void setProduto(Produto produto) {
         this.produto = produto;
     }
 
-    public List<Estoque> getListEstoque() {
-        return listEstoque;
+    public Estoque getEstoque() {
+        return estoque;
     }
 
-    public void setListEstoque(List<Estoque> listEstoque) {
-        this.listEstoque = listEstoque;
+    public void setEstoque(Estoque estoque) {
+        this.estoque = estoque;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Departamento getSelectedDepartamento() {
+        return selectedDepartamento;
+    }
+
+    public void setSelectedDepartamento(Departamento selectedDepartamento) {
+        this.selectedDepartamento = selectedDepartamento;
+    }
+
+    public Filial getSelectedFilialDestino() {
+        return selectedFilialDestino;
+    }
+
+    public void setSelectedFilialDestino(Filial selectedFilialDestino) {
+        this.selectedFilialDestino = selectedFilialDestino;
+    }
+
+    public void removeQuantidadeEstoque() {
+        if (estoque.getId() != -1) {
+            int quantidadeAdd = 0;
+            int quantidadeEst = 0;
+            if (!listEstoqueSaidaConsumo[0].isEmpty()) {
+                for (EstoqueSaidaConsumo lesc : listEstoqueSaidaConsumo[0]) {
+                    quantidadeAdd += lesc.getQuantidade();
+                }
+            }
+            if (estoqueSaidaConsumo.getQuantidade() < 0) {
+                return;
+            }
+            quantidadeEst = estoque.getEstoque() - estoqueSaidaConsumo.getQuantidade() - quantidadeAdd;
+            color = "";
+            if (quantidadeEst < estoque.getEstoqueMinimo()) {
+                color = "color: red; border: 1px dashed red!important;";
+                GenericaMensagem.warn("Validação", "Limite do estoque mínimo excedido. Cadastrar mais produtos no estoque desta filial.");
+            } else {
+                int percent = quantidadeEst;
+                if (percent < 10) {
+                    color = "color: orange; border: 1px solid yellow!important;";
+                } else {
+                    color = "color: green; border: 1px solid green!important;";
+                }
+            }
+            if (quantidadeEst >= 0) {
+                quantidadeEstoque = quantidadeEst;
+            }
+            PF.update("form_baixa_produto:");
+        }
+    }
+
+    public int getQuantidadeEstoque() {
+        return quantidadeEstoque;
+    }
+
+    public void setQuantidadeEstoque(int quantidadeEstoque) {
+        this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public int getNrEstoque() {
+        return nrEstoque;
+    }
+
+    public void setNrEstoque(int nrEstoque) {
+        this.nrEstoque = nrEstoque;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
