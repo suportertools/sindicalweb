@@ -192,7 +192,7 @@ public class BaixaProdutoConsumoBean {
     public List<Departamento> getListDepartamentos() {
         if (listDepartamentos.isEmpty()) {
             Dao dao = new Dao();
-            listDepartamentos = (List<Departamento>) dao.list("Departamento", true);
+            listDepartamentos = (List<Departamento>) dao.listQuery("FilialDepartamento", "findDepartamentoPorFilial", new Object[]{filial.getId()});
         }
         return listDepartamentos;
     }
@@ -225,6 +225,11 @@ public class BaixaProdutoConsumoBean {
     }
 
     public Filial getFilial() {
+        if (!listFiliais.isEmpty()) {
+            if (filial.getId() == -1) {
+                filial = listFiliais.get(0);
+            }
+        }
         return filial;
     }
 
@@ -241,7 +246,7 @@ public class BaixaProdutoConsumoBean {
                 produto = p;
                 ProdutoDao produtoDao = new ProdutoDao();
                 estoque = (Estoque) produtoDao.listaEstoquePorProdutoFilial(produto, filial);
-                if(estoque != null) {
+                if (estoque != null) {
                     quantidadeEstoque = estoque.getEstoque();
                     nrEstoque = estoque.getEstoque();
                 } else {
