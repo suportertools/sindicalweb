@@ -272,7 +272,7 @@
                                     <p:inputText value="#{produtoBean.produtoSubGrupo.descricao}" converter="#{toUpperCase}">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputText>                                        
-                                    <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoSubGrupo}" update="i_msg_produto_subgrupo i_produto_subgrupo i_panel_grid_1" immediate="true"/>
+                                    <p:commandButton value="Adicionar" action="#{produtoBean.saveProdutoSubGrupo}" update="i_msg_produto_subgrupo i_produto_subgrupo i_panel_grid_1" />
                                 </h:panelGrid>
                             </p:dialog> 
 
