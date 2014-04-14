@@ -109,6 +109,7 @@
 
                             <h:outputLabel value="Grupo Categoria: " styleClass="fontePadrao"/>
                             <h:selectOneMenu id="idGrupoCategoria" value="#{sociosBean.idGrupoCategoria}">
+                                <a4j:ajax event="change" render="idCategoria" />
                                 <f:selectItems value="#{sociosBean.listaGrupoCategoria}"/>
                             </h:selectOneMenu>
                             
