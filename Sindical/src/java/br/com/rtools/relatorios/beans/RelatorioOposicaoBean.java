@@ -58,7 +58,7 @@ public class RelatorioOposicaoBean implements Serializable {
     private List<SelectItem>[] listSelectItem;
     private List<ParametroOposicao> parametroOposicao;
     private List<ConvencaoPeriodo> listConvencaoPeriodos;
-    private int[] index;
+    private Integer[] index;
     private String porPesquisa;
     private String descPorPesquisa;
 
@@ -78,7 +78,7 @@ public class RelatorioOposicaoBean implements Serializable {
         listSelectItem[1] = new ArrayList<SelectItem>();
         parametroOposicao = new ArrayList<ParametroOposicao>();
         listConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
-        index = new int[2];
+        index = new Integer[2];
         index[0] = 0;
         index[1] = 0;
         porPesquisa = "";
@@ -132,9 +132,9 @@ public class RelatorioOposicaoBean implements Serializable {
             if (porPeridoConvencao) {
                 for (int i = 0; i < listConvencaoPeriodos.size(); i++) {
                     if (i == 0) {
-                        referencia = "" + listConvencaoPeriodos.get(i).getId();
+                        referencia = "" + Integer.toString(listConvencaoPeriodos.get(i).getId());
                     } else {
-                        referencia += "," + listConvencaoPeriodos.get(i).getId();
+                        referencia += "," + Integer.toString(listConvencaoPeriodos.get(i).getId());
                     }
                 }
             }
@@ -145,14 +145,13 @@ public class RelatorioOposicaoBean implements Serializable {
                 detalheRelatorio += "Pesquisar registros por: ";
                 for (int i = 0; i < listDetalhePesquisa.size(); i++) {
                     if (i == 0) {
-                        detalheRelatorio += listDetalhePesquisa.get(i).toString();
+                        detalheRelatorio += "" + listDetalhePesquisa.get(i).toString();
                     } else {
                         detalheRelatorio += "," + listDetalhePesquisa.get(i).toString();
                     }
                 }
             }
             String dt = "";
-            String dat = "";
             for (Object list1 : list) {
                 dt = GenericaString.converterNullToString(((List) list1).get(0));
                 ParametroOposicao po
@@ -208,7 +207,7 @@ public class RelatorioOposicaoBean implements Serializable {
     public List<SelectItem> getListaTipoRelatorios() {
         if (listSelectItem[0].isEmpty()) {
             RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
-            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(163);
+            List<Relatorios> list = (List<Relatorios>) db.pesquisaTipoRelatorio(239);
             for (int i = 0; i < list.size(); i++) {
                 listSelectItem[0].add(new SelectItem(i, list.get(i).getNome(), "" + list.get(i).getId()));
             }
@@ -224,7 +223,7 @@ public class RelatorioOposicaoBean implements Serializable {
             OposicaoDB oposicaoDB = new OposicaoDBToplink();
             List<ConvencaoPeriodo> list = (List<ConvencaoPeriodo>) oposicaoDB.listaConvencaoPeriodoPorOposicao();
             for (int i = 0; i < list.size(); i++) {
-                listSelectItem[1].add(new SelectItem(i, list.get(i).getReferenciaFinal() + " - " + list.get(i).getReferenciaInicial() + " - Grupo Cidade: " +list.get(i).getGrupoCidade().getDescricao()  + " - Convenção: " +list.get(i).getConvencao().getDescricao(), "" + list.get(i).getId()));
+                listSelectItem[1].add(new SelectItem(i, list.get(i).getReferenciaFinal() + " - " + list.get(i).getReferenciaInicial() + " - Grupo Cidade: " + list.get(i).getGrupoCidade().getDescricao() + " - Convenção: " + list.get(i).getConvencao().getDescricao(), "" + list.get(i).getId()));
             }
             if (listSelectItem[1].isEmpty()) {
                 listSelectItem[1] = new ArrayList<SelectItem>();
@@ -360,11 +359,11 @@ public class RelatorioOposicaoBean implements Serializable {
         this.listSelectItem = listSelectItem;
     }
 
-    public int[] getIndex() {
+    public Integer[] getIndex() {
         return index;
     }
 
-    public void setIndex(int[] index) {
+    public void setIndex(Integer[] index) {
         this.index = index;
     }
 
@@ -425,7 +424,7 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public void addReferencia() {
         Dao dao = new Dao();
-        int id = Integer.parseInt(getListaReferencias().get(index[1]).getDescription());
+        Integer id = Integer.parseInt(getListaReferencias().get(index[1]).getDescription());
         for (ConvencaoPeriodo lcp : listConvencaoPeriodos) {
             if (id == lcp.getId()) {
                 return;

@@ -37,7 +37,7 @@ public class ProdutoBean implements Serializable {
     private String mensagem;
     private String comoPesquisa;
     // [0] ProdutoGrupo - [1] ProdutoSubGrupo - [2] ProdutoUnidade - [3] Cor
-    private int[] indices;
+    private Integer[] indices;
     private List<SelectItem> listaSelectItem[];
     private List<Produto> listaProdutos;
     private List<Estoque> listaEstoque;
@@ -63,7 +63,7 @@ public class ProdutoBean implements Serializable {
         listaSelectItem[5] = new ArrayList<SelectItem>();
         listaProdutos = new ArrayList<Produto>();
         listaEstoque = new ArrayList<Estoque>();
-        indices = new int[6];
+        indices = new Integer[6];
         indices[0] = 0;
         indices[1] = 0;
         indices[2] = 0;
@@ -75,7 +75,7 @@ public class ProdutoBean implements Serializable {
 
     @PreDestroy
     public void destroy() {
-        GenericaSessao.remove("produtoBean"); 
+        GenericaSessao.remove("produtoBean");
     }
 
     public void clear() {
@@ -224,7 +224,7 @@ public class ProdutoBean implements Serializable {
     public List<SelectItem> getListaSubGrupos() {
         if (!listaSelectItem[0].isEmpty()) {
             if (listaSelectItem[1].isEmpty()) {
-                Dao dao = new Dao();                
+                Dao dao = new Dao();
                 List<ProdutoSubGrupo> list = (List<ProdutoSubGrupo>) dao.listQuery(new ProdutoSubGrupo(), "findGrupo", new Object[]{getListaGrupos().get(indices[0]).getDescription()});
                 for (int i = 0; i < list.size(); i++) {
                     listaSelectItem[1].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
@@ -462,11 +462,11 @@ public class ProdutoBean implements Serializable {
         }
     }
 
-    public int[] getIndices() {
+    public Integer[] getIndices() {
         return indices;
     }
 
-    public void setIndices(int[] indices) {
+    public void setIndices(Integer[] indices) {
         this.indices = indices;
     }
 

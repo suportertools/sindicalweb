@@ -249,7 +249,7 @@ public class Dao extends DB {
         }
         try {
             getEntityManager().getTransaction().begin();
-            getEntityManager().remove(object);
+            getEntityManager().remove(find(object));
             getEntityManager().flush();
             getEntityManager().getTransaction().commit();
             return true;
@@ -482,7 +482,11 @@ public class Dao extends DB {
             int y = 1;
             for (Object param : params) {
                 if (Types.isInteger(param)) {
-                    query.setParameter("p" + y, Integer.parseInt((String) param));
+                    try {
+                        query.setParameter("p" + y, Integer.parseInt((String) param));                        
+                    } catch (Exception e) {
+                        query.setParameter("p" + y, param);
+                    }
                 } else if (Types.isFloat(param)) {
                     query.setParameter("p" + y, Float.parseFloat((String) param));
                 } else if (Types.isDouble(param)) {
