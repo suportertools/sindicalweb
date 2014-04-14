@@ -30,11 +30,12 @@
                                 <p:submenu label="Segurança" icon="ui-icon-document" style="margin-right: 15px">
                                     <p:menuitem value="Usuários" action="#{chamadaPaginaBean.usuario}" />  
                                     <p:submenu label="Permissão" icon="ui-icon-contact">  
-                                        <p:menuitem value="Perm. Departamento"       action="#{chamadaPaginaBean.permissaoDepartamento}" />
-                                        <p:menuitem value="Módulo/Rotina"                action="#{chamadaPaginaBean.permissao}" />
-                                        <p:menuitem value="Cadastro Simples"             action="#{chamadaPaginaBean.simples}" />
-                                        <p:menuitem value="Rotina"                       action="#{chamadaPaginaBean.rotina}" />
-                                        <p:menuitem value="Níveis"                       action="#{chamadaPaginaBean.nivel}" />
+                                        <p:menuitem value="Perm. Departamento"      action="#{chamadaPaginaBean.permissaoDepartamento}" />
+                                        <p:menuitem value="Módulo/Rotina"           action="#{chamadaPaginaBean.permissao}" />
+                                        <p:menuitem value="Cadastro Simples"        action="#{chamadaPaginaBean.simples}" />
+                                        <p:menuitem value="Rotina"                  action="#{chamadaPaginaBean.rotina}" />
+                                        <p:menuitem value="Níveis"                  action="#{chamadaPaginaBean.nivel}" />
+                                        <p:menuitem value="Filial Departamento"     action="#{chamadaPaginaBean.pagina('filialDepartamento')}" />
                                     </p:submenu>  
                                     <p:separator />  
                                     <p:menuitem value="Pesquisar Logs"                   action="#{chamadaPaginaBean.pesquisaLog}" title="Registro de atividades"  />

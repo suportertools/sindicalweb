@@ -24,8 +24,8 @@
                             <p:inputText value="#{produtoBean.produtoPesquisa.descricao}">
                                 <p:ajax event="blur" update="@this" />
                             </p:inputText>
-                            <h:outputLabel value="Por: "/>
-                            <p:selectOneMenu id="idTipoClasse">                                
+                            <h:outputLabel value="Por: " rendered="false"/>
+                            <p:selectOneMenu id="idTipoClasse" rendered="false">
                             </p:selectOneMenu>
                             <p:commandButton id="idInicial" value="Inicial">
                                 <p:ajax listener="#{produtoBean.acaoPesquisaInicial}" update=":form_pesquisa_produto:"/>
