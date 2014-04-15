@@ -267,16 +267,20 @@ public class OposicaoBean implements Serializable {
 
     public void convencaoPeriodoConvencaoGrupoCidade() {
         if (oposicao.getJuridica().getId() != -1) {
-            OposicaoDB oposicaoDB = new OposicaoDBToplink();
-            List list = oposicaoDB.pesquisaPessoaConvencaoGrupoCidade(oposicao.getJuridica().getId());
-            ConvencaoPeriodoDB dB = new ConvencaoPeriodoDBTopLink();
-            if (!list.isEmpty()) {
-                convencaoPeriodo = dB.convencaoPeriodoConvencaoGrupoCidade((Integer) list.get(0), (Integer) list.get(1));
-                if (convencaoPeriodo.getId() == -1) {
-                    convencaoPeriodo = new ConvencaoPeriodo();
-                } else {
-                    oposicao.setConvencaoPeriodo(convencaoPeriodo);
+            if(oposicao.getConvencaoPeriodo().getId() == -1) {
+                OposicaoDB oposicaoDB = new OposicaoDBToplink();
+                List list = oposicaoDB.pesquisaPessoaConvencaoGrupoCidade(oposicao.getJuridica().getId());
+                ConvencaoPeriodoDB dB = new ConvencaoPeriodoDBTopLink();
+                if (!list.isEmpty()) {
+                    convencaoPeriodo = dB.convencaoPeriodoConvencaoGrupoCidade((Integer) list.get(0), (Integer) list.get(1));
+                    if (convencaoPeriodo.getId() == -1) {
+                        convencaoPeriodo = new ConvencaoPeriodo();
+                    } else {
+                        oposicao.setConvencaoPeriodo(convencaoPeriodo);
+                    }
                 }
+            } else {
+                convencaoPeriodo = oposicao.getConvencaoPeriodo();
             }
         }
     }
