@@ -817,7 +817,7 @@ INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 10, 'Trans. Bancária' 
 INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 11, 'Ticket' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_pagamento WHERE id = 11);
 INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 12, 'Recibo' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_pagamento WHERE id = 12);
 INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 13, 'Débito Automático' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_pagamento WHERE id = 13);
-SELECT setval('fin_tipo_pagamento_id_seq', max(id)) FROM fin_tipo_documento;
+SELECT setval('fin_tipo_pagamento_id_seq', max(id)) FROM fin_tipo_pagamento;
 
 -- hom_demissao 
 -- Criate: 2013-08-02
