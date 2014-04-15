@@ -987,7 +987,7 @@ public class SociosBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         File files;
         if (socios.getId() != -1) {
-            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".jpg"));
+            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".PNG"));
             if (files.exists()) {
                 return files.getPath();
             } else {

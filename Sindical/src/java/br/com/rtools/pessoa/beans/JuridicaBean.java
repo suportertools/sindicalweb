@@ -89,7 +89,7 @@ public class JuridicaBean implements Serializable {
     private boolean habServContabil = true;
     private boolean carregaEnvios = false;
     private boolean renderAtivoInativo = false;
-    private boolean chkEndContabilidade = true;
+//    private boolean chkEndContabilidade = true;
     private List listaEnd = new ArrayList();
     private List listEn = new ArrayList();
     private List<Cnae> listaCnae = new ArrayList();
@@ -135,9 +135,9 @@ public class JuridicaBean implements Serializable {
             return;
         }
         if (juridicaReceita.getId() == -1) {
-            
+
             try {
-                System.loadLibrary("knu");  
+                System.loadLibrary("knu");
             } catch (Exception e) {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
                 msgDocumento = "Consulta temporárimente indisponível!";
@@ -146,7 +146,7 @@ public class JuridicaBean implements Serializable {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
                 msgDocumento = "Consulta temporárimente indisponível!";
                 return;
-            } 
+            }
 
             knu.ReceitaCNPJ resultado = knu.knu.receitaCNPJ(documento);
 
@@ -247,7 +247,6 @@ public class JuridicaBean implements Serializable {
             if (juridicaReceita.getStatus().equals("BAIXADA")) {
                 msgDocumento = "Esta empresa esta INATIVA na receita!";
             }
-
 
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
 
@@ -444,7 +443,7 @@ public class JuridicaBean implements Serializable {
         if (listaContribuintesInativos.isEmpty()) {
             ContribuintesInativosDB db = new ContribuintesInativosDBToplink();
             listaContribuintesInativos = db.listaContribuintesInativos(juridica.getId());
-            if(listaContribuintesInativos == null) {
+            if (listaContribuintesInativos == null) {
                 listaContribuintesInativos = new ArrayList();
             }
         }
@@ -536,12 +535,11 @@ public class JuridicaBean implements Serializable {
 
         juridica.setPorte((Porte) new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(getListaPorte().get(idPorte).getDescription()), "Porte"));
 
-        if (!chkEndContabilidade) {
-            juridica.setEmailEscritorio(false);
-        }
+//        if (!chkEndContabilidade) {
+//            juridica.setEmailEscritorio(false);
+//        }
         //else
         //    juridica.setEmailEscritorio(false);
-
         dbSalvar.abrirTransacao();
         if (juridica.getId() == -1) {
             juridica.getPessoa().setTipoDocumento((TipoDocumento) dbSalvar.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDocumento().get(idTipoDocumento)).getDescription()), "TipoDocumento"));
@@ -737,7 +735,6 @@ public class JuridicaBean implements Serializable {
         }
 
         //  EXCLUIR OS EMAILS ENVIADOS PESSOA --------------------------------------------------------------
-
         EnvioEmailsDB db = new EnvioEmailsDBToplink();
         List<EnvioEmails> listE = db.pesquisaTodosPorPessoa(juridica.getPessoa().getId());
 
@@ -748,13 +745,13 @@ public class JuridicaBean implements Serializable {
                 return null;
             }
         }
-        
+
         PessoaDB dbp = new PessoaDBToplink();
         String documento = AnaliseString.extrairNumeros(juridica.getPessoa().getDocumento());
         JuridicaReceita jr = dbp.pesquisaJuridicaReceita(documento);
-        
-        if (jr.getId() != -1){
-            if (!sv.deletarObjeto(sv.pesquisaCodigo(jr.getId(), "JuridicaReceita"))){
+
+        if (jr.getId() != -1) {
+            if (!sv.deletarObjeto(sv.pesquisaCodigo(jr.getId(), "JuridicaReceita"))) {
                 msgConfirma = "Erro ao excluir Pesquisa da Receita!";
                 sv.desfazerTransacao();
                 return null;
@@ -776,7 +773,6 @@ public class JuridicaBean implements Serializable {
     public String editar(Juridica j) {
         listaContribuintesInativos.clear();
         contribuintesInativos = new ContribuintesInativos();
-        juridica = j;
         juridica = j;
         if (juridica.getContabilidade() == null) {
             contabilidade = new Juridica();
@@ -823,13 +819,13 @@ public class JuridicaBean implements Serializable {
                 if (contabilidade.getId() != -1) {
                     PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
                     // PessoaEndereco pesEnd1 = new PessoaEndereco(), pesEnd2 = new PessoaEndereco();
-                    PessoaEndereco pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
-                    PessoaEndereco pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
-                    if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
-                        chkEndContabilidade = true;
-                    } else {
-                        chkEndContabilidade = false;
-                    }
+//                    PessoaEndereco pesEnd1 = db.pesquisaEndPorPessoaTipo(juridica.getPessoa().getId(), 3);
+//                    PessoaEndereco pesEnd2 = db.pesquisaEndPorPessoaTipo(contabilidade.getPessoa().getId(), 3);
+//                    if (comparaEndereco(pesEnd1, pesEnd2) || listaEnd.isEmpty()) {
+//                        chkEndContabilidade = true;
+//                    } else {
+//                        chkEndContabilidade = false;
+//                    }
                 }
             }
             return url;
@@ -882,7 +878,6 @@ public class JuridicaBean implements Serializable {
 //        }
 //        return "pessoaJuridica";
 //    }
-
     public String editarEmpresaPertencente() {
         juridica = (Juridica) listaEmpresasPertencentes.get(idIndexPertencente).getArgumento0();
         if (juridica.getContabilidade() == null) {
@@ -975,7 +970,7 @@ public class JuridicaBean implements Serializable {
         juridica.setContabilidade(contabilidade);
         juridica.setEmailEscritorio(true);
         renChkEndereco = "true";
-        chkEndContabilidade = true; // ROGÉRINHO PEDIU PRA VOLTAR TRUE NA DATA -- 30/07/2013 -- POR CAUSA DO CARLOS DE LIMEIRA
+        //chkEndContabilidade = true; // ROGÉRINHO PEDIU PRA VOLTAR TRUE NA DATA -- 30/07/2013 -- POR CAUSA DO CARLOS DE LIMEIRA
         return "pessoaJuridica";
     }
 
@@ -1170,7 +1165,7 @@ public class JuridicaBean implements Serializable {
     public void verificarEndContabilidade() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         if (juridica.getId() != -1) {
-            if (chkEndContabilidade && contabilidade.getId() != -1) {
+            if (juridica.isCobrancaEscritorio() && contabilidade.getId() != -1) {
                 PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
                 if ((!listaEnd.isEmpty()) && pesEndCon != null) {
                     pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
@@ -1194,7 +1189,7 @@ public class JuridicaBean implements Serializable {
                         }
                     }
                 }
-                chkEndContabilidade = false;
+                //juridica.setCobrancaEscritorio(false);
             }
         }
     }
@@ -1396,26 +1391,27 @@ public class JuridicaBean implements Serializable {
         }
     }
 
-    public String retornaCnae(Cnae cn){
+    public String retornaCnae(Cnae cn) {
         //Cnae tcnae = null;
         //Cnae tcnae = (Cnae) listaCnae.get(idIndexCnae);
         Cnae tcnae = cn;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cnaePesquisado", tcnae);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado",true);
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         descPesquisaCnae = "";
-        if( ((String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("pessoaJuridica") ){
+        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("pessoaJuridica")) {
             juridica.setCnae(tcnae);
             CnaeConvencaoDB dbCnaeCon = new CnaeConvencaoDBToplink();
-            if(dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null){
+            if (dbCnaeCon.pesquisaCnaeComConvencao(juridica.getCnae().getId()) != null) {
                 cnaeContribuinte = " cnae contribuinte!";
                 colorContri = "blue";
-            }else{
+            } else {
                 cnaeContribuinte = " este cnae não está na convenção!";
                 colorContri = "red";
             }
             return "pessoaJuridica";
-        }else
-            return (String)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        } else {
+            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        }
     }
 
     public String JuridicaFilialGrid() {
@@ -1486,7 +1482,7 @@ public class JuridicaBean implements Serializable {
         return mask;
     }
 
-    public List<SelectItem> getListaTipoDocumento() {        
+    public List<SelectItem> getListaTipoDocumento() {
         if (listaTipoDocumento.isEmpty()) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<TipoDocumento> list = (List<TipoDocumento>) salvarAcumuladoDB.listaObjeto("TipoDocumento");
@@ -1520,7 +1516,7 @@ public class JuridicaBean implements Serializable {
 
     public String btnExcluirContabilidadePertencente() {
         if (juridica.getId() != -1) {
-            chkEndContabilidade = false;
+            //chkEndContabilidade = false;
             salvarEndereco();
             juridica.setContabilidade(null);
             juridica.setEmailEscritorio(false);
@@ -1533,14 +1529,14 @@ public class JuridicaBean implements Serializable {
 
     public List<SelectItem> getListaMotivoInativacao() {
         if (listaMotivoInativacao.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink() ;
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             List<MotivoInativacao> list = (List<MotivoInativacao>) salvarAcumuladoDB.listaObjeto("MotivoInativacao");
             for (int i = 0; i < list.size(); i++) {
                 listaMotivoInativacao.add(new SelectItem(new Integer(i),
                         list.get(i).getDescricao(),
                         Integer.toString(list.get(i).getId())));
             }
-        }    
+        }
         return listaMotivoInativacao;
     }
 
@@ -1964,21 +1960,20 @@ public class JuridicaBean implements Serializable {
         this.renAbreEnd = renAbreEnd;
     }
 
-    public boolean getChkEndContabilidade() {
-        return chkEndContabilidade;
-    }
-
-    public void setChkEndContabilidade(boolean chkEndContabilidade) {
-        this.chkEndContabilidade = chkEndContabilidade;
-    }
-
-    public String getRenChkEndereco() {
-        if (renChkEndereco.equals("false")) {
-            chkEndContabilidade = false;
-        }
-        return renChkEndereco;
-    }
-
+//    public boolean getChkEndContabilidade() {
+//        return chkEndContabilidade;
+//    }
+//
+//    public void setChkEndContabilidade(boolean chkEndContabilidade) {
+//        this.chkEndContabilidade = chkEndContabilidade;
+//    }
+//
+//    public String getRenChkEndereco() {
+//        if (renChkEndereco.equals("false")) {
+//            chkEndContabilidade = false;
+//        }
+//        return renChkEndereco;
+//    }
     public void setRenChkEndereco(String renChkEndereco) {
         this.renChkEndereco = renChkEndereco;
     }
@@ -2056,7 +2051,6 @@ public class JuridicaBean implements Serializable {
 //    public void setListaJuridica(List<DataObject> listaJuridica) {
 //        this.listaJuridica = listaJuridica;
 //    }
-    
     public List<Juridica> getListaJuridica() {
         if (listaJuridica.isEmpty()) {
             JuridicaDB db = new JuridicaDBToplink();
@@ -2064,7 +2058,7 @@ public class JuridicaBean implements Serializable {
         }
         return listaJuridica;
     }
-    
+
     public String status(Juridica j) {
         String status;
         JuridicaDB db = new JuridicaDBToplink();
@@ -2077,10 +2071,9 @@ public class JuridicaBean implements Serializable {
             } else {
                 status = "ATIVO";
             }
-        }    
+        }
         return status;
     }
-
 
     public int getIdIndex() {
         return idIndex;
@@ -2236,8 +2229,8 @@ public class JuridicaBean implements Serializable {
             juridica.setCnae(null);
         }
     }
-    
-    public String getMascaraPesquisaJuridica(){
+
+    public String getMascaraPesquisaJuridica() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
-    }    
+    }
 }

@@ -43,6 +43,8 @@ public class Juridica implements Serializable {
     private Date dtFechamento;
     @Column(name = "IS_EMAIL_ESCRITORIO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean emailEscritorio;
+    @Column(name = "IS_COBRANCA_ESCRITORIO", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean cobrancaEscritorio;
 
     public Juridica() {
         this.id = -1;
@@ -58,9 +60,10 @@ public class Juridica implements Serializable {
         setAbertura("");
         setFechamento("");
         this.emailEscritorio = false;
+        this.cobrancaEscritorio = false;
     }
 
-    public Juridica(int id, Pessoa pessoa, String fantasia, Cnae cnae, Juridica contabilidade, String inscricaoEstadual, String inscricaoMunicipal, String contato, String responsavel, Porte porte, String abertura, String fechamento, boolean emailEscritorio) {
+    public Juridica(int id, Pessoa pessoa, String fantasia, Cnae cnae, Juridica contabilidade, String inscricaoEstadual, String inscricaoMunicipal, String contato, String responsavel, Porte porte, String abertura, String fechamento, boolean emailEscritorio, boolean cobrancaEscritorio) {
         this.id = id;
         this.pessoa = pessoa;
         this.fantasia = fantasia;
@@ -74,6 +77,7 @@ public class Juridica implements Serializable {
         setAbertura(abertura);
         setFechamento(fechamento);
         this.emailEscritorio = emailEscritorio;
+        this.cobrancaEscritorio = cobrancaEscritorio;
     }
 
     public int getId() {
@@ -208,6 +212,14 @@ public class Juridica implements Serializable {
         this.emailEscritorio = emailEscritorio;
     }
 
+    public boolean isCobrancaEscritorio() {
+        return cobrancaEscritorio;
+    }
+
+    public void setCobrancaEscritorio(boolean cobrancaEscritorio) {
+        this.cobrancaEscritorio = cobrancaEscritorio;
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -215,7 +227,6 @@ public class Juridica implements Serializable {
         hash = 29 * hash + (this.pessoa != null ? this.pessoa.hashCode() : 0);
         hash = 29 * hash + (this.fantasia != null ? this.fantasia.hashCode() : 0);
         hash = 29 * hash + (this.cnae != null ? this.cnae.hashCode() : 0);
-        hash = 29 * hash + (this.contabilidade != null ? this.contabilidade.hashCode() : 0);
         hash = 29 * hash + (this.inscricaoEstadual != null ? this.inscricaoEstadual.hashCode() : 0);
         hash = 29 * hash + (this.inscricaoMunicipal != null ? this.inscricaoMunicipal.hashCode() : 0);
         hash = 29 * hash + (this.contato != null ? this.contato.hashCode() : 0);
@@ -224,6 +235,7 @@ public class Juridica implements Serializable {
         hash = 29 * hash + (this.dtAbertura != null ? this.dtAbertura.hashCode() : 0);
         hash = 29 * hash + (this.dtFechamento != null ? this.dtFechamento.hashCode() : 0);
         hash = 29 * hash + (this.emailEscritorio ? 1 : 0);
+        hash = 29 * hash + (this.cobrancaEscritorio ? 1 : 0);
         return hash;
     }
 
@@ -246,9 +258,6 @@ public class Juridica implements Serializable {
             return false;
         }
         if (this.cnae != other.cnae && (this.cnae == null || !this.cnae.equals(other.cnae))) {
-            return false;
-        }
-        if (this.contabilidade != other.contabilidade && (this.contabilidade == null || !this.contabilidade.equals(other.contabilidade))) {
             return false;
         }
         if ((this.inscricaoEstadual == null) ? (other.inscricaoEstadual != null) : !this.inscricaoEstadual.equals(other.inscricaoEstadual)) {
@@ -275,12 +284,14 @@ public class Juridica implements Serializable {
         if (this.emailEscritorio != other.emailEscritorio) {
             return false;
         }
+        if (this.cobrancaEscritorio != other.cobrancaEscritorio) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "Juridica{" + "id=" + id + ", pessoa=" + pessoa + ", fantasia=" + fantasia + ", cnae=" + cnae + ", contabilidade=" + contabilidade + ", inscricaoEstadual=" + inscricaoEstadual + ", inscricaoMunicipal=" + inscricaoMunicipal + ", contato=" + contato + ", responsavel=" + responsavel + ", porte=" + porte + ", dtAbertura=" + dtAbertura + ", dtFechamento=" + dtFechamento + ", emailEscritorio=" + emailEscritorio + '}';
+        return "Juridica{" + "id=" + id + ", pessoa=" + pessoa + ", fantasia=" + fantasia + ", cnae=" + cnae + ", contabilidade=" + contabilidade + ", inscricaoEstadual=" + inscricaoEstadual + ", inscricaoMunicipal=" + inscricaoMunicipal + ", contato=" + contato + ", responsavel=" + responsavel + ", porte=" + porte + ", dtAbertura=" + dtAbertura + ", dtFechamento=" + dtFechamento + ", emailEscritorio=" + emailEscritorio + ", cobrancaEscritorio=" + cobrancaEscritorio + '}';
     }
-
 }
