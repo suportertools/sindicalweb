@@ -13,10 +13,6 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }
         </style>
-        
-        <script type="text/javascript">
-            
-        </script>
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
@@ -113,6 +109,15 @@
                                         <p:selectBooleanCheckbox id="ichk_ativa" value="#{contaCobrancaBean.contaCobranca.ativo}" itemLabel="Habilitado para baixar"/>
                                     </p:column>
                                 </h:panelGrid>
+                                
+                                <h:panelGrid style="margin-top: 10px" columns="2">
+                                    <h:outputLabel value="Layout:" />
+                                    <p:selectOneMenu value="#{contaCobrancaBean.idLayout}" style="width: 150px;">
+                                        <p:ajax event="change" update="@this" />
+                                        <f:selectItems value="#{contaCobrancaBean.listaLayout}" />
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                                
                             </p:panel>
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
                             <h:panelGrid style="margin-top: 10px; margin-bottom: 10px; clear: both">
