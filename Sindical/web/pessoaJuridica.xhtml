@@ -110,16 +110,16 @@
                                     <h:outputText value="Serviço Contabil: " styleClass="fontePadrao"/>
 
                                     <h:commandLink value="#{juridicaBean.juridica.contabilidade.pessoa.nome}" action="#{juridicaBean.editarEmpresaContabilidade}" style="font-weight:bold;"/>
-                                    <a4j:commandButton image="/Imagens/excluir.png" rendered="#{ (juridicaBean.juridica.contabilidade != null)}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" />
+                                    <a4j:commandButton image="/Imagens/excluir.png" rendered="#{juridicaBean.juridica.contabilidade != null}" title="Excluir Serviço Contábil" action="#{juridicaBean.btnExcluirContabilidadePertencente}" />
                                     
-                                    <h:selectBooleanCheckbox id="i_chk_contabil" value="#{juridicaBean.chkEndContabilidade}" rendered="#{(juridicaBean.juridica.contabilidade != null)}">
+                                    <h:selectBooleanCheckbox id="i_chk_contabil" value="#{(juridicaBean.juridica.cobrancaEscritorio)}" rendered="#{(juridicaBean.juridica.contabilidade != null)}">
                                         <a4j:ajax event="change" render="i_p"/>
                                     </h:selectBooleanCheckbox>
                                     <h:outputLabel value="Definir Endereço de Escritório para Cobrança" for="i_chk_contabil" style="cursor: pointer" styleClass="fontePadrao" rendered="#{(juridicaBean.juridica.contabilidade != null)}"/>
                                 </h:panelGrid>
                                 <h:panelGrid id="i_p" columns="6">
-                                    <h:selectBooleanCheckbox id="i_chk_email" value="#{juridicaBean.juridica.emailEscritorio}" rendered="#{(juridicaBean.juridica.contabilidade != null and juridicaBean.chkEndContabilidade)}"/>
-                                    <h:outputLabel value="Email cobrança escritório" for="i_chk_email" style="cursor: pointer" styleClass="fontePadrao" rendered="#{(juridicaBean.juridica.contabilidade != null and juridicaBean.chkEndContabilidade)}"/>                                    
+                                    <h:selectBooleanCheckbox id="i_chk_email" value="#{juridicaBean.juridica.emailEscritorio}" rendered="#{(juridicaBean.juridica.contabilidade != null and juridicaBean.juridica.cobrancaEscritorio)}"/>
+                                    <h:outputLabel value="Email cobrança escritório" for="i_chk_email" style="cursor: pointer" styleClass="fontePadrao" rendered="#{(juridicaBean.juridica.contabilidade != null and juridicaBean.juridica.cobrancaEscritorio)}"/>                                    
                                 </h:panelGrid>
                                 
                             </rich:tab>
