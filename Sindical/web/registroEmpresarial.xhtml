@@ -31,9 +31,9 @@
                                 <p:tab title="Cadastro">
                                     <p:panelGrid columns="3" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="sbb">
                                         <p:outputLabel value="Email: "/>
-                                        <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off" validatorMessage="Email inválido #{registroEmpresarialBean.registro.sisEmailResposta}" required="false" placeholder="Formato: meuemail@provedor.com">
+                                        <p:inputText id="idEmail" size="50" value="#{registroEmpresarialBean.registro.email}" autocomplete="off" validatorMessage="Email inválido #{registroEmpresarialBean.registro.sisEmailResposta}" required="false" placeholder="Formato: meuemail@provedor.com" title="Não pode ter validação automática">
                                             <p:ajax event="blur" update="i_message_email" />
-                                            <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                                            <!-- <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" /> -->
                                         </p:inputText>                                                
                                         <p:message for="idEmail" id="i_message_email" />
                                         <p:outputLabel value="Senha: " />
