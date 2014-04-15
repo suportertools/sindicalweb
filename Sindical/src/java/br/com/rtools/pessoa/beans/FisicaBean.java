@@ -1078,12 +1078,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             Filial fili = (Filial) salvarAcumuladoDB.pesquisaCodigo(1, "Filial");
             if (fili != null) {
                 Pessoa pes = fili.getMatriz().getPessoa();
-                cidade = ((PessoaEndereco) dbPes.pesquisaEndPorPessoa(pes.getId()).get(0)).getEndereco().getCidade();
-                nat = cidade.getCidade();
-                nat = nat + " - " + cidade.getUf();
-                fisica.setNaturalidade(nat);
-                nat = nat + " <<<";
-                return nat;
+                if(pes.getId() != -1) {
+                    cidade = ((PessoaEndereco) dbPes.pesquisaEndPorPessoa(pes.getId()).get(0)).getEndereco().getCidade();                    
+                    nat = cidade.getCidade();
+                    nat = nat + " - " + cidade.getUf();
+                    nat = nat + " <<<";
+                    fisica.setNaturalidade(nat);
+                    return nat;
+                }
             }
         }
         return null;
