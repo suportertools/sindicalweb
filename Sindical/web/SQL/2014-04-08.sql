@@ -228,6 +228,7 @@ CREATE TABLE est_produto
   id serial NOT NULL,
   ds_barras character varying(25),
   ds_obs character varying(5000),
+  ds_modelo character varying(255),
   ds_descricao character varying(100) NOT NULL,
   nr_qtde_embalagem integer DEFAULT 0,
   ds_fabricante character varying(100),
