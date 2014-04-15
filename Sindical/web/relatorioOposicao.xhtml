@@ -101,7 +101,7 @@
                                     <h:column>
                                         <h:panelGrid columns="4">
                                             <p:outputLabel value="Período Convenção: " />
-                                            <p:selectOneMenu id="id_convencao_periodo" value="#{relatorioOposicaoBean.index[1]}" style="width: 150px">
+                                            <p:selectOneMenu id="id_convencao_periodo" value="#{relatorioOposicaoBean.index[1]}">
                                                 <p:ajax event="change" update="@this" />
                                                 <f:selectItem itemValue="" itemLabel="Selecionar"/>
                                                 <f:selectItems value="#{relatorioOposicaoBean.listaReferencias}"/>
