@@ -17,9 +17,15 @@
             <p:panel styleClass="wrapper no-border">
                 <h:form id="form_pesquisa_agenda_telefone">
                     <c:set scope="request" var="object" value="${agendaTelefoneBean.agendaTelefone}"/>
-                    <p:dialog id="i_modal_detalhes" widgetVar="dgl_modal_detalhes"  modal="true" width="600" header="Detalhes do Contato" maximizable="true">
-                        <h:panelGrid id="i_detalhes_contato">                            
-                            <p:panel header="#{agendaTelefoneBean.agendaTelefone.agenda.nome}">
+                    <p:dialog id="i_modal_detalhes" widgetVar="dgl_modal_detalhes"  modal="true" width="600" maximizable="true" header="Detalhes Contato">
+                        <h:panelGrid id="i_detalhes_contato">
+                            <p:panel>
+                                <f:facet name="header">
+                                    <p:selectBooleanButton value="#{agendaTelefoneBean.numeroFavorito}" onIcon="ui-icon-star" offIcon="ui-icon-star" offLabel="Não" onLabel="Sim" >
+                                        <p:ajax event="change" update="@this, i_datatable_resultados" listener="#{agendaTelefoneBean.addOrRemoveFavorito}" />
+                                    </p:selectBooleanButton>
+                                    <p:outputLabel value="#{agendaTelefoneBean.agendaTelefone.agenda.nome}" escape="true" styleClass="margin-left-max"/>
+                                </f:facet>
                                 <p:panelGrid columns="2">
                                     <h:column>
                                         <p:outputLabel value="Grupo:" />
@@ -70,21 +76,24 @@
                     <h:outputText value="Agenda Telefônica" styleClass="fonteHeader" />
                     <div class="clear"></div>
                     <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                        <p:selectBooleanCheckbox value="#{agendaTelefoneBean.favoritos}" itemLabel="Meus favoritos">
+                            <p:ajax event="change" update="@this, i_panel_pesquisa, i_datatable_resultados" listener="#{agendaTelefoneBean.listaAgendas.clear()}"/>
+                        </p:selectBooleanCheckbox>                        
                         <h:panelGrid columns="10">
                             <p:outputLabel value="Pesquisar: " />
-                            <p:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSimples'}">
+                            <p:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa == 'telefoneSimples'}"  disabled="#{agendaTelefoneBean.favoritos}">
                                 <p:ajax event="change" update="idDDD" />
                                 <f:selectItems value="#{agendaTelefoneBean.listaDDD}" />
                             </p:selectOneMenu>                            
                             <h:column>
                                 <h:panelGrid id="idPanelMask">
                                     <h:outputScript library="js" name="script_primefaces.js" />
-                                    <p:inputText value="#{agendaTelefoneBean.descricaoPesquisa}" rendered="#{agendaTelefoneBean.mask}" />
-                                    <p:inputText value="#{agendaTelefoneBean.descricaoPesquisa}" rendered="#{!agendaTelefoneBean.mask}" styleClass="telefone" />
+                                    <p:inputText value="#{agendaTelefoneBean.descricaoPesquisa}" rendered="#{agendaTelefoneBean.mask}"  disabled="#{agendaTelefoneBean.favoritos}"/>
+                                    <p:inputText value="#{agendaTelefoneBean.descricaoPesquisa}" rendered="#{!agendaTelefoneBean.mask}" styleClass="telefone"  disabled="#{agendaTelefoneBean.favoritos}"/>
                                 </h:panelGrid>
                             </h:column>
                             <p:outputLabel value="Por: "/>
-                            <p:selectOneMenu id="idTipoClasse" value="#{agendaTelefoneBean.porPesquisa}" >
+                            <p:selectOneMenu id="idTipoClasse" value="#{agendaTelefoneBean.porPesquisa}" disabled="#{agendaTelefoneBean.favoritos}">
                                 <p:ajax event="change" update="idPanelMask" />
                                 <f:selectItem itemValue="nome"      itemLabel="Nome" />
                                 <f:selectItem itemValue="pessoa"    itemLabel="Pessoa" />
@@ -92,14 +101,14 @@
                                 <f:selectItem itemValue="telefone"  itemLabel="Telefone" />
                                 <f:selectItem itemValue="endereco"  itemLabel="Endereço" />
                             </p:selectOneMenu>
-                            <p:commandButton id="idInicial" value="Inicial" action="#{agendaTelefoneBean.acaoPesquisaInicial}" update="i_datatable_resultados" />
-                            <p:commandButton id="idParcial" value="Parcial" action="#{agendaTelefoneBean.acaoPesquisaParcial}" update="i_datatable_resultados" />
+                            <p:commandButton id="idInicial" value="Inicial" action="#{agendaTelefoneBean.acaoPesquisaInicial}" update="i_datatable_resultados"  disabled="#{agendaTelefoneBean.favoritos}"/>
+                            <p:commandButton id="idParcial" value="Parcial" action="#{agendaTelefoneBean.acaoPesquisaParcial}" update="i_datatable_resultados"  disabled="#{agendaTelefoneBean.favoritos}"/>
                             <p:outputLabel value="GRUPO: "  />
-                            <p:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
+                            <p:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}"  disabled="#{agendaTelefoneBean.favoritos}">
                                 <p:ajax event="change" update="i_datatable_resultados" listener="#{agendaTelefoneBean.listaAgendas.clear()}"/>
                                 <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
                             </p:selectOneMenu>
-                            <p:selectBooleanCheckbox value="#{agendaTelefoneBean.filtraPorGrupo}" itemLabel="Filtrar por grupos">
+                            <p:selectBooleanCheckbox value="#{agendaTelefoneBean.filtraPorGrupo}" itemLabel="Filtrar por grupos"  disabled="#{agendaTelefoneBean.favoritos}">
                                 <p:ajax event="change" update="i_datatable_resultados" listener="#{agendaTelefoneBean.listaAgendas.clear()}"/>
                             </p:selectBooleanCheckbox>
                         </h:panelGrid>
@@ -118,14 +127,19 @@
                             <p:column styleClass="text-center" headerText="Cidade / UF">
                                 <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.agenda.endereco.cidade.cidade} - #{agendaTelefone.agenda.endereco.cidade.uf}" styleClass="underline-hover" style="text-transform: uppercase; " title="#{agendaTelefone.agenda.endereco.enderecoSimplesToString}" />
                             </p:column>
-                            <p:column styleClass="text-center" headerText="Tipo Telefone">
+                            <p:column styleClass="text-center" headerText="Tipo Telefone" rendered="#{!agendaTelefoneBean.favoritos}">
                                 <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.tipoTelefone.descricao}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
-                            <p:column styleClass="text-center" headerText="Telefone">
+                            <p:column styleClass="text-center" headerText="Telefone" rendered="#{!agendaTelefoneBean.favoritos}">
                                 <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="+#{agendaTelefone.ddi} (#{agendaTelefone.ddd}) #{agendaTelefone.telefone}" styleClass="underline-hover" style="text-transform: uppercase; " />
                             </p:column>
-                            <p:column styleClass="text-center" headerText="Contato">
+                            <p:column styleClass="text-center" headerText="Contato" rendered="#{!agendaTelefoneBean.favoritos}">
                                 <p:commandLink action="#{agendaTelefoneBean.visualizar(agendaTelefone)}" value="#{agendaTelefone.contato}" styleClass="underline-hover" style="text-transform: uppercase;" />
+                            </p:column>
+                            <p:column styleClass="text-center" width="20">
+                                <p:column rendered="#{agendaTelefoneBean.isNFavorito(agendaTelefone.agenda.id)}">
+                                    <span class="ui-icon ui-icon-star" title="Favorito"></span>
+                                </p:column>
                             </p:column>
                         </p:dataTable>
                     </p:panel>
