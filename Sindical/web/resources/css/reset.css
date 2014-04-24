@@ -81,6 +81,7 @@ div.wrapper { width: 1024px; margin: 0 auto;}
 .bg-black {background: black!important;}
 .bg-orange {background: orange!important;}
 .bg-purple {background: purple!important;}
+.bg-yellow-ligth {background: #ffffcc!important;}
 .tam-300 {width: 300px;}
 .z-index-one {z-index: 1}
 .z-index-five {z-index: 5}
