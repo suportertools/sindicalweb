@@ -223,7 +223,7 @@ public class RelatorioOposicaoBean implements Serializable {
             OposicaoDB oposicaoDB = new OposicaoDBToplink();
             List<ConvencaoPeriodo> list = (List<ConvencaoPeriodo>) oposicaoDB.listaConvencaoPeriodoPorOposicao();
             for (int i = 0; i < list.size(); i++) {
-                listSelectItem[1].add(new SelectItem(i, list.get(i).getReferenciaFinal() + " - " + list.get(i).getReferenciaInicial() + " - Grupo Cidade: " + list.get(i).getGrupoCidade().getDescricao() + " - Convenção: " + list.get(i).getConvencao().getDescricao(), "" + list.get(i).getId()));
+                listSelectItem[1].add(new SelectItem(i, list.get(i).getReferenciaInicial() + " - " + list.get(i).getReferenciaFinal() + " - Grupo Cidade: " + list.get(i).getGrupoCidade().getDescricao() + " - Convenção: " + list.get(i).getConvencao().getDescricao(), "" + list.get(i).getId()));
             }
             if (listSelectItem[1].isEmpty()) {
                 listSelectItem[1] = new ArrayList<SelectItem>();
