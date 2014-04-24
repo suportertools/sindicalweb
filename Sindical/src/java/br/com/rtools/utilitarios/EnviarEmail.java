@@ -8,6 +8,7 @@ import br.com.rtools.pessoa.db.EnvioEmailsDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import com.sun.mail.smtp.SMTPTransport;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -418,11 +419,25 @@ public class EnviarEmail {
             }
             MimeMessage msg = new MimeMessage(session);
             InternetAddress internetAddress = new InternetAddress();
-            if (!r.getSisEmailResposta().isEmpty()) {
-                internetAddress.setPersonal(r.getSisEmailResposta());
-                msg.setFrom(internetAddress);
+            if (!r.getEmail().equals("fale.sender")) {
+                if (!r.getSisEmailResposta().isEmpty()) {
+                    internetAddress.setPersonal(r.getSisEmailResposta());
+                    msg.setFrom(internetAddress);
+                } else {
+                    msg.setFrom(new InternetAddress(r.getEmail()));
+                }
             } else {
-                msg.setFrom(new InternetAddress(r.getEmail()));
+//                Store store = session.getStore("smtp");  
+//                store.connect("mail.rtools.com.br", "sistema@rtools.com.br", "qwerty123");
+                //internetAddress.setPersonal(r.getSisEmailResposta());
+                //msg.setFrom(internetAddress);
+                msg.setFrom(new InternetAddress(r.getSisEmailResposta(), "Sistema Sindical"));
+                //msg.setRecipient(Message.RecipientType.BCC, new InternetAddress(r.getSisEmailResposta()));
+//                msg.setRecipient(new Address[] {
+//                    new InternetAddress("sistema@rtools.com.br")
+//                });
+
+                //msg.setFrom(new InternetAddress(r.getSisEmailResposta()));
             }
             String html = "";
             html += "<html><body style='background-color: white'>";
@@ -437,6 +452,16 @@ public class EnviarEmail {
             msg.setRecipient(Message.RecipientType.TO, new InternetAddress(email));
             msg.setSubject("Teste Email Sistema Sindical");
             msg.setContent(multipart);
+            msg.setSentDate(new Date());
+            msg.setHeader("X-Mailer", "Tov Are's program");
+            //Transport transport = session.getTransport("smtp"); 
+            //transport.connect("mail.rtools.com.br", r.getSisEmailResposta(), "989899");
+            //transport.sendMessage(msg, msg.getAllRecipients());
+            //SMTPTransport t = (SMTPTransport) session.getTransport("smtps");
+            //t.connect("smtp.gmail.com", "suporte.rtools@gmail.com", "sisrt**ls");
+            //System.out.println("Response: " + t.getLastServerResponse());
+            //t.sendMessage(msg, msg.getAllRecipients());
+            //t.close();
             Transport.send(msg);
             return "Enviado com Sucesso.";
         } catch (AddressException e) {
@@ -485,6 +510,7 @@ public class EnviarEmail {
                 port = 25;
             }
             properties.put("mail.smtp.port", "" + port);
+            properties.put("mail.smtp.debug", "true");
             if (protocol == 2) {
                 properties.put("mail.smtp.starttls.enable", "true");
             }

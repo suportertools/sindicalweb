@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.Query;
 
-public class Dao extends DB {
+public class Dao extends DB implements DaoInterface {
 
     /**
      * <p>
@@ -17,6 +17,7 @@ public class Dao extends DB {
      *
      * @author Bruno
      */
+    @Override
     public void openTransaction() {
         getEntityManager().getTransaction().begin();
     }
@@ -27,6 +28,7 @@ public class Dao extends DB {
      *
      * @author Bruno
      */
+    @Override
     public void commit() {
         getEntityManager().getTransaction().commit();
     }
@@ -37,10 +39,12 @@ public class Dao extends DB {
      *
      * @author Bruno
      */
+    @Override
     public void rollback() {
         getEntityManager().getTransaction().rollback();
     }
 
+    @Override
     public void flush() {
         getEntityManager().flush();
     }
@@ -53,6 +57,7 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean activeSession() {
         return getEntityManager().getTransaction().isActive();
     }
@@ -67,6 +72,7 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean save(final Object object) {
         if (!activeSession()) {
             return false;
@@ -91,6 +97,7 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean save(final Object object, boolean transactionComplete) {
         if (activeSession()) {
             return false;
@@ -117,6 +124,7 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean update(final Object objeto) {
         if (!activeSession()) {
             return false;
@@ -167,6 +175,7 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean update(final Object objeto, boolean transactionComplete) {
         if (activeSession()) {
             return false;
@@ -218,12 +227,13 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean delete(final Object object) {
         if (!activeSession()) {
             return false;
         }
         try {
-            getEntityManager().remove(object);
+            getEntityManager().remove(find(object));
             getEntityManager().flush();
             return true;
         } catch (Exception e) {
@@ -243,6 +253,7 @@ public class Dao extends DB {
      *
      * @return true or false
      */
+    @Override
     public boolean delete(final Object object, boolean transactionComplete) {
         if (activeSession()) {
             return false;
@@ -260,6 +271,7 @@ public class Dao extends DB {
         }
     }
 
+    @Override
     public Object rebind(Object object) {
         try {
             openTransaction();
@@ -274,6 +286,7 @@ public class Dao extends DB {
         return object;
     }
 
+    @Override
     public void refresh(Object object) {
         try {
             openTransaction();
@@ -302,6 +315,7 @@ public class Dao extends DB {
      *
      * @return Object
      */
+    @Override
     public Object find(final Object object) {
         return find(object, null);
     }
@@ -319,6 +333,7 @@ public class Dao extends DB {
      *
      * @return Object
      */
+    @Override
     public Object find(Object object, final Object objectId) {
         if (object == null) {
             return null;
@@ -362,6 +377,64 @@ public class Dao extends DB {
 
     /**
      * <p>
+     * <strong>Find Object</strong></p>
+     * <p>
+     * <strong>Exemplo:</strong>find("User", new int[]{1,2,3,4,5}); </p>
+     *
+     * @param id (Lista de ids)
+     * @param className (Nome da classe)
+     *
+     * @author Bruno
+     *
+     * @return List
+     */
+    @Override
+    public List find(String className, int id[]) {
+        return find(className, id, "");
+    }
+
+    /**
+     * <p>
+     * <strong>Find Object</strong></p>
+     * <p>
+     * <strong>Exemplo:</strong>find("User", new int[]{1,2,3,4,5}, "id_people");
+     * </p>
+     *
+     * @param id (Lista de ids)
+     * @param className (Nome da classe)
+     * @param field (Faz a consulta utilizando outro campo que não id como
+     * parâmetro)
+     *
+     * @author Bruno
+     *
+     * @return List
+     */
+    @Override
+    public List find(String className, int id[], String field) {
+        String stringCampo = "id";
+        if (!field.isEmpty()) {
+            stringCampo = field;
+        }
+        List list = new ArrayList<Object>();
+        String queryPesquisaString = "";
+        for (int i = 0; i < id.length; i++) {
+            if (i == 0) {
+                queryPesquisaString = Integer.toString(id[i]);
+            } else {
+                queryPesquisaString += ", " + Integer.toString(id[i]);
+            }
+            String queryString = "SELECT OB FROM " + className + " OB WHERE OB." + stringCampo + " IN (" + queryPesquisaString + ")";
+            Query query = getEntityManager().createQuery(queryString);
+            list = query.getResultList();
+            if (list.isEmpty()) {
+                return list;
+            }
+        }
+        return list;
+    }
+
+    /**
+     * <p>
      * <strong>List</strong></p>
      * <p>
      * <strong>Exemplo:</strong> list(new User()).</p>
@@ -372,6 +445,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List list(Object className) {
         String name = className.getClass().getSimpleName();
         return list(name);
@@ -389,6 +463,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List list(String className) {
         List result = new ArrayList();
         String queryString = "SELECT OB FROM " + className + " AS OB";
@@ -404,6 +479,7 @@ public class Dao extends DB {
         return result;
     }
 
+    @Override
     public List list(Object className, boolean order) {
         return list(className.getClass().getSimpleName(), order);
     }
@@ -422,6 +498,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List list(String className, boolean order) {
         try {
             Query query = getEntityManager().createNamedQuery(className + ".findAll");
@@ -454,6 +531,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List listQuery(Object className, String find, Object[] params) {
         return listQuery(className.getClass().getSimpleName(), find, params);
     }
@@ -476,6 +554,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List listQuery(String className, String find, Object[] params) {
         try {
             Query query = getEntityManager().createNamedQuery(className + "." + find);
@@ -483,7 +562,7 @@ public class Dao extends DB {
             for (Object param : params) {
                 if (Types.isInteger(param)) {
                     try {
-                        query.setParameter("p" + y, Integer.parseInt((String) param));                        
+                        query.setParameter("p" + y, Integer.parseInt((String) param));
                     } catch (Exception e) {
                         query.setParameter("p" + y, param);
                     }
@@ -521,6 +600,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List liveList(String queryString) {
         return liveList(queryString, false, 0);
     }
@@ -541,6 +621,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List liveList(String queryString, boolean nativeQuery) {
         return liveList(queryString, nativeQuery, 0);
     }
@@ -563,6 +644,7 @@ public class Dao extends DB {
      *
      * @return List
      */
+    @Override
     public List liveList(String queryString, boolean nativeQuery, int maxResults) {
         try {
             Query query;
@@ -598,6 +680,7 @@ public class Dao extends DB {
      *
      * @return Object
      */
+    @Override
     public Object liveSingle(String queryString) {
         return liveSingle(queryString, false);
     }
@@ -619,6 +702,7 @@ public class Dao extends DB {
      *
      * @return Object
      */
+    @Override
     public Object liveSingle(String queryString, boolean nativeQuery) {
         try {
             Query query;
