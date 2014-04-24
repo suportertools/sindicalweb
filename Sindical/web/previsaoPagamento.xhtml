@@ -63,7 +63,7 @@
                                 </f:facet>
                                 <f:facet name="footer">
                                     <p:commandButton type="button" value="Salvar" onclick="dlg_s.show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
-                                    <p:commandButton type="button" icon="ui-icon-print" value="Relatório" disabled="true"/>
+                                    <p:commandButton type="button" icon="ui-icon-print" value="Relatório" disabled="true" action="#{previsaoPagamentoBean.visualizar}" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                 </f:facet>
                                 <p:dataTable scrollable="true" value="#{previsaoPagamentoBean.listPrevisaoPagamentos}" var="previsaoPagamento" scrollHeight="400" emptyMessage="Nenhum registro encontrado" selection="#{previsaoPagamentoBean.previsaoSelecionada}" rowKey="#{previsaoPagamento.movimento.id}" id="i_form" paginator="true" rows="10">
                                     <p:ajax event="rowSelect" update=":form_pp:i_form, :form_pp:i_sfpp, :form_pp:i_grid_totais"/>
