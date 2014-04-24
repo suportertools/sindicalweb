@@ -52,7 +52,7 @@ public class PF {
      * @param string
      */
     public static void closeDialog(String string) {
-        RequestContext.getCurrentInstance().execute("PF('" + string + "').close()");
+        RequestContext.getCurrentInstance().execute("PF('" + string + "').hide()");
     }
 
     public static void scrollTo(String string) {

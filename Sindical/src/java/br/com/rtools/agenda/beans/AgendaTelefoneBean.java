@@ -1,6 +1,7 @@
 package br.com.rtools.agenda.beans;
 
 import br.com.rtools.agenda.Agenda;
+import br.com.rtools.agenda.AgendaFavorito;
 import br.com.rtools.agenda.AgendaTelefone;
 import br.com.rtools.agenda.GrupoAgenda;
 import br.com.rtools.agenda.TipoTelefone;
@@ -12,6 +13,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
@@ -33,6 +35,7 @@ public class AgendaTelefoneBean implements Serializable {
     private AgendaTelefone agendaTelefone = new AgendaTelefone();
     private Pessoa pessoa = new Pessoa();
     private Endereco endereco = new Endereco();
+    private Usuario usuario = new Usuario();
     private List<SelectItem> listaTipoEnderecos = new ArrayList<SelectItem>();
     private List<SelectItem> listaTipoTelefones = new ArrayList<SelectItem>();
     private List<SelectItem> listaGrupoAgendas = new ArrayList<SelectItem>();
@@ -53,12 +56,15 @@ public class AgendaTelefoneBean implements Serializable {
     private boolean mask = false;
     private boolean filtraPorGrupo = false;
     private boolean visibility = false;
+    private boolean favoritos = false;
+    private boolean numeroFavorito = false;
 
     public void novo() {
         agenda = new Agenda();
         agendaTelefone = new AgendaTelefone();
         pessoa = new Pessoa();
         endereco = new Endereco();
+        usuario = new Usuario();
         listaAgendaTelefones = new ArrayList<AgendaTelefone>();
         listaAgendas.clear();
         idTipoTelefone = 0;
@@ -72,6 +78,7 @@ public class AgendaTelefoneBean implements Serializable {
         porPesquisa = "nome";
         mensagem = "";
         visibility = true;
+        numeroFavorito = false;
     }
 
     public void openDialog() {
@@ -158,16 +165,26 @@ public class AgendaTelefoneBean implements Serializable {
     public void excluir() {
         if (agenda.getId() != -1) {
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            AgendaTelefoneDB atdb = new AgendaTelefoneDBToplink();
+            List<AgendaFavorito> agendaFavoritos = (List<AgendaFavorito>) atdb.listaFavoritoPorAgenda(agenda.getId());
             salvarAcumuladoDB.abrirTransacao();
+            for (AgendaFavorito f : agendaFavoritos) {
+                AgendaFavorito af = (AgendaFavorito) salvarAcumuladoDB.find("AgendaFavorito", f.getId());
+                if (!salvarAcumuladoDB.deletarObjeto(af)) {
+                    salvarAcumuladoDB.desfazerTransacao();
+                    mensagem = "Erro ao excluir favorito da agenda!";
+                    return;
+                }
+            }
             for (AgendaTelefone listaAgendaTelefone1 : listaAgendaTelefones) {
-                AgendaTelefone at = (AgendaTelefone) salvarAcumuladoDB.pesquisaCodigo(listaAgendaTelefone1.getId(), "AgendaTelefone");
+                AgendaTelefone at = (AgendaTelefone) salvarAcumuladoDB.find("AgendaTelefone", listaAgendaTelefone1.getId());
                 if (!salvarAcumuladoDB.deletarObjeto(at)) {
                     salvarAcumuladoDB.desfazerTransacao();
                     mensagem = "Erro ao excluir telefones da agenda!";
                     return;
                 }
             }
-            agenda = (Agenda) salvarAcumuladoDB.pesquisaCodigo(agenda.getId(), "Agenda");
+            agenda = (Agenda) salvarAcumuladoDB.find("Agenda", agenda.getId());
             if (salvarAcumuladoDB.deletarObjeto(agenda)) {
                 salvarAcumuladoDB.comitarTransacao();
                 novo();
@@ -407,6 +424,8 @@ public class AgendaTelefoneBean implements Serializable {
         }
         if (agendaTelefone.getId() != -1) {
             agenda = agendaTelefone.getAgenda();
+        } else {
+            agenda = agendaTelefone.getAgenda();
         }
         listaAgendaTelefones.clear();
         getListaAgendaTelefones();
@@ -588,7 +607,11 @@ public class AgendaTelefoneBean implements Serializable {
                     descricaoDDD = "";
                 }
             }
-            List<AgendaTelefone> listAgendaTelefones = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda);
+            int idUsuario = 0;
+            if (favoritos) {
+                idUsuario = getUsuario().getId();
+            }
+            List<AgendaTelefone> listAgendaTelefones = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda, favoritos, idUsuario);
             for (AgendaTelefone listAgendaTelefone : listAgendaTelefones) {
                 AgendaTelefone at = listAgendaTelefone;
                 if (at.getAgenda().getPessoa() == null) {
@@ -617,5 +640,70 @@ public class AgendaTelefoneBean implements Serializable {
 
     public String getMascara() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
+    }
+
+    public boolean isFavoritos() {
+        return favoritos;
+    }
+
+    public void setFavoritos(boolean favoritos) {
+        this.favoritos = favoritos;
+    }
+
+    public Usuario getUsuario() {
+        if (usuario.getId() == -1) {
+            usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        }
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    public boolean isNFavorito(int idAgenda) {
+        if (idAgenda == -1 || idAgenda == 0) {
+            return false;
+        }
+        AgendaTelefoneDB agendaTelefoneDB = new AgendaTelefoneDBToplink();
+        AgendaFavorito af = agendaTelefoneDB.favorito(idAgenda, getUsuario().getId());
+        if (af == null) {
+            return false;
+        }
+        return true;
+    }
+
+    public void addOrRemoveFavorito() {
+        AgendaTelefoneDB agendaTelefoneDB = new AgendaTelefoneDBToplink();
+        AgendaFavorito af = agendaTelefoneDB.favorito(agendaTelefone.getAgenda().getId(), usuario.getId());
+        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        if (af == null) {
+            af = new AgendaFavorito();
+            af.setAgenda(agendaTelefone.getAgenda());
+            af.setUsuario(usuario);
+            sadb.abrirTransacao();
+            if (sadb.inserirObjeto(af)) {
+                sadb.comitarTransacao();
+                getListaAgendas().clear();
+            } else {
+                sadb.desfazerTransacao();
+            }
+        } else {
+            sadb.abrirTransacao();
+            if (sadb.deletarObjeto(sadb.find(af))) {
+                getListaAgendas().clear();
+                sadb.comitarTransacao();
+            } else {
+                sadb.desfazerTransacao();
+            }
+        }
+    }
+
+    public boolean isNumeroFavorito() {
+        return isNFavorito(agenda.getId());
+    }
+
+    public void setNumeroFavorito(boolean numeroFavorito) {
+        this.numeroFavorito = numeroFavorito;
     }
 }
