@@ -189,6 +189,7 @@
                                             <p:column headerText="Produto">#{esc.produto.descricao}</p:column>
                                             <p:column headerText="Filial">#{esc.filialEntrada.filial.fantasia}</p:column>
                                             <p:column headerText="Quantidade">#{esc.quantidade}</p:column>
+                                            <p:column headerText="Lançamento">#{esc.lancamento}</p:column>
                                             <p:column width="25">
                                                 <p:commandButton icon="ui-icon-trash" action="#{baixaProdutoConsumoBean.removeItem(esc)}" update=":form_saida_consumo:" />
                                             </p:column>
