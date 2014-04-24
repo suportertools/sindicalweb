@@ -1,0 +1,178 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Previsão de Pagamento</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Previsão de Pagamento" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_pp">
+                            <c:set scope="request" var="object" value="${previsaoPagamentoBean.previsaoPagamento}"/>
+                            <p:panel styleClass="fundoCinza">
+                                <h:panelGrid columns="1">
+                                    <h:panelGrid columns="7">
+                                        <p:outputLabel value="Vecto. Inicial" title="Vencimento Inicial" />
+                                        <p:inputMask mask="99/99/9999" size="8" converter="#{isDateString}" value="#{previsaoPagamentoBean.dataIncial}">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputMask>
+                                        <p:outputLabel value="Vecto. Final" title="Vencimento Final" />
+                                        <p:inputMask mask="99/99/9999" size="8" converter="#{isDateString}" value="#{previsaoPagamentoBean.dataFinal}" id="i_dt_f">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:inputMask>
+                                        <p:commandButton icon="ui-icon-circle-minus" action="#{previsaoPagamentoBean.clear('dataFinal')}" update="i_dt_f" title="Limpar vecto. final"/>
+                                        <p:commandButton value="Filtrar" action="#{previsaoPagamentoBean.listPrevisaoPagamentos.clear()}" update=":form_pp:"/>
+                                    </h:panelGrid>
+                                    <p:panelGrid id="i_grid_totais" styleClass="margin-top-max">
+                                        <f:facet name="header">
+                                            <p:row>
+                                                <p:column colspan="8">Valores (R$)</p:column>
+                                            </p:row>
+                                            <p:row>
+                                                <p:column>Total:</p:column>
+                                                <p:column><p:inputText value="#{previsaoPagamentoBean.valor[0]}" readonly="true" size="10" styleClass="input-text-min text-center font-size-12 bold bg-yellow-ligth"/></p:column>
+                                                <p:column>Dinheiro:</p:column>
+                                                <p:column><p:inputText value="#{previsaoPagamentoBean.valor[1]}" readonly="true" size="10" styleClass="input-text-min text-center font-size-12 bold"/></p:column>
+                                                <p:column>Cheque:</p:column>
+                                                <p:column><p:inputText value="#{previsaoPagamentoBean.valor[2]}" readonly="true" size="10" styleClass="input-text-min text-center font-size-12 bold"/></p:column>
+                                                <p:column>Outros:</p:column>
+                                                <p:column><p:inputText value="#{previsaoPagamentoBean.valor[3]}" readonly="true" size="10" styleClass="input-text-min text-center font-size-12 bold"/></p:column>
+                                            </p:row>
+                                        </f:facet>
+                                    </p:panelGrid>
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:panel styleClass="margin-top-max" id="i_form_panel">
+                                <f:facet name="header">
+                                    <p:commandButton icon="ui-icon-link" value="Selecionar Formas de Pagamento" onclick="dlg_1.show()" type="button" id="i_sfpp" disabled="#{previsaoPagamentoBean.listPrevisaoPagamentos.size() == 0}"/>
+                                </f:facet>
+                                <f:facet name="footer">
+                                    <p:commandButton type="button" value="Salvar" onclick="dlg_s.show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton type="button" icon="ui-icon-print" value="Relatório" disabled="true"/>
+                                </f:facet>
+                                <p:dataTable scrollable="true" value="#{previsaoPagamentoBean.listPrevisaoPagamentos}" var="previsaoPagamento" scrollHeight="400" emptyMessage="Nenhum registro encontrado" selection="#{previsaoPagamentoBean.previsaoSelecionada}" rowKey="#{previsaoPagamento.movimento.id}" id="i_form" paginator="true" rows="10">
+                                    <p:ajax event="rowSelect" update=":form_pp:i_form, :form_pp:i_sfpp, :form_pp:i_grid_totais"/>
+                                    <p:ajax event="rowSelectCheckbox" update=":form_pp:i_form, :form_pp:i_sfpp, :form_pp:i_grid_totais"/>
+                                    <p:ajax event="rowUnselect" update=":form_pp:i_form, :form_pp:i_sfpp, :form_pp:i_grid_totais"/>
+                                    <p:ajax event="rowUnselectCheckbox" update=":form_pp:i_form, :form_pp:i_sfpp, :form_pp:i_grid_totais"/>
+                                    <p:ajax event="toggleSelect" update=":form_pp:i_form, :form_pp:i_sfpp, :form_pp:i_grid_totais"/>
+                                    <p:column selectionMode="multiple" width="20" styleClass="text-center" />
+                                    <p:column width="20" styleClass="text-center">
+                                        <p:column rendered="#{previsaoPagamento.id == -1}">
+                                            <span class="ui-icon ui-icon-notice"  title="Item não esta salvo"></span>
+                                        </p:column>
+                                        <p:column rendered="#{previsaoPagamento.id != -1}">
+                                            <span class="ui-icon ui-icon-circle-check" title="Item - Ok"></span>
+                                        </p:column>
+                                    </p:column>
+                                    <p:column headerText="Forma">
+                                        #{previsaoPagamento.tipoPagamento.descricao}                                        
+                                    </p:column>
+                                    <p:column headerText="Conta">
+                                        <p:outputLabel value="#{previsaoPagamento.contaBanco.banco.banco} - #{previsaoPagamento.contaBanco.agencia} - #{previsaoPagamento.contaBanco.conta}" rendered="#{previsaoPagamento.contaBanco != null}"/>
+                                    </p:column>
+                                    <p:column headerText="Cheque">#{previsaoPagamento.cheque}</p:column>
+                                    <p:column headerText="Emissão">#{previsaoPagamento.movimento.lote.emissao}</p:column>
+                                    <p:column headerText="Doc.">#{previsaoPagamento.movimento.lote.documento}</p:column>
+                                    <p:column headerText="Credor">#{previsaoPagamento.movimento.pessoa.nome}</p:column>
+                                    <p:column headerText="V. Parcela">#{previsaoPagamentoBean.valorC(previsaoPagamento.movimento.valor, previsaoPagamento.movimento.juros, previsaoPagamento.movimento.multa, previsaoPagamento.movimento.correcao, previsaoPagamento.movimento.desconto)}</p:column>
+                                    <p:column headerText="Vencto">#{previsaoPagamento.movimento.vencimento}</p:column>
+                                    <p:column width="25" >
+                                        <p:rowToggler rendered="#{!previsaoPagamento.movimento.lote.historico.equals('')}"/>
+                                    </p:column>
+                                    <p:rowExpansion styleClass="bg-yellow-ligth">
+                                        <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                                        <h:outputLabel value="#{previsaoPagamento.movimento.lote.historico}" />
+                                    </p:rowExpansion> 
+                                    <p:column width="25" styleClass="text-center">
+                                        <p:commandButton action="#{previsaoPagamentoBean.remove(previsaoPagamento)}" icon="ui-icon-close" update=":form_pp:i_form_panel" rendered="#{previsaoPagamento.id != -1}"/>
+                                    </p:column>                                    
+                                    <f:facet name="footer">
+                                        V. Parcela (Valor da Parcela); Doc. (Tipo de Documento)
+                                    </f:facet>
+                                </p:dataTable>
+                            </p:panel>
+                            <p:dialog widgetVar="dlg_1" width="600" header="Tipo de Pagamento" modal="true">
+                                <p:messages id="i_msg" showDetail="true" showSummary="true" autoUpdate="true"/>
+                                <h:panelGrid id="i_pg_tp" columns="2" styleClass="margin-top-max">
+                                    <p:outputLabel value="Tipo pagamento:" />
+                                    <p:selectOneMenu value="#{previsaoPagamentoBean.index[0]}">
+                                        <p:ajax event="change" update="@this, i_pg_tp" />
+                                        <f:selectItems value="#{previsaoPagamentoBean.listTiposPagamento}" />
+                                    </p:selectOneMenu>
+                                    <h:column>
+                                        <c:if test="#{previsaoPagamentoBean.hidden[0]}">
+                                            <p:outputLabel value="Conta:" />
+                                        </c:if>
+                                    </h:column>
+                                    <h:column>
+                                        <c:if test="#{previsaoPagamentoBean.hidden[0]}">
+                                            <p:selectOneMenu value="#{previsaoPagamentoBean.index[1]}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItems value="#{previsaoPagamentoBean.listContasBancos}" />
+                                            </p:selectOneMenu>
+                                        </c:if>
+                                    </h:column>
+                                    <h:column>
+                                        <c:if test="#{previsaoPagamentoBean.hidden[1]}">
+                                            <p:outputLabel value="Cheque:" />
+                                        </c:if>
+                                    </h:column>
+                                    <h:column>
+                                        <c:if test="#{previsaoPagamentoBean.hidden[1]}">
+                                            <p:inputText value="#{previsaoPagamentoBean.previsaoPagamento.cheque}" size="50" maxlength="50" />                                        
+                                        </c:if>
+                                    </h:column>
+                                </h:panelGrid>
+                                <f:facet name="footer">
+                                    <p:commandButton action="#{previsaoPagamentoBean.addItem()}" value="Adicionar" />
+                                </f:facet>
+                            </p:dialog> 
+                            <p:dialog widgetVar="dlg_s" width="600" header="Deseja salvar este registro?" modal="true">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" action="#{previsaoPagamentoBean.save}" oncomplete="PF('dlg_s').hide(); PF('dlg_msg').show();" update=":form_pp:"/>
+                                        <p:button value="Não" onclick="dlg_s.hide();" /> 
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_msg" width="600" header="Mensagem" modal="true">
+                                <h:panelGrid id="i_g_msg">
+                                    <p:outputLabel value="#{previsaoPagamentoBean.message}" />
+                                </h:panelGrid>
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:button value="Ok" onclick="dlg_msg.hide();" /> 
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>
