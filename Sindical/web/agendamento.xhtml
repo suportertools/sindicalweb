@@ -218,19 +218,19 @@
                                     <h:outputText value="Contato: " styleClass="fontePadrao"/>
                                 </h:column>
                                 <h:column>
-                                    <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="20" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
+                                    <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="16" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
                                         <f:ajax event="blur" render="@this"  />
                                     </h:inputText>
-                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left-max"/>
-                                    <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="20" styleClass="fontePadraoNegrito" onblur="lowerCase(this);">
-                                        <a4j:ajax event="blur" render="this"  />
+                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left"/>
+                                    <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="40" converter="#{toUpperCase}">
+                                        <f:ajax event="blur" render="@this"  />
                                     </h:inputText>
                                     <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" status="i_status">
                                         <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
                                     </a4j:commandLink>
-                                    <h:outputText value="Tel: " styleClass="fontePadrao margin-left-max" title="Telefone"/>
-                                    <h:inputText value="#{agendamentoBean.agendamento.telefone}" size="20" styleClass="fontePadraoNegrito telefone">
-                                        <a4j:ajax event="change" render="this"  />
+                                    <h:outputText value="Tel: " styleClass="fontePadrao margin-left" title="Telefone"/>
+                                    <h:inputText value="#{agendamentoBean.agendamento.telefone}" size="12" styleClass="telefone">
+                                        <f:ajax event="change" render="@this"  />
                                     </h:inputText>
                                 </h:column>
                                 <h:column>
