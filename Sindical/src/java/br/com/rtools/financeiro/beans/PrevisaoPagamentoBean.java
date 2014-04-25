@@ -5,20 +5,41 @@ import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.PrevisaoPagamento;
 import br.com.rtools.financeiro.TipoPagamento;
 import br.com.rtools.financeiro.dao.PrevisaoPagamentoDao;
+import br.com.rtools.impressao.ParametroPrevisaoPagto;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Diretorio;
+import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.GenericaString;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.PF;
+import br.com.rtools.utilitarios.SalvaArquivos;
+import java.io.File;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
+import static org.apache.coyote.ajp.Constants.a;
 
 @ManagedBean
 @SessionScoped
@@ -403,6 +424,11 @@ public class PrevisaoPagamentoBean implements Serializable {
             valor[1] = Moeda.converteR$Float(dinheiro);
             valor[2] = Moeda.converteR$Float(cheque);
             valor[3] = Moeda.converteR$Float(outros);
+        } else {
+            valor[0] = "0,00";
+            valor[1] = "0,00";
+            valor[2] = "0,00";
+            valor[3] = "0,00";
         }
         return valor;
     }
@@ -410,4 +436,76 @@ public class PrevisaoPagamentoBean implements Serializable {
     public void setValor(String[] valor) {
         this.valor = valor;
     }
+
+    // IMPRIMIR RELATÓRIO   
+    public synchronized void print() {
+        PrevisaoPagamentoDao ppd = new PrevisaoPagamentoDao();
+        if (dataIncial.isEmpty()) {
+            return;
+        }
+        if (dataIncial.isEmpty() && dataFinal.isEmpty()) {
+            return;
+        }
+        if (dataFinal.isEmpty()) {
+            dataFinal = dataIncial;
+        }
+        List list = ppd.listaPrevisaoPagamento(dataIncial, dataFinal, true);
+        if (list.isEmpty()) {
+            return;
+        }
+        Collection<ParametroPrevisaoPagto> previsaoPagtos = new ArrayList<ParametroPrevisaoPagto>();
+        float dinheiro = 0;
+        float outros = 0;
+        float cheque = 0;
+        float valor;
+        int tipo;
+        for (int i = 0; i < list.size(); i++) {
+            valor = Float.parseFloat(GenericaString.converterNullToString((((List) list.get(i)).get(6))));
+            tipo = Integer.parseInt(GenericaString.converterNullToString((((List) list.get(i)).get(8))));
+            if (tipo == 3) {
+                dinheiro += valor;
+            } else if (tipo == 4) {
+                cheque += valor;
+            } else if (tipo == 8
+                    || tipo == 9
+                    || tipo == 10
+                    || tipo == 13) {
+                outros += valor;
+            }
+            previsaoPagtos.add(
+                    new ParametroPrevisaoPagto(
+                            GenericaString.converterNullToString(((List) list.get(i)).get(0)), // 0 - fin_lote_dt_emissao
+                            new BigDecimal(Float.parseFloat(GenericaString.converterNullToString((((List) list.get(i)).get(1))))), // 1 - fin_lote_nr_valor
+                            GenericaString.converterNullToString(((List) list.get(i)).get(2)), // 2 - pes_ds_nome
+                            GenericaString.converterNullToString(((List) list.get(i)).get(3)), // 3 - fin_plano_5
+                            GenericaString.converterNullToString(((List) list.get(i)).get(4)), // 4 - fin_lote_ds_documento
+                            GenericaString.converterNullToString(((List) list.get(i)).get(5)), // 5 - fin_movimento_dt_vencimento
+                            new BigDecimal(valor), // 6 - nr_valor_devido
+                            GenericaString.converterNullToString(((List) list.get(i)).get(7)) // 7 - fin_tipo_documento_ds_descricao
+                    )
+            );
+        }
+
+        try {
+            JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/PREVISAO_PAGTO.jasper")));
+            Diretorio.criar("Arquivos/downloads/previsao_pagto");
+            Map parametros = new HashMap();
+            parametros.put("filtro_data_inicial", dataIncial);
+            parametros.put("filtro_data_final", dataFinal);
+            parametros.put("total_dinheiro", Moeda.converteR$Float(dinheiro));
+            parametros.put("total_cheque", Moeda.converteR$Float(cheque));
+            parametros.put("total_outros", Moeda.converteR$Float(outros));
+            byte[] arquivo = JasperExportManager.exportReportToPdf(JasperFillManager.fillReport(jasperReport, parametros, new JRBeanCollectionDataSource(previsaoPagtos)));
+            String nomeDownload = "imp_previsao_pagto_" + DataHoje.horaMinuto().replace(":", "") + ".pdf";
+            String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/previsao_pagto");
+            SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
+            salvaArquivos.salvaNaPasta(pathPasta);
+            Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+            download.baixar();
+            download.remover();
+        } catch (JRException e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
 }
