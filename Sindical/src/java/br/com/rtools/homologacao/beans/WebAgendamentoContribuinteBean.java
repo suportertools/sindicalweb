@@ -204,7 +204,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         Registro reg = (Registro) salvarAcumuladoDB.find("Registro" , 1);
         if (!listaEmDebito.isEmpty() && !reg.isBloquearHomologacao()) {
-            msgConfirma = "Empresa não poderá agendar em Débito. Contate seu Sindicato!";
+            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             return null;
         }
 
