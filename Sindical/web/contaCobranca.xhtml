@@ -30,7 +30,7 @@
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="1">
                                     <p:column>
-                                        <p:commandButton id="idBanco" value="Adicionar Conta Cobrança" action="#{chamadaPaginaBean.contaBanco}" title="Pesquisa Conta Banco" rendered="#{(contaCobrancaBean.contaCobranca.contaBanco.banco.numero) == ''}"/>
+                                        <p:commandButton id="idBanco" value="Adicionar Conta Banco" action="#{chamadaPaginaBean.contaBanco}" title="Pesquisa Conta Banco" rendered="#{(contaCobrancaBean.contaCobranca.contaBanco.banco.numero) == ''}"/>
                                         <h:outputText value="Nº. #{contaCobrancaBean.contaCobranca.contaBanco.banco.numero} - 
                                                           Banco: #{contaCobrancaBean.contaCobranca.contaBanco.banco.banco} - 
                                                              Ag: #{contaCobrancaBean.contaCobranca.contaBanco.agencia} -
