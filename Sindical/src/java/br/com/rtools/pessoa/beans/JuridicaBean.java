@@ -588,6 +588,7 @@ public class JuridicaBean implements Serializable {
                     dbSalvar.comitarTransacao();
                     NovoLog novoLog = new NovoLog();
                     novoLog.novo("Salvar Pessoa Jurídica", "ID: " + juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() + " - " + juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura() + " - Fechamento" + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
+                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
                 } else {
                     msgConfirma = "Erro ao Salvar Dados!";
                     dbSalvar.desfazerTransacao();
@@ -629,6 +630,7 @@ public class JuridicaBean implements Serializable {
                         + " para ID: " + juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() + " - " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel();
                 NovoLog novoLog = new NovoLog();
                 novoLog.novo("Atualizar Pessoa Jurídica", novoLogString);
+                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
             } else {
                 dbSalvar.desfazerTransacao();
                 msgConfirma = "Erro ao atualizar Cadastro!";
