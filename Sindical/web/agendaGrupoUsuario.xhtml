@@ -1,0 +1,61 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:cc="http://java.sun.com/jsf/composite">
+
+    <h:head>
+        <title>Agenda Grupo Usuário</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+            <p:panel styleClass="wrapper no-border">
+                <h:form id="form_agu">
+                    <p:outputLabel value="Agenda Grupo Usuário" styleClass="fonteHeader"/>
+                    <c:set scope="request" var="object" value="${agendaGrupoUsuarioBean.agendaGrupoUsuarios}"/>
+                    <div class="clear"></div>                    
+                    <div class="margin-top margin-bottom">
+                        <p:messages autoUpdate="true" showSummary="true" showDetail="true" closable="true"/>
+                    </div>
+                    <p:panel id="i_panel_acao" styleClass="fundoCinza" >
+                        <h:panelGrid columns="2" >
+                            <p:commandButton icon="ui-icon-search" value="Pesquisar Usuário: " action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}" />
+                            <p:outputLabel value="#{agendaGrupoUsuarioBean.usuario.pessoa.nome}" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="3" >
+                            <p:outputLabel value="Grupo Agenda: "/>
+                            <h:column>
+                                <c:if test="#{agendaGrupoUsuarioBean.listGrupoAgenda.size() > 0}">
+                                    <p:selectOneMenu value="#{agendaGrupoUsuarioBean.indice[0]}">
+                                        <p:ajax update="id_lista" event="change" listener="#{agendaGrupoUsuarioBean.agendaGrupoUsuarios.clear()}" />
+                                        <f:selectItems value="#{agendaGrupoUsuarioBean.listGrupoAgenda}"/>
+                                    </p:selectOneMenu>
+                                </c:if>
+                            </h:column>
+                            <p:commandButton icon="ui-icon-plus" action="#{agendaGrupoUsuarioBean.save()}" update="id_lista" title="Adicionar usuário ao grupo"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1">
+                            <p:commandButton value="Novo" action="#{agendaGrupoUsuarioBean.clear()}" update=":form_agu:" />
+                        </h:panelGrid>
+                    </p:panel>
+                    <h:panelGrid styleClass="margin-top-max" id="id_lista">
+                        <p:dataTable value="#{agendaGrupoUsuarioBean.agendaGrupoUsuarios}" var="agendaGrupoUsuario" scrollable="true" scrollHeight="300" emptyMessage="Nenhum resultado encontrado" paginator="true" rows="15">
+                            <p:column headerText="Usuário">
+                                <p:outputLabel value="#{agendaGrupoUsuario.usuario.pessoa.nome}" />
+                            </p:column>
+                            <p:column styleClass="text-center" width="25">
+                                <p:commandButton icon="ui-icon-trash" action="#{agendaGrupoUsuarioBean.remove(agendaGrupoUsuario)}" update=":form_agu:"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>                    
+            </p:panel>                    
+        </f:view>
+    </h:body>
+</ui:composition>
