@@ -77,11 +77,11 @@
                                     </h:column>
                                 </h:panelGrid>
                             </p:panel>
-                            <h:panelGrid columns="4" styleClass="margin-top-max">
+                            <h:panelGrid columns="5" styleClass="margin-top-max">
                                 <p:commandButton onclick="dlg_salvar.show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar" type="button"/>
                                 <p:commandButton value="Novo" action="#{enderecoBean.novo}" title="Novo" update=":form_endereco:" />
                                 <p:commandButton onclick="dlg_excluir.show()" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" type="button"/>
-                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaEndereco}" title="Pesquisar Endereço" /> 
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaEndereco}" title="Pesquisar Endereço" />                                 
                             </h:panelGrid>
                             <p:dialog widgetVar="dlg_salvar" header="Deseja salvar este registro?" width="400" modal="true" resizable="false">
                                 <f:facet name="footer">
