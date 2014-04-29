@@ -211,6 +211,7 @@ public class ChamadaPaginaBean implements Serializable {
     public synchronized String usuario() {
         //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("usuarioBean")){
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("usuarioPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         //}
         return metodoGenerico(2, "usuario");
