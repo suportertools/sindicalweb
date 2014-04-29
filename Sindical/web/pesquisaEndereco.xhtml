@@ -29,10 +29,9 @@
 
                         <h:panelGrid columns="4">
                             <h:outputText value="CEP: " styleClass="fontePadraoNegrito"/>
-                            <h:inputText id="idCEP" value="#{enderecoBean.endereco.cep}" size="10" onkeypress="if (event.keyCode === 13) {#{rich:element('formPesquisaEndereco:btnPesquisar')}.onclick();
-                    }"/>
+                            <h:inputText id="idCEP" value="#{enderecoBean.endereco.cep}" size="10" onkeypress="if (event.keyCode === 13) {#{rich:element('formPesquisaEndereco:btnPesquisar')}.onclick();}"/>
                             <a4j:commandLink id="btnPesquisar" action="#{enderecoBean.pesquisaCep}" value="Pesquisar" styleClass="idPesquisar iLink" render="tbl"/>
-                            <h:commandLink style="margin-left: 20px;" styleClass="idPesquisar iLink" value="Cadastrar" action="#{enderecoBean.endereco()}"/>
+                            <h:commandLink style="margin-left: 20px;" styleClass="idPesquisar iLink" value="Cadastrar" action="#{enderecoBean.endereco()}" actionListener="#{enderecoBean.listenerCadastrar}"/>
                         </h:panelGrid>
                         <hr />
 
