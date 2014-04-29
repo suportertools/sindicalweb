@@ -50,7 +50,7 @@
 
                                     <h:column><h:outputLabel value="Data do cadastro: " styleClass="fontePadrao"/></h:column>
                                     <h:column>
-                                        <h:inputText id="iddata" size="10" maxlength="10" value="#{juridicaBean.juridica.pessoa.criacao}" class="data"/>
+                                        <h:inputText id="iddata" size="10" maxlength="10" value="#{juridicaBean.juridica.pessoa.criacao}" styleClass="data"/>
                                         <h:outputLabel value="Porte: " styleClass="fontePadrao margin-left-max"/>
                                         <h:selectOneMenu value="#{juridicaBean.idPorte}" onchange="submit();">
                                             <f:selectItems value="#{juridicaBean.listaPorte}"/>
@@ -79,8 +79,8 @@
                                     <h:column><h:outputLabel id="idMsgDocumento" value="#{juridicaBean.msgDocumento}" styleClass="corErro"/></h:column>
                                     <h:column><h:outputLabel value="Razão Social: " styleClass="fontePadrao"/></h:column>
                                     <h:column>
-                                        <h:inputText id="idrazao" size="100" maxlength="150" value="#{juridicaBean.juridica.pessoa.nome}" onblur="upperCase(this);">
-                                            <a4j:ajax event="blur" render="idrazao,idnomefan"/>
+                                        <h:inputText id="idrazao" size="100" maxlength="150" value="#{juridicaBean.juridica.pessoa.nome}" converter="#{toUpperCase}">
+                                            <f:ajax event="blur" render="@this formPessoaJuridica:idnomefan"/>
                                         </h:inputText>
                                     </h:column>
 
@@ -145,7 +145,7 @@
                                     </h:column>
 
                                     <h:column><h:outputLabel value="Abertura: " styleClass="fontePadrao"/></h:column>
-                                    <h:column><h:inputText id="idaber" size="10" maxlength="8" value="#{juridicaBean.juridica.abertura}" class="data">
+                                    <h:column><h:inputText id="idaber" size="10" maxlength="8" value="#{juridicaBean.juridica.abertura}" styleClass="data">
                                                 <a4j:ajax event="blur" render="this"/>
                                             </h:inputText>
                                     </h:column>
@@ -488,7 +488,7 @@
                                 <h:outputText value="#{juridicaBean.juridica.pessoa.criacao}" styleClass="negritoDescricao"/>
 
                                 <h:outputText value="Data de Inativação: " styleClass="fontePadrao" style="margin-left: 20px;"/>
-                                <h:inputText  value="#{juridicaBean.contribuintesInativos.inativacao}" size="10" maxlength="10" class="data"/>
+                                <h:inputText  value="#{juridicaBean.contribuintesInativos.inativacao}" size="10" maxlength="10" styleClass="data"/>
                             </h:panelGrid>
 
                             <h:panelGrid columns="6">
