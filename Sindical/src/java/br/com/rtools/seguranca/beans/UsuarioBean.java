@@ -252,6 +252,7 @@ public class UsuarioBean implements Serializable {
     public String editar(Usuario usu) {
         usuario = usu;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", usuario.getPessoa());
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioPesquisa", usuario);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
     }
