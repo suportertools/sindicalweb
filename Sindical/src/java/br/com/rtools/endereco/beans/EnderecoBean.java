@@ -32,6 +32,7 @@ public class EnderecoBean implements Serializable {
     private String msgDetalhada;
     private boolean blDetalhada;
     private boolean pesquisar;
+    private boolean btnCadastrar;
     private List<Endereco> listaEndereco;
     private List<SelectItem> listaLogradouro;
     private List<SelectItem> listaCidade;
@@ -54,6 +55,7 @@ public class EnderecoBean implements Serializable {
         listaCidade = new ArrayList();
         mensagem = "";
         limpar = false;
+        btnCadastrar = false;
         idLogradouro = 0;
         getListaCidade();
         getListaLogradouro();
@@ -381,5 +383,26 @@ public class EnderecoBean implements Serializable {
 
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
+    }
+
+    public void listenerCadastrar() {
+        GenericaSessao.put("cadastrarEndereco", true);
+    }
+
+    public boolean isBtnCadastrar() {
+        if (GenericaSessao.exists("cadastrarEndereco")) {
+            GenericaSessao.remove("cadastrarEndereco");
+            btnCadastrar = true;
+        }
+        return btnCadastrar;
+    }
+
+    public void setBtnCadastrar(boolean btnCadastrar) {
+        this.btnCadastrar = btnCadastrar;
+    }
+
+    public String btnPessoaJuridica() {
+        GenericaSessao.put("linkClicado", true);
+        return "pessoaJuridica";
     }
 }
