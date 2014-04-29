@@ -1687,12 +1687,6 @@
         </navigation-case>
         
         <navigation-case>
-            <from-outcome>pedido</from-outcome>
-            <to-view-id>/pedido.jsf</to-view-id>
-            <redirect/>
-        </navigation-case>
-        
-        <navigation-case>
             <from-outcome>relatorioOposicao</from-outcome>
             <to-view-id>/relatorioOposicao.jsf</to-view-id>
             <redirect/>
@@ -1709,7 +1703,7 @@
             <to-view-id>/filialDepartamento.jsf</to-view-id>
             <redirect/>
         </navigation-case>
-        
+   
         <navigation-case>
             <from-outcome>previsaoPagamento</from-outcome>
             <to-view-id>/previsaoPagamento.jsf</to-view-id>
@@ -1722,6 +1716,23 @@
             <redirect/>
         </navigation-case>
         
+        <navigation-case>
+            <from-outcome>relatorioChequesRecebidos</from-outcome>
+            <to-view-id>/relatorioChequesRecebidos.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>grupoFinanceiro</from-outcome>
+            <to-view-id>/grupoFinanceiro.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>gerarBoleto</from-outcome>
+            <to-view-id>/gerarBoleto.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>  
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
