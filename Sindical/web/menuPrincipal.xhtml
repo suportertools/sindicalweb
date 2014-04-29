@@ -48,11 +48,11 @@
                                     </c:if>
                                     <p:menuitem value="Sair do Sistema" action="#{usuarioBean.sairSistema}" /> 
                                 </p:submenu>
-                                <p:submenu label="Departamentos" icon="ui-icon-document" style="margin-right: 15px">  
+                                <p:submenu label="Departamentos" icon="ui-icon-document" style="margin-right: 15px">
                                     <p:menuitem value="Social"      action="#{chamadaPaginaBean.menuSocial}" />
                                     <p:menuitem value="Arrecadação" action="#{chamadaPaginaBean.menuArrecadacao}" />
                                     <p:menuitem value="Financeiro"  action="#{chamadaPaginaBean.menuFinanceiro}" />
-                                    <p:menuitem value="Homologação" action="#{chamadaPaginaBean.menuHomologacao}" />
+                                    <p:menuitem value="Homologação" action="#{chamadaPaginaBean.menuHomologacao}" actionListener="#{agendamentoBean.verificaNaoAtendidos}"/>
                                     <p:menuitem value="Academia"    action="#{chamadaPaginaBean.menuAcademia}" />
                                     <p:menuitem value="Escola"      action="#{chamadaPaginaBean.menuEscola}" />
                                     <p:menuitem value="Clube"       action="#{chamadaPaginaBean.menuClube}" />
@@ -91,6 +91,7 @@
                                         <p:menuitem value="Agenda Telefônica"            action="#{chamadaPaginaBean.agendaTelefone}"/>
                                         <p:menuitem value="Lista Agenda Telefônica"   action="#{chamadaPaginaBean.pesquisaAgendaTelefone}"/>
                                         <p:menuitem value="Grupo Agenda"                 action="#{chamadaPaginaBean.grupoAgenda}"/>
+                                        <p:menuitem value="Grupo Usuário"     action="#{chamadaPaginaBean.pagina('agendaGrupoUsuario')}" />
                                     </p:submenu>
                                 </p:submenu>
                                 <p:menuitem value="Relatórios" action="#{chamadaPaginaBean.relatorio}"/>
