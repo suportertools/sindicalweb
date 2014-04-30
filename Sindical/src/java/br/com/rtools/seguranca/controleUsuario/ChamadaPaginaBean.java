@@ -82,17 +82,36 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(1, pagina);
     }
 
+    public synchronized String pesquisa(String pagina, String bean) throws IOException {
+        GenericaSessao.remove(pagina + "Bean");
+        return metodoGenerico(1, pagina);
+    }
+
     public synchronized String pagina(String pagina) throws IOException {
         GenericaSessao.remove(pagina + "Bean");
         String redirect = metodoGenerico(2, pagina);
-        //FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
         return redirect;
     }
 
+    /**
+     * <p>
+     * <strong>List Query</strong></p>
+     * <p>
+     * <strong>Exemplo:</strong> pagina("pesquisaAgendaTelefone",
+     * "agendaTelefone"); Não é necessário no Bean espefícar o nome
+     * completo.</p>
+     *
+     * @param pagina (Nome da página)
+     * @param bean (Bean)
+     *
+     * @author Bruno
+     *
+     * @return List
+     * @throws java.io.IOException
+     */
     public synchronized String pagina(String pagina, String bean) throws IOException {
         GenericaSessao.remove(bean + "Bean");
         String redirect = metodoGenerico(2, pagina);
-        //FacesContext.getCurrentInstance().getExternalContext().redirect(redirect + ".jsf");
         return redirect;
     }
 
@@ -661,15 +680,6 @@ public class ChamadaPaginaBean implements Serializable {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaFisicaTipo");
         return metodoGenerico(2, "matriculaEscola");
-    }
-
-    public synchronized String agendaTelefone() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tipoAgendaTelefone", "agendaTelefone");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agendaTelefoneBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("agendaTelefonePesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoPesquisa");
-        return metodoGenerico(2, "agendaTelefone");
     }
 
     public synchronized String cancelarHorario() {
@@ -1256,11 +1266,6 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String pesquisaModeloContrato() {
         return metodoGenerico(1, "pesquisaModeloContrato");
-    }
-
-    public synchronized String pesquisaAgendaTelefone() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("tipoAgendaTelefone", "pesquisaAgendaTelefone");
-        return metodoGenerico(1, "pesquisaAgendaTelefone");
     }
 
     public synchronized String pesquisaDescontoServicoEmpresa() {
