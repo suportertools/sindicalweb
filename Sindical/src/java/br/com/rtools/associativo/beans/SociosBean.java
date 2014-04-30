@@ -165,7 +165,12 @@ public class SociosBean implements Serializable {
 
         sv.abrirTransacao();
 
-        ServicoPessoa sp = (ServicoPessoa) sv.pesquisaCodigo(servicoPessoa.getId(), "ServicoPessoa");
+        ServicoPessoa sp = (ServicoPessoa) sv.find("ServicoPessoa", servicoPessoa.getId());
+        if(sp == null) {
+            msgConfirma = "Erro ao alterar serviço pessoa";
+            sv.desfazerTransacao();
+            return null;
+        }
         sp.setAtivo(true);
         if (!sv.alterarObjeto(sp)) {
             msgConfirma = "Erro ao alterar serviço pessoa";
@@ -412,7 +417,7 @@ public class SociosBean implements Serializable {
             return false;
         }
 
-        if (listaTipoDocumento.isEmpty()) {
+        if (getListaTipoDocumento().isEmpty()) {
             msgConfirma = "Lista de Tipo Documentos Vazia!";
             return false;
         }
@@ -805,8 +810,8 @@ public class SociosBean implements Serializable {
         pesquisaLista = "";
     }
 
-    public void editarDependente() {
-        dependente = (Fisica) listaFisica.get(idIndexCombo);
+    public void editarDependente(Fisica f) {
+        dependente = (Fisica) f;
         listaFisica.clear();
         pesquisaLista = "";
 
