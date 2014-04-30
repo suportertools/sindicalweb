@@ -22,6 +22,8 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -31,62 +33,109 @@ import org.primefaces.context.RequestContext;
 @SessionScoped
 public class AgendaTelefoneBean implements Serializable {
 
-    private Agenda agenda = new Agenda();
-    private AgendaTelefone agendaTelefone = new AgendaTelefone();
-    private Pessoa pessoa = new Pessoa();
-    private Endereco endereco = new Endereco();
-    private Usuario usuario = new Usuario();
-    private List<SelectItem> listaTipoEnderecos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaTipoTelefones = new ArrayList<SelectItem>();
-    private List<SelectItem> listaGrupoAgendas = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDDD = new ArrayList<SelectItem>();
-    private List<AgendaTelefone> listaAgendaTelefones = new ArrayList<AgendaTelefone>();
-    private List<AgendaTelefone> listaAgendas = new ArrayList();
-    private int idTipoEndereco = 0;
-    private int idTipoTelefone = 0;
-    private int idDDD = 0;
-    private int idGrupoAgenda = 0;
-    private int idFiltroGrupoAgenda = 0;
-    private String descricaoPesquisa = "";
-    private String descricaoDDD = "";
-    private String comoPesquisa = "Inicial";
-    private String porPesquisa = "nome";
+    private Agenda agenda;
+    private AgendaTelefone agendaTelefone;
+    private Pessoa pessoa;
+    private Endereco endereco;
+    private Usuario usuario;
+    private List<SelectItem> listaTipoEnderecos;
+    private List<SelectItem> listaTipoTelefones;
+    private List<SelectItem> listaGrupoAgendas;
+    private List<SelectItem> listaDDD;
+    private List<AgendaTelefone> listaAgendaTelefones;
+    private List<AgendaTelefone> listaAgendas;
+    private int idTipoEndereco;
+    private int idTipoTelefone;
+    private int idDDD;
+    private int idGrupoAgenda;
+    private int idFiltroGrupoAgenda;
+    private String descricaoPesquisa;
+    private String descricaoDDD;
+    private String comoPesquisa;
+    private String porPesquisa;
     private String mensagem;
-    private String tipoAgenda = "agendaTelefone";
-    private boolean mask = false;
-    private boolean filtraPorGrupo = false;
-    private boolean visibility = false;
-    private boolean favoritos = false;
-    private boolean numeroFavorito = false;
+    private String tipoAgenda;
+    private boolean mask;
+    private boolean filtraPorGrupo;
+    private boolean visibility;
+    private boolean favoritos;
+    private boolean numeroFavorito;
 
-    public void novo() {
+    @PostConstruct
+    public void init() {
         agenda = new Agenda();
         agendaTelefone = new AgendaTelefone();
         pessoa = new Pessoa();
         endereco = new Endereco();
         usuario = new Usuario();
+        listaTipoEnderecos = new ArrayList<SelectItem>();
+        listaTipoTelefones = new ArrayList<SelectItem>();
+        listaGrupoAgendas = new ArrayList<SelectItem>();
+        listaDDD = new ArrayList<SelectItem>();
         listaAgendaTelefones = new ArrayList<AgendaTelefone>();
-        listaAgendas.clear();
-        idTipoTelefone = 0;
-        idGrupoAgenda = 0;
+        listaAgendas = new ArrayList();
         idTipoEndereco = 0;
-        idFiltroGrupoAgenda = 0;
+        idTipoTelefone = 0;
         idDDD = 0;
+        idGrupoAgenda = 0;
+        idFiltroGrupoAgenda = 0;
         descricaoPesquisa = "";
         descricaoDDD = "";
         comoPesquisa = "Inicial";
         porPesquisa = "nome";
         mensagem = "";
-        visibility = true;
+        tipoAgenda = "agendaTelefone";
+        mask = false;
+        filtraPorGrupo = false;
+        visibility = false;
+        favoritos = false;
         numeroFavorito = false;
     }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("agendaTelefoneBean");
+        GenericaSessao.remove("agendaTelefonePesquisa");
+        GenericaSessao.remove("pessoaPesquisa");
+        GenericaSessao.remove("enderecoPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("agendaTelefoneBean");
+    }
+
+    public void putType(String type) {
+        GenericaSessao.put("tipoAgendaTelefone", type);
+    }
+//
+//    public void novo() {
+//        agenda = new Agenda();
+//        agendaTelefone = new AgendaTelefone();
+//        pessoa = new Pessoa();
+//        endereco = new Endereco();
+//        usuario = new Usuario();
+//        listaAgendaTelefones = new ArrayList<AgendaTelefone>();
+//        listaAgendas.clear();
+//        idTipoTelefone = 0;
+//        idGrupoAgenda = 0;
+//        idTipoEndereco = 0;
+//        idFiltroGrupoAgenda = 0;
+//        idDDD = 0;
+//        descricaoPesquisa = "";
+//        descricaoDDD = "";
+//        comoPesquisa = "Inicial";
+//        porPesquisa = "nome";
+//        mensagem = "";
+//        visibility = true;
+//        numeroFavorito = false;
+//    }
 
     public void openDialog() {
         visibility = true;
     }
 
     public void close() {
-        novo();
+        clear();
         visibility = false;
         RequestContext.getCurrentInstance().execute("dgl_adicionar.hide()");
         RequestContext.getCurrentInstance().update("form_agenda_telefone:i_panel_adicionar");
@@ -187,7 +236,7 @@ public class AgendaTelefoneBean implements Serializable {
             agenda = (Agenda) salvarAcumuladoDB.find("Agenda", agenda.getId());
             if (salvarAcumuladoDB.deletarObjeto(agenda)) {
                 salvarAcumuladoDB.comitarTransacao();
-                novo();
+                clear();
                 mensagem = "Registro excluído com sucesso";
                 listaAgendas.clear();
                 agenda = new Agenda();
@@ -304,8 +353,14 @@ public class AgendaTelefoneBean implements Serializable {
 
     public List<SelectItem> getListaGrupoAgendas() {
         listaGrupoAgendas.clear();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        List<GrupoAgenda> list = (List<GrupoAgenda>) salvarAcumuladoDB.listaObjeto("GrupoAgenda", true);
+        List<GrupoAgenda> list;
+        if (getTipoAgenda().equals("pesquisaAgendaTelefone")) {
+            AgendaTelefoneDB telefoneDB = new AgendaTelefoneDBToplink();
+            list = (List<GrupoAgenda>) telefoneDB.listaGrupoAgendaPorUsuario(getUsuario().getId());
+        } else {
+            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            list = (List<GrupoAgenda>) salvarAcumuladoDB.listaObjeto("GrupoAgenda", true);
+        }
         for (int i = 0; i < list.size(); i++) {
             listaGrupoAgendas.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
         }
@@ -608,7 +663,7 @@ public class AgendaTelefoneBean implements Serializable {
                 }
             }
             int idUsuario = 0;
-            if (favoritos) {
+            if (getTipoAgenda().equals("pesquisaAgendaTelefone")) {
                 idUsuario = getUsuario().getId();
             }
             List<AgendaTelefone> listAgendaTelefones = agendaDB.pesquisaAgendaTelefone(descricaoDDD, descricaoPesquisa, porPesquisa, comoPesquisa, nrGrupoAgenda, favoritos, idUsuario);

@@ -7,6 +7,7 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -17,7 +18,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class AgendaGrupoUsuarioBean {
+public class AgendaGrupoUsuarioBean implements Serializable {
 
     private Usuario usuario;
     private List<AgendaGrupoUsuario> agendaGrupoUsuarios;
@@ -45,7 +46,7 @@ public class AgendaGrupoUsuarioBean {
     }
 
     public void save() {
-        if(usuario.getId() == -1) {
+        if (usuario.getId() == -1) {
             GenericaMensagem.warn("Validação", "Pesquisar usuário!");
             return;
         }
@@ -66,6 +67,7 @@ public class AgendaGrupoUsuarioBean {
         }
         if (dao.save(agp, true)) {
             GenericaMensagem.info("Sucesso", "Registro adicionado");
+            GenericaSessao.remove("agendaTelefoneBean");
             agendaGrupoUsuarios.clear();
         } else {
             GenericaMensagem.warn("Erro", "Ao adicionar!");
@@ -76,6 +78,7 @@ public class AgendaGrupoUsuarioBean {
         DaoInterface di = new Dao();
         if (di.delete(agp, true)) {
             GenericaMensagem.info("Sucesso", "Registro removido");
+            GenericaSessao.remove("agendaTelefoneBean");
             agendaGrupoUsuarios.clear();
         } else {
             GenericaMensagem.warn("Erro", "Ao remover!");
