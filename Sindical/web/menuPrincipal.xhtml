@@ -88,8 +88,7 @@
                                         <p:menuitem value="Tipo Endereço" action="#{chamadaPaginaBean.tipoEndereco}"/>
                                     </p:submenu>
                                     <p:submenu label="Agenda" icon="ui-icon-document">  
-                                        <p:menuitem value="Agenda Telefônica"            action="#{chamadaPaginaBean.agendaTelefone}"/>
-                                        <p:menuitem value="Lista Agenda Telefônica"   action="#{chamadaPaginaBean.pesquisaAgendaTelefone}"/>
+                                        <p:menuitem value="Agenda Telefônica"            action="#{chamadaPaginaBean.pagina('agendaTelefone')}" actionListener="#{agendaTelefoneBean.putType('agendaTelefone')}" title="Cadastro"/>
                                         <p:menuitem value="Grupo Agenda"                 action="#{chamadaPaginaBean.grupoAgenda}"/>
                                         <p:menuitem value="Grupo Usuário"     action="#{chamadaPaginaBean.pagina('agendaGrupoUsuario')}" />
                                     </p:submenu>
@@ -103,7 +102,7 @@
                                 <h:panelGrid>
                                     <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
                                 </h:panelGrid>
-                                <p:commandLink action="#{chamadaPaginaBean.pesquisaAgendaTelefone}" title="Pesquisa Agenda Telefônica" style="clear: both">
+                                <p:commandLink action="#{chamadaPaginaBean.pagina('pesquisaAgendaTelefone','agendaTelefone')}" title="Pesquisa Agenda Telefônica" style="clear: both" actionListener="#{agendaTelefoneBean.putType('pesquisaAgendaTelefone')}">
                                     <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" width="100" /><br />
                                 </p:commandLink>   
                             </p:panel>
