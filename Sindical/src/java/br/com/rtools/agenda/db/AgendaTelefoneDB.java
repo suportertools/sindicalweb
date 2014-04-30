@@ -25,6 +25,11 @@ public interface AgendaTelefoneDB {
     public List DDDAgrupado();
 
     public AgendaFavorito favorito(int idAgenda, int idUsuario);
-    
+
     public List listaFavoritoPorAgenda(int idAgenda);
+
+    public List listaGrupoAgendaPorGrupoUsuario();
+
+    public List listaGrupoAgendaPorUsuario(int idUsuario);
+
 }
