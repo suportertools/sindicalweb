@@ -124,7 +124,7 @@
                                     <div class="clear"></div>
                                     <h:panelGrid columns="4" styleClass="margin-top-max">
                                         <p:commandButton value="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                        <p:commandButton value="Novo" action="#{agendaTelefoneBean.novo}" update="out_mensagem i_panel_adicionar id_lista"/>
+                                        <p:commandButton value="Novo" action="#{agendaTelefoneBean.clear}" update="out_mensagem i_panel_adicionar id_lista"/>
                                         <p:commandButton value="Excluir" onclick="dgl_panel_excluir.show()"  disabled="#{controleAcessoBean.botaoExcluir}" />
                                         <p:commandButton value="Sair" action="#{agendaTelefoneBean.close}" update="out_mensagem i_panel_adicionar id_lista"/>
                                     </h:panelGrid>                                    
