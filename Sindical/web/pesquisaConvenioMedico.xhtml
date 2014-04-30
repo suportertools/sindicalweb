@@ -1,81 +1,62 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Pesquisa Convênio médico</title>
+        <title>Pesquisa Convênio Médico</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
-    <h:body class="divMenu" onload="#{rich:element('formPesquisaConvenioMedico:palavraChave')}.focus();">
+    <h:body>
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaConvenioMedico">
-            
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisa convênio Médico" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <div class="divMae">
-                        <h:outputLabel value="Pesquisar: " styleClass="fontePadraoNegrito"/>
-                        <h:inputText id="palavraChave" value="#{matriculaConvenioMedicoBean.descPesquisa}" class="#{matriculaConvenioMedicoBean.porPesquisa}">
-                            <a4j:ajax event="change" render="this"/>
-                        </h:inputText>
-                        <h:outputLabel value="Por: "/>
-                        <h:selectOneMenu value="#{matriculaConvenioMedicoBean.porPesquisa}" onchange="submit();">
-                            <f:selectItem itemValue="nome" itemLabel="Nome"/>
-                            <f:selectItem itemValue="cpf"  itemLabel="Documento"/>
-                        </h:selectOneMenu>
-                        
-                        <a4j:commandLink id="btnInicial" action="#{matriculaConvenioMedicoBean.acaoPesquisaInicial}" value="Inicial" styleClass="idNovo iLink" render="tbl"/>
-                        <a4j:commandLink id="btnParcial" action="#{matriculaConvenioMedicoBean.acaoPesquisaParcial}" value="Parcial" styleClass="idNovo iLink" render="tbl"/>
-                        
-                        <br />
-                        <div style="overflow:auto; height:380px;">
-                            <rich:panel>
-                                <rich:dataTable value="#{matriculaConvenioMedicoBean.listaConvenio}" var="linha" iterationStatusVar="it" style="width:100%" id="tbl">
-                                    <rich:column style="text-align: center;">
-                                        <f:facet name="header">
-                                            <h:outputText value="#"/>
-                                        </f:facet>
-                                        <h:outputText value="#{it.index}" />
-                                    </rich:column>                                    
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="ID"/>
-                                        </f:facet>
-                                        <h:commandLink action="#{matriculaConvenioMedicoBean.editar}" value="#{linha.id}" styleClass="iLink">
-                                            <a4j:param value="#{it.index}" assignTo="#{matriculaConvenioMedicoBean.idIndex}"/>
-                                        </h:commandLink>
-                                    </rich:column>
-                                    
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Documento"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.servicoPessoa.pessoa.documento}"/>
-                                    </rich:column>
+            <h:form id="form_pesquisa_cm">
+                <p:panel styleClass="wrapper no-border">
+                    <h:outputText value="Pesquisa Convênio Médico" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                        <h:panelGrid columns="8">
+                            <p:outputLabel value="Pesquisar: "/>
+                            <p:inputMask value="#{matriculaConvenioMedicoBean.descPesquisa}" rendered="#{matriculaConvenioMedicoBean.porPesquisa.equals('cpf')}" mask="999.999.999-99">
+                                <p:ajax event="blur" update="@this" />
+                            </p:inputMask>
+                            <p:inputText value="#{matriculaConvenioMedicoBean.descPesquisa}" rendered="#{matriculaConvenioMedicoBean.porPesquisa.equals('nome')}">
+                                <p:ajax event="blur" update="@this" />
+                            </p:inputText>
+                            <p:outputLabel value="Por: "/>
+                            <p:selectOneMenu value="#{matriculaConvenioMedicoBean.porPesquisa}">
+                                <p:ajax event="change" update="@this, :form_pesquisa_cm:" listener="#{matriculaConvenioMedicoBean.listaConvenio.clear()}"/>
+                                <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                                <f:selectItem itemValue="cpf"  itemLabel="Documento"/>
+                            </p:selectOneMenu>
+                            <p:commandButton id="idInicial" value="Inicial">
+                                <p:ajax listener="#{matriculaConvenioMedicoBean.acaoPesquisaInicial}" update=":form_pesquisa_cm:"/>
+                            </p:commandButton>
+                            <p:commandButton id="idParcial" value="Parcial">
+                                <p:ajax listener="#{matriculaConvenioMedicoBean.acaoPesquisaParcial}" update=":form_pesquisa_cm:"/>
+                            </p:commandButton>
+                        </h:panelGrid>   
+                    </p:panel>
+                </p:panel>
+                <p:panel id="i_tbl" styleClass="no-border">
+                    <p:dataTable value="#{matriculaConvenioMedicoBean.listaConvenio}" var="convenioMedico" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
+                        <p:column headerText="ID" width="25" styleClass="text-center">
+                            <p:commandLink action="#{matriculaConvenioMedicoBean.edit(convenioMedico)}" value="#{convenioMedico.id}"  />
+                        </p:column>
+                        <p:column headerText="Documento" width="60" styleClass="text-center">
+                            <p:commandLink action="#{matriculaConvenioMedicoBean.edit(convenioMedico)}" value="#{convenioMedico.servicoPessoa.pessoa.documento}"  />
+                        </p:column>
+                        <p:column headerText="Nome" styleClass="text-center">
+                            <h:commandLink value="#{convenioMedico.servicoPessoa.pessoa.documento}"   />
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
 
-                                    <rich:column>
-                                        <f:facet name="header">
-                                            <h:outputText value="Nome"/>
-                                        </f:facet>
-                                        <h:outputText value="#{linha.servicoPessoa.pessoa.nome}"/>
-                                    </rich:column>
-                                </rich:dataTable>
-                            </rich:panel>
-                        </div>
-                    
-                    </div>
-                </center>
-            </h:form>
+            </h:form>                     
         </f:view>
     </h:body>
 </ui:composition>
