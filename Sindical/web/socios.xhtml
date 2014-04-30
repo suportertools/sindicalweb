@@ -238,7 +238,7 @@
                                         </h:column>
                                     </h:panelGrid>
                                     <div style="overflow-x: auto; height: 200px;  position: absolute; z-index: 99999">
-                                        <rich:dataGrid value="#{sociosBean.listaFisica}" id="tblFisica" var="linha" style="position: relative; margin-left: 130px;">
+                                        <rich:dataGrid value="#{sociosBean.listaFisica}" id="tblFisica" var="linha" style="position: relative; margin-left: 130px;" rendered="#{sociosBean.listaFisica.size() > 0}">
                                             <rich:column>
                                                 <a4j:commandLink value="#{linha.pessoa.nome}" action="#{sociosBean.editarDependente(linha)}" styleClass="iLink" render="idDtDependente,idNomeDep,idNasc,idSexo,idCpf,idRg,idEstadoCivil,idPai,idMae,idFoto,idPesquisa,tblFisica" />
                                             </rich:column>
