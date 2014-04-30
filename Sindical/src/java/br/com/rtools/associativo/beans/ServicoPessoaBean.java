@@ -149,12 +149,9 @@ public class ServicoPessoaBean implements Serializable {
             ServicosDB db = new ServicosDBToplink();
             RotinaDB dbr = new RotinaDBToplink();
             idRotina = ((Rotina) dbr.pesquisaPaginaRotina(getRefreshPagina())).getId();
-            List<Servicos> select = new ArrayList();
-            select = db.pesquisaTodos(idRotina);
+            List<Servicos> select = db.pesquisaTodos(idRotina);
             while (i < select.size()) {
-                listaServicos.add(new SelectItem(new Integer(i),
-                        (String) select.get(i).getDescricao(),
-                        Integer.toString(select.get(i).getId())));
+                listaServicos.add(new SelectItem(i, (String) select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
                 i++;
             }
         }
@@ -167,6 +164,9 @@ public class ServicoPessoaBean implements Serializable {
         FTipoDocumentoDB dbFTipo = new FTipoDocumentoDBToplink();
 
         // --------------------------------------------
+        if(getListaServicos().isEmpty()) {
+           return "Cadastrar serviços!";
+        }
         if (servico == null) {
             servicoPessoa.setServicos(dbServico.pesquisaCodigo(Integer.parseInt(getListaServicos().get(idServico).getDescription())));
         } else {
