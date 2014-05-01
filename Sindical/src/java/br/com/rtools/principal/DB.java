@@ -88,8 +88,8 @@ public class DB {
         } else if (cliente.equals("Rtools")) {
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
-            configuracao.setHost("192.168.1.60");
-            configuracao.setSenha("989899");
+            configuracao.setHost("192.168.1.102");
+            configuracao.setSenha("r#@tools");
         } else if (cliente.equals("NovaBase")) {
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
@@ -103,10 +103,12 @@ public class DB {
         } else {
             if (cliente.equals("Sindical")) {
                 cliente = "c_limeira_base";
-                //cliente = "n_base_local";
+                //cliente = "ComercioRP";
             }
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
+            //configuracao.setHost("192.168.1.102");
+            //configuracao.setSenha("r#@tools");
             configuracao.setHost("localhost");
             configuracao.setSenha("989899");
         }
