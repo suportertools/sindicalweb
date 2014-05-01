@@ -28,4 +28,6 @@ public interface FTipoDocumentoDB {
     public List<TipoPagamento> pesquisaTodosTipoPagamento();
 
     public List<TipoPagamento> pesquisaCodigoTipoPagamentoIDS(String ids);
+    
+    public List<FTipoDocumento> pesquisaCodigoTipoDocumentoIDS(String ids);
 }

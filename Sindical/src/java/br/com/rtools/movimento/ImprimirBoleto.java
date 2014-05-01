@@ -182,7 +182,7 @@ public class ImprimirBoleto {
             return listaAdd;
         }
     }
-
+    
     public byte[] imprimirBoleto(List<Movimento> lista, List<Float> listaValores, List<String> listaVencimentos, boolean imprimeVerso) { 
         int i = 0;
         String mensagemErroMovimento = "Movimento(s) sem mensagem: ";
@@ -507,6 +507,8 @@ public class ImprimirBoleto {
         }
         return arquivo;
     }
+    
+    
 
     public byte[] imprimirAcordo(List<Movimento> lista, Acordo acordo, Historico historico, boolean imprimir_pro) {
         try {

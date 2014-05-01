@@ -889,16 +889,19 @@ public class GerarMovimento extends DB {
         // 10
         // 0000022912
         try {
-            String numeroComposto = null;
-            if (movimento.get(0).getServicos().getId() == 1) {
-                //String documento = movimento.get(0).getPessoa().getDocumento().replace(".", "").replace("/", "").replace("-", "").substring(0, 12);
-                String documento = movimento.get(0).getDocumento();
-                documento = ("000000000000000").substring(0, 15 - documento.length()) + documento;
-                String d_pagamento = ("00000000").substring(0, 8 - pagamento.replace("/", "").length()) + pagamento.replace("/", "");
-                String v_pago = ("0000000000").substring(0, 10 - Moeda.converteR$Float(valorTotal).replace(".", "").replace(",", "").length()) + Moeda.converteR$Float(valorTotal).replace(".", "").replace(",", "");
-                numeroComposto = documento + d_pagamento + v_pago;
-            }
+            String numeroComposto = "";
+            if (movimento.get(0).getServicos() != null){
+                
+                if (movimento.get(0).getServicos().getId() == 1) {
+                    //String documento = movimento.get(0).getPessoa().getDocumento().replace(".", "").replace("/", "").replace("-", "").substring(0, 12);
+                    String documento = movimento.get(0).getDocumento();
+                    documento = ("000000000000000").substring(0, 15 - documento.length()) + documento;
+                    String d_pagamento = ("00000000").substring(0, 8 - pagamento.replace("/", "").length()) + pagamento.replace("/", "");
+                    String v_pago = ("0000000000").substring(0, 10 - Moeda.converteR$Float(valorTotal).replace(".", "").replace(",", "").length()) + Moeda.converteR$Float(valorTotal).replace(".", "").replace(",", "");
+                    numeroComposto = documento + d_pagamento + v_pago;
+                }
 
+            }
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             Baixa baixa = new Baixa();
             baixa.setUsuario(usuario);
@@ -912,35 +915,52 @@ public class GerarMovimento extends DB {
                 sv.desfazerTransacao();
                 return false;
             }
-            for (int i = 0; i < fp.size(); i++) {
-                fp.get(i).setBaixa(baixa);
-
-                float calc = Moeda.multiplicarValores(Moeda.divisaoValores(fp.get(i).getValor(), valorTotal), 100);
+            for (FormaPagamento fp1 : fp) {
+                fp1.setBaixa(baixa);
+                float calc = Moeda.multiplicarValores(Moeda.divisaoValores(fp1.getValor(), valorTotal), 100);
                 calc = Moeda.converteFloatR$Float(calc);
-                fp.get(i).setValorP(calc);
-
+                fp1.setValorP(calc);
                 ChequeRec ch = new ChequeRec();
-
-                if (fp.get(i).getChequeRec() != null) {
-                    ch.setAgencia(fp.get(i).getChequeRec().getAgencia());
-                    ch.setBanco(fp.get(i).getChequeRec().getBanco());
-                    ch.setCheque(fp.get(i).getChequeRec().getCheque());
-                    ch.setConta(fp.get(i).getChequeRec().getConta());
-                    ch.setEmissao(fp.get(i).getChequeRec().getEmissao());
-                    ch.setStatus(fp.get(i).getChequeRec().getStatus());
-                    ch.setVencimento(fp.get(i).getChequeRec().getVencimento());
-
+                if (fp1.getChequeRec() != null) {
+                    ch.setAgencia(fp1.getChequeRec().getAgencia());
+                    ch.setBanco(fp1.getChequeRec().getBanco());
+                    ch.setCheque(fp1.getChequeRec().getCheque());
+                    ch.setConta(fp1.getChequeRec().getConta());
+                    ch.setEmissao(fp1.getChequeRec().getEmissao());
+                    ch.setStatus(fp1.getChequeRec().getStatus());
+                    ch.setVencimento(fp1.getChequeRec().getVencimento());
                     if (!sv.inserirObjeto(ch)) {
                         sv.desfazerTransacao();
                         return false;
                     }
-                    fp.get(i).setChequeRec(ch);
+                    fp1.setChequeRec(ch);
                 }
-
-                if (!sv.inserirObjeto(fp.get(i))) {
+                ChequePag ch_p = new ChequePag();
+                if (fp1.getChequePag() != null) {
+                    ch_p.setCheque(fp1.getChequePag().getCheque());
+                    ch_p.setPlano5(fp1.getChequePag().getPlano5());
+                    ch_p.setStatus(fp1.getChequePag().getStatus());
+                    ch_p.setVencimento(fp1.getChequePag().getVencimento());
+                    
+                    if (!sv.inserirObjeto(ch_p)) {
+                        sv.desfazerTransacao();
+                        return false;
+                    }
+                    fp1.setChequePag(ch_p);
+                    
+                    ContaBanco cb = (ContaBanco) sv.pesquisaCodigo(ch_p.getPlano5().getContaBanco().getId(),  "ContaBanco");
+                    cb.setUCheque(cb.getUCheque()+1);
+                    if (!sv.alterarObjeto(cb)) {
+                        sv.desfazerTransacao();
+                        return false;
+                    }
+                }
+                
+                if (!sv.inserirObjeto(fp1)) {
                     sv.desfazerTransacao();
                     return false;
                 }
+                
             }
 
             for (int i = 0; i < movimento.size(); i++) {

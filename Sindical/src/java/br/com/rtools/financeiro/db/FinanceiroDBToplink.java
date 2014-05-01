@@ -8,6 +8,7 @@ import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaSaldo;
 import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.SubGrupoFinanceiro;
 import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Usuario;
@@ -278,7 +279,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List listaMovimentoCaixa(int id_caixa) {
+    public List listaMovimentoCaixa(int id_caixa, String es) {
         try {
             Query qry = getEntityManager().createNativeQuery("select distinct(tp.id), " +
                                                         "       m.ds_es, " +
@@ -297,7 +298,7 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
                                                         " inner join fin_tipo_pagamento tp on tp.id = f.id_tipo_pagamento " +
                                                         " inner join fin_caixa as cx on cx.id = b.id_caixa " +
                                                         " where b.id_caixa = "+id_caixa+" and b.id_fechamento_caixa is null " +
-                                                        "   and m.ds_es = 'E'");
+                                                        "   and m.ds_es = '"+es+"'");
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();
@@ -563,13 +564,14 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
     }
     
     @Override
-    public List<FormaPagamento> listaTransferenciaFormaPagamento(int id_fechamento_caixa, int id_caixa) {
+    public List<FormaPagamento> listaTransferenciaFormaPagamento(int id_fechamento_caixa, int id_caixa, String es) {
         try {
             Query qry = getEntityManager().createQuery(
                     "SELECT fp "
                   + "  FROM FormaPagamento fp "
                   + " WHERE fp.baixa.id IN ( "
-                  + "   SELECT b.id FROM Baixa b WHERE b.caixa.id = "+id_caixa+" AND b.fechamentoCaixa.id = "+id_fechamento_caixa
+                  + "   SELECT m.baixa.id FROM Movimento m WHERE m.baixa.caixa.id = "+id_caixa+" AND m.baixa.fechamentoCaixa.id = "+id_fechamento_caixa + " AND m.es = '"+es+"'"
+                  //+ "   SELECT b.id FROM Baixa b WHERE b.caixa.id = "+id_caixa+" AND b.fechamentoCaixa.id = "+id_fechamento_caixa
                   + " ) "
             );
             return qry.getResultList();
@@ -655,4 +657,65 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             return new ArrayList<Vector>();
         }
     }
+    
+    @Override
+    public List<SubGrupoFinanceiro> listaSubGrupo(int id_grupo){
+        try {
+            
+            Query qry = getEntityManager().createQuery(
+                    "SELECT sgf " +
+                    "  FROM SubGrupoFinanceiro sgf " +
+                    " WHERE sgf.grupoFinanceiro.id = " +id_grupo+
+                    " ORDER BY sgf.descricao "
+            );
+            return qry.getResultList();
+        }catch(Exception e){
+            return new ArrayList<SubGrupoFinanceiro>();
+        }   
+    }
+    
+    @Override
+    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data) {
+        
+        String text_qry = "";
+        String where = "";
+        if (!responsavel.isEmpty())
+            where = " WHERE UPPER(responsavel) like '%"+responsavel.toUpperCase()+"%'";
+        
+        if (!lote.isEmpty() && responsavel.isEmpty())
+            where += " WHERE id_lote_boleto = "+Integer.valueOf(lote);
+        else if (!lote.isEmpty())
+            where += " AND id_lote_boleto = "+Integer.valueOf(lote);
+            
+        if (!data.isEmpty()  && responsavel.isEmpty() && lote.isEmpty())
+            where += " WHERE processamento = '"+data+"'";
+        else if (!data.isEmpty())
+            where += " AND processamento = '"+data+"'";
+            
+        text_qry = "SELECT nr_ctr_boleto, id_lote_boleto, responsavel, boleto, to_char(vencimento,'dd/MM/yyyy') as vencimento, to_char(processamento,'dd/MM/yyyy') as processamento, sum(valor) as valor " +
+                   "  FROM soc_boletos_vw " + where +
+                   " GROUP BY nr_ctr_boleto, id_lote_boleto, responsavel, boleto, vencimento, processamento "+
+                  "  ORDER BY responsavel, vencimento desc";
+        
+        try {
+            Query qry = getEntityManager().createNativeQuery(text_qry);
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+        
+    }   
+    
+    @Override
+    public List<Vector> listaBoletoSocio(String nr_ctr_boleto) {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT * FROM soc_boletos_vw" +
+                    "  WHERE nr_ctr_boleto IN ('" + nr_ctr_boleto + "')"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }    
 }

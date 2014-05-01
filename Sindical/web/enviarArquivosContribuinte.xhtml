@@ -91,13 +91,14 @@
                                     <p:commandButton value="Todas Empresas" action="#{enviarArquivosBean.todasEmpresa()}" update="i_panel"/>
                                     <p:commandButton value="Adicionar à Lista" oncomplete="i_dlg_pesquisa.show()" update="i_panel"/>
                                     
-                                    <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContribuintes}" var="juridica" scrollHeight="250" emptyMessage="Nenhum contribuinte encontrado" selection="#{enviarArquivosBean.contribuinteSelecionado}"  rowKey="#{juridica.id}" >
+                                    <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContribuintes}" var="juridica" scrollHeight="250" rowIndexVar="index" emptyMessage="Nenhum contribuinte encontrado" selection="#{enviarArquivosBean.contribuinteSelecionado}"  rowKey="#{juridica.id}" >
                                         <p:ajax event="rowSelect" update=":form_relatorio_contribuintes:i_panel"/>
                                         <p:ajax event="rowSelectCheckbox" update=":form_relatorio_contribuintes:i_panel"/>
                                         <p:ajax event="rowUnselect" update=":form_relatorio_contribuintes:i_panel"/>
                                         <p:ajax event="rowUnselectCheckbox" update=":form_relatorio_contribuintes:i_panel"/>
                                         <p:ajax event="toggleSelect" update=":form_relatorio_contribuintes:i_panel"/>
                                         
+                                        <p:column headerText="" style="width: 30px">#{index+1}</p:column>
                                         <p:column selectionMode="multiple" width="20" styleClass="text-center"/>
                                         
                                         <p:column headerText="Documento">#{juridica.pessoa.documento}</p:column>
@@ -106,7 +107,7 @@
                                         <p:column headerText="E-mail"><h:outputText title="#{juridica.pessoa.email1}" value="#{juridica.pessoa.email1}"/> </p:column>
                                     </p:dataTable>
                                     <br /><br />
-                                    <h:outputLabel value="Total de empresas: #{enviarArquivosBean.listaContribuintes.size()} -  Itens selecionados: #{enviarArquivosBean.quantidadeAnexo}" style="font-size: 12pt!important; font-weight: bold; margin-top: 20px"/>
+                                    <h:outputLabel value="Total de Empresas: #{enviarArquivosBean.listaContribuintes.size()} -  Itens selecionados: #{enviarArquivosBean.quantidadeAnexo}" style="font-size: 12pt!important; font-weight: bold; margin-top: 20px"/>
                                 </p:panel>
                             </p:column>
                                         

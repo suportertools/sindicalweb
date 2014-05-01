@@ -858,7 +858,8 @@ public class ConviteMovimentoBean implements Serializable {
                     (FStatus) dB.pesquisaCodigo(1, "FStatus"),
                     null,
                     false,
-                    null
+                    null,
+                    0
             );
             try {
                 String nrCtrBoletoResp = "";

@@ -1,31 +1,36 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.pessoa.Filial;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "FIN_CENTRO_CUSTO")
-@NamedQuery(name = "CentroCusto.pesquisaID", query = "select cc from CentroCusto cc where cc.id=:pid")
+@NamedQuery(name = "CentroCusto.pesquisaID", query = "select cc from CentroCusto cc where cc.id = :pid")
 public class CentroCusto implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
-    @OneToOne
-    private Plano5 plano5;
-    @Column(name = "NR_CENTRO_CUSTO", length = 10)
-    private int centroCusto;
+    @Column(name = "DS_DESCRICAO")
+    private String descricao;
+    @JoinColumn(name = "ID_CENTRO_CUSTO_CONTABIL", referencedColumnName = "ID")
+    @ManyToOne
+    private CentroCustoContabil centroCustoContabil;
+    @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
+    @ManyToOne
+    private Filial filial;
 
     public CentroCusto() {
         this.id = -1;
-        this.centroCusto = 0;
-        this.plano5 = new Plano5();
+        this.descricao = "";
+        this.centroCustoContabil = new CentroCustoContabil();
+        this.filial = new Filial();
     }
-
-    public CentroCusto(int id, int centroCusto, Plano5 plano5) {
+    
+    public CentroCusto(int id, String descricao, CentroCustoContabil centroCustoContabil, Filial filial) {
         this.id = id;
-        this.centroCusto = centroCusto;
-        this.plano5 = plano5;
+        this.descricao = descricao;
+        this.centroCustoContabil = centroCustoContabil;
+        this.filial = filial;
     }
 
     public int getId() {
@@ -36,19 +41,29 @@ public class CentroCusto implements java.io.Serializable {
         this.id = id;
     }
 
-    public Plano5 getPlano5() {
-        return plano5;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setPlano5(Plano5 plano5) {
-        this.plano5 = plano5;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public int getCentroCusto() {
-        return centroCusto;
+    public CentroCustoContabil getCentroCustoContabil() {
+        return centroCustoContabil;
     }
 
-    public void setCentroCusto(int centroCusto) {
-        this.centroCusto = centroCusto;
+    public void setCentroCustoContabil(CentroCustoContabil centroCustoContabil) {
+        this.centroCustoContabil = centroCustoContabil;
     }
+
+    public Filial getFilial() {
+        return filial;
+    }
+
+    public void setFilial(Filial filial) {
+        this.filial = filial;
+    }
+    
+    
 }

@@ -1190,7 +1190,7 @@ public class MatriculaEscolaBean implements Serializable {
                                 (CondicaoPagamento) salvarAcumuladoDB.find("CondicaoPagamento", idCondicaoPagto),
                                 (FStatus) salvarAcumuladoDB.find("FStatus", 1),
                                 null,
-                                matriculaEscola.isDescontoFolha(), null));
+                                matriculaEscola.isDescontoFolha(), null, 0));
                 salvarAcumuladoDB.abrirTransacao();
                 try {
 

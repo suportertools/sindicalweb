@@ -52,6 +52,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         return result;
     }
 
+    @Override
     public List listaCidadeDaEmpresa() {
         List result = new ArrayList();
         String textQuery = "";
@@ -82,6 +83,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         return result;
     }
 
+    @Override
     public List listaSPSocios() {
         List result = new ArrayList();
         try {
@@ -110,6 +112,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         return result;
     }
 
+    @Override
     public List listaSPEscola() {
         List result = new ArrayList();
         try {
@@ -124,6 +127,7 @@ public class RelatorioSociosDBToplink extends DB implements RelatorioSociosDB {
         return result;
     }
 
+    @Override
     public List listaSPConvenioMedico() {
         List result = new ArrayList();
         try {

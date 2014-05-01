@@ -269,6 +269,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 salvarAcumuladoDB.desfazerTransacao();
             }
         } else {
+            fisica.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaCodigo(1, "TipoDocumento"));
             Fisica f = db.pesquisaCodigo(fisica.getId());
             String antes = " De: ID - " + fisica.getId()
                     + " Nome: " + f.getPessoa().getNome() + " - "

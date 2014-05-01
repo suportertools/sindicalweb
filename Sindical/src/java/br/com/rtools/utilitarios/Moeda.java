@@ -74,7 +74,8 @@ public final class Moeda {
     }
 
     public static String converteR$(String $dolar) {
-        if (($dolar.equals(null)) || ($dolar.trim().equals(""))) {
+        //$dolar = $dolar.replaceAll("[^0-9]", "");
+        if ($dolar.equals(null) || $dolar.trim().equals("")) {
             return "0,00";
         }
         $dolar = Moeda.substituiVirgula($dolar);

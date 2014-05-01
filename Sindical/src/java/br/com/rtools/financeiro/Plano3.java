@@ -17,8 +17,10 @@ public class Plano3 implements java.io.Serializable {
     private String numero;
     @Column(name = "DS_CONTA", length = 200, nullable = false)
     private String conta;
-    @Column(name = "DS_ACESSO", length = 5)
+    @Column(name = "DS_ACESSO", length = 10)
     private String acesso;
+    @Column(name = "DS_CLASSIFICADOR", length = 20)
+    private String classificador;
 
     public Plano3() {
         this.id = -1;
@@ -26,14 +28,16 @@ public class Plano3 implements java.io.Serializable {
         this.numero = "";
         this.conta = "";
         this.acesso = "";
+        this.classificador = "";
     }
 
-    public Plano3(int id, Plano2 plano2, String numero, String conta, String acesso) {
+    public Plano3(int id, Plano2 plano2, String numero, String conta, String acesso, String classificador) {
         this.id = id;
         this.plano2 = plano2;
         this.numero = numero;
         this.conta = conta;
         this.acesso = acesso;
+        this.classificador = classificador;
     }
 
     public int getId() {
@@ -74,5 +78,13 @@ public class Plano3 implements java.io.Serializable {
 
     public void setAcesso(String acesso) {
         this.acesso = acesso;
+    }
+
+    public String getClassificador() {
+        return classificador;
+    }
+
+    public void setClassificador(String classificador) {
+        this.classificador = classificador;
     }
 }

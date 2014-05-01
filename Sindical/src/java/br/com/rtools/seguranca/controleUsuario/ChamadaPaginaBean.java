@@ -939,10 +939,21 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "produto");
     }
 
-    public synchronized String pedido() {
-        return metodoGenerico(2, "pedido");
+    public synchronized String grupoFinanceiro() {
+        GenericaSessao.remove("grupoFinanceiroBean");
+        return metodoGenerico(2, "grupoFinanceiro");
     }
-
+    
+    public synchronized String gerarBoleto() {
+        GenericaSessao.remove("gerarBoletoBean");
+        return metodoGenerico(2, "gerarBoleto");
+    }
+    
+    public synchronized String impressaoBoletoSocial() {
+        GenericaSessao.remove("impressaoBoletoSocialBean");
+        return metodoGenerico(2, "impressaoBoletoSocial");
+    }
+    
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1397,6 +1408,11 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("sisPessoaPesquisa");
         GenericaSessao.remove("usuarioPesquisa");
         return metodoGenerico(3, "relatorioEscola");
+    }
+    
+    public synchronized String relatorioChequesRecebidos() {
+        GenericaSessao.remove("relatorioChequesRecebidosBean");
+        return metodoGenerico(2, "relatorioChequesRecebidos");
     }
     //------------------------------------------------------------------------------------------------------------
     //------------------------------------------------------------------------------------------------------------

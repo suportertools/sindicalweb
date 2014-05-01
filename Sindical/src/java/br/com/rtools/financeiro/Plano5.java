@@ -23,8 +23,10 @@ public class Plano5 implements java.io.Serializable {
     @JoinColumn(name = "ID_PLANO5_CONTRA_PARTIDA", referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Plano5 plano5ContraPartida;
-    @Column(name = "DS_ACESSO", length = 5)
+    @Column(name = "DS_ACESSO", length = 10)
     private String acesso;
+    @Column(name = "DS_CLASSIFICADOR", length = 20)
+    private String classificador;
 
     public Plano5() {
         this.id = -1;
@@ -34,9 +36,10 @@ public class Plano5 implements java.io.Serializable {
         this.contaBanco = new ContaBanco();
         this.plano5ContraPartida = null;
         this.acesso = "";
+        this.classificador = "";
     }
 
-    public Plano5(int id, String numero, String conta, Plano4 plano4, ContaBanco contaBanco, Plano5 plano5ContraPartida, String acesso) {
+    public Plano5(int id, String numero, String conta, Plano4 plano4, ContaBanco contaBanco, Plano5 plano5ContraPartida, String acesso, String classificador) {
         this.id = id;
         this.plano4 = new Plano4();
         this.numero = numero;
@@ -44,6 +47,7 @@ public class Plano5 implements java.io.Serializable {
         this.contaBanco = contaBanco;
         this.plano5ContraPartida = plano5ContraPartida;
         this.acesso = acesso;
+        this.classificador = classificador;
     }
 
     public int getId() {
@@ -100,5 +104,13 @@ public class Plano5 implements java.io.Serializable {
 
     public void setAcesso(String acesso) {
         this.acesso = acesso;
+    }
+
+    public String getClassificador() {
+        return classificador;
+    }
+
+    public void setClassificador(String classificador) {
+        this.classificador = classificador;
     }
 }

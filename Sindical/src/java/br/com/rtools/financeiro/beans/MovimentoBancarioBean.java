@@ -121,7 +121,8 @@ public class MovimentoBancarioBean implements Serializable{
                     (FStatus) sv.pesquisaCodigo(1, "FStatus"), // 1 - EFETIVO // 8 - DEPOSITADO
                     null, // PESSOA SEM CADASTRO
                     false, // DESCONTO FOLHA
-                    null // MATRICULA SOCIO
+                    null, // MATRICULA SOCIO
+                    0     // DESCONTO
             );
     }
     

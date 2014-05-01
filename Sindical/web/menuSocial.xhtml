@@ -58,8 +58,10 @@
 
                                 <p:submenu label="Movimento" style="margin-right: 15px">
                                     <p:menuitem value="Movimentos a Receber"   action="#{chamadaPaginaBean.movimentosReceberSocial()}" />
-                                    <p:menuitem value="Geração Mensal"         action="#{chamadaPaginaBean.contribuicaoSocio}" />
-                                    <p:menuitem value="Geração Individual"     action="#{chamadaPaginaBean.contribuicaoPorSocio}" />
+                                    
+                                    <p:menuitem value="Geração Mensal"         action="#{chamadaPaginaBean.gerarBoleto()}" />
+                                    <p:menuitem value="Impressão Mensal"       action="#{chamadaPaginaBean.impressaoBoletoSocial()}" />
+                                    
                                     <p:menuitem value="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" />
                                     <p:menuitem value="Emissão de Guias"       action="#{chamadaPaginaBean.emissaoGuias}" />
                                     <p:menuitem value="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" />
@@ -74,7 +76,8 @@
                                 </p:submenu>                            
                             </p:menubar> 
                         </p:panel>
-                        
+                        <!-- <p:menuitem value="Geração Mensal"         action="# {chamadaPaginaBean.contribuicaoSocio}" /> -->
+                        <!-- <p:menuitem value="Geração Individual"     action="# {chamadaPaginaBean.contribuicaoPorSocio}" /> -->
                         <p:panel style="border: 0px; width: 1024px; height: 350px; margin: 0 auto">
                             
                         </p:panel>

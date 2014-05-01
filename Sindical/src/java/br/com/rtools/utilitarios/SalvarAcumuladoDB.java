@@ -93,6 +93,8 @@ public interface SalvarAcumuladoDB {
     public List listaObjetoGenericoOrdem(String tabela, String descricao);
 
     public boolean executeQuery(String textQuery);
+    
+    public boolean executeQueryObject(String textQuery);
 
     public boolean executeQueryVetor(String textQuery);
 

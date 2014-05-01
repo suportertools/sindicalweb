@@ -69,6 +69,8 @@ public class Lote implements java.io.Serializable {
     @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
     @ManyToOne(fetch = FetchType.EAGER)
     private MatriculaSocios matriculaSocios;
+    @Column(name = "NR_DESCONTO", length = 10)
+    private float desconto;
     
     public Lote() {
         this.id = -1;
@@ -91,9 +93,10 @@ public class Lote implements java.io.Serializable {
         this.pessoaSemCadastro = new PessoaSemCadastro();
         this.descontoFolha = false;
         this.matriculaSocios = null;
+        this.desconto = 0;
     }
 
-    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha, MatriculaSocios matriculaSocios) {
+    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha, MatriculaSocios matriculaSocios, float desconto) {
         this.id = id;
         this.rotina = rotina;
         this.pagRec = pagRec;
@@ -114,6 +117,7 @@ public class Lote implements java.io.Serializable {
         this.pessoaSemCadastro = pessoaSemCadastro;
         this.descontoFolha = descontoFolha;
         this.matriculaSocios = matriculaSocios;
+        this.desconto = desconto;
     }
 
     public int getId() {
@@ -290,5 +294,13 @@ public class Lote implements java.io.Serializable {
 
     public void setMatriculaSocios(MatriculaSocios matriculaSocios) {
         this.matriculaSocios = matriculaSocios;
+    }
+
+    public float getDesconto() {
+        return desconto;
+    }
+
+    public void setDesconto(float desconto) {
+        this.desconto = desconto;
     }
 }
