@@ -255,6 +255,7 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
                 result = qry.getResultList();
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }
@@ -337,6 +338,24 @@ public class SalvarAcumuladoDBToplink extends DB implements SalvarAcumuladoDB {
         try {
             int valor = getEntityManager().createNativeQuery(textQuery).executeUpdate();
             if (valor > 0) {
+                return true;
+            } else {
+                NovoLog log = new NovoLog();
+                log.novo("Novo Objeto", "Exception - Message: Erro ao executar: " + textQuery);
+                return false;
+            }
+        } catch (Exception e) {
+            NovoLog log = new NovoLog();
+            log.novo("Novo Objeto", "Exception - Message: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    @Override
+    public boolean executeQueryObject(String textQuery) {
+        try {
+            Object xvalor = getEntityManager().createNativeQuery(textQuery).getSingleResult();
+            if (xvalor != null) {
                 return true;
             } else {
                 NovoLog log = new NovoLog();

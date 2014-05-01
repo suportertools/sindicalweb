@@ -41,7 +41,10 @@ public class Servicos implements java.io.Serializable {
     private boolean eleicao;
     @Column(name = "IS_AGRUPA_BOLETO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean agrupaBoleto;
-
+    @JoinColumn(name = "ID_SUBGRUPO", referencedColumnName = "ID", nullable = true)
+    @ManyToOne
+    private SubGrupoFinanceiro subGrupoFinanceiro;
+    
     public Servicos() {
         this.id = -1;
         this.descricao = "";
@@ -57,6 +60,7 @@ public class Servicos implements java.io.Serializable {
         this.tabela = false;
         this.eleicao = false;
         this.agrupaBoleto = false;
+        this.subGrupoFinanceiro = new SubGrupoFinanceiro();
     }
 
     public Servicos(int id,
@@ -72,7 +76,8 @@ public class Servicos implements java.io.Serializable {
             boolean adm,
             boolean tabela,
             boolean eleicao,
-            boolean agrupaBoleto) {
+            boolean agrupaBoleto,
+            SubGrupoFinanceiro subGrupoFinanceiro) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -87,6 +92,7 @@ public class Servicos implements java.io.Serializable {
         this.tabela = tabela;
         this.eleicao = eleicao;
         this.agrupaBoleto = agrupaBoleto;
+        this.subGrupoFinanceiro = subGrupoFinanceiro;
     }
 
     public int getId() {
@@ -204,6 +210,14 @@ public class Servicos implements java.io.Serializable {
     @Override
     public String toString() {
         return "Servicos{" + "id=" + id + ", descricao=" + descricao + ", filial=" + filial + ", plano5=" + plano5 + ", departamento=" + departamento + ", validade=" + validade + ", codigo=" + codigo + ", situacao=" + situacao + ", debito=" + debito + ", alterarValor=" + alterarValor + ", adm=" + adm + ", tabela=" + tabela + ", eleicao=" + eleicao + ", agrupaBoleto=" + agrupaBoleto + '}';
+    }
+
+    public SubGrupoFinanceiro getSubGrupoFinanceiro() {
+        return subGrupoFinanceiro;
+    }
+
+    public void setSubGrupoFinanceiro(SubGrupoFinanceiro subGrupoFinanceiro) {
+        this.subGrupoFinanceiro = subGrupoFinanceiro;
     }
 
 }

@@ -50,8 +50,10 @@ public class CaixaFechadoBean implements Serializable{
         
         Caixa caixa = (Caixa)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) ,"Caixa"));
         FinanceiroDB db = new FinanceiroDBToplink();
-        List<FormaPagamento> lista_fp = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId());
+        List<FormaPagamento> lista_fp_entrada = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId(), "E");
+        List<FormaPagamento> lista_fp_saida = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId(), "S");
         float transferencia_entrada = 0, transferencia_saida = 0, dinheiro_baixa = 0, cheque = 0, cheque_pre = 0, cartao_cre = 0, cartao_deb = 0, saldo_atual = 0;
+        float dinheiro_pagamento = 0;
         Collection lista = new ArrayList();
         List<DataObject> lista_cheque = new ArrayList();
         
@@ -71,26 +73,45 @@ public class CaixaFechadoBean implements Serializable{
             transferencia_saida = Moeda.somaValores(transferencia_saida, lSaida.get(i).getValor());
         }        
         
-        for (int i = 0; i < lista_fp.size(); i++){
-            switch (lista_fp.get(i).getTipoPagamento().getId()){
+        for (int i = 0; i < lista_fp_entrada.size(); i++){
+            switch (lista_fp_entrada.get(i).getTipoPagamento().getId()){
                 case 3:
-                    dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp.get(i).getValor());
+                    dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp_entrada.get(i).getValor());
                     break;
                 case 4:
-                    cheque = Moeda.somaValores(cheque, lista_fp.get(i).getValor());
-                    lista_cheque.add(new DataObject(lista_fp.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp.get(i).getValor())));
+                    cheque = Moeda.somaValores(cheque, lista_fp_entrada.get(i).getValor());
+                    lista_cheque.add(new DataObject(lista_fp_entrada.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp_entrada.get(i).getValor())));
                     break;
                 case 5:
-                    cheque_pre = Moeda.somaValores(cheque_pre, lista_fp.get(i).getValor());
+                    cheque_pre = Moeda.somaValores(cheque_pre, lista_fp_entrada.get(i).getValor());
+                    lista_cheque.add(new DataObject(lista_fp_entrada.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp_entrada.get(i).getValor())));
                     break;
                 case 6:
-                    cartao_cre = Moeda.somaValores(cartao_cre, lista_fp.get(i).getValor());
+                    cartao_cre = Moeda.somaValores(cartao_cre, lista_fp_entrada.get(i).getValor());
                     break;
                 case 7:
-                    cartao_deb = Moeda.somaValores(cartao_deb, lista_fp.get(i).getValor());
+                    cartao_deb = Moeda.somaValores(cartao_deb, lista_fp_entrada.get(i).getValor());
                     break;
             }
         }
+        
+        for (int i = 0; i < lista_fp_saida.size(); i++) {
+            switch (lista_fp_saida.get(i).getTipoPagamento().getId()) {
+                case 3:
+                    dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    //dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    break;
+                case 4:
+                    dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    //cheque = Moeda.somaValores(cheque, lista_fp_saida.get(i).getValor());
+                    //lista_cheque.add(new DataObject(lista_fp_saida.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp_saida.get(i).getValor())));
+                    break;
+                case 5:
+                    dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    //cheque_pre = Moeda.somaValores(cheque_pre, lista_fp_saida.get(i).getValor());
+                    break;
+            }
+        }        
         
         String status = "VALOR BATIDO";
         float soma = 0;
@@ -127,7 +148,7 @@ public class CaixaFechadoBean implements Serializable{
                         Moeda.converteR$Float(cartao_deb),
                         Moeda.converteR$Float(transferencia_entrada),
                         Moeda.converteR$Float(transferencia_saida),
-                        Moeda.converteR$Float(0),
+                        Moeda.converteR$Float(dinheiro_pagamento),
                         status,
                         cr.getAgencia() + " - " + cr.getConta() + " " + cr.getBanco(),
                         cr.getCheque() +" - " + cr.getVencimento() + " | R$ " + lista_cheque.get(i).getArgumento1()
@@ -149,7 +170,7 @@ public class CaixaFechadoBean implements Serializable{
                     Moeda.converteR$Float(cartao_deb),
                     Moeda.converteR$Float(transferencia_entrada),
                     Moeda.converteR$Float(transferencia_saida),
-                    Moeda.converteR$Float(0),
+                    Moeda.converteR$Float(dinheiro_pagamento),
                     status,
                     null,
                     null
@@ -233,19 +254,29 @@ public class CaixaFechadoBean implements Serializable{
         FinanceiroDB db = new FinanceiroDBToplink();
         Caixa caixa = (Caixa)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()) ,"Caixa"));
         List<TransferenciaCaixa> lista_tc = db.listaTransferenciaDinheiro(fechamentoCaixa.getId(), caixa.getId());
-        List<FormaPagamento> lista_fp = db.listaTransferenciaFormaPagamento(fechamentoCaixa.getId(), caixa.getId());
+        List<FormaPagamento> lista_fp_entrada = db.listaTransferenciaFormaPagamento(fechamentoCaixa.getId(), caixa.getId(), "E");
+        List<FormaPagamento> lista_fp_saida = db.listaTransferenciaFormaPagamento(fechamentoCaixa.getId(), caixa.getId(), "S");
         
         float dinheiro_transferencia = 0, dinheiro_baixa = 0, outros = 0, saldo_atual = 0;
+        float dinheiro_pagamento = 0, outros_pagamento = 0;
         
         for (int i = 0; i < lista_tc.size(); i++){
             dinheiro_transferencia = Moeda.somaValores(dinheiro_transferencia, lista_tc.get(i).getValor());
         }
         
-        for (int i = 0; i < lista_fp.size(); i++){
-            if (lista_fp.get(i).getTipoPagamento().getId() == 3){
-                dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp.get(i).getValor());
+        for (int i = 0; i < lista_fp_entrada.size(); i++){
+            if (lista_fp_entrada.get(i).getTipoPagamento().getId() == 3){
+                dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp_entrada.get(i).getValor());
             }else{
-                outros = Moeda.somaValores(outros, lista_fp.get(i).getValor());
+                outros = Moeda.somaValores(outros, lista_fp_entrada.get(i).getValor());
+            }
+        }
+        
+        for (int i = 0; i < lista_fp_saida.size(); i++){
+            if (lista_fp_saida.get(i).getTipoPagamento().getId() == 3){
+                dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+            }else{
+                outros_pagamento = Moeda.somaValores(outros_pagamento, lista_fp_saida.get(i).getValor());
             }
         }
 
@@ -259,7 +290,8 @@ public class CaixaFechadoBean implements Serializable{
         float total_dinheiro = Moeda.somaValores(Moeda.somaValores(dinheiro_transferencia, dinheiro_baixa), valor_saldo_atual);
         
         float soma = Moeda.somaValores(total_dinheiro, outros);
-        
+        float soma_pagamento = Moeda.somaValores(dinheiro_pagamento, outros_pagamento);
+        //float valor_minimo = Moeda.subtracaoValores(outros, soma_pagamento);
         //if (fechamentoCaixa.getValorFechamento() != soma){
             
             //if (Moeda.converteUS$(valorTransferencia) > soma){

@@ -906,7 +906,7 @@ public class MatriculaAcademiaBean implements Serializable {
                                 (CondicaoPagamento) salvarAcumuladoDB.pesquisaCodigo(idCondicaoPagto, "CondicaoPagamento"),
                                 (FStatus) salvarAcumuladoDB.pesquisaCodigo(1, "FStatus"),
                                 null,
-                                matriculaAcademia.getServicoPessoa().isDescontoFolha(), null));
+                                matriculaAcademia.getServicoPessoa().isDescontoFolha(), null, 0));
                 salvarAcumuladoDB.abrirTransacao();
                 try {
 

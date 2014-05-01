@@ -60,7 +60,7 @@ public class ContaBancoDBToplink extends DB implements ContaBancoDB {
     @Override
     public List pesquisaTodos() {
         try {
-            Query qry = getEntityManager().createQuery("select cb from ContaBanco cb ");
+            Query qry = getEntityManager().createQuery("select cb from ContaBanco cb order by cb.banco.banco");
             return (qry.getResultList());
         } catch (Exception e) {
             return null;

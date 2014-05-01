@@ -59,7 +59,7 @@ public class Movimento implements Serializable {
     private Pessoa beneficiario;
     @Column(name = "DS_DOCUMENTO", length = 100)
     private String documento;
-    @Column(name = "NR_CTR_BOLETO", length = 20)
+    @Column(name = "NR_CTR_BOLETO", length = 30)
     private String nrCtrBoleto;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_VENCIMENTO_ORIGINAL")

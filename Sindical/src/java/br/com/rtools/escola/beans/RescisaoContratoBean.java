@@ -343,7 +343,8 @@ public class RescisaoContratoBean implements Serializable {
                     lote.getStatus(),
                     null,
                     lote.isDescontoFolha(),
-                    null);
+                    null,
+                    0);
 
             if (!sadb.inserirObjeto(l)) {
                 sadb.desfazerTransacao();

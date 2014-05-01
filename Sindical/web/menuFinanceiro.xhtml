@@ -54,6 +54,7 @@
                                         <p:menuitem value="Tipo de Serviço"     action="#{chamadaPaginaBean.tipoServico}" />
                                         <p:menuitem value="Bloqueio Serviços"   action="#{chamadaPaginaBean.bloqueioServicos}" />
                                         <p:menuitem value="Serviço Rotina"      action="#{chamadaPaginaBean.servicoRotina}" />
+                                        <p:menuitem value="Grupo Financeiro"    action="#{chamadaPaginaBean.grupoFinanceiro()}" />
                                     </p:submenu>
                                     <p:submenu label="Produtos">
                                         <p:menuitem value="Produto"             action="#{chamadaPaginaBean.pagina('produto')}" />
@@ -80,6 +81,7 @@
                                 </p:submenu>
 
                                 <p:submenu label="Relatórios" icon="ui-icon-document" style="margin-right: 15px">
+                                    <p:menuitem value="Cheques Recebidos" action="#{chamadaPaginaBean.relatorioChequesRecebidos()}"/>
                                     <p:menuitem value="Relatórios" />
                                 </p:submenu>
                             </p:menubar>

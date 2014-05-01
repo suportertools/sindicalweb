@@ -8,8 +8,21 @@
 
     <h:head>
         <title>Serviços</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>
     </h:head>
     <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
         <f:subview id="header">
             <ui:include src="templatePrime.xhtml"/>
         </f:subview>
@@ -34,8 +47,20 @@
                                         <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPlano}" value="Conta Contábil" id="id_pesquisa_plano"/>
                                         <p:column>
                                             <p:outputLabel value="Pesquisar conta contábil" for="id_pesquisa_plano" rendered="#{servicosBean.servicos.plano5.id == -1}" style="border-bottom: 1px dashed #888"/>
-                                            <p:outputLabel value="Conta Contábil: #{servicosBean.servicos.plano5.numero} - #{servicosBean.servicos.plano5.conta}" title="#{servicosBean.servicos.plano5.conta}" rendered="#{servicosBean.servicos.plano5.id != -1}"/>
+                                            <p:outputLabel value="Conta Contábil: #{servicosBean.servicos.plano5.numero} - #{servicosBean.servicos.plano5.conta}" title="#{servicosBean.servicos.plano5.conta}" rendered="#{servicosBean.servicos.plano5.id != -1}"/><br />
                                         </p:column>
+                                        
+                                        <p:outputLabel value="Grupo Financeiro:" rendered="#{servicosBean.servicos.plano5.id != -1}"/>
+                                        <p:selectOneMenu value="#{servicosBean.idGrupo}" style="margin-right: 10px; width: 480px" rendered="#{servicosBean.servicos.plano5.id != -1}">
+                                            <p:ajax event="change" listener="#{servicosBean.listaSubGrupo.clear()}" update="i_subgrupo"/>
+                                            <f:selectItems value="#{servicosBean.listaGrupo}"/>
+                                        </p:selectOneMenu>
+                                        
+                                        <p:outputLabel value="Sub Grupo Financeiro:" rendered="#{servicosBean.servicos.plano5.id != -1}"/>
+                                        <p:selectOneMenu id="i_subgrupo" value="#{servicosBean.idSubGrupo}" style="margin-right: 10px; width: 480px" rendered="#{servicosBean.servicos.plano5.id != -1}">
+                                            <f:selectItems value="#{servicosBean.listaSubGrupo}"/>
+                                        </p:selectOneMenu>
+                                        
                                         <p:outputLabel value="Dias validos da guia:" for="idDiaValido"/>
                                         <p:spinner id="idDiaValido" size="5" value="#{servicosBean.servicos.validade}" min="0" max="90" />
                                         <p:outputLabel value="Código: " for="idCodigo"/>
@@ -173,5 +198,15 @@
                 </h:form>
             </p:panel>
         </f:view>
+                                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>            
     </h:body>
 </ui:composition>

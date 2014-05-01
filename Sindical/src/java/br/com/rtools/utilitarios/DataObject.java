@@ -1,6 +1,8 @@
 package br.com.rtools.utilitarios;
 
-public class DataObject {
+import java.io.Serializable;
+
+public class DataObject implements Serializable{
 
     private Object argumento0;
     private Object argumento1;

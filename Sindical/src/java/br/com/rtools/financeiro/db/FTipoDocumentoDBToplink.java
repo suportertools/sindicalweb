@@ -134,4 +134,19 @@ public class FTipoDocumentoDBToplink extends DB implements FTipoDocumentoDB {
         }
         return result;
     }
+    
+    @Override
+    public List<FTipoDocumento> pesquisaCodigoTipoDocumentoIDS(String ids) {
+        List result = new ArrayList();
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  select tp"
+                    + "  from FTipoDocumento tp "
+                    + " where tp.id in (" + ids + ")"
+                    + " order by tp.id");
+            result = qry.getResultList();
+        } catch (Exception e) {
+        }
+        return result;
+    }
 }

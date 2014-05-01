@@ -7,6 +7,7 @@ import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Cartao;
+import br.com.rtools.financeiro.ChequePag;
 import br.com.rtools.financeiro.ChequeRec;
 import br.com.rtools.financeiro.ContaBanco;
 import br.com.rtools.financeiro.FStatus;
@@ -19,13 +20,13 @@ import br.com.rtools.financeiro.db.ContaRotinaDB;
 import br.com.rtools.financeiro.db.ContaRotinaDBToplink;
 import br.com.rtools.financeiro.db.FTipoDocumentoDB;
 import br.com.rtools.financeiro.db.FTipoDocumentoDBToplink;
+import br.com.rtools.financeiro.db.LancamentoFinanceiroDB;
+import br.com.rtools.financeiro.db.LancamentoFinanceiroDBToplink;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
 import br.com.rtools.impressao.ParametroRecibo;
-//import br.com.rtools.financeiro.db.ServicoContaCobrancaDB;
-//import br.com.rtools.financeiro.db.ServicoContaCobrancaDBToplink;
 import br.com.rtools.movimento.GerarMovimento;
 import br.com.rtools.movimento.ImprimirBoleto;
 import br.com.rtools.pessoa.Filial;
@@ -44,6 +45,8 @@ import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -56,7 +59,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-//import java.util.Vector;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -77,15 +79,20 @@ public class BaixaGeralBean {
     private String vencimento = DataHoje.data();
     private String valor = "0";
     private String numero = "";
+    private String numeroChequePag = "";
     private String total = "0.00";
     private List<DataObject> lista = new ArrayList();
     private List<Movimento> listaMovimentos = new ArrayList();
     private List<SelectItem> listaCartao = new ArrayList();
     private List<SelectItem> listaBanco = new ArrayList();
+    private List<SelectItem> listaBancoSaida = new ArrayList();
+    //private List<SelectItem> listaContaPagamento = new ArrayList();
     private int idConta = 0;
     private int idTipoDoc = 0;
     private int idCartao = 0;
     private int idBanco = 0;
+    private int idBancoSaida = 0;
+    //private int idContaPagamento = 0;
     private Rotina rotina = null;
     private Modulo modulo = new Modulo();
     private boolean desHabilitaConta = false;
@@ -99,6 +106,7 @@ public class BaixaGeralBean {
     private String tipo = "";
     private String banco = "";
     private String taxa = "0";
+    private String es = "";
     private ChequeRec chequeRec = new ChequeRec();
     private List<FormaPagamento> lfp = new ArrayList();
 
@@ -108,6 +116,35 @@ public class BaixaGeralBean {
         if (tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7){
             listaCartao.clear();
             idCartao = 0;
+        }
+    }
+    
+    public void alteraNumeroChequeConta(){
+        LancamentoFinanceiroDB db = new LancamentoFinanceiroDBToplink();
+        Plano5DB dbx = new Plano5DBToplink();
+        Plano5 pl = dbx.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()));
+        
+        ChequePag ch = db.pesquisaChequeConta(numeroChequePag, pl.getId());
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        ContaBanco cb = (ContaBanco)sv.pesquisaCodigo(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()), "ContaBanco");
+        if (ch != null){
+            GenericaMensagem.warn("Erro", "O cheque "+numeroChequePag+" já existe");
+            numeroChequePag = String.valueOf(cb.getUCheque()+1);
+        }
+        
+        if (Integer.valueOf(numeroChequePag) == cb.getUCheque()){
+            numeroChequePag = String.valueOf(cb.getUCheque()+1);
+            return;
+        }   
+        
+        if (Integer.valueOf(numeroChequePag) == cb.getUCheque()+1){
+            return;
+        }   
+        
+        if ((Integer.valueOf(numeroChequePag)+1) > (cb.getUCheque()+1)){
+            GenericaMensagem.warn("Erro", "Número "+(Integer.valueOf(numeroChequePag))+" maior que permitido!");
+            numeroChequePag = String.valueOf(cb.getUCheque()+1);
         }
     }
     
@@ -164,7 +201,7 @@ public class BaixaGeralBean {
                             String.valueOf(listaMovimentos.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
                             String.valueOf(listaMovimentos.get(i).getBaixa().getId()), // ID_BAIXA
                             listaMovimentos.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
-                            listaMovimentos.get(i).getServicos().getDescricao(), // SERVICO
+                            listaMovimentos.get(i).getServicos() != null ? listaMovimentos.get(i).getServicos().getDescricao() : "", // SERVICO
                             listaMovimentos.get(i).getVencimento(), // VENCIMENTO
                             new BigDecimal(listaMovimentos.get(i).getValorBaixa()), // VALOR BAIXA
                             listaMovimentos.get(i).getBaixa().getUsuario().getLogin(), 
@@ -211,10 +248,16 @@ public class BaixaGeralBean {
         if (retorna) {
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("baixaBoleto")) {
+                GenericaSessao.put("linkClicado", true);
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
             } else if (url.equals("movimentosReceberSocial")){
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
+                GenericaSessao.put("linkClicado", true);
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).movimentosReceberSocialBaixa();
+            }else if(url.equals("lancamentoFinanceiro")){
+                GenericaSessao.put("linkClicado", true);
+                return "lancamentoFinanceiro";
+                //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).lancamentoFinanceiro();
             }else{
                 return null;
             }
@@ -246,25 +289,52 @@ public class BaixaGeralBean {
             } else {
                 valorF = 0;
             }
-
-            //TipoPagamento tipo = null;
             TipoPagamento tipoPagamento = tipoDocDB.pesquisaCodigoTipoPagamento(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()));
 
             // CHEQUE
             if (tipoPagamento.getId() == 4 || tipoPagamento.getId() == 5) {
-                ChequeRec ch = new ChequeRec();
-                ch.setAgencia(chequeRec.getAgencia());
-                ch.setBanco(chequeRec.getBanco());
-                ch.setCheque(numero);
-                ch.setConta(chequeRec.getConta());
-                ch.setEmissao(quitacao);
-                if (tipo.equals("caixa"))
-                    ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
-                else
-                    ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(8, "FStatus"));
+                if (!getEs().isEmpty() && getEs().equals("S")){
+                    Plano5DB db = new Plano5DBToplink();
+                    Plano5 pl = db.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()));
                     
-                ch.setVencimento(vencimento);
-                lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, ch, null));
+                    for (int i = 0; i < lista.size(); i++){
+                        if (lista.get(i).getArgumento4() != null){
+                            if (((ChequePag)lista.get(i).getArgumento4()).getPlano5().getId() == pl.getId()){
+                                GenericaMensagem.error("Erro", "Esta CONTA já foi adicionada!");
+                                return;
+                            }
+                        }
+                        listaBancoSaida.get(i).setValue(i);
+                    }
+                    
+                    ChequePag ch_p = new ChequePag();
+                    ch_p.setCheque(numeroChequePag);
+                    ch_p.setPlano5(pl);
+                    ch_p.setVencimento(vencimento);
+                    
+                    if (tipo.equals("caixa"))
+                        ch_p.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
+                    else
+                        ch_p.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(8, "FStatus"));
+                    
+                    lista.add(new DataObject(vencimento, valor, numeroChequePag, tipoPagamento, ch_p, pl)); 
+                    
+                    
+                }else{
+                    ChequeRec ch = new ChequeRec();
+                    ch.setAgencia(chequeRec.getAgencia());
+                    ch.setBanco(chequeRec.getBanco());
+                    ch.setCheque(numero);
+                    ch.setConta(chequeRec.getConta());
+                    ch.setEmissao(quitacao);
+                    if (tipo.equals("caixa"))
+                        ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
+                    else
+                        ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(8, "FStatus"));
+
+                    ch.setVencimento(vencimento);
+                    lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, ch, null));
+                }
             } else if (tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7) {
             // CARTAO
                 lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, null, (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.valueOf(listaCartao.get(idCartao).getDescription()), "Cartao")));
@@ -307,7 +377,7 @@ public class BaixaGeralBean {
         }
         for (int i = 0; i < select.size(); i++) {
             conta.add(new SelectItem(
-                    new Integer(i),
+                    i,
                     (String) ((Plano5) select.get(i)).getConta(),
                     Integer.toString(((Plano5) select.get(i)).getId())));
         }
@@ -318,7 +388,12 @@ public class BaixaGeralBean {
         FTipoDocumentoDB db = new FTipoDocumentoDBToplink();
         List<SelectItem> tipoDoc = new ArrayList<SelectItem>();
         //select = db.pesquisaTodosTipoPagamento();
-        List select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,6,7,8,9,10,11");
+        List select = new ArrayList();
+        if (!getEs().isEmpty() && getEs().equals("S"))
+            select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,8,9,10");
+        else
+            select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,6,7,8,9,10,11");
+            
         for (int i = 0; i < select.size(); i++) {
             tipoDoc.add(new SelectItem(new Integer(i), ((TipoPagamento) select.get(i)).getDescricao(),
                     Integer.toString(((TipoPagamento) select.get(i)).getId())));
@@ -393,7 +468,10 @@ public class BaixaGeralBean {
             float valor = Float.parseFloat(String.valueOf(lista.get(i).getArgumento1()));
             // CHEQUE
             if (((TipoPagamento) lista.get(i).getArgumento3()).getId() == 4 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 5) {
-                lfp.add(new FormaPagamento(-1, null, (ChequeRec) lista.get(i).getArgumento4(), null, 0, valor, filial, plano5, null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
+                if (!getEs().isEmpty() && getEs().equals("S"))
+                    lfp.add(new FormaPagamento(-1, null, null, (ChequePag) lista.get(i).getArgumento4(), 0, valor, filial, (Plano5)lista.get(i).getArgumento5(), null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
+                else
+                    lfp.add(new FormaPagamento(-1, null, (ChequeRec) lista.get(i).getArgumento4(), null, 0, valor, filial, plano5, null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
             } else if (((TipoPagamento) lista.get(i).getArgumento3()).getId() == 6 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 7) {
             // CARTAO    
                 Cartao cartao = ((Cartao) lista.get(i).getArgumento5());
@@ -426,8 +504,9 @@ public class BaixaGeralBean {
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
             }else if (url.equals("emissaoGuias") || url.equals("menuPrincipal")){
                 ((EmissaoGuiasBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("emissaoGuiasBean")).atualizarHistorico();
-            }else{
-                ((MovimentosReceberJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosReceberBean")).getListaMovimentos().clear();
+            }else if(url.equals("lancamentoFinanceiro")){
+                ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcela().clear();
+                ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcelaSelecionada().clear();
             }
             retorna = true;
             mensagem = "Baixa realizada com sucesso!";
@@ -556,7 +635,7 @@ public class BaixaGeralBean {
         FTipoDocumentoDB tipoDocDB = new FTipoDocumentoDBToplink();
         //TipoPagamento tipo = null;
         TipoPagamento tipoPagamento = tipoDocDB.pesquisaCodigoTipoPagamento(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()));
-        if (tipoPagamento.getId() == 3 || tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7) {
+        if (tipoPagamento.getId() == 3 || tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7 || (!getEs().isEmpty() && getEs().equals("S"))) {
             desHabilitaNumero = true;
             numero = "";
         } else {
@@ -709,13 +788,13 @@ public class BaixaGeralBean {
             List<Cartao> result = sv.listaObjeto("Cartao");
             TipoPagamento tipoPagamento = (TipoPagamento)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()),"TipoPagamento");
             int conta = 0;
-            for (int i = 0; i < result.size(); i++){
-                String tipo = result.get(i).getDebitoCredito().equals("D") ? "Débito" : "Crédito";
-                if (tipoPagamento.getId() == 6 && result.get(i).getDebitoCredito().equals("C")){
-                    listaCartao.add(new SelectItem(new Integer(conta), result.get(i).getDescricao() + " - " + tipo, Integer.toString(result.get(i).getId())));
+            for (Cartao result1 : result) {
+                String tipox = result1.getDebitoCredito().equals("D") ? "Débito" : "Crédito";
+                if (tipoPagamento.getId() == 6 && result1.getDebitoCredito().equals("C")) {
+                    listaCartao.add(new SelectItem(conta, result1.getDescricao() + " - " + tipox, Integer.toString(result1.getId())));
                     conta++;
-                }else if (tipoPagamento.getId() == 7 && result.get(i).getDebitoCredito().equals("D")){
-                    listaCartao.add(new SelectItem(new Integer(conta), result.get(i).getDescricao() + " - " + tipo, Integer.toString(result.get(i).getId())));
+                } else if (tipoPagamento.getId() == 7 && result1.getDebitoCredito().equals("D")) {
+                    listaCartao.add(new SelectItem(conta, result1.getDescricao() + " - " + tipox, Integer.toString(result1.getId())));
                     conta++;
                 }
             }
@@ -739,7 +818,7 @@ public class BaixaGeralBean {
         if (listaBanco.isEmpty()){
             List<ContaBanco> result = (new ContaBancoDBToplink()).pesquisaTodos();
             for (int i = 0; i < result.size(); i++){
-                listaBanco.add(new SelectItem(new Integer(i), result.get(i).getAgencia() + " " +result.get(i).getConta()+" - "+result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
+                listaBanco.add(new SelectItem(i, result.get(i).getAgencia() + " " +result.get(i).getConta()+" - "+result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
             }
         }
         return listaBanco;
@@ -755,5 +834,114 @@ public class BaixaGeralBean {
 
     public void setIdBanco(int idBanco) {
         this.idBanco = idBanco;
+    }
+
+    public String getEs() {
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("esMovimento") != null){
+            es = String.valueOf(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("esMovimento"));
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("esMovimento");
+        }
+        return es;
+    }
+
+    public void setEs(String es) {
+        this.es = es;
+    }
+
+//    public List<SelectItem> getListaContaPagamento() {
+//        if (listaContaPagamento.isEmpty()){
+//            if (!getEs().isEmpty() && getEs().equals("S")){
+//                LancamentoFinanceiroDB db = new LancamentoFinanceiroDBToplink();
+//                List<Plano5> result = db.listaComboPagamentoBaixa();
+//                if (!result.isEmpty()){
+//                    for (int i = 0; i < result.size(); i ++){
+//                        listaContaPagamento.add(new SelectItem(
+//                                i, 
+//                                result.get(i).getContaBanco().getBanco().getBanco()+ " " +result.get(i).getContaBanco().getAgencia()+ " / " +result.get(i).getConta(), 
+//                                String.valueOf(i))
+//                        );
+//                    }
+//                }else{
+//                    listaContaPagamento.add(new SelectItem(0, "Nenhuma Conta Encontrada", "0"));
+//                }
+//            }
+//        }
+//        return listaContaPagamento;
+//    }
+//
+//    public void setListaContaPagamento(List<SelectItem> listaContaPagamento) {
+//        this.listaContaPagamento = listaContaPagamento;
+//    }
+//
+//    public int getIdContaPagamento() {
+//        return idContaPagamento;
+//    }
+//
+//    public void setIdContaPagamento(int idContaPagamento) {
+//        this.idContaPagamento = idContaPagamento;
+//    }
+
+    public String getNumeroChequePag() {
+        return numeroChequePag;
+    }
+
+    public void setNumeroChequePag(String numeroChequePag) {
+        this.numeroChequePag = numeroChequePag;
+    }
+
+    public List<SelectItem> getListaBancoSaida() {
+        if (listaBancoSaida.isEmpty()){
+            List<ContaBanco> result = (new ContaBancoDBToplink()).pesquisaTodos();
+            for (int i = 0; i < result.size(); i++){
+                listaBancoSaida.add(new SelectItem(i, result.get(i).getAgencia() + " " +result.get(i).getConta()+" - "+result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
+            }
+        }
+        
+        if (!getEs().isEmpty() && getEs().equals("S")){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            
+            ContaBanco cb = (ContaBanco)sv.pesquisaCodigo(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()), "ContaBanco");
+            
+//            if (!lista.isEmpty()){
+//                for (DataObject dob : lista){
+//                    try{
+//                        Plano5DB db = new Plano5DBToplink();
+//                        
+//                        Plano5 pl = db.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()));
+//                        if (dob.getArgumento5() != null){
+//                            Plano5 plx = (Plano5)dob.getArgumento5();
+//                            
+//                            if (pl.getId() == plx.getId()){
+//                                GenericaMensagem.error("Erro", "Esta conta já foi adicionada!");
+//                                break;
+//                            }
+//                        }
+//                        
+//                        //ChequePag ch_p = ((ChequePag)dob.getArgumento5());
+//                        //numeroChequePag = String.valueOf(ch_p.getUCheque() + 1);
+//                        //if (){
+//                            
+//                        //}
+//                    }catch(Exception e){
+//                    }
+//                }
+//                numeroChequePag = String.valueOf(cb.getUCheque() + 1);
+//            }else{
+                numeroChequePag = String.valueOf(cb.getUCheque() + 1);
+//            }
+        }
+        return listaBancoSaida;
+    }
+
+    public void setListaBancoSaida(List<SelectItem> listaBancoSaida) {
+        this.listaBancoSaida = listaBancoSaida;
+    }
+
+    public int getIdBancoSaida() {
+        return idBancoSaida;
+    }
+
+    public void setIdBancoSaida(int idBancoSaida) {
+        this.idBancoSaida = idBancoSaida;
     }
 }

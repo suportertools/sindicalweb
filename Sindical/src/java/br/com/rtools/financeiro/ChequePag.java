@@ -26,23 +26,28 @@ public class ChequePag implements java.io.Serializable {
     @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID")
     @OneToOne
     private FStatus status;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DT_CANCELAMENTO")
+    private Date dtCancelamento;
 
     public ChequePag() {
         this.id = -1;
         this.cheque = "";
-        this.setEmissao(null);
-        this.setVencimento(null);
+        this.dtEmissao = DataHoje.dataHoje();
+        this.dtVencimento = null;
         this.plano5 = new Plano5();
         this.status = new FStatus();
+        this.dtCancelamento = null;
     }
 
-    public ChequePag(int id, String cheque, Date dtEmissao, Date dtVencimento, Plano5 plano5, FStatus status) {
+    public ChequePag(int id, String cheque, String emissao, String vencimento, Plano5 plano5, FStatus status, String cancelamento) {
         this.id = id;
         this.cheque = cheque;
-        this.dtEmissao = dtEmissao;
-        this.dtVencimento = dtVencimento;
+        this.setEmissao(emissao);
+        this.setVencimento(vencimento);
         this.plano5 = plano5;
         this.status = status;
+        this.setCancelamento(cancelamento);
     }
 
     public int getId() {
@@ -107,5 +112,13 @@ public class ChequePag implements java.io.Serializable {
 
     public void setStatus(FStatus status) {
         this.status = status;
+    }
+    
+    public String getCancelamento() {
+        return DataHoje.converteData(dtCancelamento);
+    }
+
+    public void setCancelamento(String cancelamento) {
+        this.dtCancelamento = DataHoje.converte(cancelamento);
     }
 }

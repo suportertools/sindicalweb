@@ -4,9 +4,11 @@ import br.com.rtools.associativo.Categoria;
 import br.com.rtools.associativo.CategoriaDesconto;
 import br.com.rtools.associativo.db.CategoriaDescontoDB;
 import br.com.rtools.associativo.db.CategoriaDescontoDBToplink;
+import br.com.rtools.financeiro.GrupoFinanceiro;
 import br.com.rtools.financeiro.Plano5;
 import br.com.rtools.financeiro.ServicoValor;
 import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.financeiro.SubGrupoFinanceiro;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
@@ -22,6 +24,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
@@ -44,6 +47,11 @@ public class ServicosBean implements Serializable {
     private float descontoCategoria = 0;
     private CategoriaDesconto categoriaDesconto = new CategoriaDesconto();
     private String textoBtnServico = "Adicionar";
+    
+    private List<SelectItem> listaGrupo = new ArrayList<SelectItem>();
+    private int idGrupo = 0;
+    private List<SelectItem> listaSubGrupo = new ArrayList<SelectItem>();
+    private int idSubGrupo = 0;
 //    private String tabViewTitle = "0";
 
     public String getDescPesquisa() {
@@ -102,6 +110,11 @@ public class ServicosBean implements Serializable {
         SalvarAcumuladoDB salvar = new SalvarAcumuladoDBToplink();
         try {
             salvar.abrirTransacao();
+            if (!listaSubGrupo.isEmpty())
+                servicos.setSubGrupoFinanceiro((SubGrupoFinanceiro)salvar.pesquisaCodigo(Integer.valueOf(listaSubGrupo.get(idSubGrupo).getDescription()), "SubGrupoFinanceiro"));
+            else
+                servicos.setSubGrupoFinanceiro(null);
+                
             if (servicos.getId() == -1) {
                 if (db.idServicos(servicos) == null) {
                     servicos.setDepartamento((Departamento) salvar.pesquisaCodigo(14, "Departamento"));
@@ -157,6 +170,25 @@ public class ServicosBean implements Serializable {
         valorf = "0";
         desconto = "0";
         taxa = "0";
+        
+        //List<SubGrupoFinanceiro> listax = (new SalvarAcumuladoDBToplink().listaObjeto("SubGrupoFinanceiro"));
+        if (servicos.getSubGrupoFinanceiro() != null && !listaSubGrupo.isEmpty()){
+            listaSubGrupo.clear();
+            for (int i = 0; i < listaGrupo.size(); i++){
+                //for(SubGrupoFinanceiro sgf : listax){
+                    if (Integer.valueOf(listaGrupo.get(i).getDescription()) ==  servicos.getSubGrupoFinanceiro().getGrupoFinanceiro().getId()){
+                        idGrupo = i;
+                    }
+                //}
+            }
+            
+            getListaSubGrupo();
+            for (int i = 0; i < listaSubGrupo.size(); i++){
+                if (Integer.valueOf(listaSubGrupo.get(i).getDescription()) == servicos.getSubGrupoFinanceiro().getId()){
+                    idSubGrupo = i;
+                }
+            }
+        }
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
             return "servicos";
         } else {
@@ -462,5 +494,67 @@ public class ServicosBean implements Serializable {
 //    public void setTabViewTitle(String tabViewTitle) {
 //        this.tabViewTitle = tabViewTitle;
 //    }
+
+    public List<SelectItem> getListaGrupo() {
+        if (listaGrupo.isEmpty()){
+            List<GrupoFinanceiro> result = new SalvarAcumuladoDBToplink().listaObjeto("GrupoFinanceiro");
+            
+            if (!result.isEmpty()){
+                for (int i = 0; i < result.size(); i++) {
+                    listaGrupo.add(new SelectItem(i,
+                            result.get(i).getDescricao() + " - " + result.get(i).getPlano5().getConta(),
+                            Integer.toString(result.get(i).getId()))
+                    );
+                }
+            }else{
+                listaGrupo.add(new SelectItem(0, "Nenhum Grupo Financeiro Adicionado", "0"));
+            }
+        }
+        return listaGrupo;
+    }
+
+    public void setListaGrupo(List<SelectItem> listaGrupo) {
+        this.listaGrupo = listaGrupo;
+    }
+
+    public int getIdGrupo() {
+        return idGrupo;
+    }
+
+    public void setIdGrupo(int idGrupo) {
+        this.idGrupo = idGrupo;
+    }
+
+    public List<SelectItem> getListaSubGrupo() {
+        if (listaSubGrupo.isEmpty()){
+            FinanceiroDB db = new FinanceiroDBToplink();
+            
+            List<SubGrupoFinanceiro> result = db.listaSubGrupo(Integer.valueOf(listaGrupo.get(idGrupo).getDescription()));
+            if (!result.isEmpty()){
+                for (int i = 0; i < result.size(); i++) {
+                    listaSubGrupo.add(new SelectItem(i,
+                            result.get(i).getDescricao(),
+                            Integer.toString(result.get(i).getId()))
+                    );
+                }
+            }else{
+                listaSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", "0"));
+            }
+            
+        }
+        return listaSubGrupo;
+    }
+
+    public void setListaSubGrupo(List<SelectItem> listaSubGrupo) {
+        this.listaSubGrupo = listaSubGrupo;
+    }
+
+    public int getIdSubGrupo() {
+        return idSubGrupo;
+    }
+
+    public void setIdSubGrupo(int idSubGrupo) {
+        this.idSubGrupo = idSubGrupo;
+    }
     
 }

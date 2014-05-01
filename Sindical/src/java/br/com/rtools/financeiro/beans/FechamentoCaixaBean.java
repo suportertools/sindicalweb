@@ -68,8 +68,10 @@ public final class FechamentoCaixaBean implements Serializable {
 
         Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
         FinanceiroDB db = new FinanceiroDBToplink();
-        List<FormaPagamento> lista_fp = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId());
+        List<FormaPagamento> lista_fp_entrada = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId(), "E");
+        List<FormaPagamento> lista_fp_saida = db.listaTransferenciaFormaPagamento(fc.getId(), caixa.getId(), "S");
         float transferencia_entrada = 0, transferencia_saida = 0, dinheiro_baixa = 0, cheque = 0, cheque_pre = 0, cartao_cre = 0, cartao_deb = 0, saldo_atual = 0;
+        float dinheiro_pagamento = 0;
         Collection lista = new ArrayList();
         List<DataObject> lista_cheque = new ArrayList();
 
@@ -87,27 +89,46 @@ public final class FechamentoCaixaBean implements Serializable {
             transferencia_saida = Moeda.somaValores(transferencia_saida, lSaida.get(i).getValor());
         }
 
-        for (int i = 0; i < lista_fp.size(); i++) {
-            switch (lista_fp.get(i).getTipoPagamento().getId()) {
+        for (int i = 0; i < lista_fp_entrada.size(); i++) {
+            switch (lista_fp_entrada.get(i).getTipoPagamento().getId()) {
                 case 3:
-                    dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp.get(i).getValor());
+                    dinheiro_baixa = Moeda.somaValores(dinheiro_baixa, lista_fp_entrada.get(i).getValor());
                     break;
                 case 4:
-                    cheque = Moeda.somaValores(cheque, lista_fp.get(i).getValor());
-                    lista_cheque.add(new DataObject(lista_fp.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp.get(i).getValor())));
+                    cheque = Moeda.somaValores(cheque, lista_fp_entrada.get(i).getValor());
+                    lista_cheque.add(new DataObject(lista_fp_entrada.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp_entrada.get(i).getValor())));
                     break;
                 case 5:
-                    cheque_pre = Moeda.somaValores(cheque_pre, lista_fp.get(i).getValor());
+                    cheque_pre = Moeda.somaValores(cheque_pre, lista_fp_entrada.get(i).getValor());
+                    lista_cheque.add(new DataObject(lista_fp_entrada.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp_entrada.get(i).getValor())));
                     break;
                 case 6:
-                    cartao_cre = Moeda.somaValores(cartao_cre, lista_fp.get(i).getValor());
+                    cartao_cre = Moeda.somaValores(cartao_cre, lista_fp_entrada.get(i).getValor());
                     break;
                 case 7:
-                    cartao_deb = Moeda.somaValores(cartao_deb, lista_fp.get(i).getValor());
+                    cartao_deb = Moeda.somaValores(cartao_deb, lista_fp_entrada.get(i).getValor());
                     break;
             }
         }
 
+        for (int i = 0; i < lista_fp_saida.size(); i++) {
+            switch (lista_fp_saida.get(i).getTipoPagamento().getId()) {
+                case 3:
+                    dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    //dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    break;
+                case 4:
+                    dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    //cheque = Moeda.somaValores(cheque, lista_fp_saida.get(i).getValor());
+                    //lista_cheque.add(new DataObject(lista_fp_saida.get(i).getChequeRec(), Moeda.converteR$Float(lista_fp_saida.get(i).getValor())));
+                    break;
+                case 5:
+                    dinheiro_pagamento = Moeda.somaValores(dinheiro_pagamento, lista_fp_saida.get(i).getValor());
+                    //cheque_pre = Moeda.somaValores(cheque_pre, lista_fp_saida.get(i).getValor());
+                    break;
+            }
+        }
+        
         String status = "VALOR BATIDO";
         float soma = 0;
         if (fc.getValorFechamento() > fc.getValorInformado()) {
@@ -153,7 +174,7 @@ public final class FechamentoCaixaBean implements Serializable {
                         Moeda.converteR$Float(cartao_deb),
                         Moeda.converteR$Float(transferencia_entrada),
                         Moeda.converteR$Float(transferencia_saida),
-                        Moeda.converteR$Float(0),
+                        Moeda.converteR$Float(dinheiro_pagamento),
                         status,
                         cr.getAgencia() + " - " + cr.getConta() + " " + cr.getBanco(),
                         cr.getCheque() + " - " + cr.getVencimento() + " | R$ " + lista_cheque.get(i).getArgumento1()
@@ -175,7 +196,7 @@ public final class FechamentoCaixaBean implements Serializable {
                     Moeda.converteR$Float(cartao_deb),
                     Moeda.converteR$Float(transferencia_entrada),
                     Moeda.converteR$Float(transferencia_saida),
-                    Moeda.converteR$Float(0),
+                    Moeda.converteR$Float(dinheiro_pagamento),
                     status,
                     null,
                     null
@@ -210,17 +231,16 @@ public final class FechamentoCaixaBean implements Serializable {
         Caixa caixa_destino = (Caixa) sv.pesquisaCodigo(Integer.valueOf(listaCaixaDestino.get(idCaixaDestino).getDescription()), "Caixa");
 
         FinanceiroDB db = new FinanceiroDBToplink();
-        List<Vector> result = db.listaMovimentoCaixa(caixa.getId());
+        List<Vector> result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E");
         List<TransferenciaCaixa> lEntrada = db.listaTransferenciaEntrada(caixa.getId());
 
-        if (result.isEmpty() && lEntrada.isEmpty()) {
+        if (result_entrada.isEmpty() && lEntrada.isEmpty()) {
             GenericaMensagem.warn("Erro", "Não existe movimentos para este Caixa!");
             return;
 
         }
 
         sv.abrirTransacao();
-
         TransferenciaCaixa tc = new TransferenciaCaixa(
                 -1,
                 caixa,
@@ -240,10 +260,6 @@ public final class FechamentoCaixaBean implements Serializable {
         sv.comitarTransacao();
         GenericaMensagem.info("Sucesso", "Dinheiro transferido com Sucesso!");
         valorTransferencia = "0,00";
-    }
-
-    public void imprimir() {
-
     }
 
     public void excluir(Caixa c) {
@@ -270,11 +286,12 @@ public final class FechamentoCaixaBean implements Serializable {
             return;
         }
 
-        List<Vector> result = db.listaMovimentoCaixa(caixa.getId());
+        List<Vector> result_entrada = db.listaMovimentoCaixa(caixa.getId(), "E");
+        List<Vector> result_saida = db.listaMovimentoCaixa(caixa.getId(), "S");
         List<TransferenciaCaixa> lEntrada = db.listaTransferenciaEntrada(caixa.getId());
         List<TransferenciaCaixa> lSaida = db.listaTransferenciaSaida(caixa.getId());
 
-        if (result.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty()) {
+        if (result_entrada.isEmpty() && result_saida.isEmpty() && lEntrada.isEmpty() && lSaida.isEmpty()) {
             GenericaMensagem.warn("Erro", "Não existe movimentos para este Caixa!");
             return;
         }
@@ -293,13 +310,13 @@ public final class FechamentoCaixaBean implements Serializable {
             return;
         }
 
-        if (!result.isEmpty()) {
+        if (!result_entrada.isEmpty()) {
             float valorx = 0;
-            for (int i = 0; i < result.size(); i++) {
-                Baixa ba = ((Baixa) sv.pesquisaCodigo((Integer) result.get(i).get(8), "Baixa"));
+            for (int i = 0; i < result_entrada.size(); i++) {
+                Baixa ba = ((Baixa) sv.pesquisaCodigo((Integer) result_entrada.get(i).get(8), "Baixa"));
                 ba.setFechamentoCaixa(fechamento);
 
-                valorx = Moeda.somaValores(valorx, Float.parseFloat(Double.toString((Double) result.get(i).get(6))));
+                valorx = Moeda.somaValores(valorx, Float.parseFloat(Double.toString((Double) result_entrada.get(i).get(6))));
                 if (!sv.alterarObjeto(ba)) {
                     GenericaMensagem.warn("Erro", "Não foi possivel alterar a Baixa!");
                     sv.desfazerTransacao();
@@ -308,6 +325,25 @@ public final class FechamentoCaixaBean implements Serializable {
                 }
             }
             fechamento.setValorFechamento(valorx);
+            sv.alterarObjeto(fechamento);
+        }
+
+        if (!result_saida.isEmpty()) {
+            float valorx = 0;
+            for (int i = 0; i < result_saida.size(); i++) {
+                Baixa ba = ((Baixa) sv.pesquisaCodigo((Integer) result_saida.get(i).get(8), "Baixa"));
+                ba.setFechamentoCaixa(fechamento);
+
+                valorx = Moeda.somaValores(valorx, Float.parseFloat(Double.toString((Double) result_saida.get(i).get(6))));
+                if (!sv.alterarObjeto(ba)) {
+                    GenericaMensagem.warn("Erro", "Não foi possivel alterar a Baixa!");
+                    sv.desfazerTransacao();
+                    fechamento = new FechamentoCaixa();
+                    return;
+                }
+            }
+            //fechamento.setValorFechamento(valorx);
+            fechamento.setValorFechamento(Moeda.subtracaoValores(fechamento.getValorFechamento(), valorx));
             sv.alterarObjeto(fechamento);
         }
 
@@ -360,10 +396,14 @@ public final class FechamentoCaixaBean implements Serializable {
     public List<SelectItem> getListaCaixa() {
         if (listaCaixa.isEmpty()) {
             List<Caixa> list = (new FinanceiroDBToplink()).listaCaixa();
-            for (int i = 0; i < list.size(); i++) {
-                listaCaixa.add(new SelectItem(new Integer(i),
-                        list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
-                        Integer.toString(list.get(i).getId())));
+            if (!list.isEmpty()){
+                for (int i = 0; i < list.size(); i++) {
+                    listaCaixa.add(new SelectItem(i,
+                            list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
+                            Integer.toString(list.get(i).getId())));
+                }
+            }else{
+                listaCaixa.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
             }
 
             if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null
@@ -439,13 +479,18 @@ public final class FechamentoCaixaBean implements Serializable {
         if (listaCaixaDestino.isEmpty() && !listaCaixa.isEmpty()) {
             List<Caixa> list = (new SalvarAcumuladoDBToplink()).listaObjeto("Caixa");
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
-            for (int i = 0; i < list.size(); i++) {
-                listaCaixaDestino.add(new SelectItem(new Integer(i),
-                        list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
-                        Integer.toString(list.get(i).getId())));
-                if (list.get(i).getId() == caixa.getId()) {
-                    idCaixaDestino = i;
+            
+            if (!list.isEmpty()){
+                for (int i = 0; i < list.size(); i++) {
+                    listaCaixaDestino.add(new SelectItem(new Integer(i),
+                            list.get(i).getCaixa() + " - " + list.get(i).getDescricao(),
+                            Integer.toString(list.get(i).getId())));
+                    if (list.get(i).getId() == caixa.getId()) {
+                        idCaixaDestino = i;
+                    }
                 }
+            }else{
+                listaCaixaDestino.add(new SelectItem(0, "Nenhum Caixa Encontrado", "0"));
             }
         }
         return listaCaixaDestino;
@@ -459,6 +504,9 @@ public final class FechamentoCaixaBean implements Serializable {
         if (listaFechamento.isEmpty() && !listaCaixa.isEmpty()) {
             FinanceiroDB db = new FinanceiroDBToplink();
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
+            if (caixa == null)
+                return listaFechamento;
+            
             List<Vector> lista = db.listaFechamentoCaixa(caixa.getId());
 
             for (int i = 0; i < lista.size(); i++) {
@@ -495,6 +543,9 @@ public final class FechamentoCaixaBean implements Serializable {
     public String getSaldoAtual() {
         if (!listaCaixa.isEmpty()) {
             Caixa caixa = (Caixa) (new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.valueOf(listaCaixa.get(idCaixa).getDescription()), "Caixa"));
+            if (caixa == null)
+                return saldoAtual = "0,00";
+            
             FinanceiroDB db = new FinanceiroDBToplink();
             List<Vector> lista = db.pesquisaSaldoAtual(caixa.getId());
 

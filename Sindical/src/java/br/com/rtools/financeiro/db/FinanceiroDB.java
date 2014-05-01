@@ -4,13 +4,14 @@ import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.BloqueiaServicoPessoa;
 import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.ContaSaldo;
-import br.com.rtools.financeiro.FechamentoCaixa;
 import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Historico;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.SubGrupoFinanceiro;
 import br.com.rtools.financeiro.TransferenciaCaixa;
 import br.com.rtools.seguranca.Usuario;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -40,7 +41,7 @@ public interface FinanceiroDB {
     public List<Movimento> pesquisaMovimentoPorLote(int id_lote);
     public ContaSaldo pesquisaSaldoInicial(int id_caixa);
     public List<Caixa> listaCaixa();
-    public List listaMovimentoCaixa(int id_caixa);
+    public List listaMovimentoCaixa(int id_caixa, String es);
     public List<TransferenciaCaixa> listaTransferenciaEntrada(int id_caixa);
     public List<TransferenciaCaixa> listaTransferenciaSaida(int id_caixa);
     public List<Baixa> listaBaixa(int id_fechamento_caixa);
@@ -53,8 +54,11 @@ public interface FinanceiroDB {
     public List<TransferenciaCaixa> listaTransferenciaDinheiro(int id_fechamento_caixa, int id_caixa);
     public List<TransferenciaCaixa> listaTransferenciaDinheiroEntrada(int id_fechamento_caixa, int id_caixa);
     public List<TransferenciaCaixa> listaTransferenciaDinheiroSaida(int id_fechamento_caixa, int id_caixa);
-    public List<FormaPagamento> listaTransferenciaFormaPagamento(int id_fechamento_caixa, int id_caixa);
+    public List<FormaPagamento> listaTransferenciaFormaPagamento(int id_fechamento_caixa, int id_caixa, String es);
     public List<Vector> pesquisaSaldoAtual(int id_caixa);
     public List<Vector> pesquisaSaldoAtualRelatorio(int id_caixa, int id_fechamento);
     public List<Vector> pesquisaUsuarioFechamento(int id_fechamento);
+    public List<SubGrupoFinanceiro> listaSubGrupo(int id_grupo);
+    public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data);
+    public List<Vector> listaBoletoSocio(String nr_ctr_boleto);
 }

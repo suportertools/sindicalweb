@@ -300,7 +300,7 @@ public class VendasCaravanaBean {
         }
 
         Lote lote = new Lote(-1, (Rotina) sv.find(new Rotina(), 142), "", DataHoje.data(), pessoa, null, false, "", Moeda.converteUS$(valorTotal), (Filial) sv.pesquisaObjeto(1, "Filial"),
-                (Departamento) sv.find(new Departamento(), 6), evt, "", null, null, null, null, false, null);
+                (Departamento) sv.find(new Departamento(), 6), evt, "", null, null, null, null, false, null, 0);
         if (!sv.inserirObjeto(lote)) {
             GenericaMensagem.warn("Erro", "Não foi possível salvar Lote!"); 
             sv.desfazerTransacao();
