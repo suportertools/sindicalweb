@@ -62,6 +62,7 @@
                                 <p:submenu label="Sindicato" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:menuitem value="Registro Empresarial" action="#{chamadaPaginaBean.registroEmpresarial}" actionListener="#{registroEmpresarialBean.limparModulo()}"/>
                                     <p:menuitem value="Registro Filial"      action="#{chamadaPaginaBean.macFilial}" />
+                                    <p:menuitem value="Filial"               action="#{chamadaPaginaBean.filial}" title="Especificar cidades da Filial após cadastrar"/>
                                     <p:menuitem value="Registro Patronal"    action="#{chamadaPaginaBean.registroPatronal}" />
                                     <p:menuitem value="Piso Salarial"        action="#{chamadaPaginaBean.pisoSalarial}" />
                                 </p:submenu>
@@ -72,8 +73,7 @@
                                 <p:submenu label="Ferramentas" icon="ui-icon-document" style="margin-right: 15px">  
                                     <p:submenu label="Pessoa" icon="ui-icon-contact">
                                         <p:menuitem value="Física"                action="#{chamadaPaginaBean.pessoaFisica}"/>
-                                        <p:menuitem value="Juridica"              action="#{chamadaPaginaBean.pessoaJuridica}"/>
-                                        <p:menuitem value="Filial"                action="#{chamadaPaginaBean.filial}"/>
+                                        <p:menuitem value="Juridica"              action="#{chamadaPaginaBean.pessoaJuridica}"/>                                        
                                         <p:menuitem value="Tipo Documento"        action="#{chamadaPaginaBean.tipoDocumento}"/>
                                         <p:menuitem value="Cnae"                  action="#{chamadaPaginaBean.cnae}"/>
                                         <p:menuitem value="Profissão"             action="#{chamadaPaginaBean.profissao}"/>
