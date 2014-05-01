@@ -47,7 +47,7 @@
                                 </c:if>
                             </h:column>
                             <p:outputLabel value="Emissão: " />
-                            <p:inputText value="#{oposicaoBean.oposicao.emissao}" size="8" />
+                            <p:inputText value="#{oposicaoBean.oposicao.emissao}" size="8" disabled="#{oposicaoBean.oposicao.id != -1}"/>
                             <p:outputLabel value="RG: " />
                             <h:column>
                                 <p:inputText id="idRG"  value="#{oposicaoBean.oposicao.oposicaoPessoa.rg}" maxlength="15" size="15"  rendered="#{oposicaoBean.oposicao.oposicaoPessoa.cpf == ''}" >
