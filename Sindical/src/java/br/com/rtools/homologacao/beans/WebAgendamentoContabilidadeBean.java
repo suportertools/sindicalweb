@@ -470,7 +470,7 @@ public class WebAgendamentoContabilidadeBean extends PesquisarProfissaoBean impl
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
-            msgConfirma = "Pessoa cadastrada em oposição, não poderá ser agendada, contate seu Sindicato";
+            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             salvarAcumuladoDB.comitarTransacao();
             return null;
         } else {

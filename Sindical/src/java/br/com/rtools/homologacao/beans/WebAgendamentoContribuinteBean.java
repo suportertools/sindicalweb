@@ -209,7 +209,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
         }
 
         if (!listaEmDebito.isEmpty() && (listaEmDebito.size() > reg.getMesesInadimplentesAgenda())) {
-            msgConfirma = "Favor entrar em contato com seu Sindicato! \n clique e imprima seu relatório de débitos";
+            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             return null;
         }
 
@@ -328,7 +328,7 @@ public class WebAgendamentoContribuinteBean extends PesquisarProfissaoBean imple
 
         AtendimentoDB dbat = new AtendimentoDBTopLink();
         if (dbat.pessoaOposicao(fisica.getPessoa().getDocumento())) {
-            msgConfirma = "Pessoa cadastrada em oposição, não poderá ser agendada, contate seu Sindicato";
+            msgConfirma = "Para efetuar esse agendamento CONTATE o Sindicato!";
             sv.comitarTransacao();
             return null;
         } else {
