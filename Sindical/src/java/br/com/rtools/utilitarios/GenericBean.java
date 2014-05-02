@@ -14,8 +14,8 @@ public class GenericBean implements Serializable {
     Object object;
 
     /**
-     * PODE INICIAR O BEAN UTILIZANDO OS MÉTODOS INIT E DESTROY, ELIMINANDO A
-     * NECESSIDADE DE FICAR APAGANDO AS SESSÕES NA CHAMADA DE PÁGINA
+     * Pode iniciar o bean utilizando os métodos init e esstroy eliminando a
+     * necessidade de ficar apagamdndo as sessões na chamada de página bean;
      */
     @PostConstruct
     public void init() {
@@ -29,21 +29,21 @@ public class GenericBean implements Serializable {
     }
 
     /**
-     * OU INICIAR O BEAN UTILIZANDO O CONSTRUTOR SEM PARÂMETROS
+     * ou iniciar o bean utilizando o construtor sem parâmetros
      */
     public GenericBean() {
         //object = new Object();
     }
 
     /**
-     * UTILIZAR O CLEAR PARA LIMPAR A SESSÃO DO BEAN ATUAL
+     * Utilizar o clear para limpar a sessão do bean atual
      */
     public void clear() {
         //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("genericBean");
     }
 
     /**
-     * UTILIZAR MÉTODOS DE FÁCIL ENTENDIMENTO PARA OS EVENTOS
+     * Utilizar métodos de fácil entendimento para os eventos
      */
     public void save() {
     }
@@ -52,7 +52,7 @@ public class GenericBean implements Serializable {
     }
 
     public void edit() {
-        // SE UTILIZAR INDICE
+        // Se utilizar indices, array....
     }
 
     public void edit(Object o) {
