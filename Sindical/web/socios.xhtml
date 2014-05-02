@@ -384,7 +384,7 @@
                             </h:selectOneMenu>
                         </h:panelGrid>
                         <h:panelGrid columns="2" styleClass="margin-top-max">
-                            <a4j:commandButton value="Sim" title="Sim" action="#{sociosBean.reativarSocio}" oncomplete="#{rich:component('form_socios:dlg_reativar_socio')}.hide(); #{rich:component('form_socios:dlg_message')}.show(); return false;" render="outConfirma" />
+                            <a4j:commandButton value="Sim" title="Sim" action="#{sociosBean.inativarSocio}" oncomplete="#{rich:component('form_socios:dlg_reativar_socio')}.hide(); #{rich:component('form_socios:dlg_message')}.show(); return false;" render="outConfirma" />
                             <a4j:commandButton value="Não" title="Não" onclick="#{rich:component('dlg_inativar_socio')}.hide();return false;"/>
                         </h:panelGrid>
                     </center>
