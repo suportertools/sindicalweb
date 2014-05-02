@@ -38,7 +38,7 @@ public class NovoLog extends salvaLogs {
      * <strong>Example:</strong>live("User" + user.getLogin());</p>
      *
      * @author Bruno
-     * @param infoLive - Texto de informações livres para o log, não é gerado
+     * @param infoLive Texto de informações livres para o log, não é gerado
      * nenhum Evento (seg_evento -> default null) para esta execução.
      *
      */
@@ -50,12 +50,11 @@ public class NovoLog extends salvaLogs {
     /**
      * <p>
      * <strong>Save - String</strong></p>
-     * <p>
-     * <strong>Example:</strong>save("User" + user.getLogin()); Utilizar se for
-     * um novo registro. </p>
+     * <strong>Example:</strong><ul><li>save("User" + user.getLogin());</li><li> Utilizar se for
+     * um novo registro. </li></ul>
      *
      * @author Bruno
-     * @param infoLive - Texto de informações livres para o log.
+     * @param infoLive Texto de informações livres para o log.
      *
      */
     public void save(String infoLive) {
