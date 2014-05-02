@@ -187,8 +187,13 @@ public class NovoLog extends salvaLogs {
      * <p>
      * <strong>Evento</strong></p>
      * <p>
-     * <strong>Info:</strong> (1) Inclusão; (2) Exclusão; (3) Alteração; (4)
-     * Consulta;</p>
+     * <strong>Lista de eventos:</strong>
+     * <ul>
+     * <li>(1) Inclusão;</li>
+     * <li>(2) Exclusão;</li>
+     * <li>(3) Alteração;</li>
+     * <li>(4) Consulta;</li>
+     * </ul>
      *
      * @author Bruno
      * @param idEvento
