@@ -50,8 +50,8 @@ public class NovoLog extends salvaLogs {
     /**
      * <p>
      * <strong>Save - String</strong></p>
-     * <strong>Example:</strong><ul><li>save("User" + user.getLogin());</li><li> Utilizar se for
-     * um novo registro. </li></ul>
+     * <strong>Example:</strong><ul><li>save("User" + user.getLogin());</li><li>
+     * Utilizar se for um novo registro. </li></ul>
      *
      * @author Bruno
      * @param infoLive Texto de informações livres para o log.
