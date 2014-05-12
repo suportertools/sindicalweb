@@ -5,14 +5,19 @@ import br.com.rtools.academia.AcademiaSemana;
 import br.com.rtools.academia.db.AcademiaDB;
 import br.com.rtools.academia.db.AcademiaDBToplink;
 import br.com.rtools.sistema.Semana;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import org.primefaces.event.SelectEvent;
@@ -21,28 +26,52 @@ import org.primefaces.event.SelectEvent;
 @SessionScoped
 public class AcademiaGradeBean implements Serializable {
 
-    private AcademiaGrade academiaGrade = new AcademiaGrade();
-    private AcademiaSemana academiaSemana = new AcademiaSemana();
-    private List<AcademiaSemana> academiaSemanas = new ArrayList<AcademiaSemana>();
-    private List<AcademiaGrade> listaAcademiaGrades = new ArrayList<AcademiaGrade>();
-    private List<Semana> listaSemana = new ArrayList<Semana>();
-    private String mensagem = "";
-    private Date horaInicio = new Date();
-    private Date horaFim = new Date();
+    private AcademiaGrade academiaGrade;
+    private AcademiaSemana academiaSemana;
+    private List<AcademiaSemana> academiaSemanas;
+    private List<AcademiaGrade> listaAcademiaGrades;
+    private List<Semana> listaSemana;
+    private String mensagem;
+    private Date horaInicio;
+    private Date horaFim;
     // SEMANA
-    private boolean dom = false;
-    private boolean seg = false;
-    private boolean ter = false;
-    private boolean qua = false;
-    private boolean qui = false;
-    private boolean sex = false;
-    private boolean sab = false;
+    private boolean dom;
+    private boolean seg;
+    private boolean ter;
+    private boolean qua;
+    private boolean qui;
+    private boolean sex;
+    private boolean sab;
 
+    @PostConstruct
     public void init() {
-        System.out.println("Iniciando grade academia");
-        this.academiaGrade = new AcademiaGrade();
-        this.mensagem = "";
-        this.listaAcademiaGrades = new ArrayList<AcademiaGrade>();
+        academiaGrade = new AcademiaGrade();
+        academiaSemana = new AcademiaSemana();
+        academiaSemanas = new ArrayList<AcademiaSemana>();
+        listaAcademiaGrades = new ArrayList<AcademiaGrade>();
+        listaSemana = new ArrayList<Semana>();
+        mensagem = "";
+        horaInicio = new Date();
+        horaFim = new Date();
+        academiaGrade.setHoraInicio(DataHoje.livre(new Date(), "HH:mm"));
+        academiaGrade.setHoraFim(DataHoje.livre(new Date(), "HH:mm"));
+        // SEMANA
+        dom = false;
+        seg = false;
+        ter = false;
+        qua = false;
+        qui = false;
+        sex = false;
+        sab = false;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("academiaGradeBean");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("academiaGradeBean");
     }
 
     public String salvar() {
@@ -63,7 +92,7 @@ public class AcademiaGradeBean implements Serializable {
             if (salvarAcumuladoDB.inserirObjeto(academiaGrade)) {
                 salvarAcumuladoDB.comitarTransacao();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
-                salvarAcumuladoDB.abrirTransacao();                
+                salvarAcumuladoDB.abrirTransacao();
                 if (dom) {
                     addListaSemana(1);
                 }
@@ -72,16 +101,16 @@ public class AcademiaGradeBean implements Serializable {
                 }
                 if (ter) {
                     addListaSemana(3);
-                } 
+                }
                 if (qua) {
                     addListaSemana(4);
-                } 
+                }
                 if (qui) {
                     addListaSemana(5);
-                } 
+                }
                 if (sex) {
                     addListaSemana(6);
-                } 
+                }
                 if (sab) {
                     addListaSemana(7);
                 }
@@ -110,7 +139,7 @@ public class AcademiaGradeBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
-        novo();
+        clear();
         return "academiaGrade";
     }
 
@@ -122,8 +151,8 @@ public class AcademiaGradeBean implements Serializable {
             }
         }
     }
-    
-    public boolean showSemanaGrade(AcademiaGrade academiaGrade, int idSemana) {
+
+    public boolean showSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
         AcademiaDB academiaDB = new AcademiaDBToplink();
         boolean isSemana = academiaDB.existeAcademiaSemana(academiaGrade.getId(), idSemana);
         if (isSemana) {
@@ -131,46 +160,29 @@ public class AcademiaGradeBean implements Serializable {
         }
         return false;
     }
-    
-    public void updateSemanaGrade(AcademiaGrade academiaGrade, int idSemana) {
+
+    public void updateSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
         AcademiaDB academiaDB = new AcademiaDBToplink();
         AcademiaSemana as = academiaDB.pesquisaAcademiaSemana(academiaGrade.getId(), idSemana);
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        if(as != null) {
-            dB.abrirTransacao();
-            if (dB.deletarObjeto((AcademiaSemana) dB.pesquisaCodigo(as.getId(), "AcademiaSemana"))) {
-                dB.comitarTransacao();                
+        DaoInterface dao = new Dao();
+        if (as != null) {
+            dao.openTransaction();
+            if (dao.delete((AcademiaSemana) dao.find(as))) {
+                dao.commit();
             } else {
-                dB.desfazerTransacao();
+                dao.rollback();
             }
         } else {
-            dB.abrirTransacao();
+            dao.openTransaction();
             AcademiaSemana academiaSemanax = new AcademiaSemana();
             academiaSemanax.setAcademiaGrade(academiaGrade);
-            academiaSemanax.setSemana((Semana) dB.pesquisaCodigo(idSemana, "Semana"));
-            if (dB.inserirObjeto(academiaSemanax)) {
-                dB.comitarTransacao();                
+            academiaSemanax.setSemana((Semana) dao.find(new Semana(), idSemana));
+            if (dao.save(academiaSemanax)) {
+                dao.commit();
             } else {
-                dB.desfazerTransacao();
-            }            
+                dao.rollback();
+            }
         }
-    }
-
-    public void novo() {
-        horaInicio = new Date();
-        horaFim = new Date();
-        academiaGrade = new AcademiaGrade();
-        academiaGrade.setHoraInicio(DataHoje.livre(new Date(), "HH:mm"));
-        academiaGrade.setHoraFim(DataHoje.livre(new Date(), "HH:mm"));
-        listaSemana.clear();
-        academiaSemanas.clear();
-        dom = false;
-        seg = false;
-        ter = false;
-        qua = false;
-        qui = false;
-        sex = false;
-        sab = false;
     }
 
     public void editar(AcademiaGrade ag) {
@@ -197,7 +209,7 @@ public class AcademiaGradeBean implements Serializable {
                 salvarAcumuladoDB.desfazerTransacao();
                 GenericaMensagem.warn("Erro", "Ao excluir registro!");
             }
-        }        
+        }
     }
 
     public AcademiaGrade getAcademiaGrade() {
