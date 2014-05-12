@@ -9,18 +9,22 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_CONTA_OPERACAO")
+@Table(name = "FIN_CONTA_OPERACAO", 
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PLANO5", "ID_OPERACAO", "DS_ES"})
+)
 @NamedQuery(name = "ContaOperacao.pesquisaID", query = "select co from ContaOperacao co where co.id = :pid")
-public class ContaOperacao implements  java.io.Serializable {
+public class ContaOperacao implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @ManyToOne
     private Plano5 plano5;
-    @JoinColumn(name = "ID_CENTRO_CUSTO_CONTABIL_SUB", referencedColumnName = "ID")
+    @JoinColumn(name = "ID_CENTRO_CUSTO_CONTABIL_SUB", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private CentroCustoContabilSub centroCustoContabilSub;
     @JoinColumn(name = "ID_OPERACAO", referencedColumnName = "ID")
@@ -48,7 +52,7 @@ public class ContaOperacao implements  java.io.Serializable {
         this.es = es;
         this.contaFixa = contaFixa;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -96,4 +100,10 @@ public class ContaOperacao implements  java.io.Serializable {
     public void setContaFixa(boolean contaFixa) {
         this.contaFixa = contaFixa;
     }
+
+    @Override
+    public String toString() {
+        return "ContaOperacao{" + "id=" + id + ", plano5.id=" + plano5.getId() + ", centroCustoContabilSub.id=" + centroCustoContabilSub.getId() + ", operacao.id=" + operacao.getId() + ", es=" + es + ", contaFixa=" + contaFixa + '}';
+    }
+
 }

@@ -53,6 +53,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     private String cepEndereco = "";
     private String strContribuinte = "";
     private String emailEmpresa = "";
+    private String styleDestaque = "";
     private List listaGrid = new ArrayList();
     private List listaMovimento = new ArrayList();
     private List<SelectItem> listaStatus = new ArrayList<SelectItem>();
@@ -420,6 +421,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
     }
 
     public String salvar() {
+        styleDestaque = "";
         msgConfirma = "";
         if (fisica.getPessoa().getNome().equals("") || fisica.getPessoa().getNome() == null) {
             msgConfirma = "Digite o nome do Funcionário!";
@@ -666,8 +668,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 sv.comitarTransacao();
                 if (isOposicao) {
                     msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! Pessoa cadastrada em oposição. ";
+                    styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 } else {
                     msgConfirma = "Agendamento atualizado com Sucesso! imprimir Protocolo clicando aqui! ";
+                    styleDestaque = "";
                 }
             } else {
                 msgConfirma = "Erro ao atualizar agendamento!";
@@ -775,6 +779,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void pesquisarFuncionarioCPF() throws IOException {
         msgConfirma = "";
+        styleDestaque = "";
         if (!fisica.getPessoa().getDocumento().isEmpty() && !fisica.getPessoa().getDocumento().equals("___.___.___-__")) {
 
             if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(fisica.getPessoa().getDocumento()))) {
@@ -811,6 +816,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 // SEM PESSOA FISICA E COM OPOSICAO    
             } else if (listFisica.isEmpty() && !listao.isEmpty()) {
                 msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
+                styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 fisica.getPessoa().setNome(listao.get(0).getOposicaoPessoa().getNome());
                 fisica.setRg(listao.get(0).getOposicaoPessoa().getRg());
                 fisica.setSexo(listao.get(0).getOposicaoPessoa().getSexo());
@@ -839,6 +845,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 // COM FISICA, COM PESSOA EMPRESA COM OPOSICAO
             } else if (!listFisica.isEmpty() && !listape.isEmpty() && !listao.isEmpty()) {
                 msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
+                styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
                 pessoaEmpresa = listape.get(0);
                 fisica = pessoaEmpresa.getFisica();
                 profissao = pessoaEmpresa.getFuncao();
@@ -865,6 +872,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
                 // COM FISICA, SEM PESSOA EMPRESA COM OPOSICAO
             } else if (!listFisica.isEmpty() && listape.isEmpty() && !listao.isEmpty()) {
                 msgConfirma = "CPF cadastrado em oposição em " + listao.get(0).getEmissao();
+                styleDestaque = "color: red; font-size: 14pt; font-weight:bold";
 
                 fisica = listFisica.get(0);
                 juridica = listao.get(0).getJuridica();
@@ -1392,5 +1400,13 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
     public void setEmailEmpresa(String emailEmpresa) {
         this.emailEmpresa = emailEmpresa;
+    }
+
+    public String getStyleDestaque() {
+        return styleDestaque;
+    }
+
+    public void setStyleDestaque(String styleDestaque) {
+        this.styleDestaque = styleDestaque;
     }
 }
