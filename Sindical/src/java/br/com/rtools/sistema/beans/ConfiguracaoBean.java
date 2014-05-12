@@ -4,105 +4,117 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.sistema.Configuracao;
 import br.com.rtools.sistema.db.ConfiguracaoDB;
 import br.com.rtools.sistema.db.ConfiguracaoDBTopLink;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.context.FacesContext;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-public class ConfiguracaoJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class ConfiguracaoBean implements Serializable {
 
-    private List<Configuracao> listaConfiguracao = new ArrayList();
-    private Configuracao configuracao = new Configuracao();
-    private String mensagem = "";
-    private String descricaoPesquisa = "";
-    private Juridica juridica = new Juridica();
+    private List<Configuracao> listaConfiguracao;
+    private Configuracao configuracao;
+    private String mensagem;
+    private String descricaoPesquisa;
+    private Juridica juridica;
 
-    public String salvar() {
+    @PostConstruct
+    public void init() {
+        listaConfiguracao = new ArrayList();
+        configuracao = new Configuracao();
+        mensagem = "";
+        descricaoPesquisa = "";
+        juridica = new Juridica();
+    }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("configuracaoBean");
+        GenericaSessao.remove("configuracaoPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("configuracaoBean");
+    }
+
+    public void save() {
+
+        DaoInterface di = new Dao();
 
         configuracao.setJuridica(juridica);
 
         if (configuracao.getJuridica().getId() == -1) {
             setMensagem("Pesquisar pessoa jurídica!");
-            return null;
+            return;
         }
         if (configuracao.getIdentifica().equals("")) {
             setMensagem("Informar o identificador do cliente, deve ser único!");
-            return null;
+            return;
         }
-
 
         if (configuracao.getIdentifica().equals("")) {
             setMensagem("Informar o identificador do cliente, deve ser único!");
-            return null;
+            return;
         }
 
         if (getConfiguracao().getId() == -1) {
             ConfiguracaoDB configuracaoDB = new ConfiguracaoDBTopLink();
             if (configuracaoDB.existeIdentificador(configuracao)) {
                 setMensagem("Identificador já existe!");
-                return null;
+                return;
             }
-
 
             if (configuracaoDB.existeIdentificadorPessoa(configuracao)) {
                 setMensagem("Identificador já existe para essa pessoa!");
-                return null;
+                return;
             }
-            sv.abrirTransacao();
-            if (sv.inserirObjeto(configuracao)) {
-                sv.comitarTransacao();
+            di.openTransaction();
+            if (di.save(configuracao)) {
+                di.commit();
                 setMensagem("Configuração efetuada com sucesso");
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 setMensagem("Erro ao criar configuração.");
             }
         } else {
-            sv.abrirTransacao();
-            if (sv.alterarObjeto(configuracao)) {
-                sv.comitarTransacao();
+            di.openTransaction();
+            if (di.update(configuracao)) {
+                di.commit();
                 setMensagem("Configuração atualizada com sucesso");
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 setMensagem("Erro ao atualizar configuração.");
             }
         }
-        return "configuracao";
     }
 
-    public String excluir() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
+    public void delete() {
+        DaoInterface di = new Dao();
+        di.openTransaction();
         if (getConfiguracao().getId() != -1) {
-            if (sv.deletarObjeto((Configuracao) sv.pesquisaCodigo(configuracao.getId(), "Configuracao"))) {
-                sv.comitarTransacao();
+            if (di.delete((Configuracao) di.find(configuracao))) {
+                di.commit();
+                configuracao = new Configuracao();
                 setMensagem("Configuração excluída com sucesso");
             } else {
-                sv.desfazerTransacao();
+                di.commit();
                 setMensagem("Erro ao excluir configuração.");
             }
-
-        }
-        return "configuracao";
-    }
-
-    public String editar(Configuracao configuracao1) {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("configuracaoPesquisa", configuracao1);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
-            return "configuracao";
-        } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
         }
     }
 
-    public String novo() {
-        configuracao = new Configuracao();
-        descricaoPesquisa = "";
-        mensagem = "";
-        juridica = new Juridica();
+    public String edit(Configuracao c) {
+        GenericaSessao.put("linkClicado", true);
+        configuracao = c;
+        juridica = configuracao.getJuridica();
         return "configuracao";
     }
 
@@ -112,8 +124,8 @@ public class ConfiguracaoJSFBean implements java.io.Serializable {
                 ConfiguracaoDB configuracaoDB = new ConfiguracaoDBTopLink();
                 listaConfiguracao = (List<Configuracao>) configuracaoDB.listaConfiguracao(descricaoPesquisa);
             } else {
-                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                listaConfiguracao = (List<Configuracao>) salvarAcumuladoDB.listaObjeto("Configuracao");
+                DaoInterface di = new Dao();
+                listaConfiguracao = (List<Configuracao>) di.list("Configuracao");
             }
         }
         return listaConfiguracao;
@@ -128,11 +140,6 @@ public class ConfiguracaoJSFBean implements java.io.Serializable {
     }
 
     public Configuracao getConfiguracao() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("configuracaoPesquisa") != null) {
-            configuracao = (Configuracao) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("configuracaoPesquisa");
-            juridica = configuracao.getJuridica();
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("configuracaoPesquisa");
-        }
         return configuracao;
     }
 
@@ -157,9 +164,8 @@ public class ConfiguracaoJSFBean implements java.io.Serializable {
     }
 
     public Juridica getJuridica() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
-            juridica = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
         }
         return juridica;
     }
