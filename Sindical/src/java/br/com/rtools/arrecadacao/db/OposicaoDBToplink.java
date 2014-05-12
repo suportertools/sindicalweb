@@ -3,6 +3,7 @@ package br.com.rtools.arrecadacao.db;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.OposicaoPessoa;
+import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.relatorios.Relatorios;
@@ -207,7 +208,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
     }
 
     @Override
-    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r) {
+    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes) {
         try {
             List listQuery = new ArrayList();
             String queryEmissao = "";
@@ -230,6 +231,9 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                     + "INNER JOIN pes_pessoa                  AS PES    ON PES.id   =   J.id_pessoa             "
                     + "INNER JOIN pes_tipo_documento          AS T      ON T.id     =   PES.id_tipo_documento   ";
 
+            if (inCnaes != null) {
+                listQuery.add(" J.id_cnae IN(" + inCnaes + ") ");
+            }
             if (idEmpresa > 0) {
                 listQuery.add(" O.id_juridica =  " + idEmpresa);
             }
@@ -282,6 +286,20 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
     public List<ConvencaoPeriodo> listaConvencaoPeriodoPorOposicao() {
         try {
             Query query = getEntityManager().createQuery(" SELECT O.convencaoPeriodo FROM Oposicao AS O GROUP BY O.convencaoPeriodo ORDER BY O.convencaoPeriodo.referenciaFinal DESC, O.convencaoPeriodo.referenciaFinal DESC");
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+
+        }
+        return new ArrayList();
+    }
+
+    @Override
+    public List<Cnae> listaCnaesPorOposicaoJuridica(String inIdsCnaeConvencao) {
+        try {
+            Query query = getEntityManager().createQuery(" SELECT CC.cnae FROM CnaeConvencao AS CC WHERE CC.convencao.id IN("+inIdsCnaeConvencao+") ORDER BY CC.cnae.cnae ASC, CC.cnae.numero ASC");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
