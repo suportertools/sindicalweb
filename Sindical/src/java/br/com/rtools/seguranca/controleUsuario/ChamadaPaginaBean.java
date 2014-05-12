@@ -87,6 +87,20 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(1, pagina);
     }
 
+    /**
+     * <p>
+     * <strong>Página</strong></p>
+     * <p>
+     * <strong>Exemplo:</strong> pagina("pesquisaAgendaTelefone"); Não é
+     * necessário no Bean espefícar o nome completo.</p>
+     *
+     * @param pagina (Nome da página)
+     *
+     * @author Bruno
+     *
+     * @return List
+     * @throws java.io.IOException
+     */
     public synchronized String pagina(String pagina) throws IOException {
         GenericaSessao.remove(pagina + "Bean");
         String redirect = metodoGenerico(2, pagina);
@@ -95,7 +109,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     /**
      * <p>
-     * <strong>List Query</strong></p>
+     * <strong>Página</strong></p>
      * <p>
      * <strong>Exemplo:</strong> pagina("pesquisaAgendaTelefone",
      * "agendaTelefone"); Não é necessário no Bean espefícar o nome
@@ -111,6 +125,32 @@ public class ChamadaPaginaBean implements Serializable {
      */
     public synchronized String pagina(String pagina, String bean) throws IOException {
         GenericaSessao.remove(bean + "Bean");
+        String redirect = metodoGenerico(2, pagina);
+        return redirect;
+    }
+
+    /**
+     * <p>
+     * <strong>Página</strong></p>
+     * <p>
+     * <strong>Exemplo:</strong> pagina("pesquisaAgendaTelefone",
+     * "agendaTelefone", true); Não é necessário no Bean espefícar o nome
+     * completo.</p>
+     *
+     * @param pagina (Nome da página)
+     * @param bean (Bean)
+     * @param isCadastro (Default false)
+     *
+     * @author Bruno
+     *
+     * @return List
+     * @throws java.io.IOException
+     */
+    public synchronized String pagina(String pagina, String bean, boolean isCadastro) throws IOException {
+        GenericaSessao.remove(bean + "Bean");
+        if (isCadastro) {
+            GenericaSessao.put("acessoCadastro", true);
+        }
         String redirect = metodoGenerico(2, pagina);
         return redirect;
     }
@@ -253,15 +293,9 @@ public class ChamadaPaginaBean implements Serializable {
     }
 
     public synchronized String endereco() {
-        //if(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().containsKey("enderecoBean")){
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("enderecoBean");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("bairroPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("logradouroPesquisa");
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("descricaoEnderecoPesquisa");
-        //}
+        GenericaSessao.remove("enderecoBean");
         if (urlAtual.equals("pesquisaEndereco")) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", true);
+            GenericaSessao.put("acessoCadastro", true);
         }
         return metodoGenerico(2, "endereco");
     }
@@ -772,11 +806,6 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "atendimento");
     }
 
-    public synchronized String convencaoPeriodo() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("convencaoPeriodoBean");
-        return metodoGenerico(2, "convencaoPeriodo");
-    }
-
     public synchronized String relatorio() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("relatorioBean");
         return metodoGenerico(2, "relatorio");
@@ -801,11 +830,6 @@ public class ChamadaPaginaBean implements Serializable {
     public synchronized String bloqueioServicos() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("bloqueioServicosBean");
         return metodoGenerico(2, "bloqueioServicos");
-    }
-
-    public synchronized String configuracao() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("configuracaoBean");
-        return metodoGenerico(2, "configuracao");
     }
 
     public synchronized String modeloContratoCampos() {
@@ -943,17 +967,17 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("grupoFinanceiroBean");
         return metodoGenerico(2, "grupoFinanceiro");
     }
-    
+
     public synchronized String gerarBoleto() {
         GenericaSessao.remove("gerarBoletoBean");
         return metodoGenerico(2, "gerarBoleto");
     }
-    
+
     public synchronized String impressaoBoletoSocial() {
         GenericaSessao.remove("impressaoBoletoSocialBean");
         return metodoGenerico(2, "impressaoBoletoSocial");
     }
-    
+
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
@@ -1409,7 +1433,7 @@ public class ChamadaPaginaBean implements Serializable {
         GenericaSessao.remove("usuarioPesquisa");
         return metodoGenerico(3, "relatorioEscola");
     }
-    
+
     public synchronized String relatorioChequesRecebidos() {
         GenericaSessao.remove("relatorioChequesRecebidosBean");
         return metodoGenerico(2, "relatorioChequesRecebidos");
