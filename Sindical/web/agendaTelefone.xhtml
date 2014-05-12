@@ -25,7 +25,7 @@
                         <h:panelGrid columns="13" >
                             <p:commandButton value="Adicionar" id="id_click" update="i_panel_adicionar" action="#{agendaTelefoneBean.openDialog}" onclick="dgl_adicionar.show();" />
                             <p:outputLabel value="Pesquisar: " />
-                            <p:selectOneMenu value="#{agendaTelefoneBean.idDDD}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa.equals('telefone')}">
+                            <p:selectOneMenu value="#{agendaTelefoneBean.indice[3]}" id="idDDD" rendered="#{agendaTelefoneBean.porPesquisa.equals('telefone')}">
                                 <p:ajax event="change" update="idDDD" />
                                 <f:selectItems value="#{agendaTelefoneBean.listaDDD}" />
                             </p:selectOneMenu>
@@ -42,37 +42,37 @@
                             <p:commandButton id="idInicial" value="Inicial" action="#{agendaTelefoneBean.acaoPesquisaInicial}" update="id_lista"/>
                             <p:commandButton id="idParcial" value="Parcial" action="#{agendaTelefoneBean.acaoPesquisaParcial}" update="id_lista"/>
                             <h:outputLabel value="Grupo: " styleClass="fontePadrao" />
-                            <p:selectOneMenu value="#{agendaTelefoneBean.idFiltroGrupoAgenda}">
-                                <p:ajax event="change" update="id_lista" listener="#{agendaTelefoneBean.listaAgendas.clear()}" />
-                                <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
+                            <p:selectOneMenu value="#{agendaTelefoneBean.indice[2]}">
+                                <p:ajax event="change" update="id_lista" listener="#{agendaTelefoneBean.listAgendas.clear()}" />
+                                <f:selectItems value="#{agendaTelefoneBean.listGrupoAgendas}" />
                             </p:selectOneMenu>
                             <p:selectBooleanCheckbox id="idFiltroGrupo" value="#{agendaTelefoneBean.filtraPorGrupo}" itemLabel="Filtrar" >
-                                <p:ajax event="change" update="id_lista" listener="#{agendaTelefoneBean.listaAgendas.clear()}" />
+                                <p:ajax event="change" update="id_lista" listener="#{agendaTelefoneBean.listAgendas.clear()}" />
                             </p:selectBooleanCheckbox>                            
                         </h:panelGrid>
                     </p:panel>
                     <p:panel styleClass="margin-top-max" id="id_lista" header="Contatos">
-                        <p:dataTable value="#{agendaTelefoneBean.listaAgendas}" var="agendaTelefone" scrollable="true" scrollHeight="300" emptyMessage="Nenhum resultado encontrado" paginator="true" rows="15">
+                        <p:dataTable value="#{agendaTelefoneBean.listAgendas}" var="agendaTelefone" scrollable="true" scrollHeight="300" emptyMessage="Nenhum resultado encontrado" paginator="true" rows="15">
                             <p:column styleClass="text-center" width="25">
-                                <p:commandButton icon="ui-icon-link" action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}"  />
+                                <p:commandButton icon="ui-icon-link" action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}"  />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Grupo Agenda">
-                                <p:commandLink action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}" value="#{agendaTelefone.agenda.grupoAgenda.descricao}"  style="text-transform: uppercase; "/>
+                                <p:commandLink action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}" value="#{agendaTelefone.agenda.grupoAgenda.descricao}"  style="text-transform: uppercase; "/>
                             </p:column>
                             <p:column styleClass="text-center" headerText="Nome">
-                                <p:commandLink action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}" value="#{agendaTelefone.agenda.nome}"  style="text-transform: uppercase; " />
+                                <p:commandLink action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}" value="#{agendaTelefone.agenda.nome}"  style="text-transform: uppercase; " />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Cidade / UF">
-                                <p:commandLink action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}" value="#{agendaTelefone.agenda.endereco.cidade.cidade} - #{agendaTelefone.agenda.endereco.cidade.uf}"  style="text-transform: uppercase; " title="#{agendaTelefone.agenda.endereco.enderecoSimplesToString}" />
+                                <p:commandLink action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}" value="#{agendaTelefone.agenda.endereco.cidade.cidade} - #{agendaTelefone.agenda.endereco.cidade.uf}"  style="text-transform: uppercase; " title="#{agendaTelefone.agenda.endereco.enderecoSimplesToString}" />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Tipo Telefone">
-                                <p:commandLink action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}" value="#{agendaTelefone.tipoTelefone.descricao}"  style="text-transform: uppercase; " />
+                                <p:commandLink action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}" value="#{agendaTelefone.tipoTelefone.descricao}"  style="text-transform: uppercase; " />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Telefone">
-                                <p:commandLink action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}" value="+#{agendaTelefone.ddi} (#{agendaTelefone.ddd}) #{agendaTelefone.telefone}"  style="text-transform: uppercase; " />
+                                <p:commandLink action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}" value="+#{agendaTelefone.ddi} (#{agendaTelefone.ddd}) #{agendaTelefone.telefone}"  style="text-transform: uppercase; " />
                             </p:column>
                             <p:column styleClass="text-center" headerText="Contato">
-                                <p:commandLink action="#{agendaTelefoneBean.editar(agendaTelefone.agenda)}" value="#{agendaTelefone.contato}"  style="text-transform: uppercase;" />
+                                <p:commandLink action="#{agendaTelefoneBean.edit(agendaTelefone.agenda)}" value="#{agendaTelefone.contato}"  style="text-transform: uppercase;" />
                             </p:column>
                         </p:dataTable>
                     </p:panel>
@@ -84,50 +84,53 @@
                                     <p:panel>
                                         <h:panelGrid columns="2">
                                             <p:outputLabel value="Grupo Agenda: "  />
-                                            <p:selectOneMenu value="#{agendaTelefoneBean.idGrupoAgenda}" id="grupoAgendaList" >
+                                            <p:selectOneMenu value="#{agendaTelefoneBean.indice[2]}" id="grupoAgendaList" >
                                                 <p:ajax event="change" update="grupoAgendaList" />
-                                                <f:selectItems value="#{agendaTelefoneBean.listaGrupoAgendas}" />
+                                                <f:selectItems value="#{agendaTelefoneBean.listGrupoAgendas}" />
                                             </p:selectOneMenu>
                                             <p:outputLabel value="Nome: "  />
-                                            <p:inputText id="idNome" value="#{agendaTelefoneBean.agenda.nome}"  maxlength="100" size="35">
+                                            <p:inputText id="idNome" value="#{agendaTelefoneBean.agenda.nome}"  maxlength="100" size="35" converter="#{toUpperCase}">
                                                 <p:ajax event="change" update="idNome" /> 
                                             </p:inputText>
                                             <p:commandButton id="idPesquisaPessoa" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true"/>
                                             <h:column>
                                                 <p:outputLabel value="#{agendaTelefoneBean.pessoa.nome}" styleClass="fontePadraoNegrito"/>                            
                                                 <p:outputLabel for="idPesquisaPessoa" value=" IMPORTAR PESSOA (Não Obrigatório)"  rendered="#{agendaTelefoneBean.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
+                                                <p:commandButton icon="ui-icon-close" action="#{agendaTelefoneBean.remove('pessoa')}" title="Remover esta pessoa" rendered="#{agendaTelefoneBean.pessoa.id != -1}" styleClass="margin-left-max"/>
                                             </h:column>                            
                                             <p:commandButton id="idPesquisaEndereco" icon="ui-icon-search" title="Pesquisar Endereço"  action="#{chamadaPaginaBean.pesquisaEndereco}" immediate="true"/>
                                             <p:outputLabel for="idPesquisaEndereco" value="Pesquisar endereço" style="border-bottom: 2px #ffffff dashed;"/>
                                             <p:outputLabel value="Tipo Endereço: "  />
-                                            <p:selectOneMenu id="idTpEnd" value="#{agendaTelefoneBean.idTipoEndereco}" disabled="#{agendaTelefoneBean.endereco.id == -1}" >
+                                            <p:selectOneMenu id="idTpEnd" value="#{agendaTelefoneBean.indice[0]}" disabled="#{agendaTelefoneBean.endereco.id == -1}" >
                                                 <p:ajax event="change" update="idTpEnd" />
-                                                <f:selectItems value="#{agendaTelefoneBean.listaTipoEnderecos}"/>
+                                                <f:selectItems value="#{agendaTelefoneBean.listTipoEnderecos}"/>
                                             </p:selectOneMenu>
                                             <p:outputLabel value="Endereço: "  />
                                             <h:column>
                                                 <p:outputLabel value="#{agendaTelefoneBean.endereco.enderecoSimplesToString} - #{agendaTelefoneBean.endereco.cidade.cidade} / #{agendaTelefoneBean.endereco.cidade.uf}  "  rendered="#{agendaTelefoneBean.endereco.id != -1}" />
+                                                <p:commandButton icon="ui-icon-close" action="#{agendaTelefoneBean.remove('endereco')}" title="Remover este endereço" rendered="#{agendaTelefoneBean.endereco.id != -1}" styleClass="margin-left-max"/>
                                             </h:column>
                                             <p:outputLabel value="Número: " />
-                                            <p:inputText value="#{agendaTelefoneBean.agenda.numero}"  maxlength="10" size="5" disabled="#{agendaTelefoneBean.endereco.id == -1}"/>
+                                            <p:inputText value="#{agendaTelefoneBean.agenda.numero}" maxlength="10" size="5" disabled="#{agendaTelefoneBean.endereco.id == -1}"/>
                                             <p:outputLabel value="Complemento: " />
-                                            <p:inputText value="#{agendaTelefoneBean.agenda.complemento}"  maxlength="50" disabled="#{agendaTelefoneBean.endereco.id == -1}"/>
+                                            <p:inputText value="#{agendaTelefoneBean.agenda.complemento}" maxlength="50" disabled="#{agendaTelefoneBean.endereco.id == -1}"/>
                                             <p:outputLabel value="Email 1: "  />
-                                            <p:inputText value="#{agendaTelefoneBean.agenda.email1}"  maxlength="500" size="35"/>
+                                            <p:inputText value="#{agendaTelefoneBean.agenda.email1}" maxlength="500" size="35"/>
                                             <p:outputLabel value="Email 2: "  />
-                                            <p:inputText value="#{agendaTelefoneBean.agenda.email2}"  maxlength="500" size="35"/>
+                                            <p:inputText value="#{agendaTelefoneBean.agenda.email2}" maxlength="500" size="35"/>
                                         </h:panelGrid>
                                     </p:panel>
                                     <p:panel header="Observações" styleClass="margin-top-max">
                                         <p:inputTextarea value="#{agendaTelefoneBean.agenda.observacao}" cols="100" rows="3" placeholder="Digite suas observações aqui"/>
                                     </p:panel>
                                     <div class="clear"></div>
-                                    <h:panelGrid columns="4" styleClass="margin-top-max">
-                                        <p:commandButton value="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                        <p:commandButton value="Novo" action="#{agendaTelefoneBean.clear}" update="out_mensagem i_panel_adicionar id_lista"/>
-                                        <p:commandButton value="Excluir" onclick="dgl_panel_excluir.show()"  disabled="#{controleAcessoBean.botaoExcluir}" />
-                                        <p:commandButton value="Sair" action="#{agendaTelefoneBean.close}" update="out_mensagem i_panel_adicionar id_lista"/>
-                                    </h:panelGrid>                                    
+                                    <h:panelGrid columns="5" styleClass="margin-top-max">
+                                        <p:commandButton value="Salvar" onclick="PF('dgl_panel_salvar').show();" disabled="#{controleAcessoBean.botaoSalvar}" /> 
+                                        <p:commandButton value="Novo" action="#{agendaTelefoneBean.clear}" update="out_mensagem i_panel_adicionar id_lista" />
+                                        <p:commandButton value="Excluir" onclick="PF('dgl_panel_excluir').show();" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                        <p:commandButton value="Sair" action="#{agendaTelefoneBean.close}" update="out_mensagem i_panel_adicionar id_lista" />
+                                        <p:commandButton value="Aniversariantes" icon="ui-icon-calendar" onclick="PF('dlg_agenda_contato').show();" styleClass="font-color-red" rendered="#{agendaTelefoneBean.agenda.id != -1}" update="i_panel_ac tbl_agenda_contato" />
+                                    </h:panelGrid>
                                 </div>
                                 <div style="float: left; width: 400px;" class="margin-left-max">
                                     <c:if test="#{agendaTelefoneBean.agenda.id != -1}">
@@ -140,8 +143,8 @@
                                                 <p:row>
                                                     <p:column>
                                                         <h:panelGrid columns="7">
-                                                            <p:selectOneMenu value="#{agendaTelefoneBean.idTipoTelefone}" >
-                                                                <f:selectItems value="#{agendaTelefoneBean.listaTipoTelefones}"/>
+                                                            <p:selectOneMenu value="#{agendaTelefoneBean.indice[1]}" >
+                                                                <f:selectItems value="#{agendaTelefoneBean.listTipoTelefones}"/>
                                                             </p:selectOneMenu>
                                                             <p:outputLabel value="+" />
                                                             <p:inputMask mask="99" value="#{agendaTelefoneBean.agendaTelefone.ddi}"  maxlength="2" size="1" title="DDI" style="text-align: center;"/>
@@ -156,30 +159,30 @@
                                                     <p:column>
                                                         <h:panelGrid columns="2">
                                                             <p:inputText value="#{agendaTelefoneBean.agendaTelefone.contato}"  maxlength="500" size="28" placeholder="Nome do contato"/>
-                                                            <p:commandButton value="Adicionar" action="#{agendaTelefoneBean.adicionarAgendaTelefone()}" title="Adicionar/atualizar telefone" rendered="#{agendaTelefoneBean.agenda.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"  update="tbl_agenda_telefone messages_telefone i_panel_cadastro_telefone" />
+                                                            <p:commandButton value="Adicionar" action="#{agendaTelefoneBean.addAgendaTelefone()}" title="Adicionar/atualizar telefone" rendered="#{agendaTelefoneBean.agenda.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"  update="tbl_agenda_telefone messages_telefone i_panel_cadastro_telefone" />
                                                         </h:panelGrid>
                                                     </p:column>
                                                 </p:row>
                                             </h:panelGrid>
                                         </p:panel>
                                         <p:panel  id="tbl_agenda_telefone" styleClass="margin-top-max" header="Lista de telefones">
-                                            <c:if test="#{agendaTelefoneBean.listaAgendaTelefones.size() > 0}">
-                                                <p:dataTable var="telefone" value="#{agendaTelefoneBean.listaAgendaTelefones}">
+                                            <c:if test="#{agendaTelefoneBean.listAgendaTelefones.size() > 0}">
+                                                <p:dataTable var="telefone" value="#{agendaTelefoneBean.listAgendaTelefones}">
                                                     <p:column headerText="Tipo">
-                                                        <p:commandLink action="#{agendaTelefoneBean.editarAgendaTelefone(telefone)}" value="#{telefone.tipoTelefone.descricao}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
+                                                        <p:commandLink action="#{agendaTelefoneBean.editAgendaTelefone(telefone)}" value="#{telefone.tipoTelefone.descricao}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
                                                     </p:column>
                                                     <p:column headerText="Número">
-                                                        <p:commandLink action="#{agendaTelefoneBean.editarAgendaTelefone(telefone)}" value="+#{telefone.ddi} (#{telefone.ddd}) #{telefone.telefone}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
+                                                        <p:commandLink action="#{agendaTelefoneBean.editAgendaTelefone(telefone)}" value="+#{telefone.ddi} (#{telefone.ddd}) #{telefone.telefone}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
                                                     </p:column>
                                                     <p:column headerText="Contato">
-                                                        <p:commandLink action="#{agendaTelefoneBean.editarAgendaTelefone(telefone)}" value="#{telefone.contato}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
+                                                        <p:commandLink action="#{agendaTelefoneBean.editAgendaTelefone(telefone)}" value="#{telefone.contato}"  update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone" />
                                                     </p:column>
                                                     <p:column>
-                                                        <p:commandButton icon="ui-icon-trash" action="#{agendaTelefoneBean.excluirAgendaTelefone(telefone)}" update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone"/>
+                                                        <p:commandButton icon="ui-icon-trash" action="#{agendaTelefoneBean.removeAgendaTelefone(telefone)}" update=":form_agenda_telefone:tbl_agenda_telefone :form_agenda_telefone:i_panel_cadastro_telefone"/>
                                                     </p:column>                                    
                                                 </p:dataTable>
                                             </c:if>
-                                            <c:if test="#{agendaTelefoneBean.listaAgendaTelefones.size() == 0}">
+                                            <c:if test="#{agendaTelefoneBean.listAgendaTelefones.size() == 0}">
                                                 <f:facet name="header">
                                                     Lista de telefones - Nenhum telefone cadastrado!
                                                 </f:facet> 
@@ -190,28 +193,113 @@
                             </div>
                         </p:panel>
                     </p:dialog>
+                    <p:dialog id="i_ac" widgetVar="dlg_agenda_contato"  width="1024" height="500" resizable="false" modal="false" draggable="false">
+                        <f:facet name="header">
+                            <h:panelGrid columns="2">
+                                <h:graphicImage value="/Imagens/icon-birthday.png" width="16" />
+                                <h:column>Contato</h:column>
+                            </h:panelGrid>
+                        </f:facet>
+                        <p:messages id="messages_contato" showDetail="true" autoUpdate="true" closable="true"/>
+                        <div class="clear"></div>
+                        <h:panelGrid columns="2" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop" id="i_panel_ac" styleClass="margin-top-max">
+                            <h:column>
+                                <p:panel>
+                                    <h:panelGrid id="i_panel_cadastro_contato">
+                                        <p:outputLabel value="Contato" />
+                                        <p:inputText value="#{agendaTelefoneBean.agendaContato.contato}" placeholder="Contato" size="50" converter="#{toUpperCase}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="Departamento" />
+                                        <p:inputText value="#{agendaTelefoneBean.agendaContato.departamento}" placeholder="Departamento" size="30" converter="#{toUpperCase}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="E-mail 1" />
+                                        <p:inputText value="#{agendaTelefoneBean.agendaContato.email1}" placeholder="Email 1 - email1@domain.com" size="50">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                        <p:outputLabel value="E-mail 2" />
+                                        <p:inputText value="#{agendaTelefoneBean.agendaContato.email2}" placeholder="Email 2 - email2@domain.com" size="50">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>                                            
+                                        <p:outputLabel value="Aniversário" />
+                                        <p:calendar pattern="dd/MM/yyyy" value="#{agendaTelefoneBean.agendaContato.nascimento}" onclick="$(this).mask('99/99/9999');" placeholder="01/01/2000" navigator="true" lang="pt-br">
+                                            <p:ajax event="dateSelect" update="@this" listener="#{agendaTelefoneBean.agendaContato.selecionaDataNascimento}" />
+                                            <p:ajax event="change" update="@this" />
+                                        </p:calendar>
+                                        <h:column>
+                                            <br />
+                                            <p:selectBooleanButton value="#{agendaTelefoneBean.agendaContato.notificaAniversario}" onLabel="Remove notificação" offLabel="Habilita notificação" styleClass="margin-top-max" onIcon="ui-icon-star" offIcon="ui-icon-star" />
+                                        </h:column>
+                                    </h:panelGrid>
+                                </p:panel>
+                                <h:panelGrid columns="2" styleClass="margin-top-max">
+                                    <p:commandButton value="Salvar" icon="ui-icon-circle-plus" update="messages_contato i_panel_cadastro_contato tbl_agenda_contato" action="#{agendaTelefoneBean.addAgendaContato}"/>
+                                    <p:commandButton value="Novo" update="messages_contato i_panel_cadastro_contato tbl_agenda_contato" action="#{agendaTelefoneBean.clearAgendaContato}"/>
+                                </h:panelGrid>
+                            </h:column>
+                            <h:column>
+                                <p:panel id="tbl_agenda_contato" header="Lista de Contatos" styleClass="margin-left-max">
+                                    <p:dataTable var="agendaContato" value="#{agendaTelefoneBean.listAgendaContato}" scrollable="true" scrollHeight="300" style="width: 600px;" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column width="25">
+                                            <p:commandButton icon="ui-icon-link" update=":form_agenda_telefone:i_panel_cadastro_contato" actionListener="#{agendaTelefoneBean.editAgendaContato(agendaContato)}"/>
+                                        </p:column>
+                                        <p:column width="25" styleClass="text-center">
+                                            <f:facet name="header">
+                                                <center><span class="ui-icon ui-icon-alert" title="Notificações"></span></center>
+                                            </f:facet>
+                                            <h:column rendered="#{agendaContato.notificaAniversario}">
+                                                <center><span class="ui-icon ui-icon-check" title="Habilitado"></span></center>
+                                            </h:column>
+                                        </p:column>
+                                        <p:column headerText="Contato">
+                                            #{agendaContato.contato}
+                                        </p:column>
+                                        <p:column headerText="Departamento">
+                                            #{agendaContato.departamento}
+                                        </p:column>
+                                        <p:column headerText="E-mail 1">
+                                            #{agendaContato.email1}
+                                        </p:column>
+                                        <p:column headerText="E-mail 2">
+                                            #{agendaContato.email2}
+                                        </p:column>
+                                        <p:column headerText="Nascimento">
+                                            #{agendaContato.nascimentoString}
+                                        </p:column>                                    
+                                        <p:column width="25">
+                                            <p:commandButton icon="ui-icon-trash" action="#{agendaTelefoneBean.removeAgendaContato(agendaContato)}" update=":form_agenda_telefone:messages_contato :form_agenda_telefone:i_panel_cadastro_contato :form_agenda_telefone:tbl_agenda_contato"/>
+                                        </p:column>                                    
+                                    </p:dataTable>
+                                </p:panel>
+                            </h:column>
+                        </h:panelGrid>
+                        <f:facet name="footer">
+                            <p:commandButton value="Sair" onclick="PF('dlg_agenda_contato').hide()" />
+                        </f:facet>
+                    </p:dialog>                    
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" header="Deseja salvar este registro?" width="300">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Salvar" action="#{agendaTelefoneBean.salvar}" update="i_panel_adicionar, out_mensagem, :form_agenda_telefone:id_lista" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide();"/>
+                                <p:commandButton value="Sim" title="Salvar" action="#{agendaTelefoneBean.save}" update="i_panel_adicionar, out_mensagem, :form_agenda_telefone:id_lista" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>
                     <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir"  modal="true" resizable="true" header="Deseja excluir este registro?" width="300">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Excluir" action="#{agendaTelefoneBean.excluir}" update="i_panel_adicionar, out_mensagem, :form_agenda_telefone:id_lista" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide();"/>
+                                <p:commandButton value="Sim" title="Excluir" action="#{agendaTelefoneBean.delete}" update="i_panel_adicionar, out_mensagem, :form_agenda_telefone:id_lista" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>                    
                     <p:dialog id="id_panel_mensagem" widgetVar="dgl_panel_mensagem" modal="true" header="Mensagem" width="300">
                         <center>
                             <h:panelGrid id="out_mensagem">
-                                <p:outputLabel value="#{agendaTelefoneBean.mensagem}" />                            
+                                <p:outputLabel value="#{agendaTelefoneBean.message}" />                            
                             </h:panelGrid> 
-                            <p:commandButton value="Ok" title="Ok" onclick="dgl_panel_mensagem.hide();" />
+                            <p:commandButton value="Ok" title="Ok" onclick="PF('dgl_panel_mensagem').hide();" />
                         </center>
                     </p:dialog>                    
                 </h:form>                    

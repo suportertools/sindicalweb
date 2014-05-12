@@ -85,28 +85,28 @@
                             </h:panelGrid>
                         </p:panel>
                         <h:panelGrid columns="6" styleClass="margin-top-max">
-                            <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dgl_salvar.show()" type="button"  />
+                            <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_salvar').show()" type="button"  />
                             <p:commandButton value="Novo" action="#{modeloContratoBean.novo}" update="id_form_contrato"/>
-                            <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dgl_excluir.show()" type="button"/>
+                            <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_excluir').show()" type="button"/>
                             <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaModeloContrato}" title="Pesquisar Contrato" />
-                            <p:commandButton value="Anexar arquivos" type="button" onclick="dgl_upload.show();" id="id_btn_uploads" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
-                            <p:commandButton value="Anexos (#{modeloContratoBean.listaArquivos.size()})" type="button" onclick="dgl_anexos.show();" id="id_btn_anexo" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
+                            <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
+                            <p:commandButton value="Anexos (#{modeloContratoBean.listaArquivos.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo" rendered="#{modeloContratoBean.matriculaContrato.id != -1}"/>
                         </h:panelGrid>
                     </p:panel>
                     <p:dialog widgetVar="dgl_salvar" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{modeloContratoBean.salvar()}" onclick="dgl_salvar.hide();
-                                dgl_mensagem.show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem  id_form_contrato"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="dgl_salvar.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{modeloContratoBean.salvar()}" onclick="PF('dgl_salvar').hide();
+                                PF('dgl_mensagem').show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem  id_form_contrato"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_salvar').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:dialog widgetVar="dgl_excluir" header="Deseja excluir este registro?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{modeloContratoBean.excluir()}" onclick="dgl_excluir.hide();
-                                dgl_mensagem.show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem id_form_contrato"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="dgl_excluir.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{modeloContratoBean.excluir()}" onclick="PF('dgl_excluir').hide();
+                                PF('dgl_mensagem').show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem id_form_contrato"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_excluir').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:dialog widgetVar="dgl_mensagem" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
                         <p:outputLabel value="#{modeloContratoBean.mensagem}" id="id_mensagem" /> 
                         <div class="clear"></div>
-                        <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="dgl_mensagem.hide();"/>
+                        <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dgl_mensagem').hide();"/>
                     </p:dialog>                     
                 </h:form>
                 <h:form id="form_modelo_upload" enctype="multipart/form-data" acceptcharset="UTF-8">

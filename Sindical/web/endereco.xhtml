@@ -37,9 +37,9 @@
                                         <p:outputLabel value="Logradouro: " for="idLogradouro"/>
                                     </h:column>
                                     <h:column>
-                                        <p:selectOneMenu value="#{enderecoBean.idLogradouro}" id="idLogradouro">
+                                        <p:selectOneMenu value="#{enderecoBean.index[2]}" id="idLogradouro">
                                             <p:ajax event="change" update="@this"/>
-                                            <f:selectItems value="#{enderecoBean.listaLogradouro}" />
+                                            <f:selectItems value="#{enderecoBean.listLogradouro}" />
                                         </p:selectOneMenu>
                                     </h:column>                            
                                     <h:column>
@@ -70,7 +70,7 @@
                                         <p:inputText value="#{enderecoBean.endereco.faixa}" title="Faixa de endereço" id="idFaixa"/>
                                     </h:column>
                                     <h:column>
-                                        <p:outputLabel value="CEP: " styleClass="fontePadrao" for="idCEP"/>
+                                        <p:outputLabel value="CEP: " for="idCEP"/>
                                     </h:column>
                                     <h:column>
                                         <p:inputMask mask="99999-999" value="#{enderecoBean.endereco.cep}" title="CEP" id="idCEP"/>
@@ -78,27 +78,27 @@
                                 </h:panelGrid>
                             </p:panel>
                             <h:panelGrid columns="5" styleClass="margin-top-max">
-                                <p:commandButton onclick="dlg_salvar.show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar" type="button"/>
-                                <p:commandButton value="Novo" action="#{enderecoBean.novo}" title="Novo" update=":form_endereco:" />
-                                <p:commandButton onclick="dlg_excluir.show()" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" type="button"/>
-                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaEndereco}" title="Pesquisar Endereço" />                                 
+                                <p:commandButton onclick="PF('dlg_salvar').show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar" type="button"/>
+                                <p:commandButton value="Novo" action="#{enderecoBean.clear}" title="Novo" update=":form_endereco:" />
+                                <p:commandButton onclick="PF('dlg_excluir').show()" styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" type="button"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaEndereco}" title="Pesquisar Endereço" />
                             </h:panelGrid>
                             <p:dialog widgetVar="dlg_salvar" header="Deseja salvar este registro?" width="400" modal="true" resizable="false">
                                 <f:facet name="footer">
-                                    <p:commandButton value="Sim" title="Salvar" action="#{enderecoBean.salvar}" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show()" update=":form_endereco:"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dlg_salvar.hide();" />
+                                    <p:commandButton value="Sim" title="Salvar" action="#{enderecoBean.save}" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show()" update=":form_endereco:"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_salvar').hide();" />
                                 </f:facet>
                             </p:dialog>
                             <p:dialog widgetVar="dlg_excluir" header="Deseja excluir este registro?" width="400" modal="true" resizable="false">
                                 <f:facet name="footer">
-                                    <p:commandButton value="Sim" title="Excluir" action="#{enderecoBean.excluir}" oncomplete="PF('dlg_excluir').hide(); PF('dlg_mensagem').show()" update=":form_endereco:"/>
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dlg_excluir.hide();" />
+                                    <p:commandButton value="Sim" title="Excluir" action="#{enderecoBean.delete}" oncomplete="PF('dlg_excluir').hide(); PF('dlg_mensagem').show()" update=":form_endereco:" />
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_excluir').hide();" />
                                 </f:facet>
                             </p:dialog>
                             <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true" resizable="false">
                                 <p:outputLabel value="#{enderecoBean.mensagem}" />
                                 <f:facet name="footer">
-                                    <p:commandButton value="OK" title="OK" action="#{enderecoBean.limpar}"  onclick="dlg_mensagem.hide();"/>
+                                    <p:commandButton value="OK" title="OK" onclick="PF('dlg_mensagem').hide();"/>
                                 </f:facet>
                             </p:dialog>
                         </h:form>

@@ -64,7 +64,7 @@
                                 </p:panel>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
                                     <c:if test="#{!rescisaoContratoBean.rescindido}">
-                                        <p:commandButton value="Salvar" onclick="dlg_salvar.show();" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                        <p:commandButton value="Salvar" onclick="PF('dlg_salvar').show();" disabled="#{controleAcessoBean.botaoSalvar}" />
                                     </c:if>
                                     <c:if test="#{rescisaoContratoBean.rescindido}">
                                         <p:commandButton value="Contrato já rescindido" disabled="true" styleClass="font-color-red"/>
@@ -93,11 +93,11 @@
                                         <c:if test="#{rescisaoContratoBean.tipoRescisaoContrato == 'matriculaEscola'}">
                                             <p:commandButton value="Sim" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();" update=":form_rescisao:" action="#{rescisaoContratoBean.rescindirMatriculaEscola}" />
                                         </c:if>
-                                        <p:commandButton value="Não" onclick="dlg_salvar.hide();"/>
+                                        <p:commandButton value="Não" onclick="PF('dlg_salvar').hide();"/>
                                     </h:panelGrid>
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_mensagem" width="400" header="Mensagem" modal="true">
-                                    <p:commandButton value="Ok" onclick="dlg_mensagem.hide();"/>
+                                    <p:commandButton value="Ok" onclick="PF('dlg_mensagem').hide();"/>
                                 </p:dialog>
                             </p:panel>
                         </h:form>

@@ -68,7 +68,7 @@
                                 </p:panel>
                                 <h:panelGrid columns="2" styleClass="margin-top-max">
                                     <p:commandButton value="Novo" action="#{conclusaoMatriculaBean.novo}" update=":form_conclusao:" />
-                                    <p:commandButton value="Salvar selecionados" onclick="dlg_salvar_todos.show();" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{conclusaoMatriculaBean.turmaPesquisa}"/>
+                                    <p:commandButton value="Salvar selecionados" onclick="PF('dlg_salvar_todos').show();" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{conclusaoMatriculaBean.turmaPesquisa}"/>
                                 </h:panelGrid>
                                 <p:dialog widgetVar="dlg_panel" width="600" header="Matrícula" modal="true">
                                     <p:panel styleClass="no-border" id="i_panel">
@@ -99,21 +99,21 @@
                                                     <p:outputLabel value="#{conclusaoMatriculaBean.matriculaEscola.vendedor.pessoa.nome}" />
                                                 </h:column>
                                             </h:panelGrid>
-                                            <p:commandButton value="Salvar" onclick="dlg_panel.hide(); dlg_salvar.show();" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                            <p:commandButton value="Salvar" onclick="PF('dlg_panel').hide(); PF('dlg_salvar').show();" disabled="#{controleAcessoBean.botaoSalvar}" />
                                         
                                     </p:panel>
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_salvar" width="400" header="Deseja realmente concluir?" modal="true">
                                     <h:panelGrid columns="2" styleClass="margin-top-max">
                                         <p:commandButton value="Sim" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();" update=":form_conclusao:" action="#{conclusaoMatriculaBean.salvar}"/>
-                                        <p:commandButton value="Não" onclick="dlg_salvar.hide();"/>
+                                        <p:commandButton value="Não" onclick="PF('dlg_salvar').hide();"/>
                                     </h:panelGrid>
                                 </p:dialog>
                                 <p:dialog widgetVar="dlg_salvar_todos" width="400" header="Deseja salvar todos selecionados?" modal="true">
                                     <p:panel styleClass="no-border" footer="* Não serão salvos alunos que estiverem com status trancado e desistente; * Alunos com débitos;">
                                         <h:panelGrid columns="2" styleClass="margin-top-max">
                                             <p:commandButton value="Sim" oncomplete="PF('dlg_salvar_todos').hide(); PF('dlg_mensagem').show();" update=":form_conclusao:" action="#{conclusaoMatriculaBean.salvarTodos}"/>
-                                            <p:commandButton value="Não" onclick="dlg_salvar_todos.hide();"/>
+                                            <p:commandButton value="Não" onclick="PF('dlg_salvar_todos').hide();"/>
                                         </h:panelGrid>
                                     </p:panel>
                                 </p:dialog>

@@ -59,10 +59,10 @@
                             </p:panel>
                             <p:panel styleClass="margin-top-max" id="i_form_panel">
                                 <f:facet name="header">
-                                    <p:commandButton icon="ui-icon-link" value="Selecionar Formas de Pagamento" onclick="dlg_1.show()" type="button" id="i_sfpp" disabled="#{previsaoPagamentoBean.listPrevisaoPagamentos.size() == 0}"/>
+                                    <p:commandButton icon="ui-icon-link" value="Selecionar Formas de Pagamento" onclick="PF('dlg_1').show()" type="button" id="i_sfpp" disabled="#{previsaoPagamentoBean.listPrevisaoPagamentos.size() == 0}"/>
                                 </f:facet>
                                 <f:facet name="footer">
-                                    <p:commandButton type="button" value="Salvar" onclick="dlg_s.show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                    <p:commandButton type="button" value="Salvar" onclick="PF('dlg_s').show()" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                     <p:commandButton action="#{previsaoPagamentoBean.print}" title="Imprimir relatório" icon="ui-icon-print" value="Relatório" ajax="false" rendered="#{previsaoPagamentoBean.listPrevisaoPagamentos.size() > 0}"/>
                                 </f:facet>
                                 <p:dataTable scrollable="true" value="#{previsaoPagamentoBean.listPrevisaoPagamentos}" var="previsaoPagamento" scrollHeight="400" emptyMessage="Nenhum registro encontrado" selection="#{previsaoPagamentoBean.previsaoSelecionada}" rowKey="#{previsaoPagamento.movimento.id}" id="i_form" paginator="true" rows="10">
@@ -147,7 +147,7 @@
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Sim" action="#{previsaoPagamentoBean.save}" oncomplete="PF('dlg_s').hide(); PF('dlg_msg').show();" update=":form_pp:"/>
-                                        <p:button value="Não" onclick="dlg_s.hide();" /> 
+                                        <p:button value="Não" onclick="PF('dlg_s').hide();" /> 
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dialog>
@@ -157,7 +157,7 @@
                                 </h:panelGrid>
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
-                                        <p:button value="Ok" onclick="dlg_msg.hide();" /> 
+                                        <p:button value="Ok" onclick="PF('dlg_msg').hide();" /> 
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dialog>

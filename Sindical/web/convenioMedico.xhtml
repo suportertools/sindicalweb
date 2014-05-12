@@ -23,19 +23,19 @@
                         <p:dialog header="Deseja salvar este Registro?" widgetVar="dlg_save" modal="true" closable="true">
                             <f:facet name="footer">
                                 <p:commandButton value="Sim" title="Salvar" action="#{matriculaConvenioMedicoBean.save}" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" update=":form_cm:, outConfirma"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="dlg_save.hide();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide();"/>
                             </f:facet>
                         </p:dialog>
                         <p:dialog header="Deseja excluir este Registro?" widgetVar="dlg_delete" modal="true" closable="true">
                             <f:facet name="footer">
                                 <p:commandButton value="Sim" title="Salvar" action="#{matriculaConvenioMedicoBean.excluir}" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" update=":form_cm:, outConfirma"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="dlg_delete.hide();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide();"/>
                             </f:facet>
                         </p:dialog>
                         <p:dialog header="Mensagem" widgetVar="dlg_message" modal="true" closable="true" width="400">
                             <h:outputText id="outConfirma" value="#{matriculaConvenioMedicoBean.mensagem}" />
                             <f:facet name="footer">
-                                <p:commandButton value="OK" action="convenioMedico" title="OK" onclick="dlg_message.hide();"/>
+                                <p:commandButton value="OK" action="convenioMedico" title="OK" onclick="PF('dlg_message').hide();"/>
                             </f:facet>
                         </p:dialog>
                         <ui:include src="servicoPessoa.xhtml" />
@@ -49,9 +49,9 @@
                         </h:panelGrid>
                     </p:panel>
                     <h:panelGrid columns="4" styleClass="margin-top-max">
-                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dlg_save.show()"/>
+                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()"/>
                         <p:commandButton value="Novo" action="#{matriculaConvenioMedicoBean.clear}" update=":form_cm:"/>
-                        <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="dlg_delete.show()"/>
+                        <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaConvenioMedico}" />                        
                     </h:panelGrid>
                 </h:form>

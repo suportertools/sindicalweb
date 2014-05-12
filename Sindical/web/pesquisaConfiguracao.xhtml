@@ -1,81 +1,44 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-xmlns:ui="http://java.sun.com/jsf/facelets"
-xmlns:h="http://java.sun.com/jsf/html"
-xmlns:f="http://java.sun.com/jsf/core"
-xmlns:a4j="http://richfaces.org/a4j"
-xmlns:rich="http://richfaces.org/rich"
-xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
-        <title>Pesquisa Relatórios</title>
+        <title>Pesquisa Configuração</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
-        <h:body class="divMenu">
+    <h:body>
         <f:subview id="header">
-        <ui:include src="template.xhtml"/>
-        <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
-            <f:view>
-            <h:form id="pesquisaConfiguracao">
-            <center>
-            <div class="headerPanel">
-            <h:outputText value="Pesquisa Configuração" styleClass="fontePanel" style="width: 100%;"/>
-            </div>
-            <br /><br />
-                <div class="divMae">
-                <div style="overflow:auto; height:380px;">
-                <br />
-                <rich:dataTable value="#{configuracaoBean.listaConfiguracao}" var="linha" iterationStatusVar="it"  style="width: 95%" id="tbl">
-                <rich:column style="text-align: center;">
-                <f:facet name="header">
-                <h:outputText value="#"/>
-                </f:facet>
-                <h:outputText value="#{it.index}"/>
-                </rich:column>
-                    
-                <rich:column styleClass="colunaPesquisa">
-                    <f:facet name="header">
-                        <h:outputText value="ID"/>
-                    </f:facet>
-                    <a4j:commandLink action="#{configuracaoBean.editar(linha)}" value="#{linha.id}" />
-                </rich:column>
-                    
-                <rich:column>
-                    <f:facet name="header">
-                        <h:outputText value="Cliente"/>
-                    </f:facet>
-                    <a4j:commandLink action="#{configuracaoBean.editar(linha)}" value="#{linha.juridica.pessoa.nome}" styleClass="underline-hover" />
-                </rich:column>
-                    
-                <rich:column>
-                    <f:facet name="header">
-                        <h:outputText value="Identificador"/>
-                    </f:facet>
-                    <div>
-                        <h:outputText value="#{linha.identifica}"/>
-                    </div>
-                </rich:column>
-                    
-                <rich:column>
-                    <f:facet name="header">
-                        <h:outputText value="Acessos"/>
-                    </f:facet>
-                    <h:outputText value="#{linha.acessos}" />
-                </rich:column>
-                <rich:column>
-                    
-                    <f:facet name="header">
-                        <h:outputText value="Ativo"/>
-                    </f:facet>
-                    <h:selectBooleanCheckbox value="#{linha.ativo}" disabled="true"/>
-                </rich:column>
-                    
-                    
-                    
-                </rich:dataTable>
-                    </div>
-                </div>
-            </center>
-        </h:form>
-    </f:view>
-</h:body>
+        <f:view>
+            <h:form id="form_pc">
+                <p:panel styleClass="wrapper no-border">
+                    <h:outputText value="Pesquisa Configuração" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                </p:panel>
+                <p:panel id="i_tbl" styleClass="no-border">
+                    <p:dataTable value="#{configuracaoBean.listaConfiguracao}" var="configuracao" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
+                        <p:column width="25">
+                            <p:commandButton icon="ui-icon-link" action="#{configuracaoBean.edit(configuracao)}" title="Editar: #{configuracao.id}" />
+                        </p:column>
+                        <p:column headerText="Cliente">
+                            <h:outputText value="#{configuracao.juridica.pessoa.nome}"/>
+                        </p:column>
+                        <p:column headerText="Identificador" width="150">
+                            <h:outputText value="#{configuracao.identifica}"/>
+                        </p:column>
+                        <p:column headerText="Acessos" width="50" styleClass="text-center">
+                            <h:outputText value="#{configuracao.acessos}" />
+                        </p:column>
+                        <p:column width="30" headerText="Ativo" styleClass="text-center">
+                            <p:selectBooleanCheckbox value="#{configuracao.ativo}" disabled="true"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+            </h:form>                     
+        </f:view>     
+    </h:body>
 </ui:composition>

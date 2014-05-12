@@ -49,12 +49,12 @@
                                 </p:selectOneMenu>                                                                                            
                             </p:panel>
                         </p:panel>
-                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="eventDialog.hide(); i_dlg_s.show();" title="Deseja salvar este feriado?" />
+                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('eventDialog').hide(); PF('i_dlg_s').show();" title="Deseja salvar este feriado?" />
                         <p:commandButton value="Remover" action="#{feriadosBean.excluir()}" update="i_msg :formFeriadoNovo:, :formFeriado:i_panel_grid_feriados, schedule" disabled="#{controleAcessoBean.botaoExcluir}"/>
                     </p:dialog>
                     <p:dialog widgetVar="i_dlg_s" header="Deseja salvar este feriado?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{feriadosBean.salvar}" onclick="i_dlg_s.hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":formFeriadoNovo:, :formFeriado:i_panel_grid_feriados, schedule, i_msg"/> 
-                        <p:commandButton value="Cancelar"  type="submit" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left;" icon="ui-icon-close"/>
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{feriadosBean.salvar}" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":formFeriadoNovo:, :formFeriado:i_panel_grid_feriados, schedule, i_msg"/> 
+                        <p:commandButton value="Cancelar"  type="submit" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
                     <p:growl id="i_msg" showSummary="true" showDetail="true"/>
                 </h:form>                

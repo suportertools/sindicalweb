@@ -245,12 +245,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>configuracaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.sistema.beans.ConfiguracaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>pisoSalarialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.PisoSalarialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -259,12 +253,6 @@
     <managed-bean>
         <managed-bean-name>retornoPadraoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>convencaoPeriodoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.ConvencaoPeriodoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
@@ -1731,6 +1719,12 @@
         <navigation-case>
             <from-outcome>impressaoBoletoSocial</from-outcome>
             <to-view-id>/impressaoBoletoSocial.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>  
+        
+        <navigation-case>
+            <from-outcome>contaOperacao</from-outcome>
+            <to-view-id>/contaOperacao.jsf</to-view-id>
             <redirect/>
         </navigation-case>  
         <!-- 

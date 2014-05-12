@@ -45,7 +45,7 @@
                                                 <f:selectItems value="#{produtoBean.listaGrupos}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_grupo.show();" type="button"/>
+                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_grupo').show();" type="button"/>
                                         <p:outputLabel value="SubGrupo:" />
                                         <c:if test="#{produtoBean.listaSubGrupos.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[1]}">
@@ -53,7 +53,7 @@
                                             </p:selectOneMenu>
                                         </c:if>
                                         <c:if test="#{produtoBean.listaGrupos.size() > 0}">
-                                            <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_subgrupo.show();" type="button"/>
+                                            <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_subgrupo').show();" type="button"/>
                                         </c:if>
                                     </h:panelGrid>
                                 </h:column>
@@ -69,14 +69,14 @@
                                                 <f:selectItems value="#{produtoBean.listaUnidades}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_novo_produto_unidade.show();" type="button"/>
+                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_unidade').show();" type="button"/>
                                         <p:outputLabel value="Cor:" />
                                         <c:if test="#{produtoBean.listaCores.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[3]}" >
                                                 <f:selectItems value="#{produtoBean.listaCores}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="dlg_nova_cor.show();" type="button"/>
+                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_nova_cor').show();" type="button"/>
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
@@ -218,9 +218,9 @@
                             <!-- AÇÕES -->
 
                             <h:panelGrid styleClass="margin-top-max" columns="4">
-                                <p:commandButton value="Salvar" onclick="dlg_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <p:commandButton value="Salvar" onclick="PF('dlg_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <p:commandButton value="Novo" action="#{produtoBean.clear()}" update=":form_produto:" />
-                                <p:commandButton value="Excluir" type="button" onclick="dlg_excluir.show()" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                <p:commandButton value="Excluir" type="button" onclick="PF('dlg_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}" />
                                 <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaProduto()}"/>
                             </h:panelGrid>
 
@@ -228,7 +228,7 @@
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Sim" action="#{produtoBean.save}" update=":form_produto:" oncomplete="PF('dlg_salvar').hide(); PF('dlg_mensagem').show();"/>
-                                        <p:commandButton value="Não" onclick="dlg_salvar.hide();"/>
+                                        <p:commandButton value="Não" onclick="PF('dlg_salvar').hide();"/>
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dialog>
@@ -237,7 +237,7 @@
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Sim" action="#{produtoBean.delete()}" update=":form_produto:" oncomplete="PF('dlg_excluir').hide(); PF('dlg_mensagem').show();"/>
-                                        <p:commandButton value="Não" onclick="dlg_excluir.hide();"/>
+                                        <p:commandButton value="Não" onclick="PF('dlg_excluir').hide();"/>
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dialog>
@@ -247,7 +247,7 @@
                                     <p:outputLabel value="#{produtoBean.mensagem}" />
                                 </h:panelGrid>
                                 <f:facet name="footer">
-                                    <p:commandButton value="Ok" onclick="dlg_mensagem.hide();"/>
+                                    <p:commandButton value="Ok" onclick="PF('dlg_mensagem').hide();"/>
                                 </f:facet>
                             </p:dialog> 
 

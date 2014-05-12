@@ -47,23 +47,23 @@
                         </h:panelGrid>                        
                         <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
                             <p:column>
-                                <p:commandButton value="Salvar" title="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
+                                <p:commandButton value="Salvar" title="Salvar" onclick="PF('dgl_panel_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
                                 <p:commandButton value="Novo" title="Novo" action="#{conviteServicoBean.novo()}" update="id_panel_clube_servico :form_clube_servico:i_panel_servicos"/>
-                                <p:commandButton value="Excluir" title="Excluir" onclick="dgl_panel_excluir.show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
+                                <p:commandButton value="Excluir" title="Excluir" onclick="PF('dgl_panel_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
                             </p:column>
                         </p:panelGrid>
                     </p:panel>
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
                             <p:commandButton value="Sim" title="Salvar" action="#{conviteServicoBean.salvar()}" update="i_panel_mensagem id_panel_clube_servico :form_clube_servico:i_panel_servicos"  oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
-                            <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
+                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide()"/>
                         </p:panelGrid>
                     </p:dialog>
                     <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
                         <center>
                             <p:panelGrid columns="2" styleClass="sbb">
                                 <p:commandButton value="Sim" title="Excluir" action="#{conviteServicoBean.excluir()}" update="i_panel_mensagem id_panel_clube_servico :form_clube_servico:i_panel_servicos" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_excluir').hide();"  />
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide()"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide()"/>
                             </p:panelGrid>
                         </center>
                     </p:dialog>

@@ -1,0 +1,157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Conta Operação</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <h:form id="form_co">
+                        <c:set scope="request" var="object" value="${contaOperacaoBean.contaOperacao}"/>
+                        <p:panel styleClass="wrapper" style="border: 0px;">
+                            <h:outputText value="Conta Operação" styleClass="fonteHeader" />
+                            <div class="clear"></div>
+                            <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="true"/>
+                            <p:panel styleClass="fundoCinza margin-top-med">
+                                <h:panelGrid columns="4">
+                                    <p:outputLabel value="Operação:" />
+                                    <p:selectOneMenu value="#{contaOperacaoBean.index[0]}">
+                                        <p:ajax event="change" update=":form_co:" listener="#{contaOperacaoBean.clear(1)}"/>
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                        <f:selectItems value="#{contaOperacaoBean.listOperacoes}" />
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Plano de Conta:" />
+                                    <p:selectOneMenu value="#{contaOperacaoBean.index[3]}">
+                                        <p:ajax event="change" update=":form_co:" listener="#{contaOperacaoBean.clear(2)}"/>
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                        <f:selectItems value="#{contaOperacaoBean.listPlano4Group}" />
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:panel>
+                        <h:panelGrid columns="3" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop" styleClass="margin">
+                            <h:column>
+                                <h:panelGrid columns="1">
+                                    <p:dataTable var="plano5" value="#{contaOperacaoBean.listPlano5}" scrollHeight="250" scrollable="true" emptyMessage="Nenhum registro encontrado!">
+                                        <p:column headerText="Conta">
+                                            #{plano5.conta}
+                                        </p:column>
+                                        <p:column headerText="Classificador" width="120">
+                                            #{plano5.classificador}
+                                        </p:column>
+                                        <p:column width="25" styleClass="text-center">
+                                            <p:commandButton icon="ui-icon-plus" action="#{contaOperacaoBean.setItem(plano5)}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                        </p:column>
+                                    </p:dataTable>                                        
+                                </h:panelGrid>
+                            </h:column>
+                            <h:column>
+                                <h:panelGrid columns="1" >
+                                    <p:commandButton value="Remover contas selecionadas" action="#{contaOperacaoBean.removeItens()}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                    <hr />
+                                    <p:commandButton value="Remover todas contas" action="#{contaOperacaoBean.removeItens()}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                </h:panelGrid>
+                            </h:column>
+                            <h:column>
+                                <h:panelGrid id="i_tbl_co">
+                                    <p:dataTable var="contaOperacao" value="#{contaOperacaoBean.listContaOperacao}" scrollHeight="250" scrollable="true" selection="#{contaOperacaoBean.selectedContaOperacao}" rowKey="#{contaOperacao.id}" emptyMessage="Nenhum registro encontrado!">
+                                        <p:ajax event="rowSelect" />
+                                        <p:ajax event="rowSelectCheckbox" />
+                                        <p:ajax event="rowUnselect" />
+                                        <p:ajax event="rowUnselectCheckbox" />
+                                        <p:ajax event="toggleSelect" />
+                                        <p:column selectionMode="multiple" width="20" styleClass="text-center"/>                                    
+                                        <p:column width="25" styleClass="text-center">
+                                            <p:commandButton icon="ui-icon-link" action="#{contaOperacaoBean.editItem(contaOperacao)}" disabled="#{controleAcessoBean.botaoSalvar}" title="Editar"/>
+                                        </p:column>                                    
+                                        <p:column headerText="Plano 5">
+                                            #{contaOperacao.plano5.conta} - #{contaOperacao.plano5.numero}
+                                        </p:column>
+                                        <p:column headerText="E/S" width="25" styleClass="text-center">
+                                            #{contaOperacao.es}
+                                        </p:column>
+                                        <p:column headerText="C.F." width="25" styleClass="text-center">
+                                            <p:selectBooleanCheckbox value="#{contaOperacao.contaFixa}" disabled="#{controleAcessoBean.botaoSalvar}">
+                                                <p:ajax event="change" listener="#{contaOperacaoBean.updateContaOperacao(contaOperacao)}" />
+                                            </p:selectBooleanCheckbox>
+                                        </p:column>
+                                        <p:column width="25" styleClass="text-center">
+                                            <p:commandButton icon="ui-icon-close" action="#{contaOperacaoBean.removeItem(contaOperacao)}" disabled="#{controleAcessoBean.botaoExcluir}" title="Remover item"/>
+                                        </p:column>                                    
+                                        <f:facet name="footer">
+                                            C.F.: Conta Fixa
+                                        </f:facet>
+                                    </p:dataTable>
+                                </h:panelGrid>
+                            </h:column>
+                        </h:panelGrid>
+                        <p:dialog widgetVar="dlg_co" width="1024" modal="true" closable="false" header="Conta Operação" dynamic="true">
+                            <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="true" id="i_message_co"  />
+                            <h:panelGrid columns="2" id="i_panel_co">
+                                <p:outputLabel value="Operação:" />
+                                <p:outputLabel value="#{contaOperacaoBean.contaOperacao.operacao.descricao}" />
+                                <p:outputLabel value="Plano 5:" />
+                                <p:outputLabel value="#{contaOperacaoBean.contaOperacao.plano5.conta} - #{contaOperacaoBean.contaOperacao.plano5.classificador}" />
+                                <p:outputLabel value="Tipo (E/S):" />
+                                <p:selectOneMenu value="#{contaOperacaoBean.contaOperacao.es}">
+                                    <f:selectItem itemValue="E" itemLabel="Entrada" />
+                                    <f:selectItem itemValue="S" itemLabel="Saída" />
+                                </p:selectOneMenu>
+                                <h:column>
+                                    <h:panelGrid rendered="#{contaOperacaoBean.hidden[0]}">
+                                        <p:outputLabel value="C. Custo Contábil:" title="Centro de Custo Contábil" />
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                    <h:panelGrid columns="3" rendered="#{contaOperacaoBean.hidden[0]}">
+                                        <p:selectOneMenu value="#{contaOperacaoBean.index[1]}">
+                                            <p:ajax event="change" update="i_cccs" listener="#{contaOperacaoBean.listCentroCustoContabilSub.clear()}"/>
+                                            <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                            <f:selectItems value="#{contaOperacaoBean.listCentroCustoContabil}" />
+                                        </p:selectOneMenu>
+                                        <p:outputLabel value="C. Custo Contábil:" title="Centro de Custo Contábil Sub" />
+                                        <p:selectOneMenu value="#{contaOperacaoBean.index[2]}" id="i_cccs">
+                                            <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                            <f:selectItems value="#{contaOperacaoBean.listCentroCustoContabilSub}" />
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column>
+                                </h:column>
+                                <p:selectBooleanCheckbox value="#{contaOperacaoBean.contaOperacao.contaFixa}" itemLabel="Conta Fixa" />
+                            </h:panelGrid>
+                            <f:facet name="footer">
+                                <p>Ex: Conta fixa -> Água luz, telefone, etc.</p>
+                                <h:panelGrid columns="2">
+                                    <p:commandButton value="Salvar" action="#{contaOperacaoBean.save()}" />
+                                    <p:commandButton value="Sair" action="#{contaOperacaoBean.clear(4)}" />
+                                </h:panelGrid>
+                            </f:facet>
+                        </p:dialog>                        
+                    </h:form>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>

@@ -43,7 +43,7 @@
                         </p:column>
                     </p:panel>
                     <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaGradeBean.salvar()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margin-top-max"  update=":form_grade_novo:id_panel_grade_horarios :form_grade:i_panel_grid_horarios"/>
-                    <p:commandButton value="Novo" title="Novo" action="#{academiaGradeBean.novo()}" update=":form_grade_novo:id_panel_grade_horarios" styleClass="margin-left-max margin-top-max"/>
+                    <p:commandButton value="Novo" title="Novo" action="#{academiaGradeBean.clear()}" update=":form_grade_novo:id_panel_grade_horarios" styleClass="margin-left-max margin-top-max"/>
                 </h:form>
                 <h:form id="form_grade">
                     <p:panelGrid id="i_panel_grid_horarios" style="margin-top: 15px; width: 150px; float: left; margin-bottom: 15px;" columns="1">

@@ -80,8 +80,8 @@
                             <h:panelGrid columns="4" cellpadding="5">
                                 <p:outputLabel value="Assunto: " for="id_email_assunto" />
                                 <p:inputText id="id_email_assunto" size="110" value="#{enviarArquivosBean.mensagem.assunto}"/>
-                                <p:commandButton value="Anexar arquivos" type="button" onclick="dgl_upload.show();" id="id_btn_uploads"/>
-                                <p:commandButton value="Anexos (#{enviarArquivosBean.listaArquivosContabilidade.size()})" type="button" onclick="dgl_anexos.show();" id="id_btn_anexo"/>
+                                <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
+                                <p:commandButton value="Anexos (#{enviarArquivosBean.listaArquivosContabilidade.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo"/>
                             </h:panelGrid>
                         </p:panel>
                         
@@ -89,7 +89,7 @@
                             <p:column>
                                 <p:panel id="i_panel" header="Destinatários" style="width: 600px; height: 360px;" styleClass="margin-top-max">
                                     <p:commandButton value="Todas Empresas" action="#{enviarArquivosBean.todasEmpresa()}" update="i_panel"/>
-                                    <p:commandButton value="Adicionar à Lista" oncomplete="i_dlg_pesquisa.show()" update="i_panel"/>
+                                    <p:commandButton value="Adicionar à Lista" oncomplete="PF('i_dlg_pesquisa').show()" update="i_panel"/>
                                     
                                     <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContribuintes}" var="juridica" scrollHeight="250" rowIndexVar="index" emptyMessage="Nenhum contribuinte encontrado" selection="#{enviarArquivosBean.contribuinteSelecionado}"  rowKey="#{juridica.id}" >
                                         <p:ajax event="rowSelect" update=":form_relatorio_contribuintes:i_panel"/>
@@ -123,7 +123,7 @@
                             <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novoContribuinte()}" />
                         </h:panelGrid>
                         
-                        <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                        <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="i_dlg_modal.hide();" />
 
                         <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
                             <h:outputLabel value="... Aguarde ..." />

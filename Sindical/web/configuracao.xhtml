@@ -1,108 +1,87 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Configuração</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formConfiguracao">
-                <c:set scope="request" var="object" value="${configuracaoBean.configuracao}"/>
-                <center>                    
-                    <div class="headerPanel">
-                    <h:outputText value="Configuração" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br /><br />
-                    <div class="divMae divFundo" style="width: 800px" align="left">
-                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2" id="idPanelConfiguracao">
-                            <a4j:commandButton image="/Imagens/pesquisar.png"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" value="Pesquisar"/>
-                            <h:column>
-                                <h:outputLabel value="Cliente: " styleClass="fontePadrao" rendered="#{configuracaoBean.juridica.id == -1}"/>
-                                <h:outputLabel value="CNPJ: #{configuracaoBean.juridica.pessoa.documento} - #{configuracaoBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{configuracaoBean.juridica.id != -1}"/>
-                            </h:column>
-                            <h:outputLabel value="Identificador: " styleClass="fontePadrao"/>
-                            <h:inputText value="#{configuracaoBean.configuracao.identifica}" />
-                            <h:outputLabel value="Acessos: " styleClass="fontePadrao"/>
-                            <h:inputText value="#{configuracaoBean.configuracao.acessos}" disabled="true"/>
-                            <h:outputLabel value="Ativo: " styleClass="fontePadrao"/>
-                            <h:selectBooleanCheckbox id="idAtiva"  value="#{configuracaoBean.configuracao.ativo}" title="Ativar/Desativar">
-                                <a4j:ajax event="change" render="idAtiva" />
-                            </h:selectBooleanCheckbox>                            
-                        </h:panelGrid>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Configuração" styleClass="fonteHeader" />
                         <div class="clear"></div>
-                        <div class="float-left">
-                            <h:panelGrid columns="4" styleClass=" margin-bottom-max" style="margin-top: 15px;">
-                                <a4j:commandLink id="idBtnSalvar" styleClass="idSalvar iLink" value="Salvar" title="Salvar" onclick="modalOpcao('divSalvar');" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                <a4j:commandLink action="#{configuracaoBean.novo}" styleClass="idNovo iLink" value="Novo" title="Novo"  />
-                                <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="modalOpcao('divExcluir');" />
-                                <a4j:commandLink styleClass="idPesquisar iLink" action="#{chamadaPaginaBean.pesquisaConfiguracao}" title="Pesquisar" value="Pesquisar"/>
-                            </h:panelGrid>
-                        </div>  
-                    </div>
-                </center>
-                <div id="boxes">
-                    <div id="divSalvar" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
+                        <h:form id="form_c">
+                            <c:set scope="request" var="object" value="${configuracaoBean.configuracao}" id="idObject"/>
                             <h:panelGrid columns="2">
-                                <h:outputText value="Deseja salvar este Registro?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><span class="loading-status"></span></f:facet></a4j:status>
+                                <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" value="Pesquisar"/>
+                                <p:column>
+                                    <p:outputLabel value="Cliente: " rendered="#{configuracaoBean.juridica.id == -1}"/>
+                                    <p:outputLabel value="CNPJ: #{configuracaoBean.juridica.pessoa.documento} - #{configuracaoBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{configuracaoBean.juridica.id != -1}"/>
+                                </p:column>
+                                <p:outputLabel value="Identificador: " />
+                                <p:inputText value="#{configuracaoBean.configuracao.identifica}" />
+                                <p:outputLabel value="Acessos: " />
+                                <p:inputText value="#{configuracaoBean.configuracao.acessos}" disabled="true"/>
+                                <p:outputLabel value="Ativo: " />
+                                <p:selectBooleanCheckbox id="idAtiva"  value="#{configuracaoBean.configuracao.ativo}" itemLabel="Ativo">
+                                    <p:ajax event="change" update="@this" />
+                                </p:selectBooleanCheckbox>                            
                             </h:panelGrid>
-
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{configuracaoBean.salvar}" oncomplete="modalMensagem()" />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>
-                <div id="boxes">
-                    <div id="divExcluir" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputText value="Deseja excluir este Registro?" styleClass="fontePadrao"/>
-                                <a4j:status><f:facet name="start"><h:graphicImage value="/Imagens/espere.gif" alt="Excluindo"/></f:facet></a4j:status>
+                            <h:panelGrid columns="4" styleClass="margin-top-max">
+                                <p:commandButton id="idBtnSalvar" value="Salvar" title="Salvar" onclick="PF('dlg_save').show()" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <p:commandButton action="#{configuracaoBean.clear}" value="Novo" title="Novo" update=":form_c:"  />
+                                <p:commandButton value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" />
+                                <p:commandButton action="#{chamadaPaginaBean.pesquisaConfiguracao}" title="Pesquisar" value="Pesquisar"/>
                             </h:panelGrid>
-                            <br />
-                            <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{configuracaoBean.excluir}" oncomplete="modalMensagem()" />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
-                        </center>
-                    </div>
+                            <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" width="400" modal="true" resizable="false">
+                                <f:facet name="footer">
+                                    <p:commandButton value="Sim" title="Salvar" action="#{configuracaoBean.save}" oncomplete="PF('dlg_save').hide(); PF('dlg_mensagem').show()" update=":form_c: i_message"/>
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide();" />
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_delete" header="Deseja excluir este registro?" width="400" modal="true" resizable="false">
+                                <f:facet name="footer">
+                                    <p:commandButton value="Sim" title="Excluir" action="#{configuracaoBean.delete}" oncomplete="PF('dlg_delete').hide(); PF('dlg_mensagem').show()" update=":form_c:" />
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide();" />
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_mensagem" header="Mensagem" width="400" modal="true" resizable="false">
+                                <p:outputLabel value="#{configuracaoBean.mensagem}" id="i_message"/>
+                                <f:facet name="footer">
+                                    <p:commandButton value="OK" title="OK" onclick="PF('dlg_mensagem').hide();"/>
+                                </f:facet>
+                            </p:dialog>                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                    <div id="mask"></div>
-                </div>                
-                <div id="boxes">
-                    <div id="divMensagem" class="window">
-                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </a4j:commandLink>
-                        <br />
-                        <center>
-                            <h:outputText id="outConfirma" value="#{configuracaoBean.mensagem}" styleClass="fontePadrao"/>
-                            <br /><br />
-                            <a4j:commandLink styleClass="idNovo iLink closeModal" value="OK" title="OK" action="configuracao"/>
-                        </center>
-                    </div>
-                    <div id="mask"></div>
-                </div>                    
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

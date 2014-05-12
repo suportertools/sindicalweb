@@ -33,7 +33,7 @@
                                     <h:outputText value="#{usuarioBean.usuario.email}"/>
                                 </h:panelGrid>
                                 <h:panelGrid columns="4" styleClass="margin-top-max">
-                                    <p:commandButton value="Alterar senha" onclick="dlg_senha.show();" type="button"/>
+                                    <p:commandButton value="Alterar senha" onclick="PF('dlg_senha').show();" type="button"/>
                                 </h:panelGrid>
                             </p:panel>
                             <p:dialog id="divNovaSenha" modal="true" widgetVar="dlg_senha" header="Alterar Senha">
@@ -47,12 +47,12 @@
                                 </h:panelGrid>                        
                                 <h:panelGrid columns="2" styleClass="margin-top">
                                     <p:commandButton value="Alterar" title="Alterar" action="#{usuarioBean.salvarSenhaUsuarioPerfil()}" update=":form_usuario_perfil:" oncomplete="PF('dlg_senha').hide(); PF('dlg_mensagem').show();" />
-                                    <p:commandButton value="Voltar" title="Voltar" onclick="dlg_senha.hide();"/>
+                                    <p:commandButton value="Voltar" title="Voltar" onclick="PF('dlg_senha').hide();"/>
                                 </h:panelGrid>
                             </p:dialog>
                             <p:dialog id="divMensagem" widgetVar="dlg_mensagem" modal="true" header="mensagem">
                                 <h:outputText value="#{usuarioBean.mensagem}" styleClass="fontePadrao"/>                            
-                                <p:commandButton value="Voltar" title="Voltar" onclick="dlg_senha.hide();" update=":form_usuario_perfil:"/>
+                                <p:commandButton value="Voltar" title="Voltar" onclick="PF('dlg_senha').hide();" update=":form_usuario_perfil:"/>
                             </p:dialog>                            
                         </h:form>
                     </p:panel>

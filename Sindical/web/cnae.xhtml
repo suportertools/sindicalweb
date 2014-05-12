@@ -40,12 +40,12 @@
                     <h:panelGrid style=" clear: both; margin-top: 10px; float: left" columns="4">
                         <p:commandButton value="Salvar" action="#{cnaeBean.salvar()}" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar este Cnae"/>
                         <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.novo}"/>
-                        <p:commandButton value="Excluir" onclick="i_dlg_e.show()" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir este Cnae"/>
+                        <p:commandButton value="Excluir" onclick="PF('i_dlg_e').show()" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir este Cnae"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisar titulos"/>
                     </h:panelGrid>
                     <p:dialog widgetVar="i_dlg_e" header="Deseja realmente excluir este CNAE?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cnaeBean.excluir()}" update="formCnae" onclick="i_dlg_e.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                        <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cnaeBean.excluir()}" update="formCnae" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
                     </p:dialog>
                 </h:form>
                     

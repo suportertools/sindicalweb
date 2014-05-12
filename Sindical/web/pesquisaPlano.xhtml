@@ -44,6 +44,14 @@
                             </rich:column>
                             <rich:column styleClass="colunaPesquisa">
                                 <f:facet name="header">
+                                    <h:outputText value="ID"/>
+                                </f:facet>
+                                <a4j:commandLink action="#{planoBean.editarPesquisa}" value="#{linha.id}">
+                                    <a4j:param value="#{it.index}" assignTo="#{planoBean.idIndex}" />
+                                </a4j:commandLink>
+                            </rich:column>
+                            <rich:column styleClass="colunaPesquisa">
+                                <f:facet name="header">
                                     <h:outputText value="Número"/>
                                 </f:facet>
                                 <a4j:commandLink action="#{planoBean.editarPesquisa}" value="#{linha.numero}">
