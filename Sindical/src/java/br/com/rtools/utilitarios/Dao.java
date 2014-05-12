@@ -525,6 +525,28 @@ public class Dao extends DB implements DaoInterface {
      *
      * @param className (Nome do objeto)
      * @param find (Nome da NamedQuery dentro do objeto)
+     *
+     * @author Bruno
+     *
+     * @return List
+     */
+    @Override
+    public List listQuery(Object className, String find) {
+        return listQuery(className.getClass().getSimpleName(), find, new Object[]{});
+    }
+    
+    /**
+     * <p>
+     * <strong>List Query</strong></p>
+     * <p>
+     * <strong>Exemplo:</strong> E@NamedQuery(name = "Object.find", query =
+     * "SELECT O FROM Object AS O WHERE O.id = :p1") Uso: listQuery(Object,
+     * find, {1}) Exemplo 2 @NamedQuery(name = "Object.find", query = "SELECT O
+     * FROM Object AS O WHERE O.id = :p1 AND O.description = :p2") Uso:
+     * listQuery(Object, find, {1, 'Feliz'}).</p>
+     *
+     * @param className (Nome do objeto)
+     * @param find (Nome da NamedQuery dentro do objeto)
      * @param params (Cria se parâmetros organizados para realizar a consulta)
      *
      * @author Bruno
