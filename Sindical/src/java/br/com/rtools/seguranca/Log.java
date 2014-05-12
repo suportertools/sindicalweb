@@ -20,7 +20,7 @@ public class Log implements Serializable {
     @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Usuario usuario;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Rotina rotina;
     @Column(name = "DS_CONTEUDO_ORIGINAL", length = 1024, nullable = true)
