@@ -394,4 +394,26 @@ public class AgendaTelefoneDBToplink extends DB implements AgendaTelefoneDB {
         }
         return new ArrayList();
     }
+
+    @Override
+    public List pesquisaAniversariantesPorPeriodo() {
+        try {
+            Query query = getEntityManager().createNativeQuery("SELECT id FROM age_contato WHERE is_notifica_aniversario = TRUE AND TO_CHAR(dt_nascimento, 'MM') = TO_CHAR(current_date, 'MM')");
+            List list = query.getResultList();
+            String inIds = "";
+            if (!list.isEmpty()) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (i == 0) {
+                        inIds = "" + ((List) list.get(i)).get(0).toString();
+                    } else {
+                        inIds += ", " + ((List) list.get(i)).get(0).toString();
+                    }
+                }
+                Query query1 = getEntityManager().createQuery("SELECT AC FROM AgendaContato AS AC WHERE AC.id IN ("+inIds+") ORDER BY AC.nascimento ASC, AC.contato ASC");
+                return query1.getResultList();
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
 }
