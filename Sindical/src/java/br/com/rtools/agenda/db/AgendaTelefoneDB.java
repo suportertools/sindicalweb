@@ -31,5 +31,7 @@ public interface AgendaTelefoneDB {
     public List listaGrupoAgendaPorGrupoUsuario();
 
     public List listaGrupoAgendaPorUsuario(int idUsuario);
+    
+    public List pesquisaAniversariantesPorPeriodo();
 
 }
