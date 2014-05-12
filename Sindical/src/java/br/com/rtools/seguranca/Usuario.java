@@ -22,7 +22,7 @@ public class Usuario implements Serializable {
     private String login;
     @Column(name = "DS_SENHA", length = 6, nullable = false)
     private String senha;
-    @Column(name = "IS_ATIVO")
+    @Column(name = "IS_ATIVO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean ativo;
     @Column(name = "DS_EMAIL", length = 255)
     private String email;
