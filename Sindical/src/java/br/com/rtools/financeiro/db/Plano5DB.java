@@ -4,21 +4,8 @@ import br.com.rtools.financeiro.ContaBanco;
 import br.com.rtools.financeiro.Plano4;
 import br.com.rtools.financeiro.Plano5;
 import java.util.List;
-import javax.persistence.EntityManager;
 
 public interface Plano5DB {
-
-    public boolean insert(Plano5 plano5);
-
-    public boolean update(Plano5 plano5);
-
-    public boolean delete(Plano5 plano5);
-
-    public EntityManager getEntityManager();
-
-    public Plano5 pesquisaCodigo(int id);
-
-    public List pesquisaTodos();
 
     public List<String> pesquisaPlano5(String des_plano4, String des_plano5);
 
@@ -37,4 +24,8 @@ public interface Plano5DB {
     public List pesquisaCaixaBanco();
 
     public Plano5 pesquisaPlano5IDContaBanco(int id);
+    
+    public List listPlano4AgrupadoPlanoVw();
+
+    public List findPlano5ByPlano4(int idPlano4);
 }

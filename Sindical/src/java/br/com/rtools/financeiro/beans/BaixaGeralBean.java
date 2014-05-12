@@ -43,6 +43,8 @@ import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDB;
 import br.com.rtools.seguranca.db.PermissaoUsuarioDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -75,6 +77,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 @ManagedBean
 @SessionScoped
 public class BaixaGeralBean {
+
     private String quitacao = DataHoje.data();
     private String vencimento = DataHoje.data();
     private String valor = "0";
@@ -110,93 +113,92 @@ public class BaixaGeralBean {
     private ChequeRec chequeRec = new ChequeRec();
     private List<FormaPagamento> lfp = new ArrayList();
 
-    
-    public void atualizaTipo(){
-        TipoPagamento tipoPagamento = (TipoPagamento)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()),"TipoPagamento");
-        if (tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7){
+    public void atualizaTipo() {
+        TipoPagamento tipoPagamento = (TipoPagamento) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()), "TipoPagamento");
+        if (tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7) {
             listaCartao.clear();
             idCartao = 0;
         }
     }
-    
-    public void alteraNumeroChequeConta(){
+
+    public void alteraNumeroChequeConta() {
         LancamentoFinanceiroDB db = new LancamentoFinanceiroDBToplink();
         Plano5DB dbx = new Plano5DBToplink();
         Plano5 pl = dbx.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()));
-        
+
         ChequePag ch = db.pesquisaChequeConta(numeroChequePag, pl.getId());
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        ContaBanco cb = (ContaBanco)sv.pesquisaCodigo(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()), "ContaBanco");
-        if (ch != null){
-            GenericaMensagem.warn("Erro", "O cheque "+numeroChequePag+" já existe");
-            numeroChequePag = String.valueOf(cb.getUCheque()+1);
+
+        ContaBanco cb = (ContaBanco) sv.pesquisaCodigo(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()), "ContaBanco");
+        if (ch != null) {
+            GenericaMensagem.warn("Erro", "O cheque " + numeroChequePag + " já existe");
+            numeroChequePag = String.valueOf(cb.getUCheque() + 1);
         }
-        
-        if (Integer.valueOf(numeroChequePag) == cb.getUCheque()){
-            numeroChequePag = String.valueOf(cb.getUCheque()+1);
+
+        if (Integer.valueOf(numeroChequePag) == cb.getUCheque()) {
+            numeroChequePag = String.valueOf(cb.getUCheque() + 1);
             return;
-        }   
-        
-        if (Integer.valueOf(numeroChequePag) == cb.getUCheque()+1){
+        }
+
+        if (Integer.valueOf(numeroChequePag) == cb.getUCheque() + 1) {
             return;
-        }   
-        
-        if ((Integer.valueOf(numeroChequePag)+1) > (cb.getUCheque()+1)){
-            GenericaMensagem.warn("Erro", "Número "+(Integer.valueOf(numeroChequePag))+" maior que permitido!");
-            numeroChequePag = String.valueOf(cb.getUCheque()+1);
+        }
+
+        if ((Integer.valueOf(numeroChequePag) + 1) > (cb.getUCheque() + 1)) {
+            GenericaMensagem.warn("Erro", "Número " + (Integer.valueOf(numeroChequePag)) + " maior que permitido!");
+            numeroChequePag = String.valueOf(cb.getUCheque() + 1);
         }
     }
-    
+
     public void refreshForm() {
     }
 
     public String imprimirRecibo() {
-        
-        if (!listaMovimentos.isEmpty()){
+
+        if (!listaMovimentos.isEmpty()) {
             try {
                 Collection vetor = new ArrayList();
                 Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
                 PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
                 MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
-                
+
                 PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
                 String formas[] = new String[10];
-                
-                for (int i = 0; i < lfp.size(); i++){
+
+                for (int i = 0; i < lfp.size(); i++) {
                     // 4 - CHEQUE    
-                    if (lfp.get(i).getTipoPagamento().getId() == 4){
-                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(lfp.get(i).getValor()) + " (B: "+lfp.get(i).getChequeRec().getBanco()+" Ag: "+lfp.get(i).getChequeRec().getAgencia()+ " C: "+ lfp.get(i).getChequeRec().getConta()+" CH: "+lfp.get(i).getChequeRec().getCheque();
-                    // 5 - CHEQUE PRÉ
-                    }else if (lfp.get(i).getTipoPagamento().getId() == 5){
-                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(lfp.get(i).getValor()) + " (B: "+lfp.get(i).getChequeRec().getBanco()+" Ag: "+lfp.get(i).getChequeRec().getAgencia()+ " C: "+ lfp.get(i).getChequeRec().getConta()+" CH: "+lfp.get(i).getChequeRec().getCheque()+" P: "+lfp.get(i).getChequeRec().getVencimento()+")";
-                    // QUALQUER OUTRO    
-                    }else{
-                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(lfp.get(i).getValor());
+                    if (lfp.get(i).getTipoPagamento().getId() == 4) {
+                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(lfp.get(i).getValor()) + " (B: " + lfp.get(i).getChequeRec().getBanco() + " Ag: " + lfp.get(i).getChequeRec().getAgencia() + " C: " + lfp.get(i).getChequeRec().getConta() + " CH: " + lfp.get(i).getChequeRec().getCheque();
+                        // 5 - CHEQUE PRÉ
+                    } else if (lfp.get(i).getTipoPagamento().getId() == 5) {
+                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(lfp.get(i).getValor()) + " (B: " + lfp.get(i).getChequeRec().getBanco() + " Ag: " + lfp.get(i).getChequeRec().getAgencia() + " C: " + lfp.get(i).getChequeRec().getConta() + " CH: " + lfp.get(i).getChequeRec().getCheque() + " P: " + lfp.get(i).getChequeRec().getVencimento() + ")";
+                        // QUALQUER OUTRO    
+                    } else {
+                        formas[i] = lfp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(lfp.get(i).getValor());
                     }
-                }                
-                
-                for (int i = 0; i < listaMovimentos.size(); i++){
+                }
+
+                for (int i = 0; i < listaMovimentos.size(); i++) {
                     //String valor = (getConverteNullString(listaMovimento.get(i).getArgumento11().toString()) == "") ? "0" : listaMovimento.get(i).getArgumento11().toString();
-                    if (listaMovimentos.get(i).getBaixa() == null){
+                    if (listaMovimentos.get(i).getBaixa() == null) {
                         mensagem = "Baixa não foi concluída, não existe recibo";
                         return null;
                     }
                     vetor.add(new ParametroRecibo(
                             ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                            sindicato.getPessoa().getNome(), 
-                            pe.getEndereco().getDescricaoEndereco().getDescricao(), 
-                            pe.getEndereco().getLogradouro().getDescricao(), 
-                            pe.getNumero(), 
-                            pe.getComplemento(), 
-                            pe.getEndereco().getBairro().getDescricao(), 
-                            pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5), 
-                            pe.getEndereco().getCidade().getCidade(), 
-                            pe.getEndereco().getCidade().getUf(), 
-                            sindicato.getPessoa().getTelefone1(), 
-                            sindicato.getPessoa().getEmail1(), 
-                            sindicato.getPessoa().getSite(), 
-                            sindicato.getPessoa().getDocumento(), 
+                            sindicato.getPessoa().getNome(),
+                            pe.getEndereco().getDescricaoEndereco().getDescricao(),
+                            pe.getEndereco().getLogradouro().getDescricao(),
+                            pe.getNumero(),
+                            pe.getComplemento(),
+                            pe.getEndereco().getBairro().getDescricao(),
+                            pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
+                            pe.getEndereco().getCidade().getCidade(),
+                            pe.getEndereco().getCidade().getUf(),
+                            sindicato.getPessoa().getTelefone1(),
+                            sindicato.getPessoa().getEmail1(),
+                            sindicato.getPessoa().getSite(),
+                            sindicato.getPessoa().getDocumento(),
                             listaMovimentos.get(i).getLote().getPessoa().getNome(), // RESPONSÁVEL
                             String.valueOf(listaMovimentos.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
                             String.valueOf(listaMovimentos.get(i).getBaixa().getId()), // ID_BAIXA
@@ -204,36 +206,36 @@ public class BaixaGeralBean {
                             listaMovimentos.get(i).getServicos() != null ? listaMovimentos.get(i).getServicos().getDescricao() : "", // SERVICO
                             listaMovimentos.get(i).getVencimento(), // VENCIMENTO
                             new BigDecimal(listaMovimentos.get(i).getValorBaixa()), // VALOR BAIXA
-                            listaMovimentos.get(i).getBaixa().getUsuario().getLogin(), 
-                            listaMovimentos.get(i).getBaixa().getBaixa(), 
-                            DataHoje.horaMinuto(), 
-                            formas[0], 
-                            formas[1], 
+                            listaMovimentos.get(i).getBaixa().getUsuario().getLogin(),
+                            listaMovimentos.get(i).getBaixa().getBaixa(),
+                            DataHoje.horaMinuto(),
+                            formas[0],
+                            formas[1],
                             formas[2],
                             formas[3],
                             formas[4],
-                            formas[5], 
-                            formas[6], 
-                            formas[7], 
-                            formas[8], 
+                            formas[5],
+                            formas[6],
+                            formas[7],
+                            formas[8],
                             formas[9])
                     );
-                    
+
                 }
 
                 JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
 
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                
+
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                
+
                 HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                 res.setContentType("application/pdf");
                 res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
                 res.getOutputStream().write(arquivo);
                 res.getCharacterEncoding();
-                
+
                 FacesContext.getCurrentInstance().responseComplete();
             } catch (JRException ex) {
                 Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
@@ -243,25 +245,25 @@ public class BaixaGeralBean {
         }
         return null;
     }
-    
+
     public String retorno() {
         if (retorna) {
             String url = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
             if (url.equals("baixaBoleto")) {
                 GenericaSessao.put("linkClicado", true);
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).baixaBoleto();
-            } else if (url.equals("movimentosReceberSocial")){
+            } else if (url.equals("movimentosReceberSocial")) {
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
                 GenericaSessao.put("linkClicado", true);
                 return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).movimentosReceberSocialBaixa();
-            }else if(url.equals("lancamentoFinanceiro")){
+            } else if (url.equals("lancamentoFinanceiro")) {
                 GenericaSessao.put("linkClicado", true);
                 return "lancamentoFinanceiro";
                 //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).lancamentoFinanceiro();
-            }else{
+            } else {
                 return null;
             }
-            
+
         } else {
             return null;
         }
@@ -272,8 +274,8 @@ public class BaixaGeralBean {
         for (int i = 0; i < lista.size(); i++) {
             soma = Moeda.somaValores(soma,
                     Float.parseFloat(
-                    Moeda.substituiVirgula(
-                    String.valueOf(lista.get(i).getArgumento1()))));
+                            Moeda.substituiVirgula(
+                                    String.valueOf(lista.get(i).getArgumento1()))));
         }
         return soma;
     }
@@ -293,56 +295,57 @@ public class BaixaGeralBean {
 
             // CHEQUE
             if (tipoPagamento.getId() == 4 || tipoPagamento.getId() == 5) {
-                if (!getEs().isEmpty() && getEs().equals("S")){
+                if (!getEs().isEmpty() && getEs().equals("S")) {
                     Plano5DB db = new Plano5DBToplink();
                     Plano5 pl = db.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()));
-                    
-                    for (int i = 0; i < lista.size(); i++){
-                        if (lista.get(i).getArgumento4() != null){
-                            if (((ChequePag)lista.get(i).getArgumento4()).getPlano5().getId() == pl.getId()){
+
+                    for (int i = 0; i < lista.size(); i++) {
+                        if (lista.get(i).getArgumento4() != null) {
+                            if (((ChequePag) lista.get(i).getArgumento4()).getPlano5().getId() == pl.getId()) {
                                 GenericaMensagem.error("Erro", "Esta CONTA já foi adicionada!");
                                 return;
                             }
                         }
                         listaBancoSaida.get(i).setValue(i);
                     }
-                    
+
                     ChequePag ch_p = new ChequePag();
                     ch_p.setCheque(numeroChequePag);
                     ch_p.setPlano5(pl);
                     ch_p.setVencimento(vencimento);
-                    
-                    if (tipo.equals("caixa"))
+
+                    if (tipo.equals("caixa")) {
                         ch_p.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
-                    else
+                    } else {
                         ch_p.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(8, "FStatus"));
-                    
-                    lista.add(new DataObject(vencimento, valor, numeroChequePag, tipoPagamento, ch_p, pl)); 
-                    
-                    
-                }else{
+                    }
+
+                    lista.add(new DataObject(vencimento, valor, numeroChequePag, tipoPagamento, ch_p, pl));
+
+                } else {
                     ChequeRec ch = new ChequeRec();
                     ch.setAgencia(chequeRec.getAgencia());
                     ch.setBanco(chequeRec.getBanco());
                     ch.setCheque(numero);
                     ch.setConta(chequeRec.getConta());
                     ch.setEmissao(quitacao);
-                    if (tipo.equals("caixa"))
+                    if (tipo.equals("caixa")) {
                         ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(7, "FStatus"));
-                    else
+                    } else {
                         ch.setStatus((FStatus) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(8, "FStatus"));
+                    }
 
                     ch.setVencimento(vencimento);
                     lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, ch, null));
                 }
             } else if (tipoPagamento.getId() == 6 || tipoPagamento.getId() == 7) {
-            // CARTAO
+                // CARTAO
                 lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, null, (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.valueOf(listaCartao.get(idCartao).getDescription()), "Cartao")));
-            }else if (tipoPagamento.getId() == 8 || tipoPagamento.getId() == 9 || tipoPagamento.getId() == 10){
+            } else if (tipoPagamento.getId() == 8 || tipoPagamento.getId() == 9 || tipoPagamento.getId() == 10) {
                 Plano5DB db = new Plano5DBToplink();
                 Plano5 pl = db.pesquisaPlano5IDContaBanco(Integer.valueOf(listaBanco.get(idBanco).getDescription()));
                 lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, null, pl));
-            }else{
+            } else {
                 lista.add(new DataObject(vencimento, valor, numero, tipoPagamento, null, null));
             }
             setValor(Moeda.converteR$Float(valorF));
@@ -389,11 +392,12 @@ public class BaixaGeralBean {
         List<SelectItem> tipoDoc = new ArrayList<SelectItem>();
         //select = db.pesquisaTodosTipoPagamento();
         List select = new ArrayList();
-        if (!getEs().isEmpty() && getEs().equals("S"))
+        if (!getEs().isEmpty() && getEs().equals("S")) {
             select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,8,9,10");
-        else
+        } else {
             select = db.pesquisaCodigoTipoPagamentoIDS("3,4,5,6,7,8,9,10,11");
-            
+        }
+
         for (int i = 0; i < select.size(); i++) {
             tipoDoc.add(new SelectItem(new Integer(i), ((TipoPagamento) select.get(i)).getDescricao(),
                     Integer.toString(((TipoPagamento) select.get(i)).getId())));
@@ -420,7 +424,7 @@ public class BaixaGeralBean {
         if (macFilial == null) {
             return mensagem = "Não existe filial na sessão!";
         }
-        
+
         if (macFilial.getCaixa() == null) {
             return mensagem = "Não é possivel salvar baixa sem um caixa definido!";
         }
@@ -434,7 +438,7 @@ public class BaixaGeralBean {
         } catch (Exception e) {
             return mensagem = "Não é foi possível encontrar a filial no sistema!";
         }
-        
+
         if (Moeda.converteUS$(valor) > 0) {
             return mensagem = "Complete as parcelas para que o Valor seja zerado!";
         } else if (Moeda.converteUS$(valor) < 0) {
@@ -446,14 +450,15 @@ public class BaixaGeralBean {
         Usuario usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
 
         if (verificaBaixaBoleto()) {
-            plano5 = plano5DB.pesquisaCodigo(Integer.parseInt(((SelectItem) getListaConta().get(getIdConta())).getDescription()));
+            DaoInterface di = new Dao();
+            plano5 = (Plano5) di.find(new Plano5(), Integer.parseInt(((SelectItem) getListaConta().get(getIdConta())).getDescription()));
         } else {
             // PEGAR PLANO 5 VINCULADO AO FIN_BOLETO > FIN_CONTA_COBRANCA
             // CASO NÃO TENHA FIN_BOLETO return mensagem = "Não existe conta banco para baixar este boleto!";
             MovimentoDB db = new MovimentoDBToplink();
             Boleto bol = db.pesquisaBoletos(listaMovimentos.get(0).getNrCtrBoleto());
             //plano5 = listaMovimentos.get(0).getPlano5();
-            if (bol == null){
+            if (bol == null) {
                 return mensagem = "Não existe conta banco para baixar este boleto!";
             }
             plano5 = plano5DB.pesquisaPlano5IDContaBanco(bol.getContaCobranca().getContaBanco().getId());
@@ -463,25 +468,25 @@ public class BaixaGeralBean {
             quitacao = DataHoje.data();
         }
 
-        
         for (int i = 0; i < lista.size(); i++) {
             float valor = Float.parseFloat(String.valueOf(lista.get(i).getArgumento1()));
             // CHEQUE
             if (((TipoPagamento) lista.get(i).getArgumento3()).getId() == 4 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 5) {
-                if (!getEs().isEmpty() && getEs().equals("S"))
-                    lfp.add(new FormaPagamento(-1, null, null, (ChequePag) lista.get(i).getArgumento4(), 0, valor, filial, (Plano5)lista.get(i).getArgumento5(), null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
-                else
+                if (!getEs().isEmpty() && getEs().equals("S")) {
+                    lfp.add(new FormaPagamento(-1, null, null, (ChequePag) lista.get(i).getArgumento4(), 0, valor, filial, (Plano5) lista.get(i).getArgumento5(), null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
+                } else {
                     lfp.add(new FormaPagamento(-1, null, (ChequeRec) lista.get(i).getArgumento4(), null, 0, valor, filial, plano5, null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
+                }
             } else if (((TipoPagamento) lista.get(i).getArgumento3()).getId() == 6 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 7) {
-            // CARTAO    
+                // CARTAO    
                 Cartao cartao = ((Cartao) lista.get(i).getArgumento5());
                 DataHoje dh = new DataHoje();
-                lfp.add(new FormaPagamento(-1, null, null, null, 0, valor, filial, cartao.getPlano5(), null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, dh.converte(dh.incrementarDias(cartao.getDias(), quitacao)), Moeda.divisaoValores(Moeda.multiplicarValores(valor, cartao.getTaxa()),100)));
+                lfp.add(new FormaPagamento(-1, null, null, null, 0, valor, filial, cartao.getPlano5(), null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, dh.converte(dh.incrementarDias(cartao.getDias(), quitacao)), Moeda.divisaoValores(Moeda.multiplicarValores(valor, cartao.getTaxa()), 100)));
             } else if (((TipoPagamento) lista.get(i).getArgumento3()).getId() == 8 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 9 || ((TipoPagamento) lista.get(i).getArgumento3()).getId() == 10) {
-            // DOC BANCARIO    
+                // DOC BANCARIO    
                 lfp.add(new FormaPagamento(-1, null, null, null, 0, valor, filial, (Plano5) lista.get(i).getArgumento5(), null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, DataHoje.dataHoje(), 0));
             } else {
-            // DINHEIRO E OUTROS
+                // DINHEIRO E OUTROS
                 lfp.add(new FormaPagamento(-1, null, null, null, 0, valor, filial, plano5, null, null, (TipoPagamento) lista.get(i).getArgumento3(), 0, null, 0));
             }
         }
@@ -500,11 +505,11 @@ public class BaixaGeralBean {
             if (url.equals("baixaBoleto")) {
                 ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).getListaBoletos().clear();
                 ((BaixaBoletoJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("baixaBoletoBean")).setCarregarGrid(true);
-            } else if (url.equals("movimentosReceberSocial")){
+            } else if (url.equals("movimentosReceberSocial")) {
                 ((MovimentosReceberSocialJSFBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("movimentosSocialBean")).getListaMovimento().clear();
-            }else if (url.equals("emissaoGuias") || url.equals("menuPrincipal")){
+            } else if (url.equals("emissaoGuias") || url.equals("menuPrincipal")) {
                 ((EmissaoGuiasBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("emissaoGuiasBean")).atualizarHistorico();
-            }else if(url.equals("lancamentoFinanceiro")){
+            } else if (url.equals("lancamentoFinanceiro")) {
                 ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcela().clear();
                 ((LancamentoFinanceiroBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("lancamentoFinanceiroBean")).getListaParcelaSelecionada().clear();
             }
@@ -782,11 +787,11 @@ public class BaixaGeralBean {
     }
 
     public List<SelectItem> getListaCartao() {
-        if (listaCartao.isEmpty()){
-            
+        if (listaCartao.isEmpty()) {
+
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             List<Cartao> result = sv.listaObjeto("Cartao");
-            TipoPagamento tipoPagamento = (TipoPagamento)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()),"TipoPagamento");
+            TipoPagamento tipoPagamento = (TipoPagamento) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.parseInt(((SelectItem) getListaTipoDoc().get(idTipoDoc)).getDescription()), "TipoPagamento");
             int conta = 0;
             for (Cartao result1 : result) {
                 String tipox = result1.getDebitoCredito().equals("D") ? "Débito" : "Crédito";
@@ -815,10 +820,10 @@ public class BaixaGeralBean {
     }
 
     public List<SelectItem> getListaBanco() {
-        if (listaBanco.isEmpty()){
+        if (listaBanco.isEmpty()) {
             List<ContaBanco> result = (new ContaBancoDBToplink()).pesquisaTodos();
-            for (int i = 0; i < result.size(); i++){
-                listaBanco.add(new SelectItem(i, result.get(i).getAgencia() + " " +result.get(i).getConta()+" - "+result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
+            for (int i = 0; i < result.size(); i++) {
+                listaBanco.add(new SelectItem(i, result.get(i).getAgencia() + " " + result.get(i).getConta() + " - " + result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
             }
         }
         return listaBanco;
@@ -837,7 +842,7 @@ public class BaixaGeralBean {
     }
 
     public String getEs() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("esMovimento") != null){
+        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("esMovimento") != null) {
             es = String.valueOf(FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("esMovimento"));
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("esMovimento");
         }
@@ -880,7 +885,6 @@ public class BaixaGeralBean {
 //    public void setIdContaPagamento(int idContaPagamento) {
 //        this.idContaPagamento = idContaPagamento;
 //    }
-
     public String getNumeroChequePag() {
         return numeroChequePag;
     }
@@ -890,18 +894,18 @@ public class BaixaGeralBean {
     }
 
     public List<SelectItem> getListaBancoSaida() {
-        if (listaBancoSaida.isEmpty()){
+        if (listaBancoSaida.isEmpty()) {
             List<ContaBanco> result = (new ContaBancoDBToplink()).pesquisaTodos();
-            for (int i = 0; i < result.size(); i++){
-                listaBancoSaida.add(new SelectItem(i, result.get(i).getAgencia() + " " +result.get(i).getConta()+" - "+result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
+            for (int i = 0; i < result.size(); i++) {
+                listaBancoSaida.add(new SelectItem(i, result.get(i).getAgencia() + " " + result.get(i).getConta() + " - " + result.get(i).getBanco().getBanco(), Integer.toString(result.get(i).getId())));
             }
         }
-        
-        if (!getEs().isEmpty() && getEs().equals("S")){
+
+        if (!getEs().isEmpty() && getEs().equals("S")) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            
-            ContaBanco cb = (ContaBanco)sv.pesquisaCodigo(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()), "ContaBanco");
-            
+
+            ContaBanco cb = (ContaBanco) sv.pesquisaCodigo(Integer.valueOf(listaBancoSaida.get(idBancoSaida).getDescription()), "ContaBanco");
+
 //            if (!lista.isEmpty()){
 //                for (DataObject dob : lista){
 //                    try{
@@ -927,7 +931,7 @@ public class BaixaGeralBean {
 //                }
 //                numeroChequePag = String.valueOf(cb.getUCheque() + 1);
 //            }else{
-                numeroChequePag = String.valueOf(cb.getUCheque() + 1);
+            numeroChequePag = String.valueOf(cb.getUCheque() + 1);
 //            }
         }
         return listaBancoSaida;

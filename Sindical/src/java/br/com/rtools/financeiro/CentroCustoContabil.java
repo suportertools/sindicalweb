@@ -1,17 +1,27 @@
 package br.com.rtools.financeiro;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_CENTRO_CUSTO_CONTABIL")
-@NamedQuery(name = "CentroCustoContabil.pesquisaID", query = "select cc from CentroCustoContabil cc where cc.id = :pid")
-public class CentroCustoContabil implements java.io.Serializable {
+@Table(name = "FIN_CENTRO_CUSTO_CONTABIL",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"DS_DESCRICAO", "NR_CODIGO"})
+)
+@NamedQueries({
+    @NamedQuery(name = "CentroCustoContabil.pesquisaID", query = "SELECT CC FROM CentroCustoContabil AS CC WHERE CC.id = :pid"),
+    @NamedQuery(name = "CentroCustoContabil.findAll", query = "SELECT CC FROM CentroCustoContabil AS CC ORDER BY CC.descricao ASC, CC.codigo ASC")
+})
+
+public class CentroCustoContabil implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -25,13 +35,13 @@ public class CentroCustoContabil implements java.io.Serializable {
         this.codigo = 0;
         this.descricao = "";
     }
-    
+
     public CentroCustoContabil(int id, int codigo, String descricao) {
         this.id = id;
         this.codigo = codigo;
         this.descricao = descricao;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -54,5 +64,10 @@ public class CentroCustoContabil implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    @Override
+    public String toString() {
+        return "CentroCustoContabil{" + "id=" + id + ", codigo=" + codigo + ", descricao=" + descricao + '}';
     }
 }
