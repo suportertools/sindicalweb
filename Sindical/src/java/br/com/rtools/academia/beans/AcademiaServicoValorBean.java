@@ -126,7 +126,7 @@ public class AcademiaServicoValorBean implements Serializable {
     public List<AcademiaServicoValor> getListaAcademiaServicoValors() {
         if (listaAcademiaServicoValors.isEmpty()) {
             AcademiaDB academiaDB = new AcademiaDBToplink();
-            listaAcademiaServicoValors = academiaDB.listaAcademiaServicoValor(Integer.parseInt(listaServicos.get(idServicos).getDescription()));
+            listaAcademiaServicoValors = academiaDB.listaAcademiaServicoValor(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
         }
         return listaAcademiaServicoValors;
     }
