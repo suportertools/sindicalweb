@@ -319,8 +319,12 @@ public class MatriculaAcademiaBean implements Serializable {
                 if (idResponsavelEmpresa != -1) {
                     JuridicaDB juridicaDB = new JuridicaDBToplink();
                     Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
-                    if (juridicaB.getId() != -1) {
-                        cobranca = (Pessoa) acumuladoDB.pesquisaCodigo(idResponsavelEmpresa, "Pessoa");
+                    if(juridicaB != null) {
+                        if (juridicaB.getId() != -1) {
+                            cobranca = (Pessoa) acumuladoDB.pesquisaCodigo(idResponsavelEmpresa, "Pessoa");
+                        } else {
+                            cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                        }
                     } else {
                         cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
                     }
