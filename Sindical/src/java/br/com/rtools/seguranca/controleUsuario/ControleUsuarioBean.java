@@ -1,20 +1,23 @@
 package br.com.rtools.seguranca.controleUsuario;
 
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.principal.DBExternal;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.*;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -44,43 +47,48 @@ public class ControleUsuarioBean implements Serializable {
     private List<String> images = new ArrayList<String>();
 
     public String validacao() throws Exception {
-//        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) { 
-//            String nomeCliente = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente");        
-//            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
-//                DB db = new DB();
-//                if(db.getStatment() != null) {
-//                    try {
-//                        String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '"+nomeCliente+"'";
-//                        ResultSet resultSet = db.getStatment().executeQuery(string);
-//                        String id = "";
-//                        String ativo = "";
-//                        while(resultSet.next())  {
-//                            id = resultSet.getString("id");
-//                            ativo = resultSet.getString("is_ativo");
-//                            if (ativo.equals("f")) {
-//                                resultSet.close();
-//                                db.getStatment().close();
-//                                msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
-//                                return "pagina";
-//                            } 
-//                        }
-//                        if (!id.equals("")) {
-//                            string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = "+id;
-//                            int result = db.getStatment().executeUpdate(string);
-//                            if (result != 1) {
-//                                db.getStatment().close();
-//                                msgErro = "@ Erro ao atualizar contador!";
-//                            }
-//                        }
-//                    } catch (SQLException exception) {
-//                        db.closeStatment();
-//                        msgErro = "@ Erro!";
-//                        return "pagina";
-//                    }
-//                    db.getStatment().close();
-//                }
-//            }
-//        }
+        String pagina = null;
+        if (GenericaSessao.exists("sessaoCliente")) {
+            String nomeCliente = (String) GenericaSessao.getString("sessaoCliente");
+            if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
+                DBExternal dbe = new DBExternal();
+                if (dbe.getConnection() != null) {
+                    try {
+                        String string = "SELECT * FROM sis_configuracao WHERE ds_identifica = '" + nomeCliente + "'";
+                        ResultSet resultSet = dbe.getStatment().executeQuery(string);
+                        String id = "";
+                        String ativo = "";
+                        while (resultSet.next()) {
+                            id = resultSet.getString("id");
+                            ativo = resultSet.getString("is_ativo");
+                            if (ativo.equals("f")) {
+                                resultSet.close();
+                                dbe.getStatment().close();
+                                msgErro = "@ Entre em contato com nossa equipe (16) 3964.6117";
+                                GenericaMensagem.warn("Validação", msgErro);
+                                return null;
+                            }
+                        }
+                        if (!id.equals("")) {
+                            string = "UPDATE sis_configuracao SET nr_acesso = (nr_acesso+1) WHERE id = " + id;
+                            int result = dbe.getStatment().executeUpdate(string);
+                            if (result != 1) {
+                                dbe.getStatment().close();
+                                msgErro = "@ Erro ao atualizar contador!";
+                                GenericaMensagem.warn("Validação", msgErro);
+                                return null;
+                            }
+                        }
+                    } catch (SQLException exception) {
+                        dbe.closeStatment();
+                        msgErro = "@ Erro!";
+                        GenericaMensagem.warn("Validação", msgErro);
+                        return null;
+                    }
+                    dbe.getStatment().close();
+                }
+            }
+        }
         NovoLog log = new NovoLog();
         if (macFilial != null) {
             Object objs[] = new Object[2];
@@ -92,39 +100,38 @@ public class ControleUsuarioBean implements Serializable {
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoFilial", null);
             filial = "";
         }
-        String pagina = null;
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("indicaAcesso", "local");
         UsuarioDB db = new UsuarioDBToplink();
         String user = usuario.getLogin(), senh = usuario.getSenha();
         if (usuario.getLogin().equals("") || usuario.getLogin().equals("Usuario")) {
             msgErro = "@ Informar nome do usuário!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgErro));
+            GenericaMensagem.warn("Validação", msgErro);
             return pagina;
         }
         if (usuario.getSenha().equals("") || usuario.getSenha().equals("Senha")) {
             msgErro = "@ Informar senha!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgErro));
+            GenericaMensagem.warn("Validação", msgErro);
             return pagina;
         }
         usuario = db.ValidaUsuario(usuario.getLogin(), usuario.getSenha());
         if (usuario != null) {
             pagina = "menuPrincipal";
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoUsuario", usuario);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioLogin", usuario.getLogin());
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("userName", usuario.getLogin());
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoCadastro", false);
-            login = ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getNome() + " - "
-                    + ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getTipoDocumento().getDescricao() + ": "
-                    + ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getDocumento();
-            log.novo("login de acesso", "usuario logou!");
+            GenericaSessao.put("sessaoUsuario", usuario);
+            GenericaSessao.put("usuarioLogin", usuario.getLogin());
+            GenericaSessao.put("userName", usuario.getLogin());
+            GenericaSessao.put("linkClicado", true);
+            GenericaSessao.put("acessoCadastro", false);
+            login = ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getNome() + " - "
+                    + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getTipoDocumento().getDescricao() + ": "
+                    + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getDocumento();
+            log.live("Usuário logou - Usuário:" + user + "/sen: " + senh);
             usuario = new Usuario();
             msgErro = "";
         } else {
-            log.novo("login de acesso", "tentativa de acesso usr:" + user + "/sen: " + senh);
+            log.live("Login de acesso tentativa de acesso usr:" + user + "/sen: " + senh);
             usuario = new Usuario();
             msgErro = "@ Usuário e/ou Senha inválidas! Tente novamente.";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", msgErro));
+            GenericaMensagem.warn("Validação", msgErro);
         }
         return pagina;
     }
@@ -364,7 +371,7 @@ public class ControleUsuarioBean implements Serializable {
                 if (usuarioSuporteTecnico.getEmail().isEmpty()) {
                     if (!usuarioSuporteTecnico.getPessoa().getEmail1().equals("")) {
                         usuarioSuporteTecnico.setEmail(usuarioSuporteTecnico.getPessoa().getEmail1());
-                    } else {                        
+                    } else {
                         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
                         Usuario u = (Usuario) dB.find(new Usuario(), 1);
                         usuarioSuporteTecnico.setEmail(u.getPessoa().getEmail1());
