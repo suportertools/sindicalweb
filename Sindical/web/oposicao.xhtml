@@ -108,7 +108,7 @@
                         </c:if>
                     </p:panel>
                     <h:panelGrid columns="4" id="i_panel_acao" styleClass="margin-top-max">
-                        <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="dgl_panel_salvar.show();"  />
+                        <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_panel_salvar').show();"  />
                         <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.novo}" update="i_panel_oposicao"/>
                         <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="dgl_panel_excluir.show();"/>
                         <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaOposicao}"/>                            
@@ -117,7 +117,7 @@
                         <center>
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Sim" title="Salvar" action="#{oposicaoBean.salvar}" update="i_panel_oposicao, i_panel_acao, out_mensagem" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>
@@ -125,7 +125,7 @@
                         <center>
                             <h:panelGrid columns="2">
                                 <p:commandButton value="Sim" title="Excluir" action="#{oposicaoBean.excluir}" update="i_panel_oposicao, i_panel_acao, out_mensagem" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>
@@ -134,7 +134,7 @@
                             <h:panelGrid id="out_mensagem">
                                 <p:outputLabel value="#{oposicaoBean.mensagem}" />                            
                             </h:panelGrid> 
-                            <p:commandButton value="Ok" title="Ok" onclick="dgl_panel_mensagem.hide();" />
+                            <p:commandButton value="Ok" title="Ok" onclick="PF('dgl_panel_mensagem').hide();" />
                         </center>
                     </p:dialog>                    
                 </h:form>

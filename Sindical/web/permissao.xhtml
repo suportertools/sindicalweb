@@ -1,10 +1,10 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Permissões</title>
     </h:head>
@@ -38,19 +38,19 @@
                         </h:panelGrid>
                     </p:panel>
                     <p:panel id="tbl" styleClass="margin-top-max">
-                        <p:dataTable var="linha" value="#{permissaoBean.listaPermissoes}" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                        <p:dataTable var="permissao" value="#{permissaoBean.listaPermissoes}" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
                             <f:facet name="header">Permissões adicionadas</f:facet>
                             <p:column headerText="Módulo">
-                                <p:outputLabel value="#{linha.modulo.descricao}"/>
+                                <p:outputLabel value="#{permissao.modulo.descricao}"/>
                             </p:column>
                             <p:column headerText="Rotina">
-                                <p:outputLabel value="#{linha.rotina.rotina}"/>
+                                <p:outputLabel value="#{permissao.rotina.rotina}"/>
                             </p:column>
                             <p:column headerText="Evento">
                                 <p:outputLabel value="Inclusão, Alteração, Exclusão, Consulta"/>
                             </p:column>
                             <p:column width="30" styleClass="text-center">
-                                <p:commandButton icon="ui-icon-trash" action="#{permissaoBean.removerPermissao(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":form_permissao:id_painel_permissao :form_permissao:tbl :form_permissao:id_messages_growl" title="Código: #{linha.id}"/>
+                                <p:commandButton icon="ui-icon-trash" action="#{permissaoBean.removerPermissao(permissao)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":form_permissao:id_painel_permissao :form_permissao:tbl :form_permissao:id_messages_growl" title="Código: #{permissao.id}"/>
                             </p:column>
                         </p:dataTable>
                     </p:panel>

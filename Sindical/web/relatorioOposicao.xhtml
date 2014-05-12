@@ -37,13 +37,16 @@
                                 </p:tab>
                                 <p:tab title="Avançado">
                                     <h:panelGrid columns="1" id="i_panel_avancado">
-                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.porPeridoEmissao}" onLabel="Emissão - Edição" offLabel="Emissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[0]}" onLabel="Emissão - Edição" offLabel="Emissão - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.porOposicao}" onLabel="Oposição - Edição" offLabel="Oposição - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[2]}" onLabel="Oposição - Edição" offLabel="Oposição - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
-                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.porPeridoConvencao}" onLabel="P. Convenção - Edição" offLabel="P. Convenção - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[1]}" onLabel="P. Convenção - Edição" offLabel="P. Convenção - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[3]}" onLabel="P. Cnae - Edição" offLabel="P. Cnae - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
                                     </h:panelGrid>
@@ -52,7 +55,7 @@
                         </h:column>
                         <h:column>
                             <p:panel header="Filtro" id="id_panel_relatorio" style="width: 800px;" >
-                                <c:if test="#{relatorioOposicaoBean.porPeridoEmissao}">
+                                <c:if test="#{relatorioOposicaoBean.filtro[0]}">
                                     <h:panelGrid columns="2">
                                         <p:outputLabel value="Período Emissão: " />
                                         <h:column>
@@ -69,7 +72,7 @@
                                         </h:column>
                                     </h:panelGrid>
                                 </c:if>
-                                <c:if test="#{relatorioOposicaoBean.porOposicao}">
+                                <c:if test="#{relatorioOposicaoBean.filtro[2]}">
                                     <h:panelGrid columns="2">
                                         <h:column>
                                             <p:outputLabel value="#{relatorioOposicaoBean.descPorPesquisa}" style="text-transform: uppercase; font-weight: bold; color: red; size: 14pt;" />
@@ -97,11 +100,11 @@
                                         </h:column>
                                     </h:panelGrid>
                                 </c:if>
-                                <c:if test="#{relatorioOposicaoBean.porPeridoConvencao}">
+                                <c:if test="#{relatorioOposicaoBean.filtro[1]}">
                                     <h:column>
                                         <h:panelGrid columns="4">
                                             <p:outputLabel value="Período Convenção: " />
-                                            <p:selectOneMenu id="id_convencao_periodo" value="#{relatorioOposicaoBean.index[1]}">
+                                            <p:selectOneMenu id="id_convencao_periodo" value="#{relatorioOposicaoBean.index[1]}" style="max-width: 600px">
                                                 <p:ajax event="change" update="@this" />
                                                 <f:selectItem itemValue="" itemLabel="Selecionar"/>
                                                 <f:selectItems value="#{relatorioOposicaoBean.listaReferencias}"/>
@@ -125,6 +128,51 @@
                                                 </p:column>
                                             </p:dataTable>                                        
                                         </h:panelGrid>
+                                    </h:column>
+                                </c:if>                                    
+                                <c:if test="#{relatorioOposicaoBean.filtro[3]}">
+                                    <h:column>                                    
+                                        <!-- <h:panelGrid>
+                                            <p:dataTable value="# {relatorioOposicaoBean.listCnaes}" var="cnae" scrollable="true" scrollHeight="150" emptyMessage="Nenhum referência adicionada" styleClass="margin-top-max" selection="# {relatorioOposicaoBean.selectedCnae}" rowKey="# {cnae.id}" id="i_tbl_cnae">
+                                                <p:ajax event="rowSelect" update="i_tbl_cnae"/>
+                                                <p:ajax event="rowSelectCheckbox" update="i_tbl_cnae"/>
+                                                <p:ajax event="rowUnselect" update="i_tbl_cnae"/>
+                                                <p:ajax event="rowUnselectCheckbox" update="i_tbl_cnae"/>
+                                                <p:ajax event="toggleSelect" update="i_tbl_cnae"/>                                                
+                                                <p:column selectionMode="multiple" width="20" styleClass="text-center"/>
+                                                <f:facet name="header">
+                                                        Cnaes <p:commandButton icon="ui-icon-close" action="# {relatorioOposicaoBean.close('cnae')}" title="Remover filtro"/>
+                                                    
+                                                </f:facet>
+                                                <p:column headerText="Cnae">
+                                                    # {cnae.cnae}
+                                                </p:column>
+                                                <p:column headerText="Número">
+                                                    # {cnae.numero}
+                                                </p:column>
+                                            </p:dataTable>                                        
+                                        </h:panelGrid> -->
+                                        <p:panel header="Filtros">
+                                            <h:panelGrid id="i_panel_filtro" columns="6" cellpadding="5">
+                                                <p:outputLabel value="Convenção: " />
+                                                <p:selectCheckboxMenu label="Selecionar convenção" value="#{relatorioOposicaoBean.selectedConvencao}">
+                                                    <p:ajax event="toggleSelect" update="i_s_gc i_s_c" />
+                                                    <p:ajax event="change" update="i_s_gc i_s_c" />
+                                                    <f:selectItems value="#{relatorioOposicaoBean.listConvencaos}" />
+                                                </p:selectCheckboxMenu>
+                                                <p:outputLabel value="Grupo cidade:"/>
+                                                <p:selectCheckboxMenu id="i_s_gc" label="Selecionar grupo cidade" value="#{relatorioOposicaoBean.selectedGrupoCidades}" disabled="#{relatorioOposicaoBean.listGrupoCidades == null}">
+                                                    <p:ajax event="toggleSelect" update="i_s_c" />
+                                                    <p:ajax event="change" update="i_s_c"  />
+                                                    <f:selectItems value="#{relatorioOposicaoBean.listGrupoCidades}" />
+                                                </p:selectCheckboxMenu>
+                                                <p:outputLabel value="Cnae" />
+                                                <p:selectCheckboxMenu id="i_s_c"  label="Selecionar cnae convenção" value="#{relatorioOposicaoBean.selectedCnae}" disabled="#{relatorioOposicaoBean.listCnaes == null}">
+                                                    <p:ajax event="toggleSelect" update="@this" />
+                                                    <f:selectItems value="#{relatorioOposicaoBean.listCnaes}" />
+                                                </p:selectCheckboxMenu>
+                                            </h:panelGrid>
+                                        </p:panel>                                        
                                     </h:column>
                                 </c:if>                                    
                                 <c:if test="#{relatorioOposicaoBean.tipoRelatorio == 'Simples'}">

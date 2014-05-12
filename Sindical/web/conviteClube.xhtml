@@ -21,15 +21,15 @@
                             <c:set scope="request" var="object" value="${clubeBean.convite}"/>
 
                             <p:dialog widgetVar="i_dlg_s" header="Salvar este registro?" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{clubeBean.salvar}" onclick="i_dlg_s.hide();
-                                        i_dlg_mensagem.show()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":form_convite_clube:i_mensagem"/>  
-                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left;" icon="ui-icon-close"/>
+                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{clubeBean.salvar}" onclick="PF('i_dlg_s').hide();
+                                        PF('i_dlg_mensagem').show()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update=":form_convite_clube:i_mensagem"/>  
+                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left;" icon="ui-icon-close"/>
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_e" header="Excluir este registro?" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Confirmar"  type="submit" styleClass="ui-confirmdialog-yes" action="#{clubeBean.excluir()}" onclick="i_dlg_e.hide();
-                                        i_dlg_mensagem.show()" update=":form_convite_clube: :form_convite_clube_pesquisa:i_panel_grid i_mensagem" style="clear: both; float: left" icon="ui-icon-check" />
-                                <p:commandButton value="Cancelar"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left;" icon="ui-icon-close"/>
+                                <p:commandButton value="Confirmar"  type="submit" styleClass="ui-confirmdialog-yes" action="#{clubeBean.excluir()}" onclick="PF('i_dlg_e').hide();
+                                        PF('i_dlg_mensagem').show()" update=":form_convite_clube: :form_convite_clube_pesquisa:i_panel_grid i_mensagem" style="clear: both; float: left" icon="ui-icon-check" />
+                                <p:commandButton value="Cancelar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left;" icon="ui-icon-close"/>
                             </p:dialog>
 
                             <p:dialog widgetVar="i_dlg_mensagem" header="Mensagem" resizable="false" width="400" modal="true">
@@ -37,7 +37,7 @@
                                     <h:outputLabel value="#{clubeBean.mensagem}" id="i_mensagem"/>
                                     <br />
                                     <br />
-                                    <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_mensagem.hide()"/>
+                                    <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_mensagem').hide()"/>
                                 </center>
                             </p:dialog>
 

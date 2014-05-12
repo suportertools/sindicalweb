@@ -42,7 +42,10 @@
                                 <f:selectItems value="#{academiaServicoValorBean.listaGrades}" />
                             </p:selectOneMenu>
                             <p:outputLabel value="Fórmula:" />
-                            <p:inputText value="#{academiaServicoValorBean.academiaServicoValor.formula}" size="120"/>
+                            <h:column>
+                                <p:inputText value="#{academiaServicoValorBean.academiaServicoValor.formula}" size="120" placeholder="Ex. valor + 5"/>
+                                <p:button value="Exemplos"></p:button>
+                            </h:column>
                             <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaServicoValorBean.salvar()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margion-left-max"  update=":form_academia_servico_valor_novo:id_panel_grade_horarios :form_academia_servico_valor:i_panel_grid_valores"/>
                             <p:commandButton value="Novo" title="Novo" action="#{academiaServicoValorBean.novo()}" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" styleClass="margion-left-max"/>
                         </h:panelGrid>

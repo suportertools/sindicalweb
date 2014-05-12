@@ -38,8 +38,11 @@
                                         <p:menuitem value="Filial Departamento"     action="#{chamadaPaginaBean.pagina('filialDepartamento')}" />
                                     </p:submenu>  
                                     <p:separator />  
-                                    <p:menuitem value="Pesquisar Logs"                   action="#{chamadaPaginaBean.pesquisaLog}" title="Registro de atividades"  />
+                                    <p:menuitem value="Pesquisar Logs"              action="#{chamadaPaginaBean.pesquisaLog}" title="Registro de atividades"  />
                                     <c:if test="#{controleUsuarioBean.clienteString.equals('Rtools')}">
+                                        <p:submenu label="Sistema">
+                                            <p:menuitem value="Configurações"       action="#{chamadaPaginaBean.pagina('configuracao')}" />                                            
+                                        </p:submenu> 
                                         <p:submenu label="Ordem Serviço"> 
                                             <p:menuitem value="Ordem Serviço"    />
                                             <p:menuitem value="Prioridade" />                                            
@@ -99,13 +102,46 @@
                         <p:panel style="border: 0px; width: 1024px; height: 550px; margin: 0 auto">
                             <h:outputLabel value="O Sindical está mudando pra você..." style="font-size: 25pt!important; float: left;  font-family: 'Cordia New'"/>
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px">
-                                <h:panelGrid>
-                                    <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
-                                </h:panelGrid>
+                                <center>
+                                    <h:panelGrid>
+                                        <h:outputText style="font-weight: bold" value="Agenda Telefônica" />
+                                    </h:panelGrid>
+                                </center>
                                 <p:commandLink action="#{chamadaPaginaBean.pagina('pesquisaAgendaTelefone','agendaTelefone')}" title="Pesquisa Agenda Telefônica" style="clear: both" actionListener="#{agendaTelefoneBean.putType('pesquisaAgendaTelefone')}">
-                                    <h:graphicImage value="/Imagens/icone-agenda-telefone.jpg" width="100" /><br />
-                                </p:commandLink>   
+                                    <h:graphicImage value="/Imagens/-icone-agenda-telefone.jpg" width="120" /><br />
+                                </p:commandLink>
+                                <c:if test="#{agendaNotificaoBean.listAniversariantes.size() > 0}">
+                                    <p:commandLink onclick="PF('dlg_agenda_contato').show();">
+                                        Aniversariantes do mês
+                                        <h:graphicImage value="/Imagens/icon-birthday.png" width="16" /><br />
+                                    </p:commandLink>
+                                </c:if>
                             </p:panel>
+                            <p:dialog widgetVar="dlg_agenda_contato" modal="true" footer="Felicite esta pessoa" width="600" height="400" resizable="false">
+                                <f:facet name="header">
+                                    <h:panelGrid columns="2">
+                                        <h:graphicImage value="/Imagens/icon-birthday.png" width="16" />
+                                        <h:column>Aniversariantes</h:column>
+                                    </h:panelGrid>
+                                </f:facet>
+                                <p:dataTable var="agendaContato" value="#{agendaNotificaoBean.listAniversariantes}" paginator="true" rows="15">
+                                    <p:column headerText="Principal" width="80">
+                                        #{agendaContato.agenda.nome}
+                                    </p:column>
+                                    <p:column headerText="Data" width="80">
+                                        <h:outputLabel value="#{agendaContato.nascimentoString}" />
+                                    </p:column>
+                                    <p:column headerText="Aniversariante">
+                                        #{agendaContato.contato}
+                                    </p:column>
+                                    <p:column headerText="Depto">
+                                        #{agendaContato.departamento}
+                                    </p:column>
+                                    <p:column headerText="Email">
+                                        <p:outputLabel value="#{agendaContato.email1}" title="#{agendaContato.email2}" />
+                                    </p:column>
+                                </p:dataTable>                                
+                            </p:dialog>
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px; margin-left: 200px; width: 540px">
                                 <!-- <p:poll interval="5" update="i_panel_poll" listener="# {polling.existeUsuarioSessao()}"/>  -->
                                 <h:panelGrid id="i_panel_poll" style="float: left">
@@ -119,7 +155,7 @@
                                 <h:panelGrid  style="float: left">
                                     <h:outputLabel value="Existem guias geradas sem baixar" styleClass="fonteExtratoTela"  style="font-size: 12pt; color: #dd3b58"/>
                                     <br />
-                                    <p:commandLink value="clique aqui para baixar ou excluir" onclick="i_dlg_guias.show()"/>
+                                    <p:commandLink value="clique aqui para baixar ou excluir" onclick="PF(i_dlg_guias).show()"/>
                                 </h:panelGrid>
                                 <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
                                     <c:if test="#{emissaoGuiasBean.listah != null}">
@@ -139,7 +175,7 @@
                                         </p:dataTable>
                                     </c:if>
                                     <br /><br />
-                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_guias.hide()" style="float: left" />
+                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF(i_dlg_guias).hide()" style="float: left" />
                                 </p:dialog>
                             </p:panel>
                             <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">

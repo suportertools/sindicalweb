@@ -51,7 +51,7 @@
                                 </h:column>
                             </h:panelGrid>
                             <p:panelGrid columns="1">
-                                <p:commandButton value="Anexar arquivos" type="button" onclick="dgl_upload.show();" id="id_btn_uploads" rendered="#{registroPatronalBean.patronal.id != -1}"/>
+                                <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads" rendered="#{registroPatronalBean.patronal.id != -1}"/>
                                 <p:panel id="id_imagem_patronal" styleClass="no-border">
                                     <p:graphicImage value="/Cliente/#{controleUsuarioBean.clienteString}/Imagens/LogoPatronal/#{registroPatronalBean.logoPatronal}" width="150" style="float: right;" />
                                 </p:panel>
@@ -87,9 +87,9 @@
                         </p:panel>
                         <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
                             <p:column>
-                                <p:commandButton value="Salvar" title="Salvar" onclick="dgl_panel_salvar.show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
+                                <p:commandButton value="Salvar" title="Salvar" onclick="PF('dgl_panel_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
                                 <p:commandButton value="Novo" title="Novo" action="#{registroPatronalBean.novo}" update="id_panel_patronal"/>
-                                <p:commandButton value="Excluir" title="Excluir" onclick="dgl_panel_excluir.show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
+                                <p:commandButton value="Excluir" title="Excluir" onclick="PF('dgl_panel_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
                                 <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPatronal}" title="Pesquisar"/>
                             </p:column>
                         </p:panelGrid>
@@ -97,14 +97,14 @@
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
                             <p:commandButton value="Sim" title="Salvar" action="#{registroPatronalBean.salvar()}" update="i_panel_mensagem id_panel_patronal"  oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
-                            <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
+                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide()"/>
                         </p:panelGrid>
                     </p:dialog>
                     <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
                         <center>
                             <p:panelGrid columns="2" styleClass="sbb">
                                 <p:commandButton value="Sim" title="Excluir" action="#{registroPatronalBean.excluir()}" update="i_panel_mensagem id_panel_patronal" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_excluir').hide();"  />
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide()"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide()"/>
                             </p:panelGrid>
                         </center>
                     </p:dialog>

@@ -52,7 +52,7 @@
                             <p:inputTextarea value="#{conviteSuspencaoBean.conviteSuspencao.observacao}" style="resize: none;" cols="50" rows="5"></p:inputTextarea>
                         </h:panelGrid>
                         <h:panelGrid columns="2" id="id_acao" styleClass="margin-top">
-                            <p:commandButton id="idBotaoSalvar" value="Salvar" onclick="dgl_panel_salvar.show();" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            <p:commandButton id="idBotaoSalvar" value="Salvar" onclick="PF('dgl_panel_salvar').show();" disabled="#{controleAcessoBean.botaoSalvar}"/>
                             <p:commandButton value="Novo" action="#{conviteSuspencaoBean.novo}" update="id_panel_convite_suspencao i_painel_filtro id_acao i_grid_convite_suspencao"/>
                         </h:panelGrid>                    
                     </p:panel>
@@ -103,7 +103,7 @@
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
                             <p:commandButton value="Sim" title="Salvar" action="#{conviteSuspencaoBean.salvar}" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" update="i_panel_mensagem id_panel_novo i_grid_convite_suspencao"/>
-                            <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
+                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide()"/>
                         </p:panelGrid>
                     </p:dialog>
                     <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">

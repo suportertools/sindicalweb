@@ -167,10 +167,10 @@
                                     <p:tab title="A baixar" id="i_tab_1">
                                         <p:dataTable value="#{baixaProdutoConsumoBean.listEstoqueSaidaConsumoAdd}" scrollable="true" scrollHeight="300" paginator="true" rows="15" emptyMessage="Adicionar registros" var="esc" rowIndexVar="index">
                                             <f:facet name="header">
-                                                <p:commandButton value="Baixar Produtos" onclick="dlg_baixar.show()" title="Baixar Produtos" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                                <p:commandButton value="Baixar Produtos" onclick="PF('dlg_baixar').show()" title="Baixar Produtos" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                             </f:facet>
                                             <f:facet name="footer">
-                                                <p:commandButton value="Baixar Produtos" onclick="dlg_baixar.show()" title="Baixar Produtos" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                                                <p:commandButton value="Baixar Produtos" onclick="PF('dlg_baixar').show()" title="Baixar Produtos" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                             </f:facet>
                                             <p:column headerText="Lançamento">#{esc.lancamento}</p:column>
                                             <p:column headerText="Produto">#{esc.produto.descricao}</p:column>
@@ -200,7 +200,7 @@
                                     <f:facet name="footer">
                                         <h:panelGrid columns="2">
                                             <p:commandButton value="Sim" action="#{baixaProdutoConsumoBean.baixar}" oncomplete="PF('dlg_baixar').hide(); PF('dlg_mensagem').show();" update=":form_saida_consumo:"/>
-                                            <p:commandButton value="Não" onclick="dlg_baixar.hide();" />
+                                            <p:commandButton value="Não" onclick="PF('dlg_baixar').hide();" />
                                         </h:panelGrid>
                                     </f:facet>
                                 </p:dialog>
@@ -208,7 +208,7 @@
                                     #{baixaProdutoConsumoBean.message}
                                     <f:facet name="footer">
                                         <h:panelGrid columns="2">
-                                            <p:commandButton value="Ok" onclick="dlg_mensagem.hide();" />
+                                            <p:commandButton value="Ok" onclick="PF('dlg_mensagem').hide();" />
                                         </h:panelGrid>
                                     </f:facet>
                                 </p:dialog>

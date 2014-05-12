@@ -82,10 +82,10 @@
                                         </p:selectOneRadio>                                    
                                     </p:column>
                                     <p:column>
-                                        <p:commandButton icon="ui-icon-search" value="Função" onclick="dgl_painel_profissao.show()" type="button"/>
+                                        <p:commandButton icon="ui-icon-search" value="Função" onclick="PF('dgl_painel_profissao').show()" type="button"/>
                                     </p:column>
                                     <p:column>
-                                        <p:inputText id="idFuncao" size="40" value="#{homologacaoBean.profissao.cbo} - #{homologacaoBean.profissao.profissao}" readonly="true" onblur="dgl_painel_profissao.show();" />
+                                        <p:inputText id="idFuncao" size="40" value="#{homologacaoBean.profissao.cbo} - #{homologacaoBean.profissao.profissao}" readonly="true" onblur="PF('dgl_painel_profissao').show();" />
                                         <p:outputLabel value="Setor: " styleClass="margin-left-max"/>
                                         <p:inputText id="idSetor" size="20" value="#{homologacaoBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito ">
                                             <p:ajax event="change" update="@this"/>

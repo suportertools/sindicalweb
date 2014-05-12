@@ -29,7 +29,7 @@
 
                             <p:commandButton value="Pesquisar" update="i_panel_grid"/>
                             
-                            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+                            <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
                         </h:panelGrid>
                         <p:focus for="i_panel_pesquisa" />
                     </p:panel>
