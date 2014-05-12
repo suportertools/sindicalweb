@@ -12,53 +12,73 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
 public class EnderecoBean implements Serializable {
 
-    private Endereco endereco;
     private Cidade cidadeBase;
-    private String msgDetalhada;
+    private Endereco endereco;
     private boolean blDetalhada;
     private boolean pesquisar;
     private boolean btnCadastrar;
     private List<Endereco> listaEndereco;
-    private List<SelectItem> listaLogradouro;
-    private List<SelectItem> listaCidade;
-    private int idIndex;
-    private int idLogradouro;
-    private int idCidade;
+    private List<SelectItem>[] listSelectItem;
+    /**
+     * <ul>
+     * <li>0 - idIndex</li>
+     * <li>1 - Cidade</li>
+     * <li>2 - Logradouro</li>
+     * <li>3 - Estado</li>
+     * </ul>
+     */
+    private Integer[] index;
+    private String mensagem;
+    private String msgDetalhada;
     private String porPesquisa;
-    private String mensagem = "";
-    private boolean limpar;
 
-    public EnderecoBean() {
+    @PostConstruct
+    public void init() {
         endereco = new Endereco();
         cidadeBase = new Cidade();
         msgDetalhada = "";
         blDetalhada = false;
         listaEndereco = new ArrayList();
-        idIndex = -1;
+        index = new Integer[4];
+        index[0] = -1;
+        index[1] = 0;
+        index[2] = 0;
+        index[3] = 0;
+        listSelectItem = new ArrayList[4];
+        listSelectItem[0] = new ArrayList<SelectItem>();
+        listSelectItem[1] = new ArrayList<SelectItem>();
+        listSelectItem[2] = new ArrayList<SelectItem>();
+        listSelectItem[3] = new ArrayList<SelectItem>();
         porPesquisa = "";
-        listaLogradouro = new ArrayList();
-        listaCidade = new ArrayList();
         mensagem = "";
-        limpar = false;
         btnCadastrar = false;
-        idLogradouro = 0;
-        getListaCidade();
-        getListaLogradouro();
+        getListCidade();
+        getListLogradouro();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("enderecoBean");
+        GenericaSessao.remove("cidadePesquisa");
+        GenericaSessao.remove("bairroPesquisa");
+        GenericaSessao.remove("logradouroPesquisa");
+        GenericaSessao.remove("descricaoEnderecoPesquisa");
     }
 
     public void pesquisaCep() {
@@ -78,16 +98,15 @@ public class EnderecoBean implements Serializable {
         listaEndereco.clear();
     }
 
-    public String endereco() {
-        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).endereco();
+    public String chamadaEndereco() {
+        return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).endereco();
     }
 
-    public void salvar() throws Exception {
+    public void save() throws Exception {
         mensagem = "";
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         EnderecoDB db = new EnderecoDBToplink();
-        NovoLog log = new NovoLog();
-        Logradouro logradouro = (Logradouro) sv.find(new Logradouro(), Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription()));
+        Logradouro logradouro = (Logradouro) di.find(new Logradouro(), Integer.parseInt(getListLogradouro().get(index[2]).getDescription()));
         endereco.setLogradouro(logradouro);
         if (endereco.getDescricaoEndereco().getId() == -1) {
             mensagem = "O campo Descrição Endereço deve ser preenchido!";
@@ -115,7 +134,7 @@ public class EnderecoBean implements Serializable {
         if (endereco.getId() == -1) {
             e = endereco;
         } else {
-            e = (Endereco) sv.find(new Endereco(), endereco.getId());
+            e = (Endereco) di.find(new Endereco(), endereco.getId());
         }
         List<Endereco> listend = db.pesquisaEndereco(endereco.getDescricaoEndereco().getId(),
                 endereco.getCidade().getId(),
@@ -129,40 +148,41 @@ public class EnderecoBean implements Serializable {
                 }
             }
         }
-        sv.abrirTransacao();
+        NovoLog log = new NovoLog();
+        di.openTransaction();
         if (endereco.getId() == -1) {
-            if (sv.inserirObjeto(endereco)) {
-                sv.comitarTransacao();
+            if (di.save(endereco)) {
+                di.commit();
                 mensagem = "Endereço salvo com Sucesso!";
-                log.novo("Novo registro", "Endereco inserido " + endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") - " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
+                log.save(endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") - " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 mensagem = "Erro ao Salvar!";
             }
         } else {
-            if (sv.alterarObjeto(endereco)) {
-                sv.comitarTransacao();
+            if (di.update(endereco)) {
+                di.commit();
                 String antes = "De: " + e.getId() + " - " + e.getLogradouro().getDescricao() + " " + e.getDescricaoEndereco().getDescricao() + ", " + e.getFaixa() + " - " + e.getBairro().getDescricao() + " (" + e.getBairro().getId() + ") " + e.getCidade().getCidade() + " (" + e.getCidade().getId() + ") - " + e.getCidade().getUf();
-                log.novo("Atualizado", antes + " - para: " + endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
+                log.update(antes, endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
                 mensagem = "Endereço atualizado com Sucesso!";
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 mensagem = "Erro ao Salvar!";
             }
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("enderecoPesquisa", endereco);
+        GenericaSessao.put("enderecoPesquisa", endereco);
     }
 
-    public String editar() {
-        Endereco e = (Endereco) listaEndereco.get(getIdIndex());
-        return editar(e);
+    public String edit() {
+        Endereco e = (Endereco) listaEndereco.get(index[0]);
+        return edit(e);
     }
 
-    public String editar(Endereco e) {
+    public String edit(Endereco e) {
         endereco = e;
-        for (int i = 0; i < (listaLogradouro.size()); i++) {
-            if (Integer.parseInt(listaLogradouro.get(i).getDescription()) == endereco.getLogradouro().getId()) {
-                idLogradouro = i;
+        for (int i = 0; i < (getListLogradouro().size()); i++) {
+            if (Integer.parseInt(getListLogradouro().get(i).getDescription()) == endereco.getLogradouro().getId()) {
+                index[2] = i;
                 break;
             }
         }
@@ -175,32 +195,22 @@ public class EnderecoBean implements Serializable {
         return "endereco";
     }
 
-    public void novo() {
-        endereco = new Endereco();
-        listaEndereco.clear();
-        listaLogradouro.clear();
-        limpar = true;
+    public void clear() {
+        GenericaSessao.remove("enderecoBean");
     }
 
-    public void limpar() {
-        if (limpar == true) {
-            novo();
-        }
-    }
-
-    public void excluir() {
+    public void delete() {
         if (endereco.getId() != -1) {
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            NovoLog log = new NovoLog();
-            sv.abrirTransacao();
-            endereco = (Endereco) sv.find(endereco);
-            if (sv.deletarObjeto(endereco)) {
-                sv.comitarTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
+            if (di.delete((Endereco) di.find(endereco))) {
+                di.commit();
                 mensagem = "Endereço excluido com Sucesso!";
-                log.novo("Excluido", endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
-                novo();
+                NovoLog log = new NovoLog();
+                log.delete(endereco.getId() + " - " + endereco.getLogradouro().getDescricao() + " " + endereco.getDescricaoEndereco().getDescricao() + ", " + endereco.getFaixa() + " - " + endereco.getBairro().getDescricao() + " (" + endereco.getBairro().getId() + ") " + endereco.getCidade().getCidade() + " (" + endereco.getCidade().getId() + ") - " + endereco.getCidade().getUf());
+                clear();
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 mensagem = "Endereço não pode ser excluido!";
             }
         }
@@ -235,29 +245,81 @@ public class EnderecoBean implements Serializable {
         this.msgDetalhada = msgDetalhada;
     }
 
-    public List<SelectItem> getListaLogradouro() {
-        if (listaLogradouro.isEmpty()) {
+    public List<SelectItem> getListLogradouro() {
+        if (listSelectItem[2].isEmpty()) {
             EnderecoDB db = new EnderecoDBToplink();
-            List<Logradouro> select = db.pesquisaTodosOrdenado();
-            for (int i = 0; i < select.size(); i++) {
-                listaLogradouro.add(new SelectItem(i, (String) select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
-                if (select.get(i).getDescricao().equals("Rua")) {
-                    idLogradouro = i;
+            List<Logradouro> logradouros = db.pesquisaTodosOrdenado();
+            int j = 0;
+            for (int i = 0; i < logradouros.size(); i++) {
+                if (logradouros.get(i).getDescricao().toUpperCase().equals("RUA")
+                        || logradouros.get(i).getDescricao().toUpperCase().equals("AVENIDA")
+                        || logradouros.get(i).getDescricao().toUpperCase().equals("TRAVESSA")
+                        || logradouros.get(i).getDescricao().toUpperCase().equals("PRAÇA")
+                        || logradouros.get(i).getDescricao().toUpperCase().equals("ALAMEDA")
+                        || logradouros.get(i).getDescricao().toUpperCase().equals("RODOVIA")
+                        || logradouros.get(i).getDescricao().toUpperCase().equals("ESTRADA")) {
+                    listSelectItem[2].add(new SelectItem(j, (String) logradouros.get(i).getDescricao().toUpperCase(), Integer.toString(logradouros.get(i).getId())));
+                    if (logradouros.get(i).getDescricao().toUpperCase().equals("RUA")) {
+                        index[2] = j;
+                    }
+                    logradouros.remove(i);
+                    j++;
+                }
+            }
+            for (int i = 0; i < logradouros.size(); i++) {
+                if (!logradouros.get(i).getDescricao().toUpperCase().equals("RUA")
+                        || !logradouros.get(i).getDescricao().toUpperCase().equals("AVENIDA")
+                        || !logradouros.get(i).getDescricao().toUpperCase().equals("TRAVESSA")
+                        || !logradouros.get(i).getDescricao().toUpperCase().equals("PRAÇA")
+                        || !logradouros.get(i).getDescricao().toUpperCase().equals("ALAMEDA")
+                        || !logradouros.get(i).getDescricao().toUpperCase().equals("RODOVIA")
+                        || !logradouros.get(i).getDescricao().toUpperCase().equals("ESTRADA")) {
+                    listSelectItem[2].add(new SelectItem(j, (String) logradouros.get(i).getDescricao(), Integer.toString(logradouros.get(i).getId())));
+                    j++;
                 }
             }
         }
-        return listaLogradouro;
+        return listSelectItem[2];
     }
 
-    public void setListaLogradouro(List<SelectItem> listaLogradouro) {
-        this.listaLogradouro = listaLogradouro;
+    public List<SelectItem> getListEstado() {
+        if (listSelectItem[3].isEmpty()) {
+            listSelectItem[3].add(new SelectItem("AC", "AC", "DF"));
+            listSelectItem[3].add(new SelectItem("AL", "AL", "AL"));
+            listSelectItem[3].add(new SelectItem("AP", "AP", "AP"));
+            listSelectItem[3].add(new SelectItem("AM", "AM", "AM"));
+            listSelectItem[3].add(new SelectItem("BA", "BA", "BA"));
+            listSelectItem[3].add(new SelectItem("CE", "CE", "CE"));
+            listSelectItem[3].add(new SelectItem("DF", "DF", "DF"));
+            listSelectItem[3].add(new SelectItem("ES", "ES", "ES"));
+            listSelectItem[3].add(new SelectItem("GO", "GO", "GO"));
+            listSelectItem[3].add(new SelectItem("MA", "MA", "MA"));
+            listSelectItem[3].add(new SelectItem("MT", "MT", "MT"));
+            listSelectItem[3].add(new SelectItem("MS", "MS", "MS"));
+            listSelectItem[3].add(new SelectItem("MG", "MG", "MG"));
+            listSelectItem[3].add(new SelectItem("PA", "PA", "PA"));
+            listSelectItem[3].add(new SelectItem("PB", "PB", "PB"));
+            listSelectItem[3].add(new SelectItem("PR", "PR", "PR"));
+            listSelectItem[3].add(new SelectItem("PE", "PE", "PE"));
+            listSelectItem[3].add(new SelectItem("PI", "PI", "PI"));
+            listSelectItem[3].add(new SelectItem("RJ", "RJ", "RJ"));
+            listSelectItem[3].add(new SelectItem("RN", "RN", "RN"));
+            listSelectItem[3].add(new SelectItem("RS", "RS", "RS"));
+            listSelectItem[3].add(new SelectItem("RO", "RO", "RO"));
+            listSelectItem[3].add(new SelectItem("RR", "RR", "RR"));
+            listSelectItem[3].add(new SelectItem("SC", "SC", "SC"));
+            listSelectItem[3].add(new SelectItem("SP", "SP", "SP"));
+            listSelectItem[3].add(new SelectItem("SE", "SE", "SE"));
+            listSelectItem[3].add(new SelectItem("TO", "TO", "TO"));
+        }
+        return listSelectItem[3];
     }
 
-    public List<SelectItem> getListaCidade() {
-        if (listaCidade.isEmpty()) {
+    public List<SelectItem> getListCidade() {
+        if (listSelectItem[1].isEmpty()) {
             PessoaEnderecoDB dbPes = new PessoaEnderecoDBToplink();
-            SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-            Filial fili = (Filial) acumuladoDB.pesquisaCodigo(1, "Filial");
+            DaoInterface di = new Dao();
+            Filial fili = (Filial) di.find(new Filial(), 1);
             if (fili == null) {
                 msgDetalhada = "Não existe filial, CRIE uma e "
                         + " vincule o endereço para evitar futuros erros!";
@@ -273,25 +335,21 @@ public class EnderecoBean implements Serializable {
             List select = db.pesquisaCidadeObj(cidadeBase.getUf());
 
             for (int i = 0; i < select.size(); i++) {
-                listaCidade.add(new SelectItem(i, (String) ((Cidade) select.get(i)).getCidade(), Integer.toString(((Cidade) select.get(i)).getId())));
-                if (Integer.parseInt(listaCidade.get(i).getDescription()) == cidadeBase.getId()) {
-                    idCidade = i;
+                listSelectItem[1].add(new SelectItem(i, (String) ((Cidade) select.get(i)).getCidade(), Integer.toString(((Cidade) select.get(i)).getId())));
+                if (Integer.parseInt(listSelectItem[1].get(i).getDescription()) == cidadeBase.getId()) {
+                    index[1] = i;
                 }
             }
         } else {
-            CidadeDB db = new CidadeDBToplink();
-            cidadeBase = db.pesquisaCodigo(Integer.parseInt(listaCidade.get(idCidade).getDescription()));
-            for (int i = 0; i < listaCidade.size(); i++) {
-                if (Integer.parseInt(listaCidade.get(i).getDescription()) == cidadeBase.getId()) {
-                    idCidade = i;
+            DaoInterface di = new Dao();
+            cidadeBase = (Cidade) di.find(new Cidade(), Integer.parseInt(listSelectItem[1].get(index[1]).getDescription()));
+            for (int i = 0; i < listSelectItem[1].size(); i++) {
+                if (Integer.parseInt(listSelectItem[1].get(i).getDescription()) == cidadeBase.getId()) {
+                    index[1] = i;
                 }
             }
         }
-        return listaCidade;
-    }
-
-    public void setListaCidade(List<SelectItem> listaCidade) {
-        this.listaCidade = listaCidade;
+        return listSelectItem[1];
     }
 
     public List<Endereco> getListaEndereco() {
@@ -301,14 +359,14 @@ public class EnderecoBean implements Serializable {
                 listaEndereco = db.pesquisaEnderecoCep(endereco.getCep());
             } else if (porPesquisa.equals("inicial") && pesquisar) {
                 listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
-                        db.pesquisaCidade(Integer.parseInt(getListaCidade().get(idCidade).getDescription())).getCidade(),
-                        db.pesquisaLogradouro(Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription())).getDescricao(),
+                        db.pesquisaCidade(Integer.parseInt(getListCidade().get(index[1]).getDescription())).getCidade(),
+                        db.pesquisaLogradouro(Integer.parseInt(getListLogradouro().get(index[2]).getDescription())).getDescricao(),
                         endereco.getDescricaoEndereco().getDescricao(), "I");
                 pesquisar = false;
             } else if (porPesquisa.equals("parcial") && pesquisar) {
                 listaEndereco = db.pesquisaEnderecoDes(cidadeBase.getUf(),
-                        db.pesquisaCidade(Integer.parseInt(getListaCidade().get(idCidade).getDescription())).getCidade(),
-                        db.pesquisaLogradouro(Integer.parseInt(listaLogradouro.get(idLogradouro).getDescription())).getDescricao(),
+                        db.pesquisaCidade(Integer.parseInt(getListCidade().get(index[1]).getDescription())).getCidade(),
+                        db.pesquisaLogradouro(Integer.parseInt(getListLogradouro().get(index[2]).getDescription())).getDescricao(),
                         endereco.getDescricaoEndereco().getDescricao(), "P");
                 pesquisar = false;
             }
@@ -318,14 +376,6 @@ public class EnderecoBean implements Serializable {
 
     public void setListaEndereco(List<Endereco> listaEndereco) {
         this.listaEndereco = listaEndereco;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 
     public boolean isBlDetalhada() {
@@ -349,26 +399,10 @@ public class EnderecoBean implements Serializable {
         this.porPesquisa = porPesquisa;
     }
 
-    public int getIdLogradouro() {
-        return idLogradouro;
-    }
-
-    public void setIdLogradouro(int idLogradouro) {
-        this.idLogradouro = idLogradouro;
-    }
-
-    public int getIdCidade() {
-        return idCidade;
-    }
-
-    public void setIdCidade(int idCidade) {
-        this.idCidade = idCidade;
-    }
-
     public Cidade getCidadeBase() {
         if (!pesquisar) {
-            listaCidade.clear();
-            idCidade = 0;
+            getListCidade().clear();
+            index[1] = 0;
         }
         return cidadeBase;
     }
@@ -404,5 +438,13 @@ public class EnderecoBean implements Serializable {
     public String btnPessoaJuridica() {
         GenericaSessao.put("linkClicado", true);
         return "pessoaJuridica";
+    }
+
+    public Integer[] getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer[] index) {
+        this.index = index;
     }
 }
