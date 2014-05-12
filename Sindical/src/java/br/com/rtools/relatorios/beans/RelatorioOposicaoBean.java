@@ -1,10 +1,15 @@
 package br.com.rtools.relatorios.beans;
 
+import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
+import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.db.OposicaoDB;
 import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
 import br.com.rtools.impressao.ParametroOposicao;
+import br.com.rtools.pessoa.Cnae;
+import br.com.rtools.pessoa.db.EnviarArquivosDB;
+import br.com.rtools.pessoa.db.EnviarArquivosDBToplink;
 import br.com.rtools.relatorios.Relatorios;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
@@ -22,7 +27,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
@@ -47,40 +54,52 @@ import org.primefaces.event.TabChangeEvent;
 public class RelatorioOposicaoBean implements Serializable {
 
     private Oposicao oposicao;
-    private List<Oposicao> oposicaos;
-    private boolean porPeridoEmissao;
-    private boolean porPeridoConvencao;
-    private boolean porOposicao;
-    private String tipoRelatorio;
-    private String indexAccordion;
-    private Date dataInicial;
-    private Date dataFinal;
+    private List selectedConvencao;
+    private List selectedGrupoCidades;
+    private List selectedCnae;
     private List<SelectItem>[] listSelectItem;
     private List<ParametroOposicao> parametroOposicao;
     private List<ConvencaoPeriodo> listConvencaoPeriodos;
+    private List<Oposicao> oposicaos;
+    private Map<String, Integer> listConvencoes;
+    private Map<String, Integer> listGrupoCidades;
+    private Map<String, Integer> listCnaes;
+    private Boolean[] filtro;
+    private Date dataInicial;
+    private Date dataFinal;
     private Integer[] index;
+    private String tipoRelatorio;
+    private String indexAccordion;
     private String porPesquisa;
     private String descPorPesquisa;
 
     @PostConstruct
     public void init() {
         oposicao = new Oposicao();
+        filtro = new Boolean[4];
+        filtro[0] = false;
+        filtro[1] = false;
+        filtro[2] = false;
+        filtro[3] = false;
+        selectedConvencao = new ArrayList<Convencao>();
+        selectedGrupoCidades = new ArrayList<GrupoCidade>();
+        selectedCnae = new ArrayList<Cnae>();
         oposicaos = new ArrayList<Oposicao>();
-        porPeridoEmissao = false;
-        porPeridoConvencao = false;
-        porOposicao = false;
-        tipoRelatorio = "Simples";
-        indexAccordion = "Simples";
-        dataInicial = DataHoje.dataHoje();
-        dataFinal = DataHoje.dataHoje();
+        listCnaes = null;
+        listConvencoes = null;
+        listGrupoCidades = null;
         listSelectItem = new ArrayList[2];
         listSelectItem[0] = new ArrayList<SelectItem>();
         listSelectItem[1] = new ArrayList<SelectItem>();
         parametroOposicao = new ArrayList<ParametroOposicao>();
         listConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
+        dataInicial = DataHoje.dataHoje();
+        dataFinal = DataHoje.dataHoje();
         index = new Integer[2];
         index[0] = 0;
         index[1] = 0;
+        tipoRelatorio = "Simples";
+        indexAccordion = "Simples";
         porPesquisa = "";
         descPorPesquisa = "";
     }
@@ -111,43 +130,65 @@ public class RelatorioOposicaoBean implements Serializable {
             String pIStringI = "";
             String pFStringI = "";
             String referencia = "";
+            String dReferencia = "";
             List listDetalhePesquisa = new ArrayList();
+            if (filtro[0]) {
+                pIStringI = DataHoje.converteData(dataInicial);
+                pFStringI = DataHoje.converteData(dataFinal);
+                listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
+            }
+            if (filtro[1]) {
+                for (int i = 0; i < listConvencaoPeriodos.size(); i++) {
+                    if (i == 0) {
+                        dReferencia = "[" + listConvencaoPeriodos.get(i).getReferenciaFinal() + " - " + listConvencaoPeriodos.get(i).getReferenciaInicial() + " - Conv: " + listConvencaoPeriodos.get(i).getConvencao().getDescricao() + " - G. Cidade: " + listConvencaoPeriodos.get(i).getGrupoCidade().getDescricao() + "]";
+                        referencia = "" + Integer.toString(listConvencaoPeriodos.get(i).getId());
+                    } else {
+                        referencia += "," + Integer.toString(listConvencaoPeriodos.get(i).getId());
+                        dReferencia += ", [" + listConvencaoPeriodos.get(i).getReferenciaFinal() + " - " + listConvencaoPeriodos.get(i).getReferenciaInicial() + " - Conv: " + listConvencaoPeriodos.get(i).getConvencao().getDescricao() + " - G. Cidade: " + listConvencaoPeriodos.get(i).getGrupoCidade().getDescricao() + "]";
+                    }
+                }
+            }
+            String cnaesList = "";
+            String inCnaes = null;
+            if (!dReferencia.isEmpty()) {
+                listDetalhePesquisa.add(" Período convenção: " + dReferencia + "");
+            }
             if (porPesquisa.equals("rgs") || porPesquisa.equals("nome") || porPesquisa.equals("cpf")) {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
                     pPessoaOposicaoI = oposicao.getOposicaoPessoa().getId();
-                    listDetalhePesquisa.add(" Pessoa Oposição por " + porPesquisa + " ");
+                    listDetalhePesquisa.add(" Pessoa Oposição por " + porPesquisa + ". Documento nº" + oposicao.getOposicaoPessoa().getCpf() + " - " + oposicao.getOposicaoPessoa().getNome());
                 }
             }
             if (porPesquisa.equals("cnpj") || porPesquisa.equals("empresa")) {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
                     pEmpresaI = oposicao.getJuridica().getPessoa().getId();
-                    listDetalhePesquisa.add(" Pessoa Jurídica por " + porPesquisa + " ");
+                    listDetalhePesquisa.add(" Pessoa Jurídica por " + porPesquisa + ". CNPJ: " + oposicao.getJuridica().getPessoa().getDocumento() + " - " + oposicao.getJuridica().getPessoa().getNome());
                 }
             }
-            if (porPeridoEmissao) {
-                pIStringI = DataHoje.converteData(dataInicial);
-                pFStringI = DataHoje.converteData(dataFinal);
-                listDetalhePesquisa.add(" Período de Emissão entre " + pIStringI + " e " + pFStringI);
-            }
-            if (porPeridoConvencao) {
-                for (int i = 0; i < listConvencaoPeriodos.size(); i++) {
+            if (selectedCnae != null) {
+                for (int i = 0; i < selectedCnae.size(); i++) {
                     if (i == 0) {
-                        referencia = "" + Integer.toString(listConvencaoPeriodos.get(i).getId());
+                        inCnaes = "" + selectedCnae.get(i);
+                        //cnaesList += selectedCnae.get(i).getCnae();
                     } else {
-                        referencia += "," + Integer.toString(listConvencaoPeriodos.get(i).getId());
+                        inCnaes += "," + selectedCnae.get(i);
+                        //cnaesList += ", " + selectedCnae(i).getCnae();
                     }
                 }
+                if (!cnaesList.isEmpty()) {
+                    listDetalhePesquisa.add(" Cnaes: " + cnaesList + "; ");
+                }
             }
-            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios);
+            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes);
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
-                detalheRelatorio += "Pesquisar registros por: ";
+                detalheRelatorio += "";
                 for (int i = 0; i < listDetalhePesquisa.size(); i++) {
                     if (i == 0) {
                         detalheRelatorio += "" + listDetalhePesquisa.get(i).toString();
                     } else {
-                        detalheRelatorio += "," + listDetalhePesquisa.get(i).toString();
+                        detalheRelatorio += "; " + listDetalhePesquisa.get(i).toString();
                     }
                 }
             }
@@ -245,8 +286,8 @@ public class RelatorioOposicaoBean implements Serializable {
         indexAccordion = ((AccordionPanel) event.getComponent()).getActiveIndex();
         if (tipoRelatorio.equals("Simples")) {
             limpar();
-            porOposicao = false;
-            porPeridoEmissao = false;
+            filtro[2] = false;
+            filtro[0] = false;
         }
     }
 
@@ -261,33 +302,49 @@ public class RelatorioOposicaoBean implements Serializable {
     }
 
     public void limpar() {
-        if (!porPeridoEmissao) {
+        if (!filtro[0]) {
             dataInicial = DataHoje.dataHoje();
             dataFinal = DataHoje.dataHoje();
         }
-        if (!porPeridoConvencao) {
+        if (!filtro[1]) {
             listSelectItem[0].clear();
             listConvencaoPeriodos.clear();
         }
-        if (!porOposicao) {
+        if (!filtro[2]) {
             oposicao = new Oposicao();
             porPesquisa = "";
+        }
+        if (!filtro[3]) {
+            listCnaes = null;
+            listConvencoes = null;
+            listGrupoCidades = null;
+            listSelectItem = new ArrayList[2];
+            listSelectItem[0] = new ArrayList<SelectItem>();
+            listSelectItem[1] = new ArrayList<SelectItem>();
         }
     }
 
     public void close(String close) {
-        if (close.equals("oposicao")) {
-            porOposicao = false;
-            oposicao = new Oposicao();
-            porPesquisa = "";
-        } else if (close.equals("periodoEmissao")) {
+        if (close.equals("periodoEmissao")) {
             dataInicial = DataHoje.dataHoje();
             dataFinal = DataHoje.dataHoje();
-            porPeridoEmissao = false;
+            filtro[0] = false;
         } else if (close.equals("periodoConvencao")) {
             listSelectItem[1].clear();
-            porPeridoConvencao = false;
+            filtro[1] = false;
             listConvencaoPeriodos.clear();
+        } else if (close.equals("oposicao")) {
+            filtro[2] = false;
+            oposicao = new Oposicao();
+            porPesquisa = "";
+        } else if (close.equals("cnae")) {
+            filtro[3] = false;
+            listCnaes = null;
+            listConvencoes = null;
+            listGrupoCidades = null;
+            listSelectItem = new ArrayList[2];
+            listSelectItem[0] = new ArrayList<SelectItem>();
+            listSelectItem[1] = new ArrayList<SelectItem>();
         }
         RequestContext.getCurrentInstance().update("form_relatorio:id_panel");
     }
@@ -319,22 +376,6 @@ public class RelatorioOposicaoBean implements Serializable {
         this.oposicao = oposicao;
     }
 
-    public boolean isPorPeridoEmissao() {
-        return porPeridoEmissao;
-    }
-
-    public void setPorPeridoEmissao(boolean porPeridoEmissao) {
-        this.porPeridoEmissao = porPeridoEmissao;
-    }
-
-    public boolean isPorOposicao() {
-        return porOposicao;
-    }
-
-    public void setPorOposicao(boolean porOposicao) {
-        this.porOposicao = porOposicao;
-    }
-
     public Date getDataInicial() {
         return dataInicial;
     }
@@ -359,6 +400,15 @@ public class RelatorioOposicaoBean implements Serializable {
         this.listSelectItem = listSelectItem;
     }
 
+    /**
+     * <strong>Index</strong>
+     * <ul>
+     * <li>[0] Tipos de Relatórios</li>
+     * <li>[1] List[SelectItem] Convenção Período</li>
+     * </ul>
+     *
+     * @return Integer
+     */
     public Integer[] getIndex() {
         return index;
     }
@@ -373,14 +423,6 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public void setPorPesquisa(String porPesquisa) {
         this.porPesquisa = porPesquisa;
-    }
-
-    public boolean isPorPeridoConvencao() {
-        return porPeridoConvencao;
-    }
-
-    public void setPorPeridoConvencao(boolean porPeridoConvencao) {
-        this.porPeridoConvencao = porPeridoConvencao;
     }
 
     public List<ParametroOposicao> getParametroOposicao() {
@@ -449,4 +491,151 @@ public class RelatorioOposicaoBean implements Serializable {
     public void setListConvencaoPeriodos(List<ConvencaoPeriodo> listConvencaoPeriodos) {
         this.listConvencaoPeriodos = listConvencaoPeriodos;
     }
+
+    /**
+     * <strong>Filtros</strong>
+     * <ul>
+     * <li>[0] Periodo Emissão</li>
+     * <li>[1] Periodo Convenção</li>
+     * <li>[2] Periodo Pesquisas Oposição</li>
+     * <li>[3] Cnae</li>
+     * </ul>
+     *
+     * @return boolean
+     */
+    public Boolean[] getFiltro() {
+        return filtro;
+    }
+
+    public void setFiltro(Boolean[] filtro) {
+        this.filtro = filtro;
+    }
+
+    public Map<String, Integer> getListCnaes() {
+        listCnaes = null;
+        if (!selectedConvencao.isEmpty()) {
+            listCnaes = new HashMap<String, Integer>();
+            String ids = inIdConvencao();
+            if (!ids.isEmpty()) {
+                OposicaoDB odb = new OposicaoDBToplink();
+                List<Cnae> list = (List<Cnae>) odb.listaCnaesPorOposicaoJuridica(ids);
+                for (int i = 0; i < list.size(); i++) {
+                    listCnaes.put(list.get(i).getCnae() + " - " + list.get(i).getNumero(), list.get(i).getId());
+                }
+            }
+        } else {
+            selectedCnae = new ArrayList();
+        }
+        return listCnaes;
+    }
+
+    public void setListCnaes(Map<String, Integer> listCnaes) {
+        this.listCnaes = listCnaes;
+    }
+
+    public Map<String, Integer> getListConvencaos() {
+        if (listConvencoes == null) {
+            listConvencoes = new HashMap<String, Integer>();
+            EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
+            List<Convencao> list = enviarArquivosDB.listaConvencao();
+            for (int i = 0; i < list.size(); i++) {
+                listConvencoes.put(list.get(i).getDescricao(), list.get(i).getId());
+            }
+        }
+        return listConvencoes;
+    }
+
+    public void setListConvencaos(Map<String, Integer> listConvencoes) {
+        this.listConvencoes = listConvencoes;
+    }
+
+    public Map<String, Integer> getListGrupoCidades() {
+        listGrupoCidades = null;
+        if (!selectedConvencao.isEmpty()) {
+            listGrupoCidades = new HashMap<String, Integer>();
+            String ids = inIdConvencao();
+            if (!ids.isEmpty()) {
+                EnviarArquivosDB enviarArquivosDB = new EnviarArquivosDBToplink();
+                List<GrupoCidade> list = enviarArquivosDB.listaGrupoCidadePorConvencao(ids);
+                for (int i = 0; i < list.size(); i++) {
+                    listGrupoCidades.put(list.get(i).getDescricao(), list.get(i).getId());
+                }
+            }
+        } else {
+            selectedGrupoCidades = new ArrayList();
+        }
+        return listGrupoCidades;
+    }
+
+    public void setListGrupoCidades(HashMap<String, Integer> listGrupoCidades) {
+        this.listGrupoCidades = listGrupoCidades;
+    }
+
+    public String inIdConvencao() {
+        String ids = "";
+        if (selectedConvencao != null) {
+            for (int i = 0; i < selectedConvencao.size(); i++) {
+                if (ids.isEmpty()) {
+                    ids = "" + selectedConvencao.get(i);
+                } else {
+                    ids += "," + selectedConvencao.get(i);
+                }
+            }
+        }
+        return ids;
+    }
+
+    public String inIdGruposCidade() {
+        String ids = "";
+        if (selectedGrupoCidades != null) {
+            for (int i = 0; i < selectedGrupoCidades.size(); i++) {
+                if (ids.isEmpty()) {
+                    ids = "" + selectedGrupoCidades.get(i);
+                } else {
+                    ids += "," + selectedGrupoCidades.get(i);
+                }
+            }
+        }
+        return ids;
+    }
+
+    public String inIdCnaes() {
+        String ids = "";
+        if (selectedCnae != null) {
+            for (int i = 0; i < selectedCnae.size(); i++) {
+                if (ids.isEmpty()) {
+                    ids = "" + selectedCnae.get(i);
+                } else {
+                    ids += "," + selectedCnae.get(i);
+                }
+            }
+
+        }
+        return ids;
+    }
+
+    public List getSelectedConvencao() {
+        return selectedConvencao;
+    }
+
+    public void setSelectedConvencao(List selectedConvencao) {
+        this.selectedConvencao = selectedConvencao;
+    }
+
+    public List getSelectedGrupoCidades() {
+        return selectedGrupoCidades;
+    }
+
+    public void setSelectedGrupoCidades(List selectedGrupoCidades) {
+        this.selectedGrupoCidades = selectedGrupoCidades;
+    }
+
+    public List getSelectedCnae() {
+        return selectedCnae;
+    }
+
+    public void setSelectedCnae(List selectedCnae) {
+        this.selectedCnae = selectedCnae;
+    }
+
 }
