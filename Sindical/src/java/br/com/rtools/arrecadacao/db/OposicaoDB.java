@@ -3,6 +3,7 @@ package br.com.rtools.arrecadacao.db;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.arrecadacao.OposicaoPessoa;
+import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.relatorios.Relatorios;
 import java.util.List;
@@ -28,7 +29,9 @@ public interface OposicaoDB {
 
     public boolean validaOposicao(Oposicao oposicao);
 
-    public List filtroRelatorio(int idEmpresa, int idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r);
+    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes);
 
     public List<ConvencaoPeriodo> listaConvencaoPeriodoPorOposicao();
+
+    public List<Cnae> listaCnaesPorOposicaoJuridica(String inIdsCnaeConvencao);
 }
