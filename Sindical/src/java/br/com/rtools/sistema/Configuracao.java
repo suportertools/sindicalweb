@@ -2,13 +2,15 @@ package br.com.rtools.sistema;
 
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.DataHoje;
+
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "SIS_CONFIGURACAO")
 @NamedQuery(name = "Configuracao.pesquisaID", query = "SELECT C FROM Configuracao c WHERE C.id = :pid")
-public class Configuracao implements java.io.Serializable {
+public class Configuracao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +46,7 @@ public class Configuracao implements java.io.Serializable {
         this.identifica = "";
         this.juridica = new Juridica();
         this.acessos = 0;
-        this.dtCadastro = new DataHoje().dataHoje();
+        this.dtCadastro = DataHoje.dataHoje();
         this.ativo = true;
         this.host = "";
         this.senha = "";
@@ -159,4 +161,10 @@ public class Configuracao implements java.io.Serializable {
     public void setSenha(String senha) {
         this.senha = senha;
     }
+
+    @Override
+    public String toString() {
+        return "Configuracao{" + "id=" + id + ", nomeCliente=" + nomeCliente + ", persistence=" + persistence + ", caminhoSistema=" + caminhoSistema + ", identifica=" + identifica + ", juridica=" + juridica + ", acessos=" + acessos + ", dtCadastro=" + dtCadastro + ", ativo=" + ativo + ", host=" + host + ", senha=" + senha + '}';
+    }
+
 }
