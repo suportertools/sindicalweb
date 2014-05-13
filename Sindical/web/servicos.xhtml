@@ -81,6 +81,7 @@
                                         <p:selectBooleanCheckbox value="#{servicosBean.servicos.tabela}" itemLabel="Tabela"/>
                                         <p:selectBooleanCheckbox value="#{servicosBean.servicos.eleicao}" itemLabel="Eleição"/>
                                         <p:selectBooleanCheckbox value="#{servicosBean.servicos.agrupaBoleto}" itemLabel="Agrupa boletos" />
+                                        <p:selectBooleanCheckbox value="#{servicosBean.servicos.produto}" itemLabel="Produto" />
                                     </p:panelGrid>
                                 </p:tab>
                                 <p:tab id="valor" disabled="#{servicosBean.desabilitaValor}" title="Serviço Valor">                                    
@@ -156,7 +157,7 @@
                                             </p:column>
                                             <p:column headerText="Categoria" width="200" >
                                                 <p:outputLabel value="#{categoriaDesconto.categoria.categoria}" title="Código: #{categoriaDesconto.id}"/>
-                                            </p:column>
+                                            </p:column>         
                                             <p:column headerText="Desconto (%)" width="100" styleClass="text-center">
                                                 <p:column>
                                                     <p:spinner value="#{categoriaDesconto.desconto}"  stepFactor="0.1" min="0" max="100" title="Código: #{categoriaDesconto.id}" size="2"/>                                                                                                    
