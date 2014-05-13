@@ -3,7 +3,9 @@ package br.com.rtools.financeiro;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "FIN_SERVICO_VALOR")
+@Table(name = "FIN_SERVICO_VALOR",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_SERVICO", "NR_IDADE_INI", "NR_IDADE_FIM", "NR_VALOR", "NR_DESCONTO_ATE_VENCIMENTO", "NR_TAXA"})
+)
 @NamedQuery(name = "ServicoValor.pesquisaID", query = "select s from ServicoValor s where s.id=:pid")
 public class ServicoValor implements java.io.Serializable {
 
@@ -13,15 +15,15 @@ public class ServicoValor implements java.io.Serializable {
     @JoinColumn(name = "ID_SERVICO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Servicos servicos;
-    @Column(name = "NR_IDADE_INI", length = 18, nullable = false)
+    @Column(name = "NR_IDADE_INI", length = 18, nullable = false, columnDefinition = "INTEGER DEFAULT 0")
     private int idadeIni;
-    @Column(name = "NR_IDADE_FIM", length = 18, nullable = false)
+    @Column(name = "NR_IDADE_FIM", length = 18, nullable = false, columnDefinition = "INTEGER DEFAULT 500")
     private int idadeFim;
-    @Column(name = "NR_VALOR", length = 18, nullable = false)
+    @Column(name = "NR_VALOR", length = 18, nullable = false, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private float valor;
-    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO", length = 18, nullable = false)
+    @Column(name = "NR_DESCONTO_ATE_VENCIMENTO", length = 18, nullable = false, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private float descontoAteVenc;
-    @Column(name = "NR_TAXA", length = 18, nullable = true)
+    @Column(name = "NR_TAXA", length = 18, nullable = true, columnDefinition = "DOUBLE PRECISION DEFAULT 0")
     private float taxa;
 
     public ServicoValor() {
