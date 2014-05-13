@@ -2,6 +2,7 @@ package br.com.rtools.estoque;
 
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Moeda;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -47,6 +48,8 @@ public class Produto implements Serializable {
     @JoinColumn(name = "ID_COR", referencedColumnName = "ID", nullable = false)
     @OneToOne
     private Cor cor;
+    @Column(name = "NR_VALOR", columnDefinition = "DOUBLE PRECISION DEFAULT 0", nullable = true)
+    private float valor;
 
     public Produto() {
         this.id = -1;
@@ -64,9 +67,10 @@ public class Produto implements Serializable {
         this.produtoSubGrupo = new ProdutoSubGrupo();
         this.produtoUnidade = new ProdutoUnidade();
         this.cor = new Cor();
+        this.valor = 0;
     }
 
-    public Produto(int id, String descricao, String modelo, String marca, String fabricante, String sabor, String medida, String observacao, String barras, int quantidadeEmbalagem, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor) {
+    public Produto(int id, String descricao, String modelo, String marca, String fabricante, String sabor, String medida, String observacao, String barras, int quantidadeEmbalagem, String cadastro, ProdutoGrupo produtoGrupo, ProdutoSubGrupo produtoSubGrupo, ProdutoUnidade produtoUnidade, Cor cor, float valor) {
         this.id = id;
         this.descricao = descricao;
         this.modelo = modelo;
@@ -82,6 +86,7 @@ public class Produto implements Serializable {
         this.produtoSubGrupo = produtoSubGrupo;
         this.produtoUnidade = produtoUnidade;
         this.cor = cor;
+        this.valor = valor;
     }
 
     public int getId() {
@@ -215,5 +220,21 @@ public class Produto implements Serializable {
     @Override
     public String toString() {
         return "Produto{" + "id=" + id + ", descricao=" + descricao + ", modelo=" + modelo + ", marca=" + marca + ", fabricante=" + fabricante + ", sabor=" + sabor + ", medida=" + medida + ", barras=" + barras + ", observacao=" + observacao + ", quantidadeEmbalagem=" + quantidadeEmbalagem + ", dtCadastro=" + dtCadastro + ", produtoGrupo=" + produtoGrupo + ", produtoSubGrupo=" + produtoSubGrupo + ", produtoUnidade=" + produtoUnidade + ", cor=" + cor + '}';
+    }
+
+    public float getValor() {
+        return valor;
+    }
+
+    public void setValor(float valor) {
+        this.valor = valor;
+    }
+    
+    public String getValorString() {
+        return Moeda.converteR$Float(valor);
+    }
+
+    public void setValorString(String valor) {
+        this.valor = Moeda.converteUS$(valor);
     }
 }
