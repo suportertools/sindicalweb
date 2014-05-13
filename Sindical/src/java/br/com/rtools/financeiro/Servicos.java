@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "FIN_SERVICOS")
-@NamedQuery(name = "Servicos.pesquisaID", query = "select s from Servicos s where s.id=:pid")
+@NamedQuery(name = "Servicos.pesquisaID", query = "SELECT S FROM Servicos AS S WHERE S.id = :pid")
 public class Servicos implements java.io.Serializable {
 
     @Id
@@ -41,10 +41,12 @@ public class Servicos implements java.io.Serializable {
     private boolean eleicao;
     @Column(name = "IS_AGRUPA_BOLETO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean agrupaBoleto;
+    @Column(name = "IS_PRODUTO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean produto;
     @JoinColumn(name = "ID_SUBGRUPO", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private SubGrupoFinanceiro subGrupoFinanceiro;
-    
+
     public Servicos() {
         this.id = -1;
         this.descricao = "";
@@ -61,6 +63,7 @@ public class Servicos implements java.io.Serializable {
         this.eleicao = false;
         this.agrupaBoleto = false;
         this.subGrupoFinanceiro = new SubGrupoFinanceiro();
+        this.produto = false;
     }
 
     public Servicos(int id,
@@ -77,7 +80,8 @@ public class Servicos implements java.io.Serializable {
             boolean tabela,
             boolean eleicao,
             boolean agrupaBoleto,
-            SubGrupoFinanceiro subGrupoFinanceiro) {
+            SubGrupoFinanceiro subGrupoFinanceiro,
+            boolean produto) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -93,6 +97,7 @@ public class Servicos implements java.io.Serializable {
         this.eleicao = eleicao;
         this.agrupaBoleto = agrupaBoleto;
         this.subGrupoFinanceiro = subGrupoFinanceiro;
+        this.produto = produto;
     }
 
     public int getId() {
@@ -207,11 +212,6 @@ public class Servicos implements java.io.Serializable {
         this.plano5 = plano5;
     }
 
-    @Override
-    public String toString() {
-        return "Servicos{" + "id=" + id + ", descricao=" + descricao + ", filial=" + filial + ", plano5=" + plano5 + ", departamento=" + departamento + ", validade=" + validade + ", codigo=" + codigo + ", situacao=" + situacao + ", debito=" + debito + ", alterarValor=" + alterarValor + ", adm=" + adm + ", tabela=" + tabela + ", eleicao=" + eleicao + ", agrupaBoleto=" + agrupaBoleto + '}';
-    }
-
     public SubGrupoFinanceiro getSubGrupoFinanceiro() {
         return subGrupoFinanceiro;
     }
@@ -220,4 +220,16 @@ public class Servicos implements java.io.Serializable {
         this.subGrupoFinanceiro = subGrupoFinanceiro;
     }
 
+    public boolean isProduto() {
+        return produto;
+    }
+
+    public void setProduto(boolean produto) {
+        this.produto = produto;
+    }
+
+    @Override
+    public String toString() {
+        return "Servicos{" + "id=" + id + ", descricao=" + descricao + ", filial=" + filial + ", plano5=" + plano5 + ", departamento=" + departamento + ", validade=" + validade + ", codigo=" + codigo + ", situacao=" + situacao + ", debito=" + debito + ", alterarValor=" + alterarValor + ", adm=" + adm + ", tabela=" + tabela + ", eleicao=" + eleicao + ", agrupaBoleto=" + agrupaBoleto + ", produto=" + produto + ", subGrupoFinanceiro=" + subGrupoFinanceiro + '}';
+    }
 }
