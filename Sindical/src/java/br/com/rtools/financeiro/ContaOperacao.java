@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,11 +13,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_CONTA_OPERACAO", 
+@Table(name = "FIN_CONTA_OPERACAO",
         uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PLANO5", "ID_OPERACAO", "DS_ES"})
 )
-@NamedQuery(name = "ContaOperacao.pesquisaID", query = "select co from ContaOperacao co where co.id = :pid")
-public class ContaOperacao implements java.io.Serializable {
+@NamedQuery(name = "ContaOperacao.pesquisaID", query = "SELECT CO FROM ContaOperacao AS CO WHERE CO.id = :pid")
+public class ContaOperacao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +33,7 @@ public class ContaOperacao implements java.io.Serializable {
     private Operacao operacao;
     @Column(name = "DS_ES")
     private String es;
-    @Column(name = "IS_CONTA_FIXA")
+    @Column(name = "IS_CONTA_FIXA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean contaFixa;
 
     public ContaOperacao() {

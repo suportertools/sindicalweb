@@ -9,11 +9,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_GRUPO")
-@NamedQuery(name = "GrupoFinanceiro.pesquisaID", query = "select gf from GrupoFinanceiro gf where gf.id = :pid")
+@Table(name = "FIN_GRUPO",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PLANO5", "DS_DESCRICAO"})
+)
+@NamedQuery(name = "GrupoFinanceiro.pesquisaID", query = "SELECT GF FROM GrupoFinanceiro AS GF WHERE GF.id = :pid")
 public class GrupoFinanceiro implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -28,13 +32,13 @@ public class GrupoFinanceiro implements java.io.Serializable {
         this.plano5 = new Plano5();
         this.descricao = "";
     }
-    
+
     public GrupoFinanceiro(int id, Plano5 plano5, String descricao) {
         this.id = id;
         this.plano5 = plano5;
         this.descricao = descricao;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -58,4 +62,10 @@ public class GrupoFinanceiro implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    @Override
+    public String toString() {
+        return "GrupoFinanceiro{" + "id=" + id + ", plano5=" + plano5 + ", descricao=" + descricao + '}';
+    }
+
 }
