@@ -104,6 +104,6 @@ public class ProdutoSubGrupo implements BaseEntity, Serializable {
 
     @Override
     public String toString() {
-        return "ProdutoSubGrupo{" + "id=" + id + ", descricao=" + descricao + '}';
+        return "ProdutoSubGrupo{" + "id=" + id + ", produtoGrupo=" + produtoGrupo + ", descricao=" + descricao + '}';
     }
 }
