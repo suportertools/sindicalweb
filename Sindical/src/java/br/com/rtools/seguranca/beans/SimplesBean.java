@@ -15,7 +15,6 @@ import br.com.rtools.endereco.Logradouro;
 import br.com.rtools.escola.ComponenteCurricular;
 import br.com.rtools.financeiro.Indice;
 import br.com.rtools.estoque.ProdutoGrupo;
-import br.com.rtools.estoque.ProdutoSubGrupo;
 import br.com.rtools.estoque.ProdutoUnidade;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.locadoraFilme.Genero;
@@ -580,10 +579,6 @@ public class SimplesBean implements Serializable {
             }
         } else if (obj.getClass().getSimpleName().equals("ProdutoGrupo")) {
             if (((ProdutoGrupo) obj).getDescricao().contains(pesquisaLista)) {
-                return true;
-            }
-        } else if (obj.getClass().getSimpleName().equals("ProdutoSubGrupo")) {
-            if (((ProdutoSubGrupo) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
         }
