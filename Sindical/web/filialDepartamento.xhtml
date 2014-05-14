@@ -38,28 +38,30 @@
                                 <h:panelGrid columns="6">
                                     <p:outputLabel value="Filial: " />
                                     <p:selectOneMenu value="#{filialDepartamentoBean.filial}" converter="#{entityConverter}">
-                                        <p:ajax event="change" update="@this" listener="#{filialDepartamentoBean.listDepartamentos.clear()}"/>
+                                        <p:ajax event="change" update="@this, i_sel_d, i_pg_fd" listener="#{filialDepartamentoBean.clear(2)}"/>
                                         <f:selectItems var="filial" value="#{filialDepartamentoBean.listFiliais}" itemValue="#{filial}" itemLabel="#{filial.filial.pessoa.nome}" />
                                     </p:selectOneMenu>
                                     <p:outputLabel value="Departamento: " />
-                                    <p:selectOneMenu value="#{filialDepartamentoBean.departamento}" converter="#{entityConverter}" disabled="#{filialDepartamentoBean.listDepartamentos.size() == 0}">
+                                    <p:selectOneMenu id="i_sel_d" value="#{filialDepartamentoBean.departamento}" converter="#{entityConverter}" disabled="#{filialDepartamentoBean.listDepartamentos.size() == 0}">
                                         <p:ajax event="change" update="@this" />
                                         <f:selectItems var="departamento" value="#{filialDepartamentoBean.listDepartamentos}" itemValue="#{departamento}" itemLabel="#{departamento.descricao}" />
                                     </p:selectOneMenu>
                                     <p:commandButton icon="ui-icon-plus" action="#{filialDepartamentoBean.add()}" update=":form_fd:" title="Adicionar" disabled="#{filialDepartamentoBean.listDepartamentos.size() == 0}"/>
                                 </h:panelGrid>
                             </p:panel>
-                            <p:dataTable var="filialDepartamento" value="#{filialDepartamentoBean.listFilialDepartamentos}" scrollable="true" scrollHeight="200" rowIndexVar="index" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado!">
-                                <p:column headerText="Departamento">
-                                    #{filialDepartamento.departamento.descricao}
-                                </p:column>
-                                <p:column headerText="Filial">
-                                    #{filialDepartamento.filial.filial.pessoa.nome}
-                                </p:column>
-                                <p:column width="25">
-                                    <p:commandButton icon="ui-icon-trash" action="#{filialDepartamentoBean.remove(index)}" update=":form_fd:" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                </p:column>
-                            </p:dataTable>
+                            <h:panelGrid id="i_pg_fd">
+                                <p:dataTable var="filialDepartamento" value="#{filialDepartamentoBean.listFilialDepartamentos}" scrollable="true" scrollHeight="200" rowIndexVar="index" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado!">
+                                    <p:column headerText="Departamento">
+                                        #{filialDepartamento.departamento.descricao}
+                                    </p:column>
+                                    <p:column headerText="Filial">
+                                        #{filialDepartamento.filial.filial.pessoa.nome}
+                                    </p:column>
+                                    <p:column width="25">
+                                        <p:commandButton icon="ui-icon-trash" action="#{filialDepartamentoBean.remove(index)}" update=":form_fd:" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGrid>
                             <h:panelGrid styleClass="margin-top-max" columns="2">
                                 <p:commandButton value="Salvar" action="#{filialDepartamentoBean.save()}" update=":form_fd:" disabled="#{controleAcessoBean.botaoSalvar}"/>
                                 <p:commandButton value="Novo"  action="#{filialDepartamentoBean.destroy()}" update=":form_fd:" />
