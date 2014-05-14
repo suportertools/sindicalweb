@@ -1,0 +1,75 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Produto SubGrupo</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Produto SubGrupo" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="form_psg">
+                            <p:messages autoUpdate="true" showDetail="true" showSummary="true" closable="true" />
+                            <p:panel styleClass="fundoCinza margin-top-max">
+                                <h:panelGrid columns="5">
+                                    <p:outputLabel value="Grupos:" />
+                                    <p:selectOneMenu value="#{produtoSubGrupoBean.produtoGrupo}" converter="#{entityConverter}">
+                                        <p:ajax event="change" listener="#{produtoSubGrupoBean.listProdutoSubGrupo.clear()}" update="@this :form_psg:" />
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                        <f:selectItems value="#{produtoSubGrupoBean.listProdutoGrupo}" itemValue="#{produtoGrupo}" itemLabel="#{produtoGrupo.descricao}" var="produtoGrupo"/>
+                                    </p:selectOneMenu>
+                                    <p:outputLabel value="Descrição:" />
+                                    <p:inputText value="#{produtoSubGrupoBean.produtoSubGrupo.descricao}" converter="#{toUpperCase}" >
+                                        <p:ajax event="blur" update="@this" />
+                                    </p:inputText> 
+                                    <p:commandButton value="Salvar" action="#{produtoSubGrupoBean.save()}" update=":form_psg:" />
+                                    <p:commandButton value="Novo" action="#{produtoSubGrupoBean.destroy()}" update=":form_psg:" />
+                                </h:panelGrid>
+                            </p:panel>
+                            <p:dataTable value="#{produtoSubGrupoBean.listProdutoSubGrupo}" var="produtoSubGrupo" scrollable="true" scrollHeight="250" styleClass="margin-top-max" emptyMessage="Nenhum registro encontrado!">
+                                <p:column width="25" styleClass="text-center">
+                                    <p:commandButton icon="ui-icon-link" action="#{produtoSubGrupoBean.edit(produtoSubGrupo)}" update=":form_psg:" title="Editar registro nº #{produtoSubGrupo.id}"/>
+                                </p:column>
+                                <p:column headerText="Descrição" >
+                                    #{produtoSubGrupo.descricao}
+                                </p:column>
+                                <p:column width="25" styleClass="text-center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{produtoSubGrupoBean.delete(produtoSubGrupo)}" update=":form_psg:" />
+                                </p:column>
+                            </p:dataTable>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>
