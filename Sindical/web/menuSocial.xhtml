@@ -10,7 +10,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    
+
     <h:body>
         <!-- INICIA DIV wrap e main -->
         <div id="wrapx">
@@ -39,13 +39,13 @@
                                         <p:menuitem value="Banda"                action="#{chamadaPaginaBean.bandas}" />
                                         <p:menuitem value="Baile"                action="#{chamadaPaginaBean.baile}" />
                                     </p:submenu>
-                                    
+
                                     <p:submenu label="Viagens">
                                         <p:menuitem value="Caravanas"            action="#{chamadaPaginaBean.caravana}" />
                                     </p:submenu>
-                                    
+
                                     <p:menuitem value="Desc. Serviço Empresa"     action="#{chamadaPaginaBean.descontoServicoEmpresa}" />
-                                    
+
                                     <p:submenu label="Suporte">
                                         <p:menuitem value="Descrição Eventos"    action="#{chamadaPaginaBean.descricaoEvento}" />
                                         <p:menuitem value="Grupo Evento"         action="#{chamadaPaginaBean.grupoEvento}" />
@@ -58,12 +58,12 @@
 
                                 <p:submenu label="Movimento" style="margin-right: 15px">
                                     <p:menuitem value="Movimentos a Receber"   action="#{chamadaPaginaBean.movimentosReceberSocial()}" />
-                                    
+
                                     <p:menuitem value="Geração Mensal"         action="#{chamadaPaginaBean.gerarBoleto()}" />
                                     <p:menuitem value="Impressão Mensal"       action="#{chamadaPaginaBean.impressaoBoletoSocial()}" />
-                                    
+
                                     <p:menuitem value="Lançamento Individual"  action="#{chamadaPaginaBean.lancamentoIndividual}" />
-                                    <p:menuitem value="Emissão de Guias"       action="#{chamadaPaginaBean.emissaoGuias}" />
+                                    <p:menuitem value="Emissão de Guias"       action="#{chamadaPaginaBean.pagina('emissaoGuias')}" />
                                     <p:menuitem value="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" />
                                     <p:menuitem value="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" />
                                 </p:submenu>    
@@ -79,7 +79,7 @@
                         <!-- <p:menuitem value="Geração Mensal"         action="# {chamadaPaginaBean.contribuicaoSocio}" /> -->
                         <!-- <p:menuitem value="Geração Individual"     action="# {chamadaPaginaBean.contribuicaoPorSocio}" /> -->
                         <p:panel style="border: 0px; width: 1024px; height: 350px; margin: 0 auto">
-                            
+
                         </p:panel>
                     </h:form>
                 </f:view>
