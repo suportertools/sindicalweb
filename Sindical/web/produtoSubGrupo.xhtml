@@ -35,8 +35,8 @@
                                 <h:panelGrid columns="5">
                                     <p:outputLabel value="Grupos:" />
                                     <p:selectOneMenu value="#{produtoSubGrupoBean.produtoGrupo}" converter="#{entityConverter}">
-                                        <p:ajax event="change" listener="#{produtoSubGrupoBean.listProdutoSubGrupo.clear()}" update="@this :form_psg:" />
-                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                        <p:ajax event="change" update="@this :form_psg:" listener="#{produtoSubGrupoBean.listProdutoSubGrupo.clear()}" />
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" itemDisabled="true" noSelectionOption="true"/>
                                         <f:selectItems value="#{produtoSubGrupoBean.listProdutoGrupo}" itemValue="#{produtoGrupo}" itemLabel="#{produtoGrupo.descricao}" var="produtoGrupo"/>
                                     </p:selectOneMenu>
                                     <p:outputLabel value="Descrição:" />
