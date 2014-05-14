@@ -1727,12 +1727,19 @@
             <to-view-id>/contaOperacao.jsf</to-view-id>
             <redirect/>
         </navigation-case>  
+
+        <navigation-case>
+            <from-outcome>produtoSubGrupo</from-outcome>
+            <to-view-id>/produtoSubGrupo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
             <to-view-id>/#{navigationRules.param}</to-view-id>
             <redirect/>
-        </navigation-case> -->
+        </navigation-case> -->        
         
     </navigation-rule>
     
