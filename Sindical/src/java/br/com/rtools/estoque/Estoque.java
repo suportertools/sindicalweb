@@ -6,8 +6,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(
-        name = "EST_ESTOQUE",
+@Table(name = "EST_ESTOQUE",
         uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PRODUTO", "ID_FILIAL", "ID_TIPO"})
 )
 public class Estoque implements Serializable {
