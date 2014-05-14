@@ -42,6 +42,7 @@ public class ProdutoBean implements Serializable {
     private List<Produto> listaProdutos;
     private List<Estoque> listaEstoque;
     private String custoMedio;
+    private String valor;
 
     @PostConstruct
     public void init() {
@@ -71,6 +72,7 @@ public class ProdutoBean implements Serializable {
         indices[4] = 0;
         indices[5] = 0;
         custoMedio = "0";
+        valor = "0";
     }
 
     @PreDestroy
@@ -111,6 +113,7 @@ public class ProdutoBean implements Serializable {
         } else {
             produto.setCor((Cor) dao.find(new Cor(), Integer.parseInt(listaSelectItem[3].get(indices[3]).getDescription())));
         }
+        produto.setValor(Moeda.converteUS$(valor));
         if (produto.getId() == -1) {
             if (dao.save(produto)) {
                 dao.commit();
@@ -164,6 +167,7 @@ public class ProdutoBean implements Serializable {
                 break;
             }
         }
+        valor = Moeda.converteR$Float(produto.getValor());
         listaEstoque.clear();
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
@@ -354,7 +358,7 @@ public class ProdutoBean implements Serializable {
         }
         estoque = new Estoque();
         listaEstoque.clear();
-        custoMedio = "";
+        custoMedio = "0,00";
     }
 
     public void editEstoque(Estoque e) {
@@ -576,5 +580,13 @@ public class ProdutoBean implements Serializable {
 
     public void setCustoMedio(String custoMedio) {
         this.custoMedio = custoMedio;
+    }
+
+    public String getValor() {
+        return valor;
+    }
+
+    public void setValor(String valor) {
+        this.valor = valor;
     }
 }
