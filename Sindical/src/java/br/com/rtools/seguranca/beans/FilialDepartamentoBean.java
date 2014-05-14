@@ -43,6 +43,16 @@ public class FilialDepartamentoBean {
         GenericaSessao.remove("filialDepartamentoBean");
     }
 
+    public void clear(int ctype) {
+        if (ctype == 1) {
+            listDepartamentos.clear();            
+        } else if (ctype == 2) {
+            departamento = new Departamento();
+            listDepartamentos.clear();
+            listFilialDepartamentos.clear();
+        }
+    }
+
     public void save() {
         boolean err = false;
         if (!listFilialDepartamentos.isEmpty()) {
@@ -85,7 +95,7 @@ public class FilialDepartamentoBean {
             }
         }
         for (int i = 0; i < listDepartamentos.size(); i++) {
-            if(departamento.getId() == listDepartamentos.get(i).getId()) {
+            if (departamento.getId() == listDepartamentos.get(i).getId()) {
                 listDepartamentos.remove(i);
                 break;
             }
@@ -155,6 +165,9 @@ public class FilialDepartamentoBean {
         if (listDepartamentos.isEmpty()) {
             Dao dao = new Dao();
             listDepartamentos = (List<Departamento>) dao.listQuery("FilialDepartamento", "findDepartamento", new Object[]{filial.getId()});
+            if (!listDepartamentos.isEmpty()) {
+                departamento = listDepartamentos.get(0);
+            }
         }
         return listDepartamentos;
     }
@@ -165,7 +178,9 @@ public class FilialDepartamentoBean {
 
     public Filial getFilial() {
         if (!listFiliais.isEmpty()) {
-            filial = listFiliais.get(0);
+            if (filial.getId() == -1) {
+                filial = listFiliais.get(0);
+            }
         }
         return filial;
     }
