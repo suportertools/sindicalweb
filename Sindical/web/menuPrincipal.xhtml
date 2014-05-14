@@ -151,31 +151,31 @@
                                     <p:commandLink value="Clique aqui para enviar" action="#{notificacaoBean.enviarPeloMenu()}" rendered="#{notificacaoBean.habilitaNot}" styleClass="fontePadrao"/>
                                 </h:panelGrid>
                             </p:panel>
-                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="#{!emissaoGuiasBean.listah.isEmpty()}">
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="#{!emissaoGuiasBean.listHistoricoEmissaoGuias.isEmpty()}">
                                 <h:panelGrid  style="float: left">
                                     <h:outputLabel value="Existem guias geradas sem baixar" styleClass="fonteExtratoTela"  style="font-size: 12pt; color: #dd3b58"/>
                                     <br />
-                                    <p:commandLink value="clique aqui para baixar ou excluir" onclick="PF(i_dlg_guias).show()"/>
+                                    <p:commandLink value="clique aqui para baixar ou excluir" onclick="PF('i_dlg_guias').show()"/>
                                 </h:panelGrid>
                                 <p:dialog widgetVar="i_dlg_guias" header="Lista de Guias sem baixar" resizable="false" modal="true">
-                                    <c:if test="#{emissaoGuiasBean.listah != null}">
-                                        <p:dataTable value="#{emissaoGuiasBean.listah}" var="linha" id="tbl" emptyMessage="Nenhuma guia encontrada!">
+                                    <c:if test="#{emissaoGuiasBean.listHistoricoEmissaoGuias != null}">
+                                        <p:dataTable value="#{emissaoGuiasBean.listHistoricoEmissaoGuias}" var="historicoEmissaoGuias" id="tbl" emptyMessage="Nenhuma guia encontrada!">
                                             <p:column headerText="Nome Pessoa">
-                                                <h:outputText value="#{linha.movimento.pessoa.nome}"/>
+                                                <h:outputText value="#{historicoEmissaoGuias.movimento.pessoa.nome}"/>
                                             </p:column>                                            
                                             <p:column headerText="Valor">
-                                                <h:outputText value="#{linha.movimento.valorBaixa}"/>
+                                                <h:outputText value="#{historicoEmissaoGuias.movimento.valorBaixa}"/>
                                             </p:column>                                            
                                             <p:column headerText="">
-                                                <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
+                                                <p:commandLink value="Baixar" type="submit" action="#{emissaoGuiasBean.baixarErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
                                             </p:column>                                            
                                             <p:column headerText="">
-                                                <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(linha)}" oncomplete="i_dlg_guias.hide()" style="font-weight: bold"/>  
+                                                <p:commandLink value="Excluir" type="submit" action="#{emissaoGuiasBean.excluirErrado(historicoEmissaoGuias)}" oncomplete="PF('i_dlg_guias').hide()" style="font-weight: bold"/>  
                                             </p:column>
                                         </p:dataTable>
                                     </c:if>
                                     <br /><br />
-                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF(i_dlg_guias).hide()" style="float: left" />
+                                    <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_guias').hide()" style="float: left" />
                                 </p:dialog>
                             </p:panel>
                             <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">
@@ -184,8 +184,8 @@
                                 </h:panelGrid>
                                 <br />
                                 <h:panelGrid style="text-align: left;">
-                                    <c:forEach items="#{controleUsuarioBean.listaContador}" var="linha">
-                                        <h:commandLink value="#{linha.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(linha.rotina.pagina)}" style="margin-bottom: 10px; font-size: 9pt" class="listaAcesso" />
+                                    <c:forEach items="#{controleUsuarioBean.listaContador}" var="contadorAcesso">
+                                        <h:commandLink value="#{contadorAcesso.rotina.rotina}" action="#{chamadaPaginaBean.chamadaGenerica(contadorAcesso.rotina.pagina)}" style="margin-bottom: 10px; font-size: 9pt" class="listaAcesso" />
                                         <br />
                                     </c:forEach>
                                 </h:panelGrid>
