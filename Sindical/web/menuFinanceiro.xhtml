@@ -9,19 +9,19 @@
         <title>Sindical - Menu Financeiro</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
-        
+
         <style type="text/css">
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }            
-            
-            
+
+
             .ui-widget-content .ui-menu-list .ui-corner-all .ui-helper-clearfix .ui-menu-child .ui-shadow{
                 margin-top: 20px!important;
             }
         </style>
-        
+
         <script type="text/javascript">
-            
+
         </script>
     </h:head>
     <h:body>
@@ -60,7 +60,7 @@
                                         <p:menuitem value="Produto"             action="#{chamadaPaginaBean.pagina('produto')}" />
                                         <p:menuitem value="Produto Unidade"     action="#{chamadaPaginaBean.produtoUnidade}"/>
                                         <p:menuitem value="Produto Grupo"       action="#{chamadaPaginaBean.produtoGrupo}"/>
-                                        <p:menuitem value="Produto SubGrupo"    action="#{chamadaPaginaBean.produtoSubGrupo}"/>
+                                        <p:menuitem value="Produto SubGrupo"    action="#{chamadaPaginaBean.pagina('produtoSubGrupo')}"/>
                                         <p:menuitem value="Produto Cor"         action="#{chamadaPaginaBean.cor}"/>
                                         <p:menuitem value="Pedido"              action="#{chamadaPaginaBean.pagina('pedido')}" />
                                         <p:menuitem value="Baixa de Produtos"   action="#{chamadaPaginaBean.pagina('baixaProdutoConsumo')}" title="(Consumo)"/>
@@ -86,7 +86,7 @@
                                     <p:menuitem value="Relatórios" />
                                 </p:submenu>
                             </p:menubar>
-                            
+
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 50px">
                                 <h:panelGrid>
                                     <h:outputText style="font-weight: bold" value="Transferência entre Caixas" />
@@ -96,7 +96,7 @@
                                 </p:commandLink>
                             </p:panel>
                         </p:panel>
-                        
+
                         <p:growl id="i_msg_t_g" showDetail="true" />  
                         <p:dialog widgetVar="i_dlg_t" header="Transferência entre Caixas" resizable="false" modal="true">
                             <p:messages id="i_msg_t" showDetail="true" closable="true" />  
@@ -137,7 +137,7 @@
                                 </p:column>
                             </h:panelGrid>
                         </p:dialog>                        
-                        
+
 
                     </h:form>
                 </f:view>
