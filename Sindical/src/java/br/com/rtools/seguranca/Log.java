@@ -17,7 +17,7 @@ public class Log implements Serializable {
     private Date dtData;
     @Column(name = "DS_HORA", length = 50, nullable = false)
     private String hora;
-    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = false)
+    @JoinColumn(name = "ID_USUARIO", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private Usuario usuario;
     @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID", nullable = true)
