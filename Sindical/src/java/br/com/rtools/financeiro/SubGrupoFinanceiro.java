@@ -9,11 +9,15 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "FIN_SUBGRUPO")
-@NamedQuery(name = "SubGrupoFinanceiro.pesquisaID", query = "select sgf from SubGrupoFinanceiro sgf where sgf.id = :pid")
+@Table(name = "FIN_SUBGRUPO",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_GRUPO", "DS_DESCRICAO"})
+)
+@NamedQuery(name = "SubGrupoFinanceiro.pesquisaID", query = "SELECT SGF FROM SubGrupoFinanceiro AS SGF WHERE SGF.id = :pid")
 public class SubGrupoFinanceiro implements java.io.Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -28,13 +32,13 @@ public class SubGrupoFinanceiro implements java.io.Serializable {
         this.grupoFinanceiro = new GrupoFinanceiro();
         this.descricao = "";
     }
-    
+
     public SubGrupoFinanceiro(int id, GrupoFinanceiro grupoFinanceiro, String descricao) {
         this.id = id;
         this.grupoFinanceiro = grupoFinanceiro;
         this.descricao = descricao;
     }
-    
+
     public int getId() {
         return id;
     }
@@ -58,4 +62,10 @@ public class SubGrupoFinanceiro implements java.io.Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
+    @Override
+    public String toString() {
+        return "SubGrupoFinanceiro{" + "id=" + id + ", grupoFinanceiro=" + grupoFinanceiro + ", descricao=" + descricao + '}';
+    }
+
 }
