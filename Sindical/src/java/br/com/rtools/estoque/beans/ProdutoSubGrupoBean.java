@@ -47,6 +47,10 @@ public class ProdutoSubGrupoBean {
             GenericaMensagem.warn("Validação", "Informar descrição!");
             return;
         }
+        if(produtoGrupo == null) {
+            GenericaMensagem.warn("Validação", "Selecionar um grupo!");
+            return;
+        }
         DaoInterface di = new Dao();
         NovoLog novoLog = new NovoLog();
         produtoSubGrupo.setProdutoGrupo(produtoGrupo);
@@ -91,7 +95,14 @@ public class ProdutoSubGrupoBean {
     public List<ProdutoSubGrupo> getListProdutoSubGrupo() {
         if (listProdutoSubGrupo.isEmpty()) {
             DaoInterface di = new Dao();
-            listProdutoSubGrupo = (List<ProdutoSubGrupo>) di.listQuery(new ProdutoSubGrupo(), "findGrupo", new Object[]{produtoGrupo.getId()});
+            if(produtoGrupo != null) {
+                if(produtoGrupo.getId() != -1) {
+                    listProdutoSubGrupo = (List<ProdutoSubGrupo>) di.listQuery(new ProdutoSubGrupo(), "findGrupo", new Object[]{produtoGrupo.getId()});
+                    if(!listProdutoSubGrupo.isEmpty()) {
+                        produtoGrupo = listProdutoSubGrupo.get(0).getProdutoGrupo();
+                    }
+                }
+            }
         }
         return listProdutoSubGrupo;
     }
@@ -104,6 +115,9 @@ public class ProdutoSubGrupoBean {
         if (listProdutoGrupo.isEmpty()) {
             DaoInterface di = new Dao();
             listProdutoGrupo = (List<ProdutoGrupo>) di.list(new ProdutoGrupo(), true);
+            if(!listProdutoGrupo.isEmpty()) {
+                produtoGrupo = listProdutoGrupo.get(0);
+            }
         }
         return listProdutoGrupo;
     }
