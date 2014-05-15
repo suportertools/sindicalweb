@@ -1,12 +1,14 @@
 package br.com.rtools.suporte.beans;
 
-import br.com.rtools.suporte.Protocolo;
-import br.com.rtools.suporte.db.ProtocoloDB;
-import br.com.rtools.suporte.db.ProtocoloDBToplink;
 import java.util.List;
+import br.com.rtools.suporte.Protocolo;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaSessao;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
@@ -15,70 +17,70 @@ public class ProtocoloBean {
     private Protocolo protocolo;
     private String comoPesquisa;
     private String descPesquisa;
-    private String msgConfirma;
+    private String message;
 
-    public ProtocoloBean() {
+    @PostConstruct
+    public void init() {
         protocolo = new Protocolo();
         comoPesquisa = "";
         descPesquisa = "";
+        message = "";
     }
 
-    public String novo() {
-        setProtocolo(new Protocolo());
-        return "protocolo";
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("protocoloBean");
     }
 
-    public String salvar() {
-        ProtocoloDB protocoloDB = new ProtocoloDBToplink();
-        if (getProtocolo().getId() == -1) {
-            if (getProtocolo().getSolicitante().equals("")) {
-                setMsgConfirma("Digite o a situação do histórico atual!");
+    public void save() {
+        if (protocolo.getSolicitante().isEmpty()) {
+            message = "Digite o a situação do histórico atual!";
+        }
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (protocolo.getId() == -1) {
+            if (di.save(protocolo)) {
+                di.commit();
+                message = "Registro inserido com sucesso!";
             } else {
-                if (protocoloDB.pesquisaCodigo(getProtocolo().getId()) == null) {
-                    if (protocoloDB.insert(getProtocolo())) {
-                        setMsgConfirma("Cadastro efetuado com sucesso!");
-                    } else {
-                        setMsgConfirma("Erro! Cadastro não foi efetuado.");
-                    }
-                } else {
-                    setMsgConfirma("Já existe um componente curricular com esse nome.");
-                }
+                di.rollback();
+                message = "Erro ao inserir este registro!";
             }
         } else {
-            if (protocoloDB.update(getProtocolo())) {
-                setMsgConfirma("Cadastro atualizado com sucesso!");
+            if (di.update(protocolo)) {
+                di.commit();
+                message = "Registro atualizar com sucesso!";
             } else {
+                di.rollback();
+                message = "Erro ao atualizar este registro!";
             }
         }
-        setProtocolo(new Protocolo());
-        return null;
+        protocolo = new Protocolo();
     }
 
-    public String excluir() {
-        ProtocoloDB protocoloDB = new ProtocoloDBToplink();
-        if (getProtocolo().getId() != -1) {
-            setProtocolo(protocoloDB.pesquisaCodigo(getProtocolo().getId()));
-            if (protocoloDB.delete(getProtocolo())) {
-                setMsgConfirma("Cadastro excluído com sucesso!");
+    public void delete() {
+        if (protocolo.getId() != -1) {
+            DaoInterface di = new Dao();
+            di.openTransaction();
+            if (di.delete(protocolo)) {
+                di.commit();
+                message = "Registro excluído com sucesso!";
             } else {
-                setMsgConfirma("Erro! Cadastro não foi excluído.");
+                di.rollback();
+                message = "Erro ao excluir este registro!";
             }
-        } else {
-            setMsgConfirma("Não há registro para excluir.");
         }
-        setProtocolo(new Protocolo());
-        return null;
+        protocolo = new Protocolo();
     }
 
     public String editar() {
-//        setProtocolo((Protocolo) getHtmlTable().getRowData());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("ordemProtocolo", getProtocolo());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("ordemProtocolo", protocolo);
+        GenericaSessao.put("linkClicado", true);
         setDescPesquisa("");
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") == null) {
+        if (GenericaSessao.exists("urlRetorno")) {
             return "ordemServico";
         } else {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+            return (String) GenericaSessao.getString("urlRetorno");
         }
     }
 
@@ -95,9 +97,6 @@ public class ProtocoloBean {
         List result = null;
 //        result = pesquisa.pesquisar("OrdemServico", "descricao" , getDescPesquisa(), "descricao", getComoPesquisa());
         return result;
-    }
-
-    public void refreshForm() {
     }
 
     public Protocolo getProtocolo() {
@@ -124,11 +123,11 @@ public class ProtocoloBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
