@@ -2,6 +2,8 @@ package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
+import br.com.rtools.financeiro.Baixa;
+import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.FormaPagamento;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
@@ -18,9 +20,13 @@ import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -68,6 +74,34 @@ public class MovimentosReceberSocialJSFBean {
     private String grupo = "";
     private String status = "";
     
+    
+    
+    public void salvarRecibo(byte[] arquivo, Baixa baixa){
+        //SalvaArquivos sa = new SalvaArquivos(arquivo, String.valueOf(baixa.getId()), false);
+        if (baixa.getCaixa() == null)
+            return;
+        
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/"+"Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+        Diretorio.criar("Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+        
+        String path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + ".pdf";
+        File file_arquivo = new File(path_arquivo);
+        
+        if (file_arquivo.exists()){
+            path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + "_(2).pdf";
+        }
+        
+        try {
+            File fl = new File(path_arquivo);
+            FileOutputStream out = new FileOutputStream(fl);
+            out.write(arquivo);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        
+    }
     
     public String recibo(int id_movimento){
         
@@ -143,12 +177,14 @@ public class MovimentosReceberSocialJSFBean {
                     
                 }
 
+                
                 JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
 
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
                 
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+                salvarRecibo(arquivo, lista.get(0).getBaixa());
                 
                 HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                 res.setContentType("application/pdf");
@@ -181,7 +217,7 @@ public class MovimentosReceberSocialJSFBean {
 
     public boolean baixado() {
         for (int i = 0; i < listaMovimento.size(); i++) {
-            if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) > 0.0) {
+            if (((Boolean) listaMovimento.get(i).getArgumento0()) && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) > 0.0) {
                 return true;
             }
         }
@@ -209,14 +245,10 @@ public class MovimentosReceberSocialJSFBean {
     public String estornarBaixa() { 
         if (listaMovimento.isEmpty()) {
             msgConfirma = "Não existem boletos para serem estornados!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
-        if (!baixado()) {
-            msgConfirma = "Existem boletos que não foram pagos para estornar!";
-            return null;
-        }
-        
         MovimentoDB db = new MovimentoDBToplink();
         int qnt = 0;
         Movimento mov = null;
@@ -228,15 +260,29 @@ public class MovimentosReceberSocialJSFBean {
             }
         }
         
+        if (qnt == 0){
+            msgConfirma = "Nenhum Movimento selecionado!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
         if (qnt > 1){
             msgConfirma = "Mais de um movimento foi selecionado!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
 
+        if (!baixado()) {
+            msgConfirma = "Existem boletos que não foram pagos para estornar!";
+            GenericaMensagem.warn("Erro", msgConfirma);
+            return null;
+        }
+        
         boolean est = true;
         
         if (!mov.isAtivo()) {
             msgConfirma = "Boleto ID: " + mov.getId() + " esta inativo, não é possivel concluir estorno!";
+            GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         
@@ -246,8 +292,10 @@ public class MovimentosReceberSocialJSFBean {
         
         if (!est) {
             msgConfirma = "Ocorreu erros ao estornar boletos, verifique o log!";
+            GenericaMensagem.warn("Erro", msgConfirma);
         } else {
             msgConfirma = "Boletos estornados com sucesso!";
+            GenericaMensagem.info("Sucesso", msgConfirma);
         }
         listaMovimento.clear();
         chkSeleciona = true;

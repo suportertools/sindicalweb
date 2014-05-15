@@ -95,7 +95,7 @@
                                         </h:panelGrid>
                                         
                                         <h:panelGrid style="width: 100%">
-                                            <p:dataGrid value="#{gerarBoletoBean.listaPessoa}" var="linha" rowIndexVar="index" columns="1" emptyMessage="Clique para adicionar uma Pessoa">
+                                            <p:dataGrid value="#{gerarBoletoBean.listaPessoa}" var="linha" rowIndexVar="index" columns="1" emptyMessage="Clique para adicionar uma Pessoa Específica">
                                                 <h:outputLabel value="#{linha.nome}" style="font-weight: bold"/>
                                                 <p:commandButton icon="ui-icon-close" action="#{gerarBoletoBean.removerPessoaLista(index)}" update=":formGerarBoleto:i_panel_pessoa :formGerarBoleto:i_panel_boleto" style="margin-left: 5px; width: 15px; height: 15"/>
                                                 <br />

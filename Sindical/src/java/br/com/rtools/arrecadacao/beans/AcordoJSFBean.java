@@ -661,7 +661,7 @@ public class AcordoJSFBean {
                                     "",
                                     ultimoVencimento,
                                     0,
-                                    0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0);
+                                    0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0, null);
 
                             listaOperado.add(new DataObject(new Boolean(false), new Integer(++k), mov, (String) listaVizualizado.get(i).getArgumento3(), null, null));
 
@@ -700,7 +700,7 @@ public class AcordoJSFBean {
                                 "",
                                 ultimoVencimentoSind,
                                 0,
-                                0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0);
+                                0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0, null);
 
                         listaOperado.add(new DataObject(new Boolean(false), new Integer(++k), mov, (String) listaVizualizado.get(i).getArgumento3(), null, null));
 

@@ -110,12 +110,43 @@
                         </h:column>
                         
                         <h:column>
-                            <h:outputLabel value="Dia do Vencimento para Cobrança Bancária" styleClass="fontePadraoNegrito"/>
+                            <h:outputLabel value="Dia de Vencimento" styleClass="fontePadraoNegrito"/>
                             <br />
-                            <h:selectOneMenu id="idDiaVencto" value="#{lancamentoIndividualBean.idDia}">
-                                <a4j:ajax event="change"  />
-                                <f:selectItems value="#{lancamentoIndividualBean.listaDiaVencimento}" />
-                            </h:selectOneMenu>
+                            <h:selectOneMenu id="idDiaVenct" value="#{lancamentoIndividualBean.servicoPessoa.nrDiaVencimento}" disabled="true">
+                                <f:selectItem itemValue="1" itemLabel="01"/>
+                                <f:selectItem itemValue="2" itemLabel="02"/>
+                                <f:selectItem itemValue="3" itemLabel="03"/>
+                                <f:selectItem itemValue="4" itemLabel="04"/>
+                                <f:selectItem itemValue="5" itemLabel="05"/>
+                                <f:selectItem itemValue="6" itemLabel="06"/>
+                                <f:selectItem itemValue="7" itemLabel="07"/>
+                                <f:selectItem itemValue="8" itemLabel="08"/>
+                                <f:selectItem itemValue="9" itemLabel="09"/>
+                                <f:selectItem itemValue="10" itemLabel="10"/>
+                                <f:selectItem itemValue="11" itemLabel="11"/>
+                                <f:selectItem itemValue="12" itemLabel="12"/>
+                                <f:selectItem itemValue="13" itemLabel="13"/>
+                                <f:selectItem itemValue="14" itemLabel="14"/>
+                                <f:selectItem itemValue="15" itemLabel="15"/>
+                                <f:selectItem itemValue="16" itemLabel="16"/>
+                                <f:selectItem itemValue="17" itemLabel="17"/>
+                                <f:selectItem itemValue="18" itemLabel="18"/>
+                                <f:selectItem itemValue="19" itemLabel="19"/>
+                                <f:selectItem itemValue="20" itemLabel="20"/>
+                                <f:selectItem itemValue="21" itemLabel="21"/>
+                                <f:selectItem itemValue="22" itemLabel="22"/>
+                                <f:selectItem itemValue="23" itemLabel="23"/>
+                                <f:selectItem itemValue="24" itemLabel="24"/>
+                                <f:selectItem itemValue="25" itemLabel="25"/>
+                                <f:selectItem itemValue="26" itemLabel="26"/>
+                                <f:selectItem itemValue="27" itemLabel="27"/>
+                                <f:selectItem itemValue="28" itemLabel="28"/>
+                                <f:selectItem itemValue="29" itemLabel="29"/>
+                                <f:selectItem itemValue="30" itemLabel="30"/>
+                                <f:selectItem itemValue="31" itemLabel="31"/>
+                            </h:selectOneMenu>  
+                            <h:commandLink value="Alterar dia Vencimento" onclick="#{rich:component('dlg_dv')}.show();return false;" styleClass="fontePadrao" rendered="#{lancamentoIndividualBean.servicoPessoa.id != -1}"/>
+                            <h:commandLink value="Alterar dia Vencimento" onclick="#{rich:component('dlg_dv')}.show();return false;" disabled="true" styleClass="fontePadrao" style="cursor: pointer" rendered="#{lancamentoIndividualBean.servicoPessoa.id == -1}" title="Não existe serviço pessoa para alterar este vencimento"/>
                         </h:column>
                         
                         <h:column>
@@ -123,6 +154,52 @@
                         </h:column>
                     </h:panelGrid>
                     
+                    <rich:popupPanel id="dlg_dv" header="Alterar dia de vencimento?" domElementAttachment="form" modal="true" resizeable="true" onmaskclick="#{rich:component('dlg_dv')}.hide();" width="300">
+                        <f:facet name="controls">
+                            <h:outputLink value="#" onclick="#{rich:component('dlg_dv')}.hide();return false;">
+                                <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                            </h:outputLink>
+                        </f:facet>
+                        <center>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel value="Dia Vencto:" />
+                                <h:selectOneMenu value="#{lancamentoIndividualBean.servicoPessoa.nrDiaVencimento}" >
+                                    <a4j:ajax event="change" render="this idDiaVenct" oncomplete="#{rich:component('dlg_dv')}.hide();" listener="#{lancamentoIndividualBean.salvarData}"/>
+                                    <f:selectItem itemValue="1" itemLabel="01"/>
+                                    <f:selectItem itemValue="2" itemLabel="02"/>
+                                    <f:selectItem itemValue="3" itemLabel="03"/>
+                                    <f:selectItem itemValue="4" itemLabel="04"/>
+                                    <f:selectItem itemValue="5" itemLabel="05"/>
+                                    <f:selectItem itemValue="6" itemLabel="06"/>
+                                    <f:selectItem itemValue="7" itemLabel="07"/>
+                                    <f:selectItem itemValue="8" itemLabel="08"/>
+                                    <f:selectItem itemValue="9" itemLabel="09"/>
+                                    <f:selectItem itemValue="10" itemLabel="10"/>
+                                    <f:selectItem itemValue="11" itemLabel="11"/>
+                                    <f:selectItem itemValue="12" itemLabel="12"/>
+                                    <f:selectItem itemValue="13" itemLabel="13"/>
+                                    <f:selectItem itemValue="14" itemLabel="14"/>
+                                    <f:selectItem itemValue="15" itemLabel="15"/>
+                                    <f:selectItem itemValue="16" itemLabel="16"/>
+                                    <f:selectItem itemValue="17" itemLabel="17"/>
+                                    <f:selectItem itemValue="18" itemLabel="18"/>
+                                    <f:selectItem itemValue="19" itemLabel="19"/>
+                                    <f:selectItem itemValue="20" itemLabel="20"/>
+                                    <f:selectItem itemValue="21" itemLabel="21"/>
+                                    <f:selectItem itemValue="22" itemLabel="22"/>
+                                    <f:selectItem itemValue="23" itemLabel="23"/>
+                                    <f:selectItem itemValue="24" itemLabel="24"/>
+                                    <f:selectItem itemValue="25" itemLabel="25"/>
+                                    <f:selectItem itemValue="26" itemLabel="26"/>
+                                    <f:selectItem itemValue="27" itemLabel="27"/>
+                                    <f:selectItem itemValue="28" itemLabel="28"/>
+                                    <f:selectItem itemValue="29" itemLabel="29"/>
+                                    <f:selectItem itemValue="30" itemLabel="30"/>
+                                    <f:selectItem itemValue="31" itemLabel="31"/>
+                                </h:selectOneMenu>                        
+                            </h:panelGrid>
+                        </center>
+                    </rich:popupPanel>
                     <br /><br />
                     
                     <h:outputLabel value="Parcelas" styleClass="fonteFranklinNegrito" style="font-size: 15pt"/>

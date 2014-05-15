@@ -129,6 +129,13 @@ public class CategoriaBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaCategoria", categoria);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         lista.clear();
+        
+        for (int i = 0; i < getListaGrupoCategoria().size(); i++) {
+            if ( Integer.valueOf(getListaGrupoCategoria().get(i).getDescription()) == categoria.getGrupoCategoria().getId() ){
+                idGrupoCategoria = i;
+            }
+        }   
+        
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
             return "categoria";
         } else {

@@ -9,6 +9,20 @@
         <title>Sindical - Menu Social</title>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" charset="UTF-8"/>
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
+            .ui-button { padding: 3px!important; }            
+            
+            
+            .ui-widget-content .ui-menu-list .ui-corner-all .ui-helper-clearfix .ui-menu-child .ui-shadow{
+                margin-top: 20px!important;
+            }
+        </style>
+        
+        <script type="text/javascript">
+            
+        </script>        
     </h:head>
 
     <h:body>
@@ -66,6 +80,9 @@
                                     <p:menuitem value="Emissão de Guias"       action="#{chamadaPaginaBean.pagina('emissaoGuias')}" />
                                     <p:menuitem value="Vendas Caravana"        action="#{chamadaPaginaBean.vendasCaravana}" />
                                     <p:menuitem value="Vendas Baile"           action="#{chamadaPaginaBean.vendasBaile}" />
+                                    
+                                    <p:menuitem value="Transf. Entre Caixas" onclick="i_dlg_t.show()"/>
+                                    <p:menuitem value="Fechamento de Caixa" action="#{chamadaPaginaBean.fechamentoCaixa()}"/>
                                 </p:submenu>    
 
 
@@ -81,6 +98,46 @@
                         <p:panel style="border: 0px; width: 1024px; height: 350px; margin: 0 auto">
 
                         </p:panel>
+                        <p:growl id="i_msg_t_g" showDetail="true" />  
+                        <p:dialog widgetVar="i_dlg_t" header="Transferência entre Caixas" resizable="false" modal="true">
+                            <p:messages id="i_msg_t" showDetail="true" closable="true" />  
+                            <h:panelGrid style="clear: both; width: 100%; margin-top: 20px" columns="4">
+                                <p:column>
+                                    <h:outputLabel value="Meu Caixa"/><br />
+                                    <p:selectOneMenu id="i_select_c2" value="#{fechamentoCaixaBean.idCaixa}" style="padding-right: 20px; margin-right: 20px">
+                                        <p:ajax event="change" update="i_select_c2" global="false"/>
+                                        <f:selectItems value="#{fechamentoCaixaBean.listaCaixa}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputLabel value="Tipo de Transferência"/><br /><br />
+                                    <h:outputLabel value="DINHEIRO" style="font-size: 12pt!important; font-weight: bold;  margin-right: 70px"/><br />
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputLabel value="Valor"/><br />
+                                    <p:inputText id="i_valor_t" value="#{fechamentoCaixaBean.valorTransferencia}" style="margin-right: 15px" dir="rtl">
+                                        <p:ajax event="change" update="i_valor_t" global="false"/>
+                                    </p:inputText>
+                                </p:column>
+
+                                <p:column>
+                                    <h:outputLabel value="Para o Caixa"/><br />
+                                    <p:selectOneMenu id="i_select_cd" value="#{fechamentoCaixaBean.idCaixaDestino}" style="padding-right: 20px; margin-right: 15px">
+                                        <p:ajax event="change" update="i_select_cd" global="false"/>
+                                        <f:selectItems value="#{fechamentoCaixaBean.listaCaixaDestino}"/>
+                                    </p:selectOneMenu>
+                                </p:column>
+                            </h:panelGrid>
+
+                            <h:panelGrid>
+                                <p:column>
+                                    <p:commandButton global="false" value="Transferir" type="submit" styleClass="ui-confirmdialog-yes" action="#{fechamentoCaixaBean.transferir()}" update="i_msg_t i_msg_t_g i_valor_t" style="clear: both; float: left" icon="ui-icon-check" />  
+                                    <p:commandButton value="Fechar"   type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_t.hide()" style="float: left" icon="ui-icon-close"/>       
+                                </p:column>
+                            </h:panelGrid>
+                        </p:dialog>   
                     </h:form>
                 </f:view>
                 <!-- FINALIZA div wrap main -->

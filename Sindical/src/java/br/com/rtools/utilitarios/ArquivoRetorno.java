@@ -7,6 +7,7 @@ import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.movimento.GerarMovimento;
+import br.com.rtools.pessoa.DocumentoInvalido;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
@@ -189,7 +190,7 @@ public abstract class ArquivoRetorno {
                                 0, 0, 0, 0, 0,
                                 Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
                                 Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-                                dbft.pesquisaCodigo(2), 0);
+                                dbft.pesquisaCodigo(2), 0, null);
 
                         if (GerarMovimento.salvarUmMovimentoBaixa(new Lote(), movi)) {
                             float valor_liquido = Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorCredito())) / 100;
@@ -293,7 +294,8 @@ public abstract class ArquivoRetorno {
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
                             dbft.pesquisaCodigo(2),
-                            0);
+                            0,
+                            null);
 
                     if (GerarMovimento.salvarUmMovimentoBaixa(new Lote(), movi)) {
                         float valor_liquido = Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorCredito())) / 100;
@@ -333,10 +335,22 @@ public abstract class ArquivoRetorno {
                             0, 0, 0, 0, 0,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorTaxa())) / 100,
                             Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorPago())) / 100,
-                            dbft.pesquisaCodigo(2), 0);
+                            dbft.pesquisaCodigo(2), 0, null);
 
                     if (GerarMovimento.salvarUmMovimentoBaixa(new Lote(), movi)) {
                         float valor_liquido = Moeda.substituiVirgulaFloat(Moeda.converteR$(listaParametros.get(u).getValorCredito())) / 100;
+                        
+                        DocumentoInvalidoDB dbDocInv = new DocumentoInvalidoDBToplink();
+                        List<DocumentoInvalido> listaDI = dbDocInv.pesquisaNumeroBoleto(listaParametros.get(u).getNossoNumero());
+                        
+                        if (listaDI.isEmpty()){
+                            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+                            DocumentoInvalido di = new DocumentoInvalido(-1, listaParametros.get(u).getNossoNumero(), false, DataHoje.data());
+
+                            sv.abrirTransacao();
+                            if (sv.inserirObjeto(di)) sv.comitarTransacao(); else sv.desfazerTransacao();
+                        }
+                        
                         GerarMovimento.baixarMovimento(
                                 movi,
                                 usuario,

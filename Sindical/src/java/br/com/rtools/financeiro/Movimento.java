@@ -1,6 +1,10 @@
 package br.com.rtools.financeiro;
 
 import br.com.rtools.arrecadacao.Acordo;
+import br.com.rtools.associativo.MatriculaSocios;
+import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
@@ -83,7 +87,18 @@ public class Movimento implements Serializable {
     @JoinColumn(name = "ID_TIPO_DOCUMENTO", referencedColumnName = "ID")
     @ManyToOne
     private FTipoDocumento tipoDocumento;
-
+    @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private MatriculaSocios matriculaSocios;
+    
+    /**
+     * <p>
+     * <strong>Inserir Matricula Sócio</strong>
+     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na variável ( Somente Associativo ) 
+     * Para demais Rotinas ( ex. Arrecadação ) adicionar " null " na variável
+     * </p>
+     * @return MatriculaSocio
+     */
     public Movimento() {
         this.id = -1;
         this.lote = new Lote();
@@ -114,8 +129,46 @@ public class Movimento implements Serializable {
         this.valorBaixa = 0;
         this.repasseAutomatico = 0;
         this.tipoDocumento = new FTipoDocumento();
+        this.matriculaSocios = null;
     }
 
+    /**
+     * <p>
+     * <strong>Inserir Matricula Sócio</strong>
+     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na variável ( Somente Associativo ) 
+     * Para demais Rotinas ( ex. Arrecadação ) adicionar " null " na variável
+     * </p>
+     * @param id
+     * @param lote
+     * @param plano5
+     * @param pessoa
+     * @param servicos
+     * @param baixa
+     * @param tipoServico
+     * @param acordo
+     * @param valor
+     * @param referencia
+     * @param vencimento
+     * @param quantidade
+     * @param ativo
+     * @param es
+     * @param obrigacao
+     * @param titular
+     * @param beneficiario
+     * @param documento
+     * @param nrCtrBoleto
+     * @param vencimentoOriginal
+     * @param descontoAteVencimento
+     * @param correcao
+     * @param juros
+     * @param multa
+     * @param desconto
+     * @param taxa
+     * @param valorBaixa
+     * @param tipoDocumento
+     * @param repasseAutomatico
+     * @param matriculaSocios 
+     */
     public Movimento(int id,
             Lote lote,
             Plano5 plano5,
@@ -144,7 +197,8 @@ public class Movimento implements Serializable {
             float taxa,
             float valorBaixa,
             FTipoDocumento tipoDocumento,
-            float repasseAutomatico) {
+            float repasseAutomatico,
+            MatriculaSocios matriculaSocios) {
         this.id = id;
         this.lote = lote;
         this.plano5 = plano5;
@@ -174,6 +228,7 @@ public class Movimento implements Serializable {
         this.valorBaixa = valorBaixa;
         this.repasseAutomatico = repasseAutomatico;
         this.tipoDocumento = tipoDocumento;
+        this.matriculaSocios = matriculaSocios;
     }
 
     public int getId() {
@@ -423,4 +478,30 @@ public class Movimento implements Serializable {
     public void setFTipoDocumento(FTipoDocumento fTipoDocumento) {
         this.tipoDocumento = fTipoDocumento;
     }
+    
+    /**
+     * <p>
+     * <strong>Inserir Matricula Sócio</strong>
+     * Para Inserir este Objeto basta adicinar " new MatriculaSócio() " na variável ( Somente Associativo ) 
+     * Para demais Rotinas ( ex. Arrecadação ) adicionar " null " na variável
+     * </p>
+     * @return MatriculaSocio
+     */
+    public MatriculaSocios getMatriculaSocios() {
+        if (id == -1 && matriculaSocios != null){
+            if (beneficiario != null && beneficiario.getId() != -1){
+                SociosDB dbs = new SociosDBToplink();
+                Socios soc = dbs.pesquisaSocioPorPessoaAtivo(beneficiario.getId());
+                if (soc.getId() != -1)
+                    matriculaSocios = soc.getMatriculaSocios();
+                else
+                    matriculaSocios = null;
+            }
+        }
+        return matriculaSocios;
+    }
+
+    public void setMatriculaSocios(MatriculaSocios matriculaSocios) {
+        this.matriculaSocios = matriculaSocios;
+    }    
 }

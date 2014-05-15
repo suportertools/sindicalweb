@@ -78,9 +78,9 @@ public class ExtratoTelaJSFBean {
         if (chkContribuicao) {
             int i = 0;
             ServicosDB db = new ServicosDBToplink();
-            List select = db.pesquisaTodos();
+            List select = db.pesquisaTodos(4);
             while (i < select.size()) {
-                servicos.add(new SelectItem(new Integer(i),
+                servicos.add(new SelectItem(i,
                         (String) ((Servicos) select.get(i)).getDescricao(),
                         Integer.toString(((Servicos) select.get(i)).getId())));
                 i++;
@@ -96,7 +96,7 @@ public class ExtratoTelaJSFBean {
             TipoServicoDB db = new TipoServicoDBToplink();
             List select = db.pesquisaTodos();
             while (i < select.size()) {
-                tipoServico.add(new SelectItem(new Integer(i),
+                tipoServico.add(new SelectItem(i,
                         (String) ((TipoServico) select.get(i)).getDescricao(),
                         Integer.toString(((TipoServico) select.get(i)).getId())));
                 i++;

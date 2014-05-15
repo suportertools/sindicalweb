@@ -189,7 +189,6 @@ public class DepositoBancarioBean implements Serializable{
                     (FStatus) sv.pesquisaCodigo(1, "FStatus"), // 1 - EFETIVO // 8 - DEPOSITADO
                     null, // PESSOA SEM CADASTRO
                     false, // DESCONTO FOLHA
-                    null, // MATRICULA SOCIO
                     0     // DESCONTO
             );
     }
@@ -224,7 +223,8 @@ public class DepositoBancarioBean implements Serializable{
                     0, // TAXA
                     lote.getValor(), // VALOR BAIXA
                     lote.getFtipoDocumento(), // 4 - CHEQUE / 5 - CHEQUE PRE
-                    0 // REPASSE AUTOMATICO
+                    0, // REPASSE AUTOMATICO
+                    null // MATRICULA SÓCIO
             );
     }
     

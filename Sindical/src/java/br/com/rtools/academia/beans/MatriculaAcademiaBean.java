@@ -5,6 +5,7 @@ import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.db.AcademiaDB;
 import br.com.rtools.academia.db.AcademiaDBToplink;
 import br.com.rtools.associativo.MatriculaAcademia;
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
@@ -178,7 +179,7 @@ public class MatriculaAcademiaBean implements Serializable {
             mensagem = "Pesquisar uma pessoa!";
             return;
         }
-        if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() == -1) {
+        if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
             mensagem = "Pesquisar um responsável!";
             return;
         }
@@ -197,10 +198,10 @@ public class MatriculaAcademiaBean implements Serializable {
         if (cobranca != null) {
             matriculaAcademia.getServicoPessoa().setCobranca(cobranca);
         } else {
-            matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getResponsavel());
+            matriculaAcademia.getServicoPessoa().setCobranca(matriculaAcademia.getServicoPessoa().getCobranca());
         }
         if (responsavel != null) {
-            matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
+            matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
         }
         if (matriculaAcademia.getId() == -1) {
             Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
@@ -219,7 +220,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 return;
             }
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
-            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
+            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
             mensagem = "Registro inserido com sucesso";
             acumuladoDB.comitarTransacao();
         } else {
@@ -235,7 +236,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 return;
             }
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
-            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
+            pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
             mensagem = "Registro atualizado com sucesso";
             acumuladoDB.comitarTransacao();
         }
@@ -292,7 +293,7 @@ public class MatriculaAcademiaBean implements Serializable {
         pegarIdServico();
         atualizaValor();
         calculaValorLiquido();
-        pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getResponsavel();
+        pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
         pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
         alunoFoto = false;
         GenericaSessao.put("linkClicado", true);
@@ -312,7 +313,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 if (idResponsavel != -1) {
                     cobranca = (Pessoa) acumuladoDB.pesquisaCodigo(idResponsavel, "Pessoa");
                 } else {
-                    cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
                 }
             } else {
                 int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
@@ -323,13 +324,13 @@ public class MatriculaAcademiaBean implements Serializable {
                         if (juridicaB.getId() != -1) {
                             cobranca = (Pessoa) acumuladoDB.pesquisaCodigo(idResponsavelEmpresa, "Pessoa");
                         } else {
-                            cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                            cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
                         }
                     } else {
-                        cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                        cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
                     }
                 } else {
-                    cobranca = matriculaAcademia.getServicoPessoa().getResponsavel();
+                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
                 }
             }
             if (cobranca.getId() == -1) {
@@ -337,7 +338,7 @@ public class MatriculaAcademiaBean implements Serializable {
             }
         }
         JuridicaDB juridicaDB = new JuridicaDBToplink();
-        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getResponsavel().getId());
+        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
         verificaSeContribuinteInativo();
         getRegistro();
         return matriculaAcademia;
@@ -509,10 +510,10 @@ public class MatriculaAcademiaBean implements Serializable {
                         if (pessoaComplemento != null) {
                             this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                         }
-                        matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
+                        matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
                     }
                     matriculaAcademia.getServicoPessoa().setPessoa(aluno.getPessoa());
-                    matriculaAcademia.getServicoPessoa().setResponsavel(responsavel);
+                    matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
                     pegarIdServico();
                     atualizaValor();
                     calculaValorLiquido();
@@ -522,7 +523,7 @@ public class MatriculaAcademiaBean implements Serializable {
                     int idade = functionsDB.idade("dt_nascimento", "current_date", resp.getId());
                     if (idade >= 18) {
                         if (matriculaEscolaDB.verificaPessoaEnderecoDocumento("fisica", resp.getId())) {
-                            matriculaAcademia.getServicoPessoa().setResponsavel(resp);
+                            matriculaAcademia.getServicoPessoa().setCobranca(resp);
                         }
                     } else {
                         GenericaMensagem.warn("Validação", "Responsável deve ser maior de idade!");
@@ -530,15 +531,15 @@ public class MatriculaAcademiaBean implements Serializable {
                     GenericaSessao.remove("juridicaPesquisa");
                 }
             }
-            if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() == -1) {
+            if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
                 pessoaResponsavelMemoria = responsavel;
             } else {
-                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getResponsavel().getId()) {
+                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getCobranca().getId()) {
                     pessoaResponsavelMemoria = responsavel;
                 }
             }
         }
-        verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getResponsavel());
+        verificaDebitosResponsavel(matriculaAcademia.getServicoPessoa().getCobranca());
         return aluno;
     }
 
@@ -806,16 +807,16 @@ public class MatriculaAcademiaBean implements Serializable {
                     if (pessoaComplemento != null) {
                         this.idDiaVencimentoPessoa = pessoaComplemento.getNrDiaVencimento();
                     }
-                    matriculaAcademia.getServicoPessoa().setResponsavel(juridica.getPessoa());
+                    matriculaAcademia.getServicoPessoa().setCobranca(juridica.getPessoa());
                 }
                 pegarIdServico();
                 atualizaValor();
                 calculaValorLiquido();
             }
-            if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() == -1) {
+            if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
                 pessoaResponsavelMemoria = responsavel;
             } else {
-                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getResponsavel().getId()) {
+                if (responsavel.getId() != matriculaAcademia.getServicoPessoa().getCobranca().getId()) {
                     pessoaResponsavelMemoria = responsavel;
                 }
             }
@@ -830,9 +831,9 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public boolean verificaSeContribuinteInativo() {
         JuridicaDB juridicaDB = new JuridicaDBToplink();
-        Juridica j = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getResponsavel().getId());
+        Juridica j = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
         if (j != null) {
-            if (juridicaDB.empresaInativa(matriculaAcademia.getServicoPessoa().getResponsavel(), "FECHOU")) {
+            if (juridicaDB.empresaInativa(matriculaAcademia.getServicoPessoa().getCobranca(), "FECHOU")) {
                 mensagemStatusEmpresa = "Empresa inátiva!";
                 return true;
             }
@@ -866,7 +867,7 @@ public class MatriculaAcademiaBean implements Serializable {
                     GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
                     return;
                 }
-                if (matriculaAcademia.getServicoPessoa().getResponsavel().getId() != pessoaResponsavelMemoria.getId()) {
+                if (matriculaAcademia.getServicoPessoa().getCobranca().getId() != pessoaResponsavelMemoria.getId()) {
                     GenericaMensagem.warn("Validação", "Salvar o novo aluno / responsável para gerar movimentos!");
                     return;
                 }
@@ -897,7 +898,7 @@ public class MatriculaAcademiaBean implements Serializable {
                                 (Rotina) salvarAcumuladoDB.pesquisaCodigo(122, "Rotina"),
                                 "R",
                                 DataHoje.data(),
-                                matriculaAcademia.getServicoPessoa().getResponsavel(),
+                                matriculaAcademia.getServicoPessoa().getCobranca(),
                                 matriculaAcademia.getServicoPessoa().getServicos().getPlano5(),
                                 false,
                                 "",
@@ -910,17 +911,17 @@ public class MatriculaAcademiaBean implements Serializable {
                                 (CondicaoPagamento) salvarAcumuladoDB.pesquisaCodigo(idCondicaoPagto, "CondicaoPagamento"),
                                 (FStatus) salvarAcumuladoDB.pesquisaCodigo(1, "FStatus"),
                                 null,
-                                matriculaAcademia.getServicoPessoa().isDescontoFolha(), null, 0));
+                                matriculaAcademia.getServicoPessoa().isDescontoFolha(), 0));
                 salvarAcumuladoDB.abrirTransacao();
                 try {
 
                     String nrCtrBoletoResp = "";
 
-                    for (int x = 0; x < (Integer.toString(matriculaAcademia.getServicoPessoa().getResponsavel().getId())).length(); x++) {
+                    for (int x = 0; x < (Integer.toString(matriculaAcademia.getServicoPessoa().getCobranca().getId())).length(); x++) {
                         nrCtrBoletoResp += 0;
                     }
 
-                    nrCtrBoletoResp += matriculaAcademia.getServicoPessoa().getResponsavel().getId();
+                    nrCtrBoletoResp += matriculaAcademia.getServicoPessoa().getCobranca().getId();
 
                     String mes = matriculaAcademia.getServicoPessoa().getEmissao().substring(3, 5);
                     String ano = matriculaAcademia.getServicoPessoa().getEmissao().substring(6, 10);
@@ -969,7 +970,7 @@ public class MatriculaAcademiaBean implements Serializable {
                         }
                         String vecimentoString = "";
                         Pessoa pessoaAluno = matriculaAcademia.getServicoPessoa().getPessoa();
-                        Pessoa pessoaResponsavelTitular = matriculaAcademia.getServicoPessoa().getResponsavel();
+                        Pessoa pessoaResponsavelTitular = matriculaAcademia.getServicoPessoa().getCobranca();
                         Pessoa pessoaResponsavel = matriculaAcademia.getServicoPessoa().getCobranca();
                         if (pessoaResponsavel.getId() == -1) {
                             salvarAcumuladoDB.desfazerTransacao();
@@ -1051,7 +1052,8 @@ public class MatriculaAcademiaBean implements Serializable {
                                     0,
                                     0,
                                     fTipoDocumento,
-                                    0));
+                                    0, 
+                                    new MatriculaSocios()));
                             if (!salvarAcumuladoDB.inserirObjeto(movimento)) {
                                 salvarAcumuladoDB.desfazerTransacao();
                                 GenericaMensagem.warn("Sistema", "Não foi possível gerar esse movimento!");

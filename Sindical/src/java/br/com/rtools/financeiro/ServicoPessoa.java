@@ -42,9 +42,6 @@ public class ServicoPessoa implements java.io.Serializable {
     private boolean ativo;
     @Column(name = "IS_BANCO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean banco;
-    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID", nullable = true)
-    @ManyToOne(fetch = FetchType.EAGER)
-    private Pessoa responsavel;
     
     public ServicoPessoa() {
         this.id = -1;
@@ -60,11 +57,10 @@ public class ServicoPessoa implements java.io.Serializable {
         this.cobranca = new Pessoa();
         this.ativo = true;
         this.banco = false;
-        this.responsavel = new Pessoa();
     }
 
     public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao,
-            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco, Pessoa responsavel) {
+            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -78,7 +74,6 @@ public class ServicoPessoa implements java.io.Serializable {
         this.cobranca = cobranca;
         this.ativo = ativo;
         this.banco = banco;
-        this.responsavel = responsavel;
     }
 
     public int getId() {
@@ -197,13 +192,5 @@ public class ServicoPessoa implements java.io.Serializable {
 
     public void setBanco(boolean banco) {
         this.banco = banco;
-    }
-
-    public Pessoa getResponsavel() {
-        return responsavel;
-    }
-
-    public void setResponsavel(Pessoa responsavel) {
-        this.responsavel = responsavel;
     }
 }

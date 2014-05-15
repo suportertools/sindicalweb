@@ -4,6 +4,7 @@ import br.com.rtools.associativo.CVenda;
 import br.com.rtools.associativo.Caravana;
 import br.com.rtools.associativo.EventoServico;
 import br.com.rtools.associativo.EventoServicoValor;
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Reservas;
 import br.com.rtools.associativo.db.CaravanaDB;
 import br.com.rtools.associativo.db.CaravanaDBToplink;
@@ -300,7 +301,7 @@ public class VendasCaravanaBean {
         }
 
         Lote lote = new Lote(-1, (Rotina) sv.find(new Rotina(), 142), "", DataHoje.data(), pessoa, null, false, "", Moeda.converteUS$(valorTotal), (Filial) sv.pesquisaObjeto(1, "Filial"),
-                (Departamento) sv.find(new Departamento(), 6), evt, "", null, null, null, null, false, null, 0);
+                (Departamento) sv.find(new Departamento(), 6), evt, "", null, null, null, null, false, 0);
         if (!sv.inserirObjeto(lote)) {
             GenericaMensagem.warn("Erro", "Não foi possível salvar Lote!"); 
             sv.desfazerTransacao();
@@ -343,7 +344,7 @@ public class VendasCaravanaBean {
                     0,
                     0,
                     null,
-                    0);
+                    0, new MatriculaSocios());
             if (!sv.inserirObjeto(movimento)) {
                 GenericaMensagem.warn("Erro", "Não é possivel salvar movimento!");
                 return;

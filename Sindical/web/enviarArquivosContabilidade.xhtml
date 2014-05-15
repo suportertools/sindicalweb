@@ -64,11 +64,11 @@
                         
                         <h:panelGrid columns="2">
                             <p:column>
-                                <p:panel id="i_panel" header="Destinatários" style="width: 600px; height: 360px;" styleClass="margin-top-max">
+                                <p:panel id="i_panel" header="Destinatários" style="width: 600px; height: 400px;" styleClass="margin-top-max">
                                     <p:commandButton value="Todas Contabilidades" action="#{enviarArquivosBean.todasContabilidade()}" update="i_panel"/>
                                     <p:commandButton value="Adicionar à Lista" oncomplete="PF('i_dlg_pesquisa').show()" update="i_panel"/>
 
-                                    <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContabilidade}" var="lista" scrollHeight="250" rowIndexVar="index" emptyMessage="Nenhuma contabilidade encontrado" selection="#{enviarArquivosBean.empresaSelecionada}"  rowKey="#{lista.juridica.id}" >
+                                    <p:dataTable id="tbl" scrollable="true" value="#{enviarArquivosBean.listaContabilidade}" var="lista" scrollHeight="250" rowIndexVar="index" emptyMessage="Nenhuma contabilidade encontrado" selection="#{enviarArquivosBean.empresaSelecionada}"  rowKey="#{lista.juridica.id}" paginator="true" rows="100">
                                         <p:ajax event="rowSelect" update=":form_relatorio_contabilidade:i_panel"/>
                                         <p:ajax event="rowSelectCheckbox" update=":form_relatorio_contabilidade:i_panel"/>
                                         <p:ajax event="rowUnselect" update=":form_relatorio_contabilidade:i_panel"/>
@@ -90,7 +90,7 @@
                             </p:column>
                                         
                             <p:column>
-                                <p:panel header="Mensagem e anexos" style="width: 380px; height: 360px;" styleClass="margin-top-max">
+                                <p:panel header="Mensagem e anexos" style="width: 380px; height: 450px;" styleClass="margin-top-max">
                                     <p:editor width="350" controls="bold italic underline strikethrough" value="#{enviarArquivosBean.mensagem.mensagem}"/>
                                 </p:panel>
                             </p:column>

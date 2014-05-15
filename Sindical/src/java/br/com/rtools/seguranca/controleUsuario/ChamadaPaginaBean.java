@@ -978,6 +978,11 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "impressaoBoletoSocial");
     }
 
+    public synchronized String reciboGerado() {
+        GenericaSessao.remove("reciboGeradoBean");
+        return metodoGenerico(2, "reciboGerado");
+    }
+    
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------

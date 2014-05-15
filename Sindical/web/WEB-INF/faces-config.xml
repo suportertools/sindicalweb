@@ -1723,6 +1723,12 @@
         </navigation-case>  
         
         <navigation-case>
+            <from-outcome>reciboGerado</from-outcome>
+            <to-view-id>/reciboGerado.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>  
+
+        <navigation-case>
             <from-outcome>contaOperacao</from-outcome>
             <to-view-id>/contaOperacao.jsf</to-view-id>
             <redirect/>

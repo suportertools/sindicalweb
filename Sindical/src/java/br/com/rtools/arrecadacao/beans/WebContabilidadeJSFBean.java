@@ -322,7 +322,7 @@ public class WebContabilidadeJSFBean extends MovimentoValorJSFBean {
                                         "",
                                         strVencimento,
                                         0,
-                                        0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0);
+                                        0, 0, 0, 0, 0, 0, dbFTipoDocumento.pesquisaCodigo(2), 0, null);
 
 
                                 GerarMovimento.salvarUmMovimento(new Lote(), movi);

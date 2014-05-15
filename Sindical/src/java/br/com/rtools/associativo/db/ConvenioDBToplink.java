@@ -15,30 +15,38 @@ public class ConvenioDBToplink extends DB implements ConvenioDB {
     
     @Override
     public List listaTodosPorPessoa(boolean orderPessoa, boolean orderGrupoConvenio, boolean orderSubGrupoConvenio, Convenio convenio) {
-        String juridicaSrting = "";
-        String orderPessoaSrting;
-        String orderGrupoConvenioSrting;
-        String orderSubGrupoConvenioSrting;
+        String where = "";
+        String order_by = "";
+        
         if (orderPessoa) {
-            orderPessoaSrting = "ASC";
-        } else {
-            orderPessoaSrting = "DESC";
+            order_by = " ORDER BY c.juridica.pessoa.nome ";
         }
-        if (orderGrupoConvenio) {
-            orderGrupoConvenioSrting = "ASC";
-        } else {
-            orderGrupoConvenioSrting = "DESC";
+        
+        if (orderGrupoConvenio){
+            if (order_by.isEmpty()) {
+                order_by = " ORDER BY c.subGrupoConvenio.grupoConvenio.descricao ";
+            }else{
+                order_by += ", c.subGrupoConvenio.grupoConvenio.descricao ";
+            }
         }
-        if (orderSubGrupoConvenio) {
-            orderSubGrupoConvenioSrting = "ASC";
-        } else {
-            orderSubGrupoConvenioSrting = "DESC";
+        
+        if (orderSubGrupoConvenio){
+            if (order_by.isEmpty()) {
+                order_by = " ORDER BY c.subGrupoConvenio.descricao ";
+            } else {
+                order_by += ", c.subGrupoConvenio.descricao ";
+            }
         }
+        
         if (convenio != null) {
-          juridicaSrting = " WHERE C.juridica.id = "+convenio.getJuridica().getId();  
+          where = " WHERE C.juridica.id = "+convenio.getJuridica().getId();  
         }
         try {
-            Query query = getEntityManager().createQuery(" SELECT C FROM Convenio AS C "+juridicaSrting+" ORDER BY C.juridica.pessoa.nome "+orderPessoaSrting+", C.subGrupoConvenio.grupoConvenio.descricao "+orderGrupoConvenioSrting+", C.subGrupoConvenio.descricao "+orderSubGrupoConvenioSrting);
+            Query query = getEntityManager().createQuery(
+                        " SELECT c " +
+                        "   FROM Convenio c " +
+                            where +
+                            order_by);    
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;

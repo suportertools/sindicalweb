@@ -61,4 +61,5 @@ public interface FinanceiroDB {
     public List<SubGrupoFinanceiro> listaSubGrupo(int id_grupo);
     public List<Vector> listaBoletoSocioAgrupado(String responsavel, String lote, String data);
     public List<Vector> listaBoletoSocio(String nr_ctr_boleto);
+    public List<Vector> listaServicosSemCobranca();
 }

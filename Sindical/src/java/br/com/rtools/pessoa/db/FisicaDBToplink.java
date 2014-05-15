@@ -185,7 +185,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  where fis.pessoa.id = pes.id  "
                         + "   and UPPER(pes." + por + ") like :desc "
                         + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.matriculaSocios.motivoInativacao is null )";
+                        //+ " where soc.matriculaSocios.motivoInativacao is null )";
+                        + " where soc.servicoPessoa.ativo = true )";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
@@ -194,7 +195,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  where fis.pessoa.id = pes.id  "
                         + "   and UPPER(pes." + por + ") like :desc "
                         + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.matriculaSocios.motivoInativacao is null )";
+                        + " where soc.servicoPessoa.ativo = true )";
             }
         }
 
@@ -206,7 +207,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  where fis.pessoa.id = pes.id  "
                         + "   and UPPER(pes." + por + ") like :desc "
                         + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.matriculaSocios.motivoInativacao is null )";
+                        + " where soc.servicoPessoa.ativo = true )";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
@@ -215,7 +216,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  where fis.pessoa.id = pes.id  "
                         + "   and UPPER(pes." + por + ") like :desc "
                         + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.matriculaSocios.motivoInativacao is null )";
+                        + " where soc.servicoPessoa.ativo = true )";
             }
         }
 
@@ -227,7 +228,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  where fis.pessoa.id = pes.id  "
                     + "   and UPPER(fis." + por + ") like :desc "
                     + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                    + " where soc.matriculaSocios.motivoInativacao is null )";
+                    + " where soc.servicoPessoa.ativo = true )";
         }
         if (por.equals("cpf")) {
             por = "documento";
@@ -237,7 +238,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  where fis.pessoa.id = pes.id  "
                     + "   and UPPER(pes." + por + ") like :desc"
                     + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                    + " where soc.matriculaSocios.motivoInativacao is null )";
+                    + " where soc.servicoPessoa.ativo = true )";
         }
         if (por.equals("endereco")) {
             desc = desc.toLowerCase().toUpperCase();
@@ -273,7 +274,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         listaId += ", " + ((Integer) ((List) listEndereco.get(i)).get(0)).toString();
                     }
                 }
-                textQuery = " SELECT FIS FROM Fisica AS FIS, Pessoa AS PES WHERE FIS.id IN(" + listaId + ") AND PES.id IN( SELECT SOC.servicoPessoa.pessoa.id from Socios AS SOC WHERE SOC.matriculaSocios.motivoInativacao IS NULL )";
+                textQuery = " SELECT FIS FROM Fisica AS FIS, Pessoa AS PES WHERE FIS.id IN(" + listaId + ") AND PES.id IN( SELECT SOC.servicoPessoa.pessoa.id from Socios AS SOC WHERE soc.servicoPessoa.ativo = true )";
             }
         }
         try {
@@ -302,7 +303,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + //"                 Pessoa pes     " +
                         //"  where fis.pessoa.id = pes.id  " +
                         "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             } else if (como.equals("I")) {
                 por = "nome";
@@ -311,7 +313,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + //"                 Pessoa pes     " +
                         //"  where fis.pessoa.id = pes.id  " +
                         "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             }
         }
@@ -322,7 +325,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + //"                 Pessoa pes     " +
                         //"  where fis.pessoa.id = pes.id  " +
                         "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             } else if (como.equals("I")) {
                 por = "nome";
@@ -331,7 +335,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + //"                 Pessoa pes     " +
                         //"  where fis.pessoa.id = pes.id  " +
                         "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             }
         }
@@ -342,7 +347,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + //"                 Pessoa pes     " +
                     //"  where fis.pessoa.id = pes.id  " +
                     "  where UPPER(fis." + por + ") like :desc "
-                    + "    and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                    //+ "    and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                     + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
         }
         if (por.equals("cpf")) {
@@ -352,7 +358,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + //"                 Pessoa pes     " +
                     //"  where fis.pessoa.id = pes.id  " +
                     "  where UPPER(fis.pessoa." + por + ") like :desc"
-                    + "   and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                    //+ "   and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                     + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
         }
         if (por.equals("endereco")) {
@@ -393,7 +400,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "     FROM Fisica AS FIS,         "
                         + "          Pessoa AS PES          "
                         + "    WHERE FIS.id IN(" + listaId + ") "
-                        + "      AND FIS.pessoa.id IN( SELECT SOC.servicoPessoa.pessoa.id FROM Socios SOC WHERE SOC.matriculaSocios.motivoInativacao IS NOT NULL )  "
+                        //+ "      AND FIS.pessoa.id IN( SELECT SOC.servicoPessoa.pessoa.id FROM Socios SOC WHERE SOC.matriculaSocios.motivoInativacao IS NOT NULL )  "
+                        + "      AND FIS.pessoa.id IN( SELECT SOC.servicoPessoa.pessoa.id FROM Socios SOC )  "
                         + "      AND FIS.pessoa.id NOT IN( SELECT SOC2.servicoPessoa.pessoa.id FROM Socios SOC2 WHERE SOC2.servicoPessoa.ativo = true )             ";
             }
         }
@@ -536,7 +544,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + //"                 Pessoa pes     " +
                     "  where fis.pessoa.id = " + id_pessoa
                     + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                    + " where soc.matriculaSocios.motivoInativacao is null )";
+                    + " where soc.servicoPessoa.ativo = true )";
             Query qry = getEntityManager().createQuery(textQuery);
             lista = qry.getResultList();
         } catch (Exception e) {

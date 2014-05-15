@@ -1,6 +1,8 @@
 package br.com.rtools.arrecadacao.beans;
 
 import br.com.rtools.associativo.LoteBoleto;
+import br.com.rtools.financeiro.db.FinanceiroDB;
+import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -10,6 +12,7 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -26,7 +29,18 @@ public class GerarBoletoBean {
     private String mes = DataHoje.DataToArrayString(DataHoje.data())[1];
     private List listaData = new ArrayList();
     
+    private List<Vector> listaServicoSemCobranca = new ArrayList();
+    
+    public GerarBoletoBean(){
+        getListaServicoSemCobranca();
+    }
+    
     public void gerarTodos(){
+        if (!listaServicoSemCobranca.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Não é possível gerar mensalidade, verifique os Serviços e Conta Cobrança!");
+            return;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
 
@@ -57,6 +71,11 @@ public class GerarBoletoBean {
     }
     
     public void gerarLista(){
+        if (!listaServicoSemCobranca.isEmpty()){
+            GenericaMensagem.warn("Atenção", "Não é possível gerar mensalidade, verifique os Serviços e Conta Cobrança!");
+            return;
+        }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
         boolean erro = false;
@@ -199,5 +218,25 @@ public class GerarBoletoBean {
 
     public void setListaData(List listaData) {
         this.listaData = listaData;
+    }
+    
+    public List<Vector> getListaServicoSemCobranca() {
+        if (listaServicoSemCobranca.isEmpty()){
+            FinanceiroDB db = new FinanceiroDBToplink();
+            
+            listaServicoSemCobranca = db.listaServicosSemCobranca();
+            
+            if (!listaServicoSemCobranca.isEmpty()){
+                GenericaMensagem.fatal("Atenção", "Não é possível gerar mensalidades sem antes definir Conta Cobrança para os seguintes Serviços:");
+                for (Vector linha : listaServicoSemCobranca){
+                    GenericaMensagem.info("Serviço / Tipo: ", linha.get(1).toString() + " - " + linha.get(3).toString());
+                }
+            }
+        }
+        return listaServicoSemCobranca;
+    }
+
+    public void setListaServicoSemCobranca(List<Vector> listaServicoSemCobranca) {
+        this.listaServicoSemCobranca = listaServicoSemCobranca;
     }
 }

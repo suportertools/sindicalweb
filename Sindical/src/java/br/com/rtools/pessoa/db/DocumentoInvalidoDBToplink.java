@@ -60,7 +60,7 @@ public class DocumentoInvalidoDBToplink extends DB implements DocumentoInvalidoD
     @Override
     public List pesquisaTodos() {
         try {
-            Query qry = getEntityManager().createQuery("select docs from DocumentoInvalido docs");
+            Query qry = getEntityManager().createQuery("select docs from DocumentoInvalido docs where docs.checado = false");
             return (qry.getResultList());
         } catch (Exception e) {
             return null;

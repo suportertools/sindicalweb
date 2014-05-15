@@ -1,5 +1,6 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
 import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.financeiro.CondicaoPagamento;
@@ -8,8 +9,11 @@ import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Lote;
 import br.com.rtools.financeiro.Movimento;
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.db.ServicoPessoaDB;
+import br.com.rtools.financeiro.db.ServicoPessoaDBToplink;
 import br.com.rtools.financeiro.db.ServicoRotinaDB;
 import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.pessoa.Fisica;
@@ -58,6 +62,21 @@ public class LancamentoIndividualBean {
     private String msgConfirma = "";
     private Pessoa responsavel = new Pessoa();
     private Lote lote = new Lote();
+    private ServicoPessoa servicoPessoa = new ServicoPessoa();
+    
+    public void salvarData(){
+        if (servicoPessoa.getId() != -1){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
+            
+            if (!sv.alterarObjeto(servicoPessoa)){
+                // ERRO
+                sv.desfazerTransacao();
+            }else{
+                sv.comitarTransacao();
+            }
+        }
+    }       
     
     public void adicionarParcelas(){
         if (fisica.getId() == -1){
@@ -131,7 +150,8 @@ public class LancamentoIndividualBean {
                     0, // TAXA
                     0, // VALOR BAIXA
                     td, // FTipo_documento 13 - CARTEIRA, 2 - BOLETO
-                    0 // REPASSE AUTOMATICO
+                    0, // REPASSE AUTOMATICO
+                    new MatriculaSocios() // MATRICULA SÓCIO
             ), 
                     Moeda.converteR$Float(Moeda.converteFloatR$Float(valor))
             ));
@@ -190,8 +210,6 @@ public class LancamentoIndividualBean {
         lote.setCondicaoPagamento(cp);
         lote.setPlano5(serv.getPlano5());
         lote.setDescontoFolha( descontoFolha.equals("sim") );
-        lote.setMatriculaSocios(null);
-        
         
         sv.abrirTransacao();
         if (!sv.inserirObjeto(lote) ){
@@ -256,23 +274,34 @@ public class LancamentoIndividualBean {
             int i = 0;
             ServicoRotinaDB db = new ServicoRotinaDBToplink();
             List<Servicos> select = db.pesquisaTodosServicosComRotinas(131);
-            while (i < select.size()) {
-                listaServicos.add(new SelectItem(new Integer(i),
-                                  select.get(i).getDescricao(),
-                                  Integer.toString(select.get(i).getId())
-                        ));
-                i++;
+            if (select.isEmpty()){
+                while (i < select.size()) {
+                    listaServicos.add(new SelectItem(i,
+                                      select.get(i).getDescricao(),
+                                      Integer.toString(select.get(i).getId())
+                            ));
+                    i++;
+                }
+            }else{
+                listaServicos.add(new SelectItem(0, "Nenhum Serviço Encontrado", "0"));
             }
         }
         return listaServicos;
     }
-    
+
     public Fisica getFisica() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null){
             fisica = (Fisica)FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa");
             PessoaDB db = new PessoaDBToplink();
-            
+            ServicoPessoaDB dbS = new ServicoPessoaDBToplink();
             pessoaComplemento = db.pesquisaPessoaComplementoPorPessoa(fisica.getPessoa().getId());
+            
+            servicoPessoa = dbS.pesquisaServicoPessoaPorPessoa(fisica.getPessoa().getId());
+            if (servicoPessoa == null){
+                servicoPessoa = new ServicoPessoa();
+            }
+                    
+            
             if (pessoaComplemento.getId() != -1){
                 if (pessoaComplemento.isCobrancaBancaria()){
                     cobrancaBancaria = "sim";
@@ -313,18 +342,22 @@ public class LancamentoIndividualBean {
     }
 
     public List<SelectItem> getListaJuridica() {
-        if (listaJuridica.isEmpty()){
+        if (listaJuridica.isEmpty() && !listaServicos.isEmpty()){
             LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
-            if (listaServicos.isEmpty())
-                return listaJuridica;
-            
             List<Juridica> result = db.listaEmpresaConveniada(Integer.parseInt(listaServicos.get(idServico).getDescription()));
             
-            for (int i = 0; i < result.size(); i++){
-                listaJuridica.add(new SelectItem(new Integer(i),
-                                  result.get(i).getPessoa().getNome(),
-                                  Integer.toString(result.get(i).getId())
-                        ));
+            if (listaServicos.isEmpty() || result.isEmpty()){
+                listaJuridica.add(new SelectItem(0, "Nenhuma Empresa Conveniada", "0"));
+                return listaJuridica;
+            }
+            
+            if(result.isEmpty()){
+                for (int i = 0; i < result.size(); i++){
+                    listaJuridica.add(new SelectItem(i,
+                                      result.get(i).getPessoa().getNome(),
+                                      Integer.toString(result.get(i).getId())
+                            ));
+                }
             }
         }
         return listaJuridica;
@@ -372,13 +405,16 @@ public class LancamentoIndividualBean {
     }
 
     public String getTotalPagar() {
-        if (fisica.getId() != -1){
+        if (fisica.getId() != -1 && !listaServicos.isEmpty()){
             LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
-            List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), Integer.parseInt(listaServicos.get(idServico).getDescription()));
             
+            Servicos se = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos"));
+            
+            List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), se.getId());
             float vl = Float.valueOf( ((Double)valor.get(0).get(0)).toString() );
             
-            totalPagar = Moeda.converteR$Float(vl);
+            if (!se.isAlterarValor())
+                totalPagar = Moeda.converteR$Float(vl);
         }
         return Moeda.converteR$(totalPagar);
     }
@@ -543,6 +579,14 @@ public class LancamentoIndividualBean {
 
     public void setLote(Lote lote) {
         this.lote = lote;
+    }
+
+    public ServicoPessoa getServicoPessoa() {
+        return servicoPessoa;
+    }
+
+    public void setServicoPessoa(ServicoPessoa servicoPessoa) {
+        this.servicoPessoa = servicoPessoa;
     }
 
 }

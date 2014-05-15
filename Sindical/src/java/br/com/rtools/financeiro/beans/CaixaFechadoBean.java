@@ -28,6 +28,8 @@ import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -182,19 +184,19 @@ public class CaixaFechadoBean implements Serializable{
             
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dtSource);
-//            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
-//            
-//            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-//            res.setContentType("application/pdf");
-//            res.setHeader("Content-disposition", "inline; filename=\"Relatório Fechamento Caixa.pdf\"");
-//            res.getOutputStream().write(arquivo);
-//            res.getCharacterEncoding();
-//            FacesContext.getCurrentInstance().responseComplete();
+            byte[] arquivo = JasperExportManager.exportReportToPdf(jasperPrint);
+            
+            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            res.setContentType("application/pdf");
+            res.setHeader("Content-disposition", "inline; filename=\"Relatório Fechamento Caixa.pdf\"");
+            res.getOutputStream().write(arquivo);
+            res.getCharacterEncoding();
+            FacesContext.getCurrentInstance().responseComplete();
             
             
-            JasperViewer jrviewer = new JasperViewer(jasperPrint, false);
-            jrviewer.setTitle("Relatório Fechamento Caixa");
-            jrviewer.setVisible(true);
+//            JasperViewer jrviewer = new JasperViewer(jasperPrint, false);
+//            jrviewer.setTitle("Relatório Fechamento Caixa");
+//            jrviewer.setVisible(true);
         }catch(Exception e){
             
         }

@@ -51,7 +51,9 @@
                                     </f:facet>
                                     <p:row>
                                         <p:column>
-                                            <p:inputText id="idGrupo" size="50" value="#{grupoCategoriaBean.grupoCategoria.grupoCategoria}"/>
+                                            <p:inputText id="idGrupo" size="50" value="#{grupoCategoriaBean.grupoCategoria.grupoCategoria}" converter="#{toUpperCase}">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
                                         </p:column>
                                         <p:column>
                                             <p:inputText id="idMatricula" size="20" value="#{grupoCategoriaBean.grupoCategoria.nrProximaMatricula}"/>
@@ -72,7 +74,7 @@
                                 </p:panelGrid>
                             </p:panel>                            
                             <p:panel id="i_tbl" styleClass="margin-top-max">
-                                <p:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="grupoCategoria">
+                                <p:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="grupoCategoria" emptyMessage="Nenhum Grupo Categoria Encontrado!">
                                     <p:column headerText="Nome">
                                         <p:commandLink value="#{grupoCategoria.grupoCategoria}" action="#{grupoCategoriaBean.editar(grupoCategoria)}" update=":form_grupo_categoria:i_panel_cadastro"/>
                                     </p:column>
