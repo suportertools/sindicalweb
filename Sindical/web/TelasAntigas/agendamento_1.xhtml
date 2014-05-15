@@ -1,0 +1,426 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Agendamento</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body styleClass="divMenu">
+        <f:subview id="header">
+            <ui:include src="template.xhtml"/>
+            <ui:include src="templateLinks.xhtml"/>
+        </f:subview>
+        <f:view>
+            <h:form id="form_agendamento">
+                <h:outputLink id="i_status_inativo" value=""></h:outputLink>
+                <center>
+                    <rich:panel styleClass="headerPanel">
+                        <h:outputText value="Agendamento" styleClass="fontePanel" style="margin: 0;"/>
+                    </rich:panel>
+                    <br /><br />
+                    <rich:panel id="id_form_agendamento" style="border: 0; margin: 0; background: transparent;">
+                        <c:set scope="request" var="object" value="${agendamentoBean.agendamento}"/>
+                        <rich:panel styleClass="divMae divFundo" style="text-align: left; width: 800px;" rendered="#{agendamentoBean.renderConcluir}">
+                            <h:outputScript library="js" name="jScripts.js" />
+                            <h:panelGrid id="i_panel_horario" columns="10" style="margin-left: 45px;">
+                                <h:outputText value="PROTOCOLO: " styleClass="fontePadraoNegrito"/>
+                                <h:inputText id="iProt" size="10" value="#{agendamentoBean.protocolo}" disabled="#{agendamentoBean.disabledProtocolo}" styleClass="fontePadraoNegrito">
+                                    <a4j:ajax event="blur" listener="#{agendamentoBean.pesquisarProtocolo}" render="i_panel_1" />
+                                </h:inputText>
+                                <h:outputText value="Data: " styleClass="fontePadrao"/>
+                                <h:outputText value="#{agendamentoBean.agendamento.data}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" style="margin-left: 5px;"/>
+                                <h:column>
+                                    <h:outputText value="Horário: " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value=" Alterar >> " styleClass="fontePadrao" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}"/>
+                                    <h:outputText value="#{agendamentoBean.agendamento.horarios.hora}" styleClass="fontePadraoNegritoMedio border-radius bg-white padding" rendered="#{agendamentoBean.ocultarHorarioAlternativo}"/>
+                                    <h:selectOneMenu id="id_horario_alternativo" value="#{agendamentoBean.idHorarioAlternativo}" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
+                                        <a4j:ajax event="change" render="this" status="i_status" />
+                                        <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
+                                    </h:selectOneMenu>
+                                    <a4j:commandLink styleClass="idNovo iLink" value="Ok" title="Adicionar horário alternativo" rendered="#{!agendamentoBean.ocultarHorarioAlternativo}">
+                                        <a4j:ajax event="click" listener="#{agendamentoBean.adicionarHorarioAlternativo}" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;" render="i_panel_horario, id_ocultar_horario_alternativo" status="i_status"/> 
+                                    </a4j:commandLink>
+                                </h:column>
+                                <a4j:commandButton image="/Imagens/horario.png" title="Transferir horário" render="i_panel_horario" action="#{agendamentoBean.trasfere()}" rendered="#{agendamentoBean.agendamento.id != -1}" styleClass="margin-left-max" status="i_status"/>
+                                <a4j:outputPanel layout="block" rendered="#{agendamentoBean.renderTransfere}">
+                                    <rich:calendar value="#{agendamentoBean.dataTransferencia}" datePattern="dd/MM/yyyy" style="width:200px">
+                                        <a4j:ajax event="change" render="i_panel_horario" status="i_status"/>
+                                    </rich:calendar>
+                                </a4j:outputPanel>
+                                <h:selectOneMenu id="i_horario_transferencia" value="#{agendamentoBean.idHorarioTransferencia}" rendered="#{agendamentoBean.renderTransfere}">
+                                    <a4j:ajax event="change" render="i_horario_transferencia" status="i_status" />
+                                    <f:selectItems value="#{agendamentoBean.listaHorarioTransferencia}"/>
+                                </h:selectOneMenu>
+                                <a4j:commandButton action="#{agendamentoBean.salvarTransferencia()}" rendered="#{agendamentoBean.renderTransfere}" value="OK" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" render="i_painel_mensagem"/>
+                            </h:panelGrid>
+                            <h:panelGrid id="i_panel_1" columns="2" columnClasses="coluna1, coluna2" cellspacing="3">
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding margin-top-maior">FUNCIONÁRIO</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>                                
+                                <h:outputText value="MOTIVO DEMISSÃO: " styleClass="fontePadraoVermelho"/>
+                                <h:column>
+                                    <h:selectOneMenu id="idMotivoDemissao" value="#{agendamentoBean.idMotivoDemissao}" >
+                                        <a4j:ajax event="change" render="this"  />
+                                        <f:selectItems value="#{agendamentoBean.listaDemissao}"/>
+                                    </h:selectOneMenu>
+                                    <h:outputText value="TIPO DE AVISO: " styleClass="fontePadraoVermelho margin-left-max"/>
+                                    <h:selectOneMenu id="idTipoAviso" value="#{agendamentoBean.tipoAviso}">
+                                        <a4j:ajax event="change" render="this"  />
+                                        <f:selectItem itemValue="false" itemLabel="Imediato"/>
+                                        <f:selectItem itemValue="true"  itemLabel="Trabalhado"/>
+                                    </h:selectOneMenu>
+                                </h:column>                                
+                                <h:outputText value="CPF: " styleClass="fontePadraoVermelho" />
+                                <h:column>
+                                    <h:inputText id="idCPF" value="#{agendamentoBean.fisica.pessoa.documento}" size="14" styleClass="cpf">
+                                        <a4j:ajax event="blur" listener="#{agendamentoBean.pesquisarFuncionarioCPF}" render="i_painel_mensagem id_form_agendamento" oncomplete="#{rich:component('i_painel_mensagem')}.show(); return false;" status="i_status"/>
+                                    </h:inputText>
+                                </h:column>
+                                <h:outputText value="NOME: " styleClass="fontePadraoVermelho margin-left-max"/>
+                                <h:column>
+                                    <h:inputText id="iFuncionario" size="50" value="#{agendamentoBean.fisica.pessoa.nome}" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
+                                        <f:ajax event="blur" render="@this" />
+                                    </h:inputText>
+                                    <h:outputText value="NASCIMENTO: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText id="iNascimento" size="10" maxlength="10" value="#{agendamentoBean.fisica.nascimento}" styleClass="fontePadraoNegrito data">
+                                        <a4j:ajax event="blur" render="this" />
+                                    </h:inputText>
+                                </h:column>
+                                <a4j:commandLink styleClass="idPesquisar iLink" value="Endereço" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.show(); return false;" title="Pesquisar Endereço" /> 
+                                <h:column id="idOutEndX">
+                                    <h:outputLabel id="idOutEnd" value="#{agendamentoBean.enderecoFisica.endereco.logradouro.descricao} #{agendamentoBean.enderecoFisica.endereco.descricaoEndereco.descricao},
+                                                   #{agendamentoBean.enderecoFisica.endereco.cidade.cidade} - #{agendamentoBean.enderecoFisica.endereco.cidade.uf}" styleClass="fontePadrao" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
+                                    <h:outputText value="Nº: " styleClass="fontePadrao" style="margin-left: 20px;" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
+                                    <h:inputText id="iNum" size="5" value="#{agendamentoBean.enderecoFisica.numero}" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}">
+                                        <a4j:ajax event="blur" render="this" />
+                                    </h:inputText>
+                                    <h:outputText value="COMPL.: " styleClass="fontePadrao margin-left-max" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}"/>
+                                    <h:inputText id="iCompl" size="15" value="#{agendamentoBean.enderecoFisica.complemento}" rendered="#{agendamentoBean.enderecoFisica.endereco.id != -1}">
+                                        <a4j:ajax event="blur" render="this" />
+                                    </h:inputText>
+                                    <h:outputText value="Pesquisar Endereço" rendered="#{agendamentoBean.enderecoFisica.endereco.id == -1}"/>
+                                </h:column>
+                                <h:outputText value="CARTEIRA: " styleClass="fontePadrao"/>
+                                <h:column>
+                                    <h:inputText id="iCarteira" size="10" value="#{agendamentoBean.fisica.carteira}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                        <a4j:ajax event="blur" render="this"  />
+                                    </h:inputText>
+                                    <h:outputText value="SÉRIE: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText id="iSerie" size="15" value="#{agendamentoBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                        <a4j:ajax event="blur" render="this"  />
+                                    </h:inputText>
+                                </h:column>
+                                <h:outputText value="SEXO: " styleClass="fontePadrao"/>
+                                <h:selectOneRadio id="idSexo" value="#{agendamentoBean.fisica.sexo}" styleClass="fontePadrao">
+                                    <a4j:ajax event="change" render="this"  />
+                                    <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                    <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                </h:selectOneRadio>
+                                <a4j:commandLink id="btnFuncao" value="Função" styleClass="idSalvar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.show(); return false;" /> 
+                                <h:column>
+                                    <h:inputText id="idFuncao" size="40" value="#{agendamentoBean.profissao.cbo}  #{agendamentoBean.profissao.profissao}" styleClass="fontePadraoNegrito" readonly="true">
+                                        <a4j:ajax event="click" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.show(); return false;" />
+                                    </h:inputText>
+                                    <h:outputText value="SETOR: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText id="iSetor" size="20" value="#{agendamentoBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                        <a4j:ajax event="blur" render="this"  />
+                                    </h:inputText>
+                                </h:column>                                
+                                <h:outputText value="ADMISSÃO: " styleClass="fontePadrao"/>
+                                <h:column>
+                                    <h:inputText id="iAdmissao" size="10" value="#{agendamentoBean.pessoaEmpresa.admissao}" styleClass="fontePadraoNegrito data">
+                                        <a4j:ajax event="blur" render="this"  />
+                                    </h:inputText>
+                                    <h:outputText value="DEMISSÃO: " styleClass="fontePadraoVermelho margin-left-max"/>
+                                    <h:inputText id="iDemissao" size="10" value="#{agendamentoBean.pessoaEmpresa.demissao}" styleClass="fontePadraoNegrito data">
+                                        <a4j:ajax event="blur" render="this"  />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding margin-top-maior">EMPRESA</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>
+                                <h:column>
+                                    <h:commandButton image="/Imagens/pesquisar.png" title="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"  immediate="true" disabled="#{agendamentoBean.disabledEmpresa}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="Pesquisar Empresa" styleClass="font-color-red" rendered="#{agendamentoBean.juridica.pessoa.id == -1}"/>
+                                    <h:outputText id="iEmpresa" value="#{agendamentoBean.juridica.pessoa.nome}" styleClass="fontePadraoNegrito"/>
+                                    <h:outputText value="Telefone: " styleClass="fontePadrao" style="margin-left: 20px;" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                    <h:outputText id="iEmpTelefone" value="#{agendamentoBean.juridica.pessoa.telefone1} / #{agendamentoBean.juridica.pessoa.telefone2}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="STATUS: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iStatus" value="#{agendamentoBean.statusEmpresa}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:commandLink id="iImprimirPlanilha" value="Imprimir Planilha" title="Imprimir Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.imprimirPlanilha}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" target="_blank"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:panelGrid columns="3">
+                                        <a4j:commandLink id="iEnviarPlanilha" value="Enviar Planilha por Email para" title="Enviar Planilha de Débitos" styleClass="fontePadrao" action="#{agendamentoBean.enviarPlanilha}" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" render="i_painel_mensagem"/>
+                                        <h:selectOneMenu id="chkEmail" value="#{agendamentoBean.enviarPara}" rendered="#{!agendamentoBean.statusEmpresa.equals('REGULAR')}" styleClass=" margin-left-max">
+                                            <a4j:ajax event="change" render="@this, id_email_empresa" />
+                                            <f:selectItem itemValue="contabilidade" itemLabel="Contabilidade"/>
+                                            <f:selectItem itemValue="empresa"       itemLabel="Empresa"/>
+                                        </h:selectOneMenu>
+                                        <h:panelGrid id="id_email_empresa" columns="2">
+                                            <h:outputLabel value="E-mail opcional:" />
+                                            <h:inputText value="#{agendamentoBean.emailEmpresa}">
+                                                <a4j:ajax event="blur" render="this" />
+                                            </h:inputText>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:outputText id="iContribuinte" value="#{agendamentoBean.strContribuinte}" styleClass="fontePadraoVermelho"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="ENDEREÇO: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iEmpEndereco" value="#{agendamentoBean.strEndereco}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>  
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="ESCRITÓRIO: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iEscritorio" value="#{agendamentoBean.juridica.contabilidade.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="TELEFONE: " styleClass="fontePadrao" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText id="iContTel" value="#{agendamentoBean.juridica.contabilidade.pessoa.telefone1} / #{agendamentoBean.juridica.contabilidade.pessoa.telefone2}" styleClass="fontePadraoNegrito" rendered="#{agendamentoBean.juridica.pessoa.id != -1}"/>
+                                </h:column>
+                                <h:column>
+                                    <h4 class="border-radius bg-white padding margin-top-maior">CONTATO</h4>
+                                </h:column>
+                                <h:column>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="Contato: " styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column>
+                                    <h:inputText id="iContato" value="#{agendamentoBean.agendamento.contato}" size="16" styleClass="fontePadraoNegrito" converter="#{toUpperCase}">
+                                        <f:ajax event="blur" render="@this"  />
+                                    </h:inputText>
+                                    <h:outputText value="E-mail: " styleClass="fontePadrao margin-left"/>
+                                    <h:inputText id="iEmail" value="#{agendamentoBean.agendamento.email}" size="40" >
+                                        <f:ajax event="blur" render="@this" />
+                                    </h:inputText>
+                                    <a4j:commandLink id="id_enviar_p_email" action="#{agendamentoBean.enviarEmailProtocolo()}" styleClass="fontePadrao" style="text-decoration: none;" title="Enviar protocolo por email" rendered="#{agendamentoBean.agendamento.id != -1}" status="i_status">
+                                        <img src="/Sindical/Imagens/convite.png" alt="Enviar protocolo por email" width="25" />
+                                    </a4j:commandLink>
+                                    <h:outputText value="Tel: " styleClass="fontePadrao margin-left" title="Telefone"/>
+                                    <h:inputText value="#{agendamentoBean.agendamento.telefone}" size="12" styleClass="telefone">
+                                        <f:ajax event="change" render="@this"  />
+                                    </h:inputText>
+                                </h:column>
+                                <h:column>
+                                    <h:outputText value="Observação: " styleClass="fontePadrao" />
+                                </h:column>
+                                <h:column>
+                                    <h:inputTextarea cols="70" rows="3" value="#{agendamentoBean.agendamento.observacao}" />
+                                </h:column>                                
+                            </h:panelGrid>
+                            <h:panelGrid columns="5" style="margin-top: 20px;" id="id_menu_acao">
+                                <a4j:commandLink styleClass="idPesquisar iLink" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.show(); return false;" value="#{agendamentoBean.strSalvar}" action="#{agendamentoBean.salvar}" disabled="#{controleAcessoBean.botaoSalvar}" render="id_form_agendamento i_painel_mensagem" status="i_status"/>
+                                <a4j:commandLink styleClass="idSalvar iLink"    value="Voltar" action="#{agendamentoBean.cancelar}" render="id_form_agendamento, id_form_agendamento_novo" status="i_status"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Extrato na Tela" action="#{agendamentoBean.extratoTela}" status="i_status"/>
+                                <a4j:commandLink styleClass="idPesquisar iLink" style="width: 150px;" value="Cancelar Horário" action="#{agendamentoBean.cancelarHorario}" rendered="#{agendamentoBean.renderCancelarHorario}" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                                <h:commandLink value="Imprimir Protocolo" id="i_imprime_protocolo_3" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao"/>
+                                <h:commandLink value="Imprirmir" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" styleClass="fontePadrao" />
+                            </h:panelGrid>
+                        </rich:panel>
+                    </rich:panel>
+                    <div class="clear"></div>
+                    <rich:panel id="id_form_agendamento_novo" style="height:600px; border: 0;">
+                        <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}">
+                            <h:panelGrid columns="5">
+                                <h:outputLabel value="Data: " styleClass="fontePadrao"/>
+                                <h:column>
+                                    <a4j:outputPanel id="calendar" layout="block">
+                                        <rich:calendar value="#{agendamentoBean.data}" datePattern="dd/MM/yyyy" style="width:400px">
+                                            <a4j:ajax event="change" render="tbl, idMensagemAgendamento" listener="#{agendamentoBean.mensagemAgendamento}" status="i_status"/>
+                                        </rich:calendar>
+                                    </a4j:outputPanel>
+                                </h:column>
+                                <h:outputLabel value="Status: " styleClass="fontePadrao"/>
+                                <h:selectOneMenu id="idStatus" value="#{agendamentoBean.idStatus}">
+                                    <a4j:ajax event="change" render="tbl" status="i_status"/>
+                                    <f:selectItems value="#{agendamentoBean.listaStatus}"/>
+                                </h:selectOneMenu>
+                                <h:outputLabel id="idMensagemAgendamento" value="#{agendamentoBean.msgAgendamento}" styleClass="corErro"/>
+                            </h:panelGrid>
+                        </h:panelGrid> 
+                        <div style="overflow:auto; height:600px;">
+                            <h:panelGrid rendered="#{agendamentoBean.renderAgendamento}" style="margin-top: 15px;">
+                                <a4j:poll id="poolMonitor" interval="5000" render="poolMonitor, tbl" />
+                                <rich:dataTable value="#{agendamentoBean.listaHorarios}" var="objeto" id="tbl" style="width: 95%; " onrowmouseover="this.style.backgroundColor='#F1F1F1'" onrowmouseout="this.style.backgroundColor='#{a4jSkin.tableBackgroundColor}'">
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
+                                            <h:outputText value="Horarios" rendered="false"/>
+                                            <h:graphicImage value="/Imagens/horario_pisca.gif" alt="Horário" title="Horário" width="20" />
+                                        </f:facet>
+                                        <a4j:commandLink action="#{agendamentoBean.agendar(objeto.agendamento)}" value="#{objeto.agendamento.horarios.hora}" render="id_form_agendamento_novo, id_form_agendamento" status="i_status"/>
+                                    </rich:column>
+                                    <rich:column styleClass="coluna" rendered="#{agendamentoBean.renderedDisponivel}">
+                                        <f:facet name="header">
+                                            <h:outputText value="Disponível"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.quantidade}" rendered="#{agendamentoBean.renderedDisponivel}"/>
+                                    </rich:column>
+                                    <rich:column style="width: 100px">
+                                        <f:facet name="header">
+                                            <h:outputText value="CNPJ"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Empresa"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Funcionário"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Homologador"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.homologador.pessoa.nome}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Contato"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.contato}"/>
+                                    </rich:column>
+                                    <rich:column  style="width: 80px">
+                                        <f:facet name="header">
+                                            <h:outputText value="Telefone"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.agendamento.telefone}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <f:facet name="header">
+                                            <h:outputText value="Usuario"/>
+                                        </f:facet>
+                                        <h:outputText value="#{objeto.usuarioAgendador}" />
+                                    </rich:column>
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
+                                            <h:graphicImage value="/Imagens/iconPrint.png" alt="Imprimir Protocolo" title="Imprimir Protocolo"/>
+                                        </f:facet>
+                                        <h:commandLink action="#{protocoloAgendamento.imprimir(objeto.agendamento)}" target="_blank" value="#{objeto.agendamento.id}" rendered="#{agendamentoBean.disabledProtocolo}" title="Imprimir Protocolo"/>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:panelGrid>
+                        </div>
+                    </rich:panel>
+                </center>
+                <rich:popupPanel id="i_painel_profissao" modal="true" resizeable="true" domElementAttachment="form" width="600" height="400" header="Profissão">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="7">
+                            <h:outputLabel value="Profissão: " styleClass="fontePadrao"/>
+                            <h:inputText id="idProf" size="20" value="#{agendamentoBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
+                            <a4j:commandButton value="Inicial" action="#{agendamentoBean.inicial}" render="i_tbl_prof" status="i_status" />
+                            <a4j:commandButton value="Parcial" action="#{agendamentoBean.parcial}" render="i_tbl_prof" status="i_status" />
+                            <h:outputText value="Por: " styleClass="fontePadrao"/>
+                            <h:selectOneMenu id="idPor" value="#{agendamentoBean.combo}" >
+                                <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
+                                <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
+                            </h:selectOneMenu>
+                            <a4j:commandButton value="Cadastrar" action="#{chamadaPaginaBean.profissao()}" immediate="true" />
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" styleClass="margin-top-maior">
+                            <rich:extendedDataTable var="linha" value="#{agendamentoBean.listaProfissao}" id="i_tbl_prof" frozenColumns="2" style="height:300px; width: 500px" selectionMode="none" columnClasses="text-center  overflow-visible" rowClasses="overflow-visible">
+                                <f:facet name="header">Lista de profissões</f:facet>
+                                <rich:column width="30">
+                                    <f:facet name="header">Id</f:facet>
+                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.id}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
+                                </rich:column>
+                                <rich:column styleClass="text-center">
+                                    <f:facet name="header">Cbo</f:facet>
+                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.cbo}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover" />
+                                </rich:column>
+                                <rich:column styleClass="textoEsquerda" width="350">
+                                    <f:facet name="header">Profissão</f:facet>
+                                    <a4j:commandLink action="#{agendamentoBean.editar(linha)}" value="#{linha.profissao}" render="idProf, idFuncao" oncomplete="#{rich:component('form_agendamento:i_painel_profissao')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                                </rich:column>
+                            </rich:extendedDataTable>
+                        </h:panelGrid>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_painel_endereco" modal="true" resizeable="true" width="600" height="400" domElementAttachment="form" header="Endereço">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:panelGrid columns="4">
+                            <h:outputLabel value="Cep: " styleClass="fontePadrao"/>
+                            <h:inputText size="10" id="id_numero_cep" maxlength="8" value="#{agendamentoBean.cepEndereco}" styleClass="fontePadrao" >
+                                <a4j:ajax event="blur" render="@this" listener="#{agendamentoBean.limparPesquisaEndereco}" />
+                            </h:inputText>
+                            <a4j:commandButton value="Pesquisar" action="#{agendamentoBean.pesquisaEndereco}" render="i_tbl_endereco" status="i_status" />
+                            <a4j:commandButton value="Cadastrar" action="#{chamadaPaginaBean.endereco()}" immediate="true" />
+                        </h:panelGrid>
+                        <rich:extendedDataTable value="#{agendamentoBean.listaEnderecos}" var="linha" id="i_tbl_endereco" frozenColumns="2" style="height:300px; width: 500px;" selectionMode="none" columnClasses="text-center  overflow-visible" rowClasses="overflow-visible" styleClass="margin-top-maior">
+                            <rich:column width="50">
+                                <f:facet name="header">ID</f:facet>
+                                <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.id}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                            </rich:column>
+                            <rich:column width="450">
+                                <f:facet name="header">Endereço</f:facet>
+                                <a4j:commandLink action="#{agendamentoBean.editarEndereco(linha)}" value="#{linha.logradouro.descricao} #{linha.descricaoEndereco.descricao}, #{linha.cidade.cidade} - #{linha.cidade.uf}" render="id_form_agendamento" oncomplete="#{rich:component('form_agendamento:i_painel_endereco')}.hide(); return false;" status="i_status" styleClass="underline-hover"/>
+                            </rich:column>
+                        </rich:extendedDataTable>
+                    </center>
+                </rich:popupPanel>
+                <rich:popupPanel id="i_painel_mensagem" modal="true" resizeable="true" width="400" height="200" header="Mensagem">
+                    <f:facet name="controls">
+                        <h:outputLink value="#" onclick="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;">
+                            <a4j:ajax event="click" render="id_form_agendamento" />
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>                            
+                        </h:outputLink>
+                    </f:facet>
+                    <center>
+                        <h:outputText value="#{agendamentoBean.msgConfirma}" styleClass="fontePadrao" rendered="#{!agendamentoBean.imprimirPro}" style="#{agendamentoBean.styleDestaque}" />
+                        <h:commandLink value="#{agendamentoBean.msgConfirma}" target="_blank" action="#{protocoloAgendamento.imprimir(agendamentoBean.agendamento)}" rendered="#{agendamentoBean.imprimirPro}" styleClass="fontePadrao" style="#{agendamentoBean.styleDestaque}" />
+                        <br /><br />
+                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_agendamento:i_painel_mensagem')}.hide(); return false;" render="id_form_agendamento" action="agendamento" immediate="true" />
+                        <br /><br />
+                    </center>
+                </rich:popupPanel>
+            </h:form>                   
+        </f:view>
+    </h:body>
+</ui:composition>

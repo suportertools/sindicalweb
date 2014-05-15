@@ -239,12 +239,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>atalhosBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.sistema.beans.AtalhosJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>pisoSalarialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.PisoSalarialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -1737,6 +1731,18 @@
         <navigation-case>
             <from-outcome>produtoSubGrupo</from-outcome>
             <to-view-id>/produtoSubGrupo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+
+        <navigation-case>
+            <from-outcome>ordemServico</from-outcome>
+            <to-view-id>/ordemServico.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+
+        <navigation-case>
+            <from-outcome>protocolo</from-outcome>
+            <to-view-id>/protocolo.jsf</to-view-id>
             <redirect/>
         </navigation-case>        
         
