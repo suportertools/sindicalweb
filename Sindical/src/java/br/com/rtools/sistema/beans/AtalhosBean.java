@@ -7,14 +7,19 @@ import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.sistema.Atalhos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.context.FacesContext;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class AtalhosJSFBean implements java.io.Serializable {
+@ManagedBean
+@SessionScoped
+public class AtalhosBean implements Serializable {
 
     private List<Atalhos> listaAtalhos = new ArrayList();
     private int idRotina = 0;
@@ -22,19 +27,19 @@ public class AtalhosJSFBean implements java.io.Serializable {
     private Atalhos atalhos = new Atalhos();
 
     public String adicionar() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         AtalhoDB db = new AtalhoDBToplink();
-        atalhos.setRotina( (Rotina) sv.pesquisaObjeto(Integer.parseInt(listaRotina.get(idRotina).getDescription()), "Rotina"));
+        atalhos.setRotina((Rotina) di.find(new Rotina(), Integer.parseInt(listaRotina.get(idRotina).getDescription())));
         if (atalhos.getSigla().isEmpty() || db.pesquisaPorSigla(atalhos.getSigla()) != null || db.pesquisaPorRotina(atalhos.getRotina().getId()) != null) {
             return null;
         }
-        atalhos.setPessoa(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa());
-        sv.abrirTransacao();
-        if (sv.inserirObjeto(atalhos)) {
-            sv.comitarTransacao();
+        atalhos.setPessoa(((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa());
+        di.openTransaction();
+        if (di.save(atalhos)) {
+            di.commit();
             listaAtalhos.clear();
         } else {
-            sv.desfazerTransacao();
+            di.rollback();
         }
         atalhos = new Atalhos();
         idRotina = 0;
@@ -42,23 +47,21 @@ public class AtalhosJSFBean implements java.io.Serializable {
     }
 
     public String excluir(int id) {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
-        sv.abrirTransacao();
-
-        if (sv.deletarObjeto((Atalhos) sv.pesquisaCodigo(id, "Atalhos"))) {
-            sv.comitarTransacao();
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (di.delete((Atalhos) di.find(new Atalhos(), id))) {
+            di.commit();
             listaAtalhos.clear();
         } else {
-            sv.desfazerTransacao();
+            di.rollback();
         }
         return "menuPrincipal";
     }
 
     public List<Atalhos> getListaAtalhos() {
-        if (listaAtalhos.isEmpty() && FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+        if (listaAtalhos.isEmpty() && GenericaSessao.exists("sessaoUsuario")) {
             AtalhoDB db = new AtalhoDBToplink();
-            listaAtalhos = db.listaTodos(((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")).getPessoa().getId());
+            listaAtalhos = db.listaTodos(((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getId());
             for (int i = 0; i < listaAtalhos.size(); i++) {
                 if (listaAtalhos.get(i).getRotina().getRotina().length() > 16) {
                     listaAtalhos.get(i).getRotina().setRotina(listaAtalhos.get(i).getRotina().getRotina().substring(0, 13) + "...");
