@@ -4,12 +4,13 @@ import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PRO_OS")
-public class OrdemServico implements java.io.Serializable {
+public class OrdemServico implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,20 +44,6 @@ public class OrdemServico implements java.io.Serializable {
     @Column(name = "DT_CONCLUSAO")
     private Date dataConclusao;
 
-    public OrdemServico(int id, Protocolo protocolo, Modulo modulo, Rotina rotina, Usuario responsavel, String historico, String historicoInterno, Prioridade prioridade, ProStatus proStatus, Date dataPrevisao, Date dataConclusao) {
-        this.id = id;
-        this.protocolo = protocolo;
-        this.modulo = modulo;
-        this.rotina = rotina;
-        this.responsavel = responsavel;
-        this.historico = historico;
-        this.historicoInterno = historicoInterno;
-        this.prioridade = prioridade;
-        this.proStatus = proStatus;
-        this.dataPrevisao = dataPrevisao;
-        this.dataConclusao = dataConclusao;
-    }
-
     public OrdemServico() {
         this.id = -1;
         this.protocolo = new Protocolo();
@@ -69,6 +56,20 @@ public class OrdemServico implements java.io.Serializable {
         this.proStatus = new ProStatus();
         this.dataPrevisao = null;
         this.dataConclusao = null;
+    }
+
+    public OrdemServico(int id, Protocolo protocolo, Modulo modulo, Rotina rotina, Usuario responsavel, String historico, String historicoInterno, Prioridade prioridade, ProStatus proStatus, Date dataPrevisao, Date dataConclusao) {
+        this.id = id;
+        this.protocolo = protocolo;
+        this.modulo = modulo;
+        this.rotina = rotina;
+        this.responsavel = responsavel;
+        this.historico = historico;
+        this.historicoInterno = historicoInterno;
+        this.prioridade = prioridade;
+        this.proStatus = proStatus;
+        this.dataPrevisao = dataPrevisao;
+        this.dataConclusao = dataConclusao;
     }
 
     public int getId() {
@@ -174,4 +175,10 @@ public class OrdemServico implements java.io.Serializable {
     public void setProStatus(ProStatus proStatus) {
         this.proStatus = proStatus;
     }
+
+    @Override
+    public String toString() {
+        return "OrdemServico{" + "id=" + id + ", protocolo=" + protocolo + ", modulo=" + modulo + ", rotina=" + rotina + ", responsavel=" + responsavel + ", historico=" + historico + ", historicoInterno=" + historicoInterno + ", prioridade=" + prioridade + ", proStatus=" + proStatus + ", dataPrevisao=" + dataPrevisao + ", dataConclusao=" + dataConclusao + '}';
+    }
+
 }

@@ -1,6 +1,7 @@
 package br.com.rtools.suporte;
 
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,7 +16,7 @@ import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "PRO_INTERRUPCAO")
-public class Interrupcao implements java.io.Serializable {
+public class Interrupcao implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,5 +94,10 @@ public class Interrupcao implements java.io.Serializable {
 
     public void setDataString(String date) {
         this.date = DataHoje.converte(date);
+    }
+
+    @Override
+    public String toString() {
+        return "Interrupcao{" + "id=" + id + ", ordemServico=" + ordemServico + ", date=" + date + ", horario=" + horario + ", motivo=" + motivo + '}';
     }
 }

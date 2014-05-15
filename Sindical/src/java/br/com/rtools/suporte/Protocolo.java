@@ -2,12 +2,13 @@ package br.com.rtools.suporte;
 
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
+import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PRO_PROTOCOLO")
-public class Protocolo implements java.io.Serializable {
+public class Protocolo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
