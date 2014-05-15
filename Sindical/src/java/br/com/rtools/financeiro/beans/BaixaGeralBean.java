@@ -5,6 +5,7 @@ import br.com.rtools.associativo.beans.EmissaoGuiasBean;
 import br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
+import br.com.rtools.financeiro.Baixa;
 import br.com.rtools.financeiro.Boleto;
 import br.com.rtools.financeiro.Cartao;
 import br.com.rtools.financeiro.ChequePag;
@@ -52,6 +53,8 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -152,6 +155,40 @@ public class BaixaGeralBean {
 
     public void refreshForm() {
     }
+    
+    public void salvarRecibo(byte[] arquivo, Baixa baixa){
+        //SalvaArquivos sa = new SalvaArquivos(arquivo, String.valueOf(baixa.getId()), false);
+        if (baixa.getCaixa() == null)
+            return;
+        
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/recibo/");
+        
+        String path_caixa = caminho + "/" +baixa.getCaixa().getCaixa();
+        File file_caixa = new File(path_caixa);
+        file_caixa.mkdir();
+        
+        String path_data = path_caixa + "/" + DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-");
+        File file_data = new File(path_data);
+        file_data.mkdir();
+        
+        String path_arquivo = path_data + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + ".pdf";
+        File file_arquivo = new File(path_arquivo);
+        
+        if (file_arquivo.exists()){
+            path_arquivo = path_data + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + "_(2).pdf";
+        }
+        
+        try {
+            File fl = new File(path_arquivo);
+            FileOutputStream out = new FileOutputStream(fl);
+            out.write(arquivo);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        
+    }
 
     public String imprimirRecibo() {
 
@@ -230,6 +267,8 @@ public class BaixaGeralBean {
 
                 byte[] arquivo = JasperExportManager.exportReportToPdf(print);
 
+                salvarRecibo(arquivo, listaMovimentos.get(0).getBaixa());
+                
                 HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
                 res.setContentType("application/pdf");
                 res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");

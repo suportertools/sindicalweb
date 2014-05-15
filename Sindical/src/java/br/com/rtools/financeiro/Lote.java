@@ -66,9 +66,6 @@ public class Lote implements java.io.Serializable {
     private PessoaSemCadastro pessoaSemCadastro;
     @Column(name = "IS_DESCONTO_FOLHA", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean descontoFolha;
-    @JoinColumn(name = "ID_MATRICULA_SOCIOS", referencedColumnName = "ID", nullable = true)
-    @ManyToOne(fetch = FetchType.EAGER)
-    private MatriculaSocios matriculaSocios;
     @Column(name = "NR_DESCONTO", length = 10)
     private float desconto;
     
@@ -92,11 +89,10 @@ public class Lote implements java.io.Serializable {
         this.status = new FStatus();
         this.pessoaSemCadastro = new PessoaSemCadastro();
         this.descontoFolha = false;
-        this.matriculaSocios = null;
         this.desconto = 0;
     }
 
-    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha, MatriculaSocios matriculaSocios, float desconto) {
+    public Lote(int id, Rotina rotina, String pagRec, String dtLancamento, Pessoa pessoa, Plano5 plano5, boolean avencerContabil, String documento, float valor, Filial filial, Departamento departamento, Evt evt, String historico, FTipoDocumento ftipoDocumento, CondicaoPagamento condicaoPagamento, FStatus status, PessoaSemCadastro pessoaSemCadastro, boolean descontoFolha, float desconto) {
         this.id = id;
         this.rotina = rotina;
         this.pagRec = pagRec;
@@ -116,7 +112,6 @@ public class Lote implements java.io.Serializable {
         this.status = status;
         this.pessoaSemCadastro = pessoaSemCadastro;
         this.descontoFolha = descontoFolha;
-        this.matriculaSocios = matriculaSocios;
         this.desconto = desconto;
     }
 
@@ -286,14 +281,6 @@ public class Lote implements java.io.Serializable {
 
     public void setDescontoFolha(boolean descontoFolha) {
         this.descontoFolha = descontoFolha;
-    }
-
-    public MatriculaSocios getMatriculaSocios() {
-        return matriculaSocios;
-    }
-
-    public void setMatriculaSocios(MatriculaSocios matriculaSocios) {
-        this.matriculaSocios = matriculaSocios;
     }
 
     public float getDesconto() {

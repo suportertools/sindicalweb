@@ -91,17 +91,17 @@
 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" update="i_msg" />
+                                    <p:commandButton value="Baixar" title="Baixar este movimento" action="#{movimentosSocialBean.telaBaixa()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" update="formMovimentosReceber" />
                                 </p:column>
                                 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" update="i_msg"/>
+                                    <p:commandButton value="Acordo" title="Fazer um acordo" action="#{movimentosSocialBean.telaAcordo()}" rendered="#{movimentosSocialBean.porPesquisa != 'quitados'}" update="formMovimentosReceber"/>
                                 </p:column>
                                 
                                 <p:column>
                                     <br />
-                                    <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" rendered="#{movimentosSocialBean.porPesquisa != 'abertos'}" update="i_msg"/>
+                                    <p:commandButton value="Estornar" title="Estornar Movimentos Baixados" onclick="PF('i_dlg_estorno').show()" rendered="#{movimentosSocialBean.porPesquisa != 'abertos'}"/>
                                 </p:column>
                             </h:panelGrid>
                             
@@ -172,6 +172,11 @@
                                 </p:column>
                             </p:dataTable>      
                             
+                            <p:dialog widgetVar="i_dlg_estorno" header="Deseja estornar este Movimento" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{movimentosSocialBean.estornarBaixa()}" update="formMovimentosReceber" onclick="i_dlg_estorno.hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_estorno.hide()" style="float: left" icon="ui-icon-close"/>       
+                            </p:dialog>
+                            
                             <p:dialog widgetVar="i_dlg_dados" header="Ver Mais" resizable="false" modal="true">
                                 <h:panelGrid id="i_dados">
                                     <h:panelGrid columns="4" style="width: 100%">
@@ -235,12 +240,12 @@
                                         <h:outputLabel value="-- Dados do Sócio --" style="font-size: 11pt!important" />
                                         <br />
                                         <h:panelGrid>
-                                            <h:outputLabel value="Titular" /><br />
+                                            <h:outputLabel value="Titular" />
                                             <h:outputLabel value="#{movimentosSocialBean.titular}" style="font-weight: bold"/>
                                         </h:panelGrid>
 
                                         <h:panelGrid>
-                                            <h:outputLabel value="Matrícula" /><br />
+                                            <h:outputLabel value="Matrícula" />
                                             <h:outputLabel value="#{movimentosSocialBean.matricula}" style="font-weight: bold"/>
                                         </h:panelGrid>
 

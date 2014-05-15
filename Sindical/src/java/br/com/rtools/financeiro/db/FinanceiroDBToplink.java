@@ -718,4 +718,27 @@ public class FinanceiroDBToplink extends DB implements FinanceiroDB {
             return new ArrayList<Vector>();
         }
     }    
+    
+    @Override
+    public List<Vector> listaServicosSemCobranca() {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT " +
+                    "  se.id AS id_servico, " +
+                    "  se.ds_descricao AS servico, " +
+                    "  t.id AS id_tipo, " +
+                    "  t.ds_descricao AS tipo " +
+                    "  FROM fin_servicos AS se " +
+                    " INNER JOIN fin_tipo_servico AS t ON t.id > 0 " +
+                    " WHERE 's'||se.id||'t'||t.id NOT IN (SELECT 's'||id_servicos||'t'||id_tipo_servico FROM fin_servico_conta_cobranca) " +
+                    "   AND se.id NOT IN (SELECT id_servicos FROM fin_servico_rotina WHERE id_rotina = 4) " +
+                    "   AND se.id NOT IN (6,7,8,10,11) " +
+                    " ORDER BY se.id, se.ds_descricao, t.id, t.ds_descricao "
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList<Vector>();
+        }
+    }    
+    
 }

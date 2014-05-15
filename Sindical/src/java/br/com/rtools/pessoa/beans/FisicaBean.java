@@ -45,27 +45,27 @@ import org.primefaces.event.TabChangeEvent;
 public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     private Fisica fisica = new Fisica();
-    private PessoaEndereco pessoaEndereco = new PessoaEndereco();
+    
     private PessoaProfissao pessoaProfissao = new PessoaProfissao();
     private PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
-    private Endereco endereco = new Endereco();
+    
     private Usuario usuario = new Usuario();
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private Socios socios = new Socios();
-    private String renEndereco = "false";
+    //private String renEndereco = "false";
     private String indicaTab = "pessoal";
     private String enderecoCompleto = "";
     private String descPesquisa = "";
     private String porPesquisa = "nome";
     private String comoPesquisa = "";
     private String mensagem = "";
-    private String log = "";
-    private String desc = "";
-    private String cid = "";
-    private String uf = "";
+    //private String log = "";
+    //private String desc = "";
+    //private String cid = "";
+    //private String uf = "";
     private String masc = "";
     private String maxl = "";
-    private String renNovoEndereco = "false";
+    //private String renNovoEndereco = "false";
     private String enderecoCobranca = "";
     private String renAbreEnd = "true";
     private String msgSocio = "";
@@ -80,7 +80,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean fotoTemp = false;
     private boolean renderJuridicaPesquisa = false;
     private boolean temFoto = false;
-    private List listaEnd = new ArrayList();
+    //private List listaEnd = new ArrayList();
     public List itens = new ArrayList();
     private List<DataObject> listaPessoa = new ArrayList();
     private List<Fisica> listaPessoaFisica = new ArrayList<Fisica>();
@@ -102,95 +102,96 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean readyOnlineNaturalidade = true;
     private boolean disabledNaturalidade = false;
     private String[] imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
-
+    private List<Socios> listaSocioInativo = new ArrayList<Socios>();
+    
+    private Endereco enderecox = new Endereco();
+    private List<PessoaEndereco> listaPessoaEndereco = new ArrayList<PessoaEndereco>();
+    private String numero = "";
+    private String complemento = "";
+    private PessoaEndereco pessoaEndereco = new PessoaEndereco();
+    private boolean visibleEditarEndereco = false;
+    private int index_endereco = 0;
+    
     public void novo() {
-        fisica = new Fisica();
-        pessoaEndereco = new PessoaEndereco();
-        pessoaProfissao = new PessoaProfissao();
-        pessoaEmpresa = new PessoaEmpresa();
-        endereco = new Endereco();
-        pessoaComplemento = new PessoaComplemento();
-        socios = new Socios();
-        renEndereco = "false";
-        indicaTab = "pessoal";
-        enderecoCompleto = "";
-        descPesquisa = "";
-        porPesquisa = "nome";
-        comoPesquisa = "";
-        mensagem = "";
-        log = "";
-        desc = "";
-        cid = "";
-        uf = "";
-        masc = "";
-        maxl = "";
-        renNovoEndereco = "false";
-        enderecoCobranca = "";
-        renAbreEnd = "true";
-        msgSocio = "";
-        lblSocio = "";
-        pesquisaPor = "";
-        tipoSocio = "";
-        alterarEnd = false;
-        endResidencial = false;
-        fotoTemp = false;
-        renderJuridicaPesquisa = false;
-        temFoto = false;
-        readyOnlineNaturalidade = true;
-        disabledNaturalidade = false;
-        listaEnd.clear();
-        itens.clear();
-        listaPessoa.clear();
-        listaProfissoes.clear();
-        listaPessoaEmpresa.clear();
-        idPais = 11;
-        // idProfissao = 386; ANTES ESTAVA FUNCIONANDO
-        idProfissao = 0;
-        idIndexEndereco = 0;
-        idIndexFisica = 0;
-        idIndexPessoaEmp = 0;
-        limpaFoto();
-        GenericaSessao.remove("enderecoPesquisa");
-        GenericaSessao.remove("enderecoNum");
-        GenericaSessao.remove("enderecoComp");
-        GenericaSessao.remove("juridicaPesquisa");
-        GenericaSessao.remove("fisicaPesquisa");
-        GenericaSessao.remove("FisicaBean");
-        GenericaSessao.remove("pessoaComplementoBean");
-        this.profissao = new Profissao();
-        // EDITADO POR BRUNO
-        indexPessoaFisica = 0;
-        indexNovoEndereco = "";
-        fotoPerfil = "";
-        fotoArquivo = "";
-        fotoTempPerfil = "";
-        fotoTempArquivo = "";
+//        fisica = new Fisica();
+//        pessoaEndereco = new PessoaEndereco();
+//        pessoaProfissao = new PessoaProfissao();
+//        pessoaEmpresa = new PessoaEmpresa();
+//        
+//        pessoaComplemento = new PessoaComplemento();
+//        socios = new Socios();
+//        renEndereco = "false";
+//        indicaTab = "pessoal";
+//        enderecoCompleto = "";
+//        descPesquisa = "";
+//        porPesquisa = "nome";
+//        comoPesquisa = "";
+//        mensagem = "";
+//        log = "";
+//        desc = "";
+//        cid = "";
+//        uf = "";
+//        masc = "";
+//        maxl = "";
+//        renNovoEndereco = "false";
+//        enderecoCobranca = "";
+//        renAbreEnd = "true";
+//        msgSocio = "";
+//        lblSocio = "";
+//        pesquisaPor = "";
+//        tipoSocio = "";
+//        alterarEnd = false;
+//        endResidencial = false;
+//        fotoTemp = false;
+//        renderJuridicaPesquisa = false;
+//        temFoto = false;
+//        readyOnlineNaturalidade = true;
+//        disabledNaturalidade = false;
+//        listaEnd.clear();
+//        itens.clear();
+//        listaPessoa.clear();
+//        listaProfissoes.clear();
+//        listaPessoaEmpresa.clear();
+//        idPais = 11;
+//        // idProfissao = 386; ANTES ESTAVA FUNCIONANDO
+//        idProfissao = 0;
+//        idIndexEndereco = 0;
+//        idIndexFisica = 0;
+//        idIndexPessoaEmp = 0;
+//        limpaFoto();
+//        GenericaSessao.remove("enderecoPesquisa");
+//        GenericaSessao.remove("enderecoNum");
+//        GenericaSessao.remove("enderecoComp");
+//        GenericaSessao.remove("juridicaPesquisa");
+//        GenericaSessao.remove("fisicaPesquisa");
+//        GenericaSessao.remove("FisicaBean");
+//        GenericaSessao.remove("pessoaComplementoBean");
+//        this.profissao = new Profissao();
+//        // EDITADO POR BRUNO
+//        indexPessoaFisica = 0;
+//        indexNovoEndereco = "";
+//        fotoPerfil = "";
+//        fotoArquivo = "";
+//        fotoTempPerfil = "";
+//        fotoTempArquivo = "";
+        GenericaSessao.put("fisicaBean", new FisicaBean());
     }
 
-    public String getEnderecoCobranca() {
-        PessoaEndereco ende = null;
-        String strCompl;
-        if (!listaEnd.isEmpty()) {
-            ende = (PessoaEndereco) listaEnd.get(0);
-        }
-
-        if (ende != null) {
-            if (ende.getComplemento().equals("")) {
-                strCompl = " ";
-            } else {
-                strCompl = " ( " + ende.getComplemento() + " ) ";
-            }
-            enderecoCobranca = ende.getEndereco().getLogradouro().getDescricao() + " "
-                    + ende.getEndereco().getDescricaoEndereco().getDescricao() + ", " + ende.getNumero() + " " + ende.getEndereco().getBairro().getDescricao() + ","
-                    + strCompl + ende.getEndereco().getCidade().getCidade() + " - " + ende.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(ende.getEndereco().getCep());
-        } else {
-            if (alterarEnd) {
-                getListaEnderecos();
-            } else {
-                enderecoCobranca = "NENHUM";
-            }
-        }
-        return enderecoCobranca;
+   public String getEnderecoCobranca() {
+       for (PessoaEndereco pe : listaPessoaEndereco){
+           String strCompl = "";
+           if (pe.getTipoEndereco().getId() == 3){
+               if (pe.getComplemento().isEmpty()){
+                   strCompl = " ";
+               }else
+                   strCompl = " ( " + pe.getComplemento() + " ) ";
+               
+               return enderecoCobranca = pe.getEndereco().getLogradouro().getDescricao() + " " +
+                                         pe.getEndereco().getDescricaoEndereco().getDescricao() + ", " + pe.getNumero() + " " + pe.getEndereco().getBairro().getDescricao() + "," +
+                                         strCompl + pe.getEndereco().getCidade().getCidade() + " - " + pe.getEndereco().getCidade().getUf() + " - " + AnaliseString.mascaraCep(pe.getEndereco().getCep());
+           }
+       }
+       return enderecoCobranca;
     }
 
     public void salvar() {
@@ -198,14 +199,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         FisicaDB db = new FisicaDBToplink();
         Pessoa pessoa = fisica.getPessoa();
         List listDocumento;
-        if (listaEnd.isEmpty() || pessoa.getId() == -1) {
+        if ((listaPessoaEndereco.isEmpty() || pessoa.getId() == -1) && enderecox.getId() != -1) {
             adicionarEnderecos();
         }
+        
         if (temFoto) {
             fisica.setDataFoto(DataHoje.data());
         } else {
             fisica.setDtFoto(null);
         }
+        
         boolean sucesso = false;
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         salvarAcumuladoDB.abrirTransacao();
@@ -395,76 +398,34 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public void salvarEndereco() {
-        List endPorPessoa = getPesquisaEndPorPessoa();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        //List endPorPessoa = getPesquisaEndPorPessoa();
         if (fisica.getId() != -1) {
-            if (endPorPessoa.isEmpty()) {
-                PessoaEnderecoDB pedb = new PessoaEnderecoDBToplink();
-                for (Object listaEnd1 : listaEnd) {
-                    pessoaEndereco = (PessoaEndereco) listaEnd1;
-                    PessoaEndereco pe = pedb.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), pessoaEndereco.getTipoEndereco().getId());
-                    if (pe == null) {
-                        salvarAcumuladoDB.abrirTransacao();
-                        if (salvarAcumuladoDB.inserirObjeto(pessoaEndereco)) {
-                            salvarAcumuladoDB.comitarTransacao();
-                        } else {
-                            salvarAcumuladoDB.desfazerTransacao();
-                            mensagem = "Erro ao Salvar Endereço!";
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            if (!listaPessoaEndereco.isEmpty()){
+                sv.abrirTransacao();
+                for (PessoaEndereco pe : listaPessoaEndereco) {
+                    if (pe.getId() == -1){
+                        if (!sv.inserirObjeto(pe)) { 
+                            GenericaMensagem.warn("Erro", "Não foi possivel SALVAR endereço!");
+                            sv.desfazerTransacao();
+                            return;
                         }
-                        pessoaEndereco = new PessoaEndereco();
+                    }else{
+                        if (!sv.alterarObjeto(pe)) { 
+                            GenericaMensagem.warn("Erro", "Não foi possivel ALTERAR endereço!");
+                            sv.desfazerTransacao();
+                            return;
+                        }
+
                     }
                 }
-            } else {
-                if (endResidencial) {
-                    for (Object listaEnd1 : listaEnd) {
-                        salvarAcumuladoDB.abrirTransacao();
-                        if (salvarAcumuladoDB.alterarObjeto((PessoaEndereco) listaEnd1)) {
-                            salvarAcumuladoDB.comitarTransacao();
-                        } else {
-                            salvarAcumuladoDB.desfazerTransacao();
-                        }
-                    }
-                    endResidencial = false;
-                } else {
-                    if (pessoaEndereco.getId() != -1) {
-                        salvarAcumuladoDB.abrirTransacao();
-                        if (salvarAcumuladoDB.alterarObjeto(pessoaEndereco)) {
-                            salvarAcumuladoDB.comitarTransacao();
-                        } else {
-                            salvarAcumuladoDB.desfazerTransacao();
-                        }
-                    }
-                }
+                
+                sv.comitarTransacao();
             }
-            pessoaEndereco = new PessoaEndereco();
+  
         }
     }
-
-    public String abreEndereco() {
-        listaEnd = getListaEnderecos();
-        if (listaEnd.isEmpty()) {
-            if (renEndereco.equals("false")) {
-                renEndereco = "false";
-                renNovoEndereco = "true";
-                pessoaEndereco = new PessoaEndereco();
-                listaEnd = new ArrayList();
-            } else {
-                renEndereco = "false";
-                renNovoEndereco = "false";
-            }
-        } else {
-            if (renEndereco.equals("true")) {
-                renEndereco = "false";
-                renNovoEndereco = "false";
-            } else {
-                renEndereco = "true";
-                renNovoEndereco = "false";
-            }
-
-        }
-        return "pessoaFisica";
-    }
-
+    
     public void excluir() {
         if (socios.getId() != -1) {
             mensagem = "Esse cadastro esta associado, desvincule para excluir!";
@@ -550,11 +511,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         porPesquisa = "nome";
         comoPesquisa = "";
         alterarEnd = true;
-        renNovoEndereco = "false";
-        renEndereco = "false";
-        listaEnd = new ArrayList();
         listaPessoa = new ArrayList();
-        enderecoCobranca = "NENHUM";
         msgSocio = "";
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
@@ -576,10 +533,12 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 }
             }
         }
-        getListaEnderecos();
+        
         editarFisicaSocio(fisica);
         showImagemFisica();
         GenericaSessao.put("linkClicado", true);
+        
+        
         return url;
     }
 
@@ -614,9 +573,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 String x = editarFisicaParametro((Fisica) lista.get(0));
                 pessoaUpper();
                 RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
-                if (!listaEnd.isEmpty()) {
-                    indexNovoEndereco = "0";
-                }
                 showImagemFisica();
             }
         }
@@ -631,10 +587,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         porPesquisa = "nome";
         comoPesquisa = "";
         alterarEnd = true;
-        renNovoEndereco = "false";
-        renEndereco = "false";
-        listaEnd = new ArrayList();
-        enderecoCobranca = "NENHUM";
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
             profissao = pessoaEmpresa.getFuncao();
@@ -645,7 +597,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
-        getListaEnderecos();
+        
         editarFisicaSocio(fisica);
         GenericaSessao.put("linkClicado", true);
         return url;
@@ -654,6 +606,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void editarFisicaSocio(Fisica fis) {
         SociosDB db = new SociosDBToplink();
         socios = db.pesquisaSocioPorPessoa(fisica.getPessoa().getId());
+        listaSocioInativo.clear();
     }
 
     public List getListaFisica() {
@@ -662,128 +615,78 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         return result;
     }
 
-    public List<PessoaEndereco> getListaEnderecos() {
-        String strCompl;
-        if (!getPesquisaEndPorPessoa().isEmpty() && alterarEnd && listaEnd.isEmpty()) {
-            listaEnd = getPesquisaEndPorPessoa();
-            PessoaEndereco pe = (PessoaEndereco) (listaEnd.get(0));
-            if (pe.getComplemento().equals("")) {
-                strCompl = " ";
-            } else {
-                strCompl = " ( " + pe.getComplemento() + " ) ";
-            }
-            enderecoCobranca = pe.getEndereco().getLogradouro().getDescricao() + " "
-                    + pe.getEndereco().getDescricaoEndereco().getDescricao() + ", " + pe.getNumero() + " - " + pe.getEndereco().getBairro().getDescricao() + ","
-                    + strCompl + pe.getEndereco().getCidade().getCidade() + " - " + pe.getEndereco().getCidade().getUf() + " / " + AnaliseString.mascaraCep(pe.getEndereco().getCep());
-        }
-        return listaEnd;
-    }
-
     /**
      * TIPO ENDERECO PESSOA FÍSICA {1,3,4}
      */
+    
+    public void alterarEndereco(){
+        visibleEditarEndereco = false;
+        enderecox = new Endereco();
+        for(PessoaEndereco pe : listaPessoaEndereco){
+            
+        }
+    }
+    
     public void adicionarEnderecos() {
-        endereco = new Endereco();
-        String num;
-        String comp;
-        GenericaSessao.put("enderecoNum", pessoaEndereco.getNumero());
-        GenericaSessao.put("enderecoComp", pessoaEndereco.getComplemento());
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         List<TipoEndereco> tipoEnderecos = (List<TipoEndereco>) dB.pesquisaObjeto(new int[]{1, 3, 4}, "TipoEndereco");
-        endereco = (Endereco) GenericaSessao.getObject("enderecoPesquisa");
-        if (endereco != null) {
-            if (!alterarEnd) {
-                num = (String) GenericaSessao.getString("enderecoNum");
-                comp = (String) GenericaSessao.getString("enderecoComp");
-                for (TipoEndereco te : tipoEnderecos) {
-                    pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setTipoEndereco((TipoEndereco) te);
-                    pessoaEndereco.setPessoa(fisica.getPessoa());
-                    pessoaEndereco.setNumero(num);
-                    pessoaEndereco.setComplemento(comp);
-                    listaEnd.add(pessoaEndereco);
-                    pessoaEndereco = new PessoaEndereco();
-                }
-            } else {
-                num = (String) GenericaSessao.getString("enderecoNum");
-                comp = (String) GenericaSessao.getString("enderecoComp");
-                if (listaEnd.isEmpty()) {
-                    for (TipoEndereco te : tipoEnderecos) {
-                        pessoaEndereco.setEndereco(endereco);
-                        pessoaEndereco.setTipoEndereco((TipoEndereco) te);
-                        pessoaEndereco.setPessoa(fisica.getPessoa());
-                        pessoaEndereco.setNumero(num);
-                        pessoaEndereco.setComplemento(comp);
-                        listaEnd.add(pessoaEndereco);
-                        pessoaEndereco = new PessoaEndereco();
-                    }
-                } else if (!listaEnd.isEmpty() && pessoaEndereco.getTipoEndereco().getId() == 1) {
-                    if (pessoaEndereco.getId() != -1) {
-                        PessoaEnderecoDB pedb = new PessoaEnderecoDBToplink();
-                        PessoaEndereco pessoaEndeAnt = pedb.pesquisaEndPorPessoaTipo(pessoaEndereco.getPessoa().getId(), 1);
-                        ((PessoaEndereco) listaEnd.get(0)).setTipoEndereco((TipoEndereco) tipoEnderecos.get(0));
-                        ((PessoaEndereco) listaEnd.get(0)).setEndereco(endereco);
-                        ((PessoaEndereco) listaEnd.get(0)).setComplemento(pessoaEndereco.getComplemento());
-                        ((PessoaEndereco) listaEnd.get(0)).setNumero(pessoaEndereco.getNumero());
-                        for (int u = 1; u < listaEnd.size(); u++) {
-                            if (comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))) {
-                                ((PessoaEndereco) listaEnd.get(u)).setTipoEndereco((TipoEndereco) tipoEnderecos.get(u));
-                                ((PessoaEndereco) listaEnd.get(u)).setEndereco(endereco);
-                                ((PessoaEndereco) listaEnd.get(u)).setComplemento(pessoaEndereco.getComplemento());
-                                ((PessoaEndereco) listaEnd.get(u)).setNumero(pessoaEndereco.getNumero());
-                            }
-                        }
-                        endResidencial = true;
-                    } else {
-                        listaEnd = new ArrayList();
-                        for (TipoEndereco te : tipoEnderecos) {
-                            pessoaEndereco.setEndereco(endereco);
-                            pessoaEndereco.setTipoEndereco((TipoEndereco) te);
-                            pessoaEndereco.setPessoa(fisica.getPessoa());
-                            pessoaEndereco.setNumero(num);
-                            pessoaEndereco.setComplemento(comp);
-                            listaEnd.add(pessoaEndereco);
-                            pessoaEndereco = new PessoaEndereco();
-                        }
-                    }
-                } else {
-                    pessoaEndereco.setEndereco(endereco);
-                    pessoaEndereco.setPessoa(fisica.getPessoa());
-                    pessoaEndereco.setNumero(num);
-                    pessoaEndereco.setComplemento(comp);
-                    ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setEndereco(endereco);
-                    ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setComplemento(pessoaEndereco.getComplemento());
-                    ((PessoaEndereco) listaEnd.get(idIndexEndereco)).setNumero(pessoaEndereco.getNumero());
-                }
-                alterarEnd = false;
+        if (enderecox.getId() != -1){
+
+            listaPessoaEndereco.clear();
+            for (TipoEndereco tipoEndereco : tipoEnderecos){
+                listaPessoaEndereco.add(new PessoaEndereco(
+                        -1,
+                        enderecox,
+                        tipoEndereco,
+                        fisica.getPessoa(),
+                        numero,
+                        complemento
+                ));
             }
-            renEndereco = "false";
-            renNovoEndereco = "false";
         }
-        setEnderecoCompleto("");
-        GenericaSessao.remove("enderecoPesquisa");
-        GenericaSessao.remove("enderecoNum");
-        GenericaSessao.remove("enderecoComp");
+        
+        enderecox = new Endereco();
+        if (1 == 1) return;
+        // COMPARA ENDERECOS
+        // comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))
+        Endereco endereco = new Endereco();
+        
+        //GenericaSessao.put("enderecoNum", pessoaEndereco.getNumero());
+        //GenericaSessao.put("enderecoComp", pessoaEndereco.getComplemento());
     }
 
-    public void editarPessoaEndereco(int index) {
-        pessoaEndereco = (PessoaEndereco) listaEnd.get(index);
-        GenericaSessao.put("enderecoPesquisa", pessoaEndereco.getEndereco());
-        log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
-        desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
-        cid = pessoaEndereco.getEndereco().getCidade().getCidade();
-        uf = pessoaEndereco.getEndereco().getCidade().getUf();
-        setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
-        renEndereco = "false";
-        setRenNovoEndereco("true");
-        alterarEnd = true;
+    public void editarPessoaEndereco(PessoaEndereco pessoaEnderecox, int index) {
+        pessoaEndereco = pessoaEnderecox;
+        visibleEditarEndereco = true;
+        
+        //GenericaSessao.put("enderecoPesquisa", pessoaEndereco.getEndereco());
+        //log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
+        //desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
+        //cid = pessoaEndereco.getEndereco().getCidade().getCidade();
+        //uf = pessoaEndereco.getEndereco().getCidade().getUf();
+//        setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
+//        renEndereco = "false";
+//        setRenNovoEndereco("true");
+//        alterarEnd = true;
     }
-
-    public List getListaPessoaEndereco() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        List list = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
-        return list;
-    }
+//    public void editarPessoaEndereco(int index) {
+//        pessoaEndereco = (PessoaEndereco) listaEnd.get(index);
+//        GenericaSessao.put("enderecoPesquisa", pessoaEndereco.getEndereco());
+//        log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
+//        desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
+//        cid = pessoaEndereco.getEndereco().getCidade().getCidade();
+//        uf = pessoaEndereco.getEndereco().getCidade().getUf();
+//        setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
+//        renEndereco = "false";
+//        setRenNovoEndereco("true");
+//        alterarEnd = true;
+//    }
+//
+//    public List getListaPessoaEndereco() {
+//        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+//        List list = salvarAcumuladoDB.listaObjeto("PessoaEndereco");
+//        return list;
+//    }
 
     public String CarregarEndereco() {
         EnderecoDB db_endereco = new EnderecoDBToplink();
@@ -921,17 +824,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setListaPessoa(List<DataObject> listaPessoa) {
         this.listaPessoa = listaPessoa;
-    }
-
-    public String getRetornarEnderecoAmbos() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("enderecoPesquisa") != null) {
-            log = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getLogradouro().getDescricao();
-            desc = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getDescricaoEndereco().getDescricao();
-            cid = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getCidade().getCidade();
-            uf = ((Endereco) GenericaSessao.getObject("enderecoPesquisa")).getCidade().getUf();
-            setEnderecoCompleto(log + " " + desc + ", " + cid + " - " + uf);
-        }
-        return enderecoCompleto;
     }
 
     public String getColocarMascaraPesquisa() {
@@ -1270,8 +1162,19 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             msgSocio = "";
             GenericaSessao.put("fisicaPesquisa", fisica);
             GenericaSessao.put("pessoaEmpresaPesquisa", pessoaEmpresa);
+            if (socios.getMatriculaSocios().getMotivoInativacao() == null)
+                GenericaSessao.put("reativarSocio", true);
+            else
+                GenericaSessao.put("reativarSocio", false);
 
         }
+        return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
+    }
+    
+    public String associarFisica(Pessoa _pessoa) {
+        GenericaSessao.put("fisicaPesquisa", (new FisicaDBToplink()).pesquisaFisicaPorPessoa(_pessoa.getId()));
+        GenericaSessao.put("pessoaEmpresaPesquisa", (new PessoaEmpresaDBToplink()).pesquisaPessoaEmpresaPorPessoa(_pessoa.getId()));
+        GenericaSessao.put("reativarSocio", true);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).socios();
     }
 
@@ -1286,14 +1189,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setItens(List itens) {
         this.itens = itens;
-    }
-
-    public String getRenEndereco() {
-        return renEndereco;
-    }
-
-    public void setRenEndereco(String renEndereco) {
-        this.renEndereco = renEndereco;
     }
 
     public void setComoPesquisa(String comoPesquisa) {
@@ -1371,14 +1266,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setMensagem(String mensagem) {
         this.mensagem = mensagem;
-    }
-
-    public String getRenNovoEndereco() {
-        return renNovoEndereco;
-    }
-
-    public void setRenNovoEndereco(String renNovoEndereco) {
-        this.renNovoEndereco = renNovoEndereco;
     }
 
     public String getRenAbreEnd() {
@@ -1492,9 +1379,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public String getLblSocio() {
         if (socios.getId() == -1) {
             lblSocio = "ASSOCIAR";
-        } else {
-            lblSocio = "CADASTRO";
-        }
+        } else if (socios.getId() != -1 && socios.getMatriculaSocios().getDtInativo() != null){
+            lblSocio = "ASSOCIAR";
+        }else
+            lblSocio = "VER CADASTRO";
         return lblSocio;
     }
 
@@ -1520,16 +1408,15 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public String getTipoSocio() {
         if (socios.getId() != -1) {
-            SociosDB db = new SociosDBToplink();
-            Socios soc = db.pesquisaSocioDoDependente(socios.getServicoPessoa().getPessoa());
-            if (soc == null) {
+            //SociosDB db = new SociosDBToplink();
+            //Socios soc = db.pesquisaSocioDoDependente(socios.getServicoPessoa().getPessoa());
+            if (socios.getMatriculaSocios().getTitular().getId() == fisica.getPessoa().getId()) {
                 tipoSocio = "Titular";
             } else {
                 tipoSocio = "Dependente";
             }
-        } else {
+        }else
             tipoSocio = "";
-        }
         return tipoSocio;
     }
 
@@ -1626,12 +1513,11 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 pessoaEmpresaString = pe.getJuridica().getPessoa().getNome();
             }
         }
-        return pessoaEmpresaString;
+        return (pessoaEmpresaString.isEmpty()) ? "SEM EMPRESA" : pessoaEmpresaString;
     }
 
     public void novoEndereco(TabChangeEvent event) {
         indexNovoEndereco = ((AccordionPanel) event.getComponent()).getActiveIndex();
-        abreEndereco();
     }
 
     public void accordion(TabChangeEvent event) {
@@ -1720,8 +1606,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                 fotoTempPerfil = "";
             }
         }
-        RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_perfil");
-        RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
+        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
         RequestContext.getCurrentInstance().execute("dgl_captura.hide();");
     }
 
@@ -1747,7 +1632,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             fotoTempPerfil = "";
             fotoPerfil = "";
         }
-        RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_perfil");
+        RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
 
     }
 
@@ -1765,7 +1650,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         if (sucesso) {
             fotoTempPerfil = "";
             fotoPerfil = "";
-            RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_tabview_fisica:i_panel_perfil");
+            RequestContext.getCurrentInstance().update(":form_pessoa_fisica");
         }
     }
 
@@ -1798,4 +1683,72 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.imagensTipo = imagensTipo;
     }
 
+    public List<Socios> getListaSocioInativo() {
+        if (listaSocioInativo.isEmpty() && fisica.getId() != -1){
+            listaSocioInativo = new SociosDBToplink().pesquisaSocioPorPessoaInativo(fisica.getPessoa().getId());
+        }
+        return listaSocioInativo;
+    }
+
+    public void setListaSocioInativo(List<Socios> listaSocioInativo) {
+        this.listaSocioInativo = listaSocioInativo;
+    }
+
+    public Endereco getEnderecox() {
+        if (GenericaSessao.getObject("enderecoPesquisa") != null){
+            enderecox = (Endereco)GenericaSessao.getObject("enderecoPesquisa");
+            
+            enderecoCompleto = enderecox.getLogradouro().getDescricao() + " " + 
+                               enderecox.getDescricaoEndereco().getDescricao() + ", " + 
+                               enderecox.getCidade().getCidade() + " - " + 
+                               enderecox.getCidade().getUf();
+            
+            GenericaSessao.remove("enderecoPesquisa");
+            
+            if (visibleEditarEndereco){
+                pessoaEndereco.setEndereco(enderecox);
+            }
+        }
+        return enderecox;
+    }
+
+    public void setEnderecox(Endereco enderecox) {
+        this.enderecox = enderecox;
+    }
+
+    public List<PessoaEndereco> getListaPessoaEndereco() {
+        if (fisica.getId() != -1 && listaPessoaEndereco.isEmpty()){
+            PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
+            listaPessoaEndereco = db.pesquisaEndPorPessoa(fisica.getPessoa().getId());
+        }
+        return listaPessoaEndereco;
+    }
+
+    public void setListaPessoaEndereco(List<PessoaEndereco> listaPessoaEndereco) {
+        this.listaPessoaEndereco = listaPessoaEndereco;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
+    public String getComplemento() {
+        return complemento;
+    }
+
+    public void setComplemento(String complemento) {
+        this.complemento = complemento;
+    }
+
+    public boolean isVisibleEditarEndereco() {
+        return visibleEditarEndereco;
+    }
+
+    public void setVisibleEditarEndereco(boolean visibleEditarEndereco) {
+        this.visibleEditarEndereco = visibleEditarEndereco;
+    }
 }

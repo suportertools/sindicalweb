@@ -6,13 +6,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 public interface ServicoPessoaDB {
-
-    public boolean insert(ServicoPessoa servicoPessoa);
-
-    public boolean update(ServicoPessoa servicoPessoa);
-
-    public boolean delete(ServicoPessoa servicoPessoa);
-
     public EntityManager getEntityManager();
 
     public ServicoPessoa pesquisaCodigo(int id);

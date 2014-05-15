@@ -2141,6 +2141,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
         }
     }
     
+    @Override
     public Guia pesquisaGuias(int id_lote) {
         try {
             Query qry = getEntityManager().createQuery("select g from Guia g where g.lote.id = "+id_lote);
@@ -2148,6 +2149,21 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             return result;
         } catch (Exception e) {
             return new Guia();
+        }
+    }
+    
+    @Override
+    public List<Movimento> pesquisaMovimentoCadastrado(String documento) {
+        String text_qry = 
+                "SELECT m " +
+                "  FROM Movimento m "+
+                " WHERE m.baixa.documentoBaixa LIKE '%"+documento+"%'";
+        try {
+            Query qry = getEntityManager().createQuery(text_qry);
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
         }
     }
 }

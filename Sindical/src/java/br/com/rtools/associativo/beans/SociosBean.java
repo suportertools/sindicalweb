@@ -6,7 +6,6 @@ import br.com.rtools.associativo.db.*;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.ServicoPessoa;
-import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.*;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Pessoa;
@@ -16,22 +15,23 @@ import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.beans.FisicaBean;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import static br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean.getCliente;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import org.primefaces.context.RequestContext;
 
 @ManagedBean
 @SessionScoped
 public class SociosBean implements Serializable {
-
     private ServicoPessoa servicoPessoa;
     private ServicoCategoria servicoCategoria;
     private Socios socios;
@@ -43,12 +43,12 @@ public class SociosBean implements Serializable {
     private List<SelectItem> listaServicos;
     private List<SelectItem> listaParentesco;
     private List<DataObject> listaDependentes;
+    private List<DataObject> listaDependentesInativos;
     private List<SelectItem> listaMotivoInativacao;
     private int idTipoDocumento;
     private int idServico;
     private int idGrupoCategoria;
     private int idCategoria;
-    private int idIndexDep;
     private int idIndexCombo;
     private int idInativacao;
     private boolean renderServicos;
@@ -57,15 +57,25 @@ public class SociosBean implements Serializable {
     private boolean desabilitaImpressao;
     private boolean imprimirVerso;
     private String msgConfirma;
-    private String pesquisaLista;
     private String lblSocio;
     private String lblSocioPergunta;
     private String tipoDestinario;
     private String dataInativacao;
     private String dataReativacao;
     private String statusSocio;
-    private List<Fisica> listaFisica;
-
+    
+    List<SelectItem> listaGrupoCategoria = new ArrayList<SelectItem>();
+    List<SelectItem> listaCategoria = new ArrayList<SelectItem>();
+    private List<Fisica> listaFisica = new ArrayList<Fisica>();
+    private Fisica fisicaPesquisa = new Fisica();
+    private Pessoa pessoaPesquisa = new Pessoa();
+    private List<SelectItem> listaSelectFisica = new ArrayList<SelectItem>();
+    
+    private Fisica novoDependente = new Fisica();
+    private int index_dependente = 0;
+    private String[] imagensTipo = new String[]{"jpg", "jpeg", "png", "gif"};
+    private List<Socios> listaSocioInativo = new ArrayList<Socios>();
+    
     public SociosBean() {
         servicoPessoa = new ServicoPessoa();
         servicoCategoria = new ServicoCategoria();
@@ -78,11 +88,11 @@ public class SociosBean implements Serializable {
         listaServicos = new ArrayList();
         listaParentesco = new ArrayList();
         listaDependentes = new ArrayList();
+        listaDependentesInativos = new ArrayList();
         idTipoDocumento = 0;
         idServico = 0;
         idGrupoCategoria = 0;
         idCategoria = 0;
-        idIndexDep = -1;
         idIndexCombo = -1;
         idInativacao = 0;
         renderServicos = true;
@@ -93,26 +103,75 @@ public class SociosBean implements Serializable {
         dataInativacao = DataHoje.data();
         dataReativacao = DataHoje.data();
         msgConfirma = "";
-        pesquisaLista = "";
         lblSocio = "";
         lblSocioPergunta = "";
         tipoDestinario = "socio";
         statusSocio = "NOVO";
-        listaFisica = new ArrayList();
         listaMotivoInativacao = new ArrayList<SelectItem>();
     }
-
+    
+    public String getFotoTipTitular() {
+        String caminhoTemp = "/Cliente/" + getCliente() + "/Imagens/Fotos/";
+        String arquivo = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath(caminhoTemp);
+        for (String imagensTipo1 : imagensTipo) {
+            File f = new File(arquivo + "/" + servicoPessoa.getPessoa().getId() + "." + imagensTipo1);
+            if (f.exists()) {
+                return caminhoTemp + "/" + servicoPessoa.getPessoa().getId() + "." + imagensTipo1;
+            }
+        }
+        
+        FisicaDB db = new FisicaDBToplink();
+        Fisica fis = db.pesquisaFisicaPorPessoa(servicoPessoa.getPessoa().getId());
+        if (fis.getSexo().equals("M"))
+            return "/Imagens/user_male.png";
+        else
+            return "/Imagens/user_female.png";
+    }    
+    
+    public void salvarData(){
+        if (servicoPessoa.getId() != -1){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
+            
+            if (!sv.alterarObjeto(servicoPessoa)){
+                // ERRO
+                sv.desfazerTransacao();
+            }else{
+                sv.comitarTransacao();
+            }
+        }
+    }       
+    
+    public List<Fisica> listaPesquisaDependente(String query){
+        List<Fisica> result = new ArrayList<Fisica>();
+        FisicaDB db = new FisicaDBToplink();
+        listaFisica = db.pesquisaFisicaPorNome(query.toUpperCase());
+//        for(int i = 0; i < listaFisica.size(); i++) {
+            //result.add(new SelectItem(i, listaFisica.get(i).getPessoa().getNome(), String.valueOf(listaFisica.get(i).getId())));
+//        }
+        return listaFisica;
+    }
+    
+    public void selectDependente(){
+        if (fisicaPesquisa == null){
+            
+        }else{
+            novoDependente = fisicaPesquisa;
+        }
+    }
+    
+    
     public String inativarSocio() {
         if (socios.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             SociosDB db = new SociosDBToplink();
             if (dataInativacao.length() < 10) {
-                msgConfirma = "Data de inativação inválida!";
+                GenericaMensagem.warn("Erro", "Data de inativação inválida!");
                 return null;
             }
 
             if (DataHoje.converteDataParaInteger(dataInativacao) > DataHoje.converteDataParaInteger(DataHoje.data())) {
-                msgConfirma = "Data de inativação maior que dia de hoje!";
+                GenericaMensagem.warn("Erro", "Data de inativação não pode ser maior que dia de hoje!");
                 return null;
             }
 
@@ -120,9 +179,9 @@ public class SociosBean implements Serializable {
 
             ServicoPessoa sp = (ServicoPessoa) sv.pesquisaCodigo(servicoPessoa.getId(), "ServicoPessoa");
             sp.setAtivo(false);
-            List<Socios> listaDps = db.pesquisaDependentes(matriculaSocios.getId());
+            List<Socios> listaDps = db.listaDependentes(matriculaSocios.getId());
             if (!sv.alterarObjeto(sp)) {
-                msgConfirma = "Erro ao alterar serviço pessoa";
+                GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
                 sv.desfazerTransacao();
                 return null;
             }
@@ -131,7 +190,7 @@ public class SociosBean implements Serializable {
                 ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
                 sp2.setAtivo(false);
                 if (!sv.alterarObjeto(sp2)) {
-                    msgConfirma = "Erro ao alterar serviço pessoa do Dependente";
+                    GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
                     sv.desfazerTransacao();
                     return null;
                 }
@@ -141,15 +200,22 @@ public class SociosBean implements Serializable {
             matriculaSocios.setMotivoInativacao((SMotivoInativacao) sv.pesquisaCodigo(Integer.parseInt(listaMotivoInativacao.get(idInativacao).getDescription()), "SMotivoInativacao"));
             matriculaSocios.setInativo(dataInativacao);
             if (!sv.alterarObjeto(matriculaSocios)) {
-                msgConfirma = "Erro ao alterar matrícula";
+                GenericaMensagem.error("Erro", "Erro ao alterar matrícula");
                 sv.desfazerTransacao();
                 return null;
             }
-
-            msgConfirma = "Sócio inativado com sucesso!";
+            
+            GenericaMensagem.info("Concluído", "Sócio inativado com Sucesso!");
             sv.comitarTransacao();
+
+            FisicaDB dbf = new FisicaDBToplink();
+            GenericaSessao.put("fisicaBean", new FisicaBean());
+            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
+            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
+            ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
+            
         } else {
-            msgConfirma = "Não existe sócio para ser inativado!";
+            GenericaMensagem.warn("Erro", "Não existe sócio para ser inativado!");
         }
         return null;
     }
@@ -159,7 +225,7 @@ public class SociosBean implements Serializable {
         SociosDB db = new SociosDBToplink();
 
         if (db.pesquisaSocioPorPessoaAtivo(socios.getServicoPessoa().getPessoa().getId()).getId() != -1) {
-            msgConfirma = "Este sócio já esta cadastrado!";
+            GenericaMensagem.warn("Erro", "Este sócio já esta cadastrado!");
             return null;
         }
 
@@ -167,23 +233,24 @@ public class SociosBean implements Serializable {
 
         ServicoPessoa sp = (ServicoPessoa) sv.find("ServicoPessoa", servicoPessoa.getId());
         if(sp == null) {
-            msgConfirma = "Erro ao alterar serviço pessoa";
+            GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa");
             sv.desfazerTransacao();
             return null;
         }
         sp.setAtivo(true);
         if (!sv.alterarObjeto(sp)) {
-            msgConfirma = "Erro ao alterar serviço pessoa";
+            GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa");
             sv.desfazerTransacao();
             return null;
         }
+        
         servicoPessoa = sp;
-        List<Socios> listaDps = db.pesquisaDependentes(matriculaSocios.getId());
+        List<Socios> listaDps = db.listaDependentesInativos(matriculaSocios.getId());
         for (int i = 0; i < listaDps.size(); i++) {
             ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDps.get(i).getServicoPessoa().getId(), "ServicoPessoa");
             sp2.setAtivo(true);
             if (!sv.alterarObjeto(sp2)) {
-                msgConfirma = "Erro ao alterar serviço pessoa do Dependente";
+                GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa do Dependente");
                 sv.desfazerTransacao();
                 return null;
             }
@@ -192,13 +259,20 @@ public class SociosBean implements Serializable {
         matriculaSocios.setMotivoInativacao(null);
         matriculaSocios.setDtInativo(null);
         if (!sv.alterarObjeto(matriculaSocios)) {
-            msgConfirma = "Erro ao ativar matrícula";
+            GenericaMensagem.error("Erro", "Erro ao ativar matrícula");
             sv.desfazerTransacao();
             return null;
         }
-        msgConfirma = "Sócio ativado com sucesso!";
+        GenericaMensagem.info("Concluído", "Sócio ativado com Sucesso!");
         dataInativacao = DataHoje.data();
+        
         sv.comitarTransacao();
+        
+        FisicaDB dbf = new FisicaDBToplink();
+        GenericaSessao.put("fisicaBean", new FisicaBean());
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).editarFisicaParametro(dbf.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).setSocios(socios);
+        ((FisicaBean) GenericaSessao.getObject("fisicaBean")).showImagemFisica();
         return null;
     }
 
@@ -217,16 +291,16 @@ public class SociosBean implements Serializable {
         // NOVO REGISTRO -----------------------
         if (servicoPessoa.getId() == -1) {
             servicoPessoa.setAtivo(true);
-            servicoPessoa.setResponsavel(servicoPessoa.getPessoa());
+            servicoPessoa.setCobranca(servicoPessoa.getPessoa());
             if (!sv.inserirObjeto(servicoPessoa)) {
-                msgConfirma = "Erro ao salvar serviço Pessoa!";
+                GenericaMensagem.error("Erro", "Erro ao salvar Serviço Pessoa!");
                 return null;
             }
             matriculaSocios.setMotivoInativacao(null);
         } else {
             // ATUALIZA REGISTRO -------------------
             if (!sv.alterarObjeto(servicoPessoa)) {
-                msgConfirma = "Erro ao alterar serviço Pessoa!";
+                GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
                 return null;
             }
         }
@@ -265,20 +339,20 @@ public class SociosBean implements Serializable {
         if(msMemoria.getNrMatricula() != matriculaSocios.getNrMatricula() || matriculaSocios.getNrMatricula() == 0) {
             List list = dbMat.listaMatriculaPorGrupoNrMatricula(matriculaSocios.getCategoria().getGrupoCategoria().getId(), matriculaSocios.getNrMatricula());
             if (!list.isEmpty()) {
-                msgConfirma = "Matrícula já existe!";
+                GenericaMensagem.error("Erro", "Matrícula já existe!");
                 sv.desfazerTransacao();
                 return null;
             }
         }
         if (matriculaSocios.getId() == -1) {
             if (!sv.inserirObjeto(matriculaSocios)) {
-                msgConfirma = "Erro ao salvar matrícula!";
+                GenericaMensagem.error("Erro", "Erro ao Salvar Matrícula!");
                 sv.desfazerTransacao();
                 return null;
             }
         } else {
             if (!sv.alterarObjeto(matriculaSocios)) {
-                msgConfirma = "Erro ao atualizar matrícula!";
+                GenericaMensagem.error("Erro", "Erro ao Atualizar Matrícula!");
                 sv.desfazerTransacao();
                 return null;
             }
@@ -289,53 +363,56 @@ public class SociosBean implements Serializable {
         socios.setParentesco((Parentesco) sv.pesquisaCodigo(1, "Parentesco"));
         socios.setServicoPessoa(servicoPessoa);
         socios.setNrViaCarteirinha(1);
+        
         if (socios.getId() == -1) {
             if (!sv.inserirObjeto(socios)) {
-                msgConfirma = "Erro ao salvar sócio!";
+                GenericaMensagem.error("Erro", "Erro ao Salvar Sócio!");
                 sv.desfazerTransacao();
                 return null;
             }
-            msgConfirma = "Pessoa associada com sucesso!";
+            GenericaMensagem.info("Sucesso", "Pessoa Associada!");
         } else {
             if (!sv.alterarObjeto(socios)) {
-                msgConfirma = "Erro ao atualizar sócio!";
+                GenericaMensagem.error("Erro", "Erro ao Atualizar Sócio!");
                 sv.desfazerTransacao();
                 return null;
             }
-            msgConfirma = "Cadastro atualizado com sucesso!";
+            GenericaMensagem.info("Sucesso", "Cadastro Atualizado!");
         }
         if (!listaDependentes.isEmpty()) {
             SociosDB db = new SociosDBToplink();
             ServicoCategoriaDB dbSCat = new ServicoCategoriaDBToplink();
             ParentescoDB dbPar = new ParentescoDBToplink();
+            
             for (int i = 0; i < listaDependentes.size(); i++) {
                 if (((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getId() != -1) {
                     Socios socioDependente = db.pesquisaSocioPorPessoaAtivo(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
                     Parentesco parentesco = dbPar.pesquisaCodigo(Integer.parseInt(getListaParentesco().get(Integer.parseInt((String) ((DataObject) listaDependentes.get(i)).getArgumento1())).getDescription()));
                     ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(parentesco.getId(), servicoCategoria.getCategoria().getId());
-
+                    
+                    String ref_dependente = (listaDependentes.get(i).getArgumento4() == null ) ? "" : listaDependentes.get(i).getArgumento4().toString();
+                    
                     if (servicoCategoriaDep == null) {
-                        msgConfirma = "Erro para Serviço Categoria: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
+                        GenericaMensagem.warn("Erro", "Erro para Serviço Categoria: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
                         sv.desfazerTransacao();
                         return null;
                     }
                     if (socioDependente.getId() == -1) {
                         ServicoPessoa servicoPessoaDependente = new ServicoPessoa(-1,
                                 servicoPessoa.getEmissao(),
-                                ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa(),
+                                ((Fisica) listaDependentes.get(i).getArgumento0()).getPessoa(),
                                 servicoPessoa.isDescontoFolha(),
-                                servicoPessoa.getServicos(),
-                                servicoPessoa.getNrDesconto(),
+                                servicoCategoriaDep.getServicos(),
+                                Moeda.substituiVirgulaFloat(listaDependentes.get(i).getArgumento5().toString()),
                                 servicoPessoa.getReferenciaVigoracao(),
-                                servicoPessoa.getReferenciaValidade(),
+                                ref_dependente,
                                 servicoPessoa.getNrDiaVencimento(),
                                 servicoPessoa.getTipoDocumento(),
                                 servicoPessoa.getCobranca(),
                                 servicoPessoa.isAtivo(),
-                                servicoPessoa.isBanco(),
-                                ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa());
+                                servicoPessoa.isBanco());
                         if (!sv.inserirObjeto(servicoPessoaDependente)) {
-                            msgConfirma = "Erro ao salvar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
+                            GenericaMensagem.warn("Erro", "Erro ao salvar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
                             sv.desfazerTransacao();
                             return null;
                         }
@@ -347,28 +424,29 @@ public class SociosBean implements Serializable {
                                 DataHoje.converte((String) ((DataObject) listaDependentes.get(i)).getArgumento3()));
 
                         if (!sv.inserirObjeto(socioDependente)) {
-                            msgConfirma = "Erro ao salvar sócio: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
+                            GenericaMensagem.warn("Erro", "Erro ao salvar Sócio: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
                             sv.desfazerTransacao();
                             return null;
                         }
                     } else {
                         ServicoPessoaDB dbSerP = new ServicoPessoaDBToplink();
-                        ServicoPessoa servicoPessoaDependente = dbSerP.pesquisaServicoPessoaPorPessoa(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
+                        //ServicoPessoa servicoPessoaDependente = dbSerP.pesquisaServicoPessoaPorPessoa(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
+                        ServicoPessoa servicoPessoaDependente = (ServicoPessoa)sv.pesquisaCodigo(socioDependente.getServicoPessoa().getId(), "ServicoPessoa");
 
                         servicoPessoaDependente.setEmissao(servicoPessoa.getEmissao());
-                        servicoPessoaDependente.setPessoa(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa());
+                        servicoPessoaDependente.setPessoa(((Fisica) listaDependentes.get(i).getArgumento0()).getPessoa());
                         servicoPessoaDependente.setDescontoFolha(servicoPessoa.isDescontoFolha());
-                        servicoPessoaDependente.setServicos(servicoPessoa.getServicos());
-                        servicoPessoaDependente.setNrDesconto(servicoPessoa.getNrDesconto());
+                        servicoPessoaDependente.setServicos(servicoCategoriaDep.getServicos());
+                        servicoPessoaDependente.setNrDesconto(Moeda.substituiVirgulaFloat(listaDependentes.get(i).getArgumento5().toString()));
                         servicoPessoaDependente.setReferenciaVigoracao(servicoPessoa.getReferenciaVigoracao());
-                        servicoPessoaDependente.setReferenciaValidade(servicoPessoa.getReferenciaValidade());
+                        servicoPessoaDependente.setReferenciaValidade(ref_dependente);
                         servicoPessoaDependente.setNrDiaVencimento(servicoPessoa.getNrDiaVencimento());
                         servicoPessoaDependente.setTipoDocumento(servicoPessoa.getTipoDocumento());
                         servicoPessoaDependente.setCobranca(servicoPessoa.getCobranca());
                         servicoPessoaDependente.setAtivo(servicoPessoa.isAtivo());
                         servicoPessoaDependente.setBanco(servicoPessoa.isBanco());
                         if (!sv.alterarObjeto(servicoPessoaDependente)) {
-                            msgConfirma = "Erro ao alterar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
+                            GenericaMensagem.error("Erro", "Erro ao Alterar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
                             sv.desfazerTransacao();
                             return null;
                         }
@@ -378,7 +456,7 @@ public class SociosBean implements Serializable {
                         socioDependente.setNrViaCarteirinha(Integer.parseInt((String) ((DataObject) listaDependentes.get(i)).getArgumento2()));
                         socioDependente.setParentesco(parentesco);
                         if (!sv.alterarObjeto(socioDependente)) {
-                            msgConfirma = "Erro ao salvar sócio: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome();
+                            GenericaMensagem.error("Erro", "Erro ao Salvar Sócio: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
                             sv.desfazerTransacao();
                             return null;
                         }
@@ -386,12 +464,20 @@ public class SociosBean implements Serializable {
                 }
             }
         }
+        
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).setSocios(socios);
         sv.comitarTransacao();
+        
+        atualizarListaDependenteAtivo();
+        atualizarListaDependenteInativo();
         return null;
     }
 
     public String editarTitular() {
+        if (socios.getId() == -1){
+            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+            return "pessoaFisica";
+        }
         FisicaDB db = new FisicaDBToplink();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaBean", new FisicaBean());
         ((FisicaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaBean")).editarFisicaParametro(db.pesquisaFisicaPorPessoa(socios.getServicoPessoa().getPessoa().getId()));
@@ -403,22 +489,22 @@ public class SociosBean implements Serializable {
 
     public boolean validaSalvar() {
         if (matriculaSocios.getEmissao().isEmpty()) {
-            msgConfirma = "Data de emissáo inválida!";
+            GenericaMensagem.warn("Erro", "Data de Emissáo Inválida!");
             return false;
         }
 
         if (getListaGrupoCategoria().isEmpty()) {
-            msgConfirma = "Lista de Grupos Categoria Vazia!";
+            GenericaMensagem.warn("Erro", "Lista de Grupos Categoria Vazia!");
             return false;
         }
 
         if (getListaCategoria().isEmpty()) {
-            msgConfirma = "Lista de Categoria Vazia!";
+            GenericaMensagem.warn("Erro", "Lista de Categoria Vazia!");
             return false;
         }
 
         if (getListaTipoDocumento().isEmpty()) {
-            msgConfirma = "Lista de Tipo Documentos Vazia!";
+            GenericaMensagem.warn("Erro", "Lista de Tipo Documentos Vazia!");
             return false;
         }
 
@@ -426,7 +512,7 @@ public class SociosBean implements Serializable {
         int idCat = Integer.parseInt(getListaCategoria().get(idCategoria).getDescription());
         servicoCategoria = dbSCat.pesquisaPorParECat(1, idCat);
         if (servicoCategoria == null) {
-            msgConfirma = "Não existe Serviço Categoria cadastrado!";
+            GenericaMensagem.warn("Erro", "Não existe Serviço Categoria cadastrado!");
             return false;
         } else {
             servicoPessoa.setServicos(servicoCategoria.getServicos());
@@ -434,7 +520,7 @@ public class SociosBean implements Serializable {
 
         if (servicoPessoa.isDescontoFolha()) {
             if (pessoaEmpresa.getId() == -1) {
-                msgConfirma = "Este sócio não possui empresa para desconto em folha!";
+                GenericaMensagem.error("Erro", "Este sócio não possui Empresa para desconto em folha!");
                 servicoPessoa.setDescontoFolha(false);
                 return false;
             }
@@ -445,7 +531,7 @@ public class SociosBean implements Serializable {
 
         SociosDB db = new SociosDBToplink();
         if ((servicoPessoa.getId() == -1) && (db.pesquisaSocioPorPessoaAtivo(servicoPessoa.getPessoa().getId()).getId() != -1)) {
-            msgConfirma = "Esta pessoa já um sócio Cadastrado!";
+            GenericaMensagem.error("Erro", "Esta pessoa já um Sócio Cadastrado!");
             return false;
         }
 
@@ -456,124 +542,167 @@ public class SociosBean implements Serializable {
                 servicoPessoa.setBanco(true);
             } else {
                 servicoPessoa.setBanco(false);
-                msgConfirma = "Não existe Serviço Conta Cobrança!";
+                GenericaMensagem.error("Erro", "Não existe Serviço Conta Cobrança!");
                 return false;
             }
         } else {
             servicoPessoa.setBanco(false);
         }
-
         return true;
     }
 
-    public String salvarFisicaDependente() {
+    public void salvarFisicaDependente() {
         if (!validaSalvarDependente()) {
-            return null;
+            return;
         }
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         if (temFoto) {
-            dependente.setDataFoto(DataHoje.data());
+            novoDependente.setDataFoto(DataHoje.data());
         } else {
-            dependente.setDtFoto(null);
+            novoDependente.setDtFoto(null);
         }
 
-        if (dependente.getId() == -1) {
-            dependente.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
+        if (novoDependente.getId() == -1) {
+            novoDependente.getPessoa().setTipoDocumento((TipoDocumento) sv.pesquisaCodigo(1, "TipoDocumento"));
             sv.abrirTransacao();
-            if (!sv.inserirObjeto(dependente.getPessoa())) {
-                msgConfirma = "Erro ao salvar Pessoa!";
+            if (!sv.inserirObjeto(novoDependente.getPessoa())) {
+                GenericaMensagem.error("Erro", "Erro ao salvar Pessoa!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
 
-            if (!sv.inserirObjeto(dependente)) {
-                msgConfirma = "Erro ao salvar Cadastro!";
+            if (!sv.inserirObjeto(novoDependente)) {
+                GenericaMensagem.error("Erro", "Erro ao salvar Cadastro!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
             sv.comitarTransacao();
-            //FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("fisicaPesquisa",dependente);
-            msgConfirma = "Dependente salvo com sucesso!";
+            GenericaMensagem.info("Sucesso", "Dependente Salvo!");
         } else {
             sv.abrirTransacao();
-            if (!sv.alterarObjeto(dependente.getPessoa())) {
-                msgConfirma = "Erro ao atualizar Pessoa!";
+            if (!sv.alterarObjeto(novoDependente.getPessoa())) {
+                GenericaMensagem.error("Erro", "Erro ao atualizar Pessoa!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
 
-            if (!sv.alterarObjeto(dependente)) {
-                msgConfirma = "Erro ao atualizar Cadastro!";
+            if (!sv.alterarObjeto(novoDependente)) {
+                GenericaMensagem.error("Erro", "Erro ao atualizar Cadastro!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
             sv.comitarTransacao();
-            ((DataObject) listaDependentes.get(idIndexDep)).setArgumento0(dependente);
-            msgConfirma = "Dependente atualizado com sucesso!";
+            GenericaMensagem.info("Sucesso", "Dependente Atualizado!");
         }
-        return null;
+        
+        ((DataObject) listaDependentes.get(index_dependente)).setArgumento0(novoDependente);
+        
+        index_dependente = 0;
+        novoDependente = new Fisica();
+        RequestContext.getCurrentInstance().execute("dlg_dependente.hide()");
     }
 
     public boolean validaSalvarDependente() {
-        if (dependente.getNascimento().isEmpty() || dependente.getNascimento().length() < 10) {
-            msgConfirma = "Data de Nascimento esta inválida!";
-            return false;
-        }
-        if (dependente.getPessoa().getNome().equals("")) {
-            msgConfirma = "O campo nome não pode ser nulo! ";
-            return false;
-        }
-        if (!dependente.getPessoa().getDocumento().isEmpty() && !dependente.getPessoa().getDocumento().equals("0")) {
-            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(dependente.getPessoa().getDocumento()))) {
-                msgConfirma = "Documento Inválido!";
-                return false;
-            }
-        }
         FisicaDB db = new FisicaDBToplink();
-        if (dependente.getId() == -1) {
-            if (!db.pesquisaFisicaPorNomeNascRG(dependente.getPessoa().getNome(),
-                    dependente.getDtNascimento(),
-                    dependente.getRg()).isEmpty()) {
-                msgConfirma = "Esta pessoa já esta cadastrada!";
+        if (novoDependente.getId() == -1) {
+            if (!db.pesquisaFisicaPorNomeNascRG(novoDependente.getPessoa().getNome(),
+                    novoDependente.getDtNascimento(),
+                    novoDependente.getRg()).isEmpty()) {
+                GenericaMensagem.error("Erro", "Esta pessoa já esta Cadastrada!");
                 return false;
             }
 
-            if (dependente.getPessoa().getDocumento().equals("") || dependente.getPessoa().getDocumento().equals("0")) {
-                dependente.getPessoa().setDocumento("0");
+            if (novoDependente.getPessoa().getDocumento().equals("") || novoDependente.getPessoa().getDocumento().equals("0")) {
+                novoDependente.getPessoa().setDocumento("0");
             } else {
-                List listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
+                List listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());
                 if (!listDocumento.isEmpty()) {
-                    msgConfirma = "Documento já existente!";
+                    GenericaMensagem.error("Erro", "Documento já existente!");
                     return false;
                 }
             }
         } else {
-            if (dependente.getPessoa().getDocumento().equals("") || dependente.getPessoa().getDocumento().equals("0")) {
-                dependente.getPessoa().setDocumento("0");
+            if (novoDependente.getPessoa().getDocumento().equals("") || novoDependente.getPessoa().getDocumento().equals("0")) {
+                novoDependente.getPessoa().setDocumento("0");
             } else {
 
-                List listDocumento = db.pesquisaFisicaPorDoc(dependente.getPessoa().getDocumento());
+                List listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());
                 for (Object listDocumento1 : listDocumento) {
-                    if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != dependente.getId()) {
-                        msgConfirma = "Documento já existente!";
+                    if (!listDocumento.isEmpty() && ((Fisica) listDocumento1).getId() != novoDependente.getId()) {
+                        GenericaMensagem.error("Erro", "Documento já existente!");
                         return false;
                     }
                 }
             }
         }
+        
+        if (novoDependente.getNascimento().isEmpty() || novoDependente.getNascimento().length() < 10) {
+            GenericaMensagem.fatal("Erro", "Data de Nascimento inválida!");
+            return false;
+        }
+        
+        if (novoDependente.getPessoa().getNome().equals("")) {
+            GenericaMensagem.error("Erro", "O campo nome não pode ser nulo!");
+            return false;
+        }
+        
+        if (!novoDependente.getPessoa().getDocumento().isEmpty() && !novoDependente.getPessoa().getDocumento().equals("0")) {
+            if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(novoDependente.getPessoa().getDocumento()))) {
+                GenericaMensagem.error("Erro", "Documento Inválido!");
+                return false;
+            }
+        }
+        
+        for (DataObject linha : listaDependentesInativos){
+            if ( ((Fisica)linha.getArgumento0()).getId() == novoDependente.getId() ){
+                GenericaMensagem.warn("Erro", "Este dependente esta inativado nesta matrícula!");
+                return false;
+            }
+        }
+        
+        
+        SociosDB dbs = new SociosDBToplink();
+        if (dbs.pesquisaSocioPorPessoaAtivo(novoDependente.getPessoa().getId()).getId() != -1) {
+            GenericaMensagem.error("Erro", "Esta pessoa já um Dependente Cadastrado!");
+            return false;
+        }
+
         return true;
+    }
+    
+    public void pesquisaCPF(){
+        if (!novoDependente.getPessoa().getDocumento().isEmpty()){
+            FisicaDB db = new FisicaDBToplink();
+            List<Fisica> listDocumento = db.pesquisaFisicaPorDoc(novoDependente.getPessoa().getDocumento());
+            if (!listDocumento.isEmpty()){
+                novoDependente = listDocumento.get(0);
+            }else if (novoDependente.getId() != -1){
+                String doc = novoDependente.getPessoa().getDocumento();
+
+                novoDependente = new Fisica();
+
+                novoDependente.getPessoa().setDocumento(doc);
+            }
+        }
     }
 
     public String adicionarDependente() {
         Fisica fisica = new Fisica();
+        DataHoje dh = new DataHoje();
+        
+        CategoriaDB dbCat = new CategoriaDBToplink();
+        GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()));
+        
+        Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
+        
         if (listaDependentes.isEmpty()) {
             fisica.getPessoa().setNome("");
             DataObject dtObj = new DataObject(fisica, // NOME
                     0, // IDPARENTESCO
                     1, // VIA CARTEIRINHA
-                    (new DataHoje()).incrementarAnos(5, DataHoje.data()), // DATA VALIDADE CARTEIRINHA
+                    DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
                     null, // DATA VAL DEP
-                    null);
+                    0.0);// DESCONTO
             listaDependentes.add(dtObj);
             //servicoPessoa.adicionaTitular = false;
         } else {
@@ -584,9 +713,9 @@ public class SociosBean implements Serializable {
                     DataObject dtObj = new DataObject(fisica, // NOME
                             0, // IDPARENTESCO
                             1, // VIA CARTEIRINHA
-                            (new DataHoje()).incrementarAnos(5, DataHoje.data()), // DATA VALIDADE CARTEIRINHA
+                            DataHoje.converteData(validadeCarteirinha), // DATA VALIDADE CARTEIRINHA
                             null, // DATA VAL DEP
-                            null);
+                            0.0); // DESCONTO
                     listaDependentes.add(dtObj);
                     //servicoPessoa.adicionaTitular = false;
                     break;
@@ -598,9 +727,9 @@ public class SociosBean implements Serializable {
     }
 
     public String novoCadastroDependente() {
-        dependente = new Fisica();
+        novoDependente = new Fisica();
+        fisicaPesquisa = new Fisica();
         temFoto = false;
-        listaFisica.clear();
         return null;
     }
 
@@ -611,8 +740,10 @@ public class SociosBean implements Serializable {
 
     public String excluir() {
         if (!validaExcluir()) {
+            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
             return null;
         }
+        
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         SociosDB db = new SociosDBToplink();
 
@@ -621,10 +752,11 @@ public class SociosBean implements Serializable {
         for (int i = 0; i < listaDependentes.size(); i++) {
             Socios soc = db.pesquisaSocioPorPessoa(((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId());
             if (soc.getId() == -1) {
-                listaDependentes.remove(idIndexDep);
+                //listaDependentes.remove(idIndexDep);
             } else if (!excluirDependentes(sv, (Socios) sv.pesquisaCodigo(soc.getId(), "Socios"))) {
                 sv.desfazerTransacao();
-                msgConfirma = "Erro ao excluir dependentes!";
+                GenericaMensagem.error("Erro", "Erro ao Excluir Dependentes!");
+                RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
                 return null;
             }
         }
@@ -634,7 +766,8 @@ public class SociosBean implements Serializable {
         if (!list.isEmpty()) {
             for (SocioCarteirinha socioCarteirinha : list) {
                 if (!sv.deletarObjeto(sv.pesquisaCodigo(socioCarteirinha.getId(), "SocioCarteirinha"))) {
-                    msgConfirma = "Erro ao excluir carteirinha do Dependente!";
+                    GenericaMensagem.error("Erro", "Erro ao Excluir carteirinha do Dependente!");
+                    RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
                     return null;
                 }
             }
@@ -642,23 +775,27 @@ public class SociosBean implements Serializable {
 
         // DELETAR SOCIOS ------
         if (!sv.deletarObjeto(sv.pesquisaCodigo(socios.getId(), "Socios"))) {
-            msgConfirma = "Erro ao Deletar Sócio!";
+            GenericaMensagem.error("Erro", "Erro ao Deletar Sócio!");
+            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
             sv.desfazerTransacao();
             return null;
         }
 
         if (!sv.deletarObjeto(sv.pesquisaCodigo(matriculaSocios.getId(), "MatriculaSocios"))) {
-            msgConfirma = "Erro ao Deletar Matricula!";
+            GenericaMensagem.error("Erro", "Erro ao Deletar Matricula!");
+            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
             sv.desfazerTransacao();
             return null;
         }
 
         if (!sv.deletarObjeto(sv.pesquisaCodigo(servicoPessoa.getId(), "ServicoPessoa"))) {
-            msgConfirma = "Erro ao Deletar Servico Pessoa!";
+            GenericaMensagem.error("Erro", "Erro ao Deletar Servico Pessoa!");
+            RequestContext.getCurrentInstance().execute("i_dlg_c.show()");
             sv.desfazerTransacao();
             return null;
         }
-        msgConfirma = "Cadastro deletado com sucesso!";
+        
+        GenericaMensagem.info("Sucesso", "Cadastro Deletado!");
         sv.comitarTransacao();
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
 
@@ -672,33 +809,35 @@ public class SociosBean implements Serializable {
 
     public boolean validaExcluir() {
         if (servicoPessoa.getId() == -1) {
-            msgConfirma = "Não existe sócio para ser excluido!";
+            GenericaMensagem.error("Erro", "Não existe Sócio para ser Excluído!");
             return false;
         }
         return true;
     }
 
-    public String excluirDependente() {
-        if (servicoPessoa.getId() != -1) {
+    public String excluirDependente(DataObject linha, int index) {
+        Fisica fi = (Fisica) linha.getArgumento0();
+        if (fi.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             SociosDB db = new SociosDBToplink();
+            Socios soc = db.pesquisaSocioPorPessoa(fi.getPessoa().getId());
+            
             sv.abrirTransacao();
-            Socios soc = db.pesquisaSocioPorPessoa(((Fisica) listaDependentes.get(idIndexDep).getArgumento0()).getPessoa().getId());
             if (soc.getId() == -1) {
-                listaDependentes.remove(idIndexDep);
+                listaDependentes.remove(index);
+                GenericaMensagem.warn("Erro", "Dependente Excluído!");
                 sv.desfazerTransacao();
-                msgConfirma = "Registro excluído!";
             } else if (!excluirDependentes(sv, soc)) {
                 sv.desfazerTransacao();
+                GenericaMensagem.warn("Erro", "Erro ao excluir Dependente!");
             } else {
+                listaDependentes.remove(index);
+                GenericaMensagem.warn("Erro", "Dependente Excluído!");
                 sv.comitarTransacao();
-                listaDependentes.remove(idIndexDep);
-                //servicoPessoa.adicionaTitular = true;
             }
         } else {
-            listaDependentes.remove(idIndexDep);
-            msgConfirma = "Registro excluído!";
-            //servicoPessoa.adicionaTitular = true;
+            listaDependentes.remove(index);
+            GenericaMensagem.warn("Erro", "Dependente Excluído!");
         }
         return null;
     }
@@ -717,6 +856,7 @@ public class SociosBean implements Serializable {
                 }
             }
         }
+        
 
         if (!sv.deletarObjeto(sv.pesquisaCodigo(soc.getId(), "Socios"))) {
             msgConfirma = "Erro ao excluir Dependente!";
@@ -732,14 +872,14 @@ public class SociosBean implements Serializable {
         return true;
     }
 
-    public void editarGenerico(Pessoa sessao) {
+    public void editarGenerico(Pessoa sessao, boolean reativar) {
         CategoriaDB dbCat = new CategoriaDBToplink();
         SociosDB db = new SociosDBToplink();
         FisicaDB dbf = new FisicaDBToplink();
 
         //socSessao = db.pesquisaSocioPorPessoaAtivo(sessao.getId());
         Socios socSessao = db.pesquisaSocioPorPessoa(sessao.getId());
-        if (socSessao.getId() != -1) {
+        if (socSessao.getId() != -1 && reativar) {
             socios = socSessao;
         } else {
             return;
@@ -749,9 +889,10 @@ public class SociosBean implements Serializable {
             return;
         }
 
-        Socios soc = db.pesquisaSocioDoDependente(socios.getId());
-        if (soc != null) {
-            socios = soc;
+        //Socios soc = db.pesquisaSocioDoDependente(socios.getId());
+        // SOCIO DIFERENTE PARA TRAZER NA TELA O TITULAR
+        if (socios.getMatriculaSocios().getTitular().getId() != servicoPessoa.getPessoa().getId()) {
+            socios = db.pesquisaSocioPorPessoa(socios.getMatriculaSocios().getTitular().getId());
         }
 
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
@@ -779,66 +920,122 @@ public class SociosBean implements Serializable {
                 break;
             }
         }
-        int index = 0;
-        List<Socios> listaDeps = db.pesquisaDependentes(matriculaSocios.getId());
-        if (!listaDeps.isEmpty()) {
-            listaDependentes.clear();
-            for (int i = 0; i < listaDeps.size(); i++) {
-                // FISICA, PARENTESCO, VIA_CARTEIRINHA, DATA VALIDADE CARTEIRINHA, DATA VAL DEP
-                for (int w = 0; w < getListaParentesco().size(); w++) {
-                    if (listaDeps.get(i).getParentesco().getId() == Integer.parseInt(listaParentesco.get(w).getDescription())) {
-                        index = w;
-                    }
-                }
-                Fisica fisica = dbf.pesquisaFisicaPorPessoa(listaDeps.get(i).getServicoPessoa().getPessoa().getId());
-                ParentescoDB dbp = new ParentescoDBToplink();
-                Parentesco par = dbp.pesquisaCodigo(Integer.valueOf(listaParentesco.get(index).getDescription()));
 
-                listaDependentes.add(new DataObject(fisica,
-                        index,// PARENTESCO
-                        listaDeps.get(i).getNrViaCarteirinha(), // VIA CARTEIRINHA
-                        listaDeps.get(i).getValidadeCarteirinha(), // DATA VALIDADE CARTEIRINHA
-                        atualizaValidade(par, fisica), // DATA VAL DEP
-                        null));
-            }
-        }
+        atualizarListaDependenteAtivo();
+        atualizarListaDependenteInativo();
+        
     }
 
-    public void editarOUsalvar() {
-        dependente = (Fisica) listaDependentes.get(idIndexDep).getArgumento0();
-        listaFisica.clear();
-        pesquisaLista = "";
+    public void editarOUsalvar(int index) {
+        Fisica fisica = (Fisica) listaDependentes.get(index).getArgumento0();
+        if (fisica.getId() == -1){
+            novoDependente = new Fisica();
+        }else{
+            novoDependente = fisica;
+        }
+        
+        fisicaPesquisa = new Fisica();
+        index_dependente = index;
     }
 
     public void editarDependente(Fisica f) {
         dependente = (Fisica) f;
-        listaFisica.clear();
-        pesquisaLista = "";
 
     }
-
-    public void excluirImagemDependente() {
-        FacesContext context = FacesContext.getCurrentInstance();
-        String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
-        try {
-            File fl = new File(caminho);
-            if (fl.exists()) {
-                fl.delete();
-            } else if (dependente.getId() != -1) {
-                caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + String.valueOf(dependente.getPessoa().getId()) + ".jpg");
-                fl = new File(caminho);
-                fl.delete();
-                SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-                dependente.setDataFoto("");
-                sv.abrirTransacao();
-                sv.alterarObjeto(dependente);
-                sv.comitarTransacao();
+    
+    public void reativarDependente(){
+        for (int i = 0; i < listaDependentesInativos.size(); i++){
+            String vencimento_dep = DataHoje.data().substring(0, 2)+ "/"+listaDependentesInativos.get(i).getArgumento4().toString();
+            String data_hoje =      DataHoje.data();
+            
+            if ( DataHoje.igualdadeData(vencimento_dep, data_hoje) || DataHoje.maiorData(vencimento_dep, data_hoje)){
+                listaDependentes.add(listaDependentesInativos.get(i));
+                listaDependentesInativos.remove(i);
             }
-        } catch (Exception e) {
-            System.out.println(e);
         }
     }
 
+    public void atualizarListaDependenteAtivo(){
+        int index = 0;
+        SociosDB db = new SociosDBToplink();
+        FisicaDB dbf = new FisicaDBToplink();
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        // LISTA DE DEPENDENTES ATIVOS
+        List<Socios> listaDepsAtivo = db.listaDependentes(matriculaSocios.getId());
+        if (!listaDepsAtivo.isEmpty()) {
+            listaDependentes.clear();
+            for (int i = 0; i < listaDepsAtivo.size(); i++) {   
+                // FISICA, PARENTESCO, VIA_CARTEIRINHA, DATA VALIDADE CARTEIRINHA, DATA VAL DEP
+                for (int w = 0; w < getListaParentesco().size(); w++) {
+                    if (listaDepsAtivo.get(i).getParentesco().getId() == Integer.parseInt(listaParentesco.get(w).getDescription())) {
+                        index = w;
+                    }
+                }
+                Fisica fisica = dbf.pesquisaFisicaPorPessoa(listaDepsAtivo.get(i).getServicoPessoa().getPessoa().getId());
+                ParentescoDB dbp = new ParentescoDBToplink();
+                Parentesco par = dbp.pesquisaCodigo(Integer.valueOf(listaParentesco.get(index).getDescription()));
+                String vencimento_dep = "";
+                
+                if (!listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade().isEmpty())        
+                    vencimento_dep = DataHoje.data().substring(0, 2)+ "/"+listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade();
+                String data_hoje =      DataHoje.data();
+
+                if ( vencimento_dep.isEmpty() ||
+                   (!vencimento_dep.isEmpty() && (DataHoje.igualdadeData(vencimento_dep, data_hoje) || DataHoje.maiorData(vencimento_dep, data_hoje) ))){
+                    listaDependentes.add(new DataObject(fisica,
+                            index,// PARENTESCO
+                            listaDepsAtivo.get(i).getNrViaCarteirinha(), // VIA CARTEIRINHA
+                            listaDepsAtivo.get(i).getValidadeCarteirinha(), // DATA VALIDADE CARTEIRINHA
+                            listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade(), // DATA VAL DEP
+                            listaDepsAtivo.get(i).getServicoPessoa().getNrDesconto()) // DESCONTO
+                    );
+                }else{
+                    // AQUI INATIVA AUTOMATICAMENTE SE O DEPENDENTE ESTIVER COM A REF VALIDADE < QUE A DATA ATUAL
+                    sv.abrirTransacao();
+                    ServicoPessoa sp2 = (ServicoPessoa) sv.pesquisaCodigo(listaDepsAtivo.get(i).getServicoPessoa().getId(), "ServicoPessoa");
+                    sp2.setAtivo(false);
+                    if (!sv.alterarObjeto(sp2)) {
+                        GenericaMensagem.error("Erro", "Erro ao alterar Serviço Pessoa!");
+                        sv.desfazerTransacao();
+                        return;
+                    }
+                    sp2 = new ServicoPessoa();
+                    sv.comitarTransacao();
+                }
+            }
+        }
+        
+    }
+    
+    public void atualizarListaDependenteInativo(){
+        int index = 0;
+        SociosDB db = new SociosDBToplink();
+        FisicaDB dbf = new FisicaDBToplink();
+        // LISTA DE DEPENDENTES INATIVOS
+        List<Socios> listaDepsInativo = db.listaDependentesInativos(matriculaSocios.getId());
+        if (!listaDepsInativo.isEmpty()) {
+            listaDependentesInativos.clear();
+            for (int i = 0; i < listaDepsInativo.size(); i++) {
+                // FISICA, PARENTESCO, VIA_CARTEIRINHA, DATA VALIDADE CARTEIRINHA, DATA VAL DEP
+                for (int w = 0; w < getListaParentesco().size(); w++) {
+                    if (listaDepsInativo.get(i).getParentesco().getId() == Integer.parseInt(listaParentesco.get(w).getDescription())) {
+                        index = w;
+                    }
+                }
+                Fisica fisica = dbf.pesquisaFisicaPorPessoa(listaDepsInativo.get(i).getServicoPessoa().getPessoa().getId());
+                ParentescoDB dbp = new ParentescoDBToplink();
+                Parentesco par = dbp.pesquisaCodigo(Integer.valueOf(listaParentesco.get(index).getDescription()));
+                
+                listaDependentesInativos.add(new DataObject(fisica,
+                        index,// PARENTESCO
+                        listaDepsInativo.get(i).getNrViaCarteirinha(), // VIA CARTEIRINHA
+                        listaDepsInativo.get(i).getValidadeCarteirinha(), // DATA VALIDADE CARTEIRINHA
+                        listaDepsInativo.get(i).getServicoPessoa().getReferenciaValidade(), // DATA VAL DEP
+                        listaDepsInativo.get(i).getServicoPessoa().getNrDesconto())); // DESCONTO
+            }
+        }      
+    }
+    
     public String atualizaValidade(Parentesco par, Fisica fisica) {
         if (par.getNrValidade() == 0) {
             return null;
@@ -891,6 +1088,7 @@ public class SociosBean implements Serializable {
             GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
 
             socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
+            
             if (!sv.alterarObjeto(socios)) {
                 sv.desfazerTransacao();
                 return null;
@@ -921,44 +1119,7 @@ public class SociosBean implements Serializable {
 
         if (!comita) {
             sv.desfazerTransacao();
-        }
-//        if (ImpressaoParaSocios.imprimirCarteirinha(listaAux)) {
-//            sv.comitarTransacao();
-//        } else {
-//            sv.desfazerTransacao();
-//        }
-
-//        try {
-//            if (dbF.pesquisaCodigoRegistro(1).isCarteirinhaDependente()){
-//                if (ImpressaoParaSocios.imprimirCarteirinha(listaAux)){
-//                    sv.comitarTransacao();
-//                }else{
-//                    sv.desfazerTransacao();
-//                }
-//            }else{
-//                if (ImpressaoParaSocios.imprimirCarteirinha(listaAux)){
-//                    sv.comitarTransacao();
-//                }else{
-//                    sv.desfazerTransacao();
-//                }
-//            }
-//        }catch(Exception e){
-//            
-//        }        
-//        for (int i = 0; i < listaDependentes.size();i++)
-//            listaAux.add(db.pesquisaSocioPorPessoa(((Fisica)((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getId()));
-//        
-//          INSERIR CARTEIRINHAS DEPENDENTE
-//        carteirinha = new SocioCarteirinha();
-//        for (int i = 0; i < listaAux.size();i++){
-//            carteirinha.setEmissao(data);
-//            carteirinha.setSocios( (Socios)listaAux.get(i) );
-//            if (!sv.inserirObjeto(carteirinha)){
-//                sv.desfazerTransacao();
-//                return null;
-//            }
-//            carteirinha = new SocioCarteirinha();
-//        }        
+        }      
         return null;
     }
 
@@ -993,7 +1154,7 @@ public class SociosBean implements Serializable {
         FacesContext context = FacesContext.getCurrentInstance();
         File files;
         if (socios.getId() != -1) {
-            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".PNG"));
+            files = new File(((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + socios.getServicoPessoa().getPessoa().getId() + ".png"));
             if (files.exists()) {
                 return files.getPath();
             } else {
@@ -1004,39 +1165,53 @@ public class SociosBean implements Serializable {
         }
     }
 
+    public void atualizarCategoria(){
+        listaCategoria.clear();
+        listaServicos.clear();
+        idCategoria = 0;
+    }
+    
     public List<SelectItem> getListaGrupoCategoria() {
-        List<SelectItem> listaGrupoCategoria = new ArrayList<SelectItem>();
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
-        for (int i = 0; i < grupoCategorias.size(); i++) {
-            listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
+        if (listaGrupoCategoria.isEmpty()){
+            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+            List<GrupoCategoria> grupoCategorias = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria");
+            if (!grupoCategorias.isEmpty()){
+                for (int i = 0; i < grupoCategorias.size(); i++) {
+                    listaGrupoCategoria.add(new SelectItem(i, grupoCategorias.get(i).getGrupoCategoria(), "" + grupoCategorias.get(i).getId()));
+                }
+            }else{
+                listaGrupoCategoria.add(new SelectItem(0, "Nenhum Grupo Categoria Encontrado", "0"));
+            }
+            
         }
         return listaGrupoCategoria;
     }
 
     public List<SelectItem> getListaCategoria() {
-        List<SelectItem> listaCategoria = new ArrayList<SelectItem>();
-        int i = 0;
-        if (!getListaGrupoCategoria().isEmpty()) {
+        
+        if (listaCategoria.isEmpty() && !listaGrupoCategoria.isEmpty()){
             CategoriaDB db = new CategoriaDBToplink();
-            List select = db.pesquisaCategoriaPorGrupo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()));
-            while (i < select.size()) {
-                listaCategoria.add(new SelectItem(new Integer(i),
-                        (String) ((Categoria) select.get(i)).getCategoria(),
-                        Integer.toString(((Categoria) select.get(i)).getId())));
-                i++;
+            List<Categoria> select = db.pesquisaCategoriaPorGrupo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()));
+            if (!select.isEmpty()){
+                for (int i = 0; i < select.size(); i++) {
+                    listaCategoria.add(new SelectItem(i, select.get(i).getCategoria(), Integer.toString(select.get(i).getId())));
+                }
+            }else{
+                listaCategoria.add(new SelectItem(0, "Nenhuma Categoria Encontrada", "0"));
             }
         }
         return listaCategoria;
     }
 
     public ServicoPessoa getServicoPessoa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa") != null) {
-            servicoPessoa.setPessoa(((Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa")).getPessoa());
-            editarGenerico(((Fisica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("fisicaPesquisa")).getPessoa());
-            pessoaEmpresa = (PessoaEmpresa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaEmpresaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("fisicaPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaEmpresaPesquisa");
+        if (GenericaSessao.getObject("fisicaPesquisa") != null && GenericaSessao.getObject("reativarSocio") != null) {
+            servicoPessoa.setPessoa(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa());
+            editarGenerico(((Fisica) GenericaSessao.getObject("fisicaPesquisa")).getPessoa(), 
+                            GenericaSessao.getBoolean("reativarSocio"));
+            pessoaEmpresa = (PessoaEmpresa) GenericaSessao.getObject("pessoaEmpresaPesquisa");
+            GenericaSessao.remove("fisicaPesquisa");
+            GenericaSessao.remove("pessoaEmpresaPesquisa");
+            GenericaSessao.remove("reativarSocio");
         }
         return servicoPessoa;
     }
@@ -1107,18 +1282,22 @@ public class SociosBean implements Serializable {
     }
 
     public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty()) {
+        if (listaServicos.isEmpty() && !getListaGrupoCategoria().isEmpty() && !getListaCategoria().isEmpty()) {
             int i = 0;
-            ServicosDB db = new ServicosDBToplink();
+            //ServicosDB db = new ServicosDBToplink();
             //RotinaDB dbr = new RotinaDBToplink();
-            List<Servicos> select = db.pesquisaTodos(120);
-            if (!select.isEmpty()) {
-                while (i < select.size()) {
-                    listaServicos.add(new SelectItem(new Integer(i),
-                            (String) select.get(i).getDescricao(),
-                            Integer.toString(select.get(i).getId())));
-                    i++;
-                }
+            ServicoCategoriaDB db = new ServicoCategoriaDBToplink();
+            //int id_grupo_categoria = Integer.parseInt(listaGrupoCategoria.get(idGrupoCategoria).getDescription());
+            int id_categoria = Integer.parseInt(listaCategoria.get(idCategoria).getDescription());
+            
+            ServicoCategoria select = db.pesquisaPorParECat(1, id_categoria);
+            
+            if (select != null) {
+                listaServicos.add(new SelectItem(i, select.getServicos().getDescricao(),
+                            Integer.toString(select.getServicos().getId()))
+                );
+            }else{
+                listaServicos.add(new SelectItem(0, "Nenhum Serviço Encontrado", "0"));
             }
         }
         return listaServicos;
@@ -1196,7 +1375,7 @@ public class SociosBean implements Serializable {
             ParentescoDB db = new ParentescoDBToplink();
             List select = db.pesquisaTodosSemTitular();
             for (int i = 0; i < select.size(); i++) {
-                listaParentesco.add(new SelectItem(new Integer(i),
+                listaParentesco.add(new SelectItem(i,
                         (String) ((Parentesco) select.get(i)).getParentesco(),
                         Integer.toString(((Parentesco) select.get(i)).getId())));
             }
@@ -1214,14 +1393,6 @@ public class SociosBean implements Serializable {
 
     public void setMsgConfirma(String msgConfirma) {
         this.msgConfirma = msgConfirma;
-    }
-
-    public int getIdIndexDep() {
-        return idIndexDep;
-    }
-
-    public void setIdIndexDep(int idIndexDep) {
-        this.idIndexDep = idIndexDep;
     }
 
     public String getPessoaImagem() {
@@ -1266,42 +1437,6 @@ public class SociosBean implements Serializable {
             }
         }
         return nome + ".jpg";
-    }
-
-    public List<Fisica> getListaFisica() {
-        if (!pesquisaLista.isEmpty()) {
-            List listaAux = new ArrayList();
-            FisicaDB db = new FisicaDBToplink();
-            listaFisica = db.pesquisaFisicaPorNome(pesquisaLista.toUpperCase());
-            for (Iterator it = listaFisica.iterator(); it.hasNext();) {
-                Object item = it.next();
-                //if ( ((Fisica)item).getPessoa().getNome().contains(pesquisaLista) )
-                listaAux.add(item);
-            }
-            if (!listaAux.isEmpty()) {
-                return listaAux;
-            } else {
-                return new ArrayList();
-            }
-            //lista.addAll(listaAux);
-        }
-        //if (listaFisica.size() > 200){
-        //    return listaFisica.subList(0, 200);
-        // }
-
-        return new ArrayList();
-    }
-
-    public void setListaFisica(List<Fisica> listaFisica) {
-        this.listaFisica = listaFisica;
-    }
-
-    public String getPesquisaLista() {
-        return pesquisaLista;
-    }
-
-    public void setPesquisaLista(String pesquisaLista) {
-        this.pesquisaLista = pesquisaLista;
     }
 
     public Fisica getDependente() {
@@ -1392,11 +1527,9 @@ public class SociosBean implements Serializable {
     public List<SelectItem> getListaMotivoInativacao() {
         if (listaMotivoInativacao.isEmpty()) {
             SociosDB db = new SociosDBToplink();
-            List select = db.pesquisaMotivoInativacao();
+            List<SMotivoInativacao> select = db.pesquisaMotivoInativacao();
             for (int i = 0; i < select.size(); i++) {
-                listaMotivoInativacao.add(new SelectItem(new Integer(i),
-                        (String) ((SMotivoInativacao) select.get(i)).getDescricao(),
-                        Integer.toString(((SMotivoInativacao) select.get(i)).getId())));
+                listaMotivoInativacao.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
             }
         }
         return listaMotivoInativacao;
@@ -1426,4 +1559,69 @@ public class SociosBean implements Serializable {
     public void setStatusSocio(String statusSocio) {
         this.statusSocio = statusSocio;
     }
+
+    public List<Fisica> getListaFisica() {
+        return listaFisica;
+    }
+
+    public void setListaFisica(List<Fisica> listaFisica) {
+        this.listaFisica = listaFisica;
+    }
+
+    public List<SelectItem> getListaSelectFisica() {
+        return listaSelectFisica;
+    }
+
+    public void setListaSelectFisica(List<SelectItem> listaSelectFisica) {
+        this.listaSelectFisica = listaSelectFisica;
+    }
+
+    public Fisica getFisicaPesquisa() {
+        return fisicaPesquisa;
+    }
+
+    public void setFisicaPesquisa(Fisica fisicaPesquisa) {
+        this.fisicaPesquisa = fisicaPesquisa;
+    }
+
+    public Pessoa getPessoaPesquisa() {
+        return pessoaPesquisa;
+    }
+
+    public void setPessoaPesquisa(Pessoa pessoaPesquisa) {
+        this.pessoaPesquisa = pessoaPesquisa;
+    }
+
+    public Fisica getNovoDependente() {
+        return novoDependente;
+    }
+
+    public void setNovoDependente(Fisica novoDependente) {
+        this.novoDependente = novoDependente;
+    }
+
+    public int getIndex_dependente() {
+        return index_dependente;
+    }
+
+    public void setIndex_dependente(int index_dependente) {
+        this.index_dependente = index_dependente;
+    }
+
+    public List<Socios> getListaSocioInativo() {
+        return listaSocioInativo;
+    }
+
+    public void setListaSocioInativo(List<Socios> listaSocioInativo) {
+        this.listaSocioInativo = listaSocioInativo;
+    }
+
+    public List<DataObject> getListaDependentesInativos() {
+        return listaDependentesInativos;
+    }
+
+    public void setListaDependentesInativos(List<DataObject> listaDependentesInativos) {
+        this.listaDependentesInativos = listaDependentesInativos;
+    }
+
 }

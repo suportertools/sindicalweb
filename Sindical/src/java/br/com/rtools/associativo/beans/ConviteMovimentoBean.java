@@ -4,6 +4,7 @@ import br.com.rtools.associativo.ConviteAutorizaCortesia;
 import br.com.rtools.associativo.ConviteMovimento;
 import br.com.rtools.associativo.ConviteServico;
 import br.com.rtools.associativo.ConviteSuspencao;
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.ConviteDB;
 import br.com.rtools.associativo.db.ConviteDBToplink;
@@ -858,7 +859,6 @@ public class ConviteMovimentoBean implements Serializable {
                     (FStatus) dB.pesquisaCodigo(1, "FStatus"),
                     null,
                     false,
-                    null,
                     0
             );
             try {
@@ -909,7 +909,7 @@ public class ConviteMovimentoBean implements Serializable {
                         0,
                         0,
                         fTipoDocumento,
-                        0
+                        0, new MatriculaSocios()
                 );
                 if (dB.inserirObjeto(movimento)) {
                     conviteMovimento.setEvt(evt);

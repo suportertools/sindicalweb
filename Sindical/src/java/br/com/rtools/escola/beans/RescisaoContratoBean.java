@@ -1,5 +1,6 @@
 package br.com.rtools.escola.beans;
 
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.escola.EscStatus;
 import br.com.rtools.escola.MatriculaEscola;
 import br.com.rtools.escola.MatriculaIndividual;
@@ -343,7 +344,6 @@ public class RescisaoContratoBean implements Serializable {
                     lote.getStatus(),
                     null,
                     lote.isDescontoFolha(),
-                    null,
                     0);
 
             if (!sadb.inserirObjeto(l)) {
@@ -390,7 +390,8 @@ public class RescisaoContratoBean implements Serializable {
                         0,
                         0,
                         fTipoDocumento,
-                        0);
+                        0,
+                        new MatriculaSocios());
                 if (!sadb.inserirObjeto(m)) {
                     sadb.desfazerTransacao();
                     return false;

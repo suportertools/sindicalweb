@@ -89,16 +89,31 @@ public class SociosDBToplink extends DB implements SociosDB {
     }
 
     @Override
-    public List pesquisaDependentes(int idMatricula) {
+    public List<Socios> listaDependentes(int id_matricula) {
         try {
             Query qry = getEntityManager().createQuery("select s "
                     + "  from Socios s "
                     + " where s.parentesco.id <> 1 "
-                    + "   and s.matriculaSocios.id = " + idMatricula);
+                    + "   and s.matriculaSocios.id = " + id_matricula +
+                      "   and s.servicoPessoa.ativo = true");
             return (qry.getResultList());
         } catch (Exception e) {
             e.getMessage();
-            return new ArrayList();
+            return new ArrayList<Socios>();
+        }
+    }
+    
+    public List<Socios> listaDependentesInativos(int id_matricula) {
+        try {
+            Query qry = getEntityManager().createQuery("select s "
+                    + "  from Socios s "
+                    + " where s.parentesco.id <> 1 "
+                    + "   and s.matriculaSocios.id = " + id_matricula +
+                      "   and s.servicoPessoa.ativo = false");
+            return (qry.getResultList());
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList<Socios>();
         }
     }
 //    public List pesquisaDependentes(int idPessoaSocio){
@@ -123,7 +138,8 @@ public class SociosDBToplink extends DB implements SociosDB {
         try {
             Query qry = getEntityManager().createQuery("select s from Socios s "
                     + " where s.parentesco.id <> 1 "
-                    + "   and s.matriculaSocios.id = " + idMatricula
+                    + "   and s.matriculaSocios.id = " + idMatricula +
+                      "   and s.servicoPessoa.ativo = true "
                     + " order by s.parentesco.id");
             return (qry.getResultList());
         } catch (Exception e) {
@@ -153,22 +169,10 @@ public class SociosDBToplink extends DB implements SociosDB {
     public Socios pesquisaSocioPorPessoa(int idPessoa) {
         Socios soc = new Socios();
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select s"
-                    + " from Socios s"
-                    + " where s.servicoPessoa.pessoa.id = :pid "
-                    + " order by s.servicoPessoa.id desc");
-//            Query qry = getEntityManager().createQuery(
-//                    "select s"
-//                    + " from Socios s"
-//                    + " where s.servicoPessoa.pessoa.id = :pid"
-//                    + "   and s.servicoPessoa.ativo = true");
+            Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.servicoPessoa.pessoa.id = :pid ORDER BY s.servicoPessoa.id DESC");
             qry.setParameter("pid", idPessoa);
-            qry.setMaxResults(1);
-            List list = qry.getResultList();
-            if (!list.isEmpty()) {
-                soc = (Socios) qry.getSingleResult();
-            }
+            
+            soc = (Socios) qry.setMaxResults(1).getSingleResult();
         } catch (Exception e) {
             e.getMessage();
         }
@@ -191,16 +195,15 @@ public class SociosDBToplink extends DB implements SociosDB {
     }
 
     @Override
-    public List pesquisaSocioPorPessoaInativo(int idPessoa) {
+    public List<Socios> pesquisaSocioPorPessoaInativo(int idPessoa) {
         try {
-            Query qry = getEntityManager().createQuery("select s from Socios s"
-                    + " where s.servicoPessoa.pessoa.id = :pid"
-                    + "   and s.matriculaSocios.motivoInativacao is not null");
+            //Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.servicoPessoa.pessoa.id = :pid AND s.matriculaSocios.motivoInativacao IS NOT NULL ORDER BY s.matriculaSocios.dtInativo DESC");
+            Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.servicoPessoa.pessoa.id = :pid AND s.servicoPessoa.ativo = false ORDER BY s.matriculaSocios.dtInativo DESC");
             qry.setParameter("pid", idPessoa);
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
-            return new ArrayList();
+            return new ArrayList<Socios>();
         }
     }
 
@@ -234,8 +237,7 @@ public class SociosDBToplink extends DB implements SociosDB {
             Query qry = getEntityManager().createQuery(
                     "select s "
                     + "  from Socios s "
-                    + " where s.dtValidadeCarteirinha is null "
-                    + "   and s.matriculaSocios.id = (select si.matriculaSocios.id "
+                    + " where s.matriculaSocios.id = (select si.matriculaSocios.id "
                     + "                                 from Socios si "
                     + "                                where si.parentesco.id <> 1"
                     + "                                  and si.id = :pid )");
@@ -250,15 +252,15 @@ public class SociosDBToplink extends DB implements SociosDB {
     @Override
     public Socios pesquisaSocioDoDependente(Pessoa pessoa) {
         try {
-            Query qry = getEntityManager().createQuery(
-                    "select s "
-                    + "  from Socios s "
-                    + " where s.dtValidadeCarteirinha is null "
-                    + "   and s.matriculaSocios.id = (select si.matriculaSocios.id "
-                    + "                                 from Socios si "
-                    + "                                where si.parentesco.id <> 1"
-                    + "                                  and si.servicoPessoa.pessoa.id = :pid )");
-            qry.setParameter("pid", pessoa.getId());
+            Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.matriculaSocios.titular.id = :pid AND s.matriculaSocios.dtInativo IS NOT NULL");
+//            Query qry = getEntityManager().createQuery(
+//                    "select s "
+//                    + "  from Socios s "
+//                    + " where s.matriculaSocios.id = (select si.matriculaSocios.id "
+//                    + "                                 from Socios si "
+//                    + "                                where si.parentesco.id <> 1"
+//                    + "                                  and si.servicoPessoa.pessoa.id = :pid )");
+//            qry.setParameter("pid", pessoa.getId());
             return (Socios) qry.getSingleResult();
         } catch (Exception e) {
             e.getMessage();

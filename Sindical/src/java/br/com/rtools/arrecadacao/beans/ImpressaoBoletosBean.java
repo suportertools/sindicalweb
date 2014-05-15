@@ -494,14 +494,14 @@ public class ImpressaoBoletosBean implements Serializable {
         List<SelectItem> servicoCobranca = new ArrayList<SelectItem>();
         int i = 0;
         ServicoContaCobrancaDB servDB = new ServicoContaCobrancaDBToplink();
-        List<ServicoContaCobranca> select = servDB.pesquisaTodos();
+        List<ServicoContaCobranca> select = servDB.pesquisaTodosTipoUm();
         if (select == null) {
             select = new ArrayList<ServicoContaCobranca>();
         }
         while (i < select.size()) {
             servicoCobranca.add(
                     new SelectItem(
-                    new Integer(i),
+                    i,
                     select.get(i).getServicos().getDescricao() + " - "
                     + select.get(i).getTipoServico().getDescricao() + " - "
                     + select.get(i).getContaCobranca().getCodCedente(), //+" "+

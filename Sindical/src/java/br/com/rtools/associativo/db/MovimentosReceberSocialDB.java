@@ -1,6 +1,5 @@
 package br.com.rtools.associativo.db;
 
-import br.com.rtools.financeiro.FormaPagamento;
 import java.util.List;
 
 public interface MovimentosReceberSocialDB {

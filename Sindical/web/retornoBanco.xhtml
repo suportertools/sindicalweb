@@ -23,7 +23,6 @@
                     </div>
                     <br /><br />
                     <div class="divMae divFundo" style="width: 600px" align="left">
-
                         <h:outputLabel value="Contribuição: " styleClass="fontePadrao"/>
                         <h:selectOneMenu  id="cbContribuicao" value="#{arquivoBancoBean.idContrib}" disabled="#{arquivoBancoBean.outros}" onchange="form.submit()">
                             <f:selectItems value="#{arquivoBancoBean.listaServicoCobranca}" />
@@ -70,13 +69,8 @@
                             <rich:panel> 
                                 <div align="center" style="overflow-x: auto; height:225px; width:340px; ">
                                     <rich:dataTable value="#{arquivoBancoBean.listaDocsAberto}" iterationStatusVar="it" var="linha" id="tbl2">
-                                        <rich:column style="text-align: center;">
-                                            <f:facet name="header"><h:outputText value="#"/></f:facet>
-                                            <h:outputText value="#{it.index}"/>
-                                        </rich:column>                                        
-
-                                        <rich:column>
-                                            <f:facet name="header"><h:outputText value="Gerar"/></f:facet>
+                                        <rich:column style="text-align: center">
+                                            <f:facet name="header"><h:outputText value="Excluir Verificação"/></f:facet>
                                             <h:selectBooleanCheckbox value="#{linha.argumento0}" rendered="#{linha.argumento4}"/>
                                         </rich:column>
 
@@ -85,13 +79,15 @@
                                             <h:outputText value="#{linha.argumento1}"/>
                                         </rich:column>
 
-                                        <rich:column>
+                                        <rich:column style="text-align: center">
                                             <f:facet name="header"><h:outputText value="Status"/></f:facet>
                                             <h:outputText value="#{linha.argumento2}"/>
                                         </rich:column>
                                     </rich:dataTable>
                                 </div>
                                 <h:commandButton value="Imprimir Documentos" action="#{arquivoBancoBean.imprimirDocumentos}" immediate="true" onclick="this.form.target = '_blank';"/>
+                                
+                                <h:commandButton value="Atualizar Boletos Cadastrados" action="#{arquivoBancoBean.atualizarBoletoCadastro()}" />
                             </rich:panel>
                         </h:panelGrid>
                         <h:panelGrid id="panelPendencias" style="width: 300px;" columns="2" rendered="#{arquivoBancoBean.listaPendencias.size() > 0}">

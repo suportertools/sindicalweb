@@ -22,6 +22,7 @@ import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -158,9 +159,9 @@ public class ImpressaoBoletoSocialBean {
                                 lista_socio.get(w).get(9).toString(), // CODIGO
                                 lista_socio.get(w).get(10).toString(), // RESPONSAVEL
                                 DataHoje.converteData((Date)lista_socio.get(w).get(11)), // VENCIMENTO
-                                lista_socio.get(w).get(12).toString(), // MATRICULA
-                                lista_socio.get(w).get(14).toString(), // CATEGORIA
-                                lista_socio.get(w).get(13).toString(), // GRUPO
+                                (lista_socio.get(w).get(12) == null) ? "" : lista_socio.get(w).get(12).toString(), // MATRICULA
+                                (lista_socio.get(w).get(14) == null) ? "" : lista_socio.get(w).get(14).toString(), // CATEGORIA
+                                (lista_socio.get(w).get(13) == null) ? "" : lista_socio.get(w).get(13).toString(), // GRUPO
                                 lista_socio.get(w).get(16).toString(), // CODIGO BENEFICIARIO
                                 lista_socio.get(w).get(17).toString(), // BENEFICIARIO
                                 lista_socio.get(w).get(15).toString(), // SERVICO
@@ -290,4 +291,6 @@ public class ImpressaoBoletoSocialBean {
     public void setStrData(String strData) {
         this.strData = strData;
     }
+
+    
 }

@@ -35,7 +35,7 @@ public class GerarMovimento extends DB {
             textQry = "insert into fin_lote (dt_emissao, ds_pag_rec, nr_valor, dt_lancamento, id_filial, id_pessoa, id_tipo_documento, id_rotina, is_avencer_contabil) "
                     + "(select '" + DataHoje.data() + "' as dt_emissao, 'R' as ds_pag_rec, 0 as nr_valor, '" + DataHoje.data() + "' as dt_lancamento, 1 as id_filial, id_pessoa, 2 as id_tipo_documento, 4 as id_rotina, false as is_avencer_contabil "
                     + "   from arr_contribuintes_vw where dt_inativacao is null and id_grupo_cidade = " + id_grupo_cidade + " and id_convencao = " + id_convencao + " and id_pessoa not in "
-                    + "       (select id_pessoa from fin_movimento where ds_referencia='" + referencia + "' and id_servicos = " + id_servico + " and id_tipo_servico = " + id_tipo_servico + ") "
+                    + "       (select id_pessoa from fin_movimento where ds_referencia='" + referencia + "' and id_servicos = " + id_servico + " and id_tipo_servico = " + id_tipo_servico + " and is_ativo = true) "
                     + ");";
             qry = getEntityManager().createNativeQuery(textQry);
             if (qry.executeUpdate() <= 0) {
@@ -178,7 +178,6 @@ public class GerarMovimento extends DB {
                     lote.setEvt(null);
                     lote.setPlano5(null);
                     lote.setDocumento("");
-                    lote.setMatriculaSocios(null);
 
                     if (cc == null) {
                         sv.desfazerTransacao();
@@ -499,7 +498,6 @@ public class GerarMovimento extends DB {
                 lote.setEvt(null);
                 lote.setPlano5(null);
                 lote.setDocumento("");
-                lote.setMatriculaSocios(null);
 
                 if (cc == null) {
                     sv.desfazerTransacao();

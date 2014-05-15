@@ -17,7 +17,9 @@ public interface ServicoContaCobrancaDB {
     public ServicoContaCobranca pesquisaCodigo(int id);
 
     public List pesquisaTodos();
-
+    
+    public List pesquisaTodosTipoUm();
+    
     public List pesquisaTodosFiltrado();
 
     public List pesquisaTodosFiltradoAtivo();

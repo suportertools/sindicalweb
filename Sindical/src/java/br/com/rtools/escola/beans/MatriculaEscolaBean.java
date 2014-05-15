@@ -1,5 +1,6 @@
 package br.com.rtools.escola.beans;
 
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.Midia;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SociosDB;
@@ -1190,7 +1191,7 @@ public class MatriculaEscolaBean implements Serializable {
                                 (CondicaoPagamento) salvarAcumuladoDB.find("CondicaoPagamento", idCondicaoPagto),
                                 (FStatus) salvarAcumuladoDB.find("FStatus", 1),
                                 null,
-                                matriculaEscola.isDescontoFolha(), null, 0));
+                                matriculaEscola.isDescontoFolha(), 0));
                 salvarAcumuladoDB.abrirTransacao();
                 try {
 
@@ -1346,7 +1347,8 @@ public class MatriculaEscolaBean implements Serializable {
                                         0,
                                         0,
                                         fTipoDocumento,
-                                        0));
+                                        0,
+                                        new MatriculaSocios()));
                             } else {
                                 salvarAcumuladoDB.desfazerTransacao();
                                 mensagem = "Não foi possível gerar esse movimento!";

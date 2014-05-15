@@ -623,7 +623,6 @@ public class LancamentoFinanceiroBean implements Serializable {
         lote.setFilial(filial);
         lote.setCondicaoPagamento(cp);
         lote.setDepartamento(null);
-        lote.setMatriculaSocios(null);
         lote.setRotina((Rotina) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(231, "Rotina"));
         lote.setStatus(null);
         lote.setEvt(null);
@@ -824,7 +823,8 @@ public class LancamentoFinanceiroBean implements Serializable {
                 0, // TAXA
                 0, // VALOR BAIXA
                 td, // TIPO DOCUMENTO
-                0 // REPASSE AUTOMATICO                
+                0, // REPASSE AUTOMATICO    
+                null // MATRICULA SÓCIO
         );
 
         Usuario user = (Usuario) GenericaSessao.getObject("sessaoUsuario");

@@ -16,7 +16,9 @@ public interface SociosDB {
 
     public List pesquisaSocios(String desc, String por, String como, String status);
 
-    public List pesquisaDependentes(int idPessoaSocio);
+    public List<Socios> listaDependentes(int id_matricula);
+    
+    public List<Socios> listaDependentesInativos(int id_matricula);
 
     public Socios pesquisaSocioPorPessoa(int idPessoa);
 

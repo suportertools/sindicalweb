@@ -2,6 +2,7 @@ package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.GrupoConvenio;
 import br.com.rtools.associativo.HistoricoEmissaoGuias;
+import br.com.rtools.associativo.MatriculaSocios;
 import br.com.rtools.associativo.SubGrupoConvenio;
 import br.com.rtools.associativo.db.ConvenioServicoDB;
 import br.com.rtools.associativo.db.ConvenioServicoDBToplink;
@@ -438,12 +439,14 @@ public class EmissaoGuiasBean implements Serializable {
                                 0, // TAXA
                                 0,//Moeda.multiplicarValores(quantidade, Moeda.subtracaoValores(valorx, descontox)), // VALOR BAIXA
                                 fTipoDocumento, // FTipo_documento 13 - CARTEIRA, 2 - BOLETO
-                                0 // REPASSE AUTOMATICO
+                                0, // REPASSE AUTOMATICO
+                                new MatriculaSocios()
                         ),
                         Moeda.converteR$Float(Moeda.converteFloatR$Float(valorx)), // VALOR COM MASCARA
                         Moeda.converteR$Float(Moeda.converteFloatR$Float(descontox)), // DESCONTO COM MASCARA
                         Moeda.converteR$Float(Moeda.multiplicarValores(quantidade, Moeda.subtracaoValores(valorx, descontox))) // VALOR TOTAL QUANTIDADE * (VALOR-DESCONTO)
                 ));
+
         total = "0";
         for (int i = 0; i < listaMovimento.size(); i++) {
             String total_desconto = listaMovimento.get(i).getTotal();

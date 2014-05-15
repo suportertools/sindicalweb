@@ -8,46 +8,6 @@ import javax.persistence.Query;
 import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
-
-    public boolean insert(ServicoPessoa servicoPessoa) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().persist(servicoPessoa);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean update(ServicoPessoa servicoPessoa) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().merge(servicoPessoa);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
-    public boolean delete(ServicoPessoa servicoPessoa) {
-        try {
-            getEntityManager().getTransaction().begin();
-            getEntityManager().remove(servicoPessoa);
-            getEntityManager().flush();
-            getEntityManager().getTransaction().commit();
-            return true;
-        } catch (Exception e) {
-            getEntityManager().getTransaction().rollback();
-            return false;
-        }
-    }
-
     public ServicoPessoa pesquisaCodigo(int id) {
         ServicoPessoa result = null;
         try {
@@ -60,6 +20,7 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
         return result;
     }
 
+    @Override
     public List pesquisaTodos() {
         try {
             Query qry = getEntityManager().createQuery("select sp from ServicoPessoa sp");
@@ -70,6 +31,7 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
         }
     }
 
+    @Override
     public ServicoPessoa pesquisaServicoPessoaPorPessoa(int idPessoa) {
         ServicoPessoa result = null;
         try {
@@ -86,6 +48,7 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
         return result;
     }
 
+    @Override
     public List pesquisaTodosParaGeracao(String referencia) {
         try {
             Query qry = getEntityManager().createQuery(
@@ -103,6 +66,7 @@ public class ServicoPessoaDBToplink extends DB implements ServicoPessoaDB {
         }
     }
 
+    @Override
     public List pesquisaTodosParaGeracao(String referencia, int idPessoa) {
         try {
             Query qry = getEntityManager().createQuery(

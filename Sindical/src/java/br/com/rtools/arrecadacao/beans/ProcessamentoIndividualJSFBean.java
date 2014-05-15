@@ -268,7 +268,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                             "",
                             vencimento,
                             0,
-                            0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0);
+                            0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0, null);
                     listaMovAdd.add(movi);
                 } else {
                     int tamList = listMovimentos.size();
@@ -303,7 +303,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                                 "",
                                 vencimento,
                                 0,
-                                0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0);
+                                0, 0, 0, 0, 0, 0, dbft.pesquisaCodigo(2), 0, null);
                         listaMovAdd.add(movi);
                         if (((Movimento) listMovimentos.get(0).getArgumento1()).getPessoa().getId() != juridica.getPessoa().getId()) {
                             outrasEmpresas = true;
