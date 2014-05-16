@@ -4,11 +4,13 @@ import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.Dao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -16,74 +18,85 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class RotinaBean implements Serializable {
 
-    private Rotina rotina = new Rotina();
-    private String mensagem = "";
-    private String descricaoPesquisa = "";
-    private List<Rotina> listaRotina = new ArrayList<Rotina>();
+    private Rotina rotina;
+    private String message;
+    private String descricaoPesquisa;
+    private List<Rotina> listRotina;
 
-    public void salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+    @PostConstruct
+    public void init() {
+        rotina = new Rotina();
+        message = "";
+        descricaoPesquisa = "";
+        listRotina = new ArrayList<Rotina>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+    }
+
+    public void save() {
+        DaoInterface di = new Dao();
         if (rotina.getId() == -1) {
             if (rotina.getRotina().equals("")) {
-                mensagem = "Digite uma Rotina!";
+                message = "Digite uma Rotina!";
             } else {
                 RotinaDB rotinaDB = new RotinaDBToplink();
                 if (!rotinaDB.existeRotina(rotina)) {
-                    salvarAcumuladoDB.abrirTransacao();
-                    if (salvarAcumuladoDB.inserirObjeto(rotina)) {
-                        salvarAcumuladoDB.comitarTransacao();
-                        mensagem = "Registro salvo com sucesso";
-                        listaRotina.clear();
+                    di.openTransaction();
+                    if (di.save(rotina)) {
+                        di.commit();
+                        message = "Registro salvo com sucesso";
+                        listRotina.clear();
                     } else {
-                        salvarAcumuladoDB.desfazerTransacao();
-                        mensagem = "Erro ao inserir registro!";
+                        di.rollback();
+                        message = "Erro ao inserir registro!";
                     }
                 } else {
-                    mensagem = "Esta Rotina já existe no Sistema.";
+                    message = "Esta Rotina já existe no Sistema.";
                 }
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(rotina)) {
-                listaRotina.clear();
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Registro atualizado com sucesso";
+            di.openTransaction();
+            if (di.update(rotina)) {
+                listRotina.clear();
+                di.commit();
+                message = "Registro atualizado com sucesso";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao atualizar registro!";
+                di.rollback();
+                message = "Erro ao atualizar registro!";
             }
         }
     }
 
-    public void novo() {
-        rotina = new Rotina();
-        descricaoPesquisa = "";
+    public void clear() {
+        GenericaSessao.remove("rotinaBean");
     }
 
-    public void excluir() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+    public void delete() {
+        DaoInterface di = new Dao();
         if (rotina.getId() != -1) {
-            rotina = (Rotina) salvarAcumuladoDB.pesquisaCodigo(rotina.getId(), "Rotina");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(rotina)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaRotina.clear();
-                mensagem = "Registro excluido com sucesso";
+            di.openTransaction();
+            if (di.delete(rotina)) {
+                di.commit();
+                listRotina.clear();
+                message = "Registro excluido com sucesso";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Esta registro não pode ser excluido!";
+                di.rollback();
+                message = "Esta registro não pode ser excluido!";
             }
         }
         rotina = new Rotina();
     }
 
-    public String editar(Rotina r) {
+    public String edit(Rotina r) {
         rotina = r;
         GenericaSessao.put("rotinaPesquisa", rotina);
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {
             if (!GenericaSessao.getString("urlRetorno").equals("menuPrincipal")) {
-                return (String) GenericaSessao.getString("urlRetorno");                
+                return (String) GenericaSessao.getString("urlRetorno");
             }
         } else {
             return "rotina";
@@ -91,20 +104,20 @@ public class RotinaBean implements Serializable {
         return null;
     }
 
-    public List<Rotina> getListaRotina() {
-        if (listaRotina.isEmpty()) {
+    public List<Rotina> getListRotina() {
+        if (listRotina.isEmpty()) {
             RotinaDB db = new RotinaDBToplink();
             if (descricaoPesquisa.equals("")) {
-                listaRotina = db.pesquisaTodosOrdenado();
+                listRotina = db.pesquisaTodosOrdenado();
             } else {
-                listaRotina = db.pesquisaRotinaPorDescricao(descricaoPesquisa);
+                listRotina = db.pesquisaRotinaPorDescricao(descricaoPesquisa);
             }
         }
-        return listaRotina;
+        return listRotina;
     }
 
-    public void setListaRotina(List<Rotina> listaRotina) {
-        this.listaRotina = listaRotina;
+    public void setListRotina(List<Rotina> listRotina) {
+        this.listRotina = listRotina;
     }
 
     public String rotinaAtiva(boolean ativo) {
@@ -122,12 +135,12 @@ public class RotinaBean implements Serializable {
         this.rotina = rotina;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getDescricaoPesquisa() {
