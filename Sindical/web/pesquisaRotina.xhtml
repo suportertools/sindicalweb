@@ -1,11 +1,11 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:c="http://java.sun.com/jsp/jstl/core">
+
     <h:head>
         <title>Pesquisa Rotina</title>
     </h:head>
@@ -25,29 +25,29 @@
                         <h:panelGrid columns="3" styleClass="margin">
                             <h:outputText value="Pesquisar: " />
                             <h:inputText value="#{rotinaBean.descricaoPesquisa}" />
-                            <a4j:commandLink styleClass="iLink idPesquisar" value="Pesquisar" actionListener="#{rotinaBean.listaRotina.clear()}" render="tbl" status="i_status"/>
+                            <a4j:commandLink styleClass="iLink idPesquisar" value="Pesquisar" actionListener="#{rotinaBean.listRotina.clear()}" render="tbl" status="i_status"/>
                         </h:panelGrid>
                         <h:panelGroup style="overflow:auto; height:500px; border: 0px ; border-top: 0px; border-spacing: 0px" layout="block" >
-                            <rich:dataTable value="#{rotinaBean.listaRotina}" var="rotina" style="width: 100%;" id="tbl" >
+                            <rich:dataTable value="#{rotinaBean.listRotina}" var="rotina" style="width: 100%;" id="tbl" >
                                 <rich:column style="width: 30px;">
                                     <f:facet name="header">
                                         <h:outputText value="ID"/>
                                     </f:facet>
-                                    <h:commandLink action="#{rotinaBean.editar(rotina)}" value="#{rotina.id}" styleClass="underline-hover"/>
+                                    <h:commandLink action="#{rotinaBean.edit(rotina)}" value="#{rotina.id}" styleClass="underline-hover"/>
                                 </rich:column>
 
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Rotina"/>
                                     </f:facet>
-                                    <h:commandLink action="#{rotinaBean.editar(rotina)}" value="#{rotina.rotina}" styleClass="underline-hover"/>
+                                    <h:commandLink action="#{rotinaBean.edit(rotina)}" value="#{rotina.rotina}" styleClass="underline-hover"/>
                                 </rich:column>
 
                                 <rich:column>
                                     <f:facet name="header">
                                         <h:outputText value="Classe"/>
                                     </f:facet>
-                                    <h:commandLink action="#{rotinaBean.editar(rotina)}" value="#{rotina.classe}" styleClass="underline-hover"/>
+                                    <h:commandLink action="#{rotinaBean.edit(rotina)}" value="#{rotina.classe}" styleClass="underline-hover"/>
                                 </rich:column>
                                 <rich:column style="width: 25px;">
                                     <f:facet name="header">
