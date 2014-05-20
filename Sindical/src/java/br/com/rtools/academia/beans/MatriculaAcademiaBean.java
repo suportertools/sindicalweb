@@ -28,6 +28,7 @@ import br.com.rtools.financeiro.db.MovimentoDBToplink;
 import br.com.rtools.financeiro.db.ServicoValorDB;
 import br.com.rtools.financeiro.db.ServicoValorDBToplink;
 import br.com.rtools.impressao.CarneEscola;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
@@ -214,6 +215,7 @@ public class MatriculaAcademiaBean implements Serializable {
         if (responsavel != null) {
             matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
         }
+        NovoLog novoLog = new NovoLog();
         if (matriculaAcademia.getId() == -1) {
             Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
             matriculaAcademia.setUsuario(usuario);
@@ -233,6 +235,14 @@ public class MatriculaAcademiaBean implements Serializable {
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
             pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
             message = "Registro inserido com sucesso";
+            novoLog.save(""
+                    + "ID: " + matriculaAcademia.getId()
+                    + " - Pessoa: (" + matriculaAcademia.getServicoPessoa().getPessoa().getId() + ") " + matriculaAcademia.getServicoPessoa().getPessoa().getNome()
+                    + " - Cobrança: (" + matriculaAcademia.getServicoPessoa().getCobranca().getId() + ") " + matriculaAcademia.getServicoPessoa().getCobranca().getNome()
+                    + " - Serviço: (" + matriculaAcademia.getAcademiaServicoValor().getServicos().getId() + ") " + matriculaAcademia.getAcademiaServicoValor().getServicos().getDescricao()
+                    + " - Academia Servico Valor: (" + matriculaAcademia.getAcademiaServicoValor().getId() + ")"
+                    + " - Parcelas: " + matriculaAcademia.getNumeroParcelas() + " "
+            );
             di.commit();
         } else {
             di.openTransaction();
@@ -241,6 +251,14 @@ public class MatriculaAcademiaBean implements Serializable {
                 message = "Erro ao atualizar serviço pessoa!";
                 return;
             }
+            MatriculaAcademia ma = (MatriculaAcademia) di.find(matriculaAcademia);
+            String beforeUpdate = ""
+                    + "ID: " + ma.getId()
+                    + " - Pessoa: (" + ma.getServicoPessoa().getPessoa().getId() + ") " + ma.getServicoPessoa().getPessoa().getNome()
+                    + " - Cobrança: (" + ma.getServicoPessoa().getCobranca().getId() + ") " + ma.getServicoPessoa().getCobranca().getNome()
+                    + " - Serviço: (" + ma.getAcademiaServicoValor().getServicos().getId() + ") " + ma.getAcademiaServicoValor().getServicos().getDescricao()
+                    + " - Academia Servico Valor: (" + ma.getAcademiaServicoValor().getId() + ")"
+                    + " - Parcelas: " + ma.getNumeroParcelas() + " ";
             if (!di.update(matriculaAcademia)) {
                 di.rollback();
                 message = "Erro ao atualizar registro!";
@@ -249,6 +267,14 @@ public class MatriculaAcademiaBean implements Serializable {
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
             pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
             message = "Registro atualizado com sucesso";
+            novoLog.update(beforeUpdate,
+                    "ID: " + matriculaAcademia.getId()
+                    + " - Pessoa: (" + matriculaAcademia.getServicoPessoa().getPessoa().getId() + ") " + matriculaAcademia.getServicoPessoa().getPessoa().getNome()
+                    + " - Cobrança: (" + matriculaAcademia.getServicoPessoa().getCobranca().getId() + ") " + matriculaAcademia.getServicoPessoa().getCobranca().getNome()
+                    + " - Serviço: (" + matriculaAcademia.getAcademiaServicoValor().getServicos().getId() + ") " + matriculaAcademia.getAcademiaServicoValor().getServicos().getDescricao()
+                    + " - Academia Servico Valor: (" + matriculaAcademia.getAcademiaServicoValor().getId() + ")"
+                    + " - Parcelas: " + matriculaAcademia.getNumeroParcelas() + " "
+            );
             di.commit();
         }
     }
@@ -268,6 +294,15 @@ public class MatriculaAcademiaBean implements Serializable {
                 return;
             }
             message = "Registro excluído com sucesso";
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete(""
+                    + "ID: " + matriculaAcademia.getId()
+                    + " - Pessoa: (" + matriculaAcademia.getServicoPessoa().getPessoa().getId() + ") " + matriculaAcademia.getServicoPessoa().getPessoa().getNome()
+                    + " - Cobrança: (" + matriculaAcademia.getServicoPessoa().getCobranca().getId() + ") " + matriculaAcademia.getServicoPessoa().getCobranca().getNome()
+                    + " - Serviço: (" + matriculaAcademia.getAcademiaServicoValor().getServicos().getId() + ") " + matriculaAcademia.getAcademiaServicoValor().getServicos().getDescricao()
+                    + " - Academia Servico Valor: (" + matriculaAcademia.getAcademiaServicoValor().getId() + ")"
+                    + " - Parcelas: " + matriculaAcademia.getNumeroParcelas() + " "
+            );
             di.commit();
             clear();
         }
