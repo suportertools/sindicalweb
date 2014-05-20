@@ -46,10 +46,10 @@
                                 * Cod = Código - Selecione um convidado para editar
                             </f:facet>
                             <p:column width="25" styleClass="text-center">
-                                <p:commandButton icon="ui-icon-link" action="#{conviteMovimentoBean.editar(conviteMovimento)}" title="Editar"/>
+                                <p:commandButton icon="ui-icon-link" action="#{conviteMovimentoBean.edit(conviteMovimento)}" title="Editar"/>
                             </p:column>
                             <p:column headerText="Cod." width="25" styleClass="text-center">
-                                <p:commandLink value="#{conviteMovimento.id}" action="#{conviteMovimentoBean.editar(conviteMovimento)}" title="Editar"/>
+                                <p:commandLink value="#{conviteMovimento.id}" action="#{conviteMovimentoBean.edit(conviteMovimento)}" title="Editar"/>
                             </p:column>
                             <p:column headerText="Emissão" width="80" styleClass="text-center">
                                 <h:outputText value="#{conviteMovimento.emissao}"/>
@@ -104,7 +104,7 @@
                                         <h:column>
                                             <h:panelGrid id="idComboAutoriza">
                                                 <p:selectOneMenu value="#{conviteMovimentoBean.idPessoaAutoriza}" rendered="#{conviteMovimentoBean.conviteMovimento.cortesia}" disabled="#{conviteMovimentoBean.desabilitaCampos}">
-                                                    <f:selectItems value="#{conviteMovimentoBean.listaPessoaAutoriza}" />
+                                                    <f:selectItems value="#{conviteMovimentoBean.listPessoaAutoriza}" />
                                                 </p:selectOneMenu>
                                             </h:panelGrid>
                                         </h:column>
@@ -269,7 +269,7 @@
                     <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" header="Deseja salvar este registro?" width="300">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Salvar" action="#{conviteMovimentoBean.salvar}" update="i_panel_adicionar, out_mensagem, :form_convite:id_lista" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
+                                <p:commandButton value="Sim" title="Salvar" action="#{conviteMovimentoBean.save}" update="i_panel_adicionar, out_mensagem, :form_convite:id_lista" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
                                 <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
                             </h:panelGrid>
                         </center>
@@ -277,7 +277,7 @@
                     <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir"  modal="true" resizable="true" header="Deseja excluir este registro?" width="300">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Excluir" action="#{conviteMovimentoBean.excluir}" update="i_panel_adicionar, out_mensagem, :form_convite:id_lista" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
+                                <p:commandButton value="Sim" title="Excluir" action="#{conviteMovimentoBean.delete}" update="i_panel_adicionar, out_mensagem, :form_convite:id_lista" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
                                 <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
                             </h:panelGrid>
                         </center>
@@ -285,7 +285,7 @@
                     <p:dialog id="id_panel_mensagem" widgetVar="dgl_panel_mensagem" modal="true" header="Mensagem" width="300">
                         <center>
                             <h:panelGrid id="out_mensagem">
-                                <p:outputLabel value="#{conviteMovimentoBean.mensagem}" />                            
+                                <p:outputLabel value="#{conviteMovimentoBean.message}" />                            
                             </h:panelGrid> 
                             <p:commandButton value="Ok" title="Ok" onclick="PF('dgl_panel_mensagem').hide();" />
                         </center>
