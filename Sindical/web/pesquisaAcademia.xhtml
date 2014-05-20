@@ -36,26 +36,29 @@
                 </h:form>
                 <div style="margin: auto 0;">
                     <h:form id="form_pesquisa_matricula_academia">
-                        <h:panelGrid id="i_panel_grid" style="width: 95%">
-                            <p:dataTable value="#{matriculaAcademiaBean.listaAcademia}" var="matriculaAcademia" id="tbl" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true">
+                        <h:panelGrid id="i_panel_grid">
+                            <p:dataTable value="#{matriculaAcademiaBean.listaAcademia}" var="matriculaAcademia" id="tbl" emptyMessage="Nenhum registro encontrado!" scrollHeight="400" scrollable="true">
                                 <f:facet name="footer">Obs: Nasc. = Nascimento</f:facet>
-                                <p:column headerText="ID" styleClass="text-center" width="50">
-                                    <p:commandLink action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" value="#{matriculaAcademia.id}"/>
+                                <p:column styleClass="text-center" width="25">
+                                    <p:commandButton icon="ui-icon-link" action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" title="Editar registro nº #{matriculaAcademia.id}"/>
+                                </p:column>
+                                <p:column headerText="ID" styleClass="text-center" width="25">
+                                    #{matriculaAcademia.id}
                                 </p:column>
                                 <p:column headerText="Nome">
-                                    <p:commandLink action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" value="#{matriculaAcademia.servicoPessoa.pessoa.nome}"/>
+                                    #{matriculaAcademia.servicoPessoa.pessoa.nome}
                                 </p:column>
-                                <p:column headerText="Documento" width="100"  styleClass="text-center">
-                                    <p:commandLink action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" value="#{matriculaAcademia.servicoPessoa.pessoa.documento}"/>
+                                <p:column headerText="Documento" width="120"  styleClass="text-center">
+                                    #{matriculaAcademia.servicoPessoa.pessoa.documento}
                                 </p:column>
                                 <p:column headerText="Responsável" >
-                                    <p:commandLink action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" value="#{matriculaAcademia.servicoPessoa.responsavel.nome}"/>
+                                    #{matriculaAcademia.servicoPessoa.cobranca.nome}
                                 </p:column>
                                 <p:column headerText="Serviço" >
-                                    <p:commandLink action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" value="#{matriculaAcademia.academiaServicoValor.servicos.descricao}"/>
+                                    #{matriculaAcademia.academiaServicoValor.servicos.descricao}
                                 </p:column>
-                                <p:column headerText="Horários" >
-                                    <p:commandLink action="#{matriculaAcademiaBean.editar(matriculaAcademia)}" value="#{matriculaAcademia.academiaServicoValor.academiaGrade.horaInicio} - #{matriculaAcademia.academiaServicoValor.academiaGrade.horaFim}"/>
+                                <p:column headerText="Horários" width="100" styleClass="text-center">
+                                    #{matriculaAcademia.academiaServicoValor.academiaGrade.horaInicio} - #{matriculaAcademia.academiaServicoValor.academiaGrade.horaFim}
                                 </p:column>
                             </p:dataTable>
                         </h:panelGrid>

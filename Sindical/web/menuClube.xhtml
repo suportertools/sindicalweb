@@ -23,14 +23,14 @@
                             <p:menubar>
                                 <p:submenu label="Cadastro" icon="ui-icon-document" style="margin-right: 15px">
                                     <p:menuitem value="Convite"                     action="#{chamadaPaginaBean.conviteMovimento}"/>
-                                    <p:menuitem value="Convite Serviço"             action="#{chamadaPaginaBean.conviteServico}" />
+                                    <p:menuitem value="Convite Serviço"             action="#{chamadaPaginaBean.pagina('conviteServico')}" />
                                     <p:menuitem value="Convite Suspensão"           action="#{chamadaPaginaBean.conviteSuspencao}" />
-                                    <p:menuitem value="Autoriza Cortesia"           action="#{chamadaPaginaBean.conviteAutorizaCortesia}" />
+                                    <p:menuitem value="Autoriza Cortesia"           action="#{chamadaPaginaBean.pagina('conviteAutorizaCortesia')}" />
                                     <p:menuitem value="Pessoa Jurídica"             action="#{chamadaPaginaBean.pessoaJuridica}"/>
                                     <p:menuitem value="Pessoa Física"               action="#{chamadaPaginaBean.pessoaFisica}"/>
-                                    <p:menuitem value="SPC"                         action="#{chamadaPaginaBean.spc}"/>
+                                    <p:menuitem value="SPC"                         action="#{chamadaPaginaBean.pagina('spc')}"/>
                                     <p:submenu label="Suporte">
-                                        <p:menuitem value="Convite Motivo Suspensão"    action="#{chamadaPaginaBean.conviteMotivoSuspencao}" />
+                                        <p:menuitem value="Convite Motivo Suspensão"    action="#{chamadaPaginaBean.paginaSimples('conviteMotivoSuspencao', 'Convite Motivo Suspenção')}" />
                                         <p:menuitem value="Serviços"                    action="#{chamadaPaginaBean.servicos}"/>
                                         <p:menuitem value="Serviço Rotina"              action="#{chamadaPaginaBean.servicoRotina}"/>                                
                                         <p:menuitem value="Registro Empresarial"  action="#{chamadaPaginaBean.registroEmpresarial}" />

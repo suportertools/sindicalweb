@@ -41,15 +41,15 @@
                                         <p:outputLabel value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.nome}" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1}" />
                                         <p:outputLabel value="Pesquisar um aluno" style="border-bottom: 1px dashed #ECF3FE" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id == -1}" />
                                     </h:column>
-                                    <!-- <p:outputLabel value="Responsável:" />
+                                    <p:outputLabel value="Responsável:" />
                                     <h:column>
-                                        <h:outputText id="idResp" value="# {matriculaAcademiaBean.matriculaAcademia.servicoPessoa.responsavel.nome}" styleClass="fontePadrao"/>
-                                        <h:outputText value=" - Pesquisar outro responsável - " styleClass="fontePadrao"  rendered="# {matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" />
-                                        <p:commandButton value="Pessoa física: " icon="ui-icon-search" action="# {chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="# {matriculaAcademiaBean.aluno.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" disabled="# {matriculaAcademiaBean.desabilitaCamposMovimento}" >
-                                            <p:ajax event="click" listener="# {matriculaAcademiaBean.pesquisaFisica('responsavel')}" />
+                                        <h:outputText id="idResp" value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.cobranca.nome}" styleClass="fontePadrao"/>
+                                        <h:outputText value=" - Pesquisar outro responsável - " styleClass="fontePadrao"  rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" />
+                                        <p:commandButton value="Pessoa física: " icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaAcademiaBean.aluno.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" >
+                                            <p:ajax event="click" listener="#{matriculaAcademiaBean.pesquisaFisica('responsavel')}" />
                                         </p:commandButton>
-                                        <p:commandButton value="Pessoa jurídica: " icon="ui-icon-search" action="# {chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}"/>
-                                    </h:column> -->
+                                        <p:commandButton value="Pessoa jurídica: " icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}"/>
+                                    </h:column>
                                     <p:outputLabel value="Modalidade:" />
                                     <p:selectOneMenu value="#{matriculaAcademiaBean.idModalidade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
                                         <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular()}"/>

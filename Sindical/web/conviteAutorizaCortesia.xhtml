@@ -26,10 +26,10 @@
                                 <p:outputLabel value="Pesquisar pessoa" style="border-bottom: 1px dotted #888;" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id == -1}" for="id_autoriza_cortesia"/>
                                 <p:outputLabel id="idNome" value="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.nome}" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" for="id_autoriza_cortesia"/>
                             </p:column>
-                            <p:commandButton value="Adicionar" action="#{conviteAutorizaCortesiaBean.salvar}" oncomplete="PF('dgl_panel_mensagem').show()" update="id_autoriza_cortesia, i_mensagem, tbl" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            <p:commandButton value="Adicionar" action="#{conviteAutorizaCortesiaBean.save}" oncomplete="PF('dlg_message').show()" update="id_autoriza_cortesia, i_mensagem, tbl" rendered="#{conviteAutorizaCortesiaBean.conviteAutorizaCortesia.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
                         </p:panelGrid>
                         <p:panelGrid columns="1" id="tbl" styleClass="sbb margin-top-max">
-                            <p:dataTable value="#{conviteAutorizaCortesiaBean.listaPessoasAutorizadas}" var="conviteAutorizaCortesia" emptyMessage="Nenhum registro(s) encontrado(s)">
+                            <p:dataTable value="#{conviteAutorizaCortesiaBean.listPessoasAutorizadas}" var="conviteAutorizaCortesia" emptyMessage="Nenhum registro(s) encontrado(s)">
                                 <p:column>
                                     <f:facet name="header">
                                         <h:outputText value="Nome"/>
@@ -37,19 +37,18 @@
                                     <h:outputLabel value="#{conviteAutorizaCortesia.pessoa.nome}" styleClass="fontePadrao"/>
                                 </p:column>
                                 <p:column>
-                                    <p:commandButton icon="ui-icon-trash" action="#{conviteAutorizaCortesiaBean.excluir(conviteAutorizaCortesia)}" oncomplete="PF('dgl_panel_mensagem').show()" update=":form_autoriza_cortesia:tbl, :form_autoriza_cortesia:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{conviteAutorizaCortesiaBean.delete(conviteAutorizaCortesia)}" oncomplete="PF('dlg_message').show()" update=":form_autoriza_cortesia:tbl, :form_autoriza_cortesia:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
                                 </p:column>
                                 <f:facet name="header">
                                     Relação de pessoas
                                 </f:facet>
                             </p:dataTable>
                         </p:panelGrid>                        
-                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
-                            <center>
-                                <h:outputLabel value="#{conviteAutorizaCortesiaBean.mensagem}" id="i_mensagem"/>
-                                <br /><br />
-                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
-                            </center>
+                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
+                            <h:outputLabel value="#{conviteAutorizaCortesiaBean.message}" id="i_mensagem"/>
+                            <f:facet name="footer">
+                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
+                            </f:facet>
                         </p:dialog>
                     </p:panel>
                 </h:form>
