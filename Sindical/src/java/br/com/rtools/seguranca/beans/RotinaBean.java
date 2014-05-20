@@ -1,5 +1,6 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
@@ -38,6 +39,7 @@ public class RotinaBean implements Serializable {
 
     public void save() {
         DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (rotina.getId() == -1) {
             if (rotina.getRotina().equals("")) {
                 message = "Digite uma Rotina!";
@@ -47,8 +49,10 @@ public class RotinaBean implements Serializable {
                     di.openTransaction();
                     if (di.save(rotina)) {
                         di.commit();
+                        novoLog.save("ID: " + rotina.getId() + " - Rotina: " + rotina.getRotina() + " - Página: " + rotina.getRotina() + " - Ativa: " + rotina.isAtivo());
                         message = "Registro salvo com sucesso";
                         listRotina.clear();
+                        descricaoPesquisa = "";
                     } else {
                         di.rollback();
                         message = "Erro ao inserir registro!";
@@ -58,10 +62,14 @@ public class RotinaBean implements Serializable {
                 }
             }
         } else {
+            Rotina r = (Rotina) di.find(rotina);
+            String beforeUpdate = "ID: " + r.getId() + " - Rotina: " + r.getRotina() + " - Página: " + r.getRotina() + " - Ativa: " + r.isAtivo();
             di.openTransaction();
             if (di.update(rotina)) {
-                listRotina.clear();
+                novoLog.update(beforeUpdate, "ID: " + rotina.getId() + " - Rotina: " + rotina.getRotina() + " - Página: " + rotina.getRotina() + " - Ativa: " + rotina.isAtivo());
                 di.commit();
+                listRotina.clear();
+                descricaoPesquisa = "";
                 message = "Registro atualizado com sucesso";
             } else {
                 di.rollback();
@@ -76,10 +84,13 @@ public class RotinaBean implements Serializable {
 
     public void delete() {
         DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (rotina.getId() != -1) {
             di.openTransaction();
             if (di.delete(rotina)) {
+                novoLog.delete("ID: " + rotina.getId() + " - Rotina: " + rotina.getRotina() + " - Página: " + rotina.getRotina() + " - Ativa: " + rotina.isAtivo());
                 di.commit();
+                descricaoPesquisa = "";
                 listRotina.clear();
                 message = "Registro excluido com sucesso";
             } else {
@@ -91,7 +102,9 @@ public class RotinaBean implements Serializable {
     }
 
     public String edit(Rotina r) {
-        rotina = r;
+        DaoInterface di = new Dao();
+        rotina = new Rotina();
+        rotina = (Rotina) di.rebind(r);
         GenericaSessao.put("rotinaPesquisa", rotina);
         GenericaSessao.put("linkClicado", true);
         if (GenericaSessao.exists("urlRetorno")) {

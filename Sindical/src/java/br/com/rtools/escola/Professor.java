@@ -1,6 +1,8 @@
 package br.com.rtools.escola;
 
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.utilitarios.BaseEntity;
+import java.io.Serializable;
 import javax.persistence.*;
 
 /**
@@ -22,12 +24,12 @@ import javax.persistence.*;
     @NamedQuery(name = "Professor.findAll", query = "SELECT P FROM Professor AS P ORDER BY P.professor.nome ASC"),
     @NamedQuery(name = "Professor.findName", query = "SELECT P FROM Professor AS P WHERE UPPER(P.professor.nome) LIKE :pdescricao ORDER BY P.professor.nome ASC ")
 })
-public class Professor implements java.io.Serializable {
+public class Professor implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID")
+    @JoinColumn(name = "ID_PROFESSOR", referencedColumnName = "ID", unique = true)
     @ManyToOne
     private Pessoa professor;
     @Column(name = "NR_COMISSAO")
@@ -45,6 +47,7 @@ public class Professor implements java.io.Serializable {
         this.nrComissao = nrComissao;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -68,4 +71,40 @@ public class Professor implements java.io.Serializable {
     public void setNrComissao(float nrComissao) {
         this.nrComissao = nrComissao;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + this.id;
+        hash = 59 * hash + (this.professor != null ? this.professor.hashCode() : 0);
+        hash = 59 * hash + Float.floatToIntBits(this.nrComissao);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Professor other = (Professor) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if (this.professor != other.professor && (this.professor == null || !this.professor.equals(other.professor))) {
+            return false;
+        }
+        if (Float.floatToIntBits(this.nrComissao) != Float.floatToIntBits(other.nrComissao)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Professor{" + "id=" + id + ", professor=" + professor + ", nrComissao=" + nrComissao + '}';
+    }
+
 }

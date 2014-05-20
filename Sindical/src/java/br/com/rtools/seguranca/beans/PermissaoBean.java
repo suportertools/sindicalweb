@@ -1,77 +1,105 @@
 package br.com.rtools.seguranca.beans;
 
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
-// import java.util.Vector;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
 public class PermissaoBean implements Serializable {
 
-    private Permissao permissao = new Permissao();
+    private Permissao permissao;
     private Modulo modulo;
     private Rotina rotina;
     private Evento evento;
-    private List<Permissao> listaPermissoes = new ArrayList();
-    private PermissaoDepartamento permissaoDepartamento = new PermissaoDepartamento();
+    private List<Permissao> listaPermissoes;
+    private PermissaoDepartamento permissaoDepartamento;
     private String msgConfirma;
-    private String indicaTab = "permissao";
-    private String descricaoPesquisa = "";
-    private String tabDisabled = "true";
-    private List listaPermissoesDisponiveis = new ArrayList();
-    private List listaPermissoesAdicionadas = new ArrayList();
-    private List<SelectItem> listaRotinas = new ArrayList();
-    private List<SelectItem> listaModulos = new ArrayList();
-    private List<SelectItem> listaEventos = new ArrayList();
-    private List<SelectItem> listaDepartamentos = new ArrayList();
-    private List<SelectItem> listaNiveis = new ArrayList();
+    private String indicaTab;
+    private String descricaoPesquisa;
+    private String tabDisabled;
+    private List listaPermissoesDisponiveis;
+    private List listaPermissoesAdicionadas;
+    private List<SelectItem> listaRotinas;
+    private List<SelectItem> listaModulos;
+    private List<SelectItem> listaEventos;
+    private List<SelectItem> listaDepartamentos;
+    private List<SelectItem> listaNiveis;
     private int idModulo;
     private int idRotina;
     private int idEvento;
     private int idDepartamento;
     private int idNivel;
-    private int idIndex = -1;
+    private int idIndex;
 
-    public String novo() {
+    @PostConstruct
+    public void init() {
         permissao = new Permissao();
-        setIdModulo(0);
-        setIdRotina(0);
-        setIdEvento(0);
-        setDescricaoPesquisa("");
-        setTabDisabled("true");
-        return "permissao";
+        modulo = new Modulo();
+        rotina = new Rotina();
+        evento = new Evento();
+        listaPermissoes = new ArrayList();
+        permissaoDepartamento = new PermissaoDepartamento();
+        msgConfirma = "";
+        indicaTab = "permissao";
+        descricaoPesquisa = "";
+        tabDisabled = "true";
+        listaPermissoesDisponiveis = new ArrayList();
+        listaPermissoesAdicionadas = new ArrayList();
+        listaRotinas = new ArrayList();
+        listaModulos = new ArrayList();
+        listaEventos = new ArrayList();
+        listaDepartamentos = new ArrayList();
+        listaNiveis = new ArrayList();
+        idModulo = 0;
+        idRotina = 0;
+        idEvento = 0;
+        idDepartamento = 0;
+        idNivel = 0;
+        idIndex = -1;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+    }
+
+    public void clear() {
+        GenericaSessao.remove("permissaoBean");
     }
 
     // MÓDULO / ROTINA
-    public String adicionarPermissao() {
+    public void addPermissao() {
         if (listaRotinas.isEmpty()) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Não há rotinas disponíveis para serem adicionadas a esse módulo"));
-            return null;
+            GenericaMensagem.warn("Sistema", "Não há rotinas disponíveis para serem adicionadas a esse módulo");
+            return;
         }
         PermissaoDB db = new PermissaoDBToplink();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        modulo = (Modulo) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaModulos.get(idModulo).getDescription()), "Modulo");
-        rotina = (Rotina) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaRotinas.get(idRotina).getDescription()), "Rotina");
+        DaoInterface di = new Dao();
+        modulo = (Modulo) di.find(new Modulo(), Integer.valueOf(listaModulos.get(idModulo).getDescription()));
+        rotina = (Rotina) di.find(new Rotina(), Integer.valueOf(listaRotinas.get(idRotina).getDescription()));
         boolean sucesso = false;
         if (db.pesquisaPermissaoModRot(modulo.getId(), rotina.getId()).isEmpty()) {
-            salvarAcumuladoDB.abrirTransacao();
+            di.openTransaction();
             for (int i = 0; i < getListaEventos().size(); i++) {
-                evento = (Evento) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(getListaEventos().get(i).getDescription()), "Evento");
+                evento = (Evento) di.find(new Evento(), Integer.valueOf(getListaEventos().get(i).getDescription()));
                 permissao.setModulo(modulo);
                 permissao.setRotina(rotina);
                 permissao.setEvento(evento);
-                if (!salvarAcumuladoDB.inserirObjeto(permissao)) {
+                if (!di.save(permissao)) {
                     sucesso = false;
                     break;
                 }
@@ -79,29 +107,30 @@ public class PermissaoBean implements Serializable {
                 sucesso = true;
             }
             if (sucesso) {
-                salvarAcumuladoDB.comitarTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro adicionado com sucesso"));
+                NovoLog novoLog = new NovoLog();
+                novoLog.save("Permissão [" + modulo.getDescricao() + " - " + rotina.getRotina() + "]");
+                di.commit();
+                GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
                 listaRotinas.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro adicionar permissão(s)!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro adicionar permissão(s)!");
             }
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existente!"));
+            GenericaMensagem.warn("Sistema", "Permissão já existente!");
         }
         permissao = new Permissao();
-        return null;
     }
 
-    public String removerPermissao(Permissao p) {
+    public void removePermissao(Permissao p) {
         PermissaoDB db = new PermissaoDBToplink();
         List<Permissao> listaPermissao = (List<Permissao>) db.pesquisaPermissaoModRot(p.getModulo().getId(), p.getRotina().getId());
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
+        DaoInterface di = new Dao();
+        di.openTransaction();
         boolean sucesso = false;
         for (int i = 0; i < listaPermissao.size(); i++) {
-            permissao = (Permissao) salvarAcumuladoDB.pesquisaCodigo(listaPermissao.get(i).getId(), "Permissao");
-            if (!salvarAcumuladoDB.deletarObjeto(permissao)) {
+            permissao = (Permissao) di.find(new Permissao(), listaPermissao.get(i).getId());
+            if (!di.delete(permissao)) {
                 sucesso = false;
                 break;
             }
@@ -109,14 +138,15 @@ public class PermissaoBean implements Serializable {
             permissao = new Permissao();
         }
         if (sucesso) {
-            salvarAcumuladoDB.comitarTransacao();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));
+            NovoLog novoLog = new NovoLog();
+            novoLog.save("Permissão [" + p.getModulo().getDescricao() + " - " + p.getRotina().getRotina() + "]");
+            di.commit();
+            GenericaMensagem.info("Sucesso", "Permissão(s) removida(s) com sucesso");
             listaRotinas.clear();
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+            di.rollback();
+            GenericaMensagem.warn("Erro", "Erro ao remover permissão(s)!");
         }
-        return null;
     }
 
     // PERMISSÃO DEPARTAMENTO   
@@ -124,18 +154,18 @@ public class PermissaoBean implements Serializable {
         if (!listaPermissoesDisponiveis.isEmpty()) {
             boolean erro = false;
             boolean temRegistros = false;
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
+            DaoInterface sv = new Dao();
+            sv.openTransaction();
             for (int i = 0; i < listaPermissoesDisponiveis.size(); i++) {
                 if ((Boolean) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento0() == true) {
                     Permissao perm = (Permissao) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento1();
-                    Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()), "Departamento");
-                    Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(getListaNiveis().get(idNivel).getDescription()), "Nivel");
+                    Departamento depto = (Departamento) sv.find(new Departamento(), Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()));
+                    Nivel niv = (Nivel) sv.find(new Nivel(), Integer.parseInt(getListaNiveis().get(idNivel).getDescription()));
                     permissaoDepartamento.setPermissao(perm);
                     permissaoDepartamento.setDepartamento(depto);
                     permissaoDepartamento.setNivel(niv);
 
-                    if (!sv.inserirObjeto(permissaoDepartamento)) {
+                    if (!sv.save(permissaoDepartamento)) {
                         temRegistros = false;
                         erro = true;
                         break;
@@ -145,16 +175,16 @@ public class PermissaoBean implements Serializable {
                 }
             }
             if (erro) {
-                sv.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão(s)!"));
+                sv.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao adicionar permissão(s)!");
             } else {
-                sv.comitarTransacao();
+                sv.commit();
                 if (temRegistros) {
                     listaPermissoesAdicionadas.clear();
                     listaPermissoesDisponiveis.clear();
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));
+                    GenericaMensagem.info("Sucesso", "Permissão(s) adicionada(s) com sucesso");
                 } else {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));
+                    GenericaMensagem.info("Sistema", "Não foi selecionada nenhuma permissão!");
                 }
             }
         }
@@ -164,26 +194,26 @@ public class PermissaoBean implements Serializable {
     public String adicionarPermissaoDptoDBClick(Permissao p) {
         if (!listaPermissoesDisponiveis.isEmpty()) {
             boolean erro = false;
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
             Permissao perm = p;
-            Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()), "Departamento");
-            Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(getListaNiveis().get(idNivel).getDescription()), "Nivel");
+            Departamento depto = (Departamento) di.find(new Departamento(), Integer.parseInt(getListaDepartamentos().get(idDepartamento).getDescription()));
+            Nivel niv = (Nivel) di.find(new Nivel(), Integer.parseInt(getListaNiveis().get(idNivel).getDescription()));
             permissaoDepartamento.setPermissao(perm);
             permissaoDepartamento.setDepartamento(depto);
             permissaoDepartamento.setNivel(niv);
-            if (!sv.inserirObjeto(permissaoDepartamento)) {
+            if (!di.save(permissaoDepartamento)) {
                 erro = true;
             }
             permissaoDepartamento = new PermissaoDepartamento();
             if (erro) {
-                sv.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão(s)!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao adicionar permissão(s)!");
             } else {
-                sv.comitarTransacao();
+                di.commit();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));
+                GenericaMensagem.info("Sucesso", "Permissão(s) adicionada(s) com sucesso");
             }
         }
         return null;
@@ -192,29 +222,29 @@ public class PermissaoBean implements Serializable {
     public String adicionarTodasPermissaoDpto() {
         if (!listaPermissoesDisponiveis.isEmpty()) {
             boolean erro = false;
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
             for (int i = 0; i < listaPermissoesDisponiveis.size(); i++) {
                 Permissao perm = (Permissao) ((DataObject) listaPermissoesDisponiveis.get(i)).getArgumento1();
-                Departamento depto = (Departamento) sv.pesquisaCodigo(Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription()), "Departamento");
-                Nivel niv = (Nivel) sv.pesquisaCodigo(Integer.parseInt(listaNiveis.get(idNivel).getDescription()), "Nivel");
+                Departamento depto = (Departamento) di.find(new Departamento(), Integer.parseInt(listaDepartamentos.get(idDepartamento).getDescription()));
+                Nivel niv = (Nivel) di.find(new Nivel(), Integer.parseInt(listaNiveis.get(idNivel).getDescription()));
                 permissaoDepartamento.setPermissao(perm);
                 permissaoDepartamento.setDepartamento(depto);
                 permissaoDepartamento.setNivel(niv);
-                if (!sv.inserirObjeto(permissaoDepartamento)) {
+                if (!di.save(permissaoDepartamento)) {
                     erro = true;
                     break;
                 }
                 permissaoDepartamento = new PermissaoDepartamento();
             }
             if (erro) {
-                sv.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão(s)!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao adicionar permissão(s)!");
             } else {
-                sv.comitarTransacao();
+                di.commit();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) adicionada(s) com sucesso"));
+                GenericaMensagem.info("Sucesso", "Permissão(s) adicionada(s) com sucesso");
             }
         }
         return null;
@@ -224,12 +254,12 @@ public class PermissaoBean implements Serializable {
         if (!listaPermissoesAdicionadas.isEmpty()) {
             boolean erro = false;
             boolean temRegistros = false;
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
             for (int i = 0; i < listaPermissoesAdicionadas.size(); i++) {
                 if ((Boolean) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento0() == true) {
                     permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento2();
-                    if (!sv.deletarObjeto((PermissaoDepartamento) sv.pesquisaCodigo(permissaoDepartamento.getId(), "PermissaoDepartamento"))) {
+                    if (!di.delete(permissaoDepartamento)) {
                         erro = true;
                         temRegistros = false;
                         break;
@@ -239,16 +269,16 @@ public class PermissaoBean implements Serializable {
                 permissaoDepartamento = new PermissaoDepartamento();
             }
             if (erro) {
-                sv.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao remover permissão(s)!");
             } else {
-                sv.comitarTransacao();
+                di.commit();
                 if (temRegistros) {
                     listaPermissoesAdicionadas.clear();
                     listaPermissoesDisponiveis.clear();
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));
+                    GenericaMensagem.info("Sucesso", "Permissão(s) removida(s) com sucesso");
                 } else {
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Não foi selecionada nenhuma permissão!"));
+                    GenericaMensagem.info("Sistema", "Não foi selecionada nenhuma permissão!");
                 }
             }
         }
@@ -258,21 +288,21 @@ public class PermissaoBean implements Serializable {
     public String excluirPermissaoDeptoDBClick(PermissaoDepartamento pd) {
         if (!listaPermissoesAdicionadas.isEmpty()) {
             boolean erro = false;
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
             permissaoDepartamento = pd;
-            if (!sv.deletarObjeto((PermissaoDepartamento) sv.pesquisaCodigo(permissaoDepartamento.getId(), "PermissaoDepartamento"))) {
+            if (!di.delete(permissaoDepartamento)) {
                 erro = true;
             }
             permissaoDepartamento = new PermissaoDepartamento();
             if (erro) {
-                sv.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao remover permissão(s)!");
             } else {
-                sv.comitarTransacao();
+                di.commit();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removida(s) com sucesso"));
+                GenericaMensagem.info("Sucesso", "Permissão(s) removida(s) com sucesso");
             }
         }
         return null;
@@ -281,23 +311,23 @@ public class PermissaoBean implements Serializable {
     public String excluirTodasPermissaoDepto() {
         if (!listaPermissoesAdicionadas.isEmpty()) {
             boolean erro = false;
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
             for (int i = 0; i < listaPermissoesAdicionadas.size(); i++) {
                 permissaoDepartamento = (PermissaoDepartamento) ((DataObject) listaPermissoesAdicionadas.get(i)).getArgumento2();
-                if (!sv.deletarObjeto((PermissaoDepartamento) sv.pesquisaCodigo(permissaoDepartamento.getId(), "PermissaoDepartamento"))) {
+                if (!di.delete(permissaoDepartamento)) {
                     erro = true;
                     break;
                 }
             }
             if (erro) {
-                sv.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão(s)!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao remover permissão(s)!");
             } else {
-                sv.comitarTransacao();
+                di.commit();
                 listaPermissoesAdicionadas.clear();
                 listaPermissoesDisponiveis.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão(s) removidas com sucesso"));
+                GenericaMensagem.info("Sucesso", "Permissão(s) removidas com sucesso");
             }
         }
         permissaoDepartamento = new PermissaoDepartamento();
@@ -449,10 +479,10 @@ public class PermissaoBean implements Serializable {
 
     public List<SelectItem> getListaModulos() {
         if (listaModulos.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List modulos = salvarAcumuladoDB.listaObjeto("Modulo", true);
+            DaoInterface di = new Dao();
+            List modulos = di.list(new Modulo(), true);
             for (int i = 0; i < modulos.size(); i++) {
-                listaModulos.add(new SelectItem(new Integer(i),
+                listaModulos.add(new SelectItem(i,
                         ((Modulo) modulos.get(i)).getDescricao(),
                         Integer.toString(((Modulo) modulos.get(i)).getId())));
             }
@@ -470,7 +500,7 @@ public class PermissaoBean implements Serializable {
             RotinaDB rotinaDB = new RotinaDBToplink();
             List list = rotinaDB.pesquisaRotinasDisponiveisModulo(Integer.parseInt(listaModulos.get(idModulo).getDescription()));
             for (int i = 0; i < list.size(); i++) {
-                listaRotinas.add(new SelectItem(new Integer(i),
+                listaRotinas.add(new SelectItem(i,
                         ((Rotina) list.get(i)).getRotina(),
                         Integer.toString(((Rotina) list.get(i)).getId())));
             }
@@ -484,12 +514,10 @@ public class PermissaoBean implements Serializable {
 
     public List<SelectItem> getListaEventos() {
         if (listaEventos.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List eventos = salvarAcumuladoDB.listaObjeto("Evento", true);
+            DaoInterface di = new Dao();
+            List eventos = di.list(new Evento(), true);
             for (int i = 0; i < eventos.size(); i++) {
-                listaEventos.add(new SelectItem(new Integer(i),
-                        ((Evento) eventos.get(i)).getDescricao(),
-                        Integer.toString(((Evento) eventos.get(i)).getId())));
+                listaEventos.add(new SelectItem(i, ((Evento) eventos.get(i)).getDescricao(), Integer.toString(((Evento) eventos.get(i)).getId())));
             }
         }
         return listaEventos;
@@ -501,10 +529,10 @@ public class PermissaoBean implements Serializable {
 
     public List<SelectItem> getListaNiveis() {
         if (listaNiveis.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List niveis = salvarAcumuladoDB.listaObjeto("Nivel", true);
+            DaoInterface di = new Dao();
+            List niveis = di.list(new Nivel(), true);
             for (int i = 0; i < niveis.size(); i++) {
-                listaNiveis.add(new SelectItem(new Integer(i),
+                listaNiveis.add(new SelectItem(i,
                         ((Nivel) niveis.get(i)).getDescricao(),
                         Integer.toString(((Nivel) niveis.get(i)).getId())));
             }
@@ -519,10 +547,10 @@ public class PermissaoBean implements Serializable {
 
     public List<SelectItem> getListaDepartamentos() {
         if (listaDepartamentos.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List departamentos = salvarAcumuladoDB.listaObjeto("Departamento", true);
+            DaoInterface di = new Dao();
+            List departamentos = di.list(new Departamento(), true);
             for (int i = 0; i < departamentos.size(); i++) {
-                listaDepartamentos.add(new SelectItem(new Integer(i),
+                listaDepartamentos.add(new SelectItem(i,
                         ((Departamento) departamentos.get(i)).getDescricao(),
                         Integer.toString(((Departamento) departamentos.get(i)).getId())));
             }

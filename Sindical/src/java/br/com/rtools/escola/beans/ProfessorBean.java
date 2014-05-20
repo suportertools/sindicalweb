@@ -3,106 +3,145 @@ package br.com.rtools.escola.beans;
 import br.com.rtools.escola.Professor;
 import br.com.rtools.escola.db.ProfessorDB;
 import br.com.rtools.escola.db.ProfessorDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
 public class ProfessorBean implements java.io.Serializable {
 
-    private Professor professor = new Professor();
-    private String mensagem = "";
-    private List<Professor> listaProfessores = new ArrayList();
+    private Professor professor;
+    private String message;
+    private List<Professor> listProfessores;
 
-    public void salvar() {
+    @PostConstruct
+    public void init() {
+        professor = new Professor();
+        message = "";
+        listProfessores = new ArrayList<Professor>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+        GenericaSessao.remove("pessoaPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("professorBean");
+    }
+
+    public void save() {
         ProfessorDB professorDB = new ProfessorDBToplink();
         if (professor.getProfessor().getId() == -1) {
-            mensagem = "Pesquise uma pessoa para ser Professor!";
+            message = "Pesquise uma pessoa para ser Professor!";
             return;
         }
         if (professorDB.existeProfessor(professor)) {
-            mensagem = "Professor já cadastrado!";
+            message = "Professor já cadastrado!";
             return;
         }
-
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        di.openTransaction();
         if (professor.getId() == -1) {
-            if (!salvarAcumuladoDB.inserirObjeto(professor)) {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao salvar Professor!";
+            if (!di.save(professor)) {
+                di.rollback();
+                message = "Erro ao salvar Professor!";
                 return;
             } else {
-                mensagem = "Cadastro salvo com sucesso!";
+                message = "Cadastro salvo com sucesso!";
             }
+            novoLog.save(
+                    "ID " + professor.getId()
+                    + " - Pessoa: (" + professor.getProfessor().getId() + ") " + professor.getProfessor().getNome()
+                    + " - Comissão: " + professor.getNrComissao()
+            );
         } else {
-            if (!salvarAcumuladoDB.alterarObjeto(professor)) {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao atualizar Professor!";
+            Professor p = (Professor) di.find(professor);
+            String beforeUpdate
+                    = "ID " + p.getId()
+                    + " - Pessoa: (" + p.getProfessor().getId() + ") " + p.getProfessor().getNome()
+                    + " - Comissão: " + p.getNrComissao();
+            if (!di.update(professor)) {
+                di.rollback();
+                message = "Erro ao atualizar Professor!";
                 return;
             } else {
-                mensagem = "Cadastro atualizado com sucesso!";
+                message = "Cadastro atualizado com sucesso!";
             }
+            novoLog.update(beforeUpdate,
+                    "ID " + professor.getId()
+                    + " - Pessoa: (" + professor.getProfessor().getId() + ") " + professor.getProfessor().getNome()
+                    + " - Comissão: " + professor.getNrComissao()
+            );
         }
-        salvarAcumuladoDB.comitarTransacao();
+        di.commit();
         professor = new Professor();
-        listaProfessores.clear();
+        listProfessores.clear();
     }
 
-    public void editar(Professor p) {
-        professor = p;
+    public void edit(Professor p) {
+        DaoInterface di = new Dao();
+        professor = (Professor) di.rebind(p);
     }
 
-    public void excluir() {
+    public void delete() {
         if (professor.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            professor = (Professor) salvarAcumuladoDB.pesquisaCodigo(professor.getId(), "Professor");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(professor)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaProfessores.clear();
+            DaoInterface di = new Dao();
+            NovoLog novoLog = new NovoLog();
+            di.openTransaction();
+            if (di.delete(professor)) {
+                novoLog.delete(
+                        "ID " + professor.getId()
+                        + " - Pessoa: (" + professor.getProfessor().getId() + ") " + professor.getProfessor().getNome()
+                        + " - Comissão: " + professor.getNrComissao()
+                );
+                di.commit();
+                listProfessores.clear();
                 professor = new Professor();
-                mensagem = "Cadastro excluído com sucesso!";
+                message = "Cadastro excluído com sucesso!";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao excluir Cadastro!";
+                di.rollback();
+                message = "Erro ao excluir Cadastro!";
             }
         }
     }
 
-    public void excluir(Professor p) {
+    public void delete(Professor p) {
         if (p.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            professor = (Professor) salvarAcumuladoDB.pesquisaCodigo(p.getId(), "Professor");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(professor)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaProfessores.clear();
+            DaoInterface di = new Dao();
+            di.openTransaction();
+            NovoLog novoLog = new NovoLog();
+            if (di.delete(p)) {
+                novoLog.delete(
+                        "ID " + p.getId()
+                        + " - Pessoa: (" + p.getProfessor().getId() + ") " + p.getProfessor().getNome()
+                        + " - Comissão: " + p.getNrComissao()
+                );
+                di.commit();
+                listProfessores.clear();
                 professor = new Professor();
-                mensagem = "Cadastro excluído com sucesso!";
+                message = "Cadastro excluído com sucesso!";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao excluir Cadastro!";
+                di.rollback();
+                message = "Erro ao excluir Cadastro!";
             }
         }
-    }
-
-    public void novo() {
-        professor = new Professor();
-        mensagem = "";
     }
 
     public Professor getProfessor() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            professor.setProfessor((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        if (GenericaSessao.exists("pessoaPesquisa")) {
+            professor.setProfessor((Pessoa) GenericaSessao.getObject("pessoaPesquisa", true));
         }
         return professor;
     }
@@ -111,23 +150,23 @@ public class ProfessorBean implements java.io.Serializable {
         this.professor = professor;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public List<Professor> getListaProfessores() {
-        if (listaProfessores.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaProfessores = (List<Professor>) salvarAcumuladoDB.listaObjeto("Professor", true);
+    public List<Professor> getListProfessores() {
+        if (listProfessores.isEmpty()) {
+            DaoInterface di = new Dao();
+            listProfessores = (List<Professor>) di.list(new Professor(), true);
         }
-        return listaProfessores;
+        return listProfessores;
     }
 
-    public void setListaProfessores(List<Professor> listaProfessores) {
-        this.listaProfessores = listaProfessores;
+    public void setListProfessores(List<Professor> listProfessores) {
+        this.listProfessores = listProfessores;
     }
 }

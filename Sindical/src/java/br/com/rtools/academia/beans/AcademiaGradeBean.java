@@ -4,14 +4,13 @@ import br.com.rtools.academia.AcademiaGrade;
 import br.com.rtools.academia.AcademiaSemana;
 import br.com.rtools.academia.db.AcademiaDB;
 import br.com.rtools.academia.db.AcademiaDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -74,25 +73,27 @@ public class AcademiaGradeBean implements Serializable {
         GenericaSessao.remove("academiaGradeBean");
     }
 
-    public String salvar() {
+    public void save() {
         int horaInicioI = Integer.parseInt(academiaGrade.getHoraInicio().replace(":", ""));
         int horaFimI = Integer.parseInt(academiaGrade.getHoraFim().replace(":", ""));
         if (horaFimI <= horaInicioI) {
             GenericaMensagem.info("Validação", "Hora inicio deve ser maior que hora fim");
-            return null;
+            return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        String s = "";
         if (academiaGrade.getId() == -1) {
 //            AcademiaDB academiaDB = new AcademiaDBToplink();
 //            if (((AcademiaGrade) academiaDB.existeAcademiaGrade(academiaGrade.getHoraInicio(), academiaGrade.getHoraFim())) != null) {
 //                GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
 //                return null;
 //            }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(academiaGrade)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(academiaGrade)) {
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
-                salvarAcumuladoDB.abrirTransacao();
+                di.openTransaction();
                 if (dom) {
                     addListaSemana(1);
                 }
@@ -114,33 +115,41 @@ public class AcademiaGradeBean implements Serializable {
                 if (sab) {
                     addListaSemana(7);
                 }
+
                 for (int i = 0; i < academiaSemanas.size(); i++) {
-                    if (!salvarAcumuladoDB.inserirObjeto(academiaSemanas.get(i))) {
-                        salvarAcumuladoDB.desfazerTransacao();
+                    if (!di.save(academiaSemanas.get(i))) {
+                        di.rollback();
                         academiaSemanas.clear();
                         break;
                     }
+                    if (i == 0) {
+                        s = academiaSemanas.get(i).getSemana().getDescricao();
+                    } else {
+                        s += ", " + academiaSemanas.get(i).getSemana().getDescricao();
+                    }
                 }
-                salvarAcumuladoDB.comitarTransacao();
+                novoLog.save("ID: " + academiaGrade.getId() + ". Horário das: " + academiaGrade.getHoraInicio() + " às " + academiaGrade.getHoraFim() + " (hrs). Dias da semana: " + s);
+                di.commit();
                 academiaSemanas.clear();
                 listaAcademiaGrades.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao adicionar registro!");
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(academiaGrade)) {
-                salvarAcumuladoDB.comitarTransacao();
+            AcademiaGrade ag = (AcademiaGrade) di.find(academiaGrade);
+            di.openTransaction();
+            if (di.update(academiaGrade)) {
+                novoLog.update("Horário das: " + ag.getHoraInicio() + " às " + ag.getHoraFim(), "ID: " + academiaGrade.getId() + " (hrs). Horário das: " + academiaGrade.getHoraInicio() + " às " + academiaGrade.getHoraFim() + " (hrs)");
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro atualizado");
                 listaAcademiaGrades.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
         clear();
-        return "academiaGrade";
     }
 
     public void addListaSemana(int idSemana) {
@@ -185,28 +194,36 @@ public class AcademiaGradeBean implements Serializable {
         }
     }
 
-    public void editar(AcademiaGrade ag) {
+    public void edit(AcademiaGrade ag) {
         academiaGrade = ag;
     }
 
-    public void excluir(AcademiaGrade ag) {
+    public void delete(AcademiaGrade ag) {
         if (ag.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+            DaoInterface di = new Dao();
             AcademiaDB academiaDB = new AcademiaDBToplink();
-            salvarAcumuladoDB.abrirTransacao();
+            di.openTransaction();
             List<AcademiaSemana> list = academiaDB.listaAcademiaSemana(ag.getId());
+            NovoLog novoLog = new NovoLog();
+            String s = "";
             for (int i = 0; i < list.size(); i++) {
-                if (!salvarAcumuladoDB.deletarObjeto((AcademiaSemana) salvarAcumuladoDB.pesquisaCodigo(list.get(i).getId(), "AcademiaSemana"))) {
-                    salvarAcumuladoDB.desfazerTransacao();
+                if (!di.delete(list.get(i))) {
+                    di.rollback();
                     break;
                 }
+                if (i == 0) {
+                    s = list.get(i).getSemana().getDescricao();
+                } else {
+                    s += ", " + list.get(i).getSemana().getDescricao();
+                }
             }
-            if (salvarAcumuladoDB.deletarObjeto((AcademiaGrade) salvarAcumuladoDB.pesquisaCodigo(ag.getId(), "AcademiaGrade"))) {
-                salvarAcumuladoDB.comitarTransacao();
+            if (di.delete(ag)) {
+                di.commit();
+                novoLog.delete("ID: " + ag.getId() + ". Horário das: " + ag.getHoraInicio() + " às " + ag.getHoraFim() + " (hrs). Dias da semana: " + s);
                 GenericaMensagem.info("Sucesso", "Excluído com sucesso");
                 listaAcademiaGrades.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao excluir registro!");
             }
         }
@@ -230,8 +247,8 @@ public class AcademiaGradeBean implements Serializable {
 
     public List<AcademiaGrade> getListaAcademiaGrades() {
         if (listaAcademiaGrades.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            listaAcademiaGrades = (List<AcademiaGrade>) dB.listaObjeto("AcademiaGrade", true);
+            DaoInterface di = new Dao();
+            listaAcademiaGrades = (List<AcademiaGrade>) di.list(new AcademiaGrade(), true);
         }
         return listaAcademiaGrades;
     }
@@ -341,8 +358,8 @@ public class AcademiaGradeBean implements Serializable {
 
     public List<Semana> getListaSemana() {
         if (listaSemana.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            listaSemana = (List<Semana>) dB.listaObjeto("Semana");
+            DaoInterface di = new Dao();
+            listaSemana = (List<Semana>) di.list(new Semana());
         }
         return listaSemana;
     }

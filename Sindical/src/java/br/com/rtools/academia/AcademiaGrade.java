@@ -1,8 +1,8 @@
 package br.com.rtools.academia;
 
+import br.com.rtools.utilitarios.BaseEntity;
 import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.*;
 
 /**
@@ -16,12 +16,14 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "ACA_GRADE")
+@Table(name = "ACA_GRADE",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"DS_HORA_INICIO", "DS_HORA_FIM"})
+)
 @NamedQueries({
     @NamedQuery(name = "AcademiaGrade.pesquisaID", query = "SELECT AG FROM AcademiaGrade AS AG WHERE AG.id = :pid"),
     @NamedQuery(name = "AcademiaGrade.findAll", query = "SELECT AG FROM AcademiaGrade AS AG ORDER BY AG.horaInicio ASC, AG.horaFim ASC")
 })
-public class AcademiaGrade implements Serializable {
+public class AcademiaGrade implements BaseEntity, Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +45,7 @@ public class AcademiaGrade implements Serializable {
         this.horaFim = horaFim;
     }
 
+    @Override
     public int getId() {
         return id;
     }
@@ -66,4 +69,39 @@ public class AcademiaGrade implements Serializable {
     public void setHoraFim(String horaFim) {
         this.horaFim = horaFim;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 3;
+        hash = 97 * hash + (this.horaInicio != null ? this.horaInicio.hashCode() : 0);
+        hash = 97 * hash + (this.horaFim != null ? this.horaFim.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AcademiaGrade other = (AcademiaGrade) obj;
+        if (this.id != other.id) {
+            return false;
+        }
+        if ((this.horaInicio == null) ? (other.horaInicio != null) : !this.horaInicio.equals(other.horaInicio)) {
+            return false;
+        }
+        if ((this.horaFim == null) ? (other.horaFim != null) : !this.horaFim.equals(other.horaFim)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "AcademiaGrade{" + "id=" + id + ", horaInicio=" + horaInicio + ", horaFim=" + horaFim + '}';
+    }
+
 }

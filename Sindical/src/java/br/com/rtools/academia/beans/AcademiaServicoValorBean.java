@@ -7,13 +7,17 @@ import br.com.rtools.academia.db.AcademiaDBToplink;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.sistema.Periodo;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -22,117 +26,135 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class AcademiaServicoValorBean implements Serializable {
 
-    private AcademiaServicoValor academiaServicoValor = new AcademiaServicoValor();
-    private List<AcademiaServicoValor> listaAcademiaServicoValors = new ArrayList<AcademiaServicoValor>();
-    private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaPeriodos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaGrades = new ArrayList<SelectItem>();
-    private int idServicos = 0;
-    private int idPeriodo = 0;
-    private int idGrade = 0;
-    private int maximoParcelas = 0;
-    private boolean ocultaParcelas = true;
+    private AcademiaServicoValor academiaServicoValor;
+    private List<AcademiaServicoValor> listAcademiaServicoValors;
+    private List<AcademiaGrade> listAcademiaGrades;
+    private List<Periodo> listPeriodos;
+    private AcademiaGrade academiaGrade;
+    private Periodo periodo;
+    /**
+     * <ul>
+     * <li>[0] Serviços </li>
+     * </ul>
+     */
+    private List<SelectItem>[] listSelectItem;
+    private Integer[] index;
+    private int maximoParcelas;
+    private boolean ocultaParcelas;
 
-    public void salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        if (listaServicos.isEmpty()) {
+    @PostConstruct
+    public void init() {
+        academiaServicoValor = new AcademiaServicoValor();
+        listAcademiaServicoValors = new ArrayList<AcademiaServicoValor>();
+        listSelectItem = new ArrayList[]{new ArrayList<SelectItem>()};
+        index = new Integer[]{0};
+        listAcademiaGrades = new ArrayList<AcademiaGrade>();
+        listPeriodos = new ArrayList<Periodo>();
+        academiaGrade = new AcademiaGrade();
+        periodo = new Periodo();
+        maximoParcelas = 0;
+        ocultaParcelas = true;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+    }
+
+    public void save() {
+        DaoInterface di = new Dao();
+        if (listSelectItem[0].isEmpty()) {
             GenericaMensagem.warn("Sistema", "Cadastrar serviços!");
             return;
         }
-        if (listaPeriodos.isEmpty()) {
-            GenericaMensagem.warn("Sistema", "Cadastrar grade de horários e dias da semana!");
-            return;
-        }
-        if (listaPeriodos.isEmpty()) {
+        if (listPeriodos.isEmpty()) {
             GenericaMensagem.warn("Sistema", "Cadastrar lista de períodos!");
             return;
         }
-        academiaServicoValor.setServicos((Servicos) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
-        academiaServicoValor.setAcademiaGrade((AcademiaGrade) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaGrades.get(idGrade).getDescription()), "AcademiaGrade"));
-        academiaServicoValor.setPeriodo((Periodo) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaPeriodos.get(idPeriodo).getDescription()), "Periodo"));
+        if (listAcademiaGrades.isEmpty()) {
+            GenericaMensagem.warn("Sistema", "Cadastrar grade de horários e dias da semana!");
+            return;
+        }
+        academiaServicoValor.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[0]).getDescription())));
+        academiaServicoValor.setPeriodo(periodo);
+        academiaServicoValor.setAcademiaGrade(academiaGrade);
+        NovoLog novoLog = new NovoLog();
         if (academiaServicoValor.getId() == -1) {
             AcademiaDB academiaDB = new AcademiaDBToplink();
             if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
                 GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
                 return;
             }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(academiaServicoValor)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(academiaServicoValor)) {
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
-                listaAcademiaServicoValors.clear();
+                novoLog.save("ID: " + academiaServicoValor.getId() + " - Grade: " + academiaServicoValor.getAcademiaGrade().getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
+                listAcademiaServicoValors.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao adicionar registro!");
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(academiaServicoValor)) {
-                salvarAcumuladoDB.comitarTransacao();
+            AcademiaServicoValor asv = (AcademiaServicoValor) di.find(academiaServicoValor);
+            String beforeString = "ID: " + asv.getId() + " - Grade: " + asv.getAcademiaGrade().getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao();
+            di.openTransaction();
+            if (di.update(academiaServicoValor)) {
+                novoLog.update(beforeString, "ID: " + academiaServicoValor.getId() + " - Grade: " + academiaServicoValor.getAcademiaGrade().getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro atualizado");
-                listaAcademiaServicoValors.clear();
+                listAcademiaServicoValors.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
-        novo();
+        clear();
     }
 
-    public void novo() {
-        idGrade = 0;
-        idPeriodo = 0;
-        academiaServicoValor = new AcademiaServicoValor();
-        ocultaParcelas = true;
+    public void clear() {
+        GenericaSessao.remove("academiaServicoValorBean");
     }
 
-    public void editar(AcademiaServicoValor asv) {
+    public void edit(AcademiaServicoValor asv) {
         academiaServicoValor = asv;
-        for (int i = 0; i < listaServicos.size(); i++) {
-            if (Integer.parseInt(listaServicos.get(i).getDescription()) == asv.getServicos().getId()) {
-                idServicos = i;
-                break;
-            }
-        }
-        for (int i = 0; i < listaGrades.size(); i++) {
-            if (Integer.parseInt(listaGrades.get(i).getDescription()) == asv.getAcademiaGrade().getId()) {
-                idGrade = i;
-                break;
-            }
-        }
-        for (int i = 0; i < listaPeriodos.size(); i++) {
-            if (Integer.parseInt(listaPeriodos.get(i).getDescription()) == asv.getPeriodo().getId()) {
-                idPeriodo = i;
+        academiaGrade = academiaServicoValor.getAcademiaGrade();
+        periodo = academiaServicoValor.getPeriodo();
+        for (int i = 0; i < getListServicos().size(); i++) {
+            if (Integer.parseInt(getListServicos().get(i).getDescription()) == asv.getServicos().getId()) {
+                index[0] = i;
                 break;
             }
         }
     }
 
-    public void excluir(AcademiaServicoValor asv) {
+    public void delete(AcademiaServicoValor asv) {
         if (asv.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto((AcademiaServicoValor) salvarAcumuladoDB.pesquisaCodigo(asv.getId(), "AcademiaServicoValor"))) {
-                salvarAcumuladoDB.comitarTransacao();
+            DaoInterface di = new Dao();
+            NovoLog novoLog = new NovoLog();
+            di.openTransaction();
+            if (di.delete(asv)) {
+                novoLog.delete("ID: " + asv.getId() + " - Grade: " + asv.getAcademiaGrade().getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao());
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Excluído com sucesso");
-                listaAcademiaServicoValors.clear();
+                listAcademiaServicoValors.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao excluir registro!");
             }
         }
     }
 
-    public List<AcademiaServicoValor> getListaAcademiaServicoValors() {
-        if (listaAcademiaServicoValors.isEmpty()) {
+    public List<AcademiaServicoValor> getListAcademiaServicoValors() {
+        if (listAcademiaServicoValors.isEmpty()) {
             AcademiaDB academiaDB = new AcademiaDBToplink();
-            listaAcademiaServicoValors = academiaDB.listaAcademiaServicoValor(Integer.parseInt(getListaServicos().get(idServicos).getDescription()));
+            listAcademiaServicoValors = academiaDB.listaAcademiaServicoValor(Integer.parseInt(getListServicos().get(index[0]).getDescription()));
         }
-        return listaAcademiaServicoValors;
+        return listAcademiaServicoValors;
     }
 
-    public void setListaAcademiaServicoValors(List<AcademiaServicoValor> listaAcademiaServicoValors) {
-        this.listaAcademiaServicoValors = listaAcademiaServicoValors;
+    public void setListAcademiaServicoValors(List<AcademiaServicoValor> listAcademiaServicoValors) {
+        this.listAcademiaServicoValors = listAcademiaServicoValors;
     }
 
     public AcademiaServicoValor getAcademiaServicoValor() {
@@ -143,80 +165,52 @@ public class AcademiaServicoValorBean implements Serializable {
         this.academiaServicoValor = academiaServicoValor;
     }
 
-    public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty()) {
+    public List<SelectItem> getListServicos() {
+        if (listSelectItem[0].isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
             List list = db.pesquisaTodos(122);
             for (int i = 0; i < list.size(); i++) {
-                listaServicos.add(new SelectItem(i,
+                listSelectItem[0].add(new SelectItem(i,
                         ((Servicos) list.get(i)).getDescricao(),
                         Integer.toString(((Servicos) list.get(i)).getId())));
             }
         }
-        return listaServicos;
+        return listSelectItem[0];
     }
 
-    public void setListaServicos(List<SelectItem> listaServicos) {
-        this.listaServicos = listaServicos;
-    }
-
-    public int getIdServicos() {
-        return idServicos;
-    }
-
-    public void setIdServicos(int idServicos) {
-        this.idServicos = idServicos;
-    }
-
-    public List<SelectItem> getListaPeriodos() {
-        if (listaPeriodos.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<Periodo> list = (List<Periodo>) dB.listaObjeto("Periodo", true);
-            for (int i = 0; i < list.size(); i++) {
-                listaPeriodos.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+    public List<Periodo> getListPeriodos() {
+        if (listPeriodos.isEmpty()) {
+            DaoInterface di = new Dao();
+            listPeriodos = (List<Periodo>) di.list(new Periodo(), true);
+            if (!listPeriodos.isEmpty()) {
+                periodo = listPeriodos.get(0);
             }
         }
-        return listaPeriodos;
+        return listPeriodos;
     }
 
-    public void setListaPeriodos(List<SelectItem> listaPeriodos) {
-        this.listaPeriodos = listaPeriodos;
+    public void setListPeriodos(List<Periodo> listPeriodos) {
+        this.listPeriodos = listPeriodos;
     }
 
-    public int getIdPeriodo() {
-        return idPeriodo;
-    }
-
-    public void setIdPeriodo(int idPeriodo) {
-        this.idPeriodo = idPeriodo;
-    }
-
-    public List<SelectItem> getListaGrades() {
-        if (listaGrades.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<AcademiaGrade> list = (List<AcademiaGrade>) dB.listaObjeto("AcademiaGrade", true);
-            for (int i = 0; i < list.size(); i++) {
-                listaGrades.add(new SelectItem(i, list.get(i).getHoraInicio() + " - " + list.get(i).getHoraFim(), Integer.toString(list.get(i).getId())));
+    public List<AcademiaGrade> getListAcademiaGrades() {
+        if (listAcademiaGrades.isEmpty()) {
+            DaoInterface di = new Dao();
+            listAcademiaGrades = (List<AcademiaGrade>) di.list(new AcademiaGrade(), true);
+            if (!listAcademiaGrades.isEmpty()) {
+                academiaGrade = listAcademiaGrades.get(0);
             }
         }
-        return listaGrades;
+        return listAcademiaGrades;
     }
 
-    public void setListaGrades(List<SelectItem> listaGrades) {
-        this.listaGrades = listaGrades;
-    }
-
-    public int getIdGrade() {
-        return idGrade;
-    }
-
-    public void setIdGrade(int idGrade) {
-        this.idGrade = idGrade;
+    public void setListAcademiaGrades(List<AcademiaGrade> listAcademiaGrades) {
+        this.listAcademiaGrades = listAcademiaGrades;
     }
 
     public boolean isOcultaParcelas() {
-        if (!listaPeriodos.isEmpty()) {
-            int id = Integer.parseInt(listaPeriodos.get(idPeriodo).getDescription());
+        if (!getListPeriodos().isEmpty()) {
+            int id = periodo.getId();
             switch (id) {
                 case 5:
                     ocultaParcelas = false;
@@ -247,6 +241,30 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public void setMaximoParcelas(int maximoParcelas) {
         this.maximoParcelas = maximoParcelas;
+    }
+
+    public Integer[] getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer[] index) {
+        this.index = index;
+    }
+
+    public AcademiaGrade getAcademiaGrade() {
+        return academiaGrade;
+    }
+
+    public void setAcademiaGrade(AcademiaGrade academiaGrade) {
+        this.academiaGrade = academiaGrade;
+    }
+
+    public Periodo getPeriodo() {
+        return periodo;
+    }
+
+    public void setPeriodo(Periodo periodo) {
+        this.periodo = periodo;
     }
 
 }

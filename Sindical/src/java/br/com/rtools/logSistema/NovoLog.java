@@ -92,8 +92,10 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void update(String beforeUpdate, String afterUpdate) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3));
-        execute(log);
+        if(!beforeUpdate.equals(afterUpdate)) {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3));
+            execute(log);
+        }
     }
 
     /**

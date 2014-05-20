@@ -1,15 +1,17 @@
 package br.com.rtools.pessoa.beans;
 
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.Spc;
 import br.com.rtools.pessoa.db.SpcDB;
 import br.com.rtools.pessoa.db.SpcDBToplink;
-import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -17,26 +19,40 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class SpcBean {
 
-    private Spc spc = new Spc();
-    private List<Spc> listaSPC = new ArrayList<Spc>();
-    private String mensagem = "";
-    private String botaoSalvar = "Adicionar";
-    private String descricaoPesquisa = "";
-    private String porPesquisa = "";
-    private String comoPesquisa = "";
-    private boolean filtro = false;
-    private boolean filtroPorPessoa = true;
+    private Spc spc;
+    private List<Spc> listaSPC;
+    private String mensagem;
+    private String botaoSalvar;
+    private String descricaoPesquisa;
+    private String porPesquisa;
+    private String comoPesquisa;
+    private boolean filtro;
+    private boolean filtroPorPessoa;
 
-    public void novo () {
-        botaoSalvar = "Adicionar";
+    @PostConstruct
+    public void init() {
         spc = new Spc();
+        listaSPC = new ArrayList<Spc>();
         mensagem = "";
-        listaSPC.clear();
+        botaoSalvar = "Adicionar";
         descricaoPesquisa = "";
+        porPesquisa = "";
+        comoPesquisa = "";
+        filtro = false;
+        filtroPorPessoa = true;
     }
-    
-    public void salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+        GenericaSessao.remove("pessoaPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("spcBean");
+    }
+
+    public void save() {
         if (spc.getPessoa().getId() == -1) {
             mensagem = "Pesquisar pessoa!";
             return;
@@ -46,39 +62,46 @@ public class SpcBean {
             return;
         }
         mensagem = "";
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (spc.getId() == -1) {
             SpcDB spcdb = new SpcDBToplink();
-            if(spcdb.existeCadastroSPC(spc)) {
+            if (spcdb.existeCadastroSPC(spc)) {
                 mensagem = "Pessoa já existe para data específicada";
                 return;
             }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(spc)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(spc)) {
+                novoLog.save("ID: " + spc.getId() + " - Entrada: " + spc.getDataEntrada() + " - Saída: " + spc.getDataSaida()+ " - Obs: " + spc.getObservacao() + " - Pessoa (" + spc.getPessoa().getId() + ") " + spc.getPessoa().getNome());
+                di.commit();
                 listaSPC.clear();
                 mensagem = "Registro inserido com sucesso";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 mensagem = "Erro ao inserir este registro!";
             }
         } else {
+            Spc s = (Spc) di.find(spc);
+            String beforeUpdate = "ID: " + s.getId() + " - Entrada: " + s.getDataEntrada() + " - Saída: " + s.getDataSaida() + " - Obs: " + s.getObservacao() + " - Pessoa (" + s.getPessoa().getId() + ") " + s.getPessoa().getNome();
             botaoSalvar = "Atualizar";
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(spc)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.update(spc)) {
+                di.commit();
+                novoLog.update(beforeUpdate, "ID: " + spc.getId() + " - Entrada: " + spc.getDataEntrada() + " - Saída: " + spc.getDataEntrada() + " - Obs: " + spc.getObservacao() + " - Pessoa (" + spc.getPessoa().getId() + ") " + spc.getPessoa().getNome());
                 listaSPC.clear();
                 mensagem = "Registro atualizado com sucesso";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 mensagem = "Pessoa já existe para data específicada";
             }
         }
     }
 
-    public void editar(Spc s) {
+    public void edit(Spc s) {
         listaSPC.clear();
         descricaoPesquisa = "";
-        spc = s;
+        DaoInterface di = new Dao();
+        spc = (Spc) di.rebind(s);
     }
 
     public Spc getSpc() {
@@ -165,14 +188,14 @@ public class SpcBean {
     public void setDescricaoPesquisa(String descricaoPesquisa) {
         this.descricaoPesquisa = descricaoPesquisa;
     }
-    
+
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
-    }    
+    }
 
     public String getPorPesquisa() {
         return porPesquisa;

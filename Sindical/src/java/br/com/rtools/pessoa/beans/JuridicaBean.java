@@ -587,7 +587,7 @@ public class JuridicaBean implements Serializable {
                     msgConfirma = "Cadastro salvo com Sucesso!";
                     dbSalvar.comitarTransacao();
                     NovoLog novoLog = new NovoLog();
-                    novoLog.novo("Salvar Pessoa Jurídica", "ID: " + juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() + " - " + juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura() + " - Fechamento" + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
+                    novoLog.save("ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura() + " - Fechamento" + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
                 } else {
                     msgConfirma = "Erro ao Salvar Dados!";
@@ -621,15 +621,14 @@ public class JuridicaBean implements Serializable {
             if ((juridica.getPessoa().getLogin()) == null && (juridica.getPessoa().getSenha()) == null) {
                 gerarLoginSenhaPessoa(juridica.getPessoa(), dbSalvar);
             }
+            Juridica jur = (Juridica) dbSalvar.pesquisaCodigo(juridica.getId(), "Juridica");
+            String beforeUpdate = "ID: " + jur.getId() + " - Pessoa: ("+jur.getPessoa().getId()+") " + jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura() + " - Fechamento: " + jur.getAbertura() + " - I.E.: " + jur.getInscricaoEstadual() + " - Insc. Mun.: " + jur.getInscricaoMunicipal() + " - Responsável: " + jur.getResponsavel();
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
                 msgConfirma = "Cadastro atualizado com Sucesso!";
-                Juridica jur = (Juridica) dbSalvar.pesquisaCodigo(juridica.getId(), "Juridica");
                 dbSalvar.comitarTransacao();
-                String novoLogString = " de ID: " + jur.getId() + " - Pessoa: " + jur.getPessoa().getId() + " - " + jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura() + " - Fechamento: " + jur.getAbertura() + " - I.E.: " + jur.getInscricaoEstadual() + " - Insc. Mun.: " + jur.getInscricaoMunicipal() + " - Responsável: " + jur.getResponsavel()
-                        + " para ID: " + juridica.getId() + " - Pessoa: " + juridica.getPessoa().getId() + " - " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel();
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Atualizar Pessoa Jurídica", novoLogString);
+                novoLog.update(beforeUpdate, "ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura: " + juridica.getAbertura() + " - Fechamento: " + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
                 FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("juridicaPesquisa", juridica);
             } else {
                 dbSalvar.desfazerTransacao();
@@ -767,6 +766,8 @@ public class JuridicaBean implements Serializable {
             return null;
         }
         msgConfirma = "Cadastro excluido com sucesso!";
+        NovoLog novoLog = new NovoLog();
+        novoLog.delete("ID: " + juridica.getId() + " - Pessoa: (" + juridica.getPessoa().getId() + ") " + juridica.getPessoa().getNome() + " - Abertura" + juridica.getAbertura() + " - Fechamento" + juridica.getAbertura() + " - I.E.: " + juridica.getInscricaoEstadual() + " - Insc. Mun.: " + juridica.getInscricaoMunicipal() + " - Responsável: " + juridica.getResponsavel());
         sv.comitarTransacao();
         novoGenerico();
         return null;

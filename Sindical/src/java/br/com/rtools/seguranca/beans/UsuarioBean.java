@@ -4,13 +4,16 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.*;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -21,89 +24,123 @@ import javax.servlet.http.HttpSession;
 @SessionScoped
 public class UsuarioBean implements Serializable {
 
-    private Usuario usuario = new Usuario();
-    private List<PermissaoUsuario> listaPermissaoUsuario = new ArrayList();
-    private List<Usuario> listaUsuario = new ArrayList();
-    private List<UsuarioAcesso> listaUsuarioAcesso = new ArrayList();
-    private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaRotinas = new ArrayList<SelectItem>();
-    private List<SelectItem> listaEventos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaDepartamentos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaNiveis = new ArrayList<SelectItem>();
-    private String confirmaSenha = "";
-    private String descricaoPesquisa = "";
+    private Usuario usuario;
+    private List<PermissaoUsuario> listaPermissaoUsuario;
+    private List<Usuario> listaUsuario;
+    private List<UsuarioAcesso> listaUsuarioAcesso;
+    private List<SelectItem> listaModulos;
+    private List<SelectItem> listaRotinas;
+    private List<SelectItem> listaEventos;
+    private List<SelectItem> listaDepartamentos;
+    private List<SelectItem> listaNiveis;
+    private String confirmaSenha;
+    private String descricaoPesquisa;
     private String mensagem;
-    private String senhaNova = "";
-    private String senhaAntiga = "";
+    private String senhaNova;
+    private String senhaAntiga;
     private String userLogado;
-    private boolean adicionado = false;
-    private boolean disSenha = false;
-    private boolean disNovaSenha = false;
-    private boolean disStrSenha = true;
-    private boolean filtrarPorModulo = false;
-    private boolean filtrarPorRotina = false;
-    private boolean filtrarPorEvento = false;
-    private boolean filtrarUsuarioAtivo = true;
+    private boolean adicionado;
+    private boolean disSenha;
+    private boolean disNovaSenha;
+    private boolean disStrSenha;
+    private boolean filtrarPorModulo;
+    private boolean filtrarPorRotina;
+    private boolean filtrarPorEvento;
+    private boolean filtrarUsuarioAtivo;
     private int idDepartamento;
-    private int idEvento = 0;
-    private int idModulo = 0;
+    private int idEvento;
+    private int idModulo;
     private int idNivel;
-    private int idRotina = 0;
+    private int idRotina;
 
-    public UsuarioBean() {
-        listaUsuario = new ArrayList<Usuario>();
+    @PostConstruct
+    public void init() {
+        usuario = new Usuario();
+        listaPermissaoUsuario = new ArrayList();
+        listaUsuario = new ArrayList();
+        listaUsuarioAcesso = new ArrayList();
+        listaModulos = new ArrayList<SelectItem>();
+        listaRotinas = new ArrayList<SelectItem>();
+        listaEventos = new ArrayList<SelectItem>();
+        listaDepartamentos = new ArrayList<SelectItem>();
+        listaNiveis = new ArrayList<SelectItem>();
+        confirmaSenha = "";
+        descricaoPesquisa = "";
+        mensagem = "";
+        senhaNova = "";
+        senhaAntiga = "";
+        userLogado = "";
+        adicionado = false;
+        disSenha = false;
+        disNovaSenha = false;
+        disStrSenha = true;
+        filtrarPorModulo = false;
+        filtrarPorRotina = false;
+        filtrarPorEvento = false;
+        filtrarUsuarioAtivo = true;
+        idDepartamento = 0;
+        idEvento = 0;
+        idModulo = 0;
+        idNivel = 0;
+        idRotina = 0;
     }
 
-    public String salvar() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("usuarioBean");
+        GenericaSessao.remove("usuarioPesquisa");
+        GenericaSessao.remove("pessoaPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("usuarioBean");
+    }
+
+    public void save() {
+        DaoInterface di = new Dao();
+        di.openTransaction();
 
         UsuarioDB db = new UsuarioDBToplink();
 
         if (usuario.getLogin().equals("")) {
             mensagem = "Campo login não pode ser nulo!";
-            return null;
+            return;
         }
 
         if (usuario.getSenha().equals("")) {
             mensagem = "Campo senha não pode ser nulo!";
-            return null;
+            return;
         }
         if (usuario.getSenha().length() > 6) {
             mensagem = "A senha deve ter no máximo 6 Caracteres!";
-            return null;
+            return;
         }
-
+        NovoLog novoLog = new NovoLog();
         if (usuario.getId() == -1) {
             if (usuario.getPessoa().getId() == -1) {
                 mensagem = "Pesquise um nome de Usuário disponível!";
-                return null;
+                return;
             }
 
             if (!usuario.getSenha().equals(confirmaSenha)) {
                 mensagem = "Senhas não correspondem!";
-                return null;
+                return;
             }
-
             if (db.pesquisaLogin(usuario.getLogin(), usuario.getPessoa().getId()).isEmpty()) {
-                if (sv.inserirObjeto(usuario)) {
-                    sv.comitarTransacao();
+                if (di.save(usuario)) {
+                    di.commit();
                     mensagem = "Login e senha salvos com Sucesso!";
-                    NovoLog novoLog = new NovoLog();
-                    novoLog.novo("Salvar Usuário", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
-                    return null;
+                    novoLog.save("ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
                 } else {
-                    sv.desfazerTransacao();
+                    di.rollback();
                     mensagem = "Erro ao Salvar Login e Senha!";
-                    return null;
                 }
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 mensagem = "Este login já existe no Sistema.";
-                return null;
             }
         } else {
-            Usuario user = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
+            Usuario user = (Usuario) di.find(usuario);
             if (disNovaSenha) {
                 if (user.getSenha().equals(getSenhaAntiga()) && !usuario.getSenha().equals("")) {
                 } else {
@@ -113,68 +150,68 @@ public class UsuarioBean implements Serializable {
             } else {
                 usuario.setSenha(user.getSenha());
             }
-            if (sv.alterarObjeto(usuario)) {
-                sv.comitarTransacao();
+            Usuario usu = (Usuario) di.find(usuario);
+            String beforeUpdate = "ID: " + usu.getId() + " - Pessoa: (" + usu.getPessoa().getId() + ") " + usu.getPessoa().getNome() + " - Login: " + usu.getLogin() + " - Ativo: " + usu.getAtivo();
+            if (di.update(usuario)) {
+                di.commit();
                 mensagem = "Login e senha salvos com Sucesso!";
-                Usuario usu = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
-                String novoLogString = " de ID: " + usu.getId() + " - Pessoa: " + usu.getPessoa().getId() + " - " + usu.getPessoa().getNome() + " - Login: " + usu.getLogin() + " - Ativo: " + usu.getAtivo()
-                        + " para Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo();
-                NovoLog novoLog = new NovoLog();
-                novoLog.novo("Atualizar Usuário", novoLogString);
-                return null;
+                novoLog.update(beforeUpdate, "ID: " + usuario.getId() + " - Pessoa: (" + usuario.getPessoa().getId() + ") " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
             } else {
-                sv.desfazerTransacao();
+                di.rollback();
                 mensagem = "Erro ao atualizar Usuario!";
-                return null;
             }
         }
     }
 
-    public String adicionarUsuarioPermissao() {
+    public String addUsuarioPermissao() {
         if (usuario.getId() == -1) {
             return null;
         }
         PermissaoUsuario pu = new PermissaoUsuario();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        pu.setDepartamento((Departamento) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaDepartamentos.get(idDepartamento).getDescription()), "Departamento"));
-        pu.setNivel((Nivel) salvarAcumuladoDB.pesquisaCodigo(Integer.valueOf(listaNiveis.get(idNivel).getDescription()), "Nivel"));
+        DaoInterface di = new Dao();
+        pu.setDepartamento((Departamento) di.find(new Departamento(), Integer.valueOf(listaDepartamentos.get(idDepartamento).getDescription())));
+        pu.setNivel((Nivel) di.find(new Nivel(), Integer.valueOf(listaNiveis.get(idNivel).getDescription())));
         pu.setUsuario(usuario);
         PermissaoUsuarioDB permissaoUsuarioDB = new PermissaoUsuarioDBToplink();
         if (permissaoUsuarioDB.existePermissaoUsuario(pu)) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe"));
+            GenericaMensagem.warn("Sistema", "Permissão já existe");
             return null;
         }
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.inserirObjeto(pu)) {
-            salvarAcumuladoDB.comitarTransacao();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão adicionada"));
+        di.openTransaction();
+        if (di.save(pu)) {
+            di.commit();
+            NovoLog novoLog = new NovoLog();
+            novoLog.save("Permissão Usuário - ID: " + pu.getId() + " - Usuário (" + pu.getUsuario().getId() + ") " + pu.getUsuario().getLogin() + " - Departamento (" + pu.getDepartamento().getId() + ") " + pu.getDepartamento().getDescricao() + " - Nível (" + pu.getNivel().getId() + ") " + pu.getNivel().getDescricao());
+            GenericaMensagem.info("Sucesso", "Permissão adicionada");
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar essa permissão!"));
+            di.rollback();
+            GenericaMensagem.warn("Erro", "Erro ao adicionar essa permissão!");
         }
         idDepartamento = 0;
         idNivel = 0;
         return null;
     }
 
-    public String removerPermissaoUsuario(PermissaoUsuario pu) {
+    public String removePermissaoUsuario(PermissaoUsuario pu) {
         if (pu.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            pu = (PermissaoUsuario) salvarAcumuladoDB.pesquisaCodigo(pu.getId(), "PermissaoUsuario");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(pu)) {
-                salvarAcumuladoDB.comitarTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão removida"));
+            DaoInterface di = new Dao();
+            pu = (PermissaoUsuario) di.find(pu);
+            di.openTransaction();
+            if (di.delete(pu)) {
+                di.commit();
+                NovoLog novoLog = new NovoLog();
+                novoLog.delete("Permissão Usuário - ID: " + pu.getId() + " - Usuário (" + pu.getUsuario().getId() + ") " + pu.getUsuario().getLogin() + " - Departamento (" + pu.getDepartamento().getId() + ") " + pu.getDepartamento().getDescricao() + " - Nível (" + pu.getNivel().getId() + ") " + pu.getNivel().getDescricao());
+                GenericaMensagem.info("Sucesso", "Permissão removida");
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao Excluír permissão!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Erro ao Excluír permissão!");
                 return null;
             }
         }
         return null;
     }
 
-    public boolean excluirPermissoes(SalvarAcumuladoDB sv) {
+    public boolean removePermissoes(DaoInterface di) {
         PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
         for (int i = 0; i < listaPermissaoUsuario.size(); i++) {
             PermissaoUsuario perUsuario = listaPermissaoUsuario.get(i);
@@ -183,13 +220,13 @@ public class UsuarioBean implements Serializable {
             List<PermissaoDepartamento> lista = db.pesquisaPDepartamento(perUsuario.getDepartamento().getId(), perUsuario.getNivel().getId());
             for (int w = 0; w < lista.size(); w++) {
                 UsuarioAcesso ua = db.pesquisaUsuarioAcesso(perUsuario.getUsuario().getId(), lista.get(w).getPermissao().getId());
-                if (!sv.deletarObjeto(sv.pesquisaCodigo(ua.getId(), "UsuarioAcesso"))) {
-                    sv.desfazerTransacao();
+                if (!di.delete(ua)) {
+                    di.rollback();
                     return false;
                 }
             }
-            if (!sv.deletarObjeto((PermissaoUsuario) sv.pesquisaCodigo(perUsuario.getId(), "PermissaoUsuario"))) {
-                sv.desfazerTransacao();
+            if (!di.delete(perUsuario)) {
+                di.rollback();
                 return false;
             } else {
                 return true;
@@ -198,70 +235,41 @@ public class UsuarioBean implements Serializable {
         return true;
     }
 
-    public String novo() {
-        usuario = new Usuario();
-        disNovaSenha = false;
-        idDepartamento = 0;
-        idNivel = 0;
-        adicionado = false;
-        confirmaSenha = "";
-        listaUsuario.clear();
-        listaPermissaoUsuario.clear();
-        listaUsuarioAcesso.clear();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-        return null;
-    }
-
-    public void novoGenerico() {
-        usuario = new Usuario();
-        disNovaSenha = false;
-        idDepartamento = 0;
-        idNivel = 0;
-        adicionado = false;
-        confirmaSenha = "";
-        listaUsuarioAcesso.clear();
-        listaPermissaoUsuario.clear();
-        listaUsuario.clear();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
-    }
-
-    public String excluir() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
+    public void delete() {
+        DaoInterface di = new Dao();
+        di.openTransaction();
         if (usuario.getId() != -1) {
-            if (!excluirPermissoes(sv)) {
-                mensagem = "Erro ao excluir Permissões!";
-                return null;
+            if (!removePermissoes(di)) {
+                mensagem = "Erro ao excluir permissões!";
+                return;
             }
 
-            usuario = (Usuario) sv.pesquisaCodigo(usuario.getId(), "Usuario");
-            if (!sv.deletarObjeto(usuario)) {
-                sv.desfazerTransacao();
-                mensagem = "Login não pode ser  Excluido!";
+            if (!di.delete(usuario)) {
+                di.rollback();
+                mensagem = "Login não pode ser excluido!";
             } else {
-                sv.comitarTransacao();
-                mensagem = "Login excluido com Sucesso!";
+                di.commit();
+                mensagem = "Login excluido com sucesso!";
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Excluir Usuário", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin());
+                novoLog.delete("ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin());
+                destroy();
             }
-        }
-        novoGenerico();
-        return null;
+        }        
     }
 
-    public String editar(Usuario usu) {
+    public String edit(Usuario usu) {
         usuario = usu;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", usuario.getPessoa());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("usuarioPesquisa", usuario);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        GenericaSessao.put("pessoaPesquisa", usuario.getPessoa());
+        GenericaSessao.put("usuarioPesquisa", usuario);
+        GenericaSessao.put("linkClicado", true);
+        return (String) GenericaSessao.getString("urlRetorno");
     }
 
     public List<Usuario> getListaUsuario() {
         if (listaUsuario.isEmpty()) {
             if (descricaoPesquisa.isEmpty()) {
-                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                listaUsuario = salvarAcumuladoDB.listaObjeto("Usuario", true);
+                DaoInterface di = new Dao();
+                listaUsuario = di.list(new Usuario(), true);
             } else {
                 UsuarioDB db = new UsuarioDBToplink();
                 listaUsuario = db.pesquisaTodosPorDescricao(descricaoPesquisa);
@@ -273,8 +281,8 @@ public class UsuarioBean implements Serializable {
                         list.add(listaUsuario.get(i));
                     }
                 }
-                listaUsuario.clear();                
-                listaUsuario = list;                
+                listaUsuario.clear();
+                listaUsuario = list;
             }
         }
         return listaUsuario;
@@ -286,13 +294,14 @@ public class UsuarioBean implements Serializable {
 
     public List<SelectItem> getListaNiveis() {
         if (listaNiveis.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List niveis = salvarAcumuladoDB.listaObjeto("Nivel", true);
+            DaoInterface di = new Dao();
+            List niveis = di.list(new Nivel(), true);
             if (!niveis.isEmpty()) {
                 for (int i = 0; i < niveis.size(); i++) {
-                    listaNiveis.add(new SelectItem(new Integer(i),
+                    listaNiveis.add(new SelectItem(i,
                             ((Nivel) niveis.get(i)).getDescricao(),
-                            Integer.toString(((Nivel) niveis.get(i)).getId())));
+                            Integer.toString(((Nivel) niveis.get(i)).getId()))
+                    );
                 }
             }
         }
@@ -301,27 +310,24 @@ public class UsuarioBean implements Serializable {
 
     public List<SelectItem> getListaDepartamentos() {
         if (listaDepartamentos.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List departamentos = salvarAcumuladoDB.listaObjeto("Departamento", true);
+            DaoInterface di = new Dao();
+            List departamentos = di.list(new Departamento(), true);
             for (int i = 0; i < departamentos.size(); i++) {
-                listaDepartamentos.add(new SelectItem(new Integer(i),
+                listaDepartamentos.add(new SelectItem(i,
                         ((Departamento) departamentos.get(i)).getDescricao(),
-                        Integer.toString(((Departamento) departamentos.get(i)).getId())));
+                        Integer.toString(((Departamento) departamentos.get(i)).getId()))
+                );
             }
         }
         return listaDepartamentos;
     }
 
-    public void refreshForm() {
-    }
-
     public void sairSistema() throws IOException {
         String retorno = "";
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-            retorno = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") + "/";
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
-                SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-                MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+        if (GenericaSessao.exists("sessaoCliente")) {
+            retorno = (String) GenericaSessao.getString("sessaoCliente") + "/";
+            if (GenericaSessao.exists("acessoFilial")) {
+                MacFilial macFilial = (MacFilial) GenericaSessao.getObject("acessoFilial");
                 retorno += "?filial=" + macFilial.getMac();
             }
 
@@ -383,13 +389,12 @@ public class UsuarioBean implements Serializable {
         this.disStrSenha = disStrSenha;
     }
 
-    public String habilitaNovaSenha() {
+    public void habilitaNovaSenha() {
         if (!disNovaSenha) {
             disNovaSenha = true;
         } else {
             disNovaSenha = false;
         }
-        return null;
     }
 
     public boolean isDisNovaSenha() {
@@ -425,9 +430,9 @@ public class UsuarioBean implements Serializable {
     }
 
     public Usuario getUsuario() {
-        if ((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            usuario.setPessoa((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        if (GenericaSessao.exists("pessoaPesquisa")) {
+            usuario.setPessoa((Pessoa) GenericaSessao.getObject("pessoaPesquisa", true));
+            GenericaSessao.remove("usuarioPesquisa");
         }
         return usuario;
     }
@@ -501,7 +506,7 @@ public class UsuarioBean implements Serializable {
             PermissaoDB db = new PermissaoDBToplink();
             List<Modulo> modulos = db.listaModuloPermissaoAgrupado();
             for (int i = 0; i < modulos.size(); i++) {
-                listaModulos.add(new SelectItem(new Integer(i),
+                listaModulos.add(new SelectItem(i,
                         modulos.get(i).getDescricao(),
                         Integer.toString(modulos.get(i).getId())));
             }
@@ -523,9 +528,9 @@ public class UsuarioBean implements Serializable {
             for (int i = 0; i < rotinas.size(); i++) {
                 listaRotinas.add(
                         new SelectItem(
-                        new Integer(i),
-                        rotinas.get(i).getRotina(),
-                        Integer.toString(rotinas.get(i).getId())));
+                                i,
+                                rotinas.get(i).getRotina(),
+                                Integer.toString(rotinas.get(i).getId())));
             }
             listaEventos.clear();
         }
@@ -544,11 +549,7 @@ public class UsuarioBean implements Serializable {
             List<Evento> eventos = db.listaEventoPermissaoAgrupado(idM, idR);
             listaEventos.clear();
             for (int i = 0; i < eventos.size(); i++) {
-                listaEventos.add(
-                        new SelectItem(
-                        new Integer(i),
-                        eventos.get(i).getDescricao(),
-                        Integer.toString(eventos.get(i).getId())));
+                listaEventos.add(new SelectItem(i, eventos.get(i).getDescricao(), Integer.toString(eventos.get(i).getId())));
             }
         }
         return listaEventos;
@@ -558,7 +559,7 @@ public class UsuarioBean implements Serializable {
         this.listaEventos = listaEventos;
     }
 
-    public void adicionarUsuarioAcesso() {
+    public void addUsuarioAcesso() {
         PermissaoDB db = new PermissaoDBToplink();
         int idM = Integer.parseInt(listaModulos.get(idModulo).getDescription());
         int idR = Integer.parseInt(listaRotinas.get(idRotina).getDescription());
@@ -567,20 +568,22 @@ public class UsuarioBean implements Serializable {
             if (((UsuarioAcesso) (db.pesquisaUsuarioAcessoModuloRotinaEvento(usuario.getId(), idM, idR, idE))).getId() == -1) {
                 Permissao permissao = db.pesquisaPermissaoModuloRotinaEvento(idM, idR, idE);
                 UsuarioAcesso usuarioAcesso = new UsuarioAcesso();
-                SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+                DaoInterface di = new Dao();
                 usuarioAcesso.setUsuario(usuario);
                 usuarioAcesso.setPermissao(permissao);
-                salvarAcumuladoDB.abrirTransacao();
+                di.openTransaction();
                 usuarioAcesso.setPermite(true);
-                if (salvarAcumuladoDB.inserirObjeto(usuarioAcesso)) {
-                    salvarAcumuladoDB.comitarTransacao();
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão adicionada"));
+                if (di.save(usuarioAcesso)) {
+                    di.commit();
+                    NovoLog novoLog = new NovoLog();
+                    novoLog.save("Usuário Acesso - ID: " + usuarioAcesso.getId() + " - Usuário (" + usuarioAcesso.getUsuario().getId() + ") " + usuarioAcesso.getUsuario().getLogin() + " - Permissão (" + usuarioAcesso.getPermissao().getId() + ") [Módulo: " + usuarioAcesso.getPermissao().getModulo().getDescricao() + " - Rotina: " +  usuarioAcesso.getPermissao().getRotina().getRotina()+ " - Evento: " +  usuarioAcesso.getPermissao().getEvento().getDescricao() +"]");
+                    GenericaMensagem.info("Sucesso", "Permissão adicionada");
                 } else {
-                    salvarAcumuladoDB.desfazerTransacao();
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao adicionar permissão!"));
+                    di.rollback();
+                    GenericaMensagem.warn("Erro", "Erro ao adicionar permissão!");
                 }
             } else {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Permissão já existe!"));
+                GenericaMensagem.warn("Sistema", "Permissão já existe!");
             }
         }
         listaUsuarioAcesso.clear();
@@ -625,39 +628,38 @@ public class UsuarioBean implements Serializable {
         this.listaUsuarioAcesso = listaUsuarioAcesso;
     }
 
-    public String permiteUsuarioAcesso(UsuarioAcesso ua) {
+    public void updateUsuarioAcesso(UsuarioAcesso ua) {
         if (ua.getId() == -1) {
-            return null;
+            return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.alterarObjeto(ua)) {
-            salvarAcumuladoDB.comitarTransacao();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão de acesso atualizada"));
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (di.update(ua)) {
+            di.commit();
+            GenericaMensagem.info("Sucesso", "Permissão de acesso atualizada");
             listaUsuarioAcesso.clear();
         } else {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Falha ao atualizar essa permisão!"));
-            salvarAcumuladoDB.desfazerTransacao();
+            GenericaMensagem.warn("Erro", "Falha ao atualizar essa permisão!");
+            di.rollback();
         }
-        return null;
     }
 
-    public String btnExcluirUsuarioAcesso(UsuarioAcesso ua) {
+    public void removeUsuarioAcesso(UsuarioAcesso ua) {
         if (ua.getId() == -1) {
-            return null;
+            return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        UsuarioAcesso usuarioAcesso = (UsuarioAcesso) salvarAcumuladoDB.pesquisaCodigo(ua.getId(), "UsuarioAcesso");
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.deletarObjeto(usuarioAcesso)) {
-            salvarAcumuladoDB.comitarTransacao();
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (di.delete(ua)) {
+            di.commit();
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete("Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " +  ua.getPermissao().getRotina().getRotina()+ " - Evento: " +  ua.getPermissao().getEvento().getDescricao() +"]");
             listaUsuarioAcesso.clear();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Permissão removida"));
+            GenericaMensagem.info("Sucesso", "Permissão removida");
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Erro ao remover permissão!"));
+            di.rollback();
+            GenericaMensagem.warn("Erro", "Erro ao remover permissão!");
         }
-        return null;
 
     }
 
@@ -694,8 +696,8 @@ public class UsuarioBean implements Serializable {
     }
 
     public String getUsuarioPerfil() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
-            usuario = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
         }
         return null;
     }
@@ -704,38 +706,38 @@ public class UsuarioBean implements Serializable {
         if (usuario.getId() != -1) {
             if (usuario.getPessoa().getId() == 1) {
                 mensagem = "Não é possível alterar a senha do administrador!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+                GenericaMensagem.warn("Validação", mensagem);
                 return;
             }
             if (getSenhaNova().equals("")) {
                 mensagem = "Campo senha não pode ser nulo!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+                GenericaMensagem.warn("Validação", mensagem);
                 return;
             }
             if (getSenhaNova().length() > 6) {
                 mensagem = "A senha deve ter no máximo 6 Caracteres!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Validação", mensagem));
+                GenericaMensagem.warn("Validação", mensagem);
                 return;
             }
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            Usuario user = (Usuario) salvarAcumuladoDB.pesquisaCodigo(usuario.getId(), "Usuario");
+            DaoInterface di = new Dao();
+            Usuario user = (Usuario) di.find(new Usuario(), usuario.getId());
             if (!user.getSenha().equals(senhaAntiga)) {
                 mensagem = "Senha antiga incompativel!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
                 return;
             }
             usuario.setSenha(senhaNova);
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(usuario)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.update(usuario)) {
+                di.commit();
                 setSenhaNova("");
                 setSenhaAntiga("");
                 mensagem = "Senha alterada";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                GenericaMensagem.info("Sucesso", mensagem);
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Alteração de Senha Usuário Perfil", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
+                novoLog.update("", "ID: " + usuario.getId() + " - Pessoa: " + usuario.getPessoa().getId() + " - " + usuario.getPessoa().getNome() + " - Login: " + usuario.getLogin() + " - Ativo: " + usuario.getAtivo());
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 mensagem = "Não foi possível atualizar essa senha!";
             }
         }
