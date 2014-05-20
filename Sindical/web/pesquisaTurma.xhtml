@@ -19,39 +19,39 @@
                     <p:outputLabel value="Pesquisar de Turma" styleClass="fonteHeader"/>
                     <c:set scope="request" var="object" value="${turmaBean.turma}"/>
                     <div class="clear"></div>
-                    <p:dataTable value="#{turmaBean.listaTurma}" var="linha" scrollHeight="400" scrollable="true" emptyMessage="Não existem turmas cadastradas">
+                    <p:dataTable value="#{turmaBean.listTurma}" var="turma" scrollHeight="400" scrollable="true" emptyMessage="Não existem turmas cadastradas">
                         <f:facet name="footer">
                             Selecione uma turma selecionando o id ou curso
                         </f:facet>
-                        <p:column headerText="ID" width="25" styleClass="text-center">
-                            <p:commandLink value="#{linha.id}" action="#{turmaBean.editar(linha)}" styleClass="underline-hover"/>
+                        <p:column width="25" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-link" title="Editar Registro nº #{turma.id}" action="#{turmaBean.edit(turma)}" styleClass="underline-hover"/>
                         </p:column>
                         <p:column headerText="Dt. Inicio" width="80" styleClass="text-center">
-                            <h:outputText value="#{linha.dataInicio}"/>
+                            <h:outputText value="#{turma.dataInicio}"/>
                         </p:column>
                         <p:column headerText="Dt. Término" width="80" styleClass="text-center">
-                            <h:outputText value="#{linha.dataTermino}"/>
+                            <h:outputText value="#{turma.dataTermino}"/>
                         </p:column>
                         <p:column headerText="Hora Inicio / Término" width="100">
-                            <h:outputText value="#{linha.horaInicio} - #{linha.horaTermino}"/>
+                            <h:outputText value="#{turma.horaInicio} - #{turma.horaTermino}"/>
                         </p:column>
                         <p:column headerText="Curso">
-                            <p:commandLink value="#{linha.cursos.descricao}" action="#{turmaBean.editar(linha)}"/>
+                            <p:commandLink value="#{turma.cursos.descricao}" action="#{turmaBean.editar(turma)}"/>
                         </p:column>
                         <p:column headerText="Idade" styleClass="text-center">
-                            <h:outputText value="#{linha.idadeInicial} à #{linha.idadeFim} ano(s)"/>
+                            <h:outputText value="#{turma.idadeInicial} à #{turma.idadeFim} ano(s)"/>
                         </p:column>
                         <p:column headerText="Sala" styleClass="text-center">
-                            <h:outputText value="#{linha.sala}"/>
+                            <h:outputText value="#{turma.sala}"/>
                         </p:column>
                         <p:column headerText="Vagas" styleClass="text-center">
-                            <h:outputText value="#{linha.quantidade}"/>
+                            <h:outputText value="#{turma.quantidade}"/>
                         </p:column>
                         <p:column headerText="Descrição" styleClass="text-center">
-                            <h:outputText value="#{linha.descricao}"/>
+                            <h:outputText value="#{turma.descricao}"/>
                         </p:column>
                         <p:column headerText="Filial">
-                            <h:outputText value="#{linha.filial.filial.pessoa.nome} - CNPJ: #{linha.filial.filial.pessoa.documento}"/>
+                            <h:outputText value="#{turma.filial.filial.pessoa.nome} - CNPJ: #{turma.filial.filial.pessoa.documento}"/>
                         </p:column>
                     </p:dataTable>                     
                 </h:form>                    

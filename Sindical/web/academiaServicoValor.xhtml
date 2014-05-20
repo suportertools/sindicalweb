@@ -21,54 +21,76 @@
                     <p:panel id="id_panel_grade_horarios">
                         <h:panelGrid columns="2">
                             <p:outputLabel value="Serviço: " />
-                            <p:selectOneMenu value="#{academiaServicoValorBean.idServicos}" valueChangeListener="#{academiaServicoValorBean.listaAcademiaServicoValors.clear()}">
-                                <p:ajax event="change" update="@this, :form_academia_servico_valor:i_panel_grid_valores"/>
-                                <f:selectItems value="#{academiaServicoValorBean.listaServicos}" />
+                            <p:selectOneMenu value="#{academiaServicoValorBean.index[0]}">
+                                <p:ajax event="change" update="@this, :form_academia_servico_valor:i_panel_grid_valores" listener="#{academiaServicoValorBean.listAcademiaServicoValors.clear()}"/>
+                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                <f:selectItems value="#{academiaServicoValorBean.listServicos}" />
                             </p:selectOneMenu>
                             <p:outputLabel value="Período:" />
                             <h:column>
                                 <h:panelGrid columns="3" id="id_panel_grid_a">
-                                    <p:selectOneMenu value="#{academiaServicoValorBean.idPeriodo}">
+                                    <p:selectOneMenu value="#{academiaServicoValorBean.periodo}" converter="#{entityConverter}">
                                         <p:ajax event="change" update="id_panel_grid_a" />
-                                        <f:selectItems value="#{academiaServicoValorBean.listaPeriodos}" />
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                        <f:selectItems value="#{academiaServicoValorBean.listPeriodos}" itemLabel="#{periodo.descricao}" itemValue="#{periodo}" var="periodo"/>
                                     </p:selectOneMenu>
-                                    <p:outputLabel value="Número parcelas:" rendered="#{!academiaServicoValorBean.ocultaParcelas}" styleClass="margin-left-max"/>
+                                    <p:outputLabel value="Número parcelas:" rendered="#{!academiaServicoValorBean.ocultaParcelas}" styleClass="margin-left-max" />
                                     <p:spinner value="#{academiaServicoValorBean.academiaServicoValor.numeroParcelas}" size="2" maxlength="2" rendered="#{!academiaServicoValorBean.ocultaParcelas}" min="0" max="#{academiaServicoValorBean.maximoParcelas}"/>
                                 </h:panelGrid> 
                             </h:column>
                             <p:outputLabel value="Grade:" />
-                            <p:selectOneMenu value="#{academiaServicoValorBean.idGrade}">
+                            <p:selectOneMenu value="#{academiaServicoValorBean.academiaGrade}" converter="#{entityConverter}">
                                 <p:ajax event="change" update="@this" />
-                                <f:selectItems value="#{academiaServicoValorBean.listaGrades}" />
+                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                <f:selectItems value="#{academiaServicoValorBean.listAcademiaGrades}" itemLabel="#{academiaGrade.horaInicio} - #{academiaGrade.horaFim}" itemValue="#{academiaGrade}" var="academiaGrade"/>
                             </p:selectOneMenu>
                             <p:outputLabel value="Fórmula:" />
                             <h:column>
                                 <p:inputText value="#{academiaServicoValorBean.academiaServicoValor.formula}" size="120" placeholder="Ex. valor + 5"/>
-                                <p:button value="Exemplos"></p:button>
+                                <p:commandButton value="Exemplos" onclick="PF('dlg_example').show()" type="button" styleClass="margin-left-max"/>
                             </h:column>
-                            <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaServicoValorBean.salvar()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margion-left-max"  update=":form_academia_servico_valor_novo:id_panel_grade_horarios :form_academia_servico_valor:i_panel_grid_valores"/>
-                            <p:commandButton value="Novo" title="Novo" action="#{academiaServicoValorBean.novo()}" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" styleClass="margion-left-max"/>
+                            <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaServicoValorBean.save()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margion-left-max"  update=":form_academia_servico_valor_novo:id_panel_grade_horarios :form_academia_servico_valor:i_panel_grid_valores"/>
+                            <p:commandButton value="Novo" title="Novo" action="#{academiaServicoValorBean.clear()}" update=":form_academia_servico_valor_novo:" styleClass="margion-left-max"/>
                         </h:panelGrid>
                     </p:panel>
                 </h:form>
                 <h:form id="form_academia_servico_valor">
                     <p:panelGrid id="i_panel_grid_valores" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
-                        <p:dataTable value="#{academiaServicoValorBean.listaAcademiaServicoValors}" var="academiaServicoValor" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) serviços(s) cadastrados" >
+                        <p:dataTable value="#{academiaServicoValorBean.listAcademiaServicoValors}" var="academiaServicoValor" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) serviços(s) cadastrados" >
                             <f:facet name="header">Grade serviços valor</f:facet>
+                            <p:column styleClass="text-center" width="25">
+                                <p:commandButton icon="ui-icon-link" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" action="#{academiaServicoValorBean.edit(academiaServicoValor)}" title="Editar Registro nº #{academiaServicoValor.id}"/>
+                            </p:column>
                             <p:column headerText="Serviços" styleClass="text-center">
-                                <p:commandLink update=":form_academia_servico_valor_novo:id_panel_grade_horarios" value="#{academiaServicoValor.servicos.descricao}" action="#{academiaServicoValorBean.editar(academiaServicoValor)}"/>
+                                #{academiaServicoValor.servicos.descricao}
                             </p:column>
                             <p:column headerText="Período" styleClass="text-center">
-                                <p:commandLink update=":form_academia_servico_valor_novo:id_panel_grade_horarios" value="#{academiaServicoValor.periodo.descricao}" action="#{academiaServicoValorBean.editar(academiaServicoValor)}"/>
+                                #{academiaServicoValor.periodo.descricao}
                             </p:column>
                             <p:column headerText="Grade (hrs)" styleClass="text-center">#{academiaServicoValor.academiaGrade.horaInicio} - #{academiaServicoValor.academiaGrade.horaFim}</p:column>
                             <p:column headerText="Fórmula" styleClass="text-center">#{academiaServicoValor.formula}</p:column>
                             <p:column headerText="Parcelas" styleClass="text-center">#{academiaServicoValor.numeroParcelas}</p:column>
                             <p:column styleClass="text-center" width="25">
-                                <p:commandButton icon="ui-icon-trash" action="#{academiaServicoValorBean.excluir(academiaServicoValor)}" update=":form_academia_servico_valor:i_panel_grid_valores :form_academia_servico_valor_novo: :form_academia_servico_valor_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset"/>
+                                <p:commandButton icon="ui-icon-trash" action="#{academiaServicoValorBean.delete(academiaServicoValor)}" update=":form_academia_servico_valor:i_panel_grid_valores :form_academia_servico_valor_novo: :form_academia_servico_valor_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset"/>
                             </p:column>                             
                         </p:dataTable>
                     </p:panelGrid>
+                    <p:dialog widgetVar="dlg_example" header="Exemplos" width="400" modal="true" resizable="false" draggable="false">
+                        <h:panelGrid>
+                            <p:column>
+                                <p:outputLabel value="Variável: " /><p:outputLabel value="valor" styleClass="font-color-red"/><br /><br />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Ex 1: " /><p:outputLabel value="valor" styleClass="font-color-red"/><p:outputLabel value=" + 6.00 " />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Ex 2: " /><p:outputLabel value="valor" styleClass="font-color-red"/><p:outputLabel value=" - 3 " />
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Ex 3: " /><p:outputLabel value="valor" styleClass="font-color-red"/><p:outputLabel value=" * 1,05 (5%) " />
+                            </p:column>
+                        </h:panelGrid>
+                    </p:dialog>
                 </h:form>
             </p:panel>
         </f:view>

@@ -29,7 +29,7 @@
                             <p:outputLabel for="idServicos" value="Serviços:" />
                             <p:selectOneMenu id="idServicos" value="#{descontoServicoEmpresaBean.idServicos}" style="width: 250px;" disabled="#{descontoServicoEmpresaBean.descontoServicoEmpresa.juridica.pessoa.id == -1}" >
                                 <p:ajax event="change" update="idServicos" />
-                                <f:selectItems value="#{descontoServicoEmpresaBean.listaServicos}" />
+                                <f:selectItems value="#{descontoServicoEmpresaBean.listServicos}" />
                             </p:selectOneMenu>
                             <p:outputLabel for="idDesconto" value="Desconto:" />
                             <p:column>
@@ -41,37 +41,37 @@
                         <p:panelGrid columns="1" styleClass="sbb margin-top-max">
                             <p:column>
                                 <!-- <p:commandButton icon="ui-icon-plus" value="Adicionar" title="Adicionar"  type="button" disabled="# {controleAcessoBean.botaoSalvar}"/> -->
-                                <p:commandButton icon="ui-icon-plus"  value="Adicionar" title="Adicionar" action="#{descontoServicoEmpresaBean.salvar()}" update="growl :form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                <p:commandButton value="Novo" action="#{descontoServicoEmpresaBean.novo()}" styleClass="margin-left-max" update="id_panel_grid_novo :form_desconto:id_desconto_filtro" />
+                                <p:commandButton icon="ui-icon-plus"  value="Adicionar" title="Adicionar" action="#{descontoServicoEmpresaBean.save()}" update="growl :form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                <p:commandButton value="Novo" action="#{descontoServicoEmpresaBean.clear()}" styleClass="margin-left-max" update=":form_novo_desconto: :form_desconto:" />
                             </p:column>
                         </p:panelGrid>
                     </p:panel>
-                    <p:dialog id="i_painel_salvar" header="Deseja salvar este registro?" widgetVar="dgl_painel_salvar" modal="true" height="100" width="350">
+                    <p:dialog id="i_painel_salvar" header="Deseja salvar este registro?" widgetVar="dlg_save" modal="true" height="100" width="350">
                         <h:panelGrid columns="2" styleClass="margin-top">
-                            <p:commandButton value="Sim" title="Confirmar" action="#{descontoServicoEmpresaBean.salvar()}" oncomplete="PF('dgl_painel_salvar').hide(); PF('dgl_painel_mensagem').show();" update=":form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dgl_painel_salvar').hide();" />
+                            <p:commandButton value="Sim" title="Confirmar" action="#{descontoServicoEmpresaBean.save()}" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" update=":form_desconto:id_desconto_filtro i_painel_mensagem id_panel_grid_novo" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dlg_save').hide();" />
                         </h:panelGrid>
                     </p:dialog>                     
-                    <p:dialog id="i_painel_excluir" header="Deseja excluir este registro?" widgetVar="dgl_painel_excluir" modal="true" height="100" width="350">
+                    <p:dialog id="i_painel_excluir" header="Deseja excluir este registro?" widgetVar="dlg_delete" modal="true" height="100" width="350">
                         <h:panelGrid columns="2" styleClass="margin-top">
-                            <p:commandButton value="Sim" action="#{descontoServicoEmpresaBean.excluir()}" oncomplete="PF('dgl_painel_excluir').hide(); PF('dgl_painel_mensagem').show();" styleClass="margin-left-max" disabled="#{controleAcessoBean.botaoExcluir}" update="growl id_panel_grid_novo :form_desconto:id_desconto_filtro i_painel_mensagem" />
-                            <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dgl_painel_excluir').hide();" />
+                            <p:commandButton value="Sim" action="#{descontoServicoEmpresaBean.delete()}" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" styleClass="margin-left-max" disabled="#{controleAcessoBean.botaoExcluir}" update="growl id_panel_grid_novo :form_desconto:id_desconto_filtro i_painel_mensagem" />
+                            <p:commandButton value="Não" title="Desfazer" oncomplete="PF('dlg_delete').hide();" />
                         </h:panelGrid>
                     </p:dialog>                     
-                    <p:dialog id="i_painel_mensagem" header="Mensagem" widgetVar="dgl_painel_mensagem" modal="true" height="100" width="350">
+                    <p:dialog id="i_painel_mensagem" header="Mensagem" widgetVar="dlg_message" modal="true" height="100" width="350">
                         <center>
-                            <p:outputLabel value="#{descontoServicoEmpresaBean.mensagem}"/>
+                            <p:outputLabel value="#{descontoServicoEmpresaBean.message}"/>
                             <br /><br />
-                            <p:commandButton value="Ok" type="button" onclick="PF('dgl_painel_mensagem').hide()" style="float: left;" icon="ui-icon-close" />
+                            <p:commandButton value="Ok" type="button" onclick="PF('dlg_message').hide()" style="float: left;" icon="ui-icon-close" />
                         </center>
                     </p:dialog>                    
                 </h:form>
                 <h:form id="form_desconto">
                     <p:panel id="id_desconto_filtro" style="width: 400px; margin-left: 50px;" styleClass="float-left">
-                        <p:dataTable id="id_data_table" value="#{descontoServicoEmpresaBean.listaDSEPorEmpresa}" var="dse" emptyMessage="Não existem registros" scrollHeight="300"  scrollable="true" editable="true" >
+                        <p:dataTable id="id_data_table" value="#{descontoServicoEmpresaBean.listDSEPorEmpresa}" var="dse" emptyMessage="Não existem registros" scrollHeight="300"  scrollable="true" editable="true" >
                             <f:facet name="header">Serviços com desconto adicionados</f:facet>
-                            <p:ajax event="rowEdit" listener="#{descontoServicoEmpresaBean.atualizar}" update=":form_novo_desconto:growl id_data_table" disabled="#{controleAcessoBean.botaoSalvar}" />
-                            <p:ajax event="rowEditCancel" listener="#{descontoServicoEmpresaBean.remover}" update=":form_novo_desconto:growl id_data_table :form_novo_desconto:id_panel_grid_novo" disabled="#{controleAcessoBean.botaoExcluir}"/>
+                            <p:ajax event="rowEdit" listener="#{descontoServicoEmpresaBean.update}" update=":form_novo_desconto:growl id_data_table" disabled="#{controleAcessoBean.botaoSalvar}" />
+                            <p:ajax event="rowEditCancel" listener="#{descontoServicoEmpresaBean.remove}" update=":form_novo_desconto:growl id_data_table :form_novo_desconto:id_panel_grid_novo" disabled="#{controleAcessoBean.botaoExcluir}"/>
                             <p:column headerText="Serviço">
                                 #{dse.servicos.descricao}                                
                             </p:column>

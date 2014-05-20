@@ -26,29 +26,29 @@
                                 <p:outputLabel value="Pesquisar pessoa" style="border-bottom: 1px dotted #888;" rendered="#{vendedorBean.vendedor.pessoa.id == -1}" for="id_pessoa_vendedor"/>
                                 <p:outputLabel id="idNome" value="#{vendedorBean.vendedor.pessoa.nome}" rendered="#{vendedorBean.vendedor.pessoa.id != -1}" for="id_pessoa_vendedor"/>
                             </p:column>
-                            <p:commandButton value="Adicionar" action="#{vendedorBean.adicionar}" oncomplete="PF('dgl_panel_mensagem').show()" update="id_panel_turma, i_mensagem, tbl" rendered="#{vendedorBean.vendedor.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
+                            <p:commandButton value="Adicionar" action="#{vendedorBean.save}" oncomplete="PF('dlg_message').show()" update=":form_vendedor: i_mensagem" rendered="#{vendedorBean.vendedor.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}"/>
                         </p:panelGrid>
                         <p:panelGrid columns="1" id="tbl" styleClass="sbb margin-top-max">
-                            <p:dataTable value="#{vendedorBean.listaVendedores}" var="linha">
+                            <p:dataTable value="#{vendedorBean.listVendedores}" var="vendedor">
                                 <p:column>
                                     <f:facet name="header">
                                         <h:outputText value="Nome"/>
                                     </f:facet>
-                                    <h:outputLabel value="#{linha.pessoa.nome}" styleClass="fontePadrao"/>
+                                    <h:outputLabel value="#{vendedor.pessoa.nome}" />
                                 </p:column>
                                 <p:column>
-                                    <p:commandButton icon="ui-icon-trash" action="#{vendedorBean.excluir(linha)}" oncomplete="PF('dgl_panel_mensagem').show()" update=":form_vendedor:tbl, :form_vendedor:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{vendedorBean.delete(vendedor)}" oncomplete="PF('dlg_message').show()" update=":form_vendedor:tbl, :form_vendedor:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{vendedor.id}"/>
                                 </p:column>
                                 <f:facet name="header">
                                     Relação de vendedores
                                 </f:facet>
                             </p:dataTable>
                         </p:panelGrid>                        
-                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
+                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
                             <center>
-                                <h:outputLabel value="#{vendedorBean.mensagem}" id="i_mensagem"/>
+                                <h:outputLabel value="#{vendedorBean.message}" id="i_mensagem"/>
                                 <br /><br />
-                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
+                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
                             </center>
                         </p:dialog>
                     </p:panel>

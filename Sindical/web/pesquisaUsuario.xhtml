@@ -30,21 +30,21 @@
                                 <p:focus for="i_panel_pesquisa" />
                             </p:panel>
                             <p:panel id="i_panel_grid" style="clear: both; margin-top: 15px;"> 
-                                <p:dataTable value="#{usuarioBean.listaUsuario}" id="tbl" var="linha" style="width: 100%;" scrollable="true" scrollHeight="180" emptyMessage="Nenhum registro encontrado" resizableColumns="true">
-                                    <p:column style="text-align: center; width: 20px;" headerText="ID">
-                                        <p:commandLink value="#{linha.id}" action="#{usuarioBean.editar(linha)}" />
+                                <p:dataTable value="#{usuarioBean.listaUsuario}" id="tbl" var="usuario" style="width: 100%;" scrollable="true" scrollHeight="180" emptyMessage="Nenhum registro encontrado" resizableColumns="true">
+                                    <p:column width="25" styleClass="text-center">
+                                        <p:commandButton icon="ui-icon-link" title="Editar Registro nº #{usuario.id}" action="#{usuarioBean.edit(usuario)}" />
                                     </p:column>
 
                                     <p:column headerText="Nome" >
-                                        <p:commandLink value="#{linha.pessoa.nome}" action="#{usuarioBean.editar(linha)}" />
+                                        #{usuario.pessoa.nome}
                                     </p:column>
 
                                     <p:column headerText="Login" >
-                                        <p:commandLink value="#{linha.login}" action="#{usuarioBean.editar(linha)}" />
+                                        #{usuario.login}
                                     </p:column>
                                     
-                                    <p:column headerText="Ativo" style="width: 40px;">
-                                        <p:commandButton icon="ui-icon-check" rendered="#{linha.ativo}" global="false"/>
+                                    <p:column headerText="Ativo" width="25" styleClass="text-center">
+                                        <p:commandButton icon="ui-icon-check" rendered="#{usuario.ativo}" global="false"/>
                                     </p:column>
                                 </p:dataTable>
                             </p:panel>

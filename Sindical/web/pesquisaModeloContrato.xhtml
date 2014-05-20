@@ -25,13 +25,13 @@
                             Selecione um modelo de contrato
                         </f:facet>
                         <p:column headerText="Cadastro" styleClass="text-center" width="80" >
-                            <p:commandLink value="#{linha.dataCadastro}" action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
+                            <p:commandLink value="#{linha.dataCadastro}" action="#{modeloContratoBean.edit(linha)}" styleClass="underline-hover"/>
                         </p:column>
                         <p:column headerText="Atualizado" styleClass="text-center" width="80" >
-                            <p:commandLink value="#{linha.dataAtualizado}" action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover"/>
+                            <p:commandLink value="#{linha.dataAtualizado}" action="#{modeloContratoBean.edit(linha)}" styleClass="underline-hover"/>
                         </p:column>
                         <p:column headerText="Título" >
-                            <p:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{modeloContratoBean.editar(linha)}" styleClass="underline-hover" style="text-transform: uppercase"/>
+                            <p:commandLink value="#{linha.titulo}" title="Código: #{linha.id}"  action="#{modeloContratoBean.edit(linha)}" styleClass="underline-hover" style="text-transform: uppercase"/>
                         </p:column>
                     </p:dataTable>                     
                 </h:form>                    

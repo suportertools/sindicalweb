@@ -33,21 +33,21 @@
                                 <h:outputText value="Ex. 10.6 / 100 / 33" styleClass="margin-left-max"/>
                             </p:column>
                         </p:panelGrid>
-                        <p:panelGrid columns="3" styleClass="sbb margin-top-max" id="id_panel_acao">
-                            <p:commandButton onclick="dgl_panel_salvar.show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" type="button" rendered="#{professorBean.professor.professor.id != -1}"/>
-                            <p:commandButton value="Novo" action="#{professorBean.novo}" update="id_panel_professor"/>
-                            <p:commandButton onclick="dgl_panel_excluir.show()" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" type="button" rendered="#{professorBean.professor.professor.id != -1}"/>
+                        <p:panelGrid columns="3" styleClass="margin-top-max" id="id_panel_acao">
+                            <p:commandButton onclick="PF('dlg_save').show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" type="button" rendered="#{professorBean.professor.professor.id != -1}"/>
+                            <p:commandButton value="Novo" action="#{professorBean.clear}" update=":form_professor:"/>
+                            <p:commandButton onclick="PF('dlg_delete').show()" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" type="button" rendered="#{professorBean.professor.professor.id != -1}"/>
                         </p:panelGrid>
                         <p:panelGrid columns="1" id="tbl" styleClass="sbb margin-top-max">
-                            <p:dataTable value="#{professorBean.listaProfessores}" var="linha">
+                            <p:dataTable value="#{professorBean.listProfessores}" var="professor" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="150">
                                 <p:column headerText="Nome">
-                                    <p:commandLink value="#{linha.professor.nome}" action="#{professorBean.editar(linha)}" update=":form_professor:id_grid_professor :form_professor:id_panel_acao" title="Código: #{linha.id}"/>
+                                    <p:commandLink value="#{professor.professor.nome}" action="#{professorBean.edit(professor)}" update=":form_professor:id_grid_professor :form_professor:id_panel_acao" title="Código: #{professor.id}"/>
                                 </p:column>
-                                <p:column headerText="C. (%)" styleClass="text-center">
-                                    <p:commandLink value="#{linha.nrComissao}" action="#{professorBean.editar(linha)}" update=":form_professor:id_grid_professor :form_professor:id_panel_acao" title="Código: #{linha.id}"/>
+                                <p:column headerText="C. (%)" styleClass="text-center" width="50">
+                                    <p:commandLink value="#{professor.nrComissao}" action="#{professorBean.edit(professor)}" update=":form_professor:id_grid_professor :form_professor:id_panel_acao" title="Código: #{professor.id}"/>
                                 </p:column>
-                                <p:column>
-                                    <p:commandButton icon="ui-icon-trash" action="#{professorBean.excluir(linha)}" oncomplete="PF('dgl_panel_mensagem').show()" update=":form_professor:tbl, :form_professor:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{linha.id}"/>
+                                <p:column width="25" styleClass="text-center">
+                                    <p:commandButton icon="ui-icon-trash" action="#{professorBean.delete(professor)}" oncomplete="PF('dlg_message').show()" update=":form_professor:tbl, :form_professor:i_mensagem" disabled="#{controleAcessoBean.botaoExcluir}" title="Código: #{professor.id}"/>
                                 </p:column>
                                 <f:facet name="header">
                                     Relação de professores
@@ -57,25 +57,25 @@
                                 </f:facet>
                             </p:dataTable>
                         </p:panelGrid>
-                        <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
+                        <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                             <p:panelGrid columns="2" styleClass="sbb">
-                                <p:commandButton value="Sim" title="Salvar" action="#{professorBean.salvar()}" update="i_panel_mensagem id_panel_professor"  oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
-                                <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar.hide()"/>
+                                <p:commandButton value="Sim" title="Salvar" action="#{professorBean.save()}" update=":form_professor:"  oncomplete="PF('dlg_message').show(); PF('dlg_save').hide();" />
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide()"/>
                             </p:panelGrid>
                         </p:dialog>
-                        <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
+                        <p:dialog id="i_panel_excluir" widgetVar="dlg_delete" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
                             <center>
                                 <p:panelGrid columns="2" styleClass="sbb">
-                                    <p:commandButton value="Sim" title="Excluir" action="#{professorBean.excluir()}" update="i_panel_mensagem id_panel_professor" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_excluir').hide();"  />
-                                    <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_excluir.hide()"/>
+                                    <p:commandButton value="Sim" title="Excluir" action="#{professorBean.delete()}" update=":form_professor:" oncomplete="PF('dlg_message').show(); PF('dlg_delete').hide();"  />
+                                    <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide()"/>
                                 </p:panelGrid>
                             </center>
                         </p:dialog>                        
-                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
+                        <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
                             <center>
-                                <h:outputLabel value="#{professorBean.mensagem}" id="i_mensagem"/>
+                                <h:outputLabel value="#{professorBean.message}" id="i_mensagem"/>
                                 <br /><br />
-                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
+                                <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
                             </center>
                         </p:dialog>
                     </p:panel>

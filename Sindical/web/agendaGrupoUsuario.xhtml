@@ -32,9 +32,10 @@
                             <p:outputLabel value="Grupo Agenda: "/>
                             <h:column>
                                 <c:if test="#{agendaGrupoUsuarioBean.listGrupoAgenda.size() > 0}">
-                                    <p:selectOneMenu value="#{agendaGrupoUsuarioBean.indice[0]}">
-                                        <p:ajax update="id_lista" event="change" listener="#{agendaGrupoUsuarioBean.agendaGrupoUsuarios.clear()}" />
-                                        <f:selectItems value="#{agendaGrupoUsuarioBean.listGrupoAgenda}"/>
+                                    <p:selectOneMenu value="#{agendaGrupoUsuarioBean.grupoAgenda}" converter="#{entityConverter}">
+                                        <p:ajax update="@this, id_lista" event="change" listener="#{agendaGrupoUsuarioBean.agendaGrupoUsuarios.clear()}" />
+                                        <f:selectItem itemValue="" itemLabel="Selecionar" noSelectionOption="true" itemDisabled="true"/>
+                                        <f:selectItems value="#{agendaGrupoUsuarioBean.listGrupoAgenda}" var="grupoAgenda" itemValue="#{grupoAgenda}" itemLabel="#{grupoAgenda.descricao}" />
                                     </p:selectOneMenu>
                                 </c:if>
                             </h:column>

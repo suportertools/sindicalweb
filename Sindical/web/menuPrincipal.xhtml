@@ -38,7 +38,7 @@
                                         <p:menuitem value="Filial Departamento"     action="#{chamadaPaginaBean.pagina('filialDepartamento')}" />
                                     </p:submenu>  
                                     <p:separator />  
-                                    <p:menuitem value="Pesquisar Logs"              action="#{chamadaPaginaBean.pesquisaLog}" title="Registro de atividades"  />
+                                    <p:menuitem value="Pesquisar Logs"              action="#{chamadaPaginaBean.pagina('pesquisaLog')}" title="Registro de atividades"  />
                                     <c:if test="#{controleUsuarioBean.clienteString.equals('Rtools')}">
                                         <p:submenu label="Sistema">
                                             <p:menuitem value="Configurações"       action="#{chamadaPaginaBean.pagina('configuracao')}" />                                            
@@ -178,7 +178,7 @@
                                     <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_guias').hide()" style="float: left" />
                                 </p:dialog>
                             </p:panel>
-                            
+
                             <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="false">
                                 <h:outputLabel value="Comunicado Importante: " style="color: red; font-weight: bold; font-size: 12pt!important" />
                                 <br />
@@ -187,7 +187,7 @@
                                 <h:outputText value="suporte@rtools.com.br" style="font-weight: bold"/>
                                 <h:outputText value=" sua solicitação será respondida após voltarmos." style="font-size: 10pt!important"/>
                             </p:panel>
-                            
+
                             <p:panel style="float: right; text-align: center; background: #f6f6f6; position: absolute; clear: both; margin-left: 770px;">
                                 <h:panelGrid>
                                     <h:outputText style="font-weight: bold" value="Meus principais Acessos" />
