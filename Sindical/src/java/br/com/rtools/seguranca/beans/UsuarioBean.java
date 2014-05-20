@@ -634,9 +634,17 @@ public class UsuarioBean implements Serializable {
         }
         DaoInterface di = new Dao();
         di.openTransaction();
+        NovoLog novoLog = new NovoLog();
+        String beforeUpdate = "Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " +  ua.getPermissao().getRotina().getRotina()+ " - Evento: " +  ua.getPermissao().getEvento().getDescricao() +"] - Permite:" + ua.isPermite();
+        if(ua.isPermite()) {
+            ua.setPermite(false);
+        } else {
+            ua.setPermite(true);
+        }        
         if (di.update(ua)) {
+            novoLog.update(beforeUpdate, "Usuário Acesso - ID: " + ua.getId() + " - Usuário (" + ua.getUsuario().getId() + ") " + ua.getUsuario().getLogin() + " - Permissão (" + ua.getPermissao().getId() + ") [Módulo: " + ua.getPermissao().getModulo().getDescricao() + " - Rotina: " +  ua.getPermissao().getRotina().getRotina()+ " - Evento: " +  ua.getPermissao().getEvento().getDescricao() +"] - Permite:" + ua.isPermite());
             di.commit();
-            GenericaMensagem.info("Sucesso", "Permissão de acesso atualizada");
+            GenericaMensagem.info("Sucesso", "Permissão de acesso atualizada"); 
             listaUsuarioAcesso.clear();
         } else {
             GenericaMensagem.warn("Erro", "Falha ao atualizar essa permisão!");
