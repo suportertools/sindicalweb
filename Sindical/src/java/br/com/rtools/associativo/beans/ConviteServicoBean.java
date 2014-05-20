@@ -4,12 +4,16 @@ import br.com.rtools.associativo.ConviteServico;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -18,98 +22,193 @@ import javax.faces.model.SelectItem;
 @SessionScoped
 public class ConviteServicoBean implements Serializable {
 
-    private Servicos servicos = new Servicos();
-    private ConviteServico conviteServico = new ConviteServico();
-    private List<ConviteServico> listaConviteServicos = new ArrayList();
-    private String mensagem = "";
-    private String descricaoPesquisa = "";
-    private List<SelectItem> listaServicos = new ArrayList();
-    private int idServicos = 0;
+    private Servicos servicos;
+    private ConviteServico conviteServico;
+    private List<ConviteServico> listConviteServicos;
+    private String message;
+    private String descricaoPesquisa;
+    private List<SelectItem> listServicos;
+    private int idServicos;
 
-    public void salvar() {
-        if (listaServicos.isEmpty()) {
-            GenericaMensagem.warn("Validação", "Cadastrar serviço!");
-            return;
-        }
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        conviteServico.setServicos((Servicos) dB.pesquisaObjeto(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
-        if (conviteServico.getId() == -1) {
-            dB.abrirTransacao();
-            if (dB.inserirObjeto(conviteServico)) {
-                dB.comitarTransacao();
-                mensagem = "Registro inserido com sucesso";
-                listaConviteServicos.clear();
-            } else {
-                dB.desfazerTransacao();
-                mensagem = "Erro ao adicionar registro!";
-            }
-        } else {
-            dB.abrirTransacao();
-            if (dB.alterarObjeto(conviteServico)) {
-                dB.comitarTransacao();
-                mensagem = "Registro atualizado com sucesso";
-                listaConviteServicos.clear();
-            } else {
-                dB.desfazerTransacao();
-                mensagem = "Erro ao atualizar registro!";
-            }
-        }
+    @PostConstruct
+    public void init() {
+        servicos = new Servicos();
         conviteServico = new ConviteServico();
-    }
-
-    public void novo() {
-        conviteServico = new ConviteServico();
-        listaConviteServicos.clear();
-        listaServicos.clear();
+        listConviteServicos = new ArrayList();
+        message = "";
+        descricaoPesquisa = "";
+        listServicos = new ArrayList();
         idServicos = 0;
     }
 
-    public void editar(ConviteServico cs) {
+    @PreDestroy
+    public void destroy() {
+        clear();
+    }
+
+    public void save() {
+        if (listServicos.isEmpty()) {
+            GenericaMensagem.warn("Validação", "Cadastrar serviço!");
+            return;
+        }
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
+        conviteServico.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
+        if (conviteServico.getId() == -1) {
+            di.openTransaction();
+            if (di.save(conviteServico)) {
+                di.commit();
+                novoLog.save(""
+                        + "ID: " + conviteServico.getId()
+                        + " - Serviço: (" + conviteServico.getId() + ") " + conviteServico.getServicos().getDescricao()
+                        + " - Dias: "
+                        + " [Dom][" + conviteServico.isDomingo() + "]"
+                        + " [Seg][" + conviteServico.isSegunda() + "]"
+                        + " [Ter][" + conviteServico.isTerca() + "]"
+                        + " [Qua][" + conviteServico.isQuarta() + "]"
+                        + " [Qui][" + conviteServico.isQuinta() + "]"
+                        + " [Sex][" + conviteServico.isSexta() + "]"
+                        + " [Sab][" + conviteServico.isSabado() + "]"
+                        + " [Feriados][" + conviteServico.isFeriado() + "]"
+                );
+                message = "Registro inserido com sucesso";
+                listConviteServicos.clear();
+            } else {
+                di.rollback();
+                message = "Erro ao adicionar registro!";
+            }
+        } else {
+            ConviteServico cs = (ConviteServico) di.find(conviteServico);
+            String beforeUpdate = ""
+                    + "ID: " + cs.getId()
+                    + " - Serviço: (" + cs.getId() + ") " + cs.getServicos().getDescricao()
+                    + " - Dias: "
+                    + " [Dom][" + cs.isDomingo() + "]"
+                    + " [Seg][" + cs.isSegunda() + "]"
+                    + " [Ter][" + cs.isTerca() + "]"
+                    + " [Qua][" + cs.isQuarta() + "]"
+                    + " [Qui][" + cs.isQuinta() + "]"
+                    + " [Sex][" + cs.isSexta() + "]"
+                    + " [Sab][" + cs.isSabado() + "]"
+                    + " [Feriados][" + cs.isFeriado() + "]";
+            di.openTransaction();
+            if (di.update(conviteServico)) {
+                di.commit();
+                novoLog.update(beforeUpdate, ""
+                        + " ID: " + conviteServico.getId()
+                        + " - Serviço: (" + conviteServico.getId() + ") " + conviteServico.getServicos().getDescricao()
+                        + " - Dias: "
+                        + " [Dom][" + conviteServico.isDomingo() + "]"
+                        + " [Seg][" + conviteServico.isSegunda() + "]"
+                        + " [Ter][" + conviteServico.isTerca() + "]"
+                        + " [Qua][" + conviteServico.isQuarta() + "]"
+                        + " [Qui][" + conviteServico.isQuinta() + "]"
+                        + " [Sex][" + conviteServico.isSexta() + "]"
+                        + " [Sab][" + conviteServico.isSabado() + "]"
+                        + " [Feriados][" + conviteServico.isFeriado() + "]"
+                );
+                message = "Registro atualizado com sucesso";
+                listConviteServicos.clear();
+            } else {
+                di.rollback();
+                message = "Erro ao atualizar registro!";
+            }
+        }
         conviteServico = new ConviteServico();
-        conviteServico = cs;
-        for (int i = 0; i < listaServicos.size(); i++) {
-            if (Integer.parseInt(listaServicos.get(i).getDescription()) == cs.getServicos().getId()) {
+    }
+
+    public void clear() {
+        GenericaSessao.remove("conviteServicoBean");
+    }
+
+    public void edit(ConviteServico cs) {
+        conviteServico = new ConviteServico();
+        DaoInterface di = new Dao();
+        conviteServico = (ConviteServico) di.rebind(cs);
+        for (int i = 0; i < listServicos.size(); i++) {
+            if (Integer.parseInt(listServicos.get(i).getDescription()) == cs.getServicos().getId()) {
                 idServicos = i;
                 break;
             }
         }
     }
 
-    public void atualizarDiaSemana(ConviteServico cs) {
+    public void updateDiaSemana(ConviteServico cs) {
         if (cs.getId() != -1) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            dB.abrirTransacao();
-            if (dB.alterarObjeto(cs)) {
+            NovoLog novoLog = new NovoLog();
+            DaoInterface di = new Dao();
+            di.openTransaction();
+            ConviteServico csb = (ConviteServico) di.find(cs);
+            String beforeUpdate = ""
+                    + "ID: " + csb.getId()
+                    + " - Serviço: (" + csb.getId() + ") " + csb.getServicos().getDescricao()
+                    + " - Dias: "
+                    + " [Dom][" + csb.isDomingo() + "]"
+                    + " [Seg][" + csb.isSegunda() + "]"
+                    + " [Ter][" + csb.isTerca() + "]"
+                    + " [Qua][" + csb.isQuarta() + "]"
+                    + " [Qui][" + csb.isQuinta() + "]"
+                    + " [Sex][" + csb.isSexta() + "]"
+                    + " [Sab][" + csb.isSabado() + "]"
+                    + " [Feriados][" + csb.isFeriado() + "]";
+            if (di.update(cs)) {
                 if (cs.getId() == conviteServico.getId()) {
                     conviteServico = cs;
                 }
-                dB.comitarTransacao();
+                di.commit();
+                novoLog.update(beforeUpdate, ""
+                        + "ID: " + cs.getId()
+                        + " - Serviço: (" + cs.getId() + ") " + csb.getServicos().getDescricao()
+                        + " - Dias: "
+                        + " [Dom][" + cs.isDomingo() + "]"
+                        + " [Seg][" + cs.isSegunda() + "]"
+                        + " [Ter][" + cs.isTerca() + "]"
+                        + " [Qua][" + cs.isQuarta() + "]"
+                        + " [Qui][" + cs.isQuinta() + "]"
+                        + " [Sex][" + cs.isSexta() + "]"
+                        + " [Sab][" + cs.isSabado() + "]"
+                        + " [Feriados][" + cs.isFeriado() + "]"
+                );
                 GenericaMensagem.info("Sucesso", "Registro atualizado.");
-                listaConviteServicos.clear();
+                listConviteServicos.clear();
             } else {
-                dB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
 
         }
     }
 
-    public void excluir() {
-        excluir(conviteServico);
+    public void delete() {
+        delete(conviteServico);
         conviteServico = new ConviteServico();
     }
 
-    public void excluir(ConviteServico cs) {
+    public void delete(ConviteServico cs) {
         if (cs.getId() != -1) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            dB.abrirTransacao();
-            if (dB.deletarObjeto((ConviteServico) dB.pesquisaCodigo(cs.getId(), "ConviteServico"))) {
-                dB.comitarTransacao();
-                mensagem = "Registro excluído com sucesso";
-                listaConviteServicos.clear();
+            DaoInterface di = new Dao();
+            NovoLog novoLog = new NovoLog();
+            di.openTransaction();
+            if (di.delete(cs)) {
+                novoLog.delete(""
+                        + "ID: " + cs.getId()
+                        + " - Serviço: (" + cs.getId() + ") " + cs.getServicos().getDescricao()
+                        + " - Dias: "
+                        + " [Dom][" + cs.isDomingo() + "]"
+                        + " [Seg][" + cs.isSegunda() + "]"
+                        + " [Ter][" + cs.isTerca() + "]"
+                        + " [Qua][" + cs.isQuarta() + "]"
+                        + " [Qui][" + cs.isQuinta() + "]"
+                        + " [Sex][" + cs.isSexta() + "]"
+                        + " [Sab][" + cs.isSabado() + "]"
+                        + " [Feriados][" + cs.isFeriado() + "]"
+                );
+                di.commit();
+                message = "Registro excluído com sucesso";
+                listConviteServicos.clear();
             } else {
-                dB.desfazerTransacao();
-                mensagem = "Erro ao excluir registro!";
+                di.rollback();
+                message = "Erro ao excluir registro!";
             }
         }
     }
@@ -130,12 +229,12 @@ public class ConviteServicoBean implements Serializable {
         this.conviteServico = conviteServico;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getDescricaoPesquisa() {
@@ -146,33 +245,33 @@ public class ConviteServicoBean implements Serializable {
         this.descricaoPesquisa = descricaoPesquisa;
     }
 
-    public List<ConviteServico> getListaConviteServicos() {
-        if (listaConviteServicos.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            listaConviteServicos = (List<ConviteServico>) dB.listaObjeto("ConviteServico", true);
+    public List<ConviteServico> getListConviteServicos() {
+        if (listConviteServicos.isEmpty()) {
+            DaoInterface di = new Dao();
+            listConviteServicos = (List<ConviteServico>) di.list(new ConviteServico(), true);
         }
-        return listaConviteServicos;
+        return listConviteServicos;
     }
 
-    public void setListaConviteServicos(List<ConviteServico> listaConviteServicos) {
-        this.listaConviteServicos = listaConviteServicos;
+    public void setListConviteServicos(List<ConviteServico> listConviteServicos) {
+        this.listConviteServicos = listConviteServicos;
     }
 
-    public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty()) {
+    public List<SelectItem> getListServicos() {
+        if (listServicos.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
             List<Servicos> lista = (List<Servicos>) db.pesquisaTodos(215);
             int i = 0;
             for (Servicos s : lista) {
-                listaServicos.add(new SelectItem(i, s.getDescricao(), Integer.toString((s.getId()))));
+                listServicos.add(new SelectItem(i, s.getDescricao(), Integer.toString((s.getId()))));
                 i++;
             }
         }
-        return listaServicos;
+        return listServicos;
     }
 
-    public void setListaServicos(List<SelectItem> listaServicos) {
-        this.listaServicos = listaServicos;
+    public void setListServicos(List<SelectItem> listServicos) {
+        this.listServicos = listServicos;
     }
 
     public int getIdServicos() {

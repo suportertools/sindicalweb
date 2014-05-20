@@ -74,13 +74,13 @@ public class ConviteMovimentoBean implements Serializable {
     private Usuario usuario = new Usuario();
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private List<ConviteMovimento> conviteMovimentos = new ArrayList<ConviteMovimento>();
-    private List<SelectItem> listaPessoaAutoriza = new ArrayList<SelectItem>();
+    private List<SelectItem> listPessoaAutoriza = new ArrayList<SelectItem>();
     private List<SelectItem> conviteServicos = new ArrayList<SelectItem>();
     private String fotoPerfil = "";
     private String fotoArquivo = "";
     private String fotoTempPerfil = "";
     private String fotoTempArquivo = "";
-    private String mensagem = "";
+    private String message = "";
     private String tipoCaptura = "";
     private String descricaoPesquisa = "";
     private String comoPesquisa = "";
@@ -102,7 +102,7 @@ public class ConviteMovimentoBean implements Serializable {
         conviteMovimento.getSisPessoa().setDtNascimento(null);
         pessoaEndereco = new PessoaEndereco();
         socios = new Socios();
-        mensagem = "";
+        message = "";
         tipoCaptura = "";
         descricaoPesquisa = "";
         comoPesquisa = "";
@@ -131,41 +131,42 @@ public class ConviteMovimentoBean implements Serializable {
         RequestContext.getCurrentInstance().update("form_convite:i_panel_adicionar");
     }
 
-    public String salvar() throws IOException {
+    public String save() throws IOException {
         if (MacFilial.getAcessoFilial().getId() == -1) {
             if (conviteMovimento.getId() == -1) {
                 if (!conviteMovimento.isCortesia()) {
-                    mensagem = "Para salvar convites não cortesia configurar Filial em sua estação trabalho!";
+                    message = "Para salvar convites não cortesia configurar Filial em sua estação trabalho!";
                     return null;
                 }
             }
         }
         boolean sucesso = false;
         if (conviteServicos.isEmpty()) {
-            mensagem = "Cadastrar serviços!";
+            message = "Cadastrar serviços!";
             return null;
         }
         if (conviteMovimento.getPessoa().getId() == -1) {
-            mensagem = "Pesquisar sócio!";
+            message = "Pesquisar sócio!";
             return null;
         }
         if (conviteMovimento.getSisPessoa().getNome().equals("")) {
-            mensagem = "Informar nome do convidado!";
+            message = "Informar nome do convidado!";
             return null;
         }
         conviteMovimento.getSisPessoa().setNome(conviteMovimento.getSisPessoa().getNome().toUpperCase());
         if (conviteMovimento.getSisPessoa().getNascimento().equals("")) {
-            mensagem = "Informar data de nascimento do convidado!";
+            message = "Informar data de nascimento do convidado!";
             return null;
         }
         if (conviteMovimento.getSisPessoa().getTelefone().equals("") && conviteMovimento.getSisPessoa().getCelular().equals("")) {
-            mensagem = "Informar um número de telefone/celular!";
+            message = "Informar um número de telefone/celular!";
             return null;
         }
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
         if (conviteMovimento.isCortesia()) {
-            conviteMovimento.setAutorizaCortesia(((ConviteAutorizaCortesia) dB.pesquisaObjeto(Integer.parseInt(listaPessoaAutoriza.get(idPessoaAutoriza).getDescription()), "ConviteAutorizaCortesia")).getPessoa());
+            conviteMovimento.setAutorizaCortesia(((ConviteAutorizaCortesia) dB.pesquisaObjeto(Integer.parseInt(listPessoaAutoriza.get(idPessoaAutoriza).getDescription()), "ConviteAutorizaCortesia")).getPessoa());
         }
+        NovoLog novoLog = new NovoLog();
         conviteMovimento.setConviteServico((ConviteServico) dB.pesquisaObjeto(Integer.parseInt(conviteServicos.get(idServico).getDescription()), "ConviteServico"));
         dB.abrirTransacao();
         if (conviteMovimento.getSisPessoa().getId() == -1) {
@@ -174,7 +175,7 @@ public class ConviteMovimentoBean implements Serializable {
                 dB.comitarTransacao();
             } else {
                 dB.desfazerTransacao();
-                mensagem = "Erro ao inserir sis pessoa!";
+                message = "Erro ao inserir sis pessoa!";
                 return null;
             }
         } else {
@@ -182,7 +183,7 @@ public class ConviteMovimentoBean implements Serializable {
                 dB.comitarTransacao();
             } else {
                 dB.desfazerTransacao();
-                mensagem = "Erro ao atualizar sis pessoa!";
+                message = "Erro ao atualizar sis pessoa!";
                 return null;
             }
         }
@@ -191,46 +192,46 @@ public class ConviteMovimentoBean implements Serializable {
             Registro r = (Registro) dB.pesquisaObjeto(1, "Registro");
             SpcDB spcDB = new SpcDBToplink();
             if (spcDB.existeRegistroPessoaSPC(conviteMovimento.getPessoa())) {
-                mensagem = "Existem débitos com o síndicato!";
+                message = "Existem débitos com o síndicato!";
                 return null;
             }
             ConviteDB cdb = new ConviteDBToplink();
             if (!conviteMovimento.isCortesia()) {
                 if (cdb.limiteConvitePorSocio(r.getConviteQuantidadeSocio(), r.getConviteDiasSocio(), conviteMovimento.getPessoa().getId())) {
-                    mensagem = "Limite de convites excedido para este sócio! Este sócio tem direito a disponibilizar " + r.getConviteQuantidadeSocio() + " convite(s) a cada " + r.getConviteDiasSocio() + "dia(s)";
+                    message = "Limite de convites excedido para este sócio! Este sócio tem direito a disponibilizar " + r.getConviteQuantidadeSocio() + " convite(s) a cada " + r.getConviteDiasSocio() + "dia(s)";
                     return null;
                 }
                 if (cdb.limiteConviteConvidado(r.getConviteQuantidadeConvidado(), r.getConviteDiasConvidado(), conviteMovimento.getSisPessoa().getId())) {
-                    mensagem = "Limite de convites excedido para convidado! Este convidado tem direito a " + r.getConviteQuantidadeConvidado() + " a cada " + r.getConviteDiasConvidado() + "dia(s)";
+                    message = "Limite de convites excedido para convidado! Este convidado tem direito a " + r.getConviteQuantidadeConvidado() + " a cada " + r.getConviteDiasConvidado() + "dia(s)";
                     return null;
                 }
                 if (valorString.equals("")) {
-                    mensagem = "Informar o valor do serviço, faixa etária não possuí valor do serviço!";
+                    message = "Informar o valor do serviço, faixa etária não possuí valor do serviço!";
                     return null;
                 }
             }
-                if (cdb.socio(conviteMovimento.getSisPessoa())) {
-                    mensagem = "Convidado não pode ser sócio ativo!";
-                    return null;
-                }
+            if (cdb.socio(conviteMovimento.getSisPessoa())) {
+                message = "Convidado não pode ser sócio ativo!";
+                return null;
+            }
             ConviteSuspencao cs = new ConviteSuspencao();
             cs.setSisPessoa(conviteMovimento.getSisPessoa());
             if (cdb.existeSisPessoaSuspensa(cs)) {
-                mensagem = "Convidado possui cadastro suspenso!";
+                message = "Convidado possui cadastro suspenso!";
                 return null;
             }
             if (spcDB.existeRegistroPessoaSPC(conviteMovimento.getPessoa())) {
-                mensagem = "Existem débitos com o síndicato!";
+                message = "Existem débitos com o síndicato!";
                 return null;
             }
             SociosDB sdb = new SociosDBToplink();
             if (sdb.socioDebito(conviteMovimento.getPessoa().getId())) {
-                mensagem = "Sócio possui débitos!";
+                message = "Sócio possui débitos!";
                 return null;
             }
             List list = sdb.pesquisaSocioPorPessoaInativo(conviteMovimento.getPessoa().getId());
             if (!list.isEmpty()) {
-                mensagem = "Sócio encontra-se inátivo!";
+                message = "Sócio encontra-se inátivo!";
                 return null;
             }
             conviteMovimento.setUsuario(usuario);
@@ -242,55 +243,80 @@ public class ConviteMovimentoBean implements Serializable {
             dB.abrirTransacao();
             if (dB.inserirObjeto(conviteMovimento)) {
                 if (conviteMovimento.isCortesia()) {
+                    novoLog.save(""
+                            + "ID: " + conviteMovimento.getId()
+                            + " - Emissão: " + conviteMovimento.getEmissao()
+                            + " - SisPessoa: (" + conviteMovimento.getSisPessoa().getId() + ") " + conviteMovimento.getSisPessoa().getNome()
+                            + " - Responsável (Pessoa): (" + conviteMovimento.getPessoa().getId() + ") " + conviteMovimento.getPessoa().getNome()
+                            + " - Validade: " + conviteMovimento.getValidade()
+                            + " - Autorizado por (Pessoa): (" + conviteMovimento.getAutorizaCortesia().getId() + ") " + conviteMovimento.getAutorizaCortesia().getNome()
+                            + " - Convite Serviço: (" + conviteMovimento.getConviteServico().getId() + ") " + conviteMovimento.getConviteServico().getServicos().getDescricao()
+                    );
                     dB.comitarTransacao();
-                    mensagem = "Registro inserido com sucesso";
+                    message = "Registro inserido com sucesso";
                     desabilitaCamposMovimento = true;
                     sucesso = true;
+
                 } else {
                     float valor = Moeda.substituiVirgulaFloat(valorString);
                     if (valor == 0) {
                         dB.desfazerTransacao();
                         conviteMovimento.setId(-1);
-                        mensagem = "Informar valor do serviço! Deve ser direfente de 0.";
+                        message = "Informar valor do serviço! Deve ser direfente de 0.";
                         return null;
                     }
                     try {
                         if (gerarMovimento(dB)) {
                             dB.comitarTransacao();
-                            mensagem = "Registro inserido com sucesso";
+                            message = "Registro inserido com sucesso";
                             desabilitaCamposMovimento = true;
                             sucesso = true;
                         } else {
                             dB.desfazerTransacao();
                             conviteMovimento.setId(-1);
-                            mensagem = "Erro ao inserir registro!";
+                            message = "Erro ao inserir registro!";
                             return null;
                         }
                     } catch (Exception e) {
                         dB.desfazerTransacao();
                         conviteMovimento.setId(-1);
-                        mensagem = "Erro ao inserir registro!";
+                        message = "Erro ao inserir registro!";
                         return null;
                     }
                 }
             } else {
                 dB.desfazerTransacao();
                 conviteMovimento.setId(-1);
-                mensagem = "Erro ao inserir registro!";
+                message = "Erro ao inserir registro!";
                 return null;
             }
         } else {
             dB.abrirTransacao();
-            String cvAntes = ((ConviteMovimento) dB.pesquisaObjeto(conviteMovimento.getId(), "ConviteMovimento")).toString();
+            ConviteMovimento cm = (ConviteMovimento) dB.pesquisaObjeto(conviteMovimento.getId(), "ConviteMovimento");
+            String beforeUpdate = ""
+                    + "ID: " + cm.getId()
+                    + " - Emissão: " + cm.getEmissao()
+                    + " - SisPessoa: (" + cm.getSisPessoa().getId() + ") " + cm.getSisPessoa().getNome()
+                    + " - Responsável (Pessoa): (" + cm.getPessoa().getId() + ") " + cm.getPessoa().getNome()
+                    + " - Validade: " + cm.getValidade()
+                    + " - Autorizado por (Pessoa): (" + cm.getAutorizaCortesia().getId() + ") " + cm.getAutorizaCortesia().getNome()
+                    + " - Convite Serviço: (" + cm.getConviteServico().getId() + ") " + cm.getConviteServico().getServicos().getDescricao();
             if (dB.alterarObjeto(conviteMovimento)) {
                 dB.comitarTransacao();
-                mensagem = "Registro atualizado com sucesso";
-                NovoLog log = new NovoLog();
-                log.novo("Atualizado", "De:" + cvAntes + " para " + conviteMovimento.toString());
+                message = "Registro atualizado com sucesso";
+                novoLog.update(beforeUpdate, ""
+                        + "ID: " + conviteMovimento.getId()
+                        + " - Emissão: " + conviteMovimento.getEmissao()
+                        + " - SisPessoa: (" + conviteMovimento.getSisPessoa().getId() + ") " + conviteMovimento.getSisPessoa().getNome()
+                        + " - Responsável (Pessoa): (" + conviteMovimento.getPessoa().getId() + ") " + conviteMovimento.getPessoa().getNome()
+                        + " - Validade: " + conviteMovimento.getValidade()
+                        + " - Autorizado por (Pessoa): (" + conviteMovimento.getAutorizaCortesia().getId() + ") " + conviteMovimento.getAutorizaCortesia().getNome()
+                        + " - Convite Serviço: (" + conviteMovimento.getConviteServico().getId() + ") " + conviteMovimento.getConviteServico().getServicos().getDescricao()
+                );
                 sucesso = true;
             } else {
                 dB.desfazerTransacao();
-                mensagem = "Erro ao atualizar registro!";
+                message = "Erro ao atualizar registro!";
                 return null;
             }
         }
@@ -372,7 +398,7 @@ public class ConviteMovimentoBean implements Serializable {
         }
     }
 
-    public void excluir() {
+    public void delete() {
         String msg = "";
         if (conviteMovimento.getId() != -1) {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
@@ -387,7 +413,16 @@ public class ConviteMovimentoBean implements Serializable {
                         return;
                     }
                 }
-                NovoLog log = new NovoLog();
+                NovoLog novoLog = new NovoLog();
+                novoLog.delete(""
+                        + "ID: " + conviteMovimento.getId()
+                        + " - Emissão: " + conviteMovimento.getEmissao()
+                        + " - SisPessoa: (" + conviteMovimento.getSisPessoa().getId() + ") " + conviteMovimento.getSisPessoa().getNome()
+                        + " - Responsável (Pessoa): (" + conviteMovimento.getPessoa().getId() + ") " + conviteMovimento.getPessoa().getNome()
+                        + " - Validade: " + conviteMovimento.getValidade()
+                        + " - Autorizado por (Pessoa): (" + conviteMovimento.getAutorizaCortesia().getId() + ") " + conviteMovimento.getAutorizaCortesia().getNome()
+                        + " - Convite Serviço: (" + conviteMovimento.getConviteServico().getId() + ") " + conviteMovimento.getConviteServico().getServicos().getDescricao()
+                );
                 dB.comitarTransacao();
                 msg = "Registro inativado com sucesso";
                 RequestContext.getCurrentInstance().execute("dgl_adicionar.show()");
@@ -398,10 +433,10 @@ public class ConviteMovimentoBean implements Serializable {
             }
         }
         novo();
-        mensagem = msg;
+        message = msg;
     }
 
-    public void editar(ConviteMovimento cm) {
+    public void edit(ConviteMovimento cm) {
         conviteMovimento = cm;
         carregaSocio(conviteMovimento.getPessoa());
         carregaEndereco(conviteMovimento.getPessoa());
@@ -417,9 +452,9 @@ public class ConviteMovimentoBean implements Serializable {
             fotoArquivo = "/Cliente/" + getCliente() + "/Imagens/Fotos/SisPessoa/" + conviteMovimento.getId() + "/documento.png";
             fotoTempArquivo = "";
         }
-        if(conviteMovimento.getAutorizaCortesia() != null) {
-            for (int i = 0; i < getListaPessoaAutoriza().size(); i++) {
-                if (Integer.parseInt(listaPessoaAutoriza.get(i).getDescription()) == conviteMovimento.getAutorizaCortesia().getId()) {
+        if (conviteMovimento.getAutorizaCortesia() != null) {
+            for (int i = 0; i < getListPessoaAutoriza().size(); i++) {
+                if (Integer.parseInt(listPessoaAutoriza.get(i).getDescription()) == conviteMovimento.getAutorizaCortesia().getId()) {
                     idPessoaAutoriza = i;
                     break;
                 }
@@ -514,12 +549,12 @@ public class ConviteMovimentoBean implements Serializable {
         }
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public List<SelectItem> getConviteServicos() {
@@ -725,21 +760,21 @@ public class ConviteMovimentoBean implements Serializable {
         this.idPessoaAutoriza = idPessoaAutoriza;
     }
 
-    public List<SelectItem> getListaPessoaAutoriza() {
-        if (listaPessoaAutoriza.isEmpty()) {
+    public List<SelectItem> getListPessoaAutoriza() {
+        if (listPessoaAutoriza.isEmpty()) {
             SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
             List<ConviteAutorizaCortesia> list = (List<ConviteAutorizaCortesia>) dB.listaObjeto("ConviteAutorizaCortesia");
             int i = 0;
             for (ConviteAutorizaCortesia cac : list) {
-                listaPessoaAutoriza.add(new SelectItem(i, cac.getPessoa().getNome(), "" + cac.getId()));
+                listPessoaAutoriza.add(new SelectItem(i, cac.getPessoa().getNome(), "" + cac.getId()));
                 i++;
             }
         }
-        return listaPessoaAutoriza;
+        return listPessoaAutoriza;
     }
 
-    public void setListaPessoaAutoriza(List<SelectItem> listaPessoaAutoriza) {
-        this.listaPessoaAutoriza = listaPessoaAutoriza;
+    public void setListPessoaAutoriza(List<SelectItem> listPessoaAutoriza) {
+        this.listPessoaAutoriza = listPessoaAutoriza;
     }
 
     public String validadeConvite(String dataEmissao) {
