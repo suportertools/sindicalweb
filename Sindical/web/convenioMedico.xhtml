@@ -28,12 +28,12 @@
                         </p:dialog>
                         <p:dialog header="Deseja excluir este Registro?" widgetVar="dlg_delete" modal="true" closable="true">
                             <f:facet name="footer">
-                                <p:commandButton value="Sim" title="Salvar" action="#{matriculaConvenioMedicoBean.excluir}" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" update=":form_cm:, outConfirma"/>
+                                <p:commandButton value="Sim" title="Salvar" action="#{matriculaConvenioMedicoBean.delete}" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" update=":form_cm:, outConfirma"/>
                                 <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide();"/>
                             </f:facet>
                         </p:dialog>
                         <p:dialog header="Mensagem" widgetVar="dlg_message" modal="true" closable="true" width="400">
-                            <h:outputText id="outConfirma" value="#{matriculaConvenioMedicoBean.mensagem}" />
+                            <h:outputText id="outConfirma" value="#{matriculaConvenioMedicoBean.message}" />
                             <f:facet name="footer">
                                 <p:commandButton value="OK" action="convenioMedico" title="OK" onclick="PF('dlg_message').hide();"/>
                             </f:facet>
