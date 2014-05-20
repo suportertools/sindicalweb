@@ -4,6 +4,7 @@ import br.com.rtools.associativo.MatriculaConvenioMedico;
 import br.com.rtools.associativo.db.MatriculaConvenioMedicoDB;
 import br.com.rtools.associativo.db.MatriculaConvenioMedicoDBToplink;
 import br.com.rtools.financeiro.ServicoPessoa;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -16,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
@@ -24,7 +24,7 @@ public class MatriculaConvenioMedicoBean implements Serializable {
 
     private MatriculaConvenioMedico matriculaConvenioMedico;
     private ServicoPessoaBean servicoPessoaBean;
-    private String mensagem;
+    private String message;
     private String descPesquisa;
     private String porPesquisa;
     private String comoPesquisa;
@@ -33,11 +33,11 @@ public class MatriculaConvenioMedicoBean implements Serializable {
     @PostConstruct
     public void init() {
         servicoPessoaBean = null;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("servicoPessoaBean", new ServicoPessoaBean());
-        servicoPessoaBean = ((ServicoPessoaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("servicoPessoaBean"));
+        GenericaSessao.put("servicoPessoaBean", new ServicoPessoaBean());
+        servicoPessoaBean = ((ServicoPessoaBean) GenericaSessao.getObject("servicoPessoaBean"));
         servicoPessoaBean.setRenderServicos(true);
         matriculaConvenioMedico = new MatriculaConvenioMedico();
-        mensagem = "";
+        message = "";
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
@@ -52,41 +52,61 @@ public class MatriculaConvenioMedicoBean implements Serializable {
 
     public void save() {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
-        MatriculaConvenioMedicoDB db = new MatriculaConvenioMedicoDBToplink();
+        NovoLog novoLog = new NovoLog();
         if (servicoPessoaBean.getServicoPessoa().getPessoa().getId() == -1) {
-            mensagem = "Pesquise uma Pessoa!";
+            message = "Pesquise uma Pessoa!";
             return;
         }
         dbSalvar.abrirTransacao();
         if (servicoPessoaBean.getServicoPessoa().getId() == -1) {
-            mensagem = servicoPessoaBean.salvarServicoPessoa(null, dbSalvar);
-            if (!mensagem.isEmpty()) {
+            message = servicoPessoaBean.salvarServicoPessoa(null, dbSalvar);
+            if (!message.isEmpty()) {
                 dbSalvar.desfazerTransacao();
                 return;
             }
 
             matriculaConvenioMedico.setServicoPessoa(servicoPessoaBean.getServicoPessoa());
             if (dbSalvar.inserirObjeto(matriculaConvenioMedico)) {
-                mensagem = "Matricula salva com Sucesso!";
+                novoLog.save(""
+                        + "ID: " + matriculaConvenioMedico.getId()
+                        + " - Código: " + matriculaConvenioMedico.getCodigo()
+                        + " - Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getPessoa().getNome()
+                        + " - Cobrança (Pessoa): (" + matriculaConvenioMedico.getServicoPessoa().getCobranca().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getCobranca().getNome()
+                        + " - Serviço Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getServicos().getDescricao()
+                );
+                message = "Matricula salva com Sucesso!";
                 dbSalvar.comitarTransacao();
             } else {
-                mensagem = "Erro ao Salvar Matricula!";
+                message = "Erro ao Salvar Matricula!";
                 dbSalvar.desfazerTransacao();
             }
         } else {
-            mensagem = servicoPessoaBean.atualizarServicoPessoa(null, dbSalvar);
+            message = servicoPessoaBean.atualizarServicoPessoa(null, dbSalvar);
 
-            if (!mensagem.isEmpty()) {
+            if (!message.isEmpty()) {
                 dbSalvar.desfazerTransacao();
                 return;
             }
-
+            MatriculaConvenioMedico mcm = (MatriculaConvenioMedico) dbSalvar.pesquisaObjeto(matriculaConvenioMedico.getId(), "MatriculaConvenioMedico");
             matriculaConvenioMedico.setServicoPessoa(servicoPessoaBean.getServicoPessoa());
+            String beforeUpdate = ""
+                    + "ID: " + mcm.getId()
+                    + " - Código: " + mcm.getCodigo()
+                    + " - Pessoa: (" + mcm.getServicoPessoa().getPessoa().getId() + ") " + mcm.getServicoPessoa().getPessoa().getNome()
+                    + " - Cobrança (Pessoa): (" + mcm.getServicoPessoa().getCobranca().getId() + ") " + mcm.getServicoPessoa().getCobranca().getNome()
+                    + " - Serviço Pessoa: (" + mcm.getServicoPessoa().getId() + ") " + mcm.getServicoPessoa().getServicos().getDescricao();
             if (dbSalvar.alterarObjeto(matriculaConvenioMedico)) {
-                mensagem = "Matricula atualizada com Sucesso!";
+                message = "Matricula atualizada com Sucesso!";
+                novoLog.update(beforeUpdate, ""
+                        + "ID: " + matriculaConvenioMedico.getId()
+                        + " - Código: " + matriculaConvenioMedico.getCodigo()
+                        + " - Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getPessoa().getNome()
+                        + " - Cobrança (Pessoa): (" + matriculaConvenioMedico.getServicoPessoa().getCobranca().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getCobranca().getNome()
+                        + " - Serviço Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getServicos().getDescricao()
+                );
                 dbSalvar.comitarTransacao();
             } else {
-                mensagem = "Erro ao atualizar Matricula!";
+                message = "Erro ao atualizar Matricula!";
                 dbSalvar.desfazerTransacao();
             }
         }
@@ -96,29 +116,39 @@ public class MatriculaConvenioMedicoBean implements Serializable {
         GenericaSessao.remove("matriculaConvenioMedicoBean");
     }
 
-    public void excluir() {
+    public void delete() {
         if (servicoPessoaBean.getServicoPessoa().getId() != -1) {
             DaoInterface dao = new Dao();
+            NovoLog novoLog = new NovoLog();
             dao.openTransaction();
-            if (dao.delete((MatriculaConvenioMedico) dao.find("MatriculaConvenioMedico", matriculaConvenioMedico.getId()))) {
-                if (dao.delete((ServicoPessoa) dao.find("ServicoPessoa", servicoPessoaBean.getServicoPessoa().getId()))) {
+            if (dao.delete(matriculaConvenioMedico)) {
+                if (dao.delete(matriculaConvenioMedico.getServicoPessoa())) {
+                    novoLog.delete(""
+                            + "ID: " + matriculaConvenioMedico.getId()
+                            + " - Código: " + matriculaConvenioMedico.getCodigo()
+                            + " - Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getPessoa().getNome()
+                            + " - Cobrança (Pessoa): (" + matriculaConvenioMedico.getServicoPessoa().getCobranca().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getCobranca().getNome()
+                            + " - Serviço Pessoa: (" + matriculaConvenioMedico.getServicoPessoa().getId() + ") " + matriculaConvenioMedico.getServicoPessoa().getServicos().getDescricao()
+                    );
                     dao.commit();
-                    FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("matriculaConvenioMedicoBean", new MatriculaConvenioMedicoBean());
-                    ((MatriculaConvenioMedicoBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("matriculaConvenioMedicoBean")).setMensagem("Matricula Excluida com sucesso!");
+                    GenericaSessao.put("matriculaConvenioMedicoBean", new MatriculaConvenioMedicoBean());
+                    ((MatriculaConvenioMedicoBean) GenericaSessao.getObject("matriculaConvenioMedicoBean")).setMessage("Matricula Excluida com sucesso!");
                 } else {
-                    mensagem = "Erro ao excluir serviço pessoa!";
+                    message = "Erro ao excluir serviço pessoa!";
                     dao.rollback();
                 }
             } else {
-                mensagem = "Erro ao excluir Convênio médico!";
+                message = "Erro ao excluir Convênio médico!";
                 dao.rollback();
             }
         } else {
-            mensagem = "Pesquisar um registro!";
+            message = "Pesquisar um registro!";
         }
     }
 
     public String edit(MatriculaConvenioMedico mcm) {
+        DaoInterface di = new Dao();
+        mcm = (MatriculaConvenioMedico) di.rebind(mcm);
         matriculaConvenioMedico = mcm;
         servicoPessoaBean.setServicoPessoa(matriculaConvenioMedico.getServicoPessoa());
         descPesquisa = "";
@@ -188,11 +218,11 @@ public class MatriculaConvenioMedicoBean implements Serializable {
         this.matriculaConvenioMedico = matriculaConvenioMedico;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }
