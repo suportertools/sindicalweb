@@ -7,6 +7,12 @@
 
     <h:head>
         <title>Permissões</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+        </style>        
     </h:head>
     <h:body>
         <f:subview id="header">
@@ -31,7 +37,7 @@
                             <p:selectOneMenu value="#{permissaoBean.idRotina}">
                                 <f:selectItems value="#{permissaoBean.listaRotinas}"/>
                             </p:selectOneMenu>
-                            <p:commandButton icon="ui-icon-plus" value="Adicionar" action="#{permissaoBean.adicionarPermissao}" disabled="#{controleAcessoBean.botaoSalvar}" update="id_painel_permissao, tbl" />
+                            <p:commandButton icon="ui-icon-plus" value="Adicionar" action="#{permissaoBean.addPermissao}" disabled="#{controleAcessoBean.botaoSalvar}" update="id_painel_permissao, tbl" />
                             <p:column></p:column>
                             <p:column></p:column>
                             <p:column></p:column>
@@ -49,8 +55,8 @@
                             <p:column headerText="Evento">
                                 <p:outputLabel value="Inclusão, Alteração, Exclusão, Consulta"/>
                             </p:column>
-                            <p:column width="30" styleClass="text-center">
-                                <p:commandButton icon="ui-icon-trash" action="#{permissaoBean.removerPermissao(permissao)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":form_permissao:id_painel_permissao :form_permissao:tbl :form_permissao:id_messages_growl" title="Código: #{permissao.id}"/>
+                            <p:column width="25" styleClass="text-center">
+                                <p:commandButton icon="ui-icon-trash" action="#{permissaoBean.removePermissao(permissao)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":form_permissao:id_painel_permissao :form_permissao:tbl :form_permissao:id_messages_growl" title="Código: #{permissao.id}"/>
                             </p:column>
                         </p:dataTable>
                     </p:panel>

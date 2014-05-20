@@ -1,296 +1,244 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Cadastro de Usuários</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
     </h:head>
-    <h:body styleClass="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="form_usuario">
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="CADASTRO DE USUÁRIOS" styleClass="fontePanel" style="width: 100%" />
-                    </div>
-                </center>
-                <rich:panel id="id_panel_usuario" style="margin: 0; border: 0;">
-                    <c:set scope="request" var="object" value="${usuarioBean.usuario}" id="idObject"/>
-                    <rich:panel styleClass="divMae divFundo" style="width: 520px; border: 0;">
-                        <h:panelGrid columns="2" columnClasses="coluna1, coluna2">
-                            <h:column>                            
-                                <h:commandButton id="idPesquisaPessoa" image="/Imagens/pesquisar.png" action="#{chamadaPaginaBean.pesquisaPessoa}" immediate="true"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputText value="#{usuarioBean.usuario.pessoa.nome}" styleClass="fontePadraoNegrito"/>                            
-                                <h:outputLabel for="idPesquisaPessoa" value=" PESQUISAR PESSOA > NOME DO USUÁRIO" styleClass="fontePadrao" rendered="#{usuarioBean.usuario.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="LOGIN: " styleClass="fontePadrao"/>
-                            </h:column>
-                            <h:column>
-                                <h:inputText size="20" autocomplete="off" value="#{usuarioBean.usuario.login}"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="EMAIL:  " styleClass="fontePadrao"/>
-                            </h:column>
-                            <h:column>
-                                <h:inputText size="50" autocomplete="off" value="#{usuarioBean.usuario.email}"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="SENHA: " styleClass="fontePadrao" rendered="#{usuarioBean.disSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:inputSecret redisplay="true" autocomplete="off" size="15" value="#{usuarioBean.usuario.senha}" rendered="#{usuarioBean.disSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="CONFIRMAR SENHA: " styleClass="fontePadrao" rendered="#{usuarioBean.disSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:inputSecret redisplay="true" autocomplete="off" size="15" value="#{usuarioBean.confirmaSenha}" rendered="#{usuarioBean.disSenha}"/>
-                            </h:column>
-                             <h:column>
-                            </h:column>
-                            <h:column>
-                                <h:commandLink action="#{usuarioBean.habilitaNovaSenha}" value="ALTERAR SENHA" styleClass="fontePadraoNegrito" rendered="#{usuarioBean.disStrSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="ANTIGA: " styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:inputSecret value="#{usuarioBean.senhaAntiga}" autocomplete="off" styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:outputLabel value="NOVA: " styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>
-                            </h:column>
-                            <h:column>
-                                <h:inputSecret value="#{usuarioBean.usuario.senha}" autocomplete="off" styleClass="fontePadrao" rendered="#{usuarioBean.disNovaSenha}"/>
-                            </h:column>
-                           <h:column>
-                                <h:outputLabel value="ATIVO: " styleClass="fontePadrao" />
-                            </h:column>
-                            <h:column>
-                                <h:selectBooleanCheckbox id="idAtivaUsuario"  value="#{usuarioBean.usuario.ativo}" title="Ativar/Desativar">
-                                    <a4j:ajax event="change" render="idAtivaUsuario" />
-                                </h:selectBooleanCheckbox>
-                            </h:column>                        
-                        </h:panelGrid>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <p:outputLabel value="Cadastro de Usuários" styleClass="fonteHeader" />
                         <div class="clear"></div>
-                        <h:column rendered="#{usuarioBean.usuario.id != -1}">
-                            <rich:panel styleClass="border-radius bg-white padding" style="width: 500px; border: 0;">
-                                <h:outputText value="PERMISSÃO: " styleClass="fontePadraoNegrito"></h:outputText>
-                                <h:panelGrid columns="2" styleClass="margin-top-maior" >
-                                    <h:outputLabel value="DEPARTAMENTO " styleClass="fontePadrao"/>
-                                    <h:outputLabel value="NÍVEL" styleClass="fontePadrao"/>
-                                    <h:selectOneMenu value="#{usuarioBean.idDepartamento}" id="idSelDepto">
-                                        <f:selectItems value="#{usuarioBean.listaDepartamentos}"/>
-                                    </h:selectOneMenu>                            
-                                    <h:column>
-                                        <h:selectOneMenu value="#{usuarioBean.idNivel}" id="idSelNivel">
-                                            <f:selectItems value="#{usuarioBean.listaNiveis}"/>
-                                        </h:selectOneMenu>
-                                        <a4j:commandButton image="/Imagens/novo.png" action="#{usuarioBean.adicionarUsuarioPermissao}" render="tbl,idSelDepto,idSelNivel" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar novo departamento a esse usuário" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status"/>
+                        <h:form id="form_u">
+                            <c:set scope="request" var="object" value="${usuarioBean.usuario}" id="idObject"/>
+                            <p:panel header="Usuário">
+                                <h:panelGrid columns="2" id="i_panel_user">
+                                    <h:column>                            
+                                        <p:commandButton id="idPesquisaPessoa" icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoa')}" />
                                     </h:column>
-                                </h:panelGrid>                                                    
-                                <h:panelGrid>
-                                    <rich:panel style="border: 0;">
-                                        <rich:panel style="overflow:auto; height:100px; width: 280px; border: 0;">
-                                            <rich:dataTable value="#{usuarioBean.listaPermissaoUsuario}" var="linha" iterationStatusVar="it" style="width: 100%;" id="tbl">
-                                                <rich:column style="text-align: center;">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="#"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{it.index}"/>
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="..."/>
-                                                    </f:facet>
-                                                    <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir" action="#{usuarioBean.removerPermissaoUsuario(linha)}" render="tbl" status="i_status"/>
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Departamento"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.departamento.descricao}" />
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Nível"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.nivel.descricao}" />
-                                                </rich:column>
-                                            </rich:dataTable>
-                                        </rich:panel>
-                                    </rich:panel>
+                                    <h:column>
+                                        <p:outputLabel value="#{usuarioBean.usuario.pessoa.nome}" />                            
+                                        <p:outputLabel for="idPesquisaPessoa" value=" Pesquisar pessoa > Nome do usuário"  rendered="#{usuarioBean.usuario.pessoa.id == -1}" style="border-bottom: 2px #ffffff dashed;"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value="Login: " />
+                                    </h:column>
+                                    <h:column>
+                                        <p:inputText size="20" autocomplete="off" value="#{usuarioBean.usuario.login}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value="Email:  " />
+                                    </h:column>
+                                    <h:column>
+                                        <p:inputText size="50" autocomplete="off" value="#{usuarioBean.usuario.email}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value="Senha: " rendered="#{usuarioBean.disSenha}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:inputText type="password"  autocomplete="off" size="15" value="#{usuarioBean.usuario.senha}" rendered="#{usuarioBean.disSenha}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value="Confirma senha: " rendered="#{usuarioBean.disSenha}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:inputText type="password" autocomplete="off" size="15" value="#{usuarioBean.confirmaSenha}" rendered="#{usuarioBean.disSenha}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    <h:column>
+                                    </h:column>
+                                    <h:column>
+                                        <p:commandLink action="#{usuarioBean.habilitaNovaSenha}" value="Alterar senha"  rendered="#{usuarioBean.disStrSenha}" update="i_panel_user"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value="Antiga: "  rendered="#{usuarioBean.disNovaSenha}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:inputText type="password"  value="#{usuarioBean.senhaAntiga}" autocomplete="off"  rendered="#{usuarioBean.disNovaSenha}">
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    <h:column>
+                                        <p:outputLabel value="Nova: "  rendered="#{usuarioBean.disNovaSenha}"/>
+                                    </h:column>
+                                    <h:column>
+                                        <p:inputText type="password"  value="#{usuarioBean.usuario.senha}" autocomplete="off" rendered="#{usuarioBean.disNovaSenha}" >
+                                            <p:ajax event="blur" update="@this" />
+                                        </p:inputText>
+                                    </h:column>
+                                    <h:column>
+                                    </h:column>
+                                    <h:column>
+                                        <p:selectBooleanCheckbox id="idAtivaUsuario"  value="#{usuarioBean.usuario.ativo}" itemLabel="Ativo?">
+                                            <p:ajax event="change" update="idAtivaUsuario" />
+                                        </p:selectBooleanCheckbox>
+                                    </h:column>                        
                                 </h:panelGrid>
-                            </rich:panel>
-                        </h:column>
-                        <br />
-                        <a4j:commandLink styleClass="idSalvar iLink" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" oncomplete="#{rich:component('form_usuario:i_panel_salvar')}.show(); return false;" />
-                        <a4j:commandLink styleClass="idNovo iLink" value="Novo" action="#{usuarioBean.novo()}"/>
-                        <a4j:commandLink styleClass="idExcluir iLink" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" oncomplete="#{rich:component('form_usuario:i_panel_excluir')}.show(); return false;" />
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaUsuario()}"/>                    
-                    </rich:panel>
-                        <div class="clear"></div>
-                        <h:column rendered="#{usuarioBean.usuario.id != -1}">
-                            <div class="divMae divFundo margin-top-maior" style="width: 550px;">
-                                <h:outputText value="PERMISSÕES PERSONALIZADAS: " styleClass="fontePadraoNegrito"></h:outputText><br />
-                                <div class="clear margin-top-maior" ></div>
-                                <h:outputText value="Atalho: " styleClass="margin-top-maior"/>
-                                <a4j:commandLink value="Módulo/Rotina" styleClass="margin-top-maior" action="#{chamadaPaginaBean.permissao()}" />
-                                <h:panelGrid columns="4" styleClass="margin-top-maior" id="idRenderTabela">
-                                    <h:outputLabel value="MÓDULO" styleClass="fontePadrao margin-left"/>
-                                    <h:outputLabel value="ROTINA" styleClass="fontePadrao margin-left"/>
-                                    <h:outputLabel value="EVENTO" id="idFiltroEvento" styleClass="fontePadrao margin-left"/>
-                                    <h:column></h:column>
-                                    <h:selectOneMenu value="#{usuarioBean.idModulo}" id="idModulo">
-                                        <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcesso}" render="idRenderTabela tblUsuarioAcesso" />
-                                        <f:selectItems value="#{usuarioBean.listaModulos}" />
-                                    </h:selectOneMenu>
-                                    <h:selectOneMenu value="#{usuarioBean.idRotina}" id="idRotina">
-                                        <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
-                                        <f:selectItems value="#{usuarioBean.listaRotinas}"/>
-                                    </h:selectOneMenu>
-                                    <h:selectOneMenu value="#{usuarioBean.idEvento}" id="idEvento">
-                                        <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
-                                        <f:selectItems value="#{usuarioBean.listaEventos}"/>
-                                    </h:selectOneMenu>
-                                    <a4j:commandButton image="/Imagens/novo.png" action="#{usuarioBean.adicionarUsuarioAcesso()}" render="idRenderTabela tblUsuarioAcesso" styleClass="no-margin" style="width: 20px; vertical-align: middle" title="Adicionar permissão personalizada" rendered="#{usuarioBean.usuario.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status" />
-                                    <h:column>
-                                        <h:selectBooleanCheckbox id="idFiltroModulo"  value="#{usuarioBean.filtrarPorModulo}" title="Filtrar por Módulo">
-                                            <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
-                                        </h:selectBooleanCheckbox>
-                                        <h:outputLabel value="Filtrar" styleClass="fontePadrao margin-left" for="idFiltroModulo"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:selectBooleanCheckbox id="idFiltroRotina" value="#{usuarioBean.filtrarPorRotina}" title="Filtrar por Rotina">
-                                            <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
-                                        </h:selectBooleanCheckbox>                                
-                                        <h:outputLabel value="Filtrar" styleClass="fontePadrao margin-left" for="idFiltroRotina"/>
-                                    </h:column>
-                                    <h:column>
-                                        <h:selectBooleanCheckbox id="idFiltroEventos" value="#{usuarioBean.filtrarPorEvento}" title="Filtrar por Evento">
-                                            <a4j:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" render="idRenderTabela tblUsuarioAcesso" />
-                                        </h:selectBooleanCheckbox>                                
-                                        <h:outputLabel value="Filtrar" styleClass="fontePadrao margin-left" for="idFiltroEventos"/>
-                                    </h:column>
-                                    <h:column></h:column>
-                                </h:panelGrid>
-                                <h:panelGrid>
-                                    <rich:panel>
-                                        <div style="overflow:auto; height:300px; width: 500px;">
-                                            <rich:dataTable value="#{usuarioBean.listaUsuarioAcesso}" var="linha" iterationStatusVar="its" style="width: 100%;" id="tblUsuarioAcesso">
-                                                <rich:column style="text-align: center;">
-                                                    <f:facet name="header">
-                                                        <h:outputText value="#"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{its.index}"/>
-                                                </rich:column>
+                            </p:panel>
+                            <h:panelGrid columns="4" styleClass="margin-top-max margin-bottom-max">
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();" />
+                                <p:commandButton value="Novo" action="#{usuarioBean.clear()}" update=":form_u:"/>
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show();" />
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}"/>
+                            </h:panelGrid>
+                            <p:messages autoUpdate="true" showDetail="true" showSummary="true" closable="true" />
+                            <h:panelGrid columns="2" columnClasses="verticalAlignTop, verticalAlignTop" styleClass="margin-top-max">
+                                <h:column>
+                                    <p:panel rendered="#{usuarioBean.usuario.id != -1}" style="width: 450px;">
+                                        <f:facet name="header">
+                                            <h:panelGrid columns="2">
+                                                <p:outputLabel value="Permissões" />
+                                            </h:panelGrid>
+                                        </f:facet>
+                                        <h:panelGrid columns="3">
+                                            <p:outputLabel value="Departamento" />
+                                            <p:outputLabel value="Nível" />
+                                            <h:column />
+                                            <p:selectOneMenu value="#{usuarioBean.idDepartamento}" id="idSelDepto">
+                                                <f:selectItems value="#{usuarioBean.listaDepartamentos}"/>
+                                            </p:selectOneMenu>
+                                            <p:selectOneMenu value="#{usuarioBean.idNivel}" id="idSelNivel">
+                                                <f:selectItems value="#{usuarioBean.listaNiveis}"/>
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-plus" action="#{usuarioBean.addUsuarioPermissao}" update="tbl,idSelDepto,idSelNivel" styleClass="no-margin" title="Adicionar novo departamento a esse usuário" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                        </h:panelGrid>                                                    
+                                        <h:panelGrid id="tbl">
+                                            <p:dataTable value="#{usuarioBean.listaPermissaoUsuario}" var="permissaoUsuario" scrollable="true" scrollHeight="250" emptyMessage="Nenhum registro encontrado!">
+                                                <p:column headerText="Departamento">
+                                                    <p:outputLabel value="#{permissaoUsuario.departamento.descricao}" />
+                                                </p:column>
+                                                <p:column headerText="Nível">
+                                                    <p:outputLabel value="#{permissaoUsuario.nivel.descricao}" />
+                                                </p:column>
+                                                <p:column width="25" styleClass="texr-center">
+                                                    <p:commandButton icon="ui-icon-trash" action="#{usuarioBean.removePermissaoUsuario(permissaoUsuario)}" update=":form_u:tbl" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </h:column>
+                                <h:column>
+                                    <p:panel rendered="#{usuarioBean.usuario.id != -1}" style="width: 530px;">
+                                        <f:facet name="header">
+                                            <h:panelGrid columns="3">
+                                                <p:outputLabel value="Permissões Personalizadas > "/>
+                                                <p:outputLabel value="Atalho: "/>
+                                                <p:commandLink value="Cadastrar Módulo/Rotina" action="#{chamadaPaginaBean.permissao()}" styleClass="font-color-red"/>                                    
+                                            </h:panelGrid>
+                                        </f:facet>
+                                        <h:panelGrid columns="4" styleClass="margin-top-max" id="idRenderTabela">
+                                            <p:outputLabel value="Módulo" />
+                                            <p:outputLabel value="Rotina" />
+                                            <p:outputLabel value="Evento" id="idFiltroEvento" />
+                                            <h:column></h:column>
+                                            <p:selectOneMenu value="#{usuarioBean.idModulo}" id="idModulo">
+                                                <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcesso}" update="idRenderTabela tblUsuarioAcesso" />
+                                                <f:selectItems value="#{usuarioBean.listaModulos}" />
+                                            </p:selectOneMenu>
+                                            <p:selectOneMenu value="#{usuarioBean.idRotina}" id="idRotina">
+                                                <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" update="idRenderTabela tblUsuarioAcesso" />
+                                                <f:selectItems value="#{usuarioBean.listaRotinas}"/>
+                                            </p:selectOneMenu>
+                                            <p:selectOneMenu value="#{usuarioBean.idEvento}" id="idEvento">
+                                                <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" update="idRenderTabela tblUsuarioAcesso" />
+                                                <f:selectItems value="#{usuarioBean.listaEventos}"/>
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-plus" action="#{usuarioBean.addUsuarioAcesso()}" update="idRenderTabela tblUsuarioAcesso" styleClass="no-margin" title="Adicionar permissão personalizada" rendered="#{usuarioBean.usuario.pessoa.id != -1}" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                            <h:column>
+                                                <p:selectBooleanCheckbox id="idFiltroModulo"  value="#{usuarioBean.filtrarPorModulo}" itemLabel="Filtrar">
+                                                    <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" update="idRenderTabela tblUsuarioAcesso" />
+                                                </p:selectBooleanCheckbox>
+                                            </h:column>
+                                            <h:column>
+                                                <p:selectBooleanCheckbox id="idFiltroRotina" value="#{usuarioBean.filtrarPorRotina}" itemLabel="Filtrar">
+                                                    <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" update="idRenderTabela tblUsuarioAcesso" />
+                                                </p:selectBooleanCheckbox>
+                                            </h:column>
+                                            <h:column>
+                                                <p:selectBooleanCheckbox id="idFiltroEventos" value="#{usuarioBean.filtrarPorEvento}" itemLabel="Filtrar">
+                                                    <p:ajax event="change" listener="#{usuarioBean.limparListaUsuarioAcessox}" update="idRenderTabela tblUsuarioAcesso" />
+                                                </p:selectBooleanCheckbox>                                
+                                            </h:column>
+                                            <h:column></h:column>
+                                        </h:panelGrid>
+                                        <h:panelGrid id="tblUsuarioAcesso" styleClass="margin-top-max">
+                                            <p:dataTable value="#{usuarioBean.listaUsuarioAcesso}" var="usuarioAcesso" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="200">
+                                                <p:column headerText="Módulo">
+                                                    <p:outputLabel value="#{usuarioAcesso.permissao.modulo.descricao}" />
+                                                </p:column>
+                                                <p:column headerText="Rotina">
+                                                    <p:outputLabel value="#{usuarioAcesso.permissao.rotina.rotina}" />
+                                                </p:column>
+                                                <p:column headerText="Evento">
+                                                    <p:outputLabel value="#{usuarioAcesso.permissao.evento.descricao}" />                                              
+                                                </p:column>
+                                                <p:column width="25" styleClass="text-center">
+                                                    <p:selectBooleanCheckbox value="#{usuarioAcesso.permite}">
+                                                        <p:ajax event="change" listener="#{usuarioBean.updateUsuarioAcesso(usuarioAcesso)}" update="@this, :form_u:tblUsuarioAcesso" />
+                                                    </p:selectBooleanCheckbox>
+                                                </p:column>                                            
+                                                <p:column width="25" styleClass="text-center">
+                                                    <p:commandButton icon="ui-icon-trash" action="#{usuarioBean.removeUsuarioAcesso(usuarioAcesso)}" update=":form_u:tblUsuarioAcesso" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </h:panelGrid>
+                                    </p:panel>                                    
+                                </h:column>
+                            </h:panelGrid>                           
+                            <p:dialog widgetVar="dlg_save" modal="true" header="Deseja salvar/atualizar este registro?" width="400">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" title="Salvar" action="#{usuarioBean.save}" update=":form_u:" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();"/>
+                                        <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide();"/>
+                                    </h:panelGrid>                                    
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_delete" modal="true" header="Deseja excluir este registro?"  width="400">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" title="Excluir" action="#{usuarioBean.delete}" update=":form_u:" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" />
+                                        <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide();"/>
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_message" modal="true" header="Mensagem"  width="400">
+                                <p:outputLabel value="#{usuarioBean.mensagem}" />
+                                <f:facet name="footer">
+                                    <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_message').hide();"/>
+                                </f:facet>
+                            </p:dialog>
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="..."/>
-                                                    </f:facet>
-                                                    <a4j:commandButton image="/Imagens/excluirp.png" id="btnExcluir#{its.index}" action="#{usuarioBean.btnExcluirUsuarioAcesso(linha)}" render="tblUsuarioAcesso" status="i_status"/>
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Módulo"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.permissao.modulo.descricao}" />
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Rotina"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.permissao.rotina.rotina}" />
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Evento"/>
-                                                    </f:facet>
-                                                    <h:outputText value="#{linha.permissao.evento.descricao}" />                                              
-                                                </rich:column>
-
-                                                <rich:column>
-                                                    <f:facet name="header">
-                                                        <h:outputText value="Permite"/>
-                                                    </f:facet>
-                                                    <h:selectBooleanCheckbox value="#{linha.permite}" title="Permite / Não Permite">
-                                                        <a4j:ajax event="change" listener="#{usuarioBean.permiteUsuarioAcesso(linha)}" render="@this, tblUsuarioAcesso" />
-                                                    </h:selectBooleanCheckbox>
-                                                </rich:column>
-                                            </rich:dataTable>
-                                        </div>
-                                    </rich:panel>
-                                </h:panelGrid>                            
-                            </div>
-                    </h:column>
-                </rich:panel>
-                <rich:popupPanel id="i_panel_salvar" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_salvar')}.hide();" domElementAttachment="form">
-                    <f:facet name="header">
-                        <h:outputText value="Deseja salvar/atualizar este registro?"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_panel_salvar')}.hide(); return false;">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid columns="2">
-                            <a4j:commandButton value="Sim" title="Salvar" action="#{usuarioBean.salvar}" render="id_panel_usuario, i_panel_mensagem" oncomplete="#{rich:component('form_usuario:i_panel_salvar')}.hide(); #{rich:component('form_usuario:i_panel_mensagem')}.show(); return false;" status="i_status"/>
-                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_usuario:i_panel_salvar')}.hide(); return false;"/>
-                        </h:panelGrid>
-                    </center>
-                </rich:popupPanel>
-                <rich:popupPanel id="i_panel_excluir" modal="true" resizeable="true" onmaskclick="#{rich:component('i_panel_excluir')}.hide();" domElementAttachment="form">
-                    <f:facet name="header">
-                        <h:outputText value="Deseja excluir este registro?"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_panel_excluir')}.hide();
-                                return false;">
-                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
-                        </h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:panelGrid columns="2">
-                            <a4j:commandButton value="Sim" title="Excluir" action="#{usuarioBean.excluir}" render="id_panel_usuario, i_panel_mensagem" oncomplete="#{rich:component('form_usuario:i_panel_excluir')}.hide(); #{rich:component('form_usuario:i_panel_mensagem')}.show();" status="i_status"/>
-                            <a4j:commandButton value="Não" title="Cancelar" oncomplete="#{rich:component('form_usuario:i_panel_excluir')}.hide(); return false;"/>
-                        </h:panelGrid>
-                    </center>
-                </rich:popupPanel>
-                <rich:popupPanel id="i_panel_mensagem" modal="true" resizeable="true">
-                    <f:facet name="header">
-                        <h:outputText value="Mensagem"/>
-                    </f:facet>
-                    <f:facet name="controls">
-                        <h:outputLink value="#" onclick="#{rich:component('i_panel_mensagem')}.hide(); return false;"></h:outputLink>
-                    </f:facet>
-                    <center>
-                        <h:outputText value="#{usuarioBean.mensagem}" styleClass="fontePadrao"/>                            
-                        <br /><br />
-                        <a4j:commandButton value="Ok" title="Ok" oncomplete="#{rich:component('form_usuario:i_panel_mensagem')}.hide(); return false;" render="id_panel_usuario"/>
-                    </center>
-                </rich:popupPanel>
-            </h:form>
-        </f:view>
-        <div style="clear: both;"></div>
-        <p style="text-align: center">
-            R'Tools Desenvolvimento de Sistemas LTDA ®
-        </p>        
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>

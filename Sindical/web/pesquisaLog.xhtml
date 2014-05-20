@@ -2,101 +2,160 @@
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
-                xmlns:a4j="http://richfaces.org/a4j"
-                xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
-
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>Pesquisa Log / Registro de Atividades</title>
+        <title>Pesquisa Logs</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
     </h:head>
     <h:body class="divMenu">
         <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
+            <ui:include src="templatePrime.xhtml"/>
         </f:subview>
         <f:view>
-            <h:form id="formPesquisaLog">
-
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Pesquisar Logs" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br />
-                    <div class="divMae divFundo" style="text-align: left; width: 800px;">
-                        <h:panelGrid columns="4" id="idPainelData">
-                            <h:column>
-                                <h:outputText value="Pesquisar por: " styleClass="fontePadrao" />
-                                <rich:column>
-                                    <h:outputLabel value="No dia: " styleClass="fontePadrao" />
-                                    <h:inputText size="8" class="data" value="#{pesquisaLogBean.dataInicioString}" id="idDataInicial">
-                                        <a4j:ajax event="blur" render="idDataInicial" />
-                                    </h:inputText>
-                                    <h:outputText value=" até " styleClass="fontePadrao" /> 
-                                    <h:inputText size="8" class="data" value="#{pesquisaLogBean.dataFinalString}" id="idDataFinal">
-                                        <a4j:ajax event="blur" render="idDataFinal" />
-                                    </h:inputText>
-                                </rich:column>
-                            </h:column>
-                        </h:panelGrid>
-                        <br />
-                        <h:panelGrid columns="5" id="idPainelPesquisa1">
-                            <h:column>
-                                <h:outputLabel value="Pesquisar por: " styleClass="fontePadrao"/>
-                                <h:selectOneMenu id="ida" value="#{pesquisaLogBean.porPesquisa}">
-                                    <a4j:ajax event="change" render="ida idPainelPesquisa tbl" listener="#{pesquisaLogBean.actTipoPesquisa}" />
-                                    <f:selectItem itemValue="todos" itemLabel="Todos" />
-                                    <f:selectItem itemValue="nomeArquivo" itemLabel="Rotina" />
-                                    <f:selectItem itemValue="descricao" itemLabel="Descrição" />
-                                </h:selectOneMenu>
-                                <h:panelGrid id="idPainelPesquisa" style="float: right;" columns="2">
-                                    <h:inputText id="idPLogA2" size="25" value="#{pesquisaLogBean.descricao}" disabled="#{pesquisaLogBean.desabilitaRotinas}" />
-                                    <h:selectOneMenu id="idPLogB2" value="#{pesquisaLogBean.idRotina}" disabled="#{pesquisaLogBean.desabilitaDescricao}">
-                                        <a4j:ajax event="change" render="tbl" />
-                                        <f:selectItems value="#{pesquisaLogBean.listaRotinas}" />
-                                    </h:selectOneMenu>
-                                </h:panelGrid>
-                            </h:column>
-                        </h:panelGrid>
-                        <br />
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Pesquisar" action="#{pesquisaLogBean.pesquisar()}">
-                            <a4j:ajax event="click" render="tbl" />
-                        </a4j:commandLink>
-                        <a4j:commandLink styleClass="idPesquisar iLink" value="Atualizar" action="#{pesquisaLogBean.atualizar()}" >
-                            <a4j:ajax event="click" render="tbl"/>
-                        </a4j:commandLink>
-                    <br />
-                    <br />
-                    <h:outputText value="Resultados" />
-                    <br />
-                    <br />
-                    <rich:dataTable value="#{pesquisaLogBean.listaDiretorio}" iterationStatusVar="it"  style="width: 95%" rows="30" var="linha" id="tbl">
-                        <rich:column style="text-align: center;">
-                            <f:facet name="header">
-                                <h:outputText value="Data"/>
-                            </f:facet>
-                            <h:outputLink value="#{linha.argumento0}" target="_blank">
-                                <h:outputText value="#{linha.argumento2}" />
-                            </h:outputLink>
-                        </rich:column>
-                        <rich:column style="text-align: center;">
-                            <f:facet name="header">
-                                <h:outputText value="Descricao"/>
-                            </f:facet>
-                            <h:outputLink value="#{linha.argumento0}" target="_blank">
-                                <h:outputText value="#{linha.argumento5}" />
-                            </h:outputLink>
-                        </rich:column>
-                    </rich:dataTable>
-                    <br />
-                    <h:panelGrid columns="1">
-                        <f:facet name="footer">
-                            <rich:dataScroller id="datascroller2" render="datascroller1" for="tbl" style="vertical-align: top;"/>
+            <p:panel styleClass="wrapper no-border">
+                <h:outputScript name="tradutor_primefaces.js" library="js" />
+                <h:form id="form_logs">            
+                    <p:growl id="id_messages_growl" showDetail="true" showSummary="true" />
+                    <h:outputText value="Pesquisa Logs" styleClass="fonteHeader"/>
+                    <div class="clear"></div>
+                    <h:panelGrid columns="2" id="id_panel" columnClasses="verticalAlignTop,verticalAlignTop" styleClass="margin-top-max">
+                        <h:column>
+                            <p:accordionPanel styleClass="no-border" style="width: 200px;" dynamic="true" id="i_panel_accordion">
+                                <p:tab title="Avançado">
+                                    <h:panelGrid columns="1" id="i_panel_avancado">
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[0]}" onLabel="Período - Edição" offLabel="Período - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
+                                            <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[1]}" onLabel="Usuário - Edição" offLabel="Usuário - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[2]}" onLabel="Rotina - Edição" offLabel="Rotina - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[3]}" onLabel="Evento - Edição" offLabel="Evento - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" styleClass="margin-top-max" update=":form_logs_list:" action="#{pesquisaLogBean.listLogs.clear()}" />
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:accordionPanel>
+                        </h:column>
+                        <h:column>
+                            <p:panel id="id_panel_logs" style="width: 800px;" >
+                                <c:if test="#{pesquisaLogBean.filtro[0]}">
+                                    <h:panelGrid columns="2">
+                                        <p:outputLabel value="Período " styleClass="bold" />
+                                        <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('periodo')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                    <h:panelGrid columns="2">
+                                        <h:column>
+                                            <h:panelGrid columns="4">
+                                                <p:outputLabel value="Data: " />
+                                                <p:calendar value="#{pesquisaLogBean.data[0]}" pattern="dd/MM/yyyy" size="10" navigator="true" onclick="$(this).mask('99/99/9999');">
+                                                    <p:ajax event="dateSelect" listener="#{pesquisaLogBean.selectedDataInicial}" />
+                                                </p:calendar>
+                                                <p:outputLabel value=" até" />
+                                                <p:calendar value="#{pesquisaLogBean.data[1]}" pattern="dd/MM/yyyy"  size="10" navigator="true" onclick="$(this).mask('99/99/9999');">
+                                                    <p:ajax event="dateSelect" listener="#{pesquisaLogBean.selectedDataFinal}" />
+                                                </p:calendar>
+                                            </h:panelGrid>
+                                            <h:panelGrid columns="4">
+                                                <p:outputLabel value="Horário: " />
+                                                <p:inputMask value="#{pesquisaLogBean.hora[0]}" mask="99:99" size="5"/>
+                                                <p:outputLabel value=" ás " />
+                                                <p:inputMask value="#{pesquisaLogBean.hora[1]}" mask="99:99" size="5"/>
+                                            </h:panelGrid>                                            
+                                        </h:column>
+                                    </h:panelGrid>
+                                    <hr />
+                                </c:if>
+                                <c:if test="#{pesquisaLogBean.filtro[1]}">
+                                    <h:column>
+                                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                                            <p:commandButton  icon="ui-icon-search" value="Pesquisar usuário" action="#{chamadaPaginaBean.pesquisa('pesquisaUsuario')}"/>
+                                            <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('usuario')}" title="Remover filtro"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2" styleClass="margin-top-max">
+                                            <p:outputLabel value="Usuário:" styleClass="bold"/>
+                                            <p:outputLabel value="#{pesquisaLogBean.usuario.login}" />
+                                        </h:panelGrid>
+                                    </h:column>
+                                    <hr />
+                                </c:if>                                 
+                                <c:if test="#{pesquisaLogBean.filtro[2]}">
+                                    <h:panelGrid columns="3">
+                                        <p:outputLabel value="Rotinas:" styleClass="bold"/>
+                                        <p:selectOneMenu value="#{pesquisaLogBean.index[0]}">
+                                            <p:ajax event="change" update="@this" />
+                                            <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                            <f:selectItems value="#{pesquisaLogBean.listRotinas}" />
+                                        </p:selectOneMenu>
+                                        <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('rotina')}" title="Remover filtro"/>
+                                    </h:panelGrid>
+                                    <hr />
+                                </c:if>                                   
+                                <c:if test="#{pesquisaLogBean.filtro[3]}">
+                                    <h:column>
+                                        <h:panelGrid columns="6" cellpadding="5">
+                                            <p:outputLabel value="Eventos:" styleClass="bold"/>
+                                            <p:selectBooleanCheckbox value="#{pesquisaLogBean.filtroEvento[0]}" itemLabel="Inclusão" />
+                                            <p:selectBooleanCheckbox value="#{pesquisaLogBean.filtroEvento[1]}" itemLabel="Exclusão" />
+                                            <p:selectBooleanCheckbox value="#{pesquisaLogBean.filtroEvento[2]}" itemLabel="Alteração" />
+                                            <p:selectBooleanCheckbox value="#{pesquisaLogBean.filtroEvento[3]}" itemLabel="Consulta" />
+                                            <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('evento')}" title="Remover filtro"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                    <hr />
+                                </c:if>
+                            </p:panel>
+                        </h:column>
+                    </h:panelGrid>                    
+                </h:form>
+            </p:panel>
+            <h:form id="form_logs_list">
+                <p:panel styleClass="wrapper no-border">
+                    <p:dataTable value="#{pesquisaLogBean.listLogs}" scrollable="true" scrollHeight="400" var="log" emptyMessage="Nenhum registro encontrado!" rows="10" paginator="true">
+                        <f:facet name="header">
+                            Lista de Logs
                         </f:facet>
-                    </h:panelGrid>  
-                </div>
-            </center>
-        </h:form>
-    </f:view>
-</h:body>
+                        <p:column width="25">
+                            <p:commandButton icon="ui-icon-link" onclick="PF('dlg_log_details').show()" update=":form_logs_list:i_log_details_1 :form_logs_list:i_log_details_2" action="#{pesquisaLogBean.details(log)}" />
+                        </p:column>
+                        <p:column headerText="Data" styleClass="text-center" width="80">
+                            #{log.data}
+                        </p:column>
+                        <p:column headerText="Hora" styleClass="text-center" width="40">
+                            #{log.hora}
+                        </p:column>
+                        <p:column headerText="Rotina">
+                            #{log.rotina.rotina}
+                        </p:column>
+                        <p:column headerText="Evento" styleClass="text-center" width="60">
+                            #{log.evento.descricao}
+                        </p:column>
+                        <p:column headerText="Usuário">
+                            #{log.usuario.login}
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+                <p:dialog widgetVar="dlg_log_details" width="1000" modal="true" resizable="false">
+                    <f:facet name="header">
+                        <p:outputLabel value="Detalhes: Data: #{pesquisaLogBean.log.data} - Horário: #{pesquisaLogBean.log.hora}" id="i_log_details_1"/>
+                    </f:facet>
+                    <h:panelGrid columns="1" id="i_log_details_2">
+                        <p:outputLabel value="Usuário: #{pesquisaLogBean.log.usuario.login} - #{pesquisaLogBean.log.usuario.pessoa.nome}" />
+                        <p:outputLabel value="Rotina: #{pesquisaLogBean.log.rotina.rotina}" />
+                        <p:outputLabel value="Evento: #{pesquisaLogBean.log.evento.descricao}" />
+                        <br />
+                        <p:outputLabel value="Conteúdo Original" styleClass="bold"/>
+                        <p:inputTextarea value="#{pesquisaLogBean.log.conteudoOriginal}" cols="185" readonly="true"/>
+                        <br />
+                        <p:outputLabel value="Conteúdo Alterado" rendered="#{pesquisaLogBean.log.evento.id == 3}" styleClass="bold"/>
+                        <p:inputTextarea value="#{pesquisaLogBean.log.conteudoAlterado}" cols="185" readonly="true" rendered="#{pesquisaLogBean.log.evento.id == 3}"/>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+        </f:view>
+    </h:body>
 </ui:composition>

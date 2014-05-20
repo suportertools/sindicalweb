@@ -42,7 +42,7 @@
                             <p:selectBooleanButton value="#{academiaGradeBean.sab}" onLabel="Sáb" offLabel="Sáb" onIcon="ui-icon-check" styleClass="margin-left-max"/>
                         </p:column>
                     </p:panel>
-                    <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaGradeBean.salvar()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margin-top-max"  update=":form_grade_novo:id_panel_grade_horarios :form_grade:i_panel_grid_horarios"/>
+                    <p:commandButton value="Adicionar" title="Adicionar" action="#{academiaGradeBean.save()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margin-top-max"  update=":form_grade_novo:id_panel_grade_horarios :form_grade:i_panel_grid_horarios"/>
                     <p:commandButton value="Novo" title="Novo" action="#{academiaGradeBean.clear()}" update=":form_grade_novo:id_panel_grade_horarios" styleClass="margin-left-max margin-top-max"/>
                 </h:form>
                 <h:form id="form_grade">
@@ -87,7 +87,7 @@
                                 </p:selectBooleanCheckbox>
                             </p:column>
                             <p:column styleClass="text-center" width="25">
-                                <p:commandButton icon="ui-icon-trash" action="#{academiaGradeBean.excluir(academiaGrade)}" update=":form_grade:i_panel_grid_horarios :form_grade_novo: :form_grade_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset" immediate="true"/>
+                                <p:commandButton icon="ui-icon-trash" action="#{academiaGradeBean.delete(academiaGrade)}" update=":form_grade:i_panel_grid_horarios :form_grade_novo: :form_grade_novo:id_messages_growl" disabled="#{controleAcessoBean.botaoExcluir}" styleClass="ui-button-reset" immediate="true"/>
                             </p:column>                             
                         </p:dataTable>
                     </p:panelGrid>

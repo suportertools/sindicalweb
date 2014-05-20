@@ -41,15 +41,15 @@
                                         <p:outputLabel value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.nome}" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1}" />
                                         <p:outputLabel value="Pesquisar um aluno" style="border-bottom: 1px dashed #ECF3FE" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id == -1}" />
                                     </h:column>
-                                    <p:outputLabel value="Responsável:" />
+                                    <!-- <p:outputLabel value="Responsável:" />
                                     <h:column>
-                                        <h:outputText id="idResp" value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.responsavel.nome}" styleClass="fontePadrao"/>
-                                        <h:outputText value=" - Pesquisar outro responsável - " styleClass="fontePadrao"  rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" />
-                                        <p:commandButton value="Pessoa física: " icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaAcademiaBean.aluno.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" >
-                                            <p:ajax event="click" listener="#{matriculaAcademiaBean.pesquisaFisica('responsavel')}" />
+                                        <h:outputText id="idResp" value="# {matriculaAcademiaBean.matriculaAcademia.servicoPessoa.responsavel.nome}" styleClass="fontePadrao"/>
+                                        <h:outputText value=" - Pesquisar outro responsável - " styleClass="fontePadrao"  rendered="# {matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" />
+                                        <p:commandButton value="Pessoa física: " icon="ui-icon-search" action="# {chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="# {matriculaAcademiaBean.aluno.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}" disabled="# {matriculaAcademiaBean.desabilitaCamposMovimento}" >
+                                            <p:ajax event="click" listener="# {matriculaAcademiaBean.pesquisaFisica('responsavel')}" />
                                         </p:commandButton>
-                                        <p:commandButton value="Pessoa jurídica: " icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}"/>
-                                    </h:column>
+                                        <p:commandButton value="Pessoa jurídica: " icon="ui-icon-search" action="# {chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.pessoa.id != -1 and matriculaAcademiaBean.socio == ''}"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}"/>
+                                    </h:column> -->
                                     <p:outputLabel value="Modalidade:" />
                                     <p:selectOneMenu value="#{matriculaAcademiaBean.idModalidade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
                                         <p:ajax event="change" update="id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular()}"/>
@@ -126,14 +126,14 @@
                     </p:panel>
                     <h:panelGrid columns="8" id="id_acao" styleClass="margin-top-max">
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
-                            <p:commandButton value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_salvar_movimento').show();" type="button"/>
+                            <p:commandButton value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save_movimento').show();" type="button"/>
                         </h:column>
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
-                            <p:commandButton value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_excluir_movimento').show();" type="button"/>
+                            <p:commandButton value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete_movimento').show();" type="button"/>
                         </h:column>                        
-                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_salvar').show()" type="button"/>
-                        <p:commandButton value="Novo" action="#{matriculaAcademiaBean.novo}" update=":form_academia:"/>
-                        <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_excluir').show()" type="button"/>
+                        <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()" type="button"/>
+                        <p:commandButton value="Novo" action="#{matriculaAcademiaBean.clear()}" update=":form_academia:"/>
+                        <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dgl_delete').show()" type="button"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaAcademia}" />
                         <h:panelGrid columns="3" rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
                             <!-- <p:commandLink type="button" value="Gerar Contrato" title="Gerar Contrato" action="# {matriculaAcademiaBean.gerarContrato}" target="# {matriculaAcademiaBean.target}" rendered="# {matriculaAcademiaBean.desabilitaGeracaoContrato}" disabled="# {controleAcessoBean.botaoSalvar}" /> -->
@@ -141,28 +141,28 @@
                             <p:commandLink type="button" value="Carnê" title="Carnê" action="#{matriculaAcademiaBean.gerarCarne}" target="#{matriculaAcademiaBean.target}" rendered="#{matriculaAcademiaBean.desabilitaGeracaoContrato}" disabled="#{controleAcessoBean.botaoSalvar}" />
                         </h:panelGrid>
                     </h:panelGrid>
-                    <p:dialog widgetVar="dgl_salvar" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.salvar()}" onclick="PF('dgl_salvar').hide();
-                                PF('dgl_mensagem').show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem  id_panel_cadastro id_acao"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_salvar').hide()" style="float: left;" icon="ui-icon-close"/>
+                    <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" resizable="false" width="400" modal="true">
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.save()}" onclick="PF('dlg_save').hide();
+                                PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem  id_panel_cadastro id_acao"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
-                    <p:dialog widgetVar="dgl_excluir" header="Deseja excluir este registro?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.excluir()}" onclick="PF('dgl_excluir').hide();
-                                PF('dgl_mensagem').show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem id_panel_cadastro id_acao"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_excluir').hide()" style="float: left;" icon="ui-icon-close"/>
+                    <p:dialog widgetVar="dgl_delete" header="Deseja excluir este registro?" resizable="false" width="400" modal="true">
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.delete()}" onclick="PF('dgl_delete').hide();
+                                PF('dlg_message').show();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem id_panel_cadastro id_acao"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_delete').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
-                    <p:dialog widgetVar="dgl_salvar_movimento" header="Deseja salvar este movimento?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.gerarMovimento()}" onclick="PF('dgl_salvar_movimento').hide();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem_growl id_acao id_panel_cadastro"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_salvar_movimento').hide()" style="float: left;" icon="ui-icon-close"/>
+                    <p:dialog widgetVar="dlg_save_movimento" header="Deseja salvar este movimento?" resizable="false" width="400" modal="true">
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.gerarMovimento()}" onclick="PF('dlg_save_movimento').hide();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem_growl id_acao id_panel_cadastro"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save_movimento').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
-                    <p:dialog widgetVar="dgl_excluir_movimento" header="Deseja excluir este movimento?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.desfazerMovimento()}" onclick="PF('dgl_excluir_movimento').hide();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem_growl id_acao id_panel_cadastro"/> 
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dgl_excluir_movimento').hide()" style="float: left;" icon="ui-icon-close"/>
+                    <p:dialog widgetVar="dlg_delete_movimento" header="Deseja excluir este movimento?" resizable="false" width="400" modal="true">
+                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{matriculaAcademiaBean.desfazerMovimento()}" onclick="PF('dlg_delete_movimento').hide();" style="clear: both; float: left; margin-left: 10px;" update="id_mensagem_growl id_acao id_panel_cadastro"/> 
+                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete_movimento').hide()" style="float: left;" icon="ui-icon-close"/>
                     </p:dialog>
-                    <p:dialog widgetVar="dgl_mensagem" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
-                        <p:outputLabel value="#{matriculaAcademiaBean.mensagem}" id="id_mensagem" /> 
+                    <p:dialog widgetVar="dlg_message" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
+                        <p:outputLabel value="#{matriculaAcademiaBean.message}" id="id_mensagem" /> 
                         <div class="clear"></div>
-                        <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dgl_mensagem').hide();"/>
+                        <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dlg_message').hide();"/>
                     </p:dialog>                    
                 </h:form>
             </div>
