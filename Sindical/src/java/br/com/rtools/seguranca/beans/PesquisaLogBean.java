@@ -1,245 +1,198 @@
 package br.com.rtools.seguranca.beans;
 
-import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Log;
 import br.com.rtools.seguranca.Rotina;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.PesquisaLogDB;
 import br.com.rtools.seguranca.db.PesquisaLogDBTopLink;
-import br.com.rtools.seguranca.db.RotinaDB;
-import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
-import java.io.File;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import javax.swing.JOptionPane;
+import org.primefaces.component.accordionpanel.AccordionPanel;
+import org.primefaces.event.SelectEvent;
+import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
 @SessionScoped
 public class PesquisaLogBean implements Serializable {
 
-    private String dataInicioString = "";
-    private String dataFinalString = "";
-    private String descricao = "";
-    private String diretorio = "";
-    private String porPesquisa = "todos";
-    private List listaDiretorio = new ArrayList();
-    private int idRotina = 0;
-    private boolean tipoPesquisa = false;
-    private Rotina rotina = new Rotina();
-    private List list = new ArrayList();
-    private boolean desabilitaRotinas = true;
-    private boolean desabilitaDescricao = true;
+    private List<SelectItem>[] listSelectItem;
+    private List<Log> listLogs;
+    private Boolean[] filtro;
+    private Boolean[] filtroEvento;
+    private Date[] data;
+    private String[] hora;
+    private Integer[] index;
+    private String tipo;
+    private String indexAccordion;
+    private String porPesquisa;
+    private String descPesquisa;
+    private Usuario usuario;
+    private Log log;
 
-    public PesquisaLogBean() {
-        actTipoPesquisa();
-        diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
+    @PostConstruct
+    public void init() {
+        filtro = new Boolean[5];
+        filtro[0] = false;
+        filtro[1] = false;
+        filtro[2] = false;
+        filtro[3] = false;
+        filtro[4] = false;
+        filtroEvento = new Boolean[4];
+        filtro[0] = false;
+        filtro[1] = false;
+        filtro[2] = false;
+        filtro[3] = false;
+        listLogs = new ArrayList<Log>();
+        listSelectItem = new ArrayList[1];
+        listSelectItem[0] = new ArrayList<SelectItem>();
+        data = new Date[2];
+        data[0] = DataHoje.dataHoje();
+        data[1] = DataHoje.dataHoje();
+        hora = new String[2];
+        hora[0] = "";
+        hora[1] = "";
+        index = new Integer[1];
+        index[0] = 0;
+        tipo = "Avançado";
+        indexAccordion = "Avançado";
+        porPesquisa = "";
+        descPesquisa = "";
+        usuario = new Usuario();
+        log = new Log();
     }
 
-    public String atualizar() {
-        list.clear();
-        desabilitaRotinas = true;
-        desabilitaDescricao = true;
-        porPesquisa = "todos";
-        descricao = "";
-        return "pesquisaLog";
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("pesquisaLogBean");
+        GenericaSessao.remove("usuarioPesquisa");
+        GenericaSessao.remove("pessoaPesquisa");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("removeFiltro");
     }
 
-    public String pesquisar() {
-        getListaDiretorio();
-        return null;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public List getListaDiretorio() {
-        getList();
-        listaDiretorio.clear();
-        int dataInicioInt = 0;
-        int dataFinalInt = 0;
-        if (!dataInicioString.equals("")) {
-            dataInicioInt = DataHoje.converteDataParaInteger(dataInicioString);
-        }
-        if (!dataFinalString.equals("")) {
-            dataFinalInt = DataHoje.converteDataParaInteger(dataFinalString);
-        }
-        String descPesquisa = "";
-        if (porPesquisa.equals("nomeArquivo")) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            Rotina r = (Rotina) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(getListaRotinas().get(idRotina).getDescription()), "Rotina");
-            descPesquisa = r.getPagina();
-            desabilitaDescricao = false;
-        } else if (porPesquisa.equals("descricao")) {
-            descPesquisa = descricao;
-            desabilitaDescricao = false;
-        } else if (porPesquisa.equals("todos")) {
-            desabilitaDescricao = true;
-        }
-        for (int i = 0; i < list.size(); i++) {
-            DataObject dataObject = (DataObject) list.get(i);
-            int dataFile = DataHoje.converteDataParaInteger(dataObject.getArgumento2().toString());
-            if (!dataInicioString.equals("") && !dataFinalString.equals("")) {
-                if (dataFinalInt >= dataInicioInt) {
-                    if (dataFile <= dataFinalInt && dataFile >= dataInicioInt) {
-                        if (!descPesquisa.equals("")) {
-                            if (porPesquisa.equals("nomeArquivo")) {
-                                if (("\"/Sindical/" + dataObject.getArgumento4().toString() + "\"").equals(descPesquisa)) {
-                                    listaDiretorio.add(dataObject);
-                                }
-                            } else if (porPesquisa.equals("descricao")) {
-                                if (((dataObject.getArgumento3().toString()).toUpperCase()).equals(descPesquisa.toUpperCase()) || ((dataObject.getArgumento5().toString()).toUpperCase()).equals(descPesquisa.toUpperCase())) {
-                                    listaDiretorio.add(dataObject);
-                                }
-                            } else if (porPesquisa.equals("todos")) {
-                                listaDiretorio.add(dataObject);
-                            }
-                        } else {
-                            listaDiretorio.add(dataObject);
-                        }
-                    }
-                }
-            } else if (!dataInicioString.equals("")) {
-                if (dataFile == dataInicioInt) {
-                    if (!descPesquisa.equals("")) {
-                        if (porPesquisa.equals("nomeArquivo")) {
-                            if (("\"/Sindical/" + dataObject.getArgumento4().toString() + "\"").equals(descPesquisa)) {
-                                listaDiretorio.add(dataObject);
-                            }
-                        } else if (porPesquisa.equals("descricao")) {
-                            if (((dataObject.getArgumento3().toString()).toUpperCase()).equals(descPesquisa.toUpperCase()) || ((dataObject.getArgumento5().toString()).toUpperCase()).equals(descPesquisa.toUpperCase())) {
-                                listaDiretorio.add(dataObject);
-                            }
-                        } else if (porPesquisa.equals("todos")) {
-                            listaDiretorio.add(dataObject);
-                        }
-                    } else {
-                        listaDiretorio.add(dataObject);
-                    }
-                }
-
-            } else {
-                if (porPesquisa.equals("nomeArquivo")) {
-                    if (("\"/Sindical/" + dataObject.getArgumento4().toString() + "\"").equals(descPesquisa)) {
-                        listaDiretorio.add(dataObject);
-                    }
-                } else if (porPesquisa.equals("descricao")) {
-                    if (((dataObject.getArgumento3().toString()).toUpperCase()).equals(descPesquisa.toUpperCase()) || ((dataObject.getArgumento5().toString()).toUpperCase()).equals(descPesquisa.toUpperCase())) {
-                        listaDiretorio.add(dataObject);
-                    }
-                } else if (porPesquisa.equals("todos")) {
-                    listaDiretorio.add(dataObject);
-                }
+    public List<SelectItem> getListRotinas() {
+        if (listSelectItem[0].isEmpty()) {
+            PesquisaLogDB pldb = new PesquisaLogDBTopLink();
+            List<Rotina> list = (List<Rotina>) pldb.listRotinasLogs();
+            for (int i = 0; i < list.size(); i++) {
+                listSelectItem[0].add(new SelectItem(i, list.get(i).getRotina(), "" + list.get(i).getId()));
             }
-
-        }
-        return listaDiretorio;
-    }
-
-    public String adicionaArquivo(String caminho, String dirName) {
-        File dir = new File(caminho);
-
-        if (dir.isDirectory()) {
-
-            PesquisaLogDB db = new PesquisaLogDBTopLink();
-
-            File[] sub = dir.listFiles();
-
-            for (int i = 0; i < sub.length; i++) {
-
-                sub[i].getName();
-                String[] arrayString = sub[i].getName().split("_");
-                String descricaoFile = arrayString[1];
-                String descricaoPagina = descricaoFile + ".jsf";
-                String[] arrayDateFileString = arrayString[2].split(".txt");
-                String dateFile = arrayDateFileString[0];
-
-                DataObject ob = new DataObject(link(dirName, sub[i].getName()), sub[i].getName(), converteData(dateFile), null, null, null);
-
-                if (!getDescricao().equals("") && !getDescricao().toUpperCase().equals(("indexLogin").toUpperCase()) && !getDescricao().toUpperCase().equals(("simples").toUpperCase())) {
-                    if (db.verificaRotina(descricaoFile)) {
-                        listaDiretorio.add(ob);
-                    }
-                } else if (porPesquisa.equals("nomeArquivo")) {
-                    SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-                    rotina = (Rotina) acumuladoDB.pesquisaCodigo(Integer.parseInt(getListaRotinas().get(idRotina).getDescription()), "Rotina");
-                    if (("/Sindical/" + descricaoPagina).equals(rotina.getPagina())) {
-                        listaDiretorio.add(ob);
-                    }
-                } else if (getDescricao().toUpperCase().equals(("indexLogin").toUpperCase()) || getDescricao().toUpperCase().equals(("index").toUpperCase()) || getDescricao().toUpperCase().equals(("login").toUpperCase())) {
-                    if (descricaoFile.equals("indexLogin")) {
-                        listaDiretorio.add(ob);
-                    }
-                } else if (getDescricao().toUpperCase().equals(("simples").toUpperCase())) {
-                    if (descricaoFile.equals("simples")) {
-                        listaDiretorio.add(ob);
-                    }
-                } else if (dataInicioString.equals(dataFinalString)) {
-                    if (dataInicioString.equals(converteData(dateFile)) || dataFinalString.equals(converteData(dateFile))) {
-                        listaDiretorio.add(ob);
-                    }
-                } else if (getDescricao().equals("") && (!dataInicioString.equals("") || !dataFinalString.equals(""))) {
-                    if (dataInicioString.equals(converteData(dateFile)) || dataFinalString.equals(converteData(dateFile)) || dirName.equals(dateFile)) {
-                        listaDiretorio.add(ob);
-                    }
-                }
+            if (listSelectItem[0].isEmpty()) {
+                listSelectItem[0] = new ArrayList<SelectItem>();
             }
         }
-        return null;
-
+        return listSelectItem[0];
     }
 
-    public String converteData(String data) {
-        String novaData = data.substring(8, 10) + "/" + data.substring(5, 7) + "/" + data.substring(0, 4);
-        return novaData;
+    public void typeChange(TabChangeEvent event) {
+        tipo = event.getTab().getTitle();
+        indexAccordion = ((AccordionPanel) event.getComponent()).getActiveIndex();
     }
 
-    public String link(String dirName, String filename) {
-        Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
-        String url = reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/" + dirName + "/" + filename;
-        return url;
+    public void selectedDataInicial(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.data[0] = DataHoje.converte(format.format(event.getObject()));
     }
 
-    public List lDiretorios(String caminho) {
-        File dir = new File(caminho);
-        if (dir.isFile()) {
-            getList().add(dir.getPath());
+    public void selectedDataFinal(SelectEvent event) {
+        SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
+        this.data[1] = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public void clear() {
+        if (!filtro[0]) {
+            listSelectItem = new ArrayList[1];
+            listSelectItem[0] = new ArrayList<SelectItem>();
         }
-        return getList();
+        if (!filtro[1]) {
+            data[0] = DataHoje.dataHoje();
+            data[1] = DataHoje.dataHoje();
+            hora[0] = "";
+            hora[1] = "";
+        }
+        if (!filtro[2]) {
+            usuario = new Usuario();
+        }
+        if (!filtro[3]) {
+            filtroEvento[0] = false;
+            filtroEvento[1] = false;
+            filtroEvento[2] = false;
+            filtroEvento[3] = false;
+        }
+        if (!filtro[4]) {
+            porPesquisa = "";
+            descPesquisa = "";
+        }
     }
 
-    public void setListaDiretorio(List listaDiretorio) {
-        this.listaDiretorio = listaDiretorio;
+    public void close(String close) {
+        if (close.equals("periodo")) {
+            filtro[0] = false;
+            data[0] = DataHoje.dataHoje();
+            data[1] = DataHoje.dataHoje();
+            hora[0] = "";
+            hora[1] = "";
+        } else if (close.equals("usuario")) {
+            filtro[1] = false;
+            usuario = new Usuario();
+        } else if (close.equals("rotina")) {
+            filtro[2] = false;
+            listSelectItem = new ArrayList[1];
+            listSelectItem[0] = new ArrayList<SelectItem>();
+        } else if (close.equals("evento")) {
+            filtro[3] = false;
+            filtroEvento[0] = false;
+            filtroEvento[1] = false;
+            filtroEvento[2] = false;
+            filtroEvento[3] = false;
+        } else if (close.equals("descricao")) {
+            descPesquisa = "";
+            porPesquisa = "";
+        }
+        PF.update("form_logs:id_panel");
     }
 
-    public String getDataInicioString() {
-        return dataInicioString;
+    public String getIndexAccordion() {
+        return indexAccordion;
     }
 
-    public void setDataInicioString(String dataInicioString) {
-        this.dataInicioString = dataInicioString;
+    public void setIndexAccordion(String indexAccordion) {
+        this.indexAccordion = indexAccordion;
     }
 
-    public String getDataFinalString() {
-        return dataFinalString;
+    public List<SelectItem>[] getListSelectItem() {
+        return listSelectItem;
     }
 
-    public void setDataFinalString(String dataFinalString) {
-        this.dataFinalString = dataFinalString;
+    public void setListSelectItem(List<SelectItem>[] listSelectItem) {
+        this.listSelectItem = listSelectItem;
+    }
+
+    /**
+     * <strong>Index</strong>
+     * <ul>
+     * <li>[0] List[SelectItem] Evento</li>
+     * </ul>
+     *
+     * @return Integer
+     */
+    public Integer[] getIndex() {
+        return index;
+    }
+
+    public void setIndex(Integer[] index) {
+        this.index = index;
     }
 
     public String getPorPesquisa() {
@@ -250,189 +203,175 @@ public class PesquisaLogBean implements Serializable {
         this.porPesquisa = porPesquisa;
     }
 
-    public String pesquisarx() {
-        buscarArquivoPorNome(getDescricao(), "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
-        return null;
+    public void removeFiltro() {
+        GenericaSessao.put("removeFiltro", true);
     }
 
-    public ArrayList buscarArquivoPorNome(String palavra, String caminhoInicial) {
-        ArrayList lista = new ArrayList();
-        try {
-            File arquivo = new File(caminhoInicial);
-            lista = buscar(arquivo, palavra, lista);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Caminho Inválido");
+    /**
+     * <strong>Filtros</strong>
+     * <ul>
+     * <li>[0] Periodo</li>
+     * <li>[1] Periodo Convenção</li>
+     * <li>[2] Periodo Pesquisas Oposição</li>
+     * <li>[3] Cnae</li>
+     * </ul>
+     *
+     * @return boolean
+     */
+    public Boolean[] getFiltro() {
+        return filtro;
+    }
+
+    public String inIdEventos() {
+        List listIds = new ArrayList();
+        String ids = "";
+        if (filtroEvento[0]) {
+            listIds.add("1");
         }
-        return lista;
+        if (filtroEvento[1]) {
+            listIds.add("2");
+        }
+        if (filtroEvento[2]) {
+            listIds.add("3");
+        }
+        if (filtroEvento[3]) {
+            listIds.add("4");
+        }
+        for (int i = 0; i < listIds.size(); i++) {
+            if (i == 0) {
+                ids += listIds.get(i).toString();
+            } else {
+                ids += "," + listIds.get(i).toString();
+            }
+        }
+        return ids;
     }
 
-    public ArrayList buscar(File arquivo, String palavra, ArrayList lista) {
-        if (arquivo.isDirectory()) {
-            File[] subPastas = arquivo.listFiles();
-            for (int i = 0; i < subPastas.length; i++) {
-                lista = buscar(subPastas[i], palavra, lista);
-                if (arquivo.getName().equalsIgnoreCase(palavra)) {
-                    lista.add(arquivo.getAbsolutePath());
-                } else if (arquivo.getName().indexOf(palavra) > -1) {
-                    lista.add(arquivo.getAbsolutePath());
+    public Usuario getUsuario() {
+        if (GenericaSessao.exists("usuarioPesquisa")) {
+            usuario = (Usuario) GenericaSessao.getObject("usuarioPesquisa");
+        }
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
+
+    /**
+     * <strong>Filtros Evento</strong>
+     * <ul>
+     * <li>[0](1)Inclusão</li>
+     * <li>[1](2)Exclusão</li>
+     * <li>[2](3)Alteração</li>
+     * <li>[3](4)Consulta</li>
+     * </ul>
+     *
+     * @return boolean
+     */
+    public Boolean[] getFiltroEvento() {
+        return filtroEvento;
+    }
+
+    public void setFiltroEvento(Boolean[] filtroEvento) {
+        this.filtroEvento = filtroEvento;
+    }
+
+    public List<Log> getListLogs() {
+        if (listLogs.isEmpty()) {
+            String dtInicial = null;
+            String dtFinal = null;
+            String hrInicial = null;
+            String hrFinal = null;
+            int idR = 0;
+            int idU = 0;
+            String idInEventos = null;
+            if (filtro[0]) {
+                dtInicial = DataHoje.converteData(data[0]);
+                dtFinal = DataHoje.converteData(data[1]);
+                hrInicial = hora[0];
+                hrFinal = hora[1];
+            }
+            if (filtro[1]) {
+                if (usuario.getId() != -1) {
+                    idU = usuario.getId();
                 }
             }
-        } else if (arquivo.getName().equalsIgnoreCase(palavra)) {
-            lista.add(arquivo.getAbsolutePath());
-        } else if (arquivo.getName().indexOf(palavra) > -1) {
-            lista.add(arquivo.getAbsolutePath());
-        }
-        return lista;
-    }
-//    
-//    public void ListarFicheiros(String filename) throws IOException{  
-//        List<File> arquivos = new ArrayList<File>();   
-//        File dir = new File(filename);  
-//        if (dir.isDirectory()) {    
-//            File[] sub = dir.listFiles();    
-//            for (File f : sub) {
-//            if (f.isDirectory()) {    
-//                    //recursividade aqui  
-//                    String aaaa = f.getPath();
-//                    arquivos.addAll(ListarFicheiros(aaaa));  
-//                } else {    
-//                    arquivos.add (f);    
-//                }  
-//            }  
-//        }  
-//        ObjectOutputStream obj = new ObjectOutputStream (s.getOutputStream());  
-//        obj.writeObject(arquivos);   
-//        obj.flush();  
-//    }
-
-    public List<SelectItem> getListaRotinas() {
-        List<SelectItem> listaRotinas = new Vector<SelectItem>();
-        if (listaRotinas.isEmpty()) {
-            RotinaDB rotinaDB = new RotinaDBToplink();
-            List list = rotinaDB.pesquisaTodosOrdenado();
-            int i = 0;
-            while (i < list.size()) {
-                listaRotinas.add(new SelectItem(new Integer(i),
-                        (String) ((Rotina) list.get(i)).getRotina(),
-                        Integer.toString(((Rotina) list.get(i)).getId())));
-                i++;
-            }
-        }
-        return listaRotinas;
-    }
-
-    public int getIdRotina() {
-        return idRotina;
-    }
-
-    public void setIdRotina(int idRotina) {
-        this.idRotina = idRotina;
-    }
-
-    public boolean isTipoPesquisa() {
-        return tipoPesquisa;
-    }
-
-    public void setTipoPesquisa(boolean tipoPesquisa) {
-        this.tipoPesquisa = tipoPesquisa;
-    }
-
-    public String actTipoPesquisa() {
-        if (porPesquisa.equals("todos")) {
-            desabilitaDescricao = true;
-            desabilitaRotinas = true;
-            descricao = "";
-            diretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/logs/");
-        } else if (porPesquisa.equals("nomeArquivo")) {
-            desabilitaDescricao = false;
-            desabilitaRotinas = true;
-            tipoPesquisa = false;
-            descricao = "";
-        } else if (porPesquisa.equals("descricao")) {
-            desabilitaDescricao = true;
-            desabilitaRotinas = false;
-            tipoPesquisa = true;
-        }
-        return "pesquisaLog";
-    }
-
-    public Rotina getRotina() {
-        return rotina;
-    }
-
-    public void setRotina(Rotina rotina) {
-        this.rotina = rotina;
-    }
-
-    public List getList() {
-        if (list.isEmpty()) {
-            File dir = new File(diretorio);
-            if (dir.isDirectory()) {
-                File[] sub = dir.listFiles();
-                for (int i = 0; i < sub.length; i++) {
-                    File subdir = new File(diretorio + "/" + sub[i].getName());
-                    String dataString = converteData(sub[i].getName());
-                    File[] subfile = subdir.listFiles();
-                    for (int y = 0; y < subfile.length; y++) {
-                        String[] arrayString = subfile[y].getName().split("_");
-                        String descricaoFile = arrayString[1].toString();
-                        String descricaoPagina = descricaoFile + ".jsf";
-                        RotinaDB rotinaDB = new RotinaDBToplink();
-                        Rotina rotina = new Rotina();
-                        rotina = rotinaDB.pesquisaPaginaRotina(descricaoPagina);
-                        DataObject ob = null;
-                        if (rotina.getId() != -1) {
-                            ob = new DataObject(link(sub[i].getName(), subfile[y].getName()), sub[i].getName(), dataString, descricaoFile, descricaoPagina, rotina.getRotina());
-                        } else {
-                            ob = new DataObject(link(sub[i].getName(), subfile[y].getName()), sub[i].getName(), dataString, descricaoFile, descricaoPagina, descricaoFile);
-                        }
-                        list.add(ob);
-                    }
+            if (filtro[2]) {
+                if (!getListRotinas().isEmpty()) {
+                    idR = Integer.parseInt(getListRotinas().get(index[0]).getDescription());
                 }
             }
+            if (filtro[3]) {
+                if(!inIdEventos().isEmpty()) {
+                    idInEventos = inIdEventos();
+                }
+            }
+            if (filtro[4]) {
+
+            }
+            PesquisaLogDB pldb = new PesquisaLogDBTopLink();
+            listLogs = (List<Log>) pldb.pesquisaLogs(dtInicial, dtFinal, hrInicial, hrFinal, idU, idR, idInEventos, "");
         }
-        return list;
+        return listLogs;
     }
 
-    public void setList(List list) {
-        this.list = list;
+    public void setListLogs(List<Log> listLogs) {
+        this.listLogs = listLogs;
     }
 
-    public boolean isDesabilitaDescricao() {
-        return desabilitaDescricao;
+    public String getDescPesquisa() {
+        return descPesquisa;
     }
 
-    public void setDesabilitaDescricao(boolean desabilitaDescricao) {
-        this.desabilitaDescricao = desabilitaDescricao;
-    }
-//    public String getOrdernarPorData() {
-//        if(ordernarPorData.equals("ASC")){
-//            Collections.sort (listaDiretorio, new Comparator<DataObject> () {    
-//                public int compare (DataObject d1, DataObject d2) {    
-//                    return d1.getArgumento1().toString().compareTo(d2.getArgumento1().toString());    
-//                }    
-//            });       
-//            ordernarPorData = "DESC";
-//        }else{
-//            Collections.sort(listaDiretorio, new Comparator<DataObject> () {    
-//                public int compare (DataObject d1, DataObject d2) {    
-//                    return d1.getArgumento1().toString().compareTo(d2.getArgumento1().toString());    
-//                }    
-//            });
-//            ordernarPorData = "ASC";            
-//        }
-//        return ordernarPorData;
-//    }
-//
-//    public void setOrdernarPorData(String ordernarPorData) {
-//        this.ordernarPorData = ordernarPorData;
-//    }
-
-    public boolean isDesabilitaRotinas() {
-        return desabilitaRotinas;
+    public void setDescPesquisa(String descPesquisa) {
+        this.descPesquisa = descPesquisa;
     }
 
-    public void setDesabilitaRotinas(boolean desabilitaRotinas) {
-        this.desabilitaRotinas = desabilitaRotinas;
+    /**
+     * <strong>Data</strong>
+     * <ul>
+     * <li>[0]Inicial</li>
+     * <li>[0]Final</li>
+     * </ul>
+     *
+     * @return Date
+     */
+    public Date[] getData() {
+        return data;
+    }
+
+    public void setData(Date[] data) {
+        this.data = data;
+    }
+
+    /**
+     * <strong>Hora</strong>
+     * <ul>
+     * <li>[0]Inicial</li>
+     * <li>[0]Final</li>
+     * </ul>
+     *
+     * @return Date
+     */
+    public String[] getHora() {
+        return hora;
+    }
+
+    public void setHora(String[] hora) {
+        this.hora = hora;
+    }
+
+    public Log getLog() {
+        return log;
+    }
+
+    public void setLog(Log log) {
+        this.log = log;
+    }
+
+    public void details(Log l) {
+        log = new Log();
+        log = l;
     }
 }

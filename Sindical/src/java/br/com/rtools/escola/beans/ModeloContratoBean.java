@@ -6,60 +6,87 @@ import br.com.rtools.escola.MatriculaContratoServico;
 import br.com.rtools.escola.db.MatriculaContratoDB;
 import br.com.rtools.escola.db.MatriculaContratoDBToplink;
 import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Modulo;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.ConfiguracaoUpload;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.Upload;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import org.primefaces.event.FileUploadEvent;
-import org.primefaces.model.UploadedFile;
 
 @ManagedBean
 @SessionScoped
-public class ModeloContratoBean implements java.io.Serializable {
+public class ModeloContratoBean implements Serializable {
 
-    private MatriculaContrato matriculaContrato = new MatriculaContrato();
-    private MatriculaContratoCampos matriculaContratoCampos = new MatriculaContratoCampos();
-    private MatriculaContratoServico matriculaContratoServico = new MatriculaContratoServico();
-    private List<MatriculaContrato> matriculaContratos = new ArrayList<MatriculaContrato>();
-    private List<MatriculaContratoServico> listaMatriculaContratoServico = new ArrayList<MatriculaContratoServico>();
-    private List<MatriculaContratoCampos> listaMatriculaContratoCampos = new ArrayList<MatriculaContratoCampos>();
-    private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaModulos = new ArrayList<SelectItem>();
-    private List<SelectItem> listaModulos2 = new ArrayList<SelectItem>();
-    private List listaArquivos = new ArrayList();
-    private int idIndexServicos = -1;
-    private int idIndex = -1;
-    private Modulo modulo = new Modulo();
-    private int idModulo = 0;
-    private int idModulo2 = 0;
-    private int idServicos = 0;
-    private int quantidadeAnexo = 0;
-    private Servicos servicos = new Servicos();
-    private String mensagem = "";
-    private String descricaoPesquisa = "";
-    private String msgServico = "";
-    private boolean desabilitaObservacao = false;
+    private MatriculaContrato matriculaContrato;
+    private MatriculaContratoCampos matriculaContratoCampos;
+    private MatriculaContratoServico matriculaContratoServico;
+    private List<MatriculaContrato> matriculaContratos;
+    private List<MatriculaContratoServico> listaMatriculaContratoServico;
+    private List<MatriculaContratoCampos> listaMatriculaContratoCampos;
+    private List<SelectItem> listServicos;
+    private List<SelectItem> listModulos;
+    private List<SelectItem> listModulos2;
+    private List listaArquivos;
+    private int idIndexServicos;
+    private int idIndex;
+    private Modulo modulo;
+    private int idModulo;
+    private int idModulo2;
+    private int idServicos;
+    private int quantidadeAnexo;
+    private Servicos servicos;
+    private String mensagem;
+    private String descricaoPesquisa;
+    private String msgServico;
+    private boolean desabilitaObservacao;
+
+    @PostConstruct
+    public void init() {
+        matriculaContrato = new MatriculaContrato();
+        matriculaContratoCampos = new MatriculaContratoCampos();
+        matriculaContratoServico = new MatriculaContratoServico();
+        matriculaContratos = new ArrayList<MatriculaContrato>();
+        listaMatriculaContratoServico = new ArrayList<MatriculaContratoServico>();
+        listaMatriculaContratoCampos = new ArrayList<MatriculaContratoCampos>();
+        listServicos = new ArrayList<SelectItem>();
+        listModulos = new ArrayList<SelectItem>();
+        listModulos2 = new ArrayList<SelectItem>();
+        listaArquivos = new ArrayList();
+        idIndexServicos = -1;
+        idIndex = -1;
+        modulo = new Modulo();
+        idModulo = 0;
+        idModulo2 = 0;
+        idServicos = 0;
+        quantidadeAnexo = 0;
+        servicos = new Servicos();
+        mensagem = "";
+        descricaoPesquisa = "";
+        msgServico = "";
+        desabilitaObservacao = false;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("modeloContratoBean");
+        GenericaSessao.remove("matriculaContratoPesquisa");
+
+    }
 
     public boolean isDesabilitaObservacao() {
         if (((Usuario) (GenericaSessao.getObject("sessaoUsuario"))).getId() == 1) {
@@ -75,22 +102,11 @@ public class ModeloContratoBean implements java.io.Serializable {
     }
 
     // MATRICULA CONTRATO
-    public String novo() {
-        listaServicos.clear();
-        idServicos = 0;
-        matriculaContrato = new MatriculaContrato();
-        idIndex = -1;
-        mensagem = "";
-        setMsgServico("");
-        matriculaContratos.clear();
-        servicos = new Servicos();
-        idIndexServicos = -1;
-        listaMatriculaContratoServico.clear();
-        matriculaContratoCampos = new MatriculaContratoCampos();
-        return null;
+    public void clear() {
+        GenericaSessao.remove("modeloContratoBean");
     }
 
-    public void salvar() {
+    public void save() {
         if (matriculaContrato.getTitulo().equals("")) {
             mensagem = "Informar o titulo!";
             return;
@@ -99,12 +115,13 @@ public class ModeloContratoBean implements java.io.Serializable {
             mensagem = "Informar a descrição!";
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (matriculaContrato.getId() == -1) {
             if (GenericaSessao.exists("idModulo")) {
-                int idMod = (Integer) GenericaSessao.getInteger("idModulo");
+                int idMod = GenericaSessao.getInteger("idModulo");
                 if (idMod != 0) {
-                    modulo = (Modulo) salvarAcumuladoDB.pesquisaCodigo(idMod, "Modulo");
+                    modulo = (Modulo) di.find(new Modulo(), idMod);
                 }
             }
             matriculaContrato.setModulo(modulo);
@@ -113,56 +130,61 @@ public class ModeloContratoBean implements java.io.Serializable {
                 mensagem = "Contrato já existe!";
                 return;
             }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(matriculaContrato)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(matriculaContrato)) {
+                di.commit();
+                novoLog.save("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: ("+matriculaContrato.getModulo().getId()+") " + matriculaContrato.getModulo().getDescricao());
                 matriculaContratos.clear();
                 mensagem = "Registro inserido com sucesso.";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 mensagem = "Falha ao inserir o registro!";
             }
         } else {
+            MatriculaContrato mc = (MatriculaContrato) di.find(matriculaContrato);
+            String beforeUpdate = "ID: " + mc.getId() + " - Título: " + mc.getTitulo() + " - Módulo: ("+mc.getModulo().getId()+") " + mc.getModulo().getDescricao();
             matriculaContrato.setDataAtualizado(DataHoje.data());
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(matriculaContrato)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.update(matriculaContrato)) {
+                novoLog.update(beforeUpdate, "ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: ("+matriculaContrato.getModulo().getId()+") " + matriculaContrato.getModulo().getDescricao());
+                di.commit();
                 matriculaContratos.clear();
                 mensagem = "Registro atualizado com sucesso.";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 mensagem = "Falha ao atualizar o registro!";
             }
         }
     }
 
-    public void excluir() {
+    public void delete() {
         if (matriculaContrato.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            matriculaContrato = (MatriculaContrato) salvarAcumuladoDB.pesquisaCodigo(matriculaContrato.getId(), "MatriculaContrato");
-            salvarAcumuladoDB.abrirTransacao();
+            NovoLog novoLog = new NovoLog();
+            DaoInterface di = new Dao();
+            di.openTransaction();
             for (int i = 0; i < listaMatriculaContratoServico.size(); i++) {
-                if (!salvarAcumuladoDB.deletarObjeto((MatriculaContratoServico) salvarAcumuladoDB.pesquisaCodigo(listaMatriculaContratoServico.get(i).getId(), "MatriculaContratoServico"))) {
-                    salvarAcumuladoDB.desfazerTransacao();
+                if (!di.delete(listaMatriculaContratoServico.get(i))) {
+                    di.rollback();
                     mensagem = "Falha ao excluir esse registro!";
                     return;
                 }
             }
-            if (salvarAcumuladoDB.deletarObjeto(matriculaContrato)) {
-                salvarAcumuladoDB.comitarTransacao();
+            if (di.delete(matriculaContrato)) {
+                di.commit();
+                novoLog.delete("ID: " + matriculaContrato.getId() + " - Título: " + matriculaContrato.getTitulo() + " - Módulo: ("+matriculaContrato.getModulo().getId()+") " + matriculaContrato.getModulo().getDescricao());
                 matriculaContratos.clear();
-                novo();
+                clear();
                 mensagem = "Registro excluído com sucesso";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 mensagem = "Falha ao excluir esse registro!";
             }
         }
     }
 
-    public String editar(MatriculaContrato mc) {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        setMatriculaContrato((MatriculaContrato) dB.pesquisaCodigo(mc.getId(), "MatriculaContrato"));
+    public String edit(MatriculaContrato mc) {
+        DaoInterface di = new Dao();
+        setMatriculaContrato((MatriculaContrato) di.find(new MatriculaContrato(), mc.getId()));
         GenericaSessao.put("matriculaContratoPesquisa", matriculaContrato);
         GenericaSessao.put("linkClicado", true);
         listaMatriculaContratoServico.clear();
@@ -188,71 +210,70 @@ public class ModeloContratoBean implements java.io.Serializable {
         matriculaContratoCampos = new MatriculaContratoCampos();
     }
 
-    public synchronized void adicionarCamposModuloContrato() {
+    public synchronized void addCamposModuloContrato() {
         if (matriculaContratoCampos.getCampo().equals("")) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sistema", "Informar o campo!"));
+            GenericaMensagem.info("Sistema", "Informar o campo!");
             return;
         }
         if (matriculaContratoCampos.getVariavel().equals("")) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Informar a variável!"));
+            GenericaMensagem.warn("Sistema", "Informar a variável!");
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
         if (matriculaContratoCampos.getId() == -1) {
             if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "campo")) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Variável já existe!"));
+                GenericaMensagem.warn("Sistema", "Variável já existe!");
                 return;
             }
             if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "variavel")) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Campo já cadastrado!"));
+                GenericaMensagem.warn("Sistema", "Campo já cadastrado!");
                 return;
             }
             if (matriculaContratoDB.existeMatriculaContratoCampo(matriculaContratoCampos, "tudo")) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Sistema", "Campo já cadastrado!"));
+                GenericaMensagem.warn("Sistema", "Campo já cadastrado!");
                 return;
             }
-            matriculaContratoCampos.setModulo((Modulo) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaModulos2.get(idModulo2).getDescription()), "Modulo"));
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(matriculaContratoCampos)) {
-                salvarAcumuladoDB.comitarTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro inserido com sucesso."));
+            matriculaContratoCampos.setModulo((Modulo) di.find(new Modulo(), Integer.parseInt(listModulos2.get(idModulo2).getDescription())));
+            di.openTransaction();
+            if (di.save(matriculaContratoCampos)) {
+                di.commit();
+                GenericaMensagem.info("Sucesso", "Registro inserido com sucesso.");
                 listaMatriculaContratoCampos.clear();
-                listaModulos.clear();
+                listModulos.clear();
                 idModulo = 0;
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Erro", "Falha ao inserir o registro!"));
+                di.rollback();
+                GenericaMensagem.info("Erro", "Falha ao inserir o registro!");
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(matriculaContratoCampos)) {
-                salvarAcumuladoDB.comitarTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro atualizado com sucesso."));
+            di.openTransaction();
+            if (di.update(matriculaContratoCampos)) {
+                di.commit();
+                GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso.");
                 listaMatriculaContratoCampos.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Erro", "Falha ao atualizar o registro!"));
+                di.rollback();
+                GenericaMensagem.info("Erro", "Falha ao atualizar o registro!");
             }
         }
         matriculaContratoCampos.setModulo(modulo);
     }
 
-    public String removerCamposModuloContrato(MatriculaContratoCampos mcc) {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        mcc = (MatriculaContratoCampos) salvarAcumuladoDB.pesquisaCodigo(mcc.getId(), "MatriculaContratoCampos");
+    public String removeCamposModuloContrato(MatriculaContratoCampos mcc) {
+        DaoInterface di = new Dao();
         if (mcc.getId() != -1) {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(mcc)) {
-                salvarAcumuladoDB.comitarTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", "Registro excluído com sucesso"));
+            di.openTransaction();
+            if (di.delete(mcc)) {
+                di.commit();
+                GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
                 listaMatriculaContratoCampos.clear();
-                listaModulos.clear();
+                listModulos.clear();
                 idModulo = 0;
                 matriculaContratoCampos = new MatriculaContratoCampos();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", "Falha ao excluir o registro!"));
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Falha ao excluir o registro!");
             }
         }
         return "matriculaContratoCampos";
@@ -265,21 +286,21 @@ public class ModeloContratoBean implements java.io.Serializable {
         return matriculaContrato;
     }
 
-    public List<SelectItem> getListaServicos() {
-        if (listaServicos.isEmpty()) {
+    public List<SelectItem> getListServicos() {
+        if (listServicos.isEmpty()) {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             List<Servicos> list = (List<Servicos>) matriculaContratoDB.listaServicosDispiniveis();
             for (int i = 0; i < list.size(); i++) {
-                listaServicos.add(new SelectItem(new Integer(i), (String) (list.get(i)).getDescricao(), Integer.toString((list.get(i)).getId())));
+                listServicos.add(new SelectItem(i, (String) (list.get(i)).getDescricao(), Integer.toString((list.get(i)).getId())));
             }
         }
-        return listaServicos;
+        return listServicos;
     }
 
-    public void adicionarServicos() {
+    public void addServicos() {
         msgServico = "";
         if (matriculaContrato.getId() != -1) {
-            int idServico = Integer.parseInt(getListaServicos().get(idServicos).getDescription());
+            int idServico = Integer.parseInt(getListServicos().get(idServicos).getDescription());
             MatriculaContratoDB contratoDB = new MatriculaContratoDBToplink();
             if (contratoDB.validaMatriculaContratoServico(matriculaContrato.getId(), idServico)) {
                 GenericaMensagem.warn("Validação", "Contrato já possui esse serviço!");
@@ -289,38 +310,37 @@ public class ModeloContratoBean implements java.io.Serializable {
                 GenericaMensagem.warn("Validação", "Serviço já cadastrado para contrato (s)!");
                 return;
             }
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            matriculaContratoServico.setServico((Servicos) (salvarAcumuladoDB.pesquisaCodigo(idServico, "Servicos")));
+            DaoInterface di = new Dao();
+            matriculaContratoServico.setServico((Servicos) (di.find(new Servicos(), idServico)));
             matriculaContratoServico.setContrato(matriculaContrato);
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(matriculaContratoServico)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(matriculaContratoServico)) {
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Serviço adicionado");
                 matriculaContratoServico = new MatriculaContratoServico();
                 listaMatriculaContratoServico.clear();
             } else {
                 GenericaMensagem.warn("Erro", "Ao adicionar este serviço!");
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
             }
         }
     }
 
-    public void removerServicos(MatriculaContratoServico mcs) {
+    public void removeServicos(MatriculaContratoServico mcs) {
         msgServico = "";
         if (mcs.getId() != -1) {
             matriculaContratoServico = mcs;
         }
         if (matriculaContratoServico.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            matriculaContratoServico = (MatriculaContratoServico) salvarAcumuladoDB.pesquisaCodigo(matriculaContratoServico.getId(), "MatriculaContratoServico");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(matriculaContratoServico)) {
-                salvarAcumuladoDB.comitarTransacao();
+            DaoInterface di = new Dao();
+            di.openTransaction();
+            if (di.delete(matriculaContratoServico)) {
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Serviço removido");
                 listaMatriculaContratoServico.clear();
                 matriculaContratoServico = new MatriculaContratoServico();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao remover!");
             }
         }
@@ -409,10 +429,10 @@ public class ModeloContratoBean implements java.io.Serializable {
 
     public Modulo getModulo() {
         if (GenericaSessao.exists("idModulo")) {
-            int idMod = (Integer) GenericaSessao.getInteger("idModulo");
+            int idMod = GenericaSessao.getInteger("idModulo");
             if (idMod != 0) {
-                SalvarAcumuladoDB acumuladoDB = new SalvarAcumuladoDBToplink();
-                modulo = (Modulo) acumuladoDB.pesquisaCodigo(idMod, "Modulo");
+                DaoInterface di = new Dao();
+                modulo = (Modulo) di.find(new Modulo(), idMod);
             }
         }
         return modulo;
@@ -443,7 +463,7 @@ public class ModeloContratoBean implements java.io.Serializable {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             if (tipoLista.equals("this")) {
                 if (GenericaSessao.exists("idModulo")) {
-                    int idMod = (Integer) GenericaSessao.getInteger("idModulo");
+                    int idMod = GenericaSessao.getInteger("idModulo");
                     if (idMod != 0) {
                         if (descricaoPesquisa.equals("")) {
                             listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(idMod);
@@ -453,7 +473,7 @@ public class ModeloContratoBean implements java.io.Serializable {
                     }
                 }
             } else {
-                listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(Integer.parseInt(listaModulos.get(idModulo).getDescription()));
+                listaMatriculaContratoCampos = (List<MatriculaContratoCampos>) matriculaContratoDB.listaMatriculaContratoCampo(Integer.parseInt(listModulos.get(idModulo).getDescription()));
             }
         }
         return listaMatriculaContratoCampos;
@@ -463,19 +483,19 @@ public class ModeloContratoBean implements java.io.Serializable {
         this.listaMatriculaContratoCampos = listaMatriculaContratoCampos;
     }
 
-    public List<SelectItem> getListaModulos() {
-        if (listaModulos.isEmpty()) {
+    public List<SelectItem> getListModulos() {
+        if (listModulos.isEmpty()) {
             MatriculaContratoDB matriculaContratoDB = new MatriculaContratoDBToplink();
             List<Modulo> lista = (List<Modulo>) matriculaContratoDB.listaModulosMatriculaContratoCampos();
             for (int i = 0; i < lista.size(); i++) {
-                listaModulos.add(new SelectItem(i, lista.get(i).getDescricao(), Integer.toString(lista.get(i).getId())));
+                listModulos.add(new SelectItem(i, lista.get(i).getDescricao(), Integer.toString(lista.get(i).getId())));
             }
         }
-        return listaModulos;
+        return listModulos;
     }
 
-    public void setListaModulos(List<SelectItem> listaModulos) {
-        this.listaModulos = listaModulos;
+    public void setListModulos(List<SelectItem> listModulos) {
+        this.listModulos = listModulos;
     }
 
     public int getIdModulo() {
@@ -494,19 +514,19 @@ public class ModeloContratoBean implements java.io.Serializable {
         this.idModulo2 = idModulo2;
     }
 
-    public List<SelectItem> getListaModulos2() {
-        if (listaModulos2.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<Modulo> list = (List<Modulo>) salvarAcumuladoDB.listaObjeto("Modulo");
+    public List<SelectItem> getListModulos2() {
+        if (listModulos2.isEmpty()) {
+            DaoInterface di = new Dao();
+            List<Modulo> list = (List<Modulo>) di.list(new Modulo());
             for (int i = 0; i < list.size(); i++) {
-                listaModulos2.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listModulos2.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
-        return listaModulos2;
+        return listModulos2;
     }
 
-    public void setListaModulos2(List<SelectItem> listaModulos2) {
-        this.listaModulos2 = listaModulos2;
+    public void setListModulos2(List<SelectItem> listModulos2) {
+        this.listModulos2 = listModulos2;
     }
 
     public String getDescricaoPesquisa() {
@@ -530,7 +550,7 @@ public class ModeloContratoBean implements java.io.Serializable {
     }
 
     public void excluirArquivo(int index) {
-        if(Diretorio.remover("Arquivos/contrato/" + matriculaContrato.getId() + "/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1())) {
+        if (Diretorio.remover("Arquivos/contrato/" + matriculaContrato.getId() + "/" + (String) ((DataObject) listaArquivos.get(index)).getArgumento1())) {
             listaArquivos.remove(index);
             listaArquivos.clear();
             getListaArquivos();
@@ -545,7 +565,7 @@ public class ModeloContratoBean implements java.io.Serializable {
                     setQuantidadeAnexo(listaArquivos.size());
                 } else {
                     setQuantidadeAnexo(0);
-                }                
+                }
             }
         }
         return listaArquivos;

@@ -105,7 +105,7 @@ public class SimplesBean implements Serializable {
                 sv.abrirTransacao();
                 if (sv.inserirObjeto(objeto)) {
                     sv.comitarTransacao();
-                    log.novo("Registro de " + objeto.getClass().getSimpleName() + " inserido", "ID: " + id + " DESCRICAO: " + descricao);
+                    log.save("ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro salvo com sucesso";
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
                     descricao = "";
@@ -122,7 +122,7 @@ public class SimplesBean implements Serializable {
                 sv.abrirTransacao();
                 if (sv.alterarObjeto(objeto)) {
                     sv.comitarTransacao();
-                    log.novo("Registro de " + objeto.getClass().getSimpleName() + " alterado", "ID: " + id + " DESCRICAO: " + descricao);
+                    log.update("", "ID: " + id + " DESCRICAO: " + descricao);
                     mensagem = "Registro atualizado com sucesso";
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
                     lista.clear();
@@ -164,7 +164,7 @@ public class SimplesBean implements Serializable {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
         } else {
             sv.comitarTransacao();
-            log.novo("Registro de " + objeto.getClass().getSimpleName() + " excluido", "ID: " + id + " DESCRICAO: " + descricao);
+            log.delete("ID: " + id + " DESCRICAO: " + descricao);
             mensagem = "Registro excluído com sucesso!";
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
             lista.clear();

@@ -23,7 +23,6 @@ import javax.faces.context.FacesContext;
 import javax.persistence.Query;
 
 public class GerarMovimento extends DB {
-
     public String gerarBoletos(String referencia, String vencimento, int id_grupo_cidade, int id_convencao, int id_servico, int id_tipo_servico, int id_rotina) {
         String textQry = "";
         getEntityManager().getTransaction().begin();
@@ -512,6 +511,9 @@ public class GerarMovimento extends DB {
 
                 // MOVIMENTO ----
                 movimento.setLote(lote);
+                movimento.setVencimento(mc.getVencimento());
+                movimento.setVencimentoOriginal(mc.getVencimento());
+                
                 if (sv.inserirObjeto(movimento)) {
                     // BOLETO ---
 
@@ -599,6 +601,7 @@ public class GerarMovimento extends DB {
         return true;
     }
 
+    
     public static boolean excluirUmMovimento(Movimento movimento) {
         String mensagem = "Deletados com sucesso!";
         MovimentoDB movDB = new MovimentoDBToplink();

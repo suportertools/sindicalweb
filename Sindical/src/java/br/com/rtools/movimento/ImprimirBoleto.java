@@ -111,7 +111,7 @@ public class ImprimirBoleto {
                         lista.get(i).getAcordo(),
                         lista.get(i).getValor(),
                         lista.get(i).getReferencia(),
-                        lista.get(i).getVencimento(),
+                        null, // lista.get(i).getVencimento()
                         1,
                         true,
                         "E",
@@ -120,12 +120,11 @@ public class ImprimirBoleto {
                         lista.get(i).getPessoa(),
                         "",
                         "",
-                        lista.get(i).getVencimento(),
+                        null, // lista.get(i).getVencimento()
                         0,
                         0, 0, 0, 0, 0, 0, lista.get(i).getTipoDocumento(), 0, null);
 
                 GerarMovimento.inativarUmMovimento(lista.get(i), "REIMPRESSÃO COM NOVO CEDENTE.");
-
                 GerarMovimento.salvarUmMovimento(new Lote(), mov);
                 listaAdd.add(mov);
 
@@ -157,7 +156,7 @@ public class ImprimirBoleto {
                         lista.get(i).getAcordo(),
                         lista.get(i).getValor(),
                         lista.get(i).getReferencia(),
-                        lista.get(i).getVencimento(),
+                        null, // lista.get(i).getVencimento()
                         1,
                         true,
                         "E",
@@ -166,7 +165,7 @@ public class ImprimirBoleto {
                         lista.get(i).getPessoa(),
                         "",
                         "",
-                        lista.get(i).getVencimento(),
+                        null, // lista.get(i).getVencimento()
                         0,
                         0, 0, 0, 0, 0, 0, lista.get(i).getTipoDocumento(), 0, null);
 

@@ -29,9 +29,10 @@ import javax.persistence.*;
  * <p style="color: red;"><b>IMPORTANTE:</b>Para agrupar é necessários que as turmas sejam da mesma sala.</p>
  * @author rtools
  */
-
 @Entity
-@Table(name = "ESC_AGRUPA_TURMA")
+@Table(name = "ESC_AGRUPA_TURMA",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_TURMA, ID_TURMA_INTEGRAL"})
+)
 @NamedQueries({
     @NamedQuery(name = "AgrupaTurma.pesquisaID", query = "SELECT AT FROM AgrupaTurma AS AT WHERE AT.id = :pid"),
     @NamedQuery(name = "AgrupaTurma.findAll", query = "SELECT AT FROM AgrupaTurma AS AT ORDER BY AT.turma.cursos.descricao ASC ")
@@ -82,11 +83,11 @@ public class AgrupaTurma implements Serializable {
 
     public void setTurmaIntegral(Turma turmaIntegral) {
         this.turmaIntegral = turmaIntegral;
-    }    
+    }
 
     @Override
     public String toString() {
         return "AgrupaTurma{" + "id=" + id + ", turma=" + turma + ", turmaIntegral=" + turmaIntegral + '}';
     }
-    
+
 }

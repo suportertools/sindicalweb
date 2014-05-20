@@ -278,18 +278,16 @@ public class MatriculaEscolaBean implements Serializable {
     /* chamado quando outra view for chamada através do UIViewRoot.setViewId(String viewId) */
     @PreDestroy
     public void destroy() {
+        GenericaSessao.remove("matriculaEscolaBean");
         GenericaSessao.remove("matriculaEscolaPesquisa");
+        GenericaSessao.remove("pesquisaFisicaTipo");        
+        GenericaSessao.remove("pessoaPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("fisicaPesquisa");
     }
 
     public String novo() {
         GenericaSessao.remove("matriculaEscolaBean");
-        GenericaSessao.remove("matriculaEscolaPesquisa");
-        GenericaSessao.remove("pesquisaFisicaTipo");
-        GenericaSessao.remove("pesquisaFisica");
-        GenericaSessao.remove("pesquisaJuridica");
-        GenericaSessao.remove("juridicaPesquisa");
-        GenericaSessao.remove("fisicaPesquisa");
         return null;
     }
 
@@ -831,7 +829,7 @@ public class MatriculaEscolaBean implements Serializable {
                 sv.comitarTransacao();
                 desabilitaCampo = true;
                 mensagem = "Matrícula efetuada com sucesso.";
-                novoLog.novo("Novo registro", "Matricula Escola "
+                novoLog.save("Matricula Escola "
                         + tipoMatricula + ": ID " + matriculaEscola.getId()
                         + " - Aluno: " + matriculaEscola.getAluno().getId() + " - " + matriculaEscola.getAluno().getNome()
                         + " - Responsável: " + matriculaEscola.getResponsavel().getId() + " - " + matriculaEscola.getResponsavel().getNome()
@@ -1055,9 +1053,9 @@ public class MatriculaEscolaBean implements Serializable {
                 if (db.deletarObjeto(matriculaEscola)) {
                     db.comitarTransacao();
                     if (tipoMatricula.equals("Individual")) {
-                        novoLog.novo("Excluir Matrícula Individual", stringLogMatricula);
+                        novoLog.delete("Excluir Matrícula Individual" + stringLogMatricula);
                     } else {
-                        novoLog.novo("Excluir Matrícula Turma", stringLogMatricula);
+                        novoLog.delete("Excluir Matrícula Turma" + stringLogMatricula);
                     }
                     novo();
                     mensagem = "";

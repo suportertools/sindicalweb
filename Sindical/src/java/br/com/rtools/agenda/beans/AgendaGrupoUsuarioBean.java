@@ -2,6 +2,7 @@ package br.com.rtools.agenda.beans;
 
 import br.com.rtools.agenda.AgendaGrupoUsuario;
 import br.com.rtools.agenda.GrupoAgenda;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
@@ -14,7 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
@@ -22,17 +22,15 @@ public class AgendaGrupoUsuarioBean implements Serializable {
 
     private Usuario usuario;
     private List<AgendaGrupoUsuario> agendaGrupoUsuarios;
-    private Integer[] indice;
-    private List<SelectItem>[] listSelectItens;
+    private List<GrupoAgenda> listGrupoAgenda;
+    private GrupoAgenda grupoAgenda;
 
     @PostConstruct
     public void init() {
         usuario = new Usuario();
         agendaGrupoUsuarios = new ArrayList<AgendaGrupoUsuario>();
-        indice = new Integer[1];
-        indice[0] = 0;
-        listSelectItens = new ArrayList[1];
-        listSelectItens[0] = new ArrayList<SelectItem>();
+        listGrupoAgenda = new ArrayList<GrupoAgenda>();
+        grupoAgenda = new GrupoAgenda();
     }
 
     @PreDestroy
@@ -51,12 +49,12 @@ public class AgendaGrupoUsuarioBean implements Serializable {
             return;
         }
         AgendaGrupoUsuario agp = new AgendaGrupoUsuario();
-        if (listSelectItens[0].isEmpty()) {
+        if (listGrupoAgenda.isEmpty()) {
             GenericaMensagem.warn("Validação", "Cadastrar grupos!");
             return;
         }
         DaoInterface dao = new Dao();
-        agp.setGrupoAgenda((GrupoAgenda) dao.find(new GrupoAgenda(), Integer.parseInt(getListGrupoAgenda().get(indice[0]).getDescription())));
+        agp.setGrupoAgenda(grupoAgenda);
         agp.setUsuario(usuario);
         for (int i = 0; i < agendaGrupoUsuarios.size(); i++) {
             if (agp.getGrupoAgenda().getId() == agendaGrupoUsuarios.get(i).getGrupoAgenda().getId()
@@ -65,7 +63,9 @@ public class AgendaGrupoUsuarioBean implements Serializable {
                 return;
             }
         }
+        NovoLog novoLog = new NovoLog();
         if (dao.save(agp, true)) {
+            novoLog.save("ID: " + agp.getId() + " - Grupo Agenda: " + agp.getGrupoAgenda().getDescricao() + " - Usuário: (" + agp.getUsuario().getId() + ") " + agp.getUsuario().getLogin());
             GenericaMensagem.info("Sucesso", "Registro adicionado");
             GenericaSessao.remove("agendaTelefoneBean");
             agendaGrupoUsuarios.clear();
@@ -77,6 +77,8 @@ public class AgendaGrupoUsuarioBean implements Serializable {
     public void remove(AgendaGrupoUsuario agp) {
         DaoInterface di = new Dao();
         if (di.delete(agp, true)) {
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete("ID: " + agp.getId() + " - Grupo Agenda: " + agp.getGrupoAgenda().getDescricao() + " - Usuário: (" + agp.getUsuario().getId() + ") " + agp.getUsuario().getLogin());
             GenericaMensagem.info("Sucesso", "Registro removido");
             GenericaSessao.remove("agendaTelefoneBean");
             agendaGrupoUsuarios.clear();
@@ -89,8 +91,11 @@ public class AgendaGrupoUsuarioBean implements Serializable {
         if (agendaGrupoUsuarios.isEmpty()) {
             if (!getListGrupoAgenda().isEmpty()) {
                 DaoInterface di = new Dao();
-                int id = Integer.parseInt(getListGrupoAgenda().get(indice[0]).getDescription());
-                agendaGrupoUsuarios = (List<AgendaGrupoUsuario>) di.listQuery("AgendaGrupoUsuario", "findGrupoAgenda", new Object[]{id});
+                if (grupoAgenda != null) {
+                    if (grupoAgenda.getId() != -1) {
+                        agendaGrupoUsuarios = (List<AgendaGrupoUsuario>) di.listQuery("AgendaGrupoUsuario", "findGrupoAgenda", new Object[]{grupoAgenda.getId()});
+                    }
+                }
             }
         }
         return agendaGrupoUsuarios;
@@ -111,25 +116,26 @@ public class AgendaGrupoUsuarioBean implements Serializable {
         this.usuario = usuario;
     }
 
-    public List<SelectItem> getListGrupoAgenda() {
-        if (listSelectItens[0].isEmpty()) {
-            DaoInterface dao = new Dao();
-            List<GrupoAgenda> list = (List<GrupoAgenda>) dao.list("GrupoAgenda", true);
-            for (int i = 0; i < list.size(); i++) {
-                listSelectItens[0].add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+    public List<GrupoAgenda> getListGrupoAgenda() {
+        if (listGrupoAgenda.isEmpty()) {
+            DaoInterface di = new Dao();
+            listGrupoAgenda = di.list(new GrupoAgenda(), true);
+            if(listGrupoAgenda.isEmpty()) {
+                grupoAgenda = listGrupoAgenda.get(0);
             }
         }
-        if (listSelectItens[0].isEmpty()) {
-            listSelectItens[0] = new ArrayList<SelectItem>();
-        }
-        return listSelectItens[0];
+        return listGrupoAgenda;
     }
 
-    public Integer[] getIndice() {
-        return indice;
+    public void setListGrupoAgenda(List<GrupoAgenda> listGrupoAgenda) {
+        this.listGrupoAgenda = listGrupoAgenda;
     }
 
-    public void setIndice(Integer[] indice) {
-        this.indice = indice;
+    public GrupoAgenda getGrupoAgenda() {
+        return grupoAgenda;
+    }
+
+    public void setGrupoAgenda(GrupoAgenda grupoAgenda) {
+        this.grupoAgenda = grupoAgenda;
     }
 }

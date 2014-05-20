@@ -5,40 +5,54 @@ import br.com.rtools.escola.ListaAgrupaTurma;
 import br.com.rtools.escola.Turma;
 import br.com.rtools.escola.db.AgrupaTurmaDB;
 import br.com.rtools.escola.db.AgrupaTurmaDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
 @ManagedBean
 @SessionScoped
 public class AgrupaTurmaBean implements Serializable {
-
-    private AgrupaTurma agrupaTurma = new AgrupaTurma();
-    private List<AgrupaTurma> listaAgrupaTurma = new ArrayList<AgrupaTurma>();
-    private List<ListaAgrupaTurma> itensAgrupados = new ArrayList<ListaAgrupaTurma>();
-    private boolean integral = false;
-
-    public void novo() {
+    
+    private AgrupaTurma agrupaTurma;
+    private List<AgrupaTurma> listAgrupaTurma;
+    private List<ListaAgrupaTurma> itensAgrupados;
+    private boolean integral;
+    
+    @PostConstruct
+    public void init() {
         agrupaTurma = new AgrupaTurma();
-        listaAgrupaTurma.clear();
-        itensAgrupados.clear();
+        listAgrupaTurma = new ArrayList<AgrupaTurma>();
+        itensAgrupados = new ArrayList<ListaAgrupaTurma>();
         integral = false;
     }
-
-    public void salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+    
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("turmaPesquisa");
+        clear();
+    }
+    
+    public void clear() {
+        GenericaSessao.remove("agrupaTurmaBean");
+    }
+    
+    public void save() {
+        DaoInterface di = new Dao();
         if (itensAgrupados.isEmpty()) {
             GenericaMensagem.warn("Validação", "Pesquisar turma e adicionar itens a lista!");
             return;
         }
         boolean erro = false;
-        salvarAcumuladoDB.abrirTransacao();
+        di.openTransaction();
         int idTurmaIntegral = 0;
         for (int i = 0; i < itensAgrupados.size(); i++) {
             if (itensAgrupados.get(i).isIsIntegral()) {
@@ -46,40 +60,40 @@ public class AgrupaTurmaBean implements Serializable {
             }
         }
         AgrupaTurmaDB dB = new AgrupaTurmaDBToplink();
+        NovoLog novoLog = new NovoLog();
         for (int i = 0; i < itensAgrupados.size(); i++) {
             if (itensAgrupados.get(i).getAgrupaTurma().getId() == -1) {
-                if(itensAgrupados.isEmpty()){
-                    if(!((List) dB.pesquisaPorTurmaIntegral(itensAgrupados.get(i).getAgrupaTurma().getTurmaIntegral().getId())).isEmpty()){
+                if (itensAgrupados.isEmpty()) {
+                    if (!((List) dB.pesquisaPorTurmaIntegral(itensAgrupados.get(i).getAgrupaTurma().getTurmaIntegral().getId())).isEmpty()) {
                         GenericaMensagem.warn("Validação", "Grupo integral já cadastrado! Realizar agrupamento com o já existente.");
                         return;
                     }
                 }
-                if (!salvarAcumuladoDB.inserirObjeto(itensAgrupados.get(i).getAgrupaTurma())) {
+                if (!di.save(itensAgrupados.get(i).getAgrupaTurma())) {
                     erro = true;
-                    salvarAcumuladoDB.desfazerTransacao();
                     break;
                 }
             } else {
-                if (!salvarAcumuladoDB.alterarObjeto(itensAgrupados.get(i).getAgrupaTurma())) {
+                if (!di.update(itensAgrupados.get(i).getAgrupaTurma())) {
                     erro = true;
-                    salvarAcumuladoDB.desfazerTransacao();
                     break;
                 }
             }
         }
         if (erro) {
+            di.rollback();
             GenericaMensagem.warn("Erro", "Ao inserir registro(s)!");
             return;
         }
-        salvarAcumuladoDB.comitarTransacao();
-        listaAgrupaTurma.clear();
+        di.commit();
+        listAgrupaTurma.clear();
         itensAgrupados.clear();
         integral = false;
         agrupaTurma = new AgrupaTurma();
         GenericaMensagem.info("Sucesso", "Registro(s) inserido(s) com sucesso");
     }
-
-    public void editar(AgrupaTurma at) {
+    
+    public void edit(AgrupaTurma at) {
         AgrupaTurmaDB dB = new AgrupaTurmaDBToplink();
         List<AgrupaTurma> list = (List<AgrupaTurma>) dB.pesquisaPorTurmaIntegral(at.getTurmaIntegral().getId());
         itensAgrupados.clear();
@@ -95,31 +109,33 @@ public class AgrupaTurmaBean implements Serializable {
                 itensAgrupados.add(new ListaAgrupaTurma(list.get(i), turmaIntegral));
             }
         }
-
+        
     }
-
-    public void remover(AgrupaTurma at) {
+    
+    public void delete(AgrupaTurma at) {
         AgrupaTurmaDB dB = new AgrupaTurmaDBToplink();
         List<AgrupaTurma> list = (List<AgrupaTurma>) dB.pesquisaPorTurmaIntegral(at.getTurmaIntegral().getId());
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         if (!list.isEmpty()) {
-            sadb.abrirTransacao();
+            di.openTransaction();
             for (int i = 0; i < list.size(); i++) {
-                AgrupaTurma at1 = (AgrupaTurma) sadb.pesquisaCodigo(list.get(i).getId(), "AgrupaTurma");
-                if (!sadb.deletarObjeto(at1)) {
-                    sadb.desfazerTransacao();
+                AgrupaTurma at1 = (AgrupaTurma) di.find(new AgrupaTurma(), list.get(i).getId());
+                if (!di.delete(at1)) {
+                    di.rollback();
                     GenericaMensagem.warn("Erro", "Ao remover registro(s)!");
                     return;
                 }
             }
-            sadb.comitarTransacao();
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete(list.toString());
+            di.commit();
             GenericaMensagem.info("Sucesso", "Registro(s) removido(s)");
         }
-        listaAgrupaTurma.clear();
+        listAgrupaTurma.clear();
         itensAgrupados.clear();
     }
-
-    public void adicionarItem() {
+    
+    public void addItem() {
         if (agrupaTurma.getTurma().getId() == -1) {
             GenericaMensagem.warn("Validação", "Pesquisar uma turma!");
             return;
@@ -156,8 +172,8 @@ public class AgrupaTurmaBean implements Serializable {
         agrupaTurma = new AgrupaTurma();
         integral = false;
     }
-
-    public void editaItensLista(ListaAgrupaTurma lat) {
+    
+    public void editItensList(ListaAgrupaTurma lat) {
         for (int i = 0; i < itensAgrupados.size(); i++) {
             itensAgrupados.get(i).getAgrupaTurma().setTurmaIntegral(null);
             itensAgrupados.get(i).setIsIntegral(false);
@@ -169,8 +185,8 @@ public class AgrupaTurmaBean implements Serializable {
             itensAgrupados.get(i).getAgrupaTurma().setTurmaIntegral(lat.getAgrupaTurma().getTurma());
         }
     }
-
-    public void removeItensLista(ListaAgrupaTurma lat) {
+    
+    public void removeItensList(ListaAgrupaTurma lat) {
         boolean grupoIntegral = false;
         for (int i = 0; i < itensAgrupados.size(); i++) {
             if (itensAgrupados.get(i).getAgrupaTurma().getTurma().getId() == lat.getAgrupaTurma().getTurma().getId()) {
@@ -183,7 +199,7 @@ public class AgrupaTurmaBean implements Serializable {
         if (itensAgrupados.size() > 0) {
             int idTurma = itensAgrupados.get(0).getAgrupaTurma().getTurma().getId();
             for (int j = 0; j < itensAgrupados.size(); j++) {
-                if(grupoIntegral) {
+                if (grupoIntegral) {
                     itensAgrupados.get(j).setIsIntegral(grupoIntegral);
                 }
                 itensAgrupados.get(j).getAgrupaTurma().setTurmaIntegral(itensAgrupados.get(j).getAgrupaTurma().getTurma());
@@ -191,48 +207,48 @@ public class AgrupaTurmaBean implements Serializable {
             }
         }
     }
-
+    
     public AgrupaTurma getAgrupaTurma() {
         if (GenericaSessao.exists("turmaPesquisa")) {
             agrupaTurma.setTurma((Turma) GenericaSessao.getObject("turmaPesquisa", true));
         }
         return agrupaTurma;
     }
-
+    
     public void setAgrupaTurma(AgrupaTurma agrupaTurma) {
         this.agrupaTurma = agrupaTurma;
     }
-
-    public List<AgrupaTurma> getListaAgrupaTurma() {
-        if (listaAgrupaTurma.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<AgrupaTurma> list = (List<AgrupaTurma>) dB.listaObjeto("AgrupaTurma", true);
+    
+    public List<AgrupaTurma> getListAgrupaTurma() {
+        if (listAgrupaTurma.isEmpty()) {
+            DaoInterface di = new Dao();
+            List<AgrupaTurma> list = (List<AgrupaTurma>) di.list(new AgrupaTurma(), true);
             for (int i = 0; i < list.size(); i++) {
                 int idMemoria = list.get(i).getTurmaIntegral().getId();
                 if (idMemoria == list.get(i).getTurma().getId()) {
-                    listaAgrupaTurma.add(list.get(i));
+                    listAgrupaTurma.add(list.get(i));
                 }
             }
         }
-        return listaAgrupaTurma;
+        return listAgrupaTurma;
     }
-
-    public void setListaAgrupaTurma(List<AgrupaTurma> listaAgrupaTurma) {
-        this.listaAgrupaTurma = listaAgrupaTurma;
+    
+    public void setListAgrupaTurma(List<AgrupaTurma> listAgrupaTurma) {
+        this.listAgrupaTurma = listAgrupaTurma;
     }
-
+    
     public List<ListaAgrupaTurma> getItensAgrupados() {
         return itensAgrupados;
     }
-
+    
     public void setItensAgrupados(List<ListaAgrupaTurma> itensAgrupados) {
         this.itensAgrupados = itensAgrupados;
     }
-
+    
     public boolean isIntegral() {
         return integral;
     }
-
+    
     public void setIntegral(boolean integral) {
         this.integral = integral;
     }

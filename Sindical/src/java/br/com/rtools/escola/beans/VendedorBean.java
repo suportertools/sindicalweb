@@ -3,88 +3,111 @@ package br.com.rtools.escola.beans;
 import br.com.rtools.escola.Vendedor;
 import br.com.rtools.escola.db.VendedorDB;
 import br.com.rtools.escola.db.VendedorDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
-public class VendedorBean implements java.io.Serializable {
+public class VendedorBean implements Serializable {
 
-    private Vendedor vendedor = new Vendedor();
-    private String mensagem = "";
-    private List<Vendedor> listaVendedores = new ArrayList();
+    private Vendedor vendedor;
+    private String message;
+    private List<Vendedor> listVendedores;
 
-    public void adicionar() {
+    @PostConstruct
+    public void init() {
+        vendedor = new Vendedor();
+        message = "";
+        listVendedores = new ArrayList<Vendedor>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("vendedorBean");
+        GenericaSessao.remove("pessoaPesquisa");
+    }
+
+    public void save() {
         if (vendedor.getPessoa().getId() == -1) {
-            mensagem = "Pesquise uma Pessoa para ser vendedora!";
+            message = "Pesquise uma Pessoa para ser vendedora!";
             return;
         }
+        NovoLog novoLog = new NovoLog();
         VendedorDB vendedorDB = new VendedorDBToplink();
         if (vendedorDB.existeVendedor(vendedor)) {
-            mensagem = "Este vendedor já existe!";
+            message = "Este vendedor já existe!";
             vendedor = new Vendedor();
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.inserirObjeto(vendedor)) {
-            salvarAcumuladoDB.comitarTransacao();
-            mensagem = "Vendedor adicionado com sucesso!";
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (di.save(vendedor)) {
+            novoLog.save(
+                    "ID " + vendedor.getId()
+                    + " - Pessoa: (" + vendedor.getPessoa().getId() + ") " + vendedor.getPessoa().getNome()
+            );
+            di.commit();
+            message = "Registro inserido com sucesso!";
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
-            mensagem = "Erro ao adicionar!";
+            di.rollback();
+            message = "Erro ao inserir registro!";
         }
-        listaVendedores.clear();
+        listVendedores.clear();
         vendedor = new Vendedor();
     }
 
-    public void excluir(Vendedor v) {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        vendedor = (Vendedor) salvarAcumuladoDB.pesquisaCodigo(v.getId(), "Vendedor");
-        if (vendedor != null) {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(vendedor)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Excluído com sucesso!";
-                listaVendedores.clear();
-            } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao Excluir!";
-            }
+    public void delete(Vendedor v) {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        di.openTransaction();
+        if (di.delete(v)) {
+            novoLog.delete(
+                    "ID " + v.getId()
+                    + " - Pessoa: (" + v.getPessoa().getId() + ") " + v.getPessoa().getNome()
+            );
+            di.commit();
+            message = "Registro excluído com sucesso";
+            listVendedores.clear();
+            vendedor = new Vendedor();
+        } else {
+            di.rollback();
+            message = "Erro ao excluir registro!";
         }
-        vendedor = new Vendedor();
     }
 
-    public List<Vendedor> getListaVendedores() {
-        if (listaVendedores.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaVendedores = (List<Vendedor>) salvarAcumuladoDB.listaObjeto("Vendedor", true);
+    public List<Vendedor> getListVendedores() {
+        if (listVendedores.isEmpty()) {
+            DaoInterface di = new Dao();
+            listVendedores = (List<Vendedor>) di.list(new Vendedor(), true);
         }
-        return listaVendedores;
+        return listVendedores;
     }
 
-    public void setListaVendedores(List<Vendedor> listaVendedores) {
-        this.listaVendedores = listaVendedores;
+    public void setListVendedores(List<Vendedor> listVendedores) {
+        this.listVendedores = listVendedores;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Vendedor getVendedor() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            vendedor.setPessoa((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
+        if (GenericaSessao.exists("pessoaPesquisa")) {
+            vendedor.setPessoa((Pessoa) GenericaSessao.getObject("pessoaPesquisa", true));
         }
         return vendedor;
     }

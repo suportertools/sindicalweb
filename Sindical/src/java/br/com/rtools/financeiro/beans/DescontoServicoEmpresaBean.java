@@ -4,16 +4,19 @@ import br.com.rtools.financeiro.DescontoServicoEmpresa;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.DescontoServicoEmpresaDB;
 import br.com.rtools.financeiro.db.DescontoServicoEmpresaDBTopLink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.Dao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import org.primefaces.event.RowEditEvent;
 
@@ -21,220 +24,285 @@ import org.primefaces.event.RowEditEvent;
 @SessionScoped
 public class DescontoServicoEmpresaBean implements Serializable {
 
-    private DescontoServicoEmpresa descontoServicoEmpresa = new DescontoServicoEmpresa();
-    private int idServicos = 0;
-    private List<SelectItem> listaServicos = new ArrayList<SelectItem>();
-    private List<DescontoServicoEmpresa> listaDescontoServicoEmpresa = new ArrayList<DescontoServicoEmpresa>();
-    private List<DescontoServicoEmpresa> listaDSEPorEmpresa = new ArrayList<DescontoServicoEmpresa>();
-    private String descricaoPesquisaNome = "";
-    private String descricaoPesquisaCNPJ = "";
-    private String comoPesquisa = "";
-    private String porPesquisa = "";
-    private String mensagem = "";
-    private boolean desabilitaPesquisaNome = false;
-    private boolean desabilitaPesquisaCNPJ = false;
+    private DescontoServicoEmpresa descontoServicoEmpresa;
+    private int idServicos;
+    private List<SelectItem> listServicos;
+    private List<DescontoServicoEmpresa> listDescontoServicoEmpresa;
+    private List<DescontoServicoEmpresa> listDSEPorEmpresa;
+    private String descricaoPesquisaNome;
+    private String descricaoPesquisaCNPJ;
+    private String comoPesquisa;
+    private String porPesquisa;
+    private String message;
+    private boolean desabilitaPesquisaNome;
+    private boolean desabilitaPesquisaCNPJ;
 
-    public void novo() {
+    @PostConstruct
+    public void init() {
         descontoServicoEmpresa = new DescontoServicoEmpresa();
         idServicos = 0;
-        listaServicos.clear();
-        listaDescontoServicoEmpresa.clear();
-        listaDSEPorEmpresa.clear();
-        listaServicos.clear();
+        listServicos = new ArrayList<SelectItem>();
+        listDescontoServicoEmpresa = new ArrayList<DescontoServicoEmpresa>();
+        listDSEPorEmpresa = new ArrayList<DescontoServicoEmpresa>();
+        descricaoPesquisaNome = "";
+        descricaoPesquisaCNPJ = "";
+        comoPesquisa = "";
+        porPesquisa = "";
+        message = "";
+        desabilitaPesquisaNome = false;
+        desabilitaPesquisaCNPJ = false;
     }
 
-    public void salvar() {
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("descontoServicoEmpresaBean");
+        GenericaSessao.remove("descontoServicoEmpresaPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
+    }
+
+    public void clear() {
+        descontoServicoEmpresa = new DescontoServicoEmpresa();
+        idServicos = 0;
+        listServicos.clear();
+        listDescontoServicoEmpresa.clear();
+        listDSEPorEmpresa.clear();
+        listServicos.clear();
+    }
+
+    public void save() {
         if (descontoServicoEmpresa.getJuridica().getId() == -1) {
-            mensagem = "Pesquisar pessoa jurídica!";
-            GenericaMensagem.warn("Validação", mensagem);
+            message = "Pesquisar pessoa jurídica!";
+            GenericaMensagem.warn("Validação", message);
             return;
         }
-        if (listaServicos.isEmpty()) {
-            mensagem = "Cadastrar serviços!";
-            GenericaMensagem.warn("Validação", mensagem);
+        if (listServicos.isEmpty()) {
+            message = "Cadastrar serviços!";
+            GenericaMensagem.warn("Validação", message);
             return;
         }
         if (descontoServicoEmpresa.getDesconto() <= 0) {
-            mensagem = "Informar o valor do desconto!";
-            GenericaMensagem.warn("Validação", mensagem);
+            message = "Informar o valor do desconto!";
+            GenericaMensagem.warn("Validação", message);
             return;
         }
         // descontoServicoEmpresa.setDesconto(Moeda.converteUS$(desconto));
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         int idServicoAntes = -1;
         if (descontoServicoEmpresa.getId() != -1) {
             idServicoAntes = descontoServicoEmpresa.getServicos().getId();
         }
-        descontoServicoEmpresa.setServicos((Servicos) salvarAcumuladoDB.pesquisaCodigo(Integer.parseInt(listaServicos.get(idServicos).getDescription()), "Servicos"));
+        descontoServicoEmpresa.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(listServicos.get(idServicos).getDescription())));
         DescontoServicoEmpresaDB descontoServicoEmpresaDB = new DescontoServicoEmpresaDBTopLink();
         Juridica juridica = descontoServicoEmpresa.getJuridica();
+        NovoLog novoLog = new NovoLog();
         if (descontoServicoEmpresa.getId() == -1) {
             if (descontoServicoEmpresaDB.existeDescontoServicoEmpresa(descontoServicoEmpresa)) {
-                mensagem = "Desconto já cadastrado para essa empresa!";
-                GenericaMensagem.warn("Validação", mensagem);
+                message = "Desconto já cadastrado para essa empresa!";
+                GenericaMensagem.warn("Validação", message);
                 return;
             }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(descontoServicoEmpresa)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Registro cadastrado";
-                GenericaMensagem.info("Sucesso", mensagem);
-                novo();
+            di.openTransaction();
+            if (di.save(descontoServicoEmpresa)) {
+                novoLog.save(
+                        "ID: " + descontoServicoEmpresa.getId()
+                        + " - Serviços: (" + descontoServicoEmpresa.getServicos().getId() + ") " + descontoServicoEmpresa.getServicos().getDescricao()
+                        + " - Jurídica: (" + descontoServicoEmpresa.getJuridica().getId() + ") " + descontoServicoEmpresa.getJuridica().getPessoa().getNome()
+                        + " - Desconto (%): " + descontoServicoEmpresa.getDesconto()
+                );
+                di.commit();
+                message = "Registro cadastrado";
+                GenericaMensagem.info("Sucesso", message);
+                clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 descontoServicoEmpresa.setId(-1);
-                mensagem = "Erro ao atualizar este registro!";
-                GenericaMensagem.warn("Erro", mensagem);
+                message = "Erro ao atualizar este registro!";
+                GenericaMensagem.warn("Erro", message);
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(descontoServicoEmpresa)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Registro atualizado";
-                GenericaMensagem.info("Sucesso", mensagem);
-                novo();
+            DescontoServicoEmpresa dse = (DescontoServicoEmpresa) di.find(descontoServicoEmpresa);
+            String beforeUpdate
+                    = "ID: " + dse.getId()
+                    + " - Serviços: (" + dse.getServicos().getId() + ") " + dse.getServicos().getDescricao()
+                    + " - Jurídica: (" + dse.getJuridica().getId() + ") " + dse.getJuridica().getPessoa().getNome()
+                    + " - Desconto (%): " + dse.getDesconto();
+            di.openTransaction();
+            if (di.update(descontoServicoEmpresa)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + descontoServicoEmpresa.getId()
+                        + " - Serviços: (" + descontoServicoEmpresa.getServicos().getId() + ") " + descontoServicoEmpresa.getServicos().getDescricao()
+                        + " - Jurídica: (" + descontoServicoEmpresa.getJuridica().getId() + ") " + descontoServicoEmpresa.getJuridica().getPessoa().getNome()
+                        + " - Desconto (%): " + descontoServicoEmpresa.getDesconto()
+                );
+                di.commit();
+                message = "Registro atualizado";
+                GenericaMensagem.info("Sucesso", message);
+                clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao atualizar este registro!";
-                GenericaMensagem.warn("Erro", mensagem);
+                di.rollback();
+                message = "Erro ao atualizar este registro!";
+                GenericaMensagem.warn("Erro", message);
             }
         }
         descontoServicoEmpresa.setJuridica(juridica);
     }
-    
-    public void atualizar(RowEditEvent event) {
-        DescontoServicoEmpresa dse = (DescontoServicoEmpresa) event.getObject(); 
+
+    public void update(RowEditEvent event) {
+        DescontoServicoEmpresa dse = (DescontoServicoEmpresa) event.getObject();
         if (dse.getId() != -1) {
             if (dse.getDesconto() <= 0) {
-                mensagem = "Informar o valor do desconto!";
-                GenericaMensagem.warn("Validação", mensagem);
+                message = "Informar o valor do desconto!";
+                GenericaMensagem.warn("Validação", message);
                 return;
             }
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(dse)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Desconto atualizado com sucesso";
-                GenericaMensagem.info("Sucesso", mensagem);
+            NovoLog novoLog = new NovoLog();
+            DaoInterface di = new Dao();
+            DescontoServicoEmpresa dseBefore = (DescontoServicoEmpresa) di.find(dse);
+            String beforeUpdate
+                    = "ID: " + dseBefore.getId()
+                    + " - Serviços: (" + dseBefore.getServicos().getId() + ") " + dseBefore.getServicos().getDescricao()
+                    + " - Jurídica: (" + dseBefore.getJuridica().getId() + ") " + dseBefore.getJuridica().getPessoa().getNome()
+                    + " - Desconto (%): " + dseBefore.getDesconto();
+            di.openTransaction();
+            if (di.update(dse)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + dse.getId()
+                        + " - Serviços: (" + dse.getServicos().getId() + ") " + dse.getServicos().getDescricao()
+                        + " - Jurídica: (" + dse.getJuridica().getId() + ") " + dse.getJuridica().getPessoa().getNome()
+                        + " - Desconto (%): " + dse.getDesconto()
+                );
+                di.commit();
+                message = "Desconto atualizado com sucesso";
+                GenericaMensagem.info("Sucesso", message);
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao atualizar este desconto!";
-                GenericaMensagem.warn("Erro", mensagem);
+                di.rollback();
+                message = "Erro ao atualizar este desconto!";
+                GenericaMensagem.warn("Erro", message);
             }
         }
     }
 
-    public String editar(DescontoServicoEmpresa dse) {
+    public String edit(DescontoServicoEmpresa dse) {
         descontoServicoEmpresa = dse;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("descontoServicoEmpresaPesquisa", dse);
-        for (int i = 0; i < listaServicos.size(); i++) {
-            if (Integer.parseInt(listaServicos.get(i).getDescription()) == dse.getServicos().getId()) {
+        GenericaSessao.put("descontoServicoEmpresaPesquisa", dse);
+        for (int i = 0; i < listServicos.size(); i++) {
+            if (Integer.parseInt(listServicos.get(i).getDescription()) == dse.getServicos().getId()) {
                 idServicos = i;
             }
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        GenericaSessao.put("linkClicado", true);
+        return GenericaSessao.getString("urlRetorno");
     }
 
-    public void editarDSE(DescontoServicoEmpresa dse) {
+    public void editDSE(DescontoServicoEmpresa dse) {
         descontoServicoEmpresa = dse;
-        for (int i = 0; i < listaServicos.size(); i++) {
-            if (Integer.parseInt(listaServicos.get(i).getDescription()) == dse.getServicos().getId()) {
+        for (int i = 0; i < listServicos.size(); i++) {
+            if (Integer.parseInt(listServicos.get(i).getDescription()) == dse.getServicos().getId()) {
                 idServicos = i;
             }
         }
     }
 
-    public void excluir() {
+    public void delete() {
         if (descontoServicoEmpresa.getId() != -1) {
             Juridica juridica = descontoServicoEmpresa.getJuridica();
             boolean isMantemJuridica = true;
-            if (listaDSEPorEmpresa.isEmpty()) {
+            if (listDSEPorEmpresa.isEmpty()) {
                 isMantemJuridica = false;
             }
-            listaDSEPorEmpresa.size();
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            descontoServicoEmpresa = (DescontoServicoEmpresa) salvarAcumuladoDB.pesquisaCodigo(descontoServicoEmpresa.getId(), "DescontoServicoEmpresa");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(descontoServicoEmpresa)) {
-                salvarAcumuladoDB.comitarTransacao();
-                GenericaMensagem.info("Sucesso", mensagem);
-                novo();
-
+            listDSEPorEmpresa.size();
+            NovoLog novoLog = new NovoLog();
+            DaoInterface di = new Dao();
+            descontoServicoEmpresa = (DescontoServicoEmpresa) di.find(descontoServicoEmpresa);
+            di.openTransaction();
+            if (di.delete(descontoServicoEmpresa)) {
+                novoLog.delete(
+                        "ID: " + descontoServicoEmpresa.getId()
+                        + " - Serviços: (" + descontoServicoEmpresa.getServicos().getId() + ") " + descontoServicoEmpresa.getServicos().getDescricao()
+                        + " - Jurídica: (" + descontoServicoEmpresa.getJuridica().getId() + ") " + descontoServicoEmpresa.getJuridica().getPessoa().getNome()
+                        + " - Desconto (%): " + descontoServicoEmpresa.getDesconto()
+                );
+                di.commit();
+                GenericaMensagem.info("Sucesso", message);
+                clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao excluir registro!";
-                GenericaMensagem.warn("Erro", mensagem);
+                di.rollback();
+                message = "Erro ao excluir registro!";
+                GenericaMensagem.warn("Erro", message);
             }
             descontoServicoEmpresa.setJuridica(juridica);
         } else {
-            mensagem = "Pesquisar registro a ser excluído!";
-            GenericaMensagem.warn("Erro", mensagem);
+            message = "Pesquisar registro a ser excluído!";
+            GenericaMensagem.warn("Erro", message);
         }
     }
 
-    public void remover(RowEditEvent event) {
-        DescontoServicoEmpresa dse = (DescontoServicoEmpresa) event.getObject(); 
+    public void remove(RowEditEvent event) {
+        DescontoServicoEmpresa dse = (DescontoServicoEmpresa) event.getObject();
         if (dse.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            dse = (DescontoServicoEmpresa) salvarAcumuladoDB.pesquisaCodigo(dse.getId(), "DescontoServicoEmpresa");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(dse)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Registro excluído";
-                GenericaMensagem.info("Sucesso", mensagem);
-                listaDSEPorEmpresa.clear();
-                listaServicos.clear();
+            DaoInterface di = new Dao();
+            NovoLog novoLog = new NovoLog();
+            di.openTransaction();
+            if (di.delete(dse)) {
+                novoLog.delete(
+                        "ID: " + dse.getId()
+                        + " - Serviços: (" + dse.getServicos().getId() + ") " + dse.getServicos().getDescricao()
+                        + " - Jurídica: (" + dse.getJuridica().getId() + ") " + dse.getJuridica().getPessoa().getNome()
+                        + " - Desconto (%): " + dse.getDesconto()
+                );
+                di.commit();
+                message = "Registro excluído";
+                GenericaMensagem.info("Sucesso", message);
+                listDSEPorEmpresa.clear();
+                listServicos.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao excluir registro!";
-                GenericaMensagem.warn("Erro", mensagem);
+                di.rollback();
+                message = "Erro ao excluir registro!";
+                GenericaMensagem.warn("Erro", message);
             }
         }
-    }    
+    }
 
-    public List<DescontoServicoEmpresa> getListaDescontoServicoEmpresa() {
-        if (listaDescontoServicoEmpresa.isEmpty()) {
+    public List<DescontoServicoEmpresa> getListDescontoServicoEmpresa() {
+        if (listDescontoServicoEmpresa.isEmpty()) {
             DescontoServicoEmpresaDB descontoServicoEmpresaDB = new DescontoServicoEmpresaDBTopLink();
             if (desabilitaPesquisaCNPJ && !descricaoPesquisaNome.equals("")) {
-                listaDescontoServicoEmpresa = descontoServicoEmpresaDB.pesquisaDescontoServicoEmpresas("nome", descricaoPesquisaNome, comoPesquisa);
+                listDescontoServicoEmpresa = descontoServicoEmpresaDB.pesquisaDescontoServicoEmpresas("nome", descricaoPesquisaNome, comoPesquisa);
             } else if (desabilitaPesquisaNome && !descricaoPesquisaCNPJ.equals("")) {
-                listaDescontoServicoEmpresa = descontoServicoEmpresaDB.pesquisaDescontoServicoEmpresas("cnpj", descricaoPesquisaCNPJ, comoPesquisa);
+                listDescontoServicoEmpresa = descontoServicoEmpresaDB.pesquisaDescontoServicoEmpresas("cnpj", descricaoPesquisaCNPJ, comoPesquisa);
             } else {
-                listaDescontoServicoEmpresa = descontoServicoEmpresaDB.listaTodos();
+                listDescontoServicoEmpresa = descontoServicoEmpresaDB.listaTodos();
             }
         }
-        return listaDescontoServicoEmpresa;
+        return listDescontoServicoEmpresa;
     }
 
-    public List<DescontoServicoEmpresa> getListaDSEPorEmpresa() {
-        if (listaDSEPorEmpresa.isEmpty()) {
+    public List<DescontoServicoEmpresa> getListDSEPorEmpresa() {
+        if (listDSEPorEmpresa.isEmpty()) {
             if (descontoServicoEmpresa.getJuridica().getId() != -1) {
                 DescontoServicoEmpresaDB descontoServicoEmpresaDB = new DescontoServicoEmpresaDBTopLink();
-                listaDSEPorEmpresa = descontoServicoEmpresaDB.listaTodosPorEmpresa(descontoServicoEmpresa.getJuridica().getId());
+                listDSEPorEmpresa = descontoServicoEmpresaDB.listaTodosPorEmpresa(descontoServicoEmpresa.getJuridica().getId());
             }
         }
-        return listaDSEPorEmpresa;
+        return listDSEPorEmpresa;
     }
 
     public DescontoServicoEmpresa getDescontoServicoEmpresa() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
-            Juridica juridica = (Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa");
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            Juridica juridica = (Juridica) GenericaSessao.getObject("juridicaPesquisa", true);
             if (descontoServicoEmpresa.getId() == -1) {
                 descontoServicoEmpresa.setJuridica(juridica);
             } else {
                 if (descontoServicoEmpresa.getJuridica().getId() != juridica.getId()) {
-                    listaDSEPorEmpresa.clear();
+                    listDSEPorEmpresa.clear();
                     descontoServicoEmpresa.setId(-1);
                     descontoServicoEmpresa.setJuridica(juridica);
                 }
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         }
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("descontoServicoEmpresaPesquisa") != null) {
-            listaDSEPorEmpresa.clear();
-            descontoServicoEmpresa = ((DescontoServicoEmpresa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("descontoServicoEmpresaPesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("descontoServicoEmpresaPesquisa");
+        if (GenericaSessao.exists("descontoServicoEmpresaPesquisa")) {
+            listDSEPorEmpresa.clear();
+            descontoServicoEmpresa = ((DescontoServicoEmpresa) GenericaSessao.getObject("descontoServicoEmpresaPesquisa", true));
         }
         return descontoServicoEmpresa;
     }
@@ -251,23 +319,23 @@ public class DescontoServicoEmpresaBean implements Serializable {
         this.idServicos = idServicos;
     }
 
-    public List<SelectItem> getListaServicos() {
+    public List<SelectItem> getListServicos() {
         if (descontoServicoEmpresa.getJuridica().getId() != -1) {
-            if (listaServicos.isEmpty()) {
+            if (listServicos.isEmpty()) {
                 DescontoServicoEmpresaDB dsedb = new DescontoServicoEmpresaDBTopLink();
                 List<Servicos> list = dsedb.listaTodosServicosDisponiveis(descontoServicoEmpresa);
                 if (!list.isEmpty()) {
                     for (int i = 0; i < list.size(); i++) {
-                        listaServicos.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                        listServicos.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
                     }
                 }
             }
         }
-        return listaServicos;
+        return listServicos;
     }
 
-    public void setListaServicos(List<SelectItem> listaServicos) {
-        this.listaServicos = listaServicos;
+    public void setListServicos(List<SelectItem> listServicos) {
+        this.listServicos = listServicos;
     }
 
     public String getDescricaoPesquisaNome() {
@@ -320,12 +388,12 @@ public class DescontoServicoEmpresaBean implements Serializable {
 
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
-        listaDescontoServicoEmpresa.clear();
+        listDescontoServicoEmpresa.clear();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
-        listaDescontoServicoEmpresa.clear();
+        listDescontoServicoEmpresa.clear();
     }
 
     public String getComoPesquisa() {
@@ -344,11 +412,11 @@ public class DescontoServicoEmpresaBean implements Serializable {
         this.porPesquisa = porPesquisa;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

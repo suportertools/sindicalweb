@@ -8,7 +8,6 @@ import br.com.rtools.pessoa.db.EnvioEmailsDBToplink;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
-import com.sun.mail.smtp.SMTPTransport;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;

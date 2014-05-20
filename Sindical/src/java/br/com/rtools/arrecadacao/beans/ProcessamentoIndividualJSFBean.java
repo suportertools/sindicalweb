@@ -471,15 +471,16 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         ((Movimento) listMovimentos.get(i).getArgumento1()).getServicos().getId());
 
                 if (movim != null) {
-                    movim.setVencimento(((Movimento) listMovimentos.get(i).getArgumento1()).getVencimento());
                     movim.setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));
-                    ((DataObject) listMovimentos.get(i)).setArgumento1(movim);
 
                     if (GerarMovimento.alterarUmMovimento(movim)) {
                         msgConfirma = "Alterado com sucesso!";
                     } else {
                         msgConfirma = "Erro ao alterar boletos!";
                     }
+                    
+                    movim.setVencimento(((Movimento) listMovimentos.get(i).getArgumento1()).getVencimento());
+                    ((DataObject) listMovimentos.get(i)).setArgumento1(movim);
                 } else {
                     movim = (Movimento) listMovimentos.get(i).getArgumento1();
                     movim.setValor(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento3()));

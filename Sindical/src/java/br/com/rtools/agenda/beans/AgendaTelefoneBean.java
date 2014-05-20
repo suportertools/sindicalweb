@@ -9,6 +9,7 @@ import br.com.rtools.agenda.TipoTelefone;
 import br.com.rtools.agenda.db.AgendaTelefoneDB;
 import br.com.rtools.agenda.db.AgendaTelefoneDBToplink;
 import br.com.rtools.endereco.Endereco;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.TipoEndereco;
@@ -156,6 +157,7 @@ public class AgendaTelefoneBean implements Serializable {
         if (agenda.getPessoa().getId() == -1) {
             agenda.setPessoa(null);
         }
+        NovoLog novoLog = new NovoLog();
         if (agenda.getId() == -1) {
             AgendaTelefoneDB agendaDB = new AgendaTelefoneDBToplink();
             if (endereco != null) {
@@ -172,6 +174,7 @@ public class AgendaTelefoneBean implements Serializable {
             }
             di.openTransaction();
             if (di.save(agenda)) {
+                novoLog.save("ID: " + agenda.getId() + " - Grupo Agenda: " + agenda.getGrupoAgenda().getDescricao() + " - Nome: " + agenda.getNome() + " - Email(s): " + agenda.getEmail1() + " - " + agenda.getEmail2());
                 di.commit();
                 message = "Registro inserido com sucesso";
                 listAgendas.clear();
@@ -189,8 +192,12 @@ public class AgendaTelefoneBean implements Serializable {
             } else {
                 agenda.setEndereco(null);
             }
+            Agenda a = (Agenda) di.find(agenda);
+            String beforeUpdate = "ID: " + a.getId() + " - Grupo Agenda: " + a.getGrupoAgenda().getDescricao() + " - Nome: " + a.getNome() + " - Email(s): " + a.getEmail1() + " - " + agenda.getEmail2();
+
             di.openTransaction();
             if (di.update(agenda)) {
+                novoLog.update(beforeUpdate, "ID: " + agenda.getId() + " - Grupo Agenda: " + agenda.getGrupoAgenda().getDescricao() + " - Nome: " + agenda.getNome() + " - Email(s): " + agenda.getEmail1() + " - " + agenda.getEmail2());
                 di.commit();
                 message = "Registro atualizado com sucesso";
                 listAgendas.clear();
@@ -225,6 +232,8 @@ public class AgendaTelefoneBean implements Serializable {
             }
             agenda = (Agenda) di.find(new Agenda(), agenda.getId());
             if (di.delete(agenda)) {
+                NovoLog novoLog = new NovoLog();
+                novoLog.delete("ID: " + agenda.getId() + " - Grupo Agenda: " + agenda.getGrupoAgenda().getDescricao() + " - Nome: " + agenda.getNome() + " - Email(s): " + agenda.getEmail1() + " - " + agenda.getEmail2());
                 di.commit();
                 clear();
                 message = "Registro excluído com sucesso";
@@ -478,6 +487,7 @@ public class AgendaTelefoneBean implements Serializable {
             return null;
         }
         DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         agendaTelefone.setTipoTelefone((TipoTelefone) di.find(new TipoTelefone(), Integer.parseInt(getListTipoTelefones().get(indice[1]).getDescription())));
         if (agenda.getId() != -1) {
             if (agendaTelefone.getId() == -1) {
@@ -489,6 +499,7 @@ public class AgendaTelefoneBean implements Serializable {
                 }
                 di.openTransaction();
                 if (di.save(agendaTelefone)) {
+                    novoLog.save("Telefone ID: " + agendaTelefone.getId() + " - Tipo Telefone: " + agendaTelefone.getTipoTelefone().getDescricao() + " - Telefone: (" + agendaTelefone.getDdi() + ") " + agendaTelefone.getDdd() + " " + agendaTelefone.getTelefone() + " - Agenda (" + agendaTelefone.getAgenda().getId() + ")");
                     GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
                     di.commit();
                     listAgendaTelefones.clear();
@@ -497,8 +508,11 @@ public class AgendaTelefoneBean implements Serializable {
                     di.rollback();
                 }
             } else {
+                AgendaTelefone at = (AgendaTelefone) di.find(agendaTelefone);
+                String beforeUpdate = "Telefone ID: " + at.getId() + " - Tipo Telefone: " + at.getTipoTelefone().getDescricao() + " - Telefone: (" + at.getDdi() + ") " + at.getDdd() + " " + at.getTelefone() + " - Agenda (" + at.getAgenda().getId() + ")";
                 di.openTransaction();
                 if (di.update(agendaTelefone)) {
+                    novoLog.update(beforeUpdate, "Telefone ID: " + agendaTelefone.getId() + " - Tipo Telefone: " + agendaTelefone.getTipoTelefone().getDescricao() + " - Telefone: (" + agendaTelefone.getDdi() + ") " + agendaTelefone.getDdd() + " " + agendaTelefone.getTelefone() + " - Agenda (" + agendaTelefone.getAgenda().getId() + ")");
                     GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
                     di.commit();
                     listAgendaTelefones.clear();
@@ -517,6 +531,8 @@ public class AgendaTelefoneBean implements Serializable {
         at = (AgendaTelefone) di.find(at);
         di.openTransaction();
         if (di.delete(at)) {
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete("Telefone ID: " + at.getId() + " - Tipo Telefone: " + at.getTipoTelefone().getDescricao() + " - Telefone: (" + at.getDdi() + ") " + at.getDdd() + " " + at.getTelefone() + " - Agenda (" + at.getAgenda().getId() + ")");
             di.commit();
             GenericaMensagem.info("Sucesso", "Registro excluído com sucesso");
             listAgendaTelefones.clear();
