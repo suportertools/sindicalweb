@@ -7,11 +7,13 @@ import br.com.rtools.associativo.db.ConvenioDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.Dao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -19,84 +21,128 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class ConvenioBean implements Serializable {
 
-    private Convenio convenio = new Convenio();
-    private String mensagem;
-    private List<Convenio> listaConvenio = new ArrayList();
-    private boolean orderJuridica = false;
-    private boolean orderGrupo = false;
-    private boolean orderSubGrupo = false;
+    private Convenio convenio;
+    private String message;
+    private List<Convenio> listConvenio;
+    /**
+     * <ul>
+     * <li>[0] Jurídica</li>
+     * <li>[1] Grupo</li>
+     * <li>[2] SubGrupo</li>
+     * </ul>
+     */
+    private Boolean order[];
 
-    public void salvar() {
+    @PostConstruct
+    public void init() {
+        convenio = new Convenio();
+        message = "";
+        listConvenio = new ArrayList<Convenio>();
+        order = new Boolean[3];
+        order[0] = false;
+        order[1] = false;
+        order[2] = false;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("convenioBean");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("subGrupoConvenioPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("convenioBean");
+    }
+
+    public void save() {
         if (convenio.getJuridica().getPessoa().getId() == -1) {
-            mensagem = "Pesquisar uma empresa!";
+            message = "Pesquisar uma empresa!";
             return;
         }
         if (convenio.getSubGrupoConvenio().getId() == -1) {
-            mensagem = "Pesquisar um subgrupo!";
+            message = "Pesquisar um subgrupo!";
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
+        di.openTransaction();
         if (convenio.getId() == -1) {
             ConvenioDB db = new ConvenioDBToplink();
             if (db.existeSubGrupoEmpresa(convenio)) {
-                mensagem = "Convênio já existe!";
+                message = "Convênio já existe!";
                 return;
             }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(convenio)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaConvenio.clear();
-                mensagem = "Registro inserido com sucesso";
+            if (di.save(convenio)) {
+                di.commit();
+                novoLog.save(
+                        "ID: " + convenio.getId()
+                        + " - Empresa: (" + convenio.getJuridica().getPessoa().getId() + ") " + convenio.getJuridica().getPessoa().getNome()
+                        + " - SubGrupoConvenio: (" + convenio.getSubGrupoConvenio().getId() + ") " + convenio.getSubGrupoConvenio().getDescricao()
+                );
+                listConvenio.clear();
+                message = "Registro inserido com sucesso";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                NovoLog novoLog = new NovoLog();
-                novoLog.novo("Inserir - ID:", convenio.getId() + " - Empresa:" + convenio.getJuridica().getPessoa().getNome() + " - Empresa:" + convenio.getSubGrupoConvenio().getDescricao());
-                listaConvenio.clear();
-                mensagem = "Erro ao adicionar este registro!";
+                di.rollback();
+                listConvenio.clear();
+                message = "Erro ao adicionar este registro!";
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(convenio)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaConvenio.clear();
-                mensagem = "Registro atualizado com sucesso";
-                listaConvenio.clear();
+            Convenio c = (Convenio) di.find(convenio);
+            String beforeUpdate
+                    = "ID: " + c.getId()
+                    + " - Empresa: (" + c.getJuridica().getPessoa().getId() + ") " + c.getJuridica().getPessoa().getNome()
+                    + " - SubGrupoConvenio: (" + c.getSubGrupoConvenio().getId() + ") " + c.getSubGrupoConvenio().getDescricao();
+            if (di.update(convenio)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + convenio.getId()
+                        + " - Empresa: (" + convenio.getJuridica().getPessoa().getId() + ") " + convenio.getJuridica().getPessoa().getNome()
+                        + " - SubGrupoConvenio: (" + convenio.getSubGrupoConvenio().getId() + ") " + convenio.getSubGrupoConvenio().getDescricao()
+                );
+                di.commit();
+                message = "Registro atualizado com sucesso";
+                listConvenio.clear();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao atualizar este registro!";
+                di.rollback();
+                message = "Erro ao atualizar este registro!";
             }
         }
     }
 
     public void novo() {
-        listaConvenio.clear();
+        listConvenio.clear();
         convenio = new Convenio();
-        mensagem = "";
+        message = "";
     }
 
-    public void remover(Convenio c) {
+    public void remove(Convenio c) {
         if (c.getId() != -1) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            convenio = (Convenio) salvarAcumuladoDB.pesquisaCodigo(c.getId(), "Convenio");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(convenio)) {
-                salvarAcumuladoDB.comitarTransacao();
+            DaoInterface di = new Dao();
+            convenio = (Convenio) di.find(c);
+            di.openTransaction();
+            if (di.delete(convenio)) {
+                di.commit();
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Remover - ID:", convenio.getId() + " - Empresa:" + convenio.getJuridica().getPessoa().getNome() + " - Empresa:" + convenio.getSubGrupoConvenio().getDescricao());
-                listaConvenio.clear();
-                mensagem = "Registro removido com sucesso";
+                novoLog.delete(
+                        "ID: " + convenio.getId()
+                        + " - Empresa: (" + convenio.getJuridica().getPessoa().getId() + ") " + convenio.getJuridica().getPessoa().getNome()
+                        + " - SubGrupoConvenio: (" + convenio.getSubGrupoConvenio().getId() + ") " + convenio.getSubGrupoConvenio().getDescricao()
+                );
+                listConvenio.clear();
+                message = "Registro removido com sucesso";
                 convenio = new Convenio();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Falha ao remover este registro!";
+                di.rollback();
+                message = "Falha ao remover este registro!";
             }
         } else {
-            mensagem = "Pesquisar registro a ser excluído!";
+            message = "Pesquisar registro a ser excluído!";
         }
     }
 
-    public void editar(Convenio c) {
-        convenio = c;
+    public void edit(Convenio c) {
+        DaoInterface di = new Dao();
+        convenio = (Convenio) di.rebind(c);
     }
 
     public Convenio getConvenio() {
@@ -113,51 +159,35 @@ public class ConvenioBean implements Serializable {
         this.convenio = convenio;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public List<Convenio> getListaConvenio() {
-        if (listaConvenio.isEmpty()) {
+    public List<Convenio> getListConvenio() {
+        if (listConvenio.isEmpty()) {
             ConvenioDB db = new ConvenioDBToplink();
             if (convenio.getJuridica().getId() != -1) {
-                listaConvenio = db.listaTodosPorPessoa(orderJuridica, orderGrupo, orderSubGrupo, convenio);
+                listConvenio = db.listaTodosPorPessoa(order[0], order[1], order[2], convenio);
             } else {
-                listaConvenio = db.listaTodos(orderJuridica, orderGrupo, orderSubGrupo);
+                listConvenio = db.listaTodos(order[0], order[1], order[2]);
             }
         }
-        return listaConvenio;
+        return listConvenio;
     }
 
-    public void setListaConvenio(List<Convenio> listaConvenio) {
-        this.listaConvenio = listaConvenio;
+    public void setListConvenio(List<Convenio> listConvenio) {
+        this.listConvenio = listConvenio;
     }
 
-    public boolean isOrderJuridica() {
-        return orderJuridica;
+    public Boolean[] getOrder() {
+        return order;
     }
 
-    public void setOrderJuridica(boolean orderJuridica) {
-        this.orderJuridica = orderJuridica;
-    }
-
-    public boolean isOrderGrupo() {
-        return orderGrupo;
-    }
-
-    public void setOrderGrupo(boolean orderGrupo) {
-        this.orderGrupo = orderGrupo;
-    }
-
-    public boolean isOrderSubGrupo() {
-        return orderSubGrupo;
-    }
-
-    public void setOrderSubGrupo(boolean orderSubGrupo) {
-        this.orderSubGrupo = orderSubGrupo;
+    public void setOrder(Boolean[] order) {
+        this.order = order;
     }
 }

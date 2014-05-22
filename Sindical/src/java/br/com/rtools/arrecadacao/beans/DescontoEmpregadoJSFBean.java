@@ -120,7 +120,13 @@ public class DescontoEmpregadoJSFBean {
                     sv.comitarTransacao();
                     msgConfirma = "Desconto salvo com Sucesso!";
                     GenericaMensagem.info("Sucesso", msgConfirma);
-                    log.novo("Novo registro", "Desconto Empregado inserido ID: " + descontoEmpregado.getId() + " - Servico: " + descontoEmpregado.getServicos().getDescricao() + " - Valor: " + descontoEmpregado.getValorEmpregado() + " - Grupo" + descontoEmpregado.getGrupoCidade().getDescricao() + " - Convencao:" + descontoEmpregado.getConvencao().getDescricao());
+                    log.save(
+                            "ID: " + descontoEmpregado.getId()
+                            + " - Servico: (" + descontoEmpregado.getServicos().getId() + ") " + descontoEmpregado.getServicos().getDescricao()
+                            + " - Valor: " + descontoEmpregado.getValorEmpregado()
+                            + " - Grupo Cidade: ("+descontoEmpregado.getGrupoCidade().getId()+") " + descontoEmpregado.getGrupoCidade().getDescricao()
+                            + " - Convencao: ("+descontoEmpregado.getConvencao().getId()+") " + descontoEmpregado.getConvencao().getDescricao()
+                    );
                 } else {
                     sv.desfazerTransacao();
                     msgConfirma = "Erro ao salvar Desconto!";
@@ -132,9 +138,14 @@ public class DescontoEmpregadoJSFBean {
                 GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
-            DescontoEmpregado desconto = new DescontoEmpregado();
-            desconto = (DescontoEmpregado) sv.pesquisaCodigo(descontoEmpregado.getId(), "DescontoEmpregado");
-            String antes = desconto.getServicos().getDescricao() + " Percentual: " + desconto.getPercentual() + " - Valor: " + desconto.getValorEmpregado() + " - Grupo: " + desconto.getGrupoCidade().getDescricao() + " - Convencao: " + desconto.getConvencao().getDescricao();
+            DescontoEmpregado d = (DescontoEmpregado) sv.pesquisaCodigo(descontoEmpregado.getId(), "DescontoEmpregado");
+            String beforeUpdate = 
+                    "ID: " + d.getId()
+                    + " - Servico: (" + d.getServicos().getId() + ") " + d.getServicos().getDescricao()
+                    + " - Valor: " + d.getValorEmpregado()
+                    + " - Grupo Cidade: ("+d.getGrupoCidade().getId()+") " + d.getGrupoCidade().getDescricao()
+                    + " - Convencao: ("+d.getConvencao().getId()+") " + d.getConvencao().getDescricao()
+            ;
             descontoEmpregado.setServicos(servicos);
             descontoEmpregado.setGrupoCidade(grupoCidade);
             descontoEmpregado.setConvencao(convencao);
@@ -142,7 +153,13 @@ public class DescontoEmpregadoJSFBean {
                 sv.comitarTransacao();
                 msgConfirma = "Desconto atualizado com Sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
-                log.novo("Atualizado", antes + " - para ID: " + descontoEmpregado.getId() + " - Servico: " + descontoEmpregado.getServicos().getDescricao() + " - Percentual: " + descontoEmpregado.getPercentual() + " - Valor: " + descontoEmpregado.getValorEmpregado() + " - Grupo" + descontoEmpregado.getGrupoCidade().getDescricao() + " - Convencao:" + descontoEmpregado.getConvencao().getDescricao());
+                log.update(beforeUpdate,
+                        "ID: " + descontoEmpregado.getId()
+                        + " - Servico: (" + descontoEmpregado.getServicos().getId() + ") " + descontoEmpregado.getServicos().getDescricao()
+                        + " - Valor: " + descontoEmpregado.getValorEmpregado()
+                        + " - Grupo Cidade: ("+descontoEmpregado.getGrupoCidade().getId()+") " + descontoEmpregado.getGrupoCidade().getDescricao()
+                        + " - Convencao: ("+descontoEmpregado.getConvencao().getId()+") " + descontoEmpregado.getConvencao().getDescricao()
+                );
             } else {
                 sv.desfazerTransacao();
             }
@@ -159,7 +176,13 @@ public class DescontoEmpregadoJSFBean {
             limpar = true;
             msgConfirma = "Desconto Excluido com Sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);
-            log.novo("Excluido", " ID: " + descontoEmpregado.getId() + " - Servico: " + descontoEmpregado.getServicos().getDescricao() + " - Valor: " + descontoEmpregado.getValorEmpregado() + " - Grupo" + descontoEmpregado.getGrupoCidade().getDescricao() + " - Convencao:" + descontoEmpregado.getConvencao().getDescricao());
+            log.delete(
+                    "ID: " + descontoEmpregado.getId()
+                    + " - Servico: (" + descontoEmpregado.getServicos().getId() + ") " + descontoEmpregado.getServicos().getDescricao()
+                    + " - Valor: " + descontoEmpregado.getValorEmpregado()
+                    + " - Grupo Cidade: ("+descontoEmpregado.getGrupoCidade().getId()+") " + descontoEmpregado.getGrupoCidade().getDescricao()
+                    + " - Convencao: ("+descontoEmpregado.getConvencao().getId()+") " + descontoEmpregado.getConvencao().getDescricao()
+            );
             sv.comitarTransacao();
         } else {
             msgConfirma = "Desconto não pode ser Excluido!";

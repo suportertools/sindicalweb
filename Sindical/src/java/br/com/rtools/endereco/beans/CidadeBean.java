@@ -9,31 +9,47 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.PF;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
 public class CidadeBean implements Serializable {
 
-    private Cidade cidade = new Cidade();
-    private String msgConfirma;
-    private String comoPesquisa = "";
-    private List<Cidade> listaCidade = new ArrayList();
-    private String descricaoCidadePesquisa = "";
-    private String descricaoUFPesquisa = "";
+    private Cidade cidade;
+    private String message;
+    private String comoPesquisa;
+    private List<Cidade> listCidade;
+    private String descricaoCidadePesquisa;
+    private String descricaoUFPesquisa;
 
-    public CidadeBean() {
+    @PostConstruct
+    public void init() {
+        cidade = new Cidade();
+        message = "";
+        comoPesquisa = "";
+        listCidade = new ArrayList<Cidade>();
+        descricaoCidadePesquisa = "";
+        descricaoUFPesquisa = "";
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         PessoaEndereco pe = db.pesquisaEndPorPessoaTipo(1, 3);
         cidade.setUf(pe.getEndereco().getCidade().getUf());
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("cidadeBean");
+
     }
 
     public String getComoPesquisa() {
@@ -52,141 +68,136 @@ public class CidadeBean implements Serializable {
         this.cidade = cidade;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public String salvar() {
+    public void save() {
         if (cidade.getCidade().isEmpty()) {
-            msgConfirma = "Digite uma Cidade por favor!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            return null;
+            message = "Digite uma Cidade por favor!";
+            GenericaMensagem.warn("Erro", message);
+            return;
         }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         NovoLog log = new NovoLog();
 
-        sv.abrirTransacao();
+        di.openTransaction();
         if (cidade.getId() == -1) {
-            if (sv.inserirObjeto(cidade)) {
-                msgConfirma = "Cidade salva com Sucesso!";
-                listaCidade.add(cidade);
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Salvo", msgConfirma));
-                cidade = new Cidade();
-                log.novo("Novo registro", "Cidade inserida " + cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
+            if (di.save(cidade)) {
+                message = "Cidade salva com Sucesso!";
+                GenericaMensagem.info("Salvo", message);
+                listCidade.add(cidade);
+                log.save("ID: " + cidade.getId() + " - Cidade: " + cidade.getCidade() + " - UF: " + cidade.getUf());
+                clear();
             } else {
-                msgConfirma = "Erro ao salvar Cidade!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                sv.desfazerTransacao();
-                return null;
+                message = "Erro ao salvar Cidade!";
+                GenericaMensagem.warn("Erro", message);
+                di.rollback();
             }
         } else {
-            Cidade c = new Cidade();
-            c = (Cidade) sv.pesquisaCodigo(cidade.getId(), "Cidade");
-            String antes = "De: " + c.getCidade() + " / " + c.getUf();
-
-            if (sv.alterarObjeto(cidade)) {
-                msgConfirma = "Registro atualizado!";
-                //listaCidade.clear();
-                cidade = new Cidade();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Atualizado", msgConfirma));
-                log.novo("Atualizado", antes + " - para: " + cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
+            Cidade c = (Cidade) di.find(cidade);
+            String beforeUpdate = "ID: " + c.getId() + " - Cidade: " + c.getCidade() + " - UF: " + c.getUf();
+            if (di.update(cidade)) {
+                message = "Registro atualizado!";
+                GenericaMensagem.info("Atualizado", message);
+                log.update(beforeUpdate, ""
+                        + "ID: " + cidade.getId() + " - Cidade: " + cidade.getCidade() + " - UF: " + cidade.getUf()
+                );
+                clear();
             } else {
-                msgConfirma = "Erro ao atualizar!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                sv.desfazerTransacao();
-                return null;
+                message = "Erro ao atualizar!";
+                GenericaMensagem.warn("Erro", message);
+                di.rollback();
             }
         }
-        sv.comitarTransacao();
-        return null;
+        di.commit();
     }
 
-    public String novo() {
-        cidade = new Cidade();
-        return null;
+    public void clear() {
+        GenericaSessao.remove("cidadeBean");
     }
 
-    public String excluir(Cidade ci) {
+    public void delete(Cidade ci) {
         NovoLog log = new NovoLog();
-        cidade = ci;
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        if (cidade.getId() != -1) {
-            sv.abrirTransacao();
-            cidade = (Cidade) sv.pesquisaCodigo(cidade.getId(), "Cidade");
-            if (sv.deletarObjeto(cidade)) {
-                msgConfirma = "Cidade Excluida com Sucesso!";
-                listaCidade.clear();
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", msgConfirma));
-                log.novo("Excluido", cidade.getId() + " - " + cidade.getCidade() + " / " + cidade.getUf());
+        DaoInterface di = new Dao();
+        if (ci.getId() != -1) {
+            di.openTransaction();
+            if (di.delete(ci)) {
+                message = "Cidade Excluida com Sucesso!";
+                listCidade.clear();
+                GenericaMensagem.info("Sucesso", message);
+                log.delete("ID: " + ci.getId() + " - Cidade: " + ci.getCidade() + " - UF: " + ci.getUf());
             } else {
-                msgConfirma = "Cidade não pode ser Excluida!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                sv.desfazerTransacao();
-                return null;
+                message = "Cidade não pode ser Excluida!";
+                GenericaMensagem.warn("Erro", message);
+                di.rollback();
             }
         }
         cidade = new Cidade();
-        sv.comitarTransacao();
-        return null;
+        di.commit();
     }
 
-    public String editarPagina(Cidade ci) {
+    public String editPagina(Cidade ci) {
         cidade = ci;
         return null;
     }
 
-    public String editar(Cidade ci) {
-        String result = "cidade";
+    public String edit(Cidade ci) {
+        String urlRetorno = null;
         cidade = ci;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("cidadePesquisa", cidade);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null
-                && !((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("menuPrincipal")) {
-            result = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        GenericaSessao.put("cidadePesquisa", cidade);
+        GenericaSessao.put("linkClicado", true);
+        if (GenericaSessao.exists("urlRetorno")) {
+            if (!GenericaSessao.getString("urlRetorno").equals("menuPrincipal")) {
+                urlRetorno = GenericaSessao.getString("urlRetorno");
+            } else {
+                PF.openDialog("dlg_save");                
+            }
+        } else {
+            PF.openDialog("dlg_save");
         }
-        return result;
+        return urlRetorno;
     }
 
-    public void setListaCidade(List<Cidade> listaCidade) {
-        this.listaCidade = listaCidade;
+    public void setListCidade(List<Cidade> listCidade) {
+        this.listCidade = listCidade;
     }
 
-    public List<Cidade> getListaCidade() {
-        if (listaCidade.isEmpty()) {
+    public List<Cidade> getListCidade() {
+        if (listCidade.isEmpty()) {
             CidadeDB db = new CidadeDBToplink();
             GrupoCidadesDB dbCids = new GrupoCidadesDBToplink();
             if (cidade.getCidade().equals("")) {
                 List lgc = dbCids.pesquisaCidadesBase();
                 if (!lgc.isEmpty()) {
-                    listaCidade.addAll(lgc);
+                    listCidade.addAll(lgc);
                 }
                 PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
                 PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 3);
                 cidade.setUf(pe.getEndereco().getCidade().getUf());
             } else {
-                listaCidade = db.pesquisaCidade(cidade.getUf(), cidade.getCidade(), getComoPesquisa());
+                listCidade = db.pesquisaCidade(cidade.getUf(), cidade.getCidade(), getComoPesquisa());
             }
 
         }
-        return listaCidade;
+        return listCidade;
     }
 
     public void refreshForm() {
     }
 
     public void acaoPesquisaInicial() {
-        listaCidade.clear();
+        listCidade.clear();
         comoPesquisa = "I";
     }
 
     public void acaoPesquisaParcial() {
-        listaCidade.clear();
+        listCidade.clear();
         comoPesquisa = "P";
     }
 

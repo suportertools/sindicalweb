@@ -1,9 +1,9 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:c="http://java.sun.com/jsp/jstl/core"
-      xmlns:p="http://primefaces.org/ui">
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Suspensão</title>
@@ -43,29 +43,35 @@
                             </h:panelGrid>
                         </h:panelGrid>
                         <h:panelGrid columns="4">
-                            <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar" type="button" onclick="dlg_panel_salvar.show();"/>
-                            <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{suspencaoBean.novo}" update="id_panel_suspensao" />
-                            <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" type="button" onclick="dlg_panel_excluir.show();" />
+                            <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar/Atualizar" type="button" onclick="PF('dlg_save').show();"/>
+                            <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{suspencaoBean.clear}" update=":form_suspensao:" />
+                            <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir" type="button" onclick="PF('dlg_delete').show();" />
                             <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaSuspencao}" title="Pesquisar sócios suspensos"/>
                         </h:panelGrid>
                     </p:panel>
-                    <p:dialog widgetVar="dlg_panel_salvar" header="Salvar este registro?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{suspencaoBean.salvar}" onclick="dlg_panel_salvar.hide(); dlg_panel_mensagem.show()" style="clear: both; float: left; margin-left: 10px;" icon="ui-icon-check" update="i_mensagem"/>  
-                        <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="dlg_panel_salvar.hide()" style="float: left;" icon="ui-icon-close"/>
+                    <p:dialog widgetVar="dlg_save" header="Salvar este registro?" resizable="false" width="400" modal="true">
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Confirmar" type="submit" styleClass="ui-confirmdialog-yes" action="#{suspencaoBean.save}" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show()" icon="ui-icon-check" update=":form_suspensao:"/>  
+                                <p:commandButton value="Cancelar"  type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide();" icon="ui-icon-close"/>
+                            </h:panelGrid>
+                        </f:facet>
                     </p:dialog>
 
-                    <p:dialog widgetVar="dlg_panel_excluir" header="Excluir este registro?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Confirmar"  type="submit" styleClass="ui-confirmdialog-yes" action="#{suspencaoBean.excluir()}" onclick="dlg_panel_excluir.hide(); dlg_panel_mensagem.show()" update=":form_suspensao:id_panel_suspensao i_mensagem" style="clear: both; float: left" icon="ui-icon-check" />
-                        <p:commandButton value="Cancelar"   type="button" styleClass="ui-confirmdialog-no" onclick="dlg_panel_excluir.hide()" style="float: left;" icon="ui-icon-close"/>
+                    <p:dialog widgetVar="dlg_delete" header="Excluir este registro?" resizable="false" width="400" modal="true">
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Confirmar"  type="submit" styleClass="ui-confirmdialog-yes" action="#{suspencaoBean.delete()}" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show()" update=":form_suspensao:" icon="ui-icon-check" />
+                                <p:commandButton value="Cancelar"   type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide();" icon="ui-icon-close"/>
+                            </h:panelGrid>
+                        </f:facet>
                     </p:dialog>
 
-                    <p:dialog widgetVar="dlg_panel_mensagem" header="Mensagem" resizable="false" width="400" modal="true">
-                        <center>
-                            <h:outputLabel value="#{suspencaoBean.mensagem}" id="i_mensagem"/>
-                            <br />
-                            <br />
-                            <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="dlg_panel_mensagem.hide()"/>
-                        </center>
+                    <p:dialog widgetVar="dlg_message" header="Mensagem" resizable="false" width="400" modal="true">
+                        <h:outputLabel value="#{suspencaoBean.message}" id="i_mensagem"/>
+                        <f:facet name="footer">
+                            <p:commandButton value="Ok" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_message').hide()"/>
+                        </f:facet>
                     </p:dialog>                    
                 </h:form>
             </div>

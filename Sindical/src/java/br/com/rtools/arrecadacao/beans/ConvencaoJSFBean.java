@@ -4,6 +4,7 @@ import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.ConvencaoCidade;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.db.*;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -35,17 +36,16 @@ public class ConvencaoJSFBean {
     private List<Convencao> listaConvencao = new ArrayList();
     private UploadedFile file;
 
-
-    public void set(DataObject linha){
+    public void set(DataObject linha) {
         dolinha = linha;
     }
 
     public void upload() {
         if (file != null) {
-            if (dolinha == null){
+            if (dolinha == null) {
                 return;
             }
-        //    FacesContext context = FacesContext.getCurrentInstance();
+            //    FacesContext context = FacesContext.getCurrentInstance();
             //String caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/arqTemp.pdf");
             //File fl = new File(caminho);
             ConvencaoCidadeDB db = new ConvencaoCidadeDBToplink();
@@ -57,7 +57,6 @@ public class ConvencaoJSFBean {
 
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
 
-            
             sv.abrirTransacao();
             if (!sv.alterarObjeto(cc)) {
                 sv.desfazerTransacao();
@@ -68,25 +67,21 @@ public class ConvencaoJSFBean {
             String destino = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/convencao/" + String.valueOf(gc.getId()) + "_" + convencao.getId() + ".pdf");
             File fl_destino = new File(destino);
             try {
-                
+
                 InputStream in = new BufferedInputStream(file.getInputstream());
 
-
                 //O método file.getAbsolutePath() fornece o caminho do arquivo criado
-
                 //Pode ser usado para ligar algum objeto do banco ao arquivo enviado
-
-
                 FileOutputStream fout = new FileOutputStream(fl_destino);
 
-                while(in.available() != 0){
+                while (in.available() != 0) {
 
-                fout.write(in.read());
+                    fout.write(in.read());
 
                 }
 
                 fout.close();
-                
+
 //                InputStream in = file.getInputstream();
 //                FileOutputStream out = new FileOutputStream(fl_destino.getPath());
 //
@@ -98,12 +93,11 @@ public class ConvencaoJSFBean {
 //                in.close();
 //                out.flush();
 //                out.close();
-
             } catch (Exception e) {
 
             }
-            
-            GenericaMensagem.info("Sucesso", "Envio de "+file.getFileName()+" concluído!");
+
+            GenericaMensagem.info("Sucesso", "Envio de " + file.getFileName() + " concluído!");
             listaGpCidade.clear();
             dolinha = null;
         }
@@ -122,6 +116,7 @@ public class ConvencaoJSFBean {
             return null;
         }
 
+        NovoLog novoLog = new NovoLog();
         sv.abrirTransacao();
         if (convencao.getId() == -1) {
 
@@ -132,15 +127,26 @@ public class ConvencaoJSFBean {
             }
 
             GenericaMensagem.info("Sucesso", "Convenção salvo com Sucesso!");
+            novoLog.save(
+                    "ID: " + convencao.getId()
+                    + " - Descrição: " + convencao.getDescricao()
+            );
         } else {
+            Convencao c = (Convencao) sv.pesquisaObjeto(convencao.getId(), "Convencao");
+            String beforeUpdate
+                    = "ID: " + c.getId()
+                    + " - Descrição: " + c.getDescricao();
             if (!sv.alterarObjeto(convencao)) {
                 sv.desfazerTransacao();
                 GenericaMensagem.warn("Erro", "Erro ao atualizar convenção!");
                 return null;
             }
+            novoLog.update(beforeUpdate,
+                    "ID: " + convencao.getId()
+                    + " - Descrição: " + convencao.getDescricao()
+            );
             GenericaMensagem.info("Sucesso", "Convenção atualizado com Sucesso!");
         }
-
         listaGpCidade = new ArrayList();
         sv.comitarTransacao();
         return null;
@@ -226,7 +232,7 @@ public class ConvencaoJSFBean {
         if (!fl.delete()) {
             GenericaMensagem.warn("Erro", "Não foi possível excluir Arquivo PDF!");
             return false;
-        }        
+        }
         return true;
     }
 
@@ -240,10 +246,10 @@ public class ConvencaoJSFBean {
         if (!fl.delete()) {
             GenericaMensagem.warn("Erro", "Não foi possível excluir Arquivo PDF!");
         }
-        
+
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         sv.abrirTransacao();
-        
+
         cc.setCaminho("");
         if (!sv.alterarObjeto(cc)) {
             GenericaMensagem.warn("Erro", "Não foi possível alterar Convenção Cidade");
@@ -351,7 +357,11 @@ public class ConvencaoJSFBean {
                 GenericaMensagem.warn("Erro", "Convenção não pode ser excluida!");
                 sv.desfazerTransacao();
             }
-
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete(
+                    "ID: " + convencao.getId()
+                    + " - Descrição: " + convencao.getDescricao()
+            );
             GenericaMensagem.info("Sucesso", "Convenção excluida com Sucesso!");
             convencao = new Convencao();
             listaGpCidade.clear();

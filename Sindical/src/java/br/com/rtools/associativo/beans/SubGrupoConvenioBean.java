@@ -6,13 +6,16 @@ import br.com.rtools.associativo.SubGrupoConvenio;
 import br.com.rtools.associativo.db.SubGrupoConvenioDB;
 import br.com.rtools.associativo.db.SubGrupoConvenioDBToplink;
 import br.com.rtools.financeiro.Servicos;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -22,30 +25,53 @@ import javax.faces.model.SelectItem;
 public class SubGrupoConvenioBean implements Serializable {
 
     // Tela cadastro
-    private List<SelectItem> listaGrupoConvenio = new ArrayList<SelectItem>();
-    private List<SelectItem> listaSubGrupoConvenio = new ArrayList<SelectItem>();
+    private List<SelectItem> listGrupoConvenio = new ArrayList<SelectItem>();
+    private List<SelectItem> listSubGrupoConvenio = new ArrayList<SelectItem>();
     private int idGrupoConvenio = 0;
     private int idGrupoConvenioFiltro = 0;
     private int idSubGrupoConvenio = 0;
-    private String mensagem;
+    private String message;
     private Servicos[] servicoSelecionado;
     private ConvenioServico[] convenioServicoSelecionado;
     private SubGrupoConvenio subGrupoConvenio = new SubGrupoConvenio();
-    private List<Servicos> listaServicosDisponiveis = new ArrayList<Servicos>();
-    private List<ConvenioServico> listaServicosAdicionados = new ArrayList<ConvenioServico>();
+    private List<Servicos> listServicosDisponiveis = new ArrayList<Servicos>();
+    private List<ConvenioServico> listServicosAdicionados = new ArrayList<ConvenioServico>();
 
     // Tela pesquisa
-    private List<SubGrupoConvenio> listaSubGrupoConvenios = new ArrayList<SubGrupoConvenio>();
+    private List<SubGrupoConvenio> listSubGrupoConvenios = new ArrayList<SubGrupoConvenio>();
+
+    @PostConstruct
+    public void init() {
+        // Tela cadastro
+        listGrupoConvenio = new ArrayList<SelectItem>();
+        listSubGrupoConvenio = new ArrayList<SelectItem>();
+        idGrupoConvenio = 0;
+        idGrupoConvenioFiltro = 0;
+        idSubGrupoConvenio = 0;
+        message = "";
+        subGrupoConvenio = new SubGrupoConvenio();
+        listServicosDisponiveis = new ArrayList<Servicos>();
+        listServicosAdicionados = new ArrayList<ConvenioServico>();
+
+        // Tela pesquisa
+        listSubGrupoConvenios = new ArrayList<SubGrupoConvenio>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("subGrupoConvenioBean");
+        GenericaSessao.remove("subGrupoConvenioPesquisa");
+    }
 
     public String novo() {
         idGrupoConvenio = 0;
         subGrupoConvenio = new SubGrupoConvenio();
-        mensagem = "";
+        message = "";
         return null;
     }
 
-    public void adicionar() {
-        if (listaGrupoConvenio.isEmpty()) {
+    public void add() {
+        if (listGrupoConvenio.isEmpty()) {
             GenericaMensagem.warn("Validação", "Informar o grupo convênio!");
             return;
         }
@@ -53,77 +79,96 @@ public class SubGrupoConvenioBean implements Serializable {
             GenericaMensagem.warn("Validação", "Informar a descrição do subgrupo convênio!");
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         SubGrupoConvenioDB sgcdb = new SubGrupoConvenioDBToplink();
-        subGrupoConvenio.setGrupoConvenio((GrupoConvenio) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaGrupoConvenio.get(idGrupoConvenio).getDescription()), "GrupoConvenio"));
+        subGrupoConvenio.setGrupoConvenio((GrupoConvenio) di.find(new GrupoConvenio(), Integer.parseInt(listGrupoConvenio.get(idGrupoConvenio).getDescription())));
         if (subGrupoConvenio.getId() == -1) {
             if (sgcdb.existeSubGrupoConvenio(subGrupoConvenio)) {
                 GenericaMensagem.info("Validação", "SubGrupo já existe!");
                 return;
             }
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(subGrupoConvenio)) {
-                salvarAcumuladoDB.comitarTransacao();;
-                listaSubGrupoConvenio.clear();
+            di.openTransaction();
+            if (di.save(subGrupoConvenio)) {
+                novoLog.save(
+                        "ID: " + subGrupoConvenio.getId()
+                        + " - Grupo Convenio: (" + subGrupoConvenio.getGrupoConvenio().getId() + ") - " + subGrupoConvenio.getGrupoConvenio().getDescricao()
+                        + " - Descrição: " + subGrupoConvenio.getDescricao()
+                );
+                di.commit();
+                listSubGrupoConvenio.clear();
                 GenericaMensagem.info("Sucesso", "Cadastro realizado");
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao inserir este registro!");
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(subGrupoConvenio)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaSubGrupoConvenio.clear();
+            di.openTransaction();
+            SubGrupoConvenio sgc = (SubGrupoConvenio) di.find(subGrupoConvenio);
+            String beforeUpdate
+                    = "ID: " + sgc.getId()
+                    + " - Grupo Convenio: (" + sgc.getGrupoConvenio().getId() + ") - " + sgc.getGrupoConvenio().getDescricao()
+                    + " - Descrição: " + sgc.getDescricao();
+            if (di.update(subGrupoConvenio)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + subGrupoConvenio.getId()
+                        + " - Grupo Convenio: (" + subGrupoConvenio.getGrupoConvenio().getId() + ") - " + subGrupoConvenio.getGrupoConvenio().getDescricao()
+                        + " - Descrição: " + subGrupoConvenio.getDescricao()
+                );
+                di.commit();
+                listSubGrupoConvenio.clear();
                 GenericaMensagem.info("Sucesso", "Registro atualizado");
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Erro ao atualizar este registro!");
             }
         }
-        for (int i = 0; i < listaGrupoConvenio.size(); i++) {
-            if (subGrupoConvenio.getGrupoConvenio().getId() == Integer.parseInt(listaGrupoConvenio.get(i).getDescription())) {
+        for (int i = 0; i < listGrupoConvenio.size(); i++) {
+            if (subGrupoConvenio.getGrupoConvenio().getId() == Integer.parseInt(listGrupoConvenio.get(i).getDescription())) {
                 idGrupoConvenioFiltro = i;
                 break;
             }
         }
     }
 
-    public void remover() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        SubGrupoConvenio sgc = (SubGrupoConvenio) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()), "SubGrupoConvenio");
-        remover(sgc);
+    public void remove() {
+        DaoInterface di = new Dao();
+        SubGrupoConvenio sgc = (SubGrupoConvenio) di.find(new SubGrupoConvenio(), Integer.parseInt(listSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()));
+        remove(sgc);
     }
 
-    public void remover(SubGrupoConvenio sgc) {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+    public void remove(SubGrupoConvenio sgc) {
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
         if (sgc.getId() != -1) {
-            sgc = (SubGrupoConvenio) salvarAcumuladoDB.pesquisaCodigo(sgc.getId(), "SubGrupoConvenio");
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(sgc)) {
-                salvarAcumuladoDB.comitarTransacao();
-                listaSubGrupoConvenio.clear();
+            if (di.delete(sgc, true)) {
+                novoLog.delete(
+                        "ID: " + sgc.getId()
+                        + " - Grupo Convenio: (" + sgc.getGrupoConvenio().getId() + ") - " + sgc.getGrupoConvenio().getDescricao()
+                        + " - Descrição: " + sgc.getDescricao()
+                );
+                listSubGrupoConvenio.clear();
+                idSubGrupoConvenio = 0;
                 subGrupoConvenio = new SubGrupoConvenio();
                 GenericaMensagem.info("Sucesso", "Registro removido");
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
                 GenericaMensagem.warn("Erro", "SubGrupo convênio não pode ser excluido!");
             }
         }
     }
 
-    public void editar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        subGrupoConvenio = (SubGrupoConvenio) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()), "SubGrupoConvenio");
-        for (int i = 0; i < listaGrupoConvenio.size(); i++) {
-            if (subGrupoConvenio.getGrupoConvenio().getId() == Integer.parseInt(listaGrupoConvenio.get(i).getDescription())) {
+    public void edit() {
+        DaoInterface di = new Dao();
+        subGrupoConvenio = (SubGrupoConvenio) di.find(new SubGrupoConvenio(), Integer.parseInt(listSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()));
+        for (int i = 0; i < listGrupoConvenio.size(); i++) {
+            if (subGrupoConvenio.getGrupoConvenio().getId() == Integer.parseInt(listGrupoConvenio.get(i).getDescription())) {
                 idGrupoConvenio = i;
                 break;
             }
         }
     }
 
-    public String editar(SubGrupoConvenio sgc) {
+    public String edit(SubGrupoConvenio sgc) {
         String url = null;
         if (GenericaSessao.exists("urlRetorno")) {
             GenericaSessao.put("linkClicado", true);
@@ -133,43 +178,46 @@ public class SubGrupoConvenioBean implements Serializable {
         return url;
     }
 
-    public List<Servicos> getListaServicosDisponiveis() {
-        listaServicosDisponiveis.clear();
-        if (!listaSubGrupoConvenio.isEmpty()) {
+    public List<Servicos> getListServicosDisponiveis() {
+        listServicosDisponiveis.clear();
+        if (!listSubGrupoConvenio.isEmpty()) {
             SubGrupoConvenioDB subGrupoConvenioDB = new SubGrupoConvenioDBToplink();
-            listaServicosDisponiveis = subGrupoConvenioDB.listaServicosDisponiveis(Integer.parseInt(listaSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()));
+            listServicosDisponiveis = subGrupoConvenioDB.listaServicosDisponiveis(Integer.parseInt(listSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()));
         }
-        return listaServicosDisponiveis;
+        return listServicosDisponiveis;
     }
 
-    public List<ConvenioServico> getListaServicosAdicionados() {
-        listaServicosAdicionados.clear();
-        if (!listaSubGrupoConvenio.isEmpty()) {
+    public List<ConvenioServico> getListServicosAdicionados() {
+        listServicosAdicionados.clear();
+        if (!listSubGrupoConvenio.isEmpty()) {
             SubGrupoConvenioDB subGrupoConvenioDB = new SubGrupoConvenioDBToplink();
-            listaServicosAdicionados = subGrupoConvenioDB.listaServicosAdicionados(Integer.parseInt(listaSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()));
+            listServicosAdicionados = subGrupoConvenioDB.listaServicosAdicionados(Integer.parseInt(listSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()));
         }
-        return listaServicosAdicionados;
+        return listServicosAdicionados;
     }
 
-    public void adicionarConvenioServico() {
+    public void addConvenioServico() {
         if (servicoSelecionado.length == 0) {
             GenericaMensagem.warn("Validação", "Selecionar pelo menos um registro");
             return;
         }
         boolean sucesso = false;
-        for (int i = 0; i < listaServicosDisponiveis.size(); i++) {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        for (int i = 0; i < listServicosDisponiveis.size(); i++) {
             for (Servicos servicos : servicoSelecionado) {
-                if (servicos.getId() == listaServicosDisponiveis.get(i).getId()) {
+                if (servicos.getId() == listServicosDisponiveis.get(i).getId()) {
                     ConvenioServico convenioServico = new ConvenioServico();
-                    convenioServico.setServicos(listaServicosDisponiveis.get(i));
-                    SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                    convenioServico.setSubGrupoConvenio((SubGrupoConvenio) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaSubGrupoConvenio.get(idSubGrupoConvenio).getDescription()), "SubGrupoConvenio"));
-                    salvarAcumuladoDB.abrirTransacao();
-                    if (salvarAcumuladoDB.inserirObjeto(convenioServico)) {
+                    convenioServico.setServicos(listServicosDisponiveis.get(i));
+                    convenioServico.setSubGrupoConvenio((SubGrupoConvenio) di.find(new SubGrupoConvenio(), Integer.parseInt(listSubGrupoConvenio.get(idSubGrupoConvenio).getDescription())));
+                    if (di.save(convenioServico, true)) {
+                        novoLog.save(
+                                "Convênio Serviço - ID: " + convenioServico.getId()
+                                + " - Sub Grupo Convenio: (" + convenioServico.getSubGrupoConvenio().getId() + ") - " + convenioServico.getSubGrupoConvenio().getDescricao()
+                                + " - Serviço: (" + convenioServico.getServicos().getId() + ") - " + convenioServico.getServicos().getDescricao()
+                                + " - Encaminhamento: " + convenioServico.isEncaminhamento()
+                        );
                         sucesso = true;
-                        salvarAcumuladoDB.comitarTransacao();
-                    } else {
-                        salvarAcumuladoDB.desfazerTransacao();
                     }
                 }
             }
@@ -179,22 +227,25 @@ public class SubGrupoConvenioBean implements Serializable {
         }
     }
 
-    public void removerConvenioServico() {
+    public void removeConvenioServico() {
         if (convenioServicoSelecionado.length == 0) {
             GenericaMensagem.warn("Validação", "selecionar pelo menos um registro");
             return;
         }
         boolean sucesso = false;
-        for (int i = 0; i < listaServicosAdicionados.size(); i++) {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        for (int i = 0; i < listServicosAdicionados.size(); i++) {
             for (ConvenioServico convenioServico : convenioServicoSelecionado) {
-                if (convenioServico.getId() == listaServicosAdicionados.get(i).getId()) {
-                    SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-                    salvarAcumuladoDB.abrirTransacao();
-                    if (salvarAcumuladoDB.deletarObjeto((ConvenioServico) salvarAcumuladoDB.pesquisaObjeto(listaServicosAdicionados.get(i).getId(), "ConvenioServico"))) {
+                if (convenioServico.getId() == listServicosAdicionados.get(i).getId()) {
+                    if (di.delete(listServicosAdicionados.get(i), true)) {
+                        novoLog.delete(
+                                "Convênio Serviço - ID: " + convenioServico.getId()
+                                + " - Sub Grupo Convenio: (" + convenioServico.getSubGrupoConvenio().getId() + ") - " + convenioServico.getSubGrupoConvenio().getDescricao()
+                                + " - Serviço: (" + convenioServico.getServicos().getId() + ") - " + convenioServico.getServicos().getDescricao()
+                                + " - Encaminhamento: " + convenioServico.isEncaminhamento()
+                        );
                         sucesso = true;
-                        salvarAcumuladoDB.comitarTransacao();
-                    } else {
-                        salvarAcumuladoDB.desfazerTransacao();
                     }
                 }
             }
@@ -204,64 +255,74 @@ public class SubGrupoConvenioBean implements Serializable {
         }
     }
 
-    public void atualizarConvenioServico(ConvenioServico convenioServico) {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        salvarAcumuladoDB.abrirTransacao();
+    public void updateConvenioServico(ConvenioServico convenioServico) {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (convenioServico.isEncaminhamento()) {
             convenioServico.setEncaminhamento(false);
         } else {
             convenioServico.setEncaminhamento(true);
         }
-        if (salvarAcumuladoDB.alterarObjeto(convenioServico)) {
-            salvarAcumuladoDB.comitarTransacao();
+        ConvenioServico cs = (ConvenioServico) di.find(convenioServico);
+        String beforeUpdate
+                = "Convênio Serviço - ID: " + cs.getId()
+                + " - Sub Grupo Convenio: (" + cs.getSubGrupoConvenio().getId() + ") - " + cs.getSubGrupoConvenio().getDescricao()
+                + " - Serviço: (" + cs.getServicos().getId() + ") - " + cs.getServicos().getDescricao()
+                + " - Encaminhamento: " + cs.isEncaminhamento();
+        if (di.update(convenioServico, true)) {
+            novoLog.update(beforeUpdate,
+                    "Convênio Serviço - ID: " + convenioServico.getId()
+                    + " - Sub Grupo Convenio: (" + convenioServico.getSubGrupoConvenio().getId() + ") - " + convenioServico.getSubGrupoConvenio().getDescricao()
+                    + " - Serviço: (" + convenioServico.getServicos().getId() + ") - " + convenioServico.getServicos().getDescricao()
+                    + " - Encaminhamento: " + convenioServico.isEncaminhamento()
+            );
             GenericaMensagem.info("Sucesso", "Registro(s) atualizado(s)");
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
             GenericaMensagem.warn("Erro", "Ao atualizar este registro");
         }
 
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public SubGrupoConvenio getSubGrupoConvenio() {
         return subGrupoConvenio;
     }
 
-    public List<SelectItem> getListaSubGrupoConvenio() {
-        if (listaSubGrupoConvenio.isEmpty()) {
+    public List<SelectItem> getListSubGrupoConvenio() {
+        if (listSubGrupoConvenio.isEmpty()) {
             SubGrupoConvenioDB subGrupoConvenioDB = new SubGrupoConvenioDBToplink();
-            List<SubGrupoConvenio> list = subGrupoConvenioDB.listaSubGrupoConvenioPorGrupo(Integer.parseInt(listaGrupoConvenio.get(idGrupoConvenioFiltro).getDescription()));
+            List<SubGrupoConvenio> list = subGrupoConvenioDB.listaSubGrupoConvenioPorGrupo(Integer.parseInt(listGrupoConvenio.get(idGrupoConvenioFiltro).getDescription()));
             for (int i = 0; i < list.size(); i++) {
-                listaSubGrupoConvenio.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listSubGrupoConvenio.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
-        return listaSubGrupoConvenio;
+        return listSubGrupoConvenio;
     }
 
     public void setSubGrupoConvenio(SubGrupoConvenio subGrupoConvenio) {
         this.subGrupoConvenio = subGrupoConvenio;
     }
 
-    public List<SelectItem> getListaGrupoConvenio() {
-        if (listaGrupoConvenio.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<GrupoConvenio> list = (List<GrupoConvenio>) salvarAcumuladoDB.listaObjeto("GrupoConvenio", true);
+    public List<SelectItem> getListGrupoConvenio() {
+        if (listGrupoConvenio.isEmpty()) {
+            DaoInterface di = new Dao();
+            List<GrupoConvenio> list = (List<GrupoConvenio>) di.list(new GrupoConvenio(), true);
             for (int i = 0; i < list.size(); i++) {
-                listaGrupoConvenio.add(new SelectItem(new Integer(i), list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
+                listGrupoConvenio.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
         }
-        return listaGrupoConvenio;
+        return listGrupoConvenio;
     }
 
-    public void setListaGrupoConvenio(List<SelectItem> listaGrupoConvenio) {
-        this.listaGrupoConvenio = listaGrupoConvenio;
+    public void setListGrupoConvenio(List<SelectItem> listGrupoConvenio) {
+        this.listGrupoConvenio = listGrupoConvenio;
     }
 
     public int getIdGrupoConvenio() {
@@ -304,15 +365,15 @@ public class SubGrupoConvenioBean implements Serializable {
         this.convenioServicoSelecionado = convenioServicoSelecionado;
     }
 
-    public List<SubGrupoConvenio> getListaSubGrupoConvenios() {
-        if (listaSubGrupoConvenios.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaSubGrupoConvenios = (List<SubGrupoConvenio>) salvarAcumuladoDB.listaObjeto("SubGrupoConvenio", true);
+    public List<SubGrupoConvenio> getListSubGrupoConvenios() {
+        if (listSubGrupoConvenios.isEmpty()) {
+            DaoInterface di = new Dao();
+            listSubGrupoConvenios = (List<SubGrupoConvenio>) di.list(new SubGrupoConvenio(), true);
         }
-        return listaSubGrupoConvenios;
+        return listSubGrupoConvenios;
     }
 
-    public void setListaSubGrupoConvenios(List<SubGrupoConvenio> listaSubGrupoConvenios) {
-        this.listaSubGrupoConvenios = listaSubGrupoConvenios;
+    public void setListSubGrupoConvenios(List<SubGrupoConvenio> listSubGrupoConvenios) {
+        this.listSubGrupoConvenios = listSubGrupoConvenios;
     }
 }

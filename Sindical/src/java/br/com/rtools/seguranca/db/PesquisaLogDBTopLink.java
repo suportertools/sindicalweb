@@ -53,7 +53,7 @@ public class PesquisaLogDBTopLink extends DB implements PesquisaLogDB {
                     }
                 }
             }
-            String queryString = "SELECT L FROM Log AS L WHERE L.rotina IS NOT NULL AND L.usuario IS NOT NULL " + where + " ORDER BY l.dtData DESC, L.rotina.rotina DESC ";
+            String queryString = "SELECT L FROM Log AS L WHERE L.rotina IS NOT NULL AND L.usuario IS NOT NULL " + where + " ORDER BY L.dtData DESC, L.hora DESC, L.rotina.rotina DESC ";
             Query query = getEntityManager().createQuery(queryString);
             if (dataInicial != null) {
                 query.setParameter("dtInicial", DataHoje.converte(dataInicial), TemporalType.DATE);

@@ -27,7 +27,7 @@
                             <p:outputLabel value="CPF: " />
                             <h:column>
                                 <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}"  maxlength="14" size="15" disabled="#{oposicaoBean.desabilitaPessoa}" widgetVar="input_cpf">
-                                    <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update="i_panel_oposicao messages" />
+                                    <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update=":form_oposicao:" />
                                 </p:inputMask>
                                 <p:watermark value="999.999.999-99" for="idCPF" />
                             </h:column>                                
@@ -56,7 +56,9 @@
                                 <p:inputText id="idRGs"  value="#{oposicaoBean.oposicao.oposicaoPessoa.rg}" maxlength="15" size="15"  rendered="#{oposicaoBean.oposicao.oposicaoPessoa.cpf != ''}"/>
                             </h:column>
                             <p:outputLabel value="Nome: " />
-                            <p:inputText id="idNome" value="#{oposicaoBean.oposicao.oposicaoPessoa.nome}" size="50" maxlength="50" />
+                            <p:inputText id="idNome" value="#{oposicaoBean.oposicao.oposicaoPessoa.nome}" size="50" maxlength="50">
+                                <p:ajax event="blur" update="@this" />
+                            </p:inputText>
                             <p:outputLabel value="Sexo: " />
                             <p:selectOneRadio value="#{oposicaoBean.sexo}"  id="idSexo" >
                                 <p:ajax event="change" update="@this"/>
@@ -108,33 +110,33 @@
                         </c:if>
                     </p:panel>
                     <h:panelGrid columns="4" id="i_panel_acao" styleClass="margin-top-max">
-                        <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dgl_panel_salvar').show();"  />
-                        <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.novo}" update="i_panel_oposicao"/>
-                        <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="dgl_panel_excluir.show();"/>
+                        <p:commandButton  value="Salvar" title="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show();"  />
+                        <p:commandButton  value="Novo" title="Novo" action="#{oposicaoBean.destroy()}" update=":form_oposicao:"/>
+                        <p:commandButton  value="Excluir" title="Excluir" disabled="#{controleAcessoBean.botaoExcluir or oposicaoBean.oposicao.id == -1}" onclick="dlg_delete.show();"/>
                         <p:commandButton value="Pesquisar" title="Pesquisar" action="#{chamadaPaginaBean.pesquisaOposicao}"/>                            
                     </h:panelGrid>
-                    <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" header="Deseja salvar este registro?" width="400">
+                    <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" header="Deseja salvar este registro?" width="400">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Salvar" action="#{oposicaoBean.salvar}" update="i_panel_oposicao, i_panel_acao, out_mensagem" oncomplete="PF('dgl_panel_salvar').hide(); PF('dgl_panel_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide();"/>
+                                <p:commandButton value="Sim" title="Salvar" action="#{oposicaoBean.save}" update=":form_oposicao: out_mensagem" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>
-                    <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir"  modal="true" resizable="true" header="Deseja excluir este registro?" width="400">
+                    <p:dialog id="i_panel_excluir" widgetVar="dlg_delete"  modal="true" resizable="true" header="Deseja excluir este registro?" width="400">
                         <center>
                             <h:panelGrid columns="2">
-                                <p:commandButton value="Sim" title="Excluir" action="#{oposicaoBean.excluir}" update="i_panel_oposicao, i_panel_acao, out_mensagem" oncomplete="PF('dgl_panel_excluir').hide(); PF('dgl_panel_mensagem').show();"/>
-                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide();"/>
+                                <p:commandButton value="Sim" title="Excluir" action="#{oposicaoBean.delete}" update=":form_oposicao: out_mensagem" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();"/>
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide();"/>
                             </h:panelGrid>
                         </center>
                     </p:dialog>
-                    <p:dialog id="id_panel_mensagem" widgetVar="dgl_panel_mensagem" modal="true" header="Mensagem" width="400">
+                    <p:dialog id="id_panel_mensagem" widgetVar="dlg_message" modal="true" header="Mensagem" width="400">
                         <center>
                             <h:panelGrid id="out_mensagem">
-                                <p:outputLabel value="#{oposicaoBean.mensagem}" />                            
+                                <p:outputLabel value="#{oposicaoBean.message}" />                            
                             </h:panelGrid> 
-                            <p:commandButton value="Ok" title="Ok" onclick="PF('dgl_panel_mensagem').hide();" />
+                            <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_message').hide();" />
                         </center>
                     </p:dialog>                    
                 </h:form>

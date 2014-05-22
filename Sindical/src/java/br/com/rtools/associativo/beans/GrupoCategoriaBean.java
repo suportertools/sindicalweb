@@ -1,12 +1,16 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.GrupoCategoria;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.PF;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
@@ -14,11 +18,27 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class GrupoCategoriaBean {
 
-    private GrupoCategoria grupoCategoria = new GrupoCategoria();
-    private List<GrupoCategoria> listaGrupoCategoria = new ArrayList();
+    private GrupoCategoria grupoCategoria;
+    private List<GrupoCategoria> listGrupoCategoria;
 
-    public void salvar() {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+    @PostConstruct
+    public void init() {
+        grupoCategoria = new GrupoCategoria();
+        listGrupoCategoria = new ArrayList();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        clear();
+    }
+
+    public void clear() {
+        GenericaSessao.remove("grupoCategoriaBean");
+    }
+
+    public void save() {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (grupoCategoria.getGrupoCategoria().equals("") || grupoCategoria.getGrupoCategoria() == null) {
             GenericaMensagem.warn("Validação", "Digite um nome para o grupo!");
             return;
@@ -28,10 +48,10 @@ public class GrupoCategoriaBean {
             return;
         }
         grupoCategoria.setGrupoCategoria(grupoCategoria.getGrupoCategoria().toUpperCase());
-        dB.abrirTransacao();
+        di.openTransaction();
         if (grupoCategoria.getId() == -1) {
-            if(!listaGrupoCategoria.isEmpty()) {
-                for (GrupoCategoria listaGrupoCategoria1 : listaGrupoCategoria) {
+            if (!listGrupoCategoria.isEmpty()) {
+                for (GrupoCategoria listaGrupoCategoria1 : listGrupoCategoria) {
                     if (listaGrupoCategoria1.getGrupoCategoria().equals(grupoCategoria.getGrupoCategoria())) {
                         GenericaMensagem.warn("Validação", "Grupo categoria já existe!");
                         PF.update("form_grupo_categoria:i_msg");
@@ -39,44 +59,69 @@ public class GrupoCategoriaBean {
                     }
                 }
             }
-            if (dB.inserirObjeto(grupoCategoria)) {
-                dB.comitarTransacao();
+            if (di.save(grupoCategoria)) {
+                novoLog.save(
+                        "ID: " + grupoCategoria.getId()
+                        + " - Descrição: " + grupoCategoria.getGrupoCategoria()
+                        + " - Próxima Matrícula: " + grupoCategoria.getNrProximaMatricula()
+                        + " - Validade Mês Cartão: " + grupoCategoria.getNrValidadeMesCartao()
+                );
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Grupo salvo com sucesso!");
                 grupoCategoria = new GrupoCategoria();
-                listaGrupoCategoria.clear();
+                listGrupoCategoria.clear();
             } else {
                 GenericaMensagem.warn("Erro", "Ao salvar grupo!");
-                dB.desfazerTransacao();
+                di.rollback();
             }
         } else {
-            if (dB.alterarObjeto(grupoCategoria)) {
+            GrupoCategoria gc = (GrupoCategoria) di.find(grupoCategoria);
+            String beforeUpdate
+                    = "ID: " + gc.getId()
+                    + " - Descrição: " + gc.getGrupoCategoria()
+                    + " - Próxima Matrícula: " + gc.getNrProximaMatricula()
+                    + " - Validade Mês Cartão: " + gc.getNrValidadeMesCartao();
+            if (di.update(grupoCategoria)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + grupoCategoria.getId()
+                        + " - Descrição: " + grupoCategoria.getGrupoCategoria()
+                        + " - Próxima Matrícula: " + grupoCategoria.getNrProximaMatricula()
+                        + " - Validade Mês Cartão: " + grupoCategoria.getNrValidadeMesCartao()
+                );
                 GenericaMensagem.info("Sucesso", "Grupo atualizado com sucesso.");
-                dB.comitarTransacao();
+                di.commit();
                 grupoCategoria = new GrupoCategoria();
-                listaGrupoCategoria.clear();
+                listGrupoCategoria.clear();
             } else {
                 GenericaMensagem.warn("Erro", "Ao atualizar grupo!");
-                dB.desfazerTransacao();
+                di.rollback();
             }
         }
         PF.update("form_grupo_categoria:i_msg");
     }
 
-    public void excluir() {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+    public void delete() {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (grupoCategoria.getId() == -1) {
             GenericaMensagem.warn("Validação", "Selecione um grupo para ser excluído!");
             return;
         }
-        dB.abrirTransacao();
-        if (dB.deletarObjeto((GrupoCategoria) dB.pesquisaCodigo(grupoCategoria.getId(), "GrupoCategoria"))) {
+        di.openTransaction();
+        if (di.delete(grupoCategoria)) {
+            novoLog.delete(
+                    "ID: " + grupoCategoria.getId()
+                    + " - Descrição: " + grupoCategoria.getGrupoCategoria()
+                    + " - Próxima Matrícula: " + grupoCategoria.getNrProximaMatricula()
+                    + " - Validade Mês Cartão: " + grupoCategoria.getNrValidadeMesCartao()
+            );
             GenericaMensagem.info("Sucesso", "Grupo deletado com sucesso!");
-            dB.comitarTransacao();
+            di.commit();
             grupoCategoria = new GrupoCategoria();
-            listaGrupoCategoria.clear();
+            listGrupoCategoria.clear();
             PF.update("i_msg");
         } else {
-            dB.desfazerTransacao();
+            di.rollback();
             GenericaMensagem.warn("Erro", "Erro ao deletar grupo!");
         }
     }
@@ -84,11 +129,6 @@ public class GrupoCategoriaBean {
     public String editar(GrupoCategoria gc) {
         grupoCategoria = gc;
         return null;
-    }
-
-    public void novo() {
-        grupoCategoria = new GrupoCategoria();
-        listaGrupoCategoria.clear();
     }
 
     public GrupoCategoria getGrupoCategoria() {
@@ -99,15 +139,15 @@ public class GrupoCategoriaBean {
         this.grupoCategoria = grupoCategoria;
     }
 
-    public List<GrupoCategoria> getListaGrupoCategoria() {
-        if (listaGrupoCategoria.isEmpty()) {
-            SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-            listaGrupoCategoria = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria", true);
+    public List<GrupoCategoria> getListGrupoCategoria() {
+        if (listGrupoCategoria.isEmpty()) {
+            DaoInterface di = new Dao();
+            listGrupoCategoria = (List<GrupoCategoria>) di.list(new GrupoCategoria(), true);
         }
-        return listaGrupoCategoria;
+        return listGrupoCategoria;
     }
 
-    public void setListaGrupoCategoria(List<GrupoCategoria> listaGrupoCategoria) {
-        this.listaGrupoCategoria = listaGrupoCategoria;
+    public void setListGrupoCategoria(List<GrupoCategoria> listGrupoCategoria) {
+        this.listGrupoCategoria = listGrupoCategoria;
     }
 }

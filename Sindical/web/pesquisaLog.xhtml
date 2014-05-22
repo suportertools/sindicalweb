@@ -139,7 +139,7 @@
                         </p:column>
                     </p:dataTable>
                 </p:panel>
-                <p:dialog widgetVar="dlg_log_details" width="1000" modal="true" resizable="false">
+                <p:dialog id="id_log_details" widgetVar="dlg_log_details" width="1000" modal="true" resizable="false">
                     <f:facet name="header">
                         <p:outputLabel value="Detalhes: Data: #{pesquisaLogBean.log.data} - Horário: #{pesquisaLogBean.log.hora}" id="i_log_details_1"/>
                     </f:facet>
@@ -154,6 +154,12 @@
                         <p:outputLabel value="Conteúdo Alterado" rendered="#{pesquisaLogBean.log.evento.id == 3}" styleClass="bold"/>
                         <p:inputTextarea value="#{pesquisaLogBean.log.conteudoAlterado}" cols="185" readonly="true" rendered="#{pesquisaLogBean.log.evento.id == 3}"/>
                     </h:panelGrid>
+                    <f:facet name="footer">
+                        <p:commandButton value="Salvar este log" type="button" icon="ui-icon-print" >
+                            <p:printer target="id_log_details" />
+                        </p:commandButton>                    
+                        <p:commandButton value="Sair" type="button" onclick="PF('dlg_log_details').hide()" />
+                    </f:facet>
                 </p:dialog>
             </h:form>
         </f:view>

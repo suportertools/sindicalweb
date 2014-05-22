@@ -27,11 +27,12 @@
                 </f:subview>
                 <f:view>
                     <p:panel styleClass="wrapper" style="border: 0px;">
-                        <h:form id="formProfissao">
+                        <h:form id="form_profissao">
                             <c:set scope="request" var="object" value="${profissaoBean.prof}"/>
                             <h:outputText value="Profissão" styleClass="fonteHeader" />
-
-                            <p:panel id="i_panel" styleClass="fundoCinza" style="clear: both">
+                            <div class="clear"></div>
+                            <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" /> 
+                            <p:panel id="i_panel" styleClass="fundoCinza margin-top-max">
                                 <h:outputLabel value="CBO: " style="width: 80px;" title="CBO - Classificação Brasileira de Ocupações" for="idCBO"/>
                                 <p:inputText id="idCBO" size="30" value="#{profissaoBean.prof.cbo}" maxlength="50" style="margin-right: 20px"/>
                                 <p:watermark for="idCBO" value="Digite o CBO" />
@@ -41,52 +42,60 @@
                                 <p:watermark for="idProfissao" value="Digite a Profissão" />
                                 <p:focus context="i_panel" />
                             </p:panel>
-
-                            <p:messages autoUpdate="true" id="i_msg" showDetail="true" closable="true" /> 
-
-                            <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('i_dlg_s').show()" title="Salvar / Atualizar"/>
-                            <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{profissaoBean.novaProfissao}"/>
-                            <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('i_dlg_e').show()" title="Excluir"/>
-                            <p:commandButton value="Pesquisar" onclick="PF('i_dlg_pr').show()"/>
-
-                            <p:dialog widgetVar="i_dlg_s" header="Salvar esta Profissão" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{profissaoBean.salvarProfissao()}" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_s').hide()" style="float: left" icon="ui-icon-close"/>       
+                            <h:panelGrid columns="4" styleClass="margin-top-max">
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()" title="Salvar / Atualizar"/>
+                                <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{profissaoBean.clearProfissao}" update=":form_profissao: :formProfissaoPesquisa:"/>
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" title="Excluir"/>
+                                <p:commandButton value="Pesquisar" onclick="PF('i_dlg_pr').show()"/>
+                            </h:panelGrid>
+                            <p:dialog widgetVar="dlg_save" header="Salvar esta Profissão" resizable="false" width="400" modal="true">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{profissaoBean.saveProfissao()}" onclick="PF('dlg_save').hide()" icon="ui-icon-check" update=":form_profissao: :formProfissaoPesquisa:" />  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide()" style="float: left" icon="ui-icon-close"/>       
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dialog>
-
-                            <p:dialog widgetVar="i_dlg_e" header="Excluir esta Profissão" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{profissaoBean.excluirProfissao()}" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
+                            <p:dialog widgetVar="dlg_delete" header="Excluir esta Profissão" resizable="false" width="400" modal="true">
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{profissaoBean.deleteProfissao()}" onclick="PF('dlg_delete').hide()" icon="ui-icon-check" update=":form_profissao: :formProfissaoPesquisa:"/>  
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()" icon="ui-icon-close"/>       
+                                    </h:panelGrid>
+                                </f:facet>
                             </p:dialog>
                         </h:form>
 
-                        <p:dialog widgetVar="i_dlg_pr" header="Pesquisa Profissões" resizable="false">
+                        <p:dialog widgetVar="i_dlg_pr" header="Pesquisa Profissões" resizable="false" modal="true" width="1024">
                             <h:form id="formProfissaoPesquisa">
                                 <h:panelGrid id="i_panel_p" columns="6">
-                                    <p:inputText id="i_text_pe" size="20" value="#{profissaoBean.descricaoProfissao}" style="float: left"/>
+                                    <p:inputText id="i_text_pe" size="20" value="#{profissaoBean.descricaoProfissao}" />
 
                                     <p:commandButton value="Inicial" action="#{profissaoBean.inicial}" update=":formProfissaoPesquisa:i_panel_grid" style="float: left"/>
                                     <p:commandButton value="Parcial" action="#{profissaoBean.parcial}" update=":formProfissaoPesquisa:i_panel_grid" style="float: left"/>
 
-                                    <p:selectOneMenu value="#{profissaoBean.combo}" style="float: left; padding-right: 5px">
+                                    <p:selectOneMenu value="#{profissaoBean.combo}" >
                                         <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
                                         <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
                                     </p:selectOneMenu>
                                     <p:focus context="i_panel_p" />
                                 </h:panelGrid>       
 
-                                <h:panelGrid columns="1" id="i_panel_grid" style="height: 400px; width: 100%">
-                                    <p:dataTable var="linha" value="#{profissaoBean.listaProfissao}" id="tblProf" emptyMessage="Nenhuma profissão encontrada">
-                                        <p:column style="text-align: center;" headerText="ID">
-                                            <p:commandLink id="linkPro" action="#{profissaoBean.editarProfissao(linha)}" value="#{linha.id}" onclick="PF('i_dlg_pr').hide()" update=":formProfissao:i_panel :formProfissaoPesquisa:i_panel_grid"/>
+                                <h:panelGrid columns="1" id="i_panel_grid" styleClass="margin-top-max">
+                                    <p:dataTable var="profissao" value="#{profissaoBean.listaProfissao}" id="tblProf" emptyMessage="Nenhuma registro encontrado!" scrollable="true" scrollHeight="300">
+                                        <f:facet name="header">
+                                            Profissões
+                                        </f:facet>
+                                        <p:column headerText="ID" styleClass="text-center" width="25">
+                                            <p:commandLink id="linkPro" action="#{profissaoBean.editProfissao(profissao)}" value="#{profissao.id}" onclick="PF('i_dlg_pr').hide()" update=":form_profissao:i_panel :formProfissaoPesquisa:i_panel_grid"/>
                                         </p:column>
 
-                                        <p:column style="text-align: center;" headerText="CBO">
-                                            <h:outputText  value="#{linha.cbo}"/>
+                                        <p:column styleClass="text-center" headerText="CBO" width="100">
+                                            <h:outputText  value="#{profissao.cbo}"/>
                                         </p:column>
 
-                                        <p:column style="text-align: center;" headerText="Profissão">
-                                            <h:outputText  value="#{linha.profissao}"/>
+                                        <p:column styleClass="text-center" headerText="Profissão">
+                                            <h:outputText  value="#{profissao.profissao}"/>
                                         </p:column>
                                     </p:dataTable>
                                 </h:panelGrid>

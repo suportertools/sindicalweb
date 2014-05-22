@@ -91,16 +91,16 @@
                 <p:panel id="i_tbl" styleClass="no-border">
                     <p:dataTable value="#{oposicaoBean.listaOposicaos}" var="oposicao" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
                         <p:column headerText="Data" width="60" styleClass="text-center">
-                            <p:commandLink action="#{oposicaoBean.editar(oposicao)}" value="#{oposicao.emissao}"  />
+                            <p:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.emissao}"  />
                         </p:column>                                    
                         <p:column headerText="CNPJ" width="140" styleClass="text-center">
-                            <h:commandLink action="#{oposicaoBean.editar(oposicao)}" value="#{oposicao.juridica.pessoa.documento}"  />
+                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.juridica.pessoa.documento}"  />
                         </p:column>                                    
                         <p:column headerText="Empresa" >
-                            <h:commandLink action="#{oposicaoBean.editar(oposicao)}" value="#{oposicao.juridica.pessoa.nome}"  title="Nome fantasia: #{oposicao.juridica.fantasia}" />
+                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.juridica.pessoa.nome}"  title="Nome fantasia: #{oposicao.juridica.fantasia}" />
                         </p:column>
                         <p:column headerText="CPF" styleClass="text-center" width="120">
-                            <h:commandLink action="#{oposicaoBean.editar(oposicao)}" value="#{oposicao.oposicaoPessoa.cpf}"  />
+                            <h:commandLink action="#{oposicaoBean.edit(oposicao)}" value="#{oposicao.oposicaoPessoa.cpf}"  />
                         </p:column>                                    
                         <p:column headerText="RG" width="80" styleClass="text-center">
                             <h:outputText value="#{oposicao.oposicaoPessoa.rg}"/>

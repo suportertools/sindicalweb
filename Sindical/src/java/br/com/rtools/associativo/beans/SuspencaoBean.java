@@ -3,111 +3,148 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.associativo.Suspencao;
 import br.com.rtools.associativo.db.SuspencaoDB;
 import br.com.rtools.associativo.db.SuspencaoDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
 public class SuspencaoBean {
 
-    private Suspencao suspencao = new Suspencao();
-    private String mensagem = "";
-    private List<Suspencao> listaSuspencao = new ArrayList();
+    private Suspencao suspencao;
+    private String message;
+    private List<Suspencao> listSuspencao;
 
-    public void salvar() {
+    @PostConstruct
+    public void init() {
+        suspencao = new Suspencao();
+        message = "";
+        listSuspencao = new ArrayList<Suspencao>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("suspencaoBean");
+        GenericaSessao.remove("pessoaPesquisa");
+    }
+
+    public void clear() {
+        GenericaSessao.remove("suspencaoBean");
+    }
+
+    public void save() {
         if (suspencao.getPessoa().getId() == -1) {
-            mensagem = "Pesquise um sócio para Suspender!";
+            message = "Pesquise um sócio para Suspender!";
             return;
         }
         if (suspencao.getDataInicial().length() < 7 || suspencao.getDataFinal().length() < 7) {
-            mensagem = "Data inválida!";
+            message = "Data inválida!";
             return;
         }
         if (DataHoje.converteDataParaInteger(suspencao.getDataInicial())
                 > DataHoje.converteDataParaInteger(suspencao.getDataFinal())) {
-            mensagem = "Data inicial não pode ser maior que data final!";
+            message = "Data inicial não pode ser maior que data final!";
             return;
         }
         if (suspencao.getMotivo().equals("") || suspencao.getMotivo() == null) {
-            mensagem = "Digite um motivo de Suspensão!";
+            message = "Digite um motivo de Suspensão!";
             return;
         }
         SuspencaoDB suspencaoDB = new SuspencaoDBToplink();
         if (suspencaoDB.existeSuspensaoSocio(suspencao)) {
-            mensagem = "Sócio já encontra-se suspenso!";
+            message = "Sócio já encontra-se suspenso!";
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (suspencao.getId() == -1) {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(suspencao)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Suspensão salva com sucesso.";
+            if (di.save(suspencao, true)) {
+                novoLog.save(
+                        "ID: " + suspencao.getId()
+                        + " - Pessoa: (" + suspencao.getPessoa().getId()+ ") " + suspencao.getPessoa().getNome()
+                        + " - Período: " + suspencao.getDataInicial() + " até " + suspencao.getDataFinal()
+                        + " - Motivo: " + suspencao.getMotivo()
+                );
+                message = "Suspensão salva com sucesso.";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao salvar suspensão!";
+                message = "Erro ao salvar suspensão!";
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(suspencao)) {
-                salvarAcumuladoDB.comitarTransacao();
-                mensagem = "Suspensão atualizada com sucesso.";
+            Suspencao s = (Suspencao) di.find(suspencao);
+            String beforeUpdate = 
+                    "ID: " + s.getId()
+                    + " - Pessoa: (" + s.getPessoa().getId()+ ") " + s.getPessoa().getNome()
+                    + " - Período: " + s.getDataInicial() + " até " + s.getDataFinal()
+                    + " - Motivo: " + s.getMotivo()
+            ;
+            if (di.update(suspencao, true)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + suspencao.getId()
+                        + " - Pessoa: (" + suspencao.getPessoa().getId()+ ") " + suspencao.getPessoa().getNome()
+                        + " - Período: " + suspencao.getDataInicial() + " até " + suspencao.getDataFinal()
+                        + " - Motivo: " + suspencao.getMotivo()
+                );
+                message = "Suspensão atualizada com sucesso.";
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
-                mensagem = "Erro ao atualizar suspensão!";
+                message = "Erro ao atualizar suspensão!";
             }
         }
     }
 
-    public void excluir() {
+    public void delete() {
         if (suspencao.getId() == -1) {
-            mensagem = "Selecione uma suspensão para ser excluída!";
+            message = "Selecione uma suspensão para ser excluída!";
             return;
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        suspencao = (Suspencao) salvarAcumuladoDB.pesquisaCodigo(suspencao.getId(), "Suspencao");
-        salvarAcumuladoDB.abrirTransacao();
-        if (salvarAcumuladoDB.deletarObjeto(suspencao)) {
-            salvarAcumuladoDB.comitarTransacao();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        if (di.delete(suspencao, true)) {
+            novoLog.delete(
+                    "ID: " + suspencao.getId()
+                    + " - Pessoa: (" + suspencao.getPessoa().getId()+ ") " + suspencao.getPessoa().getNome()
+                    + " - Período: " + suspencao.getDataInicial() + " até " + suspencao.getDataFinal()
+                    + " - Motivo: " + suspencao.getMotivo()
+            );            
             suspencao = new Suspencao();
-            mensagem = "Suspensão deletada com sucesso!";
-            listaSuspencao.clear();
+            message = "Suspensão deletada com sucesso!";
+            listSuspencao.clear();
         } else {
-            salvarAcumuladoDB.desfazerTransacao();
-            mensagem = "Erro ao deletar suspensão!";
+            message = "Erro ao deletar suspensão!";
         }
     }
 
     public void novo() {
         suspencao = new Suspencao();
-        mensagem = "";
+        message = "";
     }
 
-    public String editar(Suspencao s) {
-        suspencao = s;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", suspencao.getPessoa());
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+    public String edit(Suspencao s) {
+        DaoInterface di = new Dao();
+        suspencao = (Suspencao) di.rebind(s);
+        GenericaSessao.put("pessoaPesquisa", suspencao.getPessoa());
+        GenericaSessao.put("linkClicado", true);
         return "suspencao";
     }
 
-    public List<Suspencao> getListaSuspencao() {
-        if (listaSuspencao.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            listaSuspencao = (List<Suspencao>) salvarAcumuladoDB.listaObjeto("Suspencao", true);
+    public List<Suspencao> getListSuspencao() {
+        if (listSuspencao.isEmpty()) {
+            DaoInterface di = new Dao();
+            listSuspencao = (List<Suspencao>) di.list(new Suspencao(), true);
         }
-        return listaSuspencao;
+        return listSuspencao;
     }
 
-    public void setListaSuspencao(List<Suspencao> listaSuspencao) {
-        this.listaSuspencao = listaSuspencao;
+    public void setListSuspencao(List<Suspencao> listSuspencao) {
+        this.listSuspencao = listSuspencao;
     }
 
     public Suspencao getSuspencao() {
@@ -121,11 +158,11 @@ public class SuspencaoBean {
         this.suspencao = suspencao;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

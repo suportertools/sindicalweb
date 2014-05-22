@@ -118,18 +118,18 @@ public class ProdutoBean implements Serializable {
             if (dao.save(produto)) {
                 dao.commit();
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Salvar", produto.toString());
+                novoLog.save(produto.toString());
                 mensagem = "Produto cadastrado com sucesso.";
             } else {
                 dao.rollback();
                 mensagem = "Erro ao adicionar registro!";
             }
         } else {
-            Produto produtoAntes = (Produto) dao.find(produto);
+            Produto beforeUpdate = (Produto) dao.find(produto);
             if (dao.update(produto)) {
-                if (!produto.equals(produtoAntes)) {
+                if (!produto.equals(beforeUpdate)) {
                     NovoLog novoLog = new NovoLog();
-                    novoLog.novo("Alterar", "De" + produtoAntes.toString() + " para " + produto.toString());
+                    novoLog.update(beforeUpdate.toString(), produto.toString());
                 }
                 dao.commit();
                 mensagem = "Produto atualizado com sucesso.";
@@ -191,7 +191,7 @@ public class ProdutoBean implements Serializable {
             }
             if (dao.delete(dao.find(produto))) {
                 NovoLog novoLog = new NovoLog();
-                novoLog.novo("Excluir", produto.toString());
+                novoLog.delete(produto.toString());
                 dao.commit();
                 clear();
                 mensagem = "Produto excluído com sucesso.";

@@ -23,15 +23,15 @@
                 <p:outputLabel value="Pesquisa Subgrupo Convênio" styleClass="fonteHeader"/>
                 <p:panel style="clear: both;" styleClass="no-border"></p:panel>
                 <h:form id="form_pesquisa_subgrupo_convenio">
-                    <p:dataTable value="#{subGrupoConvenioBean.listaSubGrupoConvenios}" var="subGrupoConvenio" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true" styleClass=" margin-bottom-max">
+                    <p:dataTable value="#{subGrupoConvenioBean.listSubGrupoConvenios}" var="subGrupoConvenio" emptyMessage="Nenhum registro encontrado" scrollHeight="400" scrollable="true" styleClass=" margin-bottom-max">
                         <p:column headerText="ID" width="20">
-                            <p:commandLink action="#{subGrupoConvenioBean.editar(subGrupoConvenio)}" value="#{subGrupoConvenio.grupoConvenio.id}" />
+                            <p:commandLink action="#{subGrupoConvenioBean.edit(subGrupoConvenio)}" value="#{subGrupoConvenio.grupoConvenio.id}" />
                         </p:column>
                         <p:column headerText="Grupo">
-                            <p:commandLink action="#{subGrupoConvenioBean.editar(subGrupoConvenio)}" value="#{subGrupoConvenio.grupoConvenio.descricao}" />
+                            <p:commandLink action="#{subGrupoConvenioBean.edit(subGrupoConvenio)}" value="#{subGrupoConvenio.grupoConvenio.descricao}" />
                         </p:column>
                         <p:column headerText="Subgrupo">
-                            <p:commandLink action="#{subGrupoConvenioBean.editar(subGrupoConvenio)}" value="#{subGrupoConvenio.descricao}" />
+                            <p:commandLink action="#{subGrupoConvenioBean.edit(subGrupoConvenio)}" value="#{subGrupoConvenio.descricao}" />
                         </p:column>
                         <f:facet name="footer" class="text-left">
                             Atalho: <p:commandLink value="Cadastrar Subgrupo" title="Cadastrar novo subgrupo" action="#{chamadaPaginaBean.subGrupoConvenio()}" styleClass="margin-top-max underline-hover" style="color: red;"/>

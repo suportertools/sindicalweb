@@ -66,7 +66,7 @@
                             <h:panelGrid columns="3">
                                 <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisa Cnae"/>
                                 <h:outputText value="#{registroPatronalBean.cnae.numero} - #{registroPatronalBean.cnae.cnae}" styleClass="fontePadraoNegrito" rendered="#{registroPatronalBean.cnae.id != -1}"/>
-                                <p:commandButton icon="ui-icon-plus" action="#{registroPatronalBean.addCnae}" title="Adicionar um novo Cnae"  oncomplete="PF('dgl_panel_mensagem').show();" update="i_panel_mensagem id_patronal_cnaes" />
+                                <p:commandButton icon="ui-icon-plus" action="#{registroPatronalBean.addCnae}" title="Adicionar um novo Cnae"  oncomplete="PF('dlg_message').show();" update="i_panel_mensagem id_patronal_cnaes" />
                             </h:panelGrid>
                         </h:panelGrid>
                         
@@ -81,38 +81,38 @@
                                 </p:column>                                
                                 <p:column styleClass="text-center">
                                     <f:facet name="header"><h:outputText value="Excluir"/></f:facet>
-                                    <p:commandButton icon="ui-icon-trash" action="#{registroPatronalBean.excluirCnae(cnae)}" style="cursor: pointer" title="Excluir cnae #{cnae.cnae.cnae}" update=":form_patronal:growl :form_patronal:id_patronal_cnaes"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{registroPatronalBean.deleteCnae(cnae)}" style="cursor: pointer" title="Excluir cnae #{cnae.cnae.cnae}" update=":form_patronal:growl :form_patronal:id_patronal_cnaes"/>
                                 </p:column>
                             </p:dataTable>
                         </p:panel>
                         <p:panelGrid columns="4" style="clear: both;" styleClass="margin-top-max sbb">
                             <p:column>
-                                <p:commandButton value="Salvar" title="Salvar" onclick="PF('dgl_panel_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
+                                <p:commandButton value="Salvar" title="Salvar" onclick="PF('dlg_save').show()" disabled="#{controleAcessoBean.botaoSalvar}" type="button"/>
                                 <p:commandButton value="Novo" title="Novo" action="#{registroPatronalBean.novo}" update="id_panel_patronal"/>
-                                <p:commandButton value="Excluir" title="Excluir" onclick="PF('dgl_panel_excluir').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
+                                <p:commandButton value="Excluir" title="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" type="button"/>
                                 <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPatronal}" title="Pesquisar"/>
                             </p:column>
                         </p:panelGrid>
                     </p:panel>
-                    <p:dialog id="i_panel_salvar" widgetVar="dgl_panel_salvar" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
+                    <p:dialog id="i_panel_salvar" widgetVar="dlg_save" modal="true" closable="true" width="300" header="Deseja salvar este registro?">
                         <p:panelGrid columns="2" styleClass="sbb">
-                            <p:commandButton value="Sim" title="Salvar" action="#{registroPatronalBean.salvar()}" update="i_panel_mensagem id_panel_patronal"  oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_salvar').hide();" />
-                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_salvar').hide()"/>
+                            <p:commandButton value="Sim" title="Salvar" action="#{registroPatronalBean.save()}" update="i_panel_mensagem id_panel_patronal"  oncomplete="PF('dlg_message').show(); PF('dlg_save').hide();" />
+                            <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide()"/>
                         </p:panelGrid>
                     </p:dialog>
-                    <p:dialog id="i_panel_excluir" widgetVar="dgl_panel_excluir" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
+                    <p:dialog id="i_panel_excluir" widgetVar="dlg_delete" modal="true" width="300" closable="true" header="Deseja excluir este registro?">
                         <center>
                             <p:panelGrid columns="2" styleClass="sbb">
-                                <p:commandButton value="Sim" title="Excluir" action="#{registroPatronalBean.excluir()}" update="i_panel_mensagem id_panel_patronal" oncomplete="PF('dgl_panel_mensagem').show(); PF('dgl_panel_excluir').hide();"  />
-                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dgl_panel_excluir').hide()"/>
+                                <p:commandButton value="Sim" title="Excluir" action="#{registroPatronalBean.delete()}" update="i_panel_mensagem id_panel_patronal" oncomplete="PF('dlg_message').show(); PF('dlg_delete').hide();"  />
+                                <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_delete').hide()"/>
                             </p:panelGrid>
                         </center>
                     </p:dialog>
-                    <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dgl_panel_mensagem" header="Mensagem">
+                    <p:dialog id="i_panel_mensagem" modal="true" width="300" widgetVar="dlg_message" header="Mensagem">
                         <center>
                             <h:outputLabel value="#{registroPatronalBean.mensagem}" id="outConfirma"/>
                             <br /><br />
-                            <p:commandButton value="Ok" title="Ok" oncomplete="PF('dgl_panel_mensagem').hide()"  />
+                            <p:commandButton value="Ok" title="Ok" oncomplete="PF('dlg_message').hide()"  />
                         </center>
                     </p:dialog>
                 </h:form>
