@@ -5,6 +5,7 @@ import br.com.rtools.arrecadacao.ConvencaoCidade;
 import br.com.rtools.arrecadacao.ConvencaoPeriodo;
 import br.com.rtools.arrecadacao.db.ConvencaoPeriodoDB;
 import br.com.rtools.arrecadacao.db.ConvencaoPeriodoDBTopLink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -85,10 +86,17 @@ public class ConvencaoPeriodoBean {
             return;
         }
         DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (getConvencaoPeriodo().getId() == -1) {
             di.openTransaction();
             if (di.save(getConvencaoPeriodo())) {
                 di.commit();
+                novoLog.save(
+                        "ID: " + getConvencaoPeriodo().getId()
+                        + " - Convencao: (" + getConvencaoPeriodo().getConvencao().getId() + ") " + getConvencaoPeriodo().getConvencao().getDescricao()
+                        + " - Grupo Cidade: (" + getConvencaoPeriodo().getGrupoCidade().getId() + ") " + getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                        + " - Ref: " + getConvencaoPeriodo().getReferenciaInicial() + " - " + getConvencaoPeriodo().getReferenciaFinal()
+                );
                 convencaoPeriodo = new ConvencaoPeriodo();
                 listConvencaoPeriodos.clear();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
@@ -99,9 +107,21 @@ public class ConvencaoPeriodoBean {
                 setMessage("Erro ao inserir esse registro!");
             }
         } else {
+            ConvencaoPeriodo cp = (ConvencaoPeriodo) di.find(convencaoPeriodo);
+            String beforeUpdate
+                    = "ID: " + cp.getId()
+                    + " - Convencao: (" + cp.getConvencao().getId() + ") " + cp.getConvencao().getDescricao()
+                    + " - Grupo Cidade: (" + cp.getGrupoCidade().getId() + ") " + cp.getGrupoCidade().getDescricao()
+                    + " - Ref: " + cp.getReferenciaInicial() + " - " + cp.getReferenciaFinal();
             di.openTransaction();
             if (di.update(getConvencaoPeriodo())) {
                 di.commit();
+                novoLog.update(beforeUpdate,
+                        "ID: " + convencaoPeriodo.getId()
+                        + " - Convencao: (" + convencaoPeriodo.getConvencao().getId() + ") " + convencaoPeriodo.getConvencao().getDescricao()
+                        + " - Grupo Cidade: (" + convencaoPeriodo.getGrupoCidade().getId() + ") " + convencaoPeriodo.getGrupoCidade().getDescricao()
+                        + " - Ref: " + convencaoPeriodo.getReferenciaInicial() + " - " + convencaoPeriodo.getReferenciaFinal()
+                );                
                 GenericaMensagem.info("Sucesso", "Registro atualizado");
                 setMessage("Sucesso registro atualizado");
             } else {
@@ -114,9 +134,16 @@ public class ConvencaoPeriodoBean {
 
     public void delete() {
         DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (getConvencaoPeriodo().getId() != -1) {
             di.openTransaction();
-            if (di.delete((ConvencaoPeriodo) di.find(convencaoPeriodo))) {
+            if (di.delete(convencaoPeriodo)) {
+                novoLog.delete(
+                        "ID: " + convencaoPeriodo.getId()
+                        + " - Convencao: (" + convencaoPeriodo.getConvencao().getId() + ") " + convencaoPeriodo.getConvencao().getDescricao()
+                        + " - Grupo Cidade: (" + convencaoPeriodo.getGrupoCidade().getId() + ") " + convencaoPeriodo.getGrupoCidade().getDescricao()
+                        + " - Ref: " + convencaoPeriodo.getReferenciaInicial() + " - " + convencaoPeriodo.getReferenciaFinal()
+                );                
                 di.commit();
                 convencaoPeriodo = new ConvencaoPeriodo();
                 listConvencaoPeriodos.clear();

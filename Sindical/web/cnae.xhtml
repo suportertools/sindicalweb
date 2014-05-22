@@ -21,7 +21,7 @@
         
         <f:view>
             <p:panel styleClass="wrapper" style="border: 0px;">
-                <h:form id="formCnae">
+                <h:form id="form_cnae">
                     <c:set scope="request" var="object" value="${cnaeBean.cnae}"/>
                     <h:outputText value="Cnae" styleClass="fonteHeader" />
 
@@ -38,14 +38,18 @@
                     </h:panelGrid>
                         
                     <h:panelGrid style=" clear: both; margin-top: 10px; float: left" columns="4">
-                        <p:commandButton value="Salvar" action="#{cnaeBean.salvar()}" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar este Cnae"/>
-                        <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.novo}"/>
-                        <p:commandButton value="Excluir" onclick="PF('i_dlg_e').show()" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir este Cnae"/>
+                        <p:commandButton value="Salvar" action="#{cnaeBean.save}" disabled="#{controleAcessoBean.botaoSalvar}" title="Salvar este Cnae"/>
+                        <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{cnaeBean.clear}" update=":form_cnae:"/>
+                        <p:commandButton value="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir este Cnae"/>
                         <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaCnae}" title="Pesquisar titulos"/>
                     </h:panelGrid>
-                    <p:dialog widgetVar="i_dlg_e" header="Deseja realmente excluir este CNAE?" resizable="false" width="400" modal="true">
-                        <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cnaeBean.excluir()}" update="formCnae" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
-                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_e').hide()" style="float: left" icon="ui-icon-close"/>       
+                    <p:dialog widgetVar="dlg_delete" header="Deseja realmente excluir este CNAE?" resizable="false" width="400" modal="true">
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Sim"   type="submit" styleClass="ui-confirmdialog-yes" action="#{cnaeBean.delete()}" update=":form_cnae:" onclick="PF('dlg_delete').hide()" icon="ui-icon-check"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()"  icon="ui-icon-close"/>       
+                            </h:panelGrid>
+                        </f:facet>
                     </p:dialog>
                 </h:form>
                     

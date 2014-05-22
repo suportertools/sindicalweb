@@ -67,16 +67,16 @@
                                         <p:inputText value="#{macFilialBean.macFilial.mesa}" size="5"/>
                                     </h:panelGrid>
                                 </p:column>
-                                
+
                                 <p:column>
                                     <h:outputLabel value="Caixa "/>
                                     <br />
-                                    
+
                                     <h:panelGrid columns="2">
                                         <p:selectOneMenu value="#{macFilialBean.idCaixa}" style="width: 200px">
                                             <f:selectItems value="#{macFilialBean.listaCaixa}"/>
                                         </p:selectOneMenu>
-                                        <p:commandButton value="Salvar" action="#{macFilialBean.adicionar}" disabled="#{controleAcessoBean.botaoSalvar}" update="formMacFilial1 :formMacFilial2:tbl"/>
+                                        <p:commandButton value="Salvar" action="#{macFilialBean.add}" disabled="#{controleAcessoBean.botaoSalvar}" update=":formMacFilial1: :formMacFilial2:tbl"/>
                                     </h:panelGrid>
                                 </p:column>
                             </h:panelGrid>
@@ -92,8 +92,9 @@
                             <p:growl id="i_msg_f2" showDetail="true" />  
                             <h:panelGrid id="tbl" style="width:100%; border: 0px; clear: both" columns="1">
                                 <p:dataTable value="#{macFilialBean.listaMacs}" var="linha" emptyMessage="Nenhum Mac Filial encontrado">
+
                                     <p:column headerText="Excluir" style="text-align: center">
-                                        <p:commandButton icon="ui-icon-trash" action="#{macFilialBean.excluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formMacFilial2:i_msg_f2 :formMacFilial2:tbl" />
+                                        <p:commandButton icon="ui-icon-trash" action="#{macFilialBean.delete(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formMacFilial2:i_msg_f2 :formMacFilial2:tbl" />
                                     </p:column>
 
                                     <p:column headerText="Filial">
@@ -111,7 +112,7 @@
                                     <p:column headerText="Nr Mesa">
                                         <h:outputLabel value="#{linha.mesa}" />
                                     </p:column>
-                                    
+
                                     <p:column headerText="Caixa">
                                         <h:outputLabel value="#{linha.caixa.caixa} - #{linha.caixa.descricao}" rendered="#{linha.caixa != null}"/>
                                         <h:outputLabel value="NENHUM CAIXA" rendered="#{linha.caixa == null}"/>

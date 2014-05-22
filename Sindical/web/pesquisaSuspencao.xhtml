@@ -11,21 +11,24 @@
     <f:subview id="header">
         <ui:include src="templatePrime.xhtml"/>
     </f:subview>
-        <f:view>
-            <h:form id="form_pesquisa_suspencao">
+    <f:view>
+        <h:form id="form_pesquisa_suspencao">
             <h:body>
                 <div class="wrapper">
                     <p:outputLabel value="Pesquisa Suspenção" styleClass="fonteHEader"/>
                     <div class="clear"></div>
-                    <p:dataTable value="#{suspencaoBean.listaSuspencao}" var="suspencao" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado">
+                    <p:dataTable value="#{suspencaoBean.listSuspencao}" var="suspencao" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado">
+                        <p:column width="25" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-link" title="Editar registro nº #{suspencao.id}" action="#{suspencaoBean.edit(suspencao)}" />
+                        </p:column>
                         <p:column headerText="Nome">
-                            <p:commandLink value="#{suspencao.pessoa.nome}" action="#{suspencaoBean.editar(suspencao)}" title="ID: #{suspencao.id}"/>
+                            #{suspencao.pessoa.nome}
                         </p:column>
                         <p:column headerText="Data Inicial" width="100" styleClass="text-center">
-                            <p:commandLink value="#{suspencao.dataInicial}" action="#{suspencaoBean.editar(suspencao)}" />
+                            #{suspencao.dataInicial}
                         </p:column>
                         <p:column headerText="Data Final" width="100" styleClass="text-center">
-                            <p:commandLink value="#{suspencao.dataFinal}" action="#{suspencaoBean.editar(suspencao)}" />
+                            #{suspencao.dataFinal}
                         </p:column>
                     </p:dataTable>
                 </div>

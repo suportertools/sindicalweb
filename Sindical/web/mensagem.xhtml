@@ -97,9 +97,9 @@
 
                             <h:panelGrid columns="2" style="width: 100%;">
                                 <h:column>
-                                    <p:commandButton value="Salvar" onclick="i_dlg_s.show()" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                    <p:commandButton value="Salvar" onclick="PF('dlg_save').show()" disabled="#{controleAcessoBean.botaoSalvar}" />
                                     <p:commandButton value="Novo" action="#{mensagemConvencaoBean.novo}" />
-                                    <p:commandButton value="Excluir" onclick="i_dlg_e.show()" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                    <p:commandButton value="Excluir" onclick="PF('dlg_delete').show()" disabled="#{controleAcessoBean.botaoExcluir}" />
                                 </h:column>
 
                                 <h:column>
@@ -133,44 +133,44 @@
                                 -->
                             </h:panelGrid>
 
-                            <p:dataTable value="#{mensagemConvencaoBean.listaMensagens}" var="linha" id="tbl" paginator="true" rows="15" emptyMessage="Nenhuma mensagem encontrada!">
+                            <p:dataTable value="#{mensagemConvencaoBean.listaMensagens}" var="mensagemConvencao" id="tbl" paginator="true" rows="15" emptyMessage="Nenhuma mensagem encontrada!">
                                 <p:column headerText="ID" style="text-align: center">
-                                    <p:commandLink ajax="false" value="#{linha.id}" action="#{mensagemConvencaoBean.editar(linha)}" />
+                                    <p:commandLink ajax="false" value="#{mensagemConvencao.id}" action="#{mensagemConvencaoBean.editar(mensagemConvencao)}" />
                                 </p:column>
 
                                 <p:column headerText="Referência">
-                                    <h:outputText value="#{linha.referencia}"/>
+                                    <h:outputText value="#{mensagemConvencao.referencia}"/>
                                 </p:column>
 
                                 <p:column headerText="Contribuição">        
-                                    <h:outputText value="#{linha.servicos.descricao}"/>
+                                    <h:outputText value="#{mensagemConvencao.servicos.descricao}"/>
                                 </p:column>
 
                                 <p:column headerText="Tipo">
-                                    <h:outputText value="#{linha.tipoServico.descricao}"/>
+                                    <h:outputText value="#{mensagemConvencao.tipoServico.descricao}"/>
                                 </p:column>
 
                                 <p:column headerText="Convenção">
-                                    <h:outputText value="#{linha.convencao.descricao}"/>
+                                    <h:outputText value="#{mensagemConvencao.convencao.descricao}"/>
                                 </p:column>
 
                                 <p:column headerText="Grupo">
-                                    <h:outputText value="#{linha.grupoCidade.descricao}"/>
+                                    <h:outputText value="#{mensagemConvencao.grupoCidade.descricao}"/>
                                 </p:column>
 
                                 <p:column headerText="Vencimento">
-                                    <h:outputText value="#{linha.vencimento}"/>
+                                    <h:outputText value="#{mensagemConvencao.vencimento}"/>
                                 </p:column>
                             </p:dataTable>
 
-                            <p:dialog widgetVar="i_dlg_s" header="Salvar esta mensagem?" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{mensagemConvencaoBean.salvar()}" onclick="i_dlg_s.hide()" update="formMensagem" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
+                            <p:dialog widgetVar="PF('dlg_save')" header="Salvar esta mensagem?" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{mensagemConvencaoBean.salvar()}" onclick="PF('dlg_save').hide()" update="formMensagem" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
-                            <p:dialog widgetVar="i_dlg_e" header="Excluir esta mensagem" resizable="false" width="400" modal="true">
-                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{mensagemConvencaoBean.excluir()}" onclick="i_dlg_e.hide()" update="formMensagem" style="clear: both; float: left" icon="ui-icon-check"/>  
-                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
+                            <p:dialog widgetVar="PF('dlg_delete')" header="Excluir esta mensagem" resizable="false" width="400" modal="true">
+                                <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{mensagemConvencaoBean.excluir()}" onclick="PF('dlg_delete').hide()" update="formMensagem" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>  
                         </h:form>
                     </p:panel>

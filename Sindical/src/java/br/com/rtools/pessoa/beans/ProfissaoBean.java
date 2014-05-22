@@ -1,126 +1,129 @@
 package br.com.rtools.pessoa.beans;
 
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Profissao;
-import br.com.rtools.pessoa.db.ProfissaoDB;
-import br.com.rtools.pessoa.db.ProfissaoDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
-import javax.faces.application.FacesMessage;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
 public class ProfissaoBean extends PesquisarProfissaoBean implements Serializable {
-private Profissao prof = new Profissao();
-    private String msgConfirma;
-    private String s_cbo = "";
-    private String s_profissao = "";
-    private int idIndexProfissao = -1;
-    
-    public String novaProfissao(){
+
+    private Profissao prof;
+    private String s_cbo;
+    private String s_profissao;
+
+    @PostConstruct
+    public void init() {
+        prof = new Profissao();
+        s_cbo = "";
+        s_profissao = "";
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("profissaoBean");
+    }
+
+    public void clearProfissao() {
         prof = new Profissao();
         super.profissao = new Profissao();
-        return "profissao";
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-    
-    public void editarProfissao(Profissao pr){
+    public void editProfissao(Profissao pr) {
         //prof = (Profissao) super.getListaProfissao().get(super.getIdIndexProf());
         prof = pr;//(Profissao) super.getListaProfissao().get(super.getIdIndexProf());
         super.getListaProfissao().clear();
     }
 
-    public String salvarProfissao(){
+    public void saveProfissao() {
 
-        if (prof.getProfissao().equals("")){
-            msgConfirma = "Digite a profissão!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            return null;
+        if (prof.getProfissao().equals("")) {
+            GenericaMensagem.warn("Validação", "Digite a profissão!");
+            return;
         }
-
-        ProfissaoDB db = new ProfissaoDBToplink();
+        NovoLog novoLog = new NovoLog();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
-        if (prof.getId() == -1){
-            if(sv.descricaoExiste(prof.getProfissao(), "profissao", "Profissao")){
-                msgConfirma = "Profissão já cadastrada!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                return null;
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (prof.getId() == -1) {
+            if (sv.descricaoExiste(prof.getProfissao(), "profissao", "Profissao")) {
+                GenericaMensagem.warn("Validação", "Profissão já cadastrada!");
+                return;
             }
-            if(!prof.getCbo().equals("")){
-                if(sv.descricaoExiste(prof.getCbo(), "cbo", "Profissao")){
-                    msgConfirma = "CBO já existe!";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-                    return null;
+            if (!prof.getCbo().equals("")) {
+                if (sv.descricaoExiste(prof.getCbo(), "cbo", "Profissao")) {
+                    GenericaMensagem.warn("Validação", "CBO já existe!");
+                    return;
                 }
             }
-            if (sv.inserirObjeto(prof)){
-                msgConfirma = "Profissão salva com sucesso";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
-            }else{
-                msgConfirma = "Erro ao salvar profissão!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+            if (di.save(prof)) {
+                GenericaMensagem.info("Sucesso!", "Profissão salva com sucesso");
+                novoLog.save(
+                        "ID: " + prof.getId()
+                        + " - Profissão: " + prof.getProfissao()
+                        + " - CBO: " + prof.getCbo()
+                );
+            } else {
+                GenericaMensagem.warn("Erro", "Erro ao salvar profissão!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
-        }else{
-            if (sv.alterarObjeto(prof)){
-                msgConfirma = "Profissão atualizada com sucesso";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
-            }else{
-                msgConfirma = "Erro ao atualizar profissão!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
+        } else {
+            Profissao p = (Profissao) di.find(prof);
+            String beforeUpdate
+                    = "ID: " + p.getId()
+                    + " - Profissão: " + p.getProfissao()
+                    + " - CBO: " + p.getCbo();
+            if (di.update(prof)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + prof.getId()
+                        + " - Profissão: " + prof.getProfissao()
+                        + " - CBO: " + prof.getCbo()
+                );
+                GenericaMensagem.info("Sucesso!", "Profissão atualizada com sucesso");
+            } else {
+                GenericaMensagem.warn("Erro", "Erro ao atualizar profissão!");
                 sv.desfazerTransacao();
-                return null;
+                return;
             }
         }
+        di.commit();
         super.getListaProfissao().clear();
         prof = new Profissao();
-        sv.comitarTransacao();
-        return null;
-    }
-    
-    public String excluirProfissao(){
-        
-        if (prof.getId() == -1){
-            msgConfirma = "Selecione uma profissão para ser excluída!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            return null;
-        }
-        
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        sv.abrirTransacao();
-        if (sv.deletarObjeto(prof = (Profissao) sv.pesquisaCodigo(prof.getId(), "Profissao"))){
-            msgConfirma = "Profissão deletada com sucesso!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso!", msgConfirma));
-            sv.comitarTransacao();
-        }else{
-            msgConfirma = "Erro ao deletar profissão!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", msgConfirma));
-            sv.desfazerTransacao();
-        }
-        super.getListaProfissao().clear();
-        prof = new Profissao();
-        return null;
-    }
-    
-    public int getIdIndexProfissao() {
-        return idIndexProfissao;
     }
 
-    public void setIdIndexProfissao(int idIndexProfissao) {
-        this.idIndexProfissao = idIndexProfissao;
+    public void deleteProfissao() {
+        if (prof.getId() == -1) {
+            GenericaMensagem.warn("Erro", "Selecione uma profissão para ser excluída!");
+            return;
+        }
+        DaoInterface di = new Dao();
+        di.openTransaction();
+        if (di.delete(prof)) {
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete(
+                    "ID: " + prof.getId()
+                    + " - Profissão: " + prof.getProfissao()
+                    + " - CBO: " + prof.getCbo()
+            );
+            GenericaMensagem.info("Sucesso!", "Profissão deletada com sucesso!");
+            di.commit();
+        } else {
+            GenericaMensagem.warn("Erro", "Erro ao deletar profissão!");
+            di.rollback();
+        }
+        super.getListaProfissao().clear();
+        prof = new Profissao();
     }
 
     public String getS_cbo() {

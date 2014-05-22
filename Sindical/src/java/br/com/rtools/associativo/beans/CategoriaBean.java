@@ -10,6 +10,7 @@ import br.com.rtools.financeiro.db.ServicoRotinaDB;
 import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -44,9 +45,25 @@ public class CategoriaBean {
         ServicosDB dbS = new ServicosDBToplink();
         CategoriaDB db = new CategoriaDBToplink();
         SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+        NovoLog novoLog = new NovoLog();
         if (categoria.getId() == -1) {
             categoria.setGrupoCategoria((GrupoCategoria) sadb.pesquisaObjeto(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()), "GrupoCategoria"));
             if (db.insert(categoria)) {
+                novoLog.save(
+                        "ID: " + categoria.getId()
+                        + " - Categoria: " + categoria.getCategoria()
+                        + " - Grupo Categoria: (" +  categoria.getGrupoCategoria().getId() +") " +  categoria.getGrupoCategoria().getGrupoCategoria()
+                        + " - Carência Balcão: " + categoria.getNrCarenciaBalcao()
+                        + " - Desc. Folha: " + categoria.getNrCarenciaDescFolha()
+                        + " - Empresa Obrigatória: " + categoria.isEmpresaObrigatoria()
+                        + " - Dias: [Dom][" + categoria.isUsaClubeDomingo() + "]"
+                        + "[Seg][" + categoria.isUsaClubeSegunda() + "]"
+                        + "[Ter][" + categoria.isUsaClubeTerca() + "]"
+                        + "[Qua][" + categoria.isUsaClubeQuarta() + "]"
+                        + "[Qui][" + categoria.isUsaClubeQuinta() + "]"
+                        + "[Sex][" + categoria.isUsaClubeSexta() + "]"
+                        + "[Sab][" + categoria.isUsaClubeSabado() + "]"
+                );
                 msgConfirma = "Categoria salva com Sucesso!";
                 limpar = false;
             } else {
@@ -65,7 +82,37 @@ public class CategoriaBean {
             lista = new ArrayList();
         } else {
             categoria.setGrupoCategoria((GrupoCategoria) sadb.pesquisaCodigo(Integer.parseInt(getListaGrupoCategoria().get(idGrupoCategoria).getDescription()), "GrupoCategoria"));
+            Categoria c = (Categoria) sadb.pesquisaObjeto(categoria.getId(), "Categoria");
+            String beforeUpdate
+                    = "ID: " + c.getId()
+                    + " - Categoria: " + c.getCategoria()
+                    + " - Grupo Categoria: (" +  c.getGrupoCategoria().getId() +") " +  c.getGrupoCategoria().getGrupoCategoria()                    
+                    + " - Carência Balcão: " + c.getNrCarenciaBalcao()
+                    + " - Desc. Folha: " + c.getNrCarenciaDescFolha()
+                    + " - Empresa Obrigatória: " + c.isEmpresaObrigatoria()
+                    + " - Dias: [Dom][" + c.isUsaClubeDomingo() + "]"
+                    + "[Seg][" + c.isUsaClubeSegunda() + "]"
+                    + "[Ter][" + c.isUsaClubeTerca() + "]"
+                    + "[Qua][" + c.isUsaClubeQuarta() + "]"
+                    + "[Qui][" + c.isUsaClubeQuinta() + "]"
+                    + "[Sex][" + c.isUsaClubeSexta() + "]"
+                    + "[Sab][" + c.isUsaClubeSabado() + "]";
             if (db.update(categoria)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + categoria.getId()
+                        + " - Categoria: " + categoria.getCategoria()
+                        + " - Grupo Categoria: (" + categoria.getGrupoCategoria().getId() +") " + categoria.getGrupoCategoria().getGrupoCategoria()
+                        + " - Carência Balcão: " + categoria.getNrCarenciaBalcao()
+                        + " - Desc. Folha: " + categoria.getNrCarenciaDescFolha()
+                        + " - Empresa Obrigatória: " + categoria.isEmpresaObrigatoria()
+                        + " - Dias: [Dom][" + categoria.isUsaClubeDomingo() + "]"
+                        + "[Seg][" + categoria.isUsaClubeSegunda() + "]"
+                        + "[Ter][" + categoria.isUsaClubeTerca() + "]"
+                        + "[Qua][" + categoria.isUsaClubeQuarta() + "]"
+                        + "[Qui][" + categoria.isUsaClubeQuinta() + "]"
+                        + "[Sex][" + categoria.isUsaClubeSexta() + "]"
+                        + "[Sab][" + categoria.isUsaClubeSabado() + "]"
+                );
                 msgConfirma = "Categoria atualizada com Sucesso!";
             } else {
                 msgConfirma = "Erro ao atualizar!";
@@ -96,10 +143,26 @@ public class CategoriaBean {
 
     public String excluir() {
         CategoriaDB db = new CategoriaDBToplink();
+        NovoLog novoLog = new NovoLog();
         if (categoria.getId() != -1) {
             categoria = db.pesquisaCodigo(categoria.getId());
         }
         if (db.delete(categoria)) {
+            novoLog.delete(
+                    "ID: " + categoria.getId()
+                    + " - Categoria: " + categoria.getCategoria()
+                    + " - Grupo Categoria: (" + categoria.getGrupoCategoria().getId() +") " + categoria.getGrupoCategoria().getGrupoCategoria()
+                    + " - Carência Balcão: " + categoria.getNrCarenciaBalcao()
+                    + " - Desc. Folha: " + categoria.getNrCarenciaDescFolha()
+                    + " - Empresa Obrigatória: " + categoria.isEmpresaObrigatoria()
+                    + " - Dias: [Dom][" + categoria.isUsaClubeDomingo() + "]"
+                    + "[Seg][" + categoria.isUsaClubeSegunda() + "]"
+                    + "[Ter][" + categoria.isUsaClubeTerca() + "]"
+                    + "[Qua][" + categoria.isUsaClubeQuarta() + "]"
+                    + "[Qui][" + categoria.isUsaClubeQuinta() + "]"
+                    + "[Sex][" + categoria.isUsaClubeSexta() + "]"
+                    + "[Sab][" + categoria.isUsaClubeSabado() + "]"
+            );
             limpar = true;
             msgConfirma = "Categoria excluída com Sucesso!";
         } else {
@@ -129,13 +192,13 @@ public class CategoriaBean {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pesquisaCategoria", categoria);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
         lista.clear();
-        
+
         for (int i = 0; i < getListaGrupoCategoria().size(); i++) {
-            if ( Integer.valueOf(getListaGrupoCategoria().get(i).getDescription()) == categoria.getGrupoCategoria().getId() ){
+            if (Integer.valueOf(getListaGrupoCategoria().get(i).getDescription()) == categoria.getGrupoCategoria().getId()) {
                 idGrupoCategoria = i;
             }
-        }   
-        
+        }
+
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
             return "categoria";
         } else {
@@ -165,8 +228,8 @@ public class CategoriaBean {
         List<SelectItem> listaG = new Vector<SelectItem>();
         SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         List select = (List<GrupoCategoria>) sadb.listaObjeto("GrupoCategoria", true);
-        for (int i =0; i < select.size(); i++) {
-            listaG.add(new SelectItem(i, (String) ((GrupoCategoria) select.get(i)).getGrupoCategoria(), ""+((GrupoCategoria) select.get(i)).getId()));
+        for (int i = 0; i < select.size(); i++) {
+            listaG.add(new SelectItem(i, (String) ((GrupoCategoria) select.get(i)).getGrupoCategoria(), "" + ((GrupoCategoria) select.get(i)).getId()));
         }
         return listaG;
     }

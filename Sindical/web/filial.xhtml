@@ -22,7 +22,7 @@
         
         <f:view>
             <p:panel styleClass="wrapper" style="border: 0px;">
-                <h:form id="formFilial">
+                <h:form id="form_filial">
                     <p:growl id="i_msg" showDetail="true" />  
                     <c:set scope="request" var="object" value="${filialBean.filial}"/>
 
@@ -32,32 +32,32 @@
                             <h:column>
                                 <p:commandButton value="Adicionar uma Filial" rendered="#{filialBean.filial.filial.pessoa.id == -1}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica}"/>
                                 <h:outputText value="#{filialBean.filial.filial.pessoa.documento} - #{filialBean.filial.filial.pessoa.nome}" styleClass="fontePadraoNegrito" rendered="#{filialBean.filial.filial.pessoa.id != -1}"/>
-                                <p:commandButton value="Salvar" action="#{filialBean.btnAdicionarFilial}" rendered="#{filialBean.filial.filial.pessoa.id != -1}" title="Adicionar esta empresa como Filial" style="margin-left: 20px" update="i_msg i_panel_grid i_panel_novo"/>
+                                <p:commandButton value="Salvar" action="#{filialBean.btnAddFilial}" rendered="#{filialBean.filial.filial.pessoa.id != -1}" title="Adicionar esta empresa como Filial" style="margin-left: 20px" update=":form_filial:"/>
                             </h:column>
                         </h:panelGrid>
                     </p:panel>
                     
                     <h:panelGrid id="i_panel_grid" style="float: left; margin-top: 15px; width: 100%" columns="1">
-                        <p:dataTable value="#{filialBean.listaFilialSemMatriz}" var="linha" id="tbl">                                    
-                            <p:column style="text-align: center" headerText="Excluir">
-                                <p:commandButton icon="ui-icon-trash" action="#{filialBean.excluir(linha)}" update=":formFilial:i_msg :formFilial:i_panel_grid"/>
+                        <p:dataTable value="#{filialBean.listaFilialSemMatriz}" var="filial" id="tbl">                                    
+                            <p:column styleClass="text-center" width="25">
+                                <p:commandButton icon="ui-icon-trash" action="#{filialBean.delete(filial)}" update=":form_filial:"/>
                             </p:column>
 
                             <p:column headerText="Doc / Filial">
-                                <h:outputText value="#{linha.filial.pessoa.documento} - #{linha.filial.pessoa.nome}"/>
+                                <h:outputText value="#{filial.filial.pessoa.documento} - #{filial.filial.pessoa.nome}"/>
                             </p:column>
                         </p:dataTable>         
                     </h:panelGrid>   
                     
-                    <h:panelGrid style="float: left; margin-top: 15px; width: 100%" columns="1">
-                        <p:dataTable value="#{filialBean.listaCidade}" var="linha" id="tbl2">
+                    <h:panelGrid style="float: left; margin-top: 15px; width: 100%" columns="1" id="i_panel">
+                        <p:dataTable value="#{filialBean.listaCidade}" var="filialCidade" id="tbl2">
                             <p:column headerText="Cidade/UF">
-                                <h:outputText value="#{linha.argumento0.cidade}"/>
+                                <h:outputText value="#{filialCidade.argumento0.cidade}"/>
                             </p:column>
 
                             <p:column headerText="Filial">
-                                <p:selectOneMenu id="cbSelectFilial" value="#{linha.argumento1}">
-                                    <p:ajax event="change" listener="#{filialBean.salvarCidadeFilial(linha.argumento0, linha.argumento1)}" update=":formFilial:i_msg :formFilial:i_panel_grid"/>
+                                <p:selectOneMenu id="cbSelectFilial" value="#{filialCidade.argumento1}">
+                                    <p:ajax event="change" listener="#{filialBean.saveCidadeFilial(filialCidade.argumento0, filialCidade.argumento1)}" update=":form_filial:"/>
                                     <f:selectItems value="#{filialBean.result}" />
                                 </p:selectOneMenu>
                             </p:column>

@@ -34,13 +34,13 @@
                     <p:panel styleClass="no-border margin-top-max" id="tbl">
                         <p:dataTable value="#{registroPatronalBean.listaPatronal}" var="patronal" scrollHeight="400" scrollable="true" emptyMessage="Nenhum registro encontrado">
                             <p:column headerText="CNPJ / Pessoa">
-                                <p:commandLink action="#{registroPatronalBean.editar(patronal)}" value="#{patronal.pessoa.documento} / #{patronal.pessoa.nome}" title="Código: #{patronal.id}" />
+                                <p:commandLink action="#{registroPatronalBean.edit(patronal)}" value="#{patronal.pessoa.documento} / #{patronal.pessoa.nome}" title="Código: #{patronal.id}" />
                             </p:column>
                             <p:column headerText="Convenção">
-                                <p:commandLink action="#{registroPatronalBean.editar(patronal)}" value="#{patronal.convencao.descricao}"/>
+                                <p:commandLink action="#{registroPatronalBean.edit(patronal)}" value="#{patronal.convencao.descricao}"/>
                             </p:column>
                             <p:column headerText="Grupo Cidade">
-                                <p:commandLink action="#{registroPatronalBean.editar(patronal)}" value="#{patronal.grupoCidade.descricao}"/>
+                                <p:commandLink action="#{registroPatronalBean.edit(patronal)}" value="#{patronal.grupoCidade.descricao}"/>
                             </p:column>
                         </p:dataTable>
                     </p:panel>

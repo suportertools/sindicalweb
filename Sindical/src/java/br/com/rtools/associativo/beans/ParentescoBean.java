@@ -3,6 +3,9 @@ package br.com.rtools.associativo.beans;
 import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.associativo.db.ParentescoDB;
 import br.com.rtools.associativo.db.ParentescoDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +25,7 @@ public class ParentescoBean {
 
     public String salvar() {
         ParentescoDB db = new ParentescoDBToplink();
+        NovoLog novoLog = new NovoLog();
         if (getParentesco().getParentesco().equals("") || getParentesco().getParentesco() == null) {
             setMsgConfirma("Digite um nome para o parentesco!");
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -32,13 +36,39 @@ public class ParentescoBean {
                 setLimpar(false);
                 setMsgConfirma("Parentesco salvo com sucesso.");
                 GenericaMensagem.info("Sucesso", msgConfirma);
+                novoLog.save(
+                        "ID: " + parentesco.getId()
+                        + " - Parentesco: " + parentesco.getParentesco()
+                        + " - Sexo: " + parentesco.getSexo()
+                        + " - Com Validade?: " + parentesco.isValidade()
+                        + " - Validade: " + parentesco.getNrValidade()
+                        + " - Ativo: " + parentesco.isAtivo()
+                );
                 parentesco = new Parentesco();
             } else {
                 setMsgConfirma("Erro ao salvar parentesco!");
                 GenericaMensagem.warn("Erro", msgConfirma);
             }
         } else {
+            DaoInterface di = new Dao();
+            Parentesco p = (Parentesco) di.find(parentesco);
+            String beforeUpdate = 
+                "ID: " + p.getId()
+                + " - Parentesco: " + p.getParentesco()
+                + " - Sexo: " + p.getSexo()
+                + " - Com Validade?: " + p.isValidade()
+                + " - Validade: " + p.getNrValidade()
+                + " - Ativo: " + p.isAtivo()
+            ;                
             if (db.update(getParentesco())) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + parentesco.getId()
+                        + " - Parentesco: " + parentesco.getParentesco()
+                        + " - Sexo: " + parentesco.getSexo()
+                        + " - Com Validade?: " + parentesco.isValidade()
+                        + " - Validade: " + parentesco.getNrValidade()
+                        + " - Ativo: " + parentesco.isAtivo()
+                );                
                 setMsgConfirma("Parentesco atualizado com sucesso.");
                 GenericaMensagem.info("Sucesso", msgConfirma);
                 parentesco = new Parentesco();
@@ -52,12 +82,21 @@ public class ParentescoBean {
 
     public String excluir() {
         ParentescoDB db = new ParentescoDBToplink();
+        NovoLog novoLog = new NovoLog();
         if (parentesco.getId() == -1) {
             msgConfirma = "Selecione um parentesco para ser excluído!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
         if (db.delete(db.pesquisaCodigo(parentesco.getId()))) {
+            novoLog.delete(
+                    "ID: " + parentesco.getId()
+                    + " - Parentesco: " + parentesco.getParentesco()
+                    + " - Sexo: " + parentesco.getSexo()
+                    + " - Com Validade?: " + parentesco.isValidade()
+                    + " - Validade: " + parentesco.getNrValidade()
+                    + " - Ativo: " + parentesco.isAtivo()
+            );            
             setLimpar(true);
             msgConfirma = "Parentesco deletado com sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);

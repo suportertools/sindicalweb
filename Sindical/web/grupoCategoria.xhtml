@@ -62,21 +62,21 @@
                                             <p:inputText id="idValidade" size="30" value="#{grupoCategoriaBean.grupoCategoria.nrValidadeMesCartao}" />
                                         </p:column>
                                         <p:column>
-                                            <p:commandButton value="Salvar" action="#{grupoCategoriaBean.salvar()}" update="i_panel_cadastro i_tbl" title="Salvar Grupo Categoria" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                            <p:commandButton value="Salvar" action="#{grupoCategoriaBean.save()}" update=":form_grupo_categoria:" title="Salvar Grupo Categoria" disabled="#{controleAcessoBean.botaoSalvar}" />
                                         </p:column>
                                         <p:column>
-                                            <p:commandButton value="Novo" action="#{grupoCategoriaBean.novo}" update="i_panel_cadastro"/>
+                                            <p:commandButton value="Novo" action="#{grupoCategoriaBean.clear}" update=":form_grupo_categoria:"/>
                                         </p:column>
                                         <p:column>
-                                            <p:commandButton value="Excluir" action="#{grupoCategoriaBean.excluir()}" update="i_panel_cadastro i_tbl" title="Excluir Grupo Categoria" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                            <p:commandButton value="Excluir" action="#{grupoCategoriaBean.delete()}" update=":form_grupo_categoria:" title="Excluir Grupo Categoria" disabled="#{controleAcessoBean.botaoExcluir}" />
                                         </p:column>
                                     </p:row>
                                 </p:panelGrid>
                             </p:panel>                            
                             <p:panel id="i_tbl" styleClass="margin-top-max">
-                                <p:dataTable value="#{grupoCategoriaBean.listaGrupoCategoria}" var="grupoCategoria" emptyMessage="Nenhum Grupo Categoria Encontrado!">
+                                <p:dataTable value="#{grupoCategoriaBean.listGrupoCategoria}" var="grupoCategoria" emptyMessage="Nenhum Grupo Categoria Encontrado!">
                                     <p:column headerText="Nome">
-                                        <p:commandLink value="#{grupoCategoria.grupoCategoria}" action="#{grupoCategoriaBean.editar(grupoCategoria)}" update=":form_grupo_categoria:i_panel_cadastro"/>
+                                        <p:commandLink value="#{grupoCategoria.grupoCategoria}" action="#{grupoCategoriaBean.editar(grupoCategoria)}" update=":form_grupo_categoria:"/>
                                     </p:column>
                                     <p:column headerText="Matricula">
                                         <h:outputText value="#{grupoCategoria.nrProximaMatricula}"/>

@@ -10,122 +10,185 @@ import br.com.rtools.arrecadacao.db.OposicaoDBToplink;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.PessoaEmpresa;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.ValidaDocumentos;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
 public class OposicaoBean implements Serializable {
 
-    private Oposicao oposicao = new Oposicao();
-    private OposicaoPessoa oposicaoPessoa = new OposicaoPessoa();
-    private ConvencaoPeriodo convencaoPeriodo = new ConvencaoPeriodo();
-    private List<ConvencaoPeriodo> listaConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
-    private String mensagem = "";
-    private String mensagemCPF = "";
-    private String mensagemEmpresa = "";
-    private int idIndex = 0;
-    private String sexo = "M";
-    private String valorPesquisa = "";
-    private boolean desabilitaPessoa = false;
-    private List<Oposicao> listaOposicaos = new ArrayList<Oposicao>();
-    private String porPesquisa = "todos";
-    private String descricaoPesquisa = "";
-    private String comoPesquisa = "";
-    private Socios socios = new Socios();
-    private boolean removeFiltro = false;
+    private Oposicao oposicao;
+    private OposicaoPessoa oposicaoPessoa;
+    private ConvencaoPeriodo convencaoPeriodo;
+    private List<ConvencaoPeriodo> listaConvencaoPeriodos;
+    private String message;
+    private String mensagemEmpresa;
+    private String sexo;
+    private String valorPesquisa;
+    private boolean desabilitaPessoa;
+    private List<Oposicao> listaOposicaos;
+    private String porPesquisa;
+    private String descricaoPesquisa;
+    private String comoPesquisa;
+    private Socios socios;
+    private boolean removeFiltro;
 
-    public void novo() {
+    @PostConstruct
+    public void init() {
+        oposicao = new Oposicao();
+        oposicaoPessoa = new OposicaoPessoa();
+        convencaoPeriodo = new ConvencaoPeriodo();
+        listaConvencaoPeriodos = new ArrayList<ConvencaoPeriodo>();
+        message = "";
+        mensagemEmpresa = "";
+        sexo = "M";
+        valorPesquisa = "";
+        desabilitaPessoa = false;
+        listaOposicaos = new ArrayList<Oposicao>();
+        porPesquisa = "todos";
+        descricaoPesquisa = "";
+        comoPesquisa = "";
+        socios = new Socios();
+        removeFiltro = false;
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("oposicaoBean");
+        GenericaSessao.remove("oposicaoPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("removeFiltro");
+    }
+
+    public void clear() {
         oposicao = new Oposicao();
         oposicaoPessoa = new OposicaoPessoa();
         convencaoPeriodo = new ConvencaoPeriodo();
         listaConvencaoPeriodos.clear();
         listaOposicaos.clear();
-        idIndex = -1;
         sexo = "";
         porPesquisa = "todos";
-        setMensagem("");
+        message = "";
         setMensagemEmpresa("");
-        setMensagemCPF("");
         setDesabilitaPessoa(false);
         valorPesquisa = "";
         setSexo("M");
     }
 
-    public void salvar() {
+    public void save() {
         if (oposicao.getJuridica().getId() == -1) {
-            mensagem = "Informar o Pessoa Jurídica!";
+            message = "Informar o Pessoa Jurídica!";
             return;
         }
         if (oposicao.getOposicaoPessoa().getNome().equals("")) {
-            mensagem = "Informar o nome da Pessoa!";
+            message = "Informar o nome da Pessoa!";
             return;
         }
         if (oposicao.getConvencaoPeriodo().getId() == -1) {
-            mensagem = "Informar o período de convenção!";
+            message = "Informar o período de convenção!";
             return;
         }
         if (oposicao.getEmissao().isEmpty()) {
-            mensagem = "Campo emissão não pode estar vazio!";
+            message = "Campo emissão não pode estar vazio!";
             return;
         }
         if (socios.getId() != -1) {
             if (socios.getServicoPessoa().isAtivo()) {
-                mensagem = "CPF cadastrado como sócio, inative para salvar oposição!";
+                message = "CPF cadastrado como sócio, inative para salvar oposição!";
                 return;
             }
         }
-        if (!salvarOposicaoPessoa()) {
-            mensagem = "Falha ao salvar oposição pessoa!";
+        DaoInterface di = new Dao();
+        String beforeUpdate = "";
+        Oposicao o = (Oposicao) di.find(oposicao);
+        if (oposicao.getId() != -1) {
+            beforeUpdate = ""
+                    + "ID: " + o.getId()
+                    + " - Pessoa (Oposição Pessoa): (" + o.getOposicaoPessoa().getId() + ") " + o.getOposicaoPessoa().getNome()
+                    + " - Jurídica: (" + o.getJuridica().getPessoa().getId() + ") " + o.getJuridica().getPessoa().getNome()
+                    + " - Convençao Período: (" + o.getConvencaoPeriodo().getId() + ") "
+                    + " [" + o.getConvencaoPeriodo().getConvencao().getDescricao()
+                    + " - " + o.getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                    + " - Ref: " + o.getConvencaoPeriodo().getReferenciaInicial()
+                    + " - " + o.getConvencaoPeriodo().getReferenciaFinal()
+                    + " ]";
+        }
+        if (!saveOposicaoPessoa()) {
+            message = "Falha ao salvar oposição pessoa!";
             return;
         }
 
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        dB.abrirTransacao();
+        NovoLog novoLog = new NovoLog();
+        di.openTransaction();
         if (oposicao.getId() == -1) {
             OposicaoDB oposicaoDB = new OposicaoDBToplink();
             if (oposicaoDB.validaOposicao(oposicao)) {
-                mensagem = "Oposição já cadastrada para essa pessoa para a convenção vigente!";
+                message = "Oposição já cadastrada para essa pessoa para a convenção vigente!";
                 return;
             }
-            if (dB.inserirObjeto(oposicao)) {
-                dB.comitarTransacao();
-                novo();
-                mensagem = "Registro salvo com sucesso.";
+            if (di.save(oposicao)) {
+                novoLog.save(""
+                        + "ID: " + oposicao.getId()
+                        + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
+                        + " - Jurídica: (" + oposicao.getJuridica().getPessoa().getId() + ") " + oposicao.getJuridica().getPessoa().getNome()
+                        + " - Convençao Período: (" + oposicao.getConvencaoPeriodo().getId() + ") "
+                        + " [" + oposicao.getConvencaoPeriodo().getConvencao().getDescricao()
+                        + " - " + oposicao.getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                        + " - Ref: " + oposicao.getConvencaoPeriodo().getReferenciaInicial()
+                        + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
+                        + " ]"
+                );
+                di.commit();
+                clear();
+                setMessage("Registro salvo com sucesso.");
             } else {
-                dB.desfazerTransacao();
-                novo();
-                mensagem = "Falha ao salvar este registro!";
+                di.rollback();
+                clear();
+                message = "Falha ao salvar este registro!";
             }
         } else {
-            if (dB.alterarObjeto(oposicao)) {
-                dB.comitarTransacao();
-                novo();
-                mensagem = "Registro atualizado com sucesso.";
+            if (di.update(oposicao)) {
+                novoLog.update(beforeUpdate, ""
+                        + "ID: " + oposicao.getId()
+                        + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
+                        + " - Jurídica: (" + oposicao.getJuridica().getPessoa().getId() + ") " + oposicao.getJuridica().getPessoa().getNome()
+                        + " - Convençao Período: (" + oposicao.getConvencaoPeriodo().getId() + ") "
+                        + " [" + oposicao.getConvencaoPeriodo().getConvencao().getDescricao()
+                        + " - " + oposicao.getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                        + " - Ref: " + oposicao.getConvencaoPeriodo().getReferenciaInicial()
+                        + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
+                        + " ]"
+                );
+                di.commit();
+                clear();
+                setMessage("Registro atualizado com sucesso.");
             } else {
-                dB.desfazerTransacao();
-                novo();
-                mensagem = "Falha ao excluir este registro!";
+                di.rollback();
+                clear();
+                message = "Falha ao excluir este registro!";
             }
         }
     }
 
-    public String editar(Oposicao o) {
+    public String edit(Oposicao o) {
+        DaoInterface di = new Dao();
         setDesabilitaPessoa(true);
-        oposicao = o;
+        oposicao = (Oposicao) di.rebind(o);
         sexo = oposicao.getOposicaoPessoa().getSexo();
         GenericaSessao.put("oposicaoPesquisa", oposicao);
         GenericaSessao.put("linkClicado", true);
@@ -137,28 +200,28 @@ public class OposicaoBean implements Serializable {
         return urlRetorno;
     }
 
-    public boolean salvarOposicaoPessoa() {
+    public boolean saveOposicaoPessoa() {
         if (oposicao.getOposicaoPessoa().getCpf().equals("___.___.___-__") || oposicao.getOposicaoPessoa().getCpf().equals("")) {
-            mensagem = "Informar o CPF!";
+            message = "Informar o CPF!";
             return false;
         }
         if (!ValidaDocumentos.isValidoCPF(AnaliseString.extrairNumeros(oposicao.getOposicaoPessoa().getCpf()))) {
-            mensagem = "CPF inválido!";
+            message = "CPF inválido!";
             return false;
         }
         oposicao.getOposicaoPessoa().setSexo(sexo);
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        dB.abrirTransacao();
+        DaoInterface di = new Dao();
+        di.openTransaction();
         OposicaoDB oposicaoDB = new OposicaoDBToplink();
         OposicaoPessoa op = oposicaoDB.pesquisaOposicaoPessoa(oposicao.getOposicaoPessoa().getCpf(), oposicao.getOposicaoPessoa().getRg());
         if (op.getId() == -1) {
             if (oposicao.getOposicaoPessoa().getId() == -1) {
-                if (dB.inserirObjeto(oposicao.getOposicaoPessoa())) {
+                if (di.save(oposicao.getOposicaoPessoa())) {
                     listaConvencaoPeriodos.clear();
-                    dB.comitarTransacao();
+                    di.commit();
                     return true;
                 } else {
-                    dB.desfazerTransacao();
+                    di.rollback();
                     return false;
                 }
             }
@@ -168,11 +231,11 @@ public class OposicaoBean implements Serializable {
             } else {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
                     oposicao.getOposicaoPessoa().setId(op.getId());
-                    if (dB.alterarObjeto(oposicao.getOposicaoPessoa())) {
-                        dB.comitarTransacao();
+                    if (di.update(oposicao.getOposicaoPessoa())) {
+                        di.commit();
                         return true;
                     } else {
-                        dB.desfazerTransacao();
+                        di.rollback();
                         return false;
                     }
                 }
@@ -181,27 +244,39 @@ public class OposicaoBean implements Serializable {
         return true;
     }
 
-    public void excluir() {
-        excluir(0);
+    public void delete() {
+        delete(0);
     }
 
-    public void excluir(int id) {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
+    public void delete(int id) {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (id > 0) {
-            oposicao = (Oposicao) dB.pesquisaCodigo(id, "Oposicao");
+            oposicao = (Oposicao) di.find(new Oposicao(), id);
         } else {
-            oposicao = (Oposicao) dB.pesquisaCodigo(oposicao.getId(), "Oposicao");
+            oposicao = (Oposicao) di.find(oposicao);
         }
         if (oposicao.getId() != -1) {
-            dB.abrirTransacao();
-            if (dB.deletarObjeto(oposicao)) {
-                dB.comitarTransacao();
-                novo();
-                mensagem = "Registro excluído com sucesso.";
+            di.openTransaction();
+            if (di.delete(oposicao)) {
+                novoLog.delete(""
+                        + "ID: " + oposicao.getId()
+                        + " - Pessoa (Oposição Pessoa): (" + oposicao.getOposicaoPessoa().getId() + ") " + oposicao.getOposicaoPessoa().getNome()
+                        + " - Jurídica: (" + oposicao.getJuridica().getPessoa().getId() + ") " + oposicao.getJuridica().getPessoa().getNome()
+                        + " - Convençao Período: (" + oposicao.getConvencaoPeriodo().getId() + ") "
+                        + " - [" + oposicao.getConvencaoPeriodo().getConvencao().getDescricao()
+                        + " - " + oposicao.getConvencaoPeriodo().getGrupoCidade().getDescricao()
+                        + " - Ref: " + oposicao.getConvencaoPeriodo().getReferenciaInicial()
+                        + " - " + oposicao.getConvencaoPeriodo().getReferenciaFinal()
+                        + " ]"
+                );
+                di.commit();
+                clear();
+                setMessage("Registro salvo com sucesso.");
             } else {
-                dB.desfazerTransacao();
-                novo();
-                mensagem = "Falha na exclusão do registro!";
+                di.rollback();
+                clear();
+                message = "Falha na exclusão do registro!";
             }
         }
     }
@@ -267,12 +342,12 @@ public class OposicaoBean implements Serializable {
 
     public void convencaoPeriodoConvencaoGrupoCidade() {
         if (oposicao.getJuridica().getId() != -1) {
-            if(oposicao.getConvencaoPeriodo().getId() == -1) {
+            if (oposicao.getConvencaoPeriodo().getId() == -1) {
                 OposicaoDB oposicaoDB = new OposicaoDBToplink();
                 List list = oposicaoDB.pesquisaPessoaConvencaoGrupoCidade(oposicao.getJuridica().getId());
-                ConvencaoPeriodoDB dB = new ConvencaoPeriodoDBTopLink();
+                ConvencaoPeriodoDB di = new ConvencaoPeriodoDBTopLink();
                 if (!list.isEmpty()) {
-                    convencaoPeriodo = dB.convencaoPeriodoConvencaoGrupoCidade((Integer) list.get(0), (Integer) list.get(1));
+                    convencaoPeriodo = di.convencaoPeriodoConvencaoGrupoCidade((Integer) list.get(0), (Integer) list.get(1));
                     if (convencaoPeriodo.getId() == -1) {
                         convencaoPeriodo = new ConvencaoPeriodo();
                     } else {
@@ -286,21 +361,19 @@ public class OposicaoBean implements Serializable {
     }
 
     public Oposicao getOposicao() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa") != null) {
-            oposicao.setJuridica((Juridica) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("juridicaPesquisa"));
+        if (GenericaSessao.exists("juridicaPesquisa")) {
+            oposicao.setJuridica((Juridica) GenericaSessao.getObject("juridicaPesquisa", true));
             mensagemEmpresa = "";
             if (oposicao.getJuridica().getDtFechamento() != null) {
                 mensagemEmpresa = "Empresa está inátiva!";
                 return null;
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
             listaConvencaoPeriodos.clear();
             convencaoPeriodoConvencaoGrupoCidade();
         }
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("oposicaoPesquisa") != null) {
+        if (GenericaSessao.exists("oposicaoPesquisa")) {
             setDesabilitaPessoa(true);
-            oposicao = (Oposicao) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("oposicaoPesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("oposicaoPesquisa");
+            oposicao = (Oposicao) GenericaSessao.getObject("oposicaoPesquisa", true);
             listaConvencaoPeriodos.clear();
             convencaoPeriodoConvencaoGrupoCidade();
         }
@@ -327,20 +400,12 @@ public class OposicaoBean implements Serializable {
         this.convencaoPeriodo = convencaoPeriodo;
     }
 
-    public String getMensagem() {
-        return mensagem;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMensagem(String mensagem) {
-        this.mensagem = mensagem;
-    }
-
-    public String getMsgCPF() {
-        return mensagemCPF;
-    }
-
-    public void setMensagemCPF(String mensagemCPF) {
-        this.mensagemCPF = mensagemCPF;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public void setMensagemEmpresa(String mensagemEmpresa) {
@@ -349,14 +414,6 @@ public class OposicaoBean implements Serializable {
 
     public String getMsgEmpresa() {
         return mensagemEmpresa;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 
     public String getSexo() {
@@ -386,8 +443,8 @@ public class OposicaoBean implements Serializable {
     public List<Oposicao> getListaOposicaos() {
         OposicaoDB oposicaoDB = new OposicaoDBToplink();
         if (listaOposicaos.isEmpty()) {
-            if(removeFiltro) {
-                if(porPesquisa.equals("todos")) {
+            if (removeFiltro) {
+                if (porPesquisa.equals("todos")) {
                     return new ArrayList();
                 }
             }
