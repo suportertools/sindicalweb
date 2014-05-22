@@ -3,11 +3,6 @@
               xmlns="http://xmlns.jcp.org/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">   
-    <managed-bean>
-        <managed-bean-name>filialBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.FilialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
 
     <managed-bean>
         <managed-bean-name>pessoaEnderecoBean</managed-bean-name>
@@ -229,18 +224,6 @@
     <managed-bean>
         <managed-bean-name>tipoCentroComercialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.pessoa.beans.TipoCentroComercialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>centroComercialBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.CentroComercialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>pisoSalarialBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.PisoSalarialJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
