@@ -23,6 +23,8 @@ import br.com.rtools.seguranca.Registro;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.GenericaSessao;
@@ -35,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -47,50 +51,103 @@ import org.primefaces.model.ScheduleEvent;
 @SessionScoped
 public class RecepcaoBean implements Serializable {
 
-    private Agendamento agendamento = new Agendamento();
-    private int idIndex = 0;
-    private int idStatus = 0;
-    private boolean renderConcluir = false;
-    private boolean ocultaData = false;
-    private boolean ocultaSenha = false;
-    private boolean ocultaStatus = false;
-    private boolean ocultaPreposto = false;
-    private boolean ocultaHomologador = false;
-    private boolean ocultaDatapesquisa = false;
-    private boolean ocultaColunaEmpresa = false;
-    private boolean ocultaColunaPessoaFisica = false;
-    private boolean isPesquisarPessoaFisicaFiltro = false;
-    private boolean isPesquisarPessoaJuridicaFiltro = false;
-    private boolean desabilitaAtualizacaoAutomatica = false;
-    private boolean desabilitaPesquisaProtocolo = false;
-    private boolean dataPesquisaTodas = false;
-    private int isCaso = 0;
-    private List listaGrid = new ArrayList();
-    private MacFilial macFilial = null;
-    private String strData = DataHoje.data();
-    private String strDataFinal = DataHoje.data();
-    private String strEndereco = "";
-    private String msgRecepcao = "";
-    private String msgConfirma = "";
-    private String statusEmpresa = "";
-    private Date data = DataHoje.dataHoje();
-    private Date dataInicial = DataHoje.dataHoje();
-    private Date dataFinal = DataHoje.dataHoje();
-    private Fisica fisica = new Fisica();
-    private Juridica juridica = new Juridica();
-    private PessoaEmpresa pessoaEmpresa = new PessoaEmpresa();
-    private PessoaEndereco enderecoEmpresa = new PessoaEndereco();
-    private Recepcao recepcao = new Recepcao();
-    private Registro registro = new Registro();
-    private Profissao profissao = new Profissao();
-    private int idMotivoDemissao = 0;
-    private String tipoPesquisa = "";
-    private String dataPesquisa = "hoje";
-    private Cancelamento cancelamento = new Cancelamento();
-    private List<ParametroSenha> listax = new ArrayList();
-    private int id_protocolo = -1;
-    private String numeroProtocolo = "";
-    private List<ListaAgendamento> listaRecepcaos = new ArrayList<ListaAgendamento>();
+    private Agendamento agendamento;
+    private int idIndex;
+    private int idStatus;
+    private boolean renderConcluir;
+    private boolean ocultaData;
+    private boolean ocultaSenha;
+    private boolean ocultaStatus;
+    private boolean ocultaPreposto;
+    private boolean ocultaHomologador;
+    private boolean ocultaDatapesquisa;
+    private boolean ocultaColunaEmpresa;
+    private boolean ocultaColunaPessoaFisica;
+    private boolean isPesquisarPessoaFisicaFiltro;
+    private boolean isPesquisarPessoaJuridicaFiltro;
+    private boolean desabilitaAtualizacaoAutomatica;
+    private boolean desabilitaPesquisaProtocolo;
+    private boolean dataPesquisaTodas;
+    private int isCaso;
+    private List listaGrid;
+    private MacFilial macFilial;
+    private String strData;
+    private String strDataFinal;
+    private String strEndereco;
+    private String msgRecepcao;
+    private String msgConfirma;
+    private String statusEmpresa;
+    private Date data;
+    private Date dataInicial;
+    private Date dataFinal;
+    private Fisica fisica;
+    private Juridica juridica;
+    private PessoaEmpresa pessoaEmpresa;
+    private PessoaEndereco enderecoEmpresa;
+    private Recepcao recepcao;
+    private Registro registro;
+    private Profissao profissao;
+    private int idMotivoDemissao;
+    private String tipoPesquisa;
+    private String dataPesquisa;
+    private Cancelamento cancelamento;
+    private int id_protocolo;
+    private String numeroProtocolo;
+    private List<ListaAgendamento> listaRecepcaos;
+
+    @PostConstruct
+    public void init() {
+        agendamento = new Agendamento();
+        idIndex = 0;
+        idStatus = 0;
+        renderConcluir = false;
+        ocultaData = false;
+        ocultaSenha = false;
+        ocultaStatus = false;
+        ocultaPreposto = false;
+        ocultaHomologador = false;
+        ocultaDatapesquisa = false;
+        ocultaColunaEmpresa = false;
+        ocultaColunaPessoaFisica = false;
+        isPesquisarPessoaFisicaFiltro = false;
+        isPesquisarPessoaJuridicaFiltro = false;
+        desabilitaAtualizacaoAutomatica = false;
+        desabilitaPesquisaProtocolo = false;
+        dataPesquisaTodas = false;
+        isCaso = 0;
+        listaGrid = new ArrayList();
+        macFilial = null;
+        strData = DataHoje.data();
+        strDataFinal = DataHoje.data();
+        strEndereco = "";
+        msgRecepcao = "";
+        msgConfirma = "";
+        statusEmpresa = "";
+        data = DataHoje.dataHoje();
+        dataInicial = DataHoje.dataHoje();
+        dataFinal = DataHoje.dataHoje();
+        fisica = new Fisica();
+        juridica = new Juridica();
+        pessoaEmpresa = new PessoaEmpresa();
+        enderecoEmpresa = new PessoaEndereco();
+        recepcao = new Recepcao();
+        registro = new Registro();
+        profissao = new Profissao();
+        idMotivoDemissao = 0;
+        tipoPesquisa = "";
+        dataPesquisa = "hoje";
+        cancelamento = new Cancelamento();
+        id_protocolo = -1;
+        numeroProtocolo = "";
+        listaRecepcaos = new ArrayList<ListaAgendamento>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("recepcaoBean");
+        GenericaSessao.remove("juridicaPesquisa");
+        GenericaSessao.remove("fisicaPesquisa");
+    }
 
     public String gerarSenha() {
         if (agendamento.getId() == -1) {
@@ -108,29 +165,29 @@ public class RecepcaoBean implements Serializable {
             return null;
         }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
+        DaoInterface di = new Dao();
+        di.openTransaction();
 
         if (agendamento.getRecepcao() == null) {
             if (recepcao.getId() == -1) {
-                if (!sv.inserirObjeto(recepcao)) {
+                if (!di.save(recepcao)) {
                     msgConfirma = "Erro ao salvar recepção!";
-                    sv.desfazerTransacao();
+                    di.rollback();
                     return null;
                 }
             } else {
-                if (!sv.alterarObjeto(recepcao)) {
+                if (!di.update(recepcao)) {
                     msgConfirma = "Erro ao atualizar recepção!";
-                    sv.desfazerTransacao();
+                    di.rollback();
                     return null;
                 }
             }
             agendamento.setRecepcao(recepcao);
         } else {
             recepcao = agendamento.getRecepcao();
-            if (!sv.alterarObjeto(recepcao)) {
+            if (!di.update(recepcao)) {
                 msgConfirma = "Erro ao atualizar recepção!";
-                sv.desfazerTransacao();
+                di.rollback();
                 return null;
             }
         }
@@ -140,13 +197,13 @@ public class RecepcaoBean implements Serializable {
             return null;
         }
 
-        if (!sv.alterarObjeto(agendamento)) {
+        if (!di.update(agendamento)) {
             msgConfirma = "Erro ao atualizar agendamento!";
-            sv.desfazerTransacao();
+            di.rollback();
             return null;
         }
+        di.commit();
         SenhaHomologacao senhaHomologacao = new SenhaHomologacao();
-        sv.comitarTransacao();
         Collection<ParametroSenha> list = senhaHomologacao.parametros(agendamento);
         if (!list.isEmpty()) {
             msgConfirma = "Senha gerada com sucesso";
@@ -165,33 +222,25 @@ public class RecepcaoBean implements Serializable {
             msgConfirma = "Motivo de cancelamento inválido";
             return null;
         }
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
-        agendamento.setStatus((Status) sv.find("Status", 3));
-
-        sv.abrirTransacao();
-
-        if (!sv.alterarObjeto(agendamento)) {
+        DaoInterface di = new Dao();
+        agendamento.setStatus((Status) di.find(new Status(), 3));
+        di.openTransaction();
+        if (!di.update(agendamento)) {
             msgConfirma = "Erro ao atualizar agendamento";
             return null;
         }
-
         pessoaEmpresa.setDtDemissao(null);
-        if (!sv.alterarObjeto(pessoaEmpresa)) {
+        if (!di.update(pessoaEmpresa)) {
             msgConfirma = "Erro ao atualizar Pessoa Empresa";
             return null;
         }
-
         cancelamento.setAgendamento(agendamento);
         cancelamento.setDtData(DataHoje.dataHoje());
         cancelamento.setUsuario(((Usuario) GenericaSessao.getObject("sessaoUsuario")));
-
-        if (!sv.inserirObjeto(cancelamento)) {
+        if (!di.save(cancelamento)) {
             msgConfirma = "Erro ao salvar cancelamento";
             return null;
         }
-
         strEndereco = "";
         renderConcluir = false;
         msgConfirma = "Horário cancelado com sucesso!";
@@ -203,15 +252,15 @@ public class RecepcaoBean implements Serializable {
         profissao = new Profissao();
         GenericaSessao.remove("juridicaPesquisa");
         GenericaSessao.remove("fisicaPesquisa");
-        sv.comitarTransacao();
+        di.commit();
         return null;
     }
 
     public String pesquisar() {
         if (tipoPesquisa.equals("juridica")) {
-            return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaJuridica();
+            return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).pesquisaPessoaJuridica();
         } else {
-            return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).pesquisaPessoaFisica();
+            return ((ChamadaPaginaBean) GenericaSessao.getObject("chamadaPaginaBean")).pesquisaPessoaFisica();
         }
     }
 
@@ -229,7 +278,7 @@ public class RecepcaoBean implements Serializable {
         SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
         List<Status> list = (List<Status>) sadb.pesquisaObjeto(new int[]{2, 3, 4, 5, 7}, "Status");
         if (!list.isEmpty()) {
-            int i = 0;
+        int i = 0;
             for (i = 0; i < list.size(); i++) {
                 result.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
@@ -240,8 +289,8 @@ public class RecepcaoBean implements Serializable {
 
     public List<SelectItem> getListaMotivoDemissao() {
         List<SelectItem> listaMotivoDemissao = new ArrayList<SelectItem>();
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        List<Demissao> list = (List<Demissao>) sadb.listaObjeto("Demissao", true);
+        DaoInterface di = new Dao();
+        List<Demissao> list = (List<Demissao>) di.list(new Demissao(), true);
         if (!list.isEmpty()) {
             for (int i = 0; i < list.size(); i++) {
                 listaMotivoDemissao.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
@@ -251,8 +300,8 @@ public class RecepcaoBean implements Serializable {
     }
 
     public String salvar() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
+        DaoInterface di = new Dao();
+        di.openTransaction();
         if (registro.isSenhaHomologacao()) {
             if (!recepcao.getHoraInicialPreposto().isEmpty()) {
                 if (recepcao.getPreposto().isEmpty()) {
@@ -261,30 +310,30 @@ public class RecepcaoBean implements Serializable {
                 }
             }
             if (recepcao.getId() == -1) {
-                if (!sv.inserirObjeto(recepcao)) {
+                if (!di.save(recepcao)) {
                     msgConfirma = "Erro ao salvar recepção!";
-                    sv.desfazerTransacao();
+                    di.rollback();
                     return null;
                 }
             } else {
-                if (!sv.alterarObjeto(recepcao)) {
+                if (!di.update(recepcao)) {
                     msgConfirma = "Erro ao atualizar recepção!";
-                    sv.desfazerTransacao();
+                    di.rollback();
                     return null;
                 }
             }
             agendamento.setRecepcao(recepcao);
         }
 
-        if (!sv.alterarObjeto(agendamento)) {
+        if (!di.update(agendamento)) {
             msgConfirma = "Erro ao atualizar!";
-            sv.desfazerTransacao();
+            di.rollback();
             return null;
         } else {
             //agendamento.setRecepcao(null);
         }
         msgConfirma = "Agendamento atualizado com sucesso!";
-        sv.comitarTransacao();
+        di.commit();
         return null;
     }
 
@@ -759,7 +808,8 @@ public class RecepcaoBean implements Serializable {
             registro = new Registro();
         }
         if (registro.getId() == -1) {
-            registro = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
+            DaoInterface di = new Dao();
+            registro = (Registro) di.find(new Registro(), 1);
         }
         return registro;
     }
@@ -1078,7 +1128,8 @@ public class RecepcaoBean implements Serializable {
         } else {
             agendamentos = db.pesquisaAgendamento(idCaso, macFilial.getFilial().getId(), dataInicialA, dataFinalA, 0, fisica.getId(), juridica.getId());
         }
-        Registro reg = (Registro) new SalvarAcumuladoDBToplink().find("Registro", 1);
+        DaoInterface di = new Dao();
+        Registro reg = (Registro) di.find(new Registro(), 1);
         for (int i = 0; i < agendamentos.size(); i++) {
             ListaAgendamento listaAgendamento = new ListaAgendamento();
             listaAgendamento.setAgendamento(agendamentos.get(i));
@@ -1129,5 +1180,23 @@ public class RecepcaoBean implements Serializable {
     public void selecionaDataFinal(SelectEvent selectEvent) {
         ScheduleEvent event = new DefaultScheduleEvent("", (Date) selectEvent.getObject(), (Date) selectEvent.getObject());
         setDataFinal(event.getStartDate());
+    }
+
+    public String getMotivoCancelamento() {
+        String motivo = "";
+        if (agendamento.getId() == -1) {
+            return motivo;
+        }
+        if (agendamento.getStatus().getId() != 3) {
+            return motivo;
+        }
+        HomologacaoDB dB = new HomologacaoDBToplink();
+        Cancelamento c = (Cancelamento) dB.pesquisaCancelamentoPorAgendanto(agendamento.getId());
+        if(c == null) {
+            motivo = "Cancelado no agendamento."; 
+        } else {
+            motivo = "Data: " + c.getData() + " - Motivo: " + c.getMotivo() + " - Cancelado por: " + c.getUsuario().getPessoa().getNome();            
+        }
+        return motivo;
     }
 }

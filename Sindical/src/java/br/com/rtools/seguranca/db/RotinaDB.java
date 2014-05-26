@@ -30,5 +30,7 @@ public interface RotinaDB {
 
     public Rotina pesquisaRotinaPorPagina(String pagina);
     
+    public Rotina pesquisaRotinaPorClasse(String classe);
+    
     public List<Rotina> pesquisaRotinaPorDescricao(String descricaoRotina);
 }

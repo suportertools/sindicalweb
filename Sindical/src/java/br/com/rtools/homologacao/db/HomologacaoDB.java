@@ -2,6 +2,7 @@ package br.com.rtools.homologacao.db;
 
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.Cancelamento;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.pessoa.PessoaEmpresa;
@@ -62,4 +63,6 @@ public interface HomologacaoDB {
     public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo);
 
     public boolean existeHorarioDisponivel(Date date, Horarios horarios);
+    
+    public Cancelamento pesquisaCancelamentoPorAgendanto(int idAgendamento);
 }

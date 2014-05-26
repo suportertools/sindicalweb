@@ -13,9 +13,9 @@ import br.com.rtools.endereco.Bairro;
 import br.com.rtools.endereco.DescricaoEndereco;
 import br.com.rtools.endereco.Logradouro;
 import br.com.rtools.escola.ComponenteCurricular;
-import br.com.rtools.financeiro.Indice;
 import br.com.rtools.estoque.ProdutoGrupo;
 import br.com.rtools.estoque.ProdutoUnidade;
+import br.com.rtools.financeiro.Indice;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.locadoraFilme.Genero;
 import br.com.rtools.logSistema.NovoLog;
@@ -25,15 +25,17 @@ import br.com.rtools.pessoa.TipoEndereco;
 import br.com.rtools.seguranca.*;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
+import br.com.rtools.sistema.Cor;
 import br.com.rtools.suporte.ProStatus;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
@@ -87,52 +89,50 @@ public class SimplesBean implements Serializable {
 
     public void salvar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         NovoLog log = new NovoLog();
+        log.setCadastroSimples(true);
         if (sessoes != null) {
             if (descricao.equals("")) {
                 mensagem = "Informar descrição!";
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+                GenericaMensagem.warn("Erro", mensagem);
                 return;
             }
             if (id == -1) {
                 converteObjeto(sessoes[0]);
                 if (sv.descricaoExiste(descricao, "descricao", objeto.getClass().getSimpleName())) {
                     mensagem = "Descrição já existe " + nomeRotina + " !";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                    GenericaMensagem.info("Sucesso", mensagem);
                     return;
 
                 }
-                sv.abrirTransacao();
-                if (sv.inserirObjeto(objeto)) {
-                    sv.comitarTransacao();
-                    log.save("ID: " + id + " DESCRICAO: " + descricao);
+                if (di.save(objeto, true)) {
+                    editaObjeto(objeto);
+                    log.save("ID: " + id + " - DESCRICAO: " + descricao);
                     mensagem = "Registro salvo com sucesso";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                    GenericaMensagem.info("Sucesso", mensagem);
                     descricao = "";
                     objeto = null;
                     lista.clear();
                     id = -1;
                 } else {
                     mensagem = "Erro ao salvar " + nomeRotina + " ";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
-                    sv.desfazerTransacao();
+                    GenericaMensagem.warn("Erro", mensagem);
                 }
             } else {
+                Object o = di.find(objeto);
                 atualizaObjeto(sessoes[0]);
-                sv.abrirTransacao();
-                if (sv.alterarObjeto(objeto)) {
-                    sv.comitarTransacao();
-                    log.update("", "ID: " + id + " DESCRICAO: " + descricao);
+                if (di.update(objeto, true)) {
+                    log.update(o.toString(), "ID: " + id + " - DESCRICAO: " + descricao);
                     mensagem = "Registro atualizado com sucesso";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+                    GenericaMensagem.info("Sucesso", mensagem);
                     lista.clear();
                     // descricao = "";
                     // objeto = null;
                     // id = -1;
                 } else {
                     mensagem = "Erro ao atualizar " + nomeRotina + " ";
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
-                    sv.desfazerTransacao();
+                    GenericaMensagem.warn("Erro", mensagem);
                 }
             }
         } else {
@@ -152,21 +152,18 @@ public class SimplesBean implements Serializable {
     }
 
     public void excluir(Object o) {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         NovoLog log = new NovoLog();
-        sv.abrirTransacao();
+        log.setCadastroSimples(true);
         objeto = o;
         editaObjeto(objeto);
-        objeto = sv.pesquisaObjeto(id, objeto.getClass().getSimpleName());
-        if (!sv.deletarObjeto(objeto)) {
-            sv.desfazerTransacao();
+        if (!di.delete(objeto, true)) {
             mensagem = "Erro ao excluir registro";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "Erro", mensagem));
+            GenericaMensagem.warn("Erro", mensagem);
         } else {
-            sv.comitarTransacao();
-            log.delete("ID: " + id + " DESCRICAO: " + descricao);
+            log.delete("ID: " + id + " - DESCRICAO: " + descricao);
             mensagem = "Registro excluído com sucesso!";
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "Sucesso", mensagem));
+            GenericaMensagem.info("Sucesso", mensagem);
             lista.clear();
             objeto = null;
             id = -1;
@@ -333,6 +330,8 @@ public class SimplesBean implements Serializable {
             objeto = (ProdutoUnidade) new ProdutoUnidade(id, descricao);
         } else if (tipo.equals("ProdutoGrupo")) {
             objeto = (ProdutoGrupo) new ProdutoGrupo(id, descricao);
+        } else if (tipo.equals("Cor")) {
+            objeto = (Cor) new Cor(id, descricao);
         }
     }
 
@@ -389,6 +388,8 @@ public class SimplesBean implements Serializable {
             ((ProdutoUnidade) objeto).setDescricao(descricao);
         } else if (tipo.equals("ProdutoGrupo")) {
             ((ProdutoGrupo) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Cor")) {
+            ((Cor) objeto).setDescricao(descricao);
         }
     }
 
@@ -471,6 +472,9 @@ public class SimplesBean implements Serializable {
         } else if (obj.getClass().getSimpleName().equals("ProdutoGrupo")) {
             descricao = ((ProdutoGrupo) obj).getDescricao();
             id = ((ProdutoGrupo) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Cor")) {
+            descricao = ((Cor) obj).getDescricao();
+            id = ((Cor) objeto).getId();
         }
         Dao dao = new Dao();
         objeto = dao.rebind(objeto);
@@ -579,6 +583,10 @@ public class SimplesBean implements Serializable {
             }
         } else if (obj.getClass().getSimpleName().equals("ProdutoGrupo")) {
             if (((ProdutoGrupo) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
+        } else if (obj.getClass().getSimpleName().equals("Cor")) {
+            if (((Cor) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
         }
