@@ -97,9 +97,10 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             msgConfirma = "Data anterior ao dia de hoje!";
             return null;
         }
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data())))
+        Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).find("Registro", 1);
+        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(reg.getHomolocaoLimiteMeses(), DataHoje.data())))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(getDataTransferencia()))) {
-            msgConfirma = "Data maior que 3 meses!";
+            msgConfirma = "Data maior que "+reg.getHomolocaoLimiteMeses()+" meses!";
             return null;
         }
 
@@ -327,8 +328,8 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         } else {
             msgAgendamento = "Agendamento retroativo liberado até dia " + reg.getAgendamentoRetroativoString();
         }
-        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(3, DataHoje.data()))) < nrData) {
-            msgAgendamento = "Data maior que 3 meses!";
+        if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(reg.getHomolocaoLimiteMeses(), DataHoje.data()))) < nrData) {
+            msgAgendamento = "Data maior que "+reg.getHomolocaoLimiteMeses()+" meses!";
             return null;
         }
 
