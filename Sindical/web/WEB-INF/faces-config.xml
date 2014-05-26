@@ -3,25 +3,7 @@
               xmlns="http://xmlns.jcp.org/xml/ns/javaee"
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
               xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">   
-
-    <managed-bean>
-        <managed-bean-name>pessoaEnderecoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.PessoaEnderecoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
     
-    <managed-bean>
-        <managed-bean-name>pessoaProfissaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.PessoaProfissaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>tipoDocumentoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.TipoDocumentoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
     <managed-bean>
         <managed-bean-name>planoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.PlanoJSFBean</managed-bean-class>
@@ -43,24 +25,6 @@
     <managed-bean>
         <managed-bean-name>motivoInativacaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.MotivoInativacaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>convencaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.ConvencaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>tipoServicoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.TipoServicoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>servicoValorBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.ServicoValorJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
@@ -119,54 +83,17 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>descontoEmpregadoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.DescontoEmpregadoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>controleAcessoSuporteWebBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.seguranca.controleUsuario.controleAcessoSuporteWebJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>cnaeConvencaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.CnaeConvencaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>webContribuintesBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContribuintesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
 
     <managed-bean>
         <managed-bean-name>webContabilidadeBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.WebContabilidadeJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>indiceMensalBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.IndiceMensalJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>correcaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.CorrecaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>indiceBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.IndiceJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
+    
     <managed-bean>
         <managed-bean-name>contribuicaoSocioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoSocioJSFBean</managed-bean-class>
@@ -192,24 +119,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>bandaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.associativo.beans.BandaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>relatorioSociosBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioSociosJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>tipoCentroComercialBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.pessoa.beans.TipoCentroComercialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>retornoPadraoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.RetornoPadraoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -230,12 +139,6 @@
     <managed-bean>
         <managed-bean-name>movimentosSocialBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.MovimentosReceberSocialJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    
-    <managed-bean>
-        <managed-bean-name>relatorioHomologacaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.relatorios.beans.RelatorioHomologacaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
     
