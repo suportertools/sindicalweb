@@ -14,14 +14,16 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -29,7 +31,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class RelatorioHomologacaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class RelatorioHomologacaoBean implements Serializable {
 
     private int idRelatorio = 0;
     private String selectAccordion = "simples";
@@ -88,7 +92,7 @@ public class RelatorioHomologacaoJSFBean {
                     getConverteNullString(result.get(i).get(8)), // TELEFONE
                     getConverteNullString(result.get(i).get(9)), // HOMOLOGADOR
                     getConverteNullString(result.get(i).get(10)) // OBS
-                    ));
+            ));
         }
 
         try {
