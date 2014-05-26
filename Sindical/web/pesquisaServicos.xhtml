@@ -24,12 +24,12 @@
                         <p:commandButton value="Parcial" action="#{servicosBean.acaoParcial}" title="Retorna somente valores complentos. Ex: André" update="tbl"/>
                     </p:panel>
                     <p:panel styleClass="no-border margin-top-max" id="tbl">
-                        <p:dataTable value="#{servicosBean.listaServicos}" var="servicos" scrollHeight="400" scrollable="true" emptyMessage="Não existem registros">
+                        <p:dataTable value="#{servicosBean.listServicos}" var="servicos" scrollHeight="400" scrollable="true" emptyMessage="Não existem registros">
                             <p:column headerText="Serviço" width="300">
-                                <p:commandLink action="#{servicosBean.editar(servicos)}" value="#{servicos.descricao}" title="Código: #{servicos.id}" />
+                                <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.descricao}" title="Código: #{servicos.id}" />
                             </p:column>
                             <p:column headerText="Plano 5">
-                                <p:commandLink action="#{servicosBean.editar(servicos)}" value="#{servicos.plano5.numero} - #{servicos.plano5.conta}" title="Código: #{servicos.id}"/>
+                                <p:commandLink action="#{servicosBean.edit(servicos)}" value="#{servicos.plano5.numero} - #{servicos.plano5.conta}" title="Código: #{servicos.id}"/>
                             </p:column>
                         </p:dataTable>
                     </p:panel>

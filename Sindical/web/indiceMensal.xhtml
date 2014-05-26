@@ -70,8 +70,8 @@
                                     
                                     <p:column>
                                         <h:outputLabel value="Valor" for="idValor"/><br />
-                                        <p:inputText id="idValor" size="10" value="#{indiceMensalBean.valor}">
-                                            <p:ajax event="change" update="idValor" />
+                                        <p:inputText id="idValor" size="10" value="#{indiceMensalBean.valor}" >
+                                            <p:ajax event="blur" update="idValor" />
                                         </p:inputText>
                                     </p:column> 
                                         
@@ -83,25 +83,25 @@
                             </p:panel>
                             <p:messages id="i_msg" showDetail="true" closable="true" />
                             
-                            <p:dataTable value="#{indiceMensalBean.listaIndiceMensal}" var="linha" id="tbl" style="width: 100%;" emptyMessage="Nenhum Índice Mensal encontrado!">
+                            <p:dataTable value="#{indiceMensalBean.listaIndiceMensal}" var="indiceMensal" id="tbl" emptyMessage="Nenhum Índice Mensal encontrado!">
                                 <p:column headerText="Índice">
-                                    <h:outputLabel value="#{linha.indice.descricao}"/>
+                                    <h:outputLabel value="#{indiceMensal.indice.descricao}"/>
                                 </p:column>
                                 
-                                <p:column headerText="Valor">
-                                    <h:outputLabel value="#{linha.valor}" />
+                                <p:column headerText="Valor" styleClass="text-center" width="100">
+                                    <h:outputLabel value="#{indiceMensal.valor}" />
                                 </p:column>
                                 
-                                <p:column headerText="Mês">
-                                    <h:outputLabel value="#{linha.mes}" />
+                                <p:column headerText="Mês" styleClass="text-center" width="25">
+                                    <h:outputLabel value="#{indiceMensal.mes}" />
                                 </p:column>
                                 
-                                <p:column headerText="Ano">
-                                    <h:outputLabel value="#{linha.ano}" />
+                                <p:column headerText="Ano" styleClass="text-center"  width="50">
+                                    <h:outputLabel value="#{indiceMensal.ano}" />
                                 </p:column>
                                 
-                                <p:column headerText="Excluir" style="text-align: center">
-                                    <p:commandButton icon="ui-icon-trash" action="#{indiceMensalBean.btnExcluir(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formIndiceMensal" />
+                                <p:column styleClass="text-center" width="25">
+                                    <p:commandButton icon="ui-icon-trash" action="#{indiceMensalBean.btnExcluir(indiceMensal)}" disabled="#{controleAcessoBean.botaoExcluir}" update=":formIndiceMensal:" />
                                 </p:column>
                             </p:dataTable>
                         </h:form>
