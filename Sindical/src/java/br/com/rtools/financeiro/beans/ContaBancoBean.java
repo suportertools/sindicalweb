@@ -16,6 +16,7 @@ import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.ListaArgumentos;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
@@ -26,7 +27,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class ContaBancoBean {
+public class ContaBancoBean implements Serializable {
 
     private ContaBanco contaBanco;
     private Indice banco;
