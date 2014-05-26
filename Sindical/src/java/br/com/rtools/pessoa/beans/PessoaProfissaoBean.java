@@ -3,14 +3,19 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.pessoa.PessoaProfissao;
 import br.com.rtools.pessoa.db.PessoaProfissaoDB;
 import br.com.rtools.pessoa.db.PessoaProfissaoDBToplink;
+import java.io.Serializable;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class PessoaProfissaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class PessoaProfissaoBean implements Serializable {
 
     private PessoaProfissao pessoaProfissao = new PessoaProfissao();
 
-    public PessoaProfissaoJSFBean() {
+    public PessoaProfissaoBean() {
         //htmlTable = new HtmlDataTable();
     }
 

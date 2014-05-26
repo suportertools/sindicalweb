@@ -28,12 +28,15 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
@@ -44,7 +47,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-public class RelatorioSociosJSFBean {
+@ManagedBean
+@SessionScoped
+public class RelatorioSociosBean implements Serializable {
 
     private String dataCadastro = "";
     private String dataCadastroFim = "";
@@ -374,7 +379,7 @@ public class RelatorioSociosJSFBean {
         Collection lista = new ArrayList<ParametroSocios>();
 
         for (int i = 0; i < result.size(); i++) {
-            lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() +"/Imagens/LogoCliente.png"),
+            lista.add(new ParametroSocios(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                     getConverteNullString(result.get(i).get(1)), // SITE
                     getConverteNullString(result.get(i).get(2)), // SIN NOME
                     getConverteNullString(result.get(i).get(3)), // SIN ENDERECO
@@ -449,7 +454,7 @@ public class RelatorioSociosJSFBean {
                     getConverteNullInt(result.get(i).get(72)),// COD TIPO COBRANCA
                     getConverteNullString(result.get(i).get(73)),// TELEFONE2
                     getConverteNullString(result.get(i).get(74)) // TELEFONE3                                          
-                    ));
+            ));
 
         }
         try {

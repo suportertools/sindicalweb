@@ -5,10 +5,13 @@ import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import java.io.IOException;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import java.io.Serializable;
 
-public class controleAcessoSuporteWebJSFBean {
+@ManagedBean
+@SessionScoped
+public class ControleAcessoSuporteWebBean {
 
     private Pessoa pessoa = new Pessoa();
     private Usuario usuario = new Usuario();

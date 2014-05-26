@@ -9,11 +9,16 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class PessoaEnderecoJSFBean {
+@ManagedBean
+@SessionScoped
+public class PessoaEnderecoBean implements Serializable {
 
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private String indicaTab;
@@ -113,8 +118,6 @@ public class PessoaEnderecoJSFBean {
         String log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
         String desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
         result = db.pesquisaEnderecoDes(uf, cidade, log, desc, "P");
-
-
 
         /*result = db.pesquisaEnderecoDes(
          pessoaEndereco.getEndereco().getCidade().getUf(),
