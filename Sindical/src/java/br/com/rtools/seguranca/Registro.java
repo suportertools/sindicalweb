@@ -97,6 +97,8 @@ public class Registro implements java.io.Serializable {
     @JoinColumn(name = "ID_EMAIL_PROTOCOLO", referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.EAGER)
     private SisEmailProtocolo sisEmailProtocolo;
+    @Column(name = "HOM_NR_LIMITE_MESES", columnDefinition = "INTEGER DEFAULT 3")
+    private int homolocaoLimiteMeses;
 
     public Registro() {
         this.id = -1;
@@ -139,6 +141,7 @@ public class Registro implements java.io.Serializable {
         this.conviteQuantidadeSocio = 10;
         this.sisEmailPorta = 25;
         this.sisEmailProtocolo = new SisEmailProtocolo();
+        this.homolocaoLimiteMeses = 3;
     }
 
     public Registro(int id,
@@ -179,7 +182,8 @@ public class Registro implements java.io.Serializable {
             int conviteQuantidadeSocio,
             String sisEmailResposta,
             int sisEmailPorta,
-            SisEmailProtocolo sisEmailProtocolo) {
+            SisEmailProtocolo sisEmailProtocolo,
+            int homolocaoLimiteMeses) {
 
         this.id = id;
         this.filial = filial;
@@ -220,6 +224,7 @@ public class Registro implements java.io.Serializable {
         this.sisEmailResposta = sisEmailResposta;
         this.sisEmailPorta = sisEmailPorta;
         this.sisEmailProtocolo = sisEmailProtocolo;
+        this.homolocaoLimiteMeses = homolocaoLimiteMeses;
     }
 
     public int getId() {
@@ -560,5 +565,13 @@ public class Registro implements java.io.Serializable {
 
     public void setSisEmailProtocolo(SisEmailProtocolo sisEmailProtocolo) {
         this.sisEmailProtocolo = sisEmailProtocolo;
+    }
+
+    public int getHomolocaoLimiteMeses() {
+        return homolocaoLimiteMeses;
+    }
+
+    public void setHomolocaoLimiteMeses(int homolocaoLimiteMeses) {
+        this.homolocaoLimiteMeses = homolocaoLimiteMeses;
     }
 }
