@@ -4,17 +4,24 @@ import br.com.rtools.seguranca.Evento;
 import br.com.rtools.seguranca.Log;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.beans.SimplesBean;
 import br.com.rtools.seguranca.db.RotinaDB;
 import br.com.rtools.seguranca.db.RotinaDBToplink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaSessao;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 
 public class NovoLog extends salvaLogs {
+
+    private boolean transaction = false;
+    private boolean cadastroSimples = false;
+    private final List<Log> listLogs = new ArrayList<Log>();
 
     // LOG ARQUIVOS    
     public String novo(String acao, String obs) {
@@ -33,6 +40,55 @@ public class NovoLog extends salvaLogs {
     // LOG NO BANCO DE DADOS
     /**
      * <p>
+     * <strong>startList</strong></p>
+     * <p>
+     * <strong>Example:</strong>startList();</p>
+     * <p>
+     * Abre uma transação e cria uma lista do processo atual para geração de
+     * log, essa semana só será finalizada se houver o commit do processo.
+     * Evitando assim gerar logs sem necessidade. Finish: commit() or
+     * rollback()</p>
+     *
+     * @author Bruno
+     *
+     */
+    public void startList() {
+        transaction = true;
+    }
+
+    /**
+     * <p>
+     * <strong>saveList</strong></p>
+     * <p>
+     * Grava todos os logs da transação atual. Finish: saveList()</p>
+     *
+     * @author Bruno
+     *
+     */
+    public void saveList() {
+        for (Log l : listLogs) {
+            execute(l);
+        }
+        listLogs.clear();
+        transaction = false;
+    }
+
+    /**
+     * <p>
+     * <strong>cancelList</strong></p>
+     * <p>
+     * Apaga todos os logs da transação atual. Finish: cancelList()</p>
+     *
+     * @author Bruno
+     *
+     */
+    public void cancelList() {
+        listLogs.clear();
+        transaction = false;
+    }
+
+    /**
+     * <p>
      * <strong>Live</strong></p>
      * <p>
      * <strong>Example:</strong>live("User" + user.getLogin());</p>
@@ -43,8 +99,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void live(String infoLive) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null);
-        execute(log);
+        if (transaction) {
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null));
+        } else {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", null);
+            execute(log);
+        }
     }
 
     /**
@@ -58,8 +118,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void save(String infoLive) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1));
-        execute(log);
+        if (transaction) {
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1)));
+        } else {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, "", getEvento(1));
+            execute(log);
+        }
     }
 
     /**
@@ -75,8 +139,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void save(Object object, boolean isObject) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1));
-        execute(log);
+        if (transaction) {
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1)));
+        } else {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), "", getEvento(1));
+            execute(log);
+        }
     }
 
     /**
@@ -92,9 +160,13 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void update(String beforeUpdate, String afterUpdate) {
-        if(!beforeUpdate.equals(afterUpdate)) {
-            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3));
-            execute(log);
+        if (!beforeUpdate.equals(afterUpdate)) {
+            if (transaction) {
+                listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3)));
+            } else {
+                Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate, afterUpdate, getEvento(3));
+                execute(log);
+            }
         }
     }
 
@@ -112,8 +184,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void update(Object beforeUpdate, Object afterUpdate, boolean isObject) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3));
-        execute(log);
+        if (transaction) {
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3)));
+        } else {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), beforeUpdate.toString(), afterUpdate.toString(), getEvento(3));
+            execute(log);
+        }
     }
 
     /**
@@ -128,8 +204,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void delete(String infoLive) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2));
-        execute(log);
+        if (transaction) {
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2)));
+        } else {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), infoLive, null, getEvento(2));
+            execute(log);
+        }
     }
 
     /**
@@ -145,8 +225,12 @@ public class NovoLog extends salvaLogs {
      *
      */
     public void delete(Object object, boolean isObject) {
-        Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2));
-        execute(log);
+        if (transaction) {
+            listLogs.add(new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2)));
+        } else {
+            Log log = new Log(-1, new Date(), DataHoje.livre(new Date(), "HH:mm"), getUsuario(), getRotina(), object.toString(), null, getEvento(2));
+            execute(log);
+        }
     }
 
     /**
@@ -171,16 +255,28 @@ public class NovoLog extends salvaLogs {
     }
 
     public Rotina getRotina() {
-        HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
-        String nomePagina = this.converteURL(paginaRequerida.getRequestURI());
-        RotinaDB rotinaDB = new RotinaDBToplink();
-        Rotina rotina = rotinaDB.pesquisaRotinaPorPagina(nomePagina);
-        try {
+        if (cadastroSimples) {
+            String classe = ((SimplesBean) GenericaSessao.getObject("simplesBean")).getSessoes()[0];
+            RotinaDB rotinaDB = new RotinaDBToplink();
+            Rotina rotina = rotinaDB.pesquisaRotinaPorClasse(classe);
+            if (rotina == null) {
+                return null;
+            }
             if (rotina.getId() != -1) {
                 return rotina;
             }
-        } catch (Exception e) {
+        } else {
+            HttpServletRequest paginaRequerida = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            String nomePagina = this.converteURL(paginaRequerida.getRequestURI());
+            RotinaDB rotinaDB = new RotinaDBToplink();
+            Rotina rotina = rotinaDB.pesquisaRotinaPorPagina(nomePagina);
+            try {
+                if (rotina.getId() != -1) {
+                    return rotina;
+                }
+            } catch (Exception e) {
 
+            }
         }
         return null;
     }
@@ -209,5 +305,13 @@ public class NovoLog extends salvaLogs {
         } catch (Exception e) {
         }
         return null;
+    }
+
+    public boolean isCadastroSimples() {
+        return cadastroSimples;
+    }
+
+    public void setCadastroSimples(boolean cadastroSimples) {
+        this.cadastroSimples = cadastroSimples;
     }
 }

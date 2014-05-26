@@ -527,7 +527,7 @@ public class JuridicaBean implements Serializable {
         SalvarAcumuladoDB dbSalvar = new SalvarAcumuladoDBToplink();
         JuridicaDB db = new JuridicaDBToplink();
         TipoDocumentoDB dbDoc = new TipoDocumentoDBToplink();
-        Pessoa pessoa = juridica.getPessoa();
+        Pessoa pessoa = getJuridica().getPessoa();
         List listDocumento;
         if (listaEnd.isEmpty() || pessoa.getId() == -1) {
             adicionarEnderecos();
@@ -622,7 +622,7 @@ public class JuridicaBean implements Serializable {
                 gerarLoginSenhaPessoa(juridica.getPessoa(), dbSalvar);
             }
             Juridica jur = (Juridica) dbSalvar.pesquisaCodigo(juridica.getId(), "Juridica");
-            String beforeUpdate = "ID: " + jur.getId() + " - Pessoa: ("+jur.getPessoa().getId()+") " + jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura() + " - Fechamento: " + jur.getAbertura() + " - I.E.: " + jur.getInscricaoEstadual() + " - Insc. Mun.: " + jur.getInscricaoMunicipal() + " - Responsável: " + jur.getResponsavel();
+            String beforeUpdate = "ID: " + jur.getId() + " - Pessoa: (" + jur.getPessoa().getId() + ") " + jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura() + " - Fechamento: " + jur.getAbertura() + " - I.E.: " + jur.getInscricaoEstadual() + " - Insc. Mun.: " + jur.getInscricaoMunicipal() + " - Responsável: " + jur.getResponsavel();
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
                 msgConfirma = "Cadastro atualizado com Sucesso!";
@@ -1789,15 +1789,15 @@ public class JuridicaBean implements Serializable {
         return indicaTab;
     }
 
-    public void setJuridica(Juridica juridica) {
-        this.juridica = juridica;
-    }
-
     public Juridica getJuridica() {
         if (juridica.getFantasia().isEmpty() || juridica.getFantasia() == null) {
             juridica.setFantasia(juridica.getPessoa().getNome());
         }
         return juridica;
+    }
+
+    public void setJuridica(Juridica juridica) {
+        this.juridica = juridica;
     }
 
     public String getStrGrupoCidade() {

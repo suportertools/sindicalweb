@@ -5,13 +5,19 @@ import br.com.rtools.financeiro.ServicoContaCobranca;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.financeiro.db.*;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class ServicoContaCobrancaJSFBean {
+@ManagedBean
+@SessionScoped
+public class ServicoContaCobrancaBean {
 
     private ServicoContaCobranca servicoContaCobranca = new ServicoContaCobranca();
     private Servicos servico = new Servicos();
@@ -58,19 +64,24 @@ public class ServicoContaCobrancaJSFBean {
 
     public String adicionar() {
         ServicoContaCobrancaDB servContaCobrancaDB = new ServicoContaCobrancaDBToplink();
-        ServicosDB servicosDB = new ServicosDBToplink();
-        TipoServicoDB tipoServicoDB = new TipoServicoDBToplink();
-        ContaCobrancaDB contaCobrancaDB = new ContaCobrancaDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if ((servicoContaCobranca != null) && (servicoContaCobranca.getId() == -1)) {
-            servico = servicosDB.pesquisaCodigo(Integer.valueOf(getListaServico().get(getIdServicos()).getDescription()));
-            tipoServico = tipoServicoDB.pesquisaCodigo(Integer.valueOf(getListaTipoServico().get(getIdTipoServico()).getDescription()));
-            contaCobranca = contaCobrancaDB.pesquisaCodigo(Integer.valueOf(getListaContaCobranca().get(getIdContaCobranca()).getDescription()));
+            servico = (Servicos) di.find(new Servicos(), Integer.parseInt(getListaServico().get(getIdServicos()).getDescription()));
+            tipoServico = (TipoServico) di.find(new TipoServico(), Integer.parseInt(getListaTipoServico().get(getIdTipoServico()).getDescription()));
+            contaCobranca = (ContaCobranca) di.find(new ContaCobranca(), Integer.parseInt(getListaContaCobranca().get(getIdContaCobranca()).getDescription()));
             List serv = servContaCobrancaDB.pesquisaServPorIdServIdTipoServ(servico.getId(), tipoServico.getId());
             if (serv.isEmpty()) {
                 servicoContaCobranca.setServicos(servico);
                 servicoContaCobranca.setTipoServico(tipoServico);
                 servicoContaCobranca.setContaCobranca(contaCobranca);
-                if (servContaCobrancaDB.insert(servicoContaCobranca)) {
+                if (di.save(servicoContaCobranca, true)) {
+                    novoLog.save(
+                            "ID: " + servicoContaCobranca.getId()
+                            + " - Serviço: (" + servicoContaCobranca.getServicos().getId() + ") " + servicoContaCobranca.getServicos().getDescricao()
+                            + " - Tipo Serviço: (" + servicoContaCobranca.getTipoServico().getId() + ") " + servicoContaCobranca.getTipoServico().getDescricao()
+                            + " - Conta Cobrança: " + servicoContaCobranca.getContaCobranca().getId()
+                    );
                     msgConfirma = "Serviço adicionado!";
                     GenericaMensagem.info("Sucesso", msgConfirma);
                 } else {
@@ -88,17 +99,20 @@ public class ServicoContaCobrancaJSFBean {
     }
 
     public String excluir(ServicoContaCobranca scc) {
-        ServicoContaCobrancaDB db = new ServicoContaCobrancaDBToplink();
-        servicoContaCobranca = scc; //listaServicoCobranca.get(idIndex);
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        servicoContaCobranca = scc;
         if (servicoContaCobranca.getId() != -1) {
-            db.getEntityManager().getTransaction().begin();
-            servicoContaCobranca = db.pesquisaCodigo(servicoContaCobranca.getId());
-            if (db.delete(servicoContaCobranca)) {
-                db.getEntityManager().getTransaction().commit();
+            if (di.delete(servicoContaCobranca, true)) {
+                novoLog.delete(
+                        "ID: " + servicoContaCobranca.getId()
+                        + " - Serviço: (" + servicoContaCobranca.getServicos().getId() + ") " + servicoContaCobranca.getServicos().getDescricao()
+                        + " - Tipo Serviço: (" + servicoContaCobranca.getTipoServico().getId() + ") " + servicoContaCobranca.getTipoServico().getDescricao()
+                        + " - Conta Cobrança: " + servicoContaCobranca.getContaCobranca().getId()
+                );
                 msgConfirma = "Serviço excluido!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
-                db.getEntityManager().getTransaction().rollback();
                 msgConfirma = "Erro ao excluir serviço!";
                 GenericaMensagem.warn("Erro", msgConfirma);
             }
@@ -120,46 +134,39 @@ public class ServicoContaCobrancaJSFBean {
     }
 
     public List<SelectItem> getListaServico() {
-        List<SelectItem> result = new Vector<SelectItem>();
-        int i = 0;
+        List<SelectItem> selectItems = new ArrayList<SelectItem>();
         ServicosDB db = new ServicosDBToplink();
-        List select = db.pesquisaTodos();
-        while (i < select.size()) {
-            result.add(new SelectItem(new Integer(i),
-                    (String) ((Servicos) select.get(i)).getDescricao(),
-                    Integer.toString(((Servicos) select.get(i)).getId())));
-            i++;
+        List list = db.pesquisaTodos();
+        for (int i = 0; i < list.size(); i++) {
+            selectItems.add(new SelectItem(i, (String) ((Servicos) list.get(i)).getDescricao(), Integer.toString(((Servicos) list.get(i)).getId())));
         }
-        return result;
+        return selectItems;
     }
 
     public List<SelectItem> getListaContaCobranca() {
-        List<SelectItem> result = new Vector<SelectItem>();
-        int i = 0;
-        ContaCobrancaDB db = new ContaCobrancaDBToplink();
-        List contaCobrancas = db.pesquisaTodos();
-        while (i < contaCobrancas.size()) {
-            result.add(new SelectItem(new Integer(i),
-                    (String) ((ContaCobranca) contaCobrancas.get(i)).getCodCedente() + " - "
-                    + (String) ((ContaCobranca) contaCobrancas.get(i)).getContaBanco().getBanco().getBanco(),
-                    Integer.toString(((ContaCobranca) contaCobrancas.get(i)).getId())));
-            i++;
+        List<SelectItem> selectItems = new ArrayList<SelectItem>();
+        DaoInterface di = new Dao();
+        List<ContaCobranca> list = (List<ContaCobranca>) di.list(new ContaCobranca());
+        for (int i = 0; i < list.size(); i++) {
+            selectItems.add(new SelectItem(i,
+                    list.get(i).getCodCedente() + " - "
+                    + list.get(i).getContaBanco().getBanco().getBanco(),
+                    Integer.toString(list.get(i).getId())));
+
         }
-        return result;
+        return selectItems;
     }
 
     public List<SelectItem> getListaTipoServico() {
-        List<SelectItem> result = new Vector<SelectItem>();
-        int i = 0;
-        TipoServicoDB db = new TipoServicoDBToplink();
-        List tipoServicos = db.pesquisaTodos();
-        while (i < tipoServicos.size()) {
-            result.add(new SelectItem(new Integer(i),
-                    (String) ((TipoServico) tipoServicos.get(i)).getDescricao(),
-                    Integer.toString(((TipoServico) tipoServicos.get(i)).getId())));
-            i++;
+        List<SelectItem> selectItems = new ArrayList<SelectItem>();
+        DaoInterface di = new Dao();
+        List<TipoServico> list = (List<TipoServico>) di.list(new TipoServico());
+        for (int i = 0; i < list.size(); i++) {
+            selectItems.add(new SelectItem(i,
+                    list.get(i).getDescricao(),
+                    Integer.toString(list.get(i).getId())));
         }
-        return result;
+        return selectItems;
     }
 
     public ServicoContaCobranca getServicoContaCobranca() {

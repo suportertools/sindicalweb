@@ -2,6 +2,7 @@ package br.com.rtools.homologacao.db;
 
 import br.com.rtools.arrecadacao.Oposicao;
 import br.com.rtools.homologacao.Agendamento;
+import br.com.rtools.homologacao.Cancelamento;
 import br.com.rtools.homologacao.Horarios;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.pessoa.PessoaEmpresa;
@@ -783,6 +784,21 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public Cancelamento pesquisaCancelamentoPorAgendanto(int idAgendamento) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT C FROM Cancelamento AS C WHERE C.agendamento.id = :agendamento");
+            query.setParameter("agendamento", idAgendamento);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return (Cancelamento) query.getSingleResult();
+            }
+        } catch (Exception e) {
+
+        }
+        return null;
     }
 
 }

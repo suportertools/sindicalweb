@@ -11,6 +11,7 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
@@ -328,31 +329,56 @@ public class ProdutoBean implements Serializable {
             return;
         }
         estoque.setCustoMedio(Moeda.converteUS$(custoMedio));
-        Dao dao = new Dao();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (estoque.getId() == -1) {
-            estoque.setEstoqueTipo((EstoqueTipo) dao.find(new EstoqueTipo(), Integer.parseInt(listaSelectItem[4].get(indices[4]).getDescription())));
-            estoque.setFilial((Filial) dao.find(new Filial(), Integer.parseInt(listaSelectItem[5].get(indices[5]).getDescription())));
+            estoque.setEstoqueTipo((EstoqueTipo) di.find(new EstoqueTipo(), Integer.parseInt(listaSelectItem[4].get(indices[4]).getDescription())));
+            estoque.setFilial((Filial) di.find(new Filial(), Integer.parseInt(listaSelectItem[5].get(indices[5]).getDescription())));
             estoque.setProduto(produto);
             ProdutoDao produtoDao = new ProdutoDao();
             if (produtoDao.existeProdutoEstoqueFilialTipo(estoque)) {
                 GenericaMensagem.warn("Validação", "Produto e tipo já cadastrado para esta filial!!");
                 return;
             }
-            dao.openTransaction();
-            if (dao.save(estoque)) {
-                dao.commit();
+            di.openTransaction();
+            if (di.save(estoque)) {
+                novoLog.save(
+                        "ID: " + estoque.getId()
+                        + " - Filial: (" + estoque.getFilial().getId() + ") " + estoque.getFilial().getFilial().getPessoa().getNome()
+                        + " - Produto: (" + estoque.getProduto().getId() + ") " + estoque.getProduto().getDescricao()
+                        + " - Estoque Tipo: (" + estoque.getEstoqueTipo().getId() + ") " + estoque.getEstoqueTipo().getDescricao()
+                        + " - Estoque: " + estoque.getEstoque()
+                        + " - Custo Médio: " + estoque.getCustoMedio()
+                );
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido som sucesso");
             } else {
-                dao.rollback();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao inserir registro!");
             }
         } else {
-            dao.openTransaction();
-            if (dao.update(estoque)) {
-                dao.commit();
+            Estoque e = (Estoque) di.find(estoque);
+            String beforeUpdate
+                    = "ID: " + e.getId()
+                    + " - Filial: (" + e.getFilial().getId() + ") " + e.getFilial().getFilial().getPessoa().getNome()
+                    + " - Produto: (" + e.getProduto().getId() + ") " + e.getProduto().getDescricao()
+                    + " - Estoque Tipo: (" + e.getEstoqueTipo().getId() + ") " + e.getEstoqueTipo().getDescricao()
+                    + " - Estoque: " + e.getEstoque()
+                    + " - Custo Médio: " + e.getCustoMedio();
+            di.openTransaction();
+            if (di.update(estoque)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + estoque.getId()
+                        + " - Filial: (" + estoque.getFilial().getId() + ") " + estoque.getFilial().getFilial().getPessoa().getNome()
+                        + " - Produto: (" + estoque.getProduto().getId() + ") " + estoque.getProduto().getDescricao()
+                        + " - Estoque Tipo: (" + estoque.getEstoqueTipo().getId() + ") " + estoque.getEstoqueTipo().getDescricao()
+                        + " - Estoque: " + estoque.getEstoque()
+                        + " - Custo Médio: " + estoque.getCustoMedio()
+                );
+                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro atualizado som sucesso");
             } else {
-                dao.rollback();
+                di.rollback();
                 GenericaMensagem.warn("Erro", "Ao atualizado registro!");
             }
         }
@@ -382,7 +408,16 @@ public class ProdutoBean implements Serializable {
     public void deleteEstoque(Estoque e) {
         if (e.getId() != -1) {
             Dao dao = new Dao();
+            NovoLog novoLog = new NovoLog();
             if (dao.delete((Estoque) dao.find(e), true)) {
+                novoLog.delete(
+                        "ID: " + e.getId()
+                        + " - Filial: (" + e.getFilial().getId() + ") " + e.getFilial().getFilial().getPessoa().getNome()
+                        + " - Produto: (" + e.getProduto().getId() + ") " + e.getProduto().getDescricao()
+                        + " - Estoque Tipo: (" + e.getEstoqueTipo().getId() + ") " + e.getEstoqueTipo().getDescricao()
+                        + " - Estoque: " + e.getEstoque()
+                        + " - Custo Médio: " + e.getCustoMedio()
+                );
                 GenericaMensagem.info("Sucesso", "Registro removido");
             } else {
                 GenericaMensagem.warn("Erro", "Ao remover registro!");
@@ -459,7 +494,9 @@ public class ProdutoBean implements Serializable {
 
     public void saveSubItens(Object object) {
         Dao dao = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (dao.save(object, true)) {
+            novoLog.save("Adicionado via cadastro de produto: " + object.toString());
             GenericaMensagem.info("Sucesso", "Registro inserido som sucesso");
         } else {
             GenericaMensagem.warn("Erro", "Ao inserir registro!");

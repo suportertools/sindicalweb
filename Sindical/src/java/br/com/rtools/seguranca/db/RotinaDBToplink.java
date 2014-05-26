@@ -79,11 +79,11 @@ public class RotinaDBToplink extends DB implements RotinaDB {
             query.setParameter("descricaoRotina", rotina.getRotina().toUpperCase());
             List list = query.getResultList();
             if (!list.isEmpty()) {
-                return true; 
+                return true;
             }
         } catch (Exception e) {
         }
-        return false; 
+        return false;
     }
 
     @Override
@@ -92,6 +92,24 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         try {
             Query qry = getEntityManager().createQuery("select rot from Rotina rot where rot.pagina like '%" + pagina + "%'");
             rotina = (Rotina) qry.getSingleResult();
+        } catch (Exception e) {
+        }
+        return rotina;
+    }
+
+    @Override
+    public Rotina pesquisaRotinaPorClasse(String classe) {
+        Rotina rotina = new Rotina();
+        try {
+            Query qry = getEntityManager().createQuery("SELECT R FROM Rotina AS R WHERE R.classe = :classe");
+            qry.setParameter("classe", classe);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                if (list.size() > 1) {
+                    return null;
+                }
+                return (Rotina) qry.getSingleResult();
+            }
         } catch (Exception e) {
         }
         return rotina;
@@ -120,7 +138,7 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         }
         return lista;
     }
-    
+
     @Override
     public List<Rotina> pesquisaAcessosOrdem() {
         List<Rotina> lista = new ArrayList();
@@ -145,7 +163,7 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         }
         return rotina;
     }
-    
+
     @Override
     public List<Rotina> pesquisaRotinaPorDescricao(String descricaoRotina) {
         try {
@@ -157,5 +175,5 @@ public class RotinaDBToplink extends DB implements RotinaDB {
         } catch (Exception e) {
         }
         return new ArrayList();
-    }    
+    }
 }

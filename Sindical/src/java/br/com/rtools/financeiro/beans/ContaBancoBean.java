@@ -9,86 +9,140 @@ import br.com.rtools.financeiro.db.ContaBancoDB;
 import br.com.rtools.financeiro.db.ContaBancoDBToplink;
 import br.com.rtools.financeiro.db.Plano5DB;
 import br.com.rtools.financeiro.db.Plano5DBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.ListaArgumentos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-import javax.faces.context.FacesContext;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class ContaBancoJSFBean {
+@ManagedBean
+@SessionScoped
+public class ContaBancoBean {
 
-    private ContaBanco contaBanco = new ContaBanco();
-    private Indice banco = new Indice();
+    private ContaBanco contaBanco;
+    private Indice banco;
     private String indice;
     private String msgConfirma;
-    private int idBanco = 0;
-    private int idPlanoContas = 0;
-    private int idFilial = 0;
-    private int idIndex = -1;
-    private Cidade cidade = new Cidade();
-    private Banco Sbanco = null;
-    private Plano5 plano5 = new Plano5();
-    private boolean salvar = false;
-    private List<ContaBanco> listaContaBanco = new ArrayList();
+    private int idBanco;
+    private int idPlanoContas;
+    private int idFilial;
+    private int idIndex;
+    private Cidade cidade;
+    private Banco Sbanco;
+    private Plano5 plano5;
+    private boolean salvar;
+    private List<ContaBanco> listaContaBanco;
 
-    public void removerCidade(){
+    @PostConstruct
+    public void init() {
+        contaBanco = new ContaBanco();
+        banco = new Indice();
+        indice = "";
+        msgConfirma = "";
+        idBanco = 0;
+        idPlanoContas = 0;
+        idFilial = 0;
+        idIndex = -1;
+        cidade = new Cidade();
+        Sbanco = null;
+        plano5 = new Plano5();
+        salvar = false;
+        listaContaBanco = new ArrayList<ContaBanco>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("contaBancoBean");
+        GenericaSessao.remove("contaBancoPesquisa");
+        GenericaSessao.remove("cidadePesquisa");
+    }
+
+    public void removerCidade() {
         cidade = new Cidade();
     }
-    
-    public String salvar() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Filial filial = (Filial) sv.pesquisaCodigo(Integer.parseInt(getListaFilial().get(idFilial).getDescription()), "Filial");
 
+    public String salvar() {
+        DaoInterface di = new Dao();
+        Filial filial = (Filial) di.find(new Filial(), Integer.parseInt(getListaFilial().get(idFilial).getDescription()));
         contaBanco.setFilial(filial);
         if (cidade == null) {
             msgConfirma = "Pesquise uma Cidade!";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Validação", msgConfirma);
             return null;
         }
 
         if (Integer.parseInt(getListaPlano5Conta().get(idPlanoContas).getDescription()) == 0) {
             msgConfirma = "Registro não pode ser salvo sem Plano de Contas!";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Validação", msgConfirma);
             return null;
         }
 
-        Sbanco = (Banco) sv.pesquisaCodigo(Integer.valueOf(getListaBancoCompleta().get(idBanco).getDescription()), "Banco");
+        Sbanco = (Banco) di.find(new Banco(), Integer.parseInt(getListaBancoCompleta().get(idBanco).getDescription()));
         contaBanco.setCidade(cidade);
         contaBanco.setBanco(Sbanco);
 
-        sv.abrirTransacao();
+        NovoLog novoLog = new NovoLog();
+        di.openTransaction();
         if (contaBanco.getId() == -1) {
             salvar = true;
-            if (!sv.inserirObjeto(contaBanco)) {
+            if (!di.save(contaBanco)) {
                 msgConfirma = "Erro ao Salvar!";
                 GenericaMensagem.warn("Erro", msgConfirma);
-                sv.desfazerTransacao();
+                di.rollback();
                 return null;
             }
+            novoLog.save(
+                    "ID: " + contaBanco.getId()
+                    + " - Filial: (" + contaBanco.getFilial().getId() + ") " + contaBanco.getFilial().getFilial().getPessoa().getNome()
+                    + " - Cidade: (" + contaBanco.getCidade().getId() + ") " + contaBanco.getCidade().getCidade() + " - UF: " + contaBanco.getCidade().getUf()
+                    + " - Banco: (" + contaBanco.getBanco().getId() + ") " + contaBanco.getBanco().getBanco().trim()
+                    + " - Agência: " + contaBanco.getAgencia().trim()
+                    + " - C. Conta: " + contaBanco.getConta().trim()
+            );
             msgConfirma = "Conta salva com Sucesso!";
-            GenericaMensagem.warn("Sucesso", msgConfirma);
+            GenericaMensagem.info("Sucesso", msgConfirma);
         } else {
-            if (!sv.alterarObjeto(contaBanco)) {
+            ContaBanco c = (ContaBanco) di.find(contaBanco);
+            String beforeUpdate
+                    = "ID: " + c.getId()
+                    + " - Filial: (" + c.getFilial().getId() + ") " + c.getFilial().getFilial().getPessoa().getNome()
+                    + " - Cidade: (" + c.getCidade().getId() + ") " + c.getCidade().getCidade() + " - UF: " + c.getCidade().getUf()
+                    + " - Banco: (" + c.getBanco().getId() + ") " + c.getBanco().getBanco().trim()
+                    + " - Agência: " + c.getAgencia().trim()
+                    + " - C. Conta: " + c.getConta().trim();
+            if (!di.update(contaBanco)) {
                 msgConfirma = "Erro ao atualizar Conta!";
                 GenericaMensagem.warn("Erro", msgConfirma);
-                sv.desfazerTransacao();
+                di.rollback();
                 return null;
             }
+            novoLog.update(beforeUpdate,
+                    "ID: " + contaBanco.getId()
+                    + " - Filial: (" + contaBanco.getFilial().getId() + ") " + contaBanco.getFilial().getFilial().getPessoa().getNome()
+                    + " - Cidade: (" + contaBanco.getCidade().getId() + ") " + contaBanco.getCidade().getCidade() + " - UF: " + contaBanco.getCidade().getUf()
+                    + " - Banco: (" + contaBanco.getBanco().getId() + ") " + contaBanco.getBanco().getBanco().trim()
+                    + " - Agência: " + contaBanco.getAgencia().trim()
+                    + " - C. Conta: " + contaBanco.getConta().trim()
+            );
             msgConfirma = "Conta atualizada com Sucesso!";
-            GenericaMensagem.warn("Sucesso", msgConfirma);
+            GenericaMensagem.info("Sucesso", msgConfirma);
         }
-        if (!atualizaPlano5Conta(sv)) {
+        if (!atualizaPlano5Conta(di)) {
             msgConfirma = "Erro ao atualizar Plano 5!";
             GenericaMensagem.warn("Erro", msgConfirma);
-            sv.desfazerTransacao();
+            di.rollback();
             return null;
         }
-        sv.comitarTransacao();
+        di.commit();
         novo();
         return null;
     }
@@ -96,12 +150,12 @@ public class ContaBancoJSFBean {
     public void refreshForm() {
     }
 
-    public boolean atualizaPlano5Conta(SalvarAcumuladoDB sv) {
-        plano5 = (Plano5) sv.pesquisaCodigo(Integer.parseInt(getListaPlano5Conta().get(idPlanoContas).getDescription()), "Plano5");
+    public boolean atualizaPlano5Conta(DaoInterface di) {
+        plano5 = (Plano5) di.find(new Plano5(), Integer.parseInt(getListaPlano5Conta().get(idPlanoContas).getDescription()));
         if (plano5.getId() != -1) {
             plano5.setConta(contaBanco.getBanco().getBanco() + " - " + contaBanco.getConta());
             plano5.setContaBanco(contaBanco);
-            if (!sv.alterarObjeto(plano5)) {
+            if (!di.update(plano5)) {
                 return false;
             }
         }
@@ -109,29 +163,38 @@ public class ContaBancoJSFBean {
     }
 
     public String excluir() {
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
         if (contaBanco.getId() != -1) {
-            sv.abrirTransacao();
+            di.openTransaction();
             if (plano5 != null) {
                 plano5.setContaBanco(null);
                 plano5.setConta("??????????????????");
-                if (!sv.alterarObjeto(plano5)) {
+                if (!di.update(plano5)) {
                     msgConfirma = "Erro ao atualizar Plano 5!";
                     GenericaMensagem.warn("Erro", msgConfirma);
-                    sv.desfazerTransacao();
+                    di.rollback();
                     return null;
                 }
             }
-            contaBanco = (ContaBanco) sv.pesquisaCodigo(contaBanco.getId(), "ContaBanco");
-            if (!sv.deletarObjeto(contaBanco)) {
+            if (!di.delete(contaBanco)) {
                 msgConfirma = "Conta não pode ser Excluida!";
                 GenericaMensagem.warn("Erro", msgConfirma);
-                sv.desfazerTransacao();
+                di.rollback();
                 return null;
             } else {
+                novoLog.delete(
+                        "ID: " + contaBanco.getId()
+                        + " - Filial: (" + contaBanco.getFilial().getId() + ") " + contaBanco.getFilial().getFilial().getPessoa().getNome()
+                        + " - Cidade: (" + contaBanco.getCidade().getId() + ") " + contaBanco.getCidade().getCidade() + " - UF: " + contaBanco.getCidade().getUf()
+                        + " - Banco: (" + contaBanco.getBanco().getId() + ") " + contaBanco.getBanco().getBanco().trim()
+                        + " - Agência: " + contaBanco.getAgencia().trim()
+                        + " - C. Conta: " + contaBanco.getConta().trim()
+                );
                 msgConfirma = "Conta Excluida com Sucesso!";
-                GenericaMensagem.warn("Sucesso", msgConfirma);
-                sv.comitarTransacao();
+                GenericaMensagem.info("Sucesso", msgConfirma);
+                di.commit();
+
             }
             novo();
         }
@@ -141,8 +204,8 @@ public class ContaBancoJSFBean {
     public List getListaBanco() {
 //       Pesquisa pesquisa = new Pesquisa();
         ListaArgumentos por = new ListaArgumentos();
-        por.adicionarObjeto(new Vector<List>(), "numero", "S");
-        por.adicionarObjeto(new Vector<List>(), "banco", "S");
+        por.adicionarObjeto(new ArrayList<List>(), "numero", "S");
+        por.adicionarObjeto(new ArrayList<List>(), "banco", "S");
         List result = null;
 //       result = pesquisa.pesquisar("Banco", "banco" , descPesquisa, "banco", comoPesquisa);
 //       result = pesquisa.pesquisarComArgumentos("Indice", "banco" , descPesquisa, por , comoPesquisa, Integer.parseInt(indice));
@@ -183,60 +246,55 @@ public class ContaBancoJSFBean {
                 }
             }
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("contaBancoPesquisa", contaBanco);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
-        if (((String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno")).equals("menuFinanceiro")) {
+        GenericaSessao.put("contaBancoPesquisa", contaBanco);
+        GenericaSessao.put("linkClicado", true);
+        if ((GenericaSessao.getString("urlRetorno")).equals("menuFinanceiro")) {
             return "contaBanco";
         }
-        return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        return GenericaSessao.getString("urlRetorno");
 
     }
 
     public List<SelectItem> getListaBancoCompleta() {
-        ContaBancoDB contaBancoDB = new ContaBancoDBToplink();
-        List<SelectItem> result = new Vector<SelectItem>();
-        List bancos = contaBancoDB.pesquisaTodosBancos();
+        List<SelectItem> selectItems = new ArrayList<SelectItem>();
+        DaoInterface di = new Dao();
+        List<Banco> list = (List<Banco>) di.list(new Banco());
         int i = 0;
-        result.add(new SelectItem(new Integer(i), "Nenhum", "0"));
-        while (i < bancos.size()) {
-            result.add(new SelectItem(new Integer(i + 1),
-                    ((Banco) bancos.get(i)).getNumero() + " - " + ((Banco) bancos.get(i)).getBanco(),
-                    Integer.toString(((Banco) bancos.get(i)).getId())));
+        selectItems.add(new SelectItem(i, "Nenhum", "0"));
+        for (Banco b : list) {
+            selectItems.add(new SelectItem(i + 1, b.getNumero() + " - " + b.getBanco(), Integer.toString(b.getId())));
             i++;
         }
-        return result;
+        return selectItems;
     }
 
     public List<SelectItem> getListaFilial() {
-//        FilialDB filialDB = new FilialDBToplink();
-//        List<Filial> listaFilial = filialDB.pesquisaTodos();
-        List<SelectItem> result = new ArrayList<SelectItem>();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        List<Filial> listaFilial = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);          
+        List<SelectItem> selectItems = new ArrayList<SelectItem>();
+        DaoInterface di = new Dao();
+        List<Filial> listaFilial = (List<Filial>) di.list(new Filial(), true);
         int i = 0;
         while (i < listaFilial.size()) {
-            result.add(new SelectItem(
-                    new Integer(i),
+            selectItems.add(new SelectItem(
+                    i,
                     listaFilial.get(i).getFilial().getPessoa().getNome(),
                     Integer.toString(listaFilial.get(i).getId())));
             i++;
         }
-
         if (contaBanco != null) {
             if (contaBanco.getFilial().getId() != -1) {
-                for (i = 0; i < result.size(); i++) {
-                    if (Integer.parseInt(result.get(i).getDescription()) == contaBanco.getFilial().getId()) {
+                for (i = 0; i < selectItems.size(); i++) {
+                    if (Integer.parseInt(selectItems.get(i).getDescription()) == contaBanco.getFilial().getId()) {
                         setIdFilial(i);
                     }
                 }
             }
         }
-        return result;
+        return selectItems;
     }
 
     public List<SelectItem> getListaPlano5Conta() {
         ContaBancoDB contaBancoDB = new ContaBancoDBToplink();
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         List planoContas;
         if ((contaBanco != null) && (contaBanco.getId() != -1) && salvar == false) {
             planoContas = contaBancoDB.pesquisaPlano5ContaComID(contaBanco.getId());
@@ -244,9 +302,9 @@ public class ContaBancoJSFBean {
             planoContas = contaBancoDB.pesquisaPlano5Conta();
         }
         int i = 0;
-        result.add(new SelectItem(new Integer(i), "Nenhum", "0"));
+        result.add(new SelectItem(i, "Nenhum", "0"));
         while (i < planoContas.size()) {
-            result.add(new SelectItem(new Integer(i + 1),
+            result.add(new SelectItem(i + 1,
                     ((Plano5) planoContas.get(i)).getConta(),
                     Integer.toString(((Plano5) planoContas.get(i)).getId())));
             i++;
@@ -260,7 +318,7 @@ public class ContaBancoJSFBean {
         idPlanoContas = 0;
         salvar = false;
         cidade = new Cidade();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("contaBancoPesquisa");
+        GenericaSessao.remove("contaBancoPesquisa");
         listaContaBanco.clear();
     }
 
@@ -270,7 +328,7 @@ public class ContaBancoJSFBean {
         idBanco = 0;
         idPlanoContas = 0;
         salvar = false;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("contaBancoPesquisa");
+        GenericaSessao.remove("contaBancoPesquisa");
         listaContaBanco.clear();
         return "contaBanco";
     }
@@ -340,9 +398,8 @@ public class ContaBancoJSFBean {
     }
 
     public Cidade getCidade() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
-            cidade = (Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
+        if (GenericaSessao.exists("cidadePesquisa")) {
+            cidade = (Cidade) GenericaSessao.getObject("cidadePesquisa", true);
         } else if (contaBanco.getId() != -1) {
             cidade = contaBanco.getCidade();
         }

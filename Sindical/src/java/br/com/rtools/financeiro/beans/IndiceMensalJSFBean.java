@@ -4,14 +4,14 @@ import br.com.rtools.financeiro.Indice;
 import br.com.rtools.financeiro.IndiceMensal;
 import br.com.rtools.financeiro.db.IndiceMensalDB;
 import br.com.rtools.financeiro.db.IndiceMensalDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.model.SelectItem;
 
 public class IndiceMensalJSFBean {
@@ -34,13 +34,13 @@ public class IndiceMensalJSFBean {
     }
 
     public List<SelectItem> getListaIndices() {
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         int i = 0;
         IndiceMensalDB db = new IndiceMensalDBToplink();
         List select = null;
         select = db.pesquisaTodosIndices();
         while (i < select.size()) {
-            result.add(new SelectItem(new Integer(i),
+            result.add(new SelectItem(i,
                     ((Indice) select.get(i)).getDescricao(),
                     Integer.toString(((Indice) select.get(i)).getId())));
             i++;
@@ -58,15 +58,23 @@ public class IndiceMensalJSFBean {
             return null;
         }
 
-        IndiceMensalDB db = new IndiceMensalDBToplink();
-        Indice indice = new Indice();
-        indice = db.pesquisaCodigoIndice(Integer.valueOf(getListaIndices().get(idIndice).getDescription()));
+        IndiceMensalDB imdb = new IndiceMensalDBToplink();
+        //Indice indice = db.pesquisaCodigoIndice(Integer.valueOf(getListaIndices().get(idIndice).getDescription()));
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
         indiceMensal.setAno(Integer.valueOf(getListaAnos().get(ano).getDescription()));
         indiceMensal.setMes(numMes);
         indiceMensal.setValor(Moeda.substituiVirgulaFloat(valor));
-        indiceMensal.setIndice(indice);
-        if (db.pesquisaIndMensalExistente(indice.getId(), indiceMensal.getAno(), indiceMensal.getMes()).isEmpty()) {
-            if (db.insert(indiceMensal)) {
+        indiceMensal.setIndice((Indice) di.find(new Indice(), Integer.parseInt(getListaIndices().get(idIndice).getDescription())));
+        if (imdb.pesquisaIndMensalExistente(indiceMensal.getIndice().getId(), indiceMensal.getAno(), indiceMensal.getMes()).isEmpty()) {
+            if (di.save(indiceMensal, true)) {
+                novoLog.save(
+                        "ID: " + indiceMensal.getId()
+                        + " - Índice: (" + indiceMensal.getIndice().getId() + ") " + indiceMensal.getIndice().getDescricao()
+                        + " - Mês: " + indiceMensal.getMes()
+                        + " - Ano: " + indiceMensal.getAno()
+                        + " - Valor: " + indiceMensal.getValor()
+                );
                 msgConfirma = "Indice Mensal salvo com Sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
             } else {
@@ -84,28 +92,32 @@ public class IndiceMensalJSFBean {
 
     public String btnExcluir(IndiceMensal im) {
         indiceMensal = im;
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        sv.abrirTransacao();
-
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(indiceMensal.getId(), "IndiceMensal"))) {
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        if (!di.delete(indiceMensal, true)) {
             msgConfirma = "Erro ao excluir Indice Mensal!";
             GenericaMensagem.warn("Erro", msgConfirma);
-            sv.desfazerTransacao();
             return null;
         } else {
+            novoLog.delete(
+                    "ID: " + indiceMensal.getId()
+                    + " - Índice: (" + indiceMensal.getIndice().getId() + ") " + indiceMensal.getIndice().getDescricao()
+                    + " - Mês: " + indiceMensal.getMes()
+                    + " - Ano: " + indiceMensal.getAno()
+                    + " - Valor: " + indiceMensal.getValor()
+            );
             msgConfirma = "Registro excluido com Sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);
             indiceMensal = new IndiceMensal();
             listaIndiceMensal.clear();
             setLimpar(true);
-            sv.comitarTransacao();
         }
 
         return null;
     }
 
     public List<SelectItem> getListaAnos() {
-        List<SelectItem> result = new Vector<SelectItem>();
+        List<SelectItem> result = new ArrayList<SelectItem>();
         int an = 0;
         an = Integer.valueOf(DataHoje.data().substring(6, 10));
         for (int o = 0; o < 6; o++) {

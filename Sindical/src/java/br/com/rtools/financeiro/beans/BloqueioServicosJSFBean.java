@@ -6,6 +6,7 @@ import br.com.rtools.financeiro.db.FinanceiroDB;
 import br.com.rtools.financeiro.db.FinanceiroDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -56,6 +57,7 @@ public class BloqueioServicosJSFBean {
         }
 
         Servicos servicos = (Servicos) sv.pesquisaCodigo(Integer.parseInt(this.getListaServico().get(idServicos).getDescription()), "Servicos");
+        NovoLog novoLog = new NovoLog();
         FinanceiroDB db = new FinanceiroDBToplink();
 
         int d_fim = DataHoje.qtdeDiasDoMes(Integer.valueOf(refFinal.substring(0, 2)), Integer.valueOf(refFinal.substring(3, 7)));
@@ -69,13 +71,20 @@ public class BloqueioServicosJSFBean {
             return null;
         }
 
-
         bloqueia.setPessoa(pessoa);
         bloqueia.setServicos(servicos);
 
         sv.abrirTransacao();
         if (bloqueia.getId() == -1) {
             if (sv.inserirObjeto(bloqueia)) {
+                novoLog.save(
+                        "ID: " + bloqueia.getId()
+                        + " - Pessoa: (" + bloqueia.getPessoa().getId() + ") " + bloqueia.getPessoa().getNome()
+                        + " - Serviços: (" + bloqueia.getServicos().getId() + ") " + bloqueia.getServicos().getDescricao()
+                        + " - Período: " + bloqueia.getInicio() + " - " + bloqueia.getFim()
+                        + " - Gerar Guias: " + bloqueia.isGeracao()
+                        + " - Impressão: " + bloqueia.isImpressao()
+                );
                 msgConfirma = "Bloqueio salvo com Sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
                 listaBloqueios.clear();
@@ -87,7 +96,23 @@ public class BloqueioServicosJSFBean {
                 sv.desfazerTransacao();
             }
         } else {
+            BloqueiaServicoPessoa bsp = (BloqueiaServicoPessoa) sv.pesquisaObjeto(bloqueia.getId(), "BloqueiaServicoPessoa");
+            String beforeUpdate
+                    = "ID: " + bsp.getId()
+                    + " - Pessoa: (" + bsp.getPessoa().getId() + ") " + bsp.getPessoa().getNome()
+                    + " - Serviços: (" + bsp.getServicos().getId() + ") " + bsp.getServicos().getDescricao()
+                    + " - Período: " + bsp.getInicio() + " - " + bsp.getFim()
+                    + " - Gerar Guias: " + bsp.isGeracao()
+                    + " - Impressão: " + bsp.isImpressao();
             if (sv.alterarObjeto(bloqueia)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + bloqueia.getId()
+                        + " - Pessoa: (" + bloqueia.getPessoa().getId() + ") " + bloqueia.getPessoa().getNome()
+                        + " - Serviços: (" + bloqueia.getServicos().getId() + ") " + bloqueia.getServicos().getDescricao()
+                        + " - Período: " + bloqueia.getInicio() + " - " + bloqueia.getFim()
+                        + " - Gerar Guias: " + bloqueia.isGeracao()
+                        + " - Impressão: " + bloqueia.isImpressao()
+                );
                 msgConfirma = "Bloqueio alterado com Sucesso!";
                 GenericaMensagem.info("Sucesso", msgConfirma);
                 listaBloqueios.clear();
@@ -104,10 +129,18 @@ public class BloqueioServicosJSFBean {
 
     public String excluir(BloqueiaServicoPessoa bl) {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
+        NovoLog novoLog = new NovoLog();
         sv.abrirTransacao();
 
         if (sv.deletarObjeto(sv.pesquisaCodigo(bl.getId(), "BloqueiaServicoPessoa"))) {
+            novoLog.delete(
+                    "ID: " + bl.getId()
+                    + " - Pessoa: (" + bl.getPessoa().getId() + ") " + bl.getPessoa().getNome()
+                    + " - Serviços: (" + bl.getServicos().getId() + ") " + bl.getServicos().getDescricao()
+                    + " - Período: " + bl.getInicio() + " - " + bl.getFim()
+                    + " - Gerar Guias: " + bl.isGeracao()
+                    + " - Impressão: " + bl.isImpressao()
+            );            
             msgConfirma = "Bloqueio excluído com Sucesso!";
             GenericaMensagem.info("Sucesso", msgConfirma);
             listaBloqueios.clear();

@@ -5,6 +5,7 @@ import br.com.rtools.estoque.EstoqueSaidaConsumo;
 import br.com.rtools.estoque.EstoqueTipo;
 import br.com.rtools.estoque.Produto;
 import br.com.rtools.estoque.dao.ProdutoDao;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Departamento;
 import br.com.rtools.seguranca.MacFilial;
@@ -67,25 +68,46 @@ public class BaixaProdutoConsumoBean implements Serializable {
 
     public void baixar() {
         Dao dao = new Dao();
+        NovoLog novoLog = new NovoLog();
+        novoLog.startList();
         dao.openTransaction();
         boolean err = false;
         for (EstoqueSaidaConsumo esc : listEstoqueSaidaConsumo[0]) {
             if (!dao.save(esc)) {
                 err = true;
             }
+            novoLog.save(
+                    "ID: " + esc.getId()
+                    + " - Departamento: (" + esc.getId() + ") " + esc.getDepartamento().getDescricao()
+                    + " - Filial Saída: " + esc.getFilialSaida().getId()
+                    + " - Filial Entrada: " + esc.getFilialEntrada().getId()
+                    + " - Quantidade: " + esc.getQuantidade()
+                    + " - Produto: (" + esc.getProduto().getId() + ") " + esc.getProduto().getDescricao()
+            );
         }
         // update est_estoque set nr_estoque=nr_estoque-(qtde da saida) where id_tipo=1 and id_filial=(filial saida) and id_produto = (produto selecionado)
         if (err) {
+            novoLog.cancelList();
             dao.rollback();
             message = "Erro ao baixar produtos do estoque!";
         } else {
+            String beforeEstoque = "" + estoque.getEstoque();
             estoque.setEstoque(quantidadeEstoque);
             if (dao.update(estoque)) {
+                novoLog.save(
+                        "Estoque - ID: " + estoque.getId()
+                        + " - Filial: (" + estoque.getFilial().getId() + ") " + estoque.getFilial().getFilial().getPessoa().getId()
+                        + " - Produto: (" + estoque.getProduto().getId() + ") " + estoque.getProduto().getDescricao()
+                        + " - Estoque Antes: " + beforeEstoque
+                        + " - Estoque Atual: " + estoque.getEstoque()
+                );
                 dao.commit();
+                novoLog.saveList();
                 message = "Baixa realizada com sucesso!";
                 listEstoqueSaidaConsumo[0].clear();
                 listEstoqueSaidaConsumo[1].clear();
             } else {
+                novoLog.cancelList();
                 dao.rollback();
                 message = "Erro ao baixar produtos do estoque!";
             }
@@ -146,28 +168,50 @@ public class BaixaProdutoConsumoBean implements Serializable {
 
     public void removeItem(EstoqueSaidaConsumo esc) {
         Dao dao = new Dao();
+        NovoLog novoLog = new NovoLog();
+        novoLog.startList();
         dao.openTransaction();
         if (esc.getLancamento().equals(DataHoje.data())) {
-            if (dao.delete(dao.find(esc))) {
+            if (dao.delete(esc)) {
+                novoLog.delete(
+                        "ID: " + esc.getId()
+                        + " - Departamento: (" + esc.getId() + ") " + esc.getDepartamento().getDescricao()
+                        + " - Filial Saída: " + esc.getFilialSaida().getId()
+                        + " - Filial Entrada: " + esc.getFilialEntrada().getId()
+                        + " - Quantidade: " + esc.getQuantidade()
+                        + " - Produto: (" + esc.getProduto().getId() + ") " + esc.getProduto().getDescricao()
+                );
+                String beforeEstoque = "" + estoque.getEstoque();
                 estoque.setEstoque(estoque.getEstoque() + esc.getQuantidade());
                 if (!dao.update(estoque)) {
                     dao.rollback();
                     GenericaMensagem.warn("Erro", "Ao excluir excluído");
+                    novoLog.cancelList();
                     return;
                 }
+                novoLog.update("Mesmo do atualizado", 
+                        "Estoque - ID: " + estoque.getId()
+                        + " - Filial: (" + estoque.getFilial().getId() + ") " + estoque.getFilial().getFilial().getPessoa().getId()
+                        + " - Produto: (" + estoque.getProduto().getId() + ") " + estoque.getProduto().getDescricao()
+                        + " - Estoque Antes: " + beforeEstoque
+                        + " - Estoque Atual: " + estoque.getEstoque()
+                );                
                 GenericaMensagem.warn("Sucesso", "Registro excluído");
                 dao.commit();
+                novoLog.saveList();
                 ProdutoDao produtoDao = new ProdutoDao();
                 estoque = (Estoque) produtoDao.listaEstoquePorProdutoFilial(produto, filial);
                 quantidadeEstoque = estoque.getEstoque();
                 nrEstoque = estoque.getEstoque();
             } else {
+                novoLog.cancelList();
                 dao.rollback();
                 GenericaMensagem.warn("Erro", "Ao excluir excluído");
             }
             listEstoqueSaidaConsumo[1].clear();
             removeQuantidadeEstoque();
         }
+        novoLog.cancelList();
     }
 
     public EstoqueSaidaConsumo getEstoqueSaidaConsumo() {

@@ -9,6 +9,8 @@ import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.TipoServico;
+import br.com.rtools.financeiro.db.ServicoRotinaDB;
+import br.com.rtools.financeiro.db.ServicoRotinaDBToplink;
 import br.com.rtools.impressao.ParametroMovimentos;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -613,11 +615,12 @@ public class RelatorioMovimentoBean implements Serializable {
 
     public List<SelectItem> getListaServicos() {
         if (listaServicos.isEmpty()) {
-            List<Servicos> select = (new SalvarAcumuladoDBToplink()).listaObjeto("Servicos");
+            ServicoRotinaDB srdb = new ServicoRotinaDBToplink();
+            List<Servicos> select = srdb.pesquisaTodosServicosComRotinas(4);
             for (int i = 0; i < select.size(); i++) {
                 listaServicos.add(
-                        new SelectItem(
-                                new Integer(i),
+                        new SelectItem( 
+                                i,
                                 select.get(i).getDescricao(),
                                 Integer.toString(select.get(i).getId())
                         )

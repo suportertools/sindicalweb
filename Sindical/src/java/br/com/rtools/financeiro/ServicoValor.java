@@ -1,10 +1,14 @@
 package br.com.rtools.financeiro;
 
+import br.com.rtools.utilitarios.Moeda;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "FIN_SERVICO_VALOR",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_SERVICO", "NR_IDADE_INI", "NR_IDADE_FIM", "NR_VALOR", "NR_DESCONTO_ATE_VENCIMENTO", "NR_TAXA"})
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"ID_SERVICO", "NR_IDADE_INI"}),
+            @UniqueConstraint(columnNames = {"ID_SERVICO", "NR_IDADE_FIM"})
+        }
 )
 @NamedQuery(name = "ServicoValor.pesquisaID", query = "select s from ServicoValor s where s.id=:pid")
 public class ServicoValor implements java.io.Serializable {
@@ -100,5 +104,13 @@ public class ServicoValor implements java.io.Serializable {
 
     public void setTaxa(float taxa) {
         this.taxa = taxa;
+    }
+
+    public String getValorString() {
+        return Moeda.converteR$Float(valor);
+    }
+
+    public void setValorString(String valor) {
+        this.valor = Moeda.converteUS$(valor);
     }
 }
