@@ -80,7 +80,7 @@
                                     <h:column><h:outputLabel value="Razão Social: " styleClass="fontePadrao"/></h:column>
                                     <h:column>
                                         <h:inputText id="idrazao" size="100" maxlength="150" value="#{juridicaBean.juridica.pessoa.nome}" converter="#{toUpperCase}">
-                                            <f:ajax event="blur" render="@this formPessoaJuridica:idnomefan"/>
+                                            <a4j:ajax event="blur" render="idrazao formPessoaJuridica:idnomefan i_contabilidade"/>
                                         </h:inputText>
                                     </h:column>
 
@@ -105,7 +105,7 @@
                                     </h:column>
                                 </h:panelGrid>
 
-                                <h:panelGrid columns="6">
+                                <h:panelGrid columns="6" id="i_contabilidade">
                                     <a4j:commandButton image="/Imagens/pesquisar.png"  title="Pesquisar Contabilidade" onclick="modalOpcao('divPesquisaContabilidade');"/>
                                     <h:outputText value="Serviço Contabil: " styleClass="fontePadrao"/>
 

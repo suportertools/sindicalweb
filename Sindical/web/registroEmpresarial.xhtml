@@ -266,6 +266,10 @@
                                             <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
                                         </p:selectBooleanCheckbox>                                                
                                         <p:column>
+                                            <h:outputLabel value="Limite de Meses Agendamento: " />
+                                            <p:spinner size="2" title="Limite de Meses Agendamento" min="0" max="12" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                        </p:column>
+                                        <p:column>
                                             <p:outputLabel value="Agendamento retroativo: " />
                                             <p:calendar value="#{registroEmpresarialBean.registro.agendamentoRetroativo}" navigator="true" pattern="dd/MM/yyyy" readonlyInput="true" size="10" title="Permite agendamento retroativo até">
                                                 <p:ajax event="dateSelect" update=":form_registro_empresarial:id_messages :form_registro_empresarial:id_messages_growl" listener="#{registroEmpresarialBean.salvarSemSenha}"/>

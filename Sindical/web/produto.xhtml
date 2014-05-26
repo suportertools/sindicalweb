@@ -38,14 +38,15 @@
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
-                                    <h:panelGrid columns="5" id="i_panel_grid_1">
+                                    <h:panelGrid columns="7" id="i_panel_grid_1">
                                         <c:if test="#{produtoBean.listaGrupos.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[0]}" >
                                                 <p:ajax event="change" update="i_panel_grid_1" listener="#{produtoBean.listaSubGrupos.clear()}" />
                                                 <f:selectItems value="#{produtoBean.listaGrupos}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_grupo').show();" type="button"/>
+                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_grupo').show();" type="button" disabled="true"/>
+                                        <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.paginaSimples('ProdutoGrupo', 'Produto Grupo')}" actionListener="#{produtoBean.listaGrupos.clear()}" title="Cadastrar Grupos" />
                                         <p:outputLabel value="SubGrupo:" />
                                         <c:if test="#{produtoBean.listaSubGrupos.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[1]}">
@@ -53,7 +54,8 @@
                                             </p:selectOneMenu>
                                         </c:if>
                                         <c:if test="#{produtoBean.listaGrupos.size() > 0}">
-                                            <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_subgrupo').show();" type="button"/>
+                                            <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_subgrupo').show();" type="button" disabled="true"/>
+                                            <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.pagina('produtoSubGrupo')}" title="Cadastrar SubGrupos" actionListener="#{produtoBean.listaSubGrupos.clear()}"/>
                                         </c:if>
                                     </h:panelGrid>
                                 </h:column>
@@ -63,20 +65,22 @@
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
-                                    <h:panelGrid columns="5" id="i_panel_grid_2">
+                                    <h:panelGrid columns="7" id="i_panel_grid_2">
                                         <c:if test="#{produtoBean.listaUnidades.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[2]}">
                                                 <f:selectItems value="#{produtoBean.listaUnidades}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_unidade').show();" type="button"/>
+                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_novo_produto_unidade').show();" type="button" disabled="true"/>
+                                        <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.paginaSimples('ProdutoUnidade', 'Unidade')}" title="Cadastrar Unidades" actionListener="#{produtoBean.listaUnidades.clear()}"/>
                                         <p:outputLabel value="Cor:" />
                                         <c:if test="#{produtoBean.listaCores.size() > 0}">
                                             <p:selectOneMenu value="#{produtoBean.indices[3]}" >
                                                 <f:selectItems value="#{produtoBean.listaCores}" />
                                             </p:selectOneMenu>
                                         </c:if>
-                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_nova_cor').show();" type="button"/>
+                                        <p:commandButton icon="ui-icon-plus" onclick="PF('dlg_nova_cor').show();" type="button" disabled="true"/>
+                                        <p:commandButton icon="ui-icon-link" action="#{chamadaPaginaBean.paginaSimples('Cor', 'Cor')}" title="Cadastrar Cores" actionListener="#{produtoBean.listaCores.clear()}"/>
                                     </h:panelGrid>
                                 </h:column>
                                 <h:column>
