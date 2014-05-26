@@ -267,7 +267,7 @@
                                         </p:selectBooleanCheckbox>                                                
                                         <p:column>
                                             <h:outputLabel value="Limite de Meses Agendamento: " />
-                                            <p:spinner size="2" title="Limite de Meses Agendamento" min="0" max="12" valueChangeListener="#{registroEmpresarialBean.salvarSemSenha}"/>
+                                            <p:spinner size="2" title="Limite de Meses Agendamento" value="#{registroEmpresarialBean.registro.homolocaoLimiteMeses}" min="0" max="24" />
                                         </p:column>
                                         <p:column>
                                             <p:outputLabel value="Agendamento retroativo: " />
