@@ -3,10 +3,15 @@ package br.com.rtools.financeiro.beans;
 import br.com.rtools.financeiro.TipoServico;
 import br.com.rtools.financeiro.db.TipoServicoDB;
 import br.com.rtools.financeiro.db.TipoServicoDBToplink;
+import java.io.Serializable;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class TipoServicoJSFBean {
+@ManagedBean
+@SessionScoped
+public class TipoServicoBean implements Serializable {
 
     private TipoServico tipoServico = new TipoServico();
     private String comoPesquisa = "P";
@@ -29,7 +34,7 @@ public class TipoServicoJSFBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public TipoServicoJSFBean() {
+    public TipoServicoBean() {
 //        htmlTable = new HtmlDataTable();
     }
 
