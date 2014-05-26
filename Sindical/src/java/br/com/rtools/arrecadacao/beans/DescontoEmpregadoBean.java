@@ -13,11 +13,16 @@ import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class DescontoEmpregadoJSFBean {
+@ManagedBean
+@SessionScoped
+public class DescontoEmpregadoBean implements Serializable {
 
     private DescontoEmpregado descontoEmpregado = new DescontoEmpregado();
     private int idServicos = 0;
@@ -124,8 +129,8 @@ public class DescontoEmpregadoJSFBean {
                             "ID: " + descontoEmpregado.getId()
                             + " - Servico: (" + descontoEmpregado.getServicos().getId() + ") " + descontoEmpregado.getServicos().getDescricao()
                             + " - Valor: " + descontoEmpregado.getValorEmpregado()
-                            + " - Grupo Cidade: ("+descontoEmpregado.getGrupoCidade().getId()+") " + descontoEmpregado.getGrupoCidade().getDescricao()
-                            + " - Convencao: ("+descontoEmpregado.getConvencao().getId()+") " + descontoEmpregado.getConvencao().getDescricao()
+                            + " - Grupo Cidade: (" + descontoEmpregado.getGrupoCidade().getId() + ") " + descontoEmpregado.getGrupoCidade().getDescricao()
+                            + " - Convencao: (" + descontoEmpregado.getConvencao().getId() + ") " + descontoEmpregado.getConvencao().getDescricao()
                     );
                 } else {
                     sv.desfazerTransacao();
@@ -139,13 +144,12 @@ public class DescontoEmpregadoJSFBean {
             }
         } else {
             DescontoEmpregado d = (DescontoEmpregado) sv.pesquisaCodigo(descontoEmpregado.getId(), "DescontoEmpregado");
-            String beforeUpdate = 
-                    "ID: " + d.getId()
+            String beforeUpdate
+                    = "ID: " + d.getId()
                     + " - Servico: (" + d.getServicos().getId() + ") " + d.getServicos().getDescricao()
                     + " - Valor: " + d.getValorEmpregado()
-                    + " - Grupo Cidade: ("+d.getGrupoCidade().getId()+") " + d.getGrupoCidade().getDescricao()
-                    + " - Convencao: ("+d.getConvencao().getId()+") " + d.getConvencao().getDescricao()
-            ;
+                    + " - Grupo Cidade: (" + d.getGrupoCidade().getId() + ") " + d.getGrupoCidade().getDescricao()
+                    + " - Convencao: (" + d.getConvencao().getId() + ") " + d.getConvencao().getDescricao();
             descontoEmpregado.setServicos(servicos);
             descontoEmpregado.setGrupoCidade(grupoCidade);
             descontoEmpregado.setConvencao(convencao);
@@ -157,8 +161,8 @@ public class DescontoEmpregadoJSFBean {
                         "ID: " + descontoEmpregado.getId()
                         + " - Servico: (" + descontoEmpregado.getServicos().getId() + ") " + descontoEmpregado.getServicos().getDescricao()
                         + " - Valor: " + descontoEmpregado.getValorEmpregado()
-                        + " - Grupo Cidade: ("+descontoEmpregado.getGrupoCidade().getId()+") " + descontoEmpregado.getGrupoCidade().getDescricao()
-                        + " - Convencao: ("+descontoEmpregado.getConvencao().getId()+") " + descontoEmpregado.getConvencao().getDescricao()
+                        + " - Grupo Cidade: (" + descontoEmpregado.getGrupoCidade().getId() + ") " + descontoEmpregado.getGrupoCidade().getDescricao()
+                        + " - Convencao: (" + descontoEmpregado.getConvencao().getId() + ") " + descontoEmpregado.getConvencao().getDescricao()
                 );
             } else {
                 sv.desfazerTransacao();
@@ -180,8 +184,8 @@ public class DescontoEmpregadoJSFBean {
                     "ID: " + descontoEmpregado.getId()
                     + " - Servico: (" + descontoEmpregado.getServicos().getId() + ") " + descontoEmpregado.getServicos().getDescricao()
                     + " - Valor: " + descontoEmpregado.getValorEmpregado()
-                    + " - Grupo Cidade: ("+descontoEmpregado.getGrupoCidade().getId()+") " + descontoEmpregado.getGrupoCidade().getDescricao()
-                    + " - Convencao: ("+descontoEmpregado.getConvencao().getId()+") " + descontoEmpregado.getConvencao().getDescricao()
+                    + " - Grupo Cidade: (" + descontoEmpregado.getGrupoCidade().getId() + ") " + descontoEmpregado.getGrupoCidade().getDescricao()
+                    + " - Convencao: (" + descontoEmpregado.getConvencao().getId() + ") " + descontoEmpregado.getConvencao().getDescricao()
             );
             sv.comitarTransacao();
         } else {
