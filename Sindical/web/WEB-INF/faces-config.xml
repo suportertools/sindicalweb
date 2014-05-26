@@ -71,12 +71,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>contaBancoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.ContaBancoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>grupoCidadesBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadesJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -137,12 +131,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>servicoContaCobrancaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.ServicoContaCobrancaJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>cnaeConvencaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.CnaeConvencaoJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
@@ -188,12 +176,6 @@
     <managed-bean>
         <managed-bean-name>contribuicaoPorSocioBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.associativo.beans.ContribuicaoPorSocioJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>servicoRotinaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.financeiro.beans.ServicoRotinaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 
