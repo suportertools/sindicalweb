@@ -9,6 +9,7 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -17,7 +18,7 @@ import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
-public class ServicoContaCobrancaBean {
+public class ServicoContaCobrancaBean implements Serializable {
 
     private ServicoContaCobranca servicoContaCobranca = new ServicoContaCobranca();
     private Servicos servico = new Servicos();

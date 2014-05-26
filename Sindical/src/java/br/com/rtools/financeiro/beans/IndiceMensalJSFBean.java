@@ -10,11 +10,12 @@ import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.model.SelectItem;
 
-public class IndiceMensalJSFBean {
+public class IndiceMensalJSFBean implements Serializable {
 
     private IndiceMensal indiceMensal = new IndiceMensal();
     private List<IndiceMensal> listaIndiceMensal = new ArrayList<IndiceMensal>();
