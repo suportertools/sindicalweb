@@ -15,15 +15,20 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
 import org.primefaces.model.UploadedFile;
 
-public class ConvencaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class ConvencaoBean implements Serializable {
 
     private Convencao convencao = new Convencao();
     private ConvencaoCidade conCidade = new ConvencaoCidade();

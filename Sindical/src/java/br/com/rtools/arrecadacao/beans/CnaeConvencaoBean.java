@@ -10,15 +10,19 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Cnae;
 import br.com.rtools.pessoa.db.CnaeDB;
 import br.com.rtools.pessoa.db.CnaeDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataObject;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-public class CnaeConvencaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class CnaeConvencaoBean implements Serializable {
 
     private List<DataObject> listaCnaes = new ArrayList();
     private List<DataObject> listaCnaesAdc = new ArrayList();
@@ -47,30 +51,32 @@ public class CnaeConvencaoJSFBean {
     }
 
     public String salvarSelecionados() {
-        NovoLog log = new NovoLog();
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
+        novoLog.startList();
         int iConvencao = Integer.parseInt(getListaConvencao().get(idConvencao).getDescription());
-        Convencao convencao = (Convencao) sv.pesquisaCodigo(iConvencao, "Convencao");
-
-        sv.abrirTransacao();
+        Convencao convencao = (Convencao) di.find(new Convencao(), iConvencao);
+        di.openTransaction();
         for (int i = 0; i < listaCnaes.size(); i++) {
             if ((Boolean) listaCnaes.get(i).getArgumento0()) {
                 CnaeConvencao cnaeConvencao = new CnaeConvencao(-1, (Cnae) listaCnaes.get(i).getArgumento1(), convencao);
-
-                if (sv.inserirObjeto(cnaeConvencao)) {
+                if (di.save(cnaeConvencao)) {
+                    novoLog.save(
+                            "ID: " + cnaeConvencao.getId()
+                            + " - Cnae: (" + cnaeConvencao.getCnae().getId() + ") " + cnaeConvencao.getCnae().getCnae() + " - " + cnaeConvencao.getCnae().getNumero()
+                            + " - Descrição: " + cnaeConvencao.getConvencao().getDescricao()
+                    );
                     msgConfirma = "CNAES adcionados com sucesso!";
-                    log.novo("Novo registro", "CNAE inserido " + cnaeConvencao.getId() + " - " + cnaeConvencao.getConvencao().getDescricao() + " - " + cnaeConvencao.getCnae().getCnae() + "( Numero: " + cnaeConvencao.getCnae().getNumero() + " )");
                 } else {
-                    sv.desfazerTransacao();
+                    novoLog.cancelList();
+                    di.rollback();
                     msgConfirma = "Erro ao adicionar CNAE!";
                     return null;
                 }
-
             }
         }
-        sv.comitarTransacao();
+        novoLog.saveList();
+        di.commit();
 
         atualizaListaDisponiveis();
         atualizarListaAdc();
@@ -97,23 +103,27 @@ public class CnaeConvencaoJSFBean {
     }
 
     public String excluirTodos() {
-        NovoLog log = new NovoLog();
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
+        novoLog.startList();
         if (!listaCnaesAdc.isEmpty()) {
-            sv.abrirTransacao();
+            di.openTransaction();
             for (int i = 0; i < listaCnaesAdc.size(); i++) {
-                CnaeConvencao cn = (CnaeConvencao) sv.pesquisaCodigo(((CnaeConvencao) listaCnaesAdc.get(i).getArgumento1()).getId(), "CnaeConvencao");
-
-                if (!sv.deletarObjeto(cn)) {
-                    sv.desfazerTransacao();
+                CnaeConvencao cn = (CnaeConvencao) di.find(new CnaeConvencao(), ((CnaeConvencao) listaCnaesAdc.get(i).getArgumento1()).getId());
+                if (!di.delete(cn)) {
+                    di.rollback();
                     msgConfirma = "Erro ao excluir Registros!";
+                    novoLog.cancelList();
                     return null;
                 }
-                log.novo("Excluido", cn.getId() + " - " + cn.getConvencao().getDescricao() + " - " + cn.getCnae().getCnae() + "( Numero: " + cn.getCnae().getNumero() + " )");
+                novoLog.delete(
+                        "ID: " + cn.getId()
+                        + " - Cnae: (" + cn.getCnae().getId() + ") " + cn.getCnae().getCnae() + " - " + cn.getCnae().getNumero()
+                        + " - Descrição: " + cn.getConvencao().getDescricao()
+                );
             }
-            sv.comitarTransacao();
-
+            novoLog.saveList();
+            di.commit();
             atualizaListaDisponiveis();
             atualizarListaAdc();
             msgConfirma = "Cnaes excluídos com sucesso!";
@@ -122,24 +132,29 @@ public class CnaeConvencaoJSFBean {
     }
 
     public String excluirSelecionados() {
-        NovoLog log = new NovoLog();
-
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        NovoLog novoLog = new NovoLog();
+        DaoInterface di = new Dao();
+        novoLog.startList();
         if (!listaCnaesAdc.isEmpty()) {
-            sv.abrirTransacao();
+            di.openTransaction();
             for (int i = 0; i < listaCnaesAdc.size(); i++) {
                 if ((Boolean) listaCnaesAdc.get(i).getArgumento0()) {
-                    CnaeConvencao cn = (CnaeConvencao) sv.pesquisaCodigo(((CnaeConvencao) listaCnaesAdc.get(i).getArgumento1()).getId(), "CnaeConvencao");
-                    if (!sv.deletarObjeto(cn)) {
-                        sv.desfazerTransacao();
+                    CnaeConvencao cn = (CnaeConvencao) di.find(new CnaeConvencao(), ((CnaeConvencao) listaCnaesAdc.get(i).getArgumento1()).getId());
+                    if (!di.delete(cn)) {
+                        di.rollback();
                         msgConfirma = "Erro ao excluir Registros!";
+                        novoLog.cancelList();
                         return null;
                     }
-                    log.novo("Excluido", cn.getId() + " - " + cn.getConvencao().getDescricao() + " - " + cn.getCnae().getCnae() + "( Numero: " + cn.getCnae().getNumero() + " )");
+                    novoLog.delete(
+                            "ID: " + cn.getId()
+                            + " - Cnae: (" + cn.getCnae().getId() + ") " + cn.getCnae().getCnae() + " - " + cn.getCnae().getNumero()
+                            + " - Descrição: " + cn.getConvencao().getDescricao()
+                    );
                 }
             }
-            sv.comitarTransacao();
-
+            di.commit();
+            novoLog.saveList();
             atualizaListaDisponiveis();
             atualizarListaAdc();
             msgConfirma = "Cnaes excluídos com sucesso!";
@@ -148,12 +163,12 @@ public class CnaeConvencaoJSFBean {
     }
 
     public List<SelectItem> getListaConvencao() {
-        List<SelectItem> convencoes = new Vector<SelectItem>();
+        List<SelectItem> convencoes = new ArrayList<SelectItem>();
         int i = 0;
         ConvencaoDB db = new ConvencaoDBToplink();
         List select = db.pesquisaTodos();
         while (i < select.size()) {
-            convencoes.add(new SelectItem(new Integer(i),
+            convencoes.add(new SelectItem(i,
                     (String) ((Convencao) select.get(i)).getDescricao(),
                     Integer.toString(((Convencao) select.get(i)).getId())));
             i++;
