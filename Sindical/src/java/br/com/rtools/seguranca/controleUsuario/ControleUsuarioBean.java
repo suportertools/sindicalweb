@@ -94,13 +94,13 @@ public class ControleUsuarioBean implements Serializable {
             Object objs[] = new Object[2];
             objs[0] = macFilial.getFilial();
             objs[1] = macFilial.getDepartamento();
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoFilial", macFilial);
+            GenericaSessao.put("acessoFilial", macFilial);
             filial = "Filial: ( " + macFilial.getFilial().getFilial().getPessoa().getNome() + " / " + macFilial.getDepartamento().getDescricao() + " )";
         } else {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("acessoFilial", null);
+            GenericaSessao.put("acessoFilial", null);
             filial = "";
         }
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("indicaAcesso", "local");
+        GenericaSessao.put("indicaAcesso", "local");
         UsuarioDB db = new UsuarioDBToplink();
         String user = usuario.getLogin(), senh = usuario.getSenha();
         if (usuario.getLogin().equals("") || usuario.getLogin().equals("Usuario")) {
@@ -124,7 +124,7 @@ public class ControleUsuarioBean implements Serializable {
             login = ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getNome() + " - "
                     + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getTipoDocumento().getDescricao() + ": "
                     + ((Usuario) GenericaSessao.getObject("sessaoUsuario")).getPessoa().getDocumento();
-            log.live("Usuário logou - Usuário:" + user + "/sen: " + senh);
+            log.novo("Usuário logou", "Usuário:" + user + "/sen: " + senh);
             usuario = new Usuario();
             msgErro = "";
         } else {
@@ -137,8 +137,8 @@ public class ControleUsuarioBean implements Serializable {
     }
 
     public String getValidacaoIndex() throws IOException {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conexao");
+        if (GenericaSessao.exists("sessaoCliente")) {
+            GenericaSessao.remove("conexao");
         }
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String requestCliente;
@@ -148,27 +148,27 @@ public class ControleUsuarioBean implements Serializable {
             requestCliente = "Sindical";
         }
         if (!requestCliente.equals("")) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
+            if (GenericaSessao.exists("sessaoCliente")) {
+                GenericaSessao.remove("sessaoCliente");
             }
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
+            if (GenericaSessao.exists("acessoFilial")) {
+                GenericaSessao.remove("acessoFilial");
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoCliente", requestCliente);
+            GenericaSessao.put("sessaoCliente", requestCliente);
         } else {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
+            if (GenericaSessao.exists("sessaoCliente")) {
+                GenericaSessao.remove("sessaoCliente");
             }
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
+            if (GenericaSessao.exists("acessoFilial")) {
+                GenericaSessao.remove("acessoFilial");
             }
         }
         return null;
     }
 
     public String getValidaIndex() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("conexao");
+        if (GenericaSessao.exists("sessaoCliente")) {
+            GenericaSessao.remove("conexao");
         }
         HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
         String requestCliente;
@@ -181,19 +181,19 @@ public class ControleUsuarioBean implements Serializable {
             requestCliente = "Sindical";
         }
         if (!requestCliente.equals("")) {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
+            if (GenericaSessao.exists("sessaoCliente")) {
+                GenericaSessao.remove("sessaoCliente");
             }
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
+            if (GenericaSessao.exists("acessoFilial")) {
+                GenericaSessao.remove("acessoFilial");
             }
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("sessaoCliente", requestCliente);
+            GenericaSessao.put("sessaoCliente", requestCliente);
         } else {
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoCliente") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("sessaoCliente");
+            if (GenericaSessao.exists("sessaoCliente")) {
+                GenericaSessao.remove("sessaoCliente");
             }
-            if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial") != null) {
-                FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("acessoFilial");
+            if (GenericaSessao.exists("acessoFilial")) {
+                GenericaSessao.remove("acessoFilial");
             }
         }
         return null;
@@ -203,7 +203,7 @@ public class ControleUsuarioBean implements Serializable {
     }
 
     public String voltarDoAcessoNegado() {
-        linkVoltar = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        linkVoltar = GenericaSessao.getString("urlRetorno");
         if (linkVoltar == null) {
             return "index";
         } else {
@@ -299,8 +299,8 @@ public class ControleUsuarioBean implements Serializable {
     }
 
     public List<ContadorAcessos> getListaContador() {
-        if (((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario")) != null) {
-            Usuario usu = ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario"));
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            Usuario usu = ((Usuario) GenericaSessao.getObject("sessaoUsuario"));
 //            RotinaDB db = new RotinaDBToplink();
             AtalhoDB dba = new AtalhoDBToplink();
             listaContador.clear();
@@ -342,9 +342,8 @@ public class ControleUsuarioBean implements Serializable {
     }
 
     public void removeSessaoModuloMenuPrincipal() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("idModulo") != null) {
+        if (GenericaSessao.exists("idModulo")) {
             GenericaSessao.remove("idModulo");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("idModulo");
         }
     }
 
