@@ -4,10 +4,15 @@ import br.com.rtools.arrecadacao.MotivoInativacao;
 import br.com.rtools.arrecadacao.db.MotivoInativacaoDB;
 import br.com.rtools.arrecadacao.db.MotivoInativacaoDBToplink;
 import br.com.rtools.logSistema.NovoLog;
+import java.io.Serializable;
 import java.util.List;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 
-public class MotivoInativacaoJSFBean {
+@ManagedBean
+@SessionScoped
+public class MotivoInativacaoBean implements Serializable {
 
     private MotivoInativacao motivoInativacao = new MotivoInativacao();
     private String comoPesquisa = "T";
@@ -31,7 +36,7 @@ public class MotivoInativacaoJSFBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public MotivoInativacaoJSFBean() {
+    public MotivoInativacaoBean() {
 //        htmlTable = new HtmlDataTable();
     }
 

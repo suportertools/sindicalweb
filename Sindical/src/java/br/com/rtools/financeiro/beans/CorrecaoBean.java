@@ -7,13 +7,17 @@ import br.com.rtools.financeiro.db.CorrecaoDB;
 import br.com.rtools.financeiro.db.CorrecaoDBToplink;
 import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
+import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
@@ -24,55 +28,94 @@ public class CorrecaoBean implements Serializable {
 
     private int idServicos = 0;
     private int idIndices = 0;
-    private int idIndex = -1;
-    private Correcao correcao = new Correcao();
-    private String msgConfirma = "";
-    private List listaCorrecao = new ArrayList();
+    private Correcao correcao;
+    private List<Correcao> listaCorrecao;
+
+    @PostConstruct
+    public void init() {
+        idServicos = 0;
+        idIndices = 0;
+        correcao = new Correcao();
+        listaCorrecao = new ArrayList<Correcao>();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("correcaoBean");
+    }
 
     public String salvar() {
         CorrecaoDB db = new CorrecaoDBToplink();
-        ServicosDB dbSer = new ServicosDBToplink();
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        Indice indice = (Indice) sv.pesquisaCodigo(Integer.valueOf(getListaIndices().get(idIndices).getDescription()), "Indice");
-        Servicos servico = dbSer.pesquisaCodigo(Integer.valueOf(getListaServico().get(idServicos).getDescription()));
-        correcao.setIndice(indice);
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        Servicos servico = (Servicos) di.find(new Servicos(), Integer.parseInt(getListaServico().get(idServicos).getDescription()));
+        correcao.setIndice((Indice) di.find(new Indice(), Integer.parseInt(getListaIndices().get(idIndices).getDescription())));
         correcao.setServicos(servico);
         if (correcao.getId() == -1) {
             if (DataHoje.validaReferencias(correcao.getReferenciaInicial(), correcao.getReferenciaFinal())) {
                 List dd = db.pesquisaRefValida(servico, correcao.getReferenciaInicial(), correcao.getReferenciaFinal());
                 if (Integer.parseInt(String.valueOf((Long) dd.get(0))) == 0) {
-                    if (db.insert(correcao)) {
-                        msgConfirma = "Correção Salva!";
-                        GenericaMensagem.info("Sucesso", msgConfirma);
+                    if (di.save(correcao, true)) {
+                        novoLog.save(
+                                "ID: " + correcao.getId()
+                                + " - Índice: (" + correcao.getIndice().getId() + ") "
+                                + " - Serviços: (" + correcao.getServicos().getId() + ") " + correcao.getServicos().getDescricao()
+                                + " - Período: " + correcao.getReferenciaInicial() + " - " + correcao.getReferenciaFinal()
+                                + " - Juros Diário: " + correcao.getJurosDiarios()
+                                + " - Juros 1º Mês: " + correcao.getJurosPriMes()
+                                + " - Juros >= 2º Mês: " + correcao.getJurosApartir2Mes()
+                                + " - Multa por Funcionário: " + correcao.getMultaPorFuncionario()
+                                + " - Multa 1º Mês: " + correcao.getMultaPriMes()
+                                + " - Multa >= 2º Mês: " + correcao.getMultaApartir2Mes()
+                        );
+                        GenericaMensagem.info("Sucesso", "Correção Salva");
                         correcao = new Correcao();
                         idIndices = 0;
                         idServicos = 0;
                     } else {
-                        msgConfirma = "Erro ao Salvar!";
-                        GenericaMensagem.warn("Erro", msgConfirma);
+                        GenericaMensagem.warn("Erro", "Erro ao Salvar!");
                     }
                 } else {
-                    msgConfirma = "Correção já existente!";
-                    GenericaMensagem.warn("Erro", msgConfirma);
+                    GenericaMensagem.warn("Validação", "Correção já existente!");
                 }
             } else {
-                msgConfirma = "Referencia Invalida!";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Validação", "Referencia Invalida!");
             }
         } else if (DataHoje.validaReferencias(correcao.getReferenciaInicial(), correcao.getReferenciaFinal())) {
-            if (db.update(correcao)) {
-                msgConfirma = "Correção Atualizada!";
-                GenericaMensagem.info("Sucesso", msgConfirma);
+            Correcao c = (Correcao) di.find(correcao);
+            String beforeUpdate
+                    = "ID: " + c.getId()
+                    + " - Índice: (" + c.getIndice().getId() + ") "
+                    + " - Serviços: (" + c.getServicos().getId() + ") " + c.getServicos().getDescricao()
+                    + " - Período: " + c.getReferenciaInicial() + " - " + c.getReferenciaFinal()
+                    + " - Juros Diário: " + c.getJurosDiarios()
+                    + " - Juros 1º Mês: " + c.getJurosPriMes()
+                    + " - Juros >= 2º Mês: " + c.getJurosApartir2Mes()
+                    + " - Multa por Funcionário: " + correcao.getMultaPorFuncionario()
+                    + " - Multa 1º Mês: " + c.getMultaPriMes()
+                    + " - Multa >= 2º Mês: " + c.getMultaApartir2Mes();
+            if (di.update(correcao, true)) {
+                novoLog.update(beforeUpdate,
+                        "ID: " + correcao.getId()
+                        + " - Índice: (" + correcao.getIndice().getId() + ") "
+                        + " - Serviços: (" + correcao.getServicos().getId() + ") " + correcao.getServicos().getDescricao()
+                        + " - Período: " + correcao.getReferenciaInicial() + " - " + correcao.getReferenciaFinal()
+                        + " - Juros Diário: " + correcao.getJurosDiarios()
+                        + " - Juros 1º Mês: " + correcao.getJurosPriMes()
+                        + " - Juros >= 2º Mês: " + correcao.getJurosApartir2Mes()
+                        + " - Multa por Funcionário: " + correcao.getMultaPorFuncionario()
+                        + " - Multa 1º Mês: " + correcao.getMultaPriMes()
+                        + " - Multa >= 2º Mês: " + correcao.getMultaApartir2Mes()
+                );
+                GenericaMensagem.info("Sucesso", "Correção Atualizada!");
                 correcao = new Correcao();
                 idIndices = 0;
                 idServicos = 0;
             } else {
-                msgConfirma = "Erro ao atualizar!";
-                GenericaMensagem.warn("Erro", msgConfirma);
+                GenericaMensagem.warn("Erro", "Erro ao atualizar!");
             }
         } else {
-            msgConfirma = "Referencia Invalida!";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Validação", "Referencia Invalida!");
         }
         listaCorrecao.clear();
         return null;
@@ -82,21 +125,30 @@ public class CorrecaoBean implements Serializable {
         correcao = new Correcao();
         idIndices = 0;
         idServicos = 0;
-        msgConfirma = "";
         listaCorrecao.clear();
         return "correcao";
     }
 
     public String btnExcluir(Correcao co) {
-        CorrecaoDB db = new CorrecaoDBToplink();
         correcao = co;
-        Correcao cor = db.pesquisaCodigo(correcao.getId());
-        if (db.delete(cor)) {
-            msgConfirma = "Correção Excluida!";
-            GenericaMensagem.info("Sucesso", msgConfirma);
+        DaoInterface di = new Dao();
+        NovoLog novoLog = new NovoLog();
+        if (di.delete(correcao, true)) {
+            novoLog.delete(
+                    "ID: " + correcao.getId()
+                    + " - Índice: (" + correcao.getIndice().getId() + ") "
+                    + " - Serviços: (" + correcao.getServicos().getId() + ") " + correcao.getServicos().getDescricao()
+                    + " - Período: " + correcao.getReferenciaInicial() + " - " + correcao.getReferenciaFinal()
+                    + " - Juros Diário: " + correcao.getJurosDiarios()
+                    + " - Juros 1º Mês: " + correcao.getJurosPriMes()
+                    + " - Juros >= 2º Mês: " + correcao.getJurosApartir2Mes()
+                    + " - Multa por Funcionário: " + correcao.getMultaPorFuncionario()
+                    + " - Multa 1º Mês: " + correcao.getMultaPriMes()
+                    + " - Multa >= 2º Mês: " + correcao.getMultaApartir2Mes()
+            );
+            GenericaMensagem.info("Sucesso", "Correção Excluida");
         } else {
-            msgConfirma = "Erro ao excluir Correção!";
-            GenericaMensagem.warn("Erro", msgConfirma);
+            GenericaMensagem.warn("Erro", "Erro ao excluir Correção!");
         }
         correcao = new Correcao();
         listaCorrecao.clear();
@@ -134,7 +186,7 @@ public class CorrecaoBean implements Serializable {
         ServicosDB db = new ServicosDBToplink();
         List select = db.pesquisaTodos();
         while (i < select.size()) {
-            result.add(new SelectItem(new Integer(i),
+            result.add(new SelectItem(i,
                     (String) ((Servicos) select.get(i)).getDescricao(),
                     Integer.toString(((Servicos) select.get(i)).getId())));
             i++;
@@ -144,17 +196,14 @@ public class CorrecaoBean implements Serializable {
 
     public List<SelectItem> getListaIndices() {
         List<SelectItem> result = new ArrayList<SelectItem>();
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        List select = sv.listaObjeto("Indice", true);
+        DaoInterface di = new Dao();
+        List select = di.list(new Indice(), true);
         for (int i = 0; i < select.size(); i++) {
-            result.add(new SelectItem(new Integer(i),
+            result.add(new SelectItem(i,
                     ((Indice) select.get(i)).getDescricao(),
                     Integer.toString(((Indice) select.get(i)).getId())));
         }
         return result;
-    }
-
-    public void refreshForm() {
     }
 
     public int getIdServicos() {
@@ -181,23 +230,7 @@ public class CorrecaoBean implements Serializable {
         this.correcao = correcao;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
-    }
-
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
-    }
-
     public void setListaCorrecao(List listaCorrecao) {
         this.listaCorrecao = listaCorrecao;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 }

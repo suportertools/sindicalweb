@@ -1,5 +1,6 @@
 package br.com.rtools.financeiro;
 
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,27 +8,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "FIN_CARTAO")
-@NamedQuery(name = "Cartao.pesquisaID", query = "select c from Cartao c where c.id = :pid")
-public class Cartao implements java.io.Serializable {
+@NamedQueries({
+    @NamedQuery(name = "Cartao.pesquisaID", query = "SELECT C FROM Cartao AS C WHERE C.id = :pid"),
+    @NamedQuery(name = "Cartao.findAll", query = "SELECT C FROM Cartao AS C ORDER BY C.plano5.conta ASC, C.descricao ASC, C.dias ASC")
+})
+public class Cartao implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(name = "DS_DESCRICAO")
     private String descricao;
     @Column(name = "NR_DIAS")
-    private int dias;    
+    private int dias;
     @Column(name = "NR_TAXA")
-    private float taxa;    
+    private float taxa;
     @Column(name = "DS_DEBITO_CREDITO")
     private String debitoCredito;
     @JoinColumn(name = "ID_PLANO5", referencedColumnName = "ID")
     @ManyToOne
-    private Plano5 plano5;    
+    private Plano5 plano5;
 
     public Cartao() {
         this.id = -1;
@@ -37,7 +43,7 @@ public class Cartao implements java.io.Serializable {
         this.debitoCredito = "";
         this.plano5 = new Plano5();
     }
-    
+
     public Cartao(int id, String descricao, int dias, float taxa, String debitoCredito, Plano5 plano5) {
         this.id = id;
         this.descricao = descricao;
@@ -94,5 +100,5 @@ public class Cartao implements java.io.Serializable {
     public void setPlano5(Plano5 plano5) {
         this.plano5 = plano5;
     }
-    
+
 }

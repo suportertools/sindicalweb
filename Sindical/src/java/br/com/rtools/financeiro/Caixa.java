@@ -1,6 +1,7 @@
 package br.com.rtools.financeiro;
 
 import br.com.rtools.pessoa.Filial;
+import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,13 +9,33 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+/**
+ * <p>
+ * <strong>Caixa</strong></p>
+ * <p>
+ * <strong>Detalhes:</strong>Define a filial, número e detalhes dos caixa que
+ * poderão ser atribuídos a um computador da filial específica.</p>
+ * <p>
+ * <strong>Importante:</strong> Utilizar filiais somente caso houver um
+ * endereçamento diferente da sede!</p>
+ *
+ * @author rtools
+ */
 @Entity
-@Table(name = "FIN_CAIXA")
-@NamedQuery(name = "Caixa.pesquisaID", query = "select c from Caixa c where c.id = :pid")
-public class Caixa implements java.io.Serializable {
+@Table(name = "FIN_CAIXA",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_FILIAL", "NR_CAIXA", "DS_DESCRICAO"})
+)
+@NamedQueries({
+    @NamedQuery(name = "Caixa.pesquisaID", query = "SELECT C FROM Caixa AS C WHERE C.id = :pid"),
+    @NamedQuery(name = "Caixa.findAll", query = "SELECT C FROM Caixa AS C ORDER BY C.filial.filial.pessoa.nome ASC, C.caixa ASC, C.descricao ASC ")
+})
+public class Caixa implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -32,7 +53,7 @@ public class Caixa implements java.io.Serializable {
         this.descricao = "";
         this.filial = new Filial();
     }
-    
+
     public Caixa(int id, int caixa, String descricao, Filial filial) {
         this.id = id;
         this.caixa = caixa;

@@ -16,7 +16,9 @@ import javax.persistence.*;
  * @author rtools
  */
 @Entity
-@Table(name = "PES_FILIAL")
+@Table(name = "PES_FILIAL",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_MATRIZ", "ID_FILIAL", "NR_CENTRO_CUSTO"})
+)
 @NamedQueries({
     @NamedQuery(name = "Filial.pesquisaID", query = "SELECT FIL FROM Filial AS FIL WHERE FIL.id = :pid"),
     @NamedQuery(name = "Filial.findAll", query = "SELECT FIL FROM Filial AS FIL ORDER BY FIL.filial.pessoa.nome ASC ")
