@@ -1,136 +1,120 @@
 <ui:composition xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:a4j="http://richfaces.org/a4j"
-      xmlns:rich="http://richfaces.org/rich"
-      xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
     <h:head>
         <title>Permissão Departamento</title>
-        <script type="text/javascript">
-        </script>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+        </style>
     </h:head>
-    <h:body class="divMenu">
-        <f:subview id="header">
-            <ui:include src="template.xhtml"/>
-            <ui:include src="templateLinks.xhtml"/>
-        </f:subview>
-        <f:view>
-            <h:form id="formPermissaoDepartamento">
-                <c:set scope="request" var="object" value="${permissaoBean.permissaoDepartamento}"/>
-                <center>
-                    <div class="headerPanel">
-                        <h:outputText value="Permissões por Departamento" styleClass="fontePanel" style="width: 100%;"/>
-                    </div>
-                    <br />
-                    <div class="divMae divFundo" style="text-align: left; width: 800px">
-                        <center>
-                            <h:panelGrid columns="2">
-                                <h:outputLabel value="Departamento " styleClass="fontePadrao"/>
-                                <h:outputLabel value="Nível " styleClass="fontePadrao"/>
-                                <h:selectOneMenu value="#{permissaoBean.idDepartamento}" style="margin-right: 20px">
-                                    <a4j:ajax event="change" listener="#{permissaoBean.pesquisaPermissoesDepartamento}" render="tbl, tbl2"/>
-                                    <f:selectItems value="#{permissaoBean.listaDepartamentos}"/>
-                                </h:selectOneMenu>
-                                <h:selectOneMenu value="#{permissaoBean.idNivel}">
-                                    <a4j:ajax event="change" listener="#{permissaoBean.pesquisaPermissoesDepartamento}" render="tbl, tbl2"/>
-                                    <f:selectItems value="#{permissaoBean.listaNiveis}"/>
-                                </h:selectOneMenu>
-                            </h:panelGrid>
-                            <h:panelGrid columns="4" id="idColunaPesquisa" styleClass="margin-top-maior">
-                                <h:outputLabel value="Filtrar permissões:" styleClass="fontePadrao" />
-                                <h:inputText value="#{permissaoBean.descricaoPesquisa}" styleClass="fontePadrao" title="Filtrar por rotina" size="25"/>
-                                <a4j:commandButton image="/Imagens/pesquisar.png" action="#{permissaoBean.pesquisaPermissoesDepartamento}" render="tbl, tbl2" />
-                                <a4j:commandButton image="/Imagens/iconClear.png" action="#{permissaoBean.limparPesquisaPermissoesDepartamento}" render="idColunaPesquisa, tbl, tbl2" title="Limpar pesquisa" />
-                            </h:panelGrid>
-                        </center>
-                        <h:panelGrid columns="3" styleClass="margin-top-maior">
-                            <rich:panel>
-                                <f:facet name="header">
-                                    <h:outputLabel value="Permissões Disponíveis"/>
-                                </f:facet>
-                                <div style="overflow:auto; height:330px; width: 300px;">
-                                    <rich:dataTable var="linha" style="width:100%" id="tbl" value="#{permissaoBean.permissaoDisponivel}">
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Sel."/>
-                                            </f:facet>
-                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" />
-                                            <!-- <a4j:ajax event="dblclick" listener="# {permissaoBean.adicionarPermissaoDptoDBClick(linha.argumento1)}" render="tbl, tbl2" /> -->
-                                        </rich:column>
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Módulo"/>
-                                            </f:facet>
-                                            <a4j:commandLink value="#{linha.argumento1.modulo.descricao}" styleClass="underline-hover" />
-                                        </rich:column>
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Rotina"/>
-                                            </f:facet>
-                                            <a4j:commandLink value="#{linha.argumento1.rotina.rotina}" styleClass="underline-hover" />
-                                            <!-- <a4j:ajax event="dblclick" listener="# {permissaoBean.adicionarPermissaoDptoDBClick(linha.argumento1)}" render="tbl, tbl2" /> -->
-                                        </rich:column>
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Permissão"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.argumento1.evento.descricao}" />
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </div>
-                            </rich:panel>   
-                            <rich:panel style="border: 0; background: transparent;">
-                                <h:panelGrid columns="1">
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Todas"       style="width: 100px;" action="#{permissaoBean.adicionarTodasPermissaoDpto}" id="idDPClick" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" status="i_status"/>
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Adicionar"   style="width: 100px;" action="#{permissaoBean.adicionarPermissaoDpto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" id="idAdicionar" status="i_status"/>
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Remover"     style="width: 100px;" action="#{permissaoBean.excluirPermissaoDepto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}" status="i_status"/>
-                                    <a4j:commandLink styleClass="idBotao iLinkSimples" value="Nenhum"      style="width: 100px;"  action="#{permissaoBean.excluirTodasPermissaoDepto}" render="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}" status="i_status"/>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:outputText value="Permissão Departamento" styleClass="fonteHeader" />
+                        <div class="clear"></div>
+                        <h:form id="formPermissaoDepartamento">
+                            <c:set scope="request" var="object" value="${permissaoBean.permissaoDepartamento}"/>
+                            <p:panel styleClass="fundoCinza">
+                                <center>
+                                    <h:panelGrid columns="4">
+                                        <h:outputLabel value="Departamento: " />
+                                        <p:selectOneMenu value="#{permissaoBean.idDepartamento}">
+                                            <p:ajax event="change" listener="#{permissaoBean.pesquisaPermissoesDepartamento}" update="tbl, tbl2"/>
+                                            <f:selectItems value="#{permissaoBean.listaDepartamentos}"/>
+                                        </p:selectOneMenu>
+                                        <h:outputLabel value="Nível:" style="margin-left: 25px;"/>
+                                        <p:selectOneMenu value="#{permissaoBean.idNivel}">
+                                            <p:ajax event="change" listener="#{permissaoBean.pesquisaPermissoesDepartamento}" update="tbl, tbl2"/>
+                                            <f:selectItems value="#{permissaoBean.listaNiveis}"/>
+                                        </p:selectOneMenu>
+                                    </h:panelGrid>
+                                    <hr />
+                                    <h:panelGrid columns="4" id="idColunaPesquisa" styleClass="margin-top-maior">
+                                        <h:outputLabel value="Filtrar permissões:" styleClass="fontePadrao" />
+                                        <p:inputText value="#{permissaoBean.descricaoPesquisa}" styleClass="fontePadrao" title="Filtrar por rotina" size="25"/>
+                                        <p:commandButton icon="ui-icon-search"  action="#{permissaoBean.pesquisaPermissoesDepartamento}" update="tbl, tbl2" />
+                                        <p:commandButton icon="ui-icon-close" action="#{permissaoBean.limparPesquisaPermissoesDepartamento}" update="idColunaPesquisa, tbl, tbl2" title="Limpar pesquisa" />
+                                    </h:panelGrid>
+                                </center>
+                            </p:panel>
+                            <center>
+                                <h:panelGrid columns="3" styleClass="margin-top-max" columnClasses="verticalAlignTop, verticalAlignTop, verticalAlignTop">
+                                    <h:column>
+                                        <p:panel header="Permissões Disponíveis" style="width: 420px;">
+                                            <p:dataTable var="linha" id="tbl" value="#{permissaoBean.permissaoDisponivel}" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!">
+                                                <p:column width="25" styleClass="text-center">
+                                                    <p:selectBooleanCheckbox value="#{linha.argumento0}" />
+                                                </p:column>
+                                                <p:column headerText="Módulo">
+                                                    <p:commandLink value="#{linha.argumento1.modulo.descricao}" />
+                                                </p:column>
+                                                <p:column headerText="Rotina">
+                                                    <p:commandLink value="#{linha.argumento1.rotina.rotina}" />
+                                                </p:column>
+                                                <p:column headerText="Permissão">
+                                                    <p:outputLabel value="#{linha.argumento1.evento.descricao}" />
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>   
+                                    </h:column>
+                                    <h:column>
+                                        <h:panelGrid columns="1">
+                                            <p:commandButton value="Todas" style="width: 100px;" action="#{permissaoBean.adicionarTodasPermissaoDpto}" id="idDPClick" update="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" />
+                                            <p:commandButton value="Adicionar" style="width: 100px;" action="#{permissaoBean.adicionarPermissaoDpto}" update="tbl, tbl2" disabled="#{controleAcessoBean.botaoSalvar}" id="idAdicionar" />
+                                            <p:commandButton value="Remover" style="width: 100px;" action="#{permissaoBean.excluirPermissaoDepto}" update="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                            <p:commandButton value="Nenhum" style="width: 100px;"  action="#{permissaoBean.excluirTodasPermissaoDepto}" update="tbl, tbl2" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                        </h:panelGrid>
+                                    </h:column>
+                                    <h:column>
+                                        <p:panel header="Permissões do Departamento e Nível" style="width: 420px;">
+                                            <p:dataTable value="#{permissaoBean.permissaoAdicionada}" var="linha" id="tbl2" scrollable="true" scrollHeight="300" emptyMessage="Nenhum registro encontrado!">
+                                                <p:column width="25" styleClass="text-center">
+                                                    <p:selectBooleanCheckbox value="#{linha.argumento0}" />
+                                                </p:column>
+                                                <p:column headerText="Módulo">
+                                                    <p:outputLabel value="#{linha.argumento1.modulo.descricao}"/>
+                                                </p:column>
+                                                <p:column headerText="Rotina">
+                                                    <p:outputLabel value="#{linha.argumento1.rotina.rotina}"/>
+                                                </p:column>
+                                                <p:column headerText="Permissão">
+                                                    <p:outputLabel value="#{linha.argumento1.evento.descricao}"/>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panel>                            
+                                    </h:column>
                                 </h:panelGrid>
-                            </rich:panel>
-                            <rich:panel>
-                                <f:facet name="header">
-                                    <h:outputLabel value="Permissões do Departamento e Nível"/>
-                                </f:facet>
-                                <div style="overflow:auto; height:330px; width: 300px;">
-                                    <rich:dataTable value="#{permissaoBean.permissaoAdicionada}" var="linha" style="width:100%" id="tbl2">
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Sel."/>
-                                            </f:facet>
-                                            <h:selectBooleanCheckbox value="#{linha.argumento0}" />
-                                            <!-- <a4j:ajax event="dblclick" listener="# {permissaoBean.excluirPermissaoDeptoDBClick(linha.argumento1)}" render="tbl, tbl2" /> -->
-                                        </rich:column>
+                            </center>
+                            <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="PF('i_dlg_modal').hide();" />
+                            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false" width="400" resizable="false">  
+                                <h:outputLabel value="Aguarde..." />
+                            </p:dialog>                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
 
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Módulo"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.argumento1.modulo.descricao}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Rotina"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.argumento1.rotina.rotina}"/>
-                                        </rich:column>
-
-                                        <rich:column>
-                                            <f:facet name="header">
-                                                <h:outputText value="Permissão"/>
-                                            </f:facet>
-                                            <h:outputText value="#{linha.argumento1.evento.descricao}"/>
-                                        </rich:column>
-                                    </rich:dataTable>
-                                </div>
-                            </rich:panel>                            
-                        </h:panelGrid>                 
-                    </div>
-                </center>
-           
-            </h:form>
-        </f:view>
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
     </h:body>
 </ui:composition>
