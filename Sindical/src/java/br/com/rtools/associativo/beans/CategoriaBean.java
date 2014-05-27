@@ -14,6 +14,7 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -24,7 +25,7 @@ import javax.faces.bean.SessionScoped;
 
 @ManagedBean
 @SessionScoped
-public class CategoriaBean {
+public class CategoriaBean implements Serializable {
 
     private Categoria categoria = new Categoria();
     private String msgConfirma = "";
