@@ -29,15 +29,20 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
+@ManagedBean(name = "processamentoIndividualBean")
+@SessionScoped
+public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implements Serializable {
 
     private String frenteVerso = "false";
     private String nImpressos = "false";
@@ -75,10 +80,10 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
     public ProcessamentoIndividualJSFBean() {
     }
 
-    public void removerEmpresa(){
+    public void removerEmpresa() {
         juridica = new Juridica();
     }
-    
+
     public void salvarEmail() {
         if (this.pessoaEnvio.getId() != -1) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -398,9 +403,9 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
 
     @Override
     public synchronized void carregarFolha() {
-        
+
     }
-    
+
     @Override
     public synchronized void carregarFolha(DataObject linha) {
         dataObject = linha; //listMovimentos.get(idIndex);
@@ -478,7 +483,7 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                     } else {
                         msgConfirma = "Erro ao alterar boletos!";
                     }
-                    
+
                     movim.setVencimento(((Movimento) listMovimentos.get(i).getArgumento1()).getVencimento());
                     ((DataObject) listMovimentos.get(i)).setArgumento1(movim);
                 } else {
@@ -529,7 +534,6 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
         Juridica jur = new Juridica();
         List<Movimento> movs = new ArrayList<Movimento>();
         String empresasSemEmail = "";
-
 
         Registro reg = new Registro();
         reg = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
@@ -689,7 +693,6 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
                         List<Pessoa> p = new ArrayList();
                         p.add(jur.getContabilidade().getPessoa());
 
-
                         String[] ret = new String[2];
                         if (!reg.isEnviarEmailAnexo()) {
                             ret = EnviarEmail.EnviarEmailPersonalizado(reg,
@@ -750,13 +753,11 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             String path = request.getQueryString();
 
-
             ImprimirBoleto imp = new ImprimirBoleto();
             imp.imprimirBoleto(movs, listaValores, listaVencimentos, imprimeVerso);
             String nome = imp.criarLink(juridica.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
             p.add(juridica.getPessoa());
-
 
             String[] ret = new String[2];
             if (!reg.isEnviarEmailAnexo()) {

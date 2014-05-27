@@ -9,51 +9,80 @@ import br.com.rtools.arrecadacao.db.MensagemConvencaoDB;
 import br.com.rtools.arrecadacao.db.MensagemConvencaoDBToplink;
 import br.com.rtools.endereco.Cidade;
 import br.com.rtools.logSistema.NovoLog;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import javax.faces.context.FacesContext;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 
-public class GrupoCidadesJSFBean {
+@ManagedBean
+@SessionScoped
+public class GrupoCidadesBean implements Serializable {
 
-    private GrupoCidades grupoCidades = new GrupoCidades();
-    private String comoPesquisa = "T";
-    private String descPesquisa = "";
-    private String msgConfirma;
-    private String msgGrupoCidade = "";
-    private List<GrupoCidades> listaCidade = new ArrayList();
-    private Cidade cidade = new Cidade();
-    private int idIndex = -1;
+    private GrupoCidades grupoCidades;
+    private String comoPesquisa;
+    private String descPesquisa;
+    private String message;
+    private String msgGrupoCidade;
+    private List<GrupoCidades> listCidade;
+    private Cidade cidade;
+
+    @PostConstruct
+    public void init() {
+        grupoCidades = new GrupoCidades();
+        comoPesquisa = "T";
+        descPesquisa = "";
+        message = "";
+        msgGrupoCidade = "";
+        listCidade = new ArrayList<GrupoCidades>();
+        cidade = new Cidade();
+    }
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("grupoCidadesBean");
+        GenericaSessao.remove("cidadePesquisa");
+        GenericaSessao.remove("grupoCidadesPesquisa");
+        GenericaSessao.remove("grupoCidadePesquisa");
+        GenericaSessao.remove("simplesPesquisa");        
+    }
+    
+    public void clear() {
+        GenericaSessao.remove("grupoCidadesBean");
+    }
 
     public void removerGrupoCidade() {
         grupoCidades = new GrupoCidades();
         cidade = new Cidade();
     }
 
-    public List<GrupoCidades> getListaCidade() {
+    public List<GrupoCidades> getListCidade() {
         GrupoCidadesDB dbGC = new GrupoCidadesDBToplink();
-        if (listaCidade.isEmpty()) {
+        if (listCidade.isEmpty()) {
             if (getGrupoCidades().getGrupoCidade().getId() != -1) {
-                listaCidade = dbGC.pesquisaPorGrupo(getGrupoCidades().getGrupoCidade().getId());
+                listCidade = dbGC.pesquisaPorGrupo(getGrupoCidades().getGrupoCidade().getId());
             }
         } else {
-            if (((GrupoCidades) listaCidade.get(0)).getGrupoCidade().getId() != getGrupoCidades().getGrupoCidade().getId()) {
-                listaCidade = dbGC.pesquisaPorGrupo(getGrupoCidades().getGrupoCidade().getId());
+            if (((GrupoCidades) listCidade.get(0)).getGrupoCidade().getId() != getGrupoCidades().getGrupoCidade().getId()) {
+                listCidade = dbGC.pesquisaPorGrupo(getGrupoCidades().getGrupoCidade().getId());
             }
         }
-        return listaCidade;
+        return listCidade;
     }
 
-    public void setListaCidade(List<GrupoCidades> listaCidade) {
-        this.listaCidade = listaCidade;
+    public void setListCidade(List<GrupoCidades> listCidade) {
+        this.listCidade = listCidade;
     }
 
     public Cidade getCidade() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa") != null) {
-            cidade = (Cidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("cidadePesquisa");
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
+        if (GenericaSessao.exists("cidadePesquisa")) {
+            cidade = (Cidade) GenericaSessao.getObject("cidadePesquisa", true);
         }
         return cidade;
     }
@@ -78,14 +107,9 @@ public class GrupoCidadesJSFBean {
         this.descPesquisa = descPesquisa;
     }
 
-    public GrupoCidadesJSFBean() {
-//        htmlTable = new HtmlDataTable();
-    }
-
     public GrupoCidades getGrupoCidades() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa") != null) {
-            grupoCidades.setGrupoCidade((GrupoCidade) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("simplesPesquisa"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("simplesPesquisa");
+        if (GenericaSessao.exists("simplesPesquisa")) {
+            grupoCidades.setGrupoCidade((GrupoCidade) GenericaSessao.getObject("simplesPesquisa", true));
         }
         return grupoCidades;
     }
@@ -94,12 +118,12 @@ public class GrupoCidadesJSFBean {
         this.grupoCidades = grupoCidades;
     }
 
-    public String getMsgConfirma() {
-        return msgConfirma;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsgConfirma(String msgConfirma) {
-        this.msgConfirma = msgConfirma;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getMsgGrupoCidade() {
@@ -110,27 +134,24 @@ public class GrupoCidadesJSFBean {
         this.msgGrupoCidade = msgGrupoCidade;
     }
 
-    public String salvar() {
-        int i = 0;
-        while (i < listaCidade.size()) {
-            grupoCidades = (GrupoCidades) listaCidade.get(i);
-            this.salvarGrupoCidade(grupoCidades);
-            i++;
+    public void save() {
+        for(int i = 0; i < listCidade.size(); i++) {
+            grupoCidades = (GrupoCidades) listCidade.get(i);
+            this.saveGrupoCidade(grupoCidades);
         }
         grupoCidades = new GrupoCidades();
-        listaCidade.clear();
+        listCidade.clear();
         cidade = new Cidade();
-        msgConfirma = "Adicionados com sucesso!";
-        return null;
+        message = "Adicionados com sucesso!";
     }
 
-    public boolean salvarGrupoCidade(GrupoCidades grupoCidades) {
+    public boolean saveGrupoCidade(GrupoCidades grupoCidades) {
         NovoLog novoLog = new NovoLog();
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         if (grupoCidades.getId() == -1) {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(grupoCidades)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(grupoCidades)) {
+                di.commit();
                 novoLog.save(
                         "ID: " + grupoCidades.getId()
                         + " - Cidade: (" + grupoCidades.getCidade().getId() + ") " + grupoCidades.getCidade().getCidade()
@@ -138,17 +159,17 @@ public class GrupoCidadesJSFBean {
                 );
                 return true;
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 return false;
             }
         } else {
-            GrupoCidades gc = (GrupoCidades) salvarAcumuladoDB.pesquisaCodigo(grupoCidades.getId(), "GrupoCidades");
+            GrupoCidades gc = (GrupoCidades) di.find(grupoCidades);
             String beforeUpdate = "ID: " + gc.getId()
                     + " - Cidade: (" + gc.getCidade().getId() + ") " + gc.getCidade().getCidade()
                     + " - Grupo Cidade: (" + gc.getGrupoCidade().getId() + ") " + gc.getGrupoCidade().getDescricao();
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(grupoCidades)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.update(grupoCidades)) {
+                di.commit();
                 novoLog.update(beforeUpdate,
                         "ID: " + grupoCidades.getId()
                         + " - Cidade: (" + grupoCidades.getCidade().getId() + ") " + grupoCidades.getCidade().getCidade()
@@ -156,13 +177,13 @@ public class GrupoCidadesJSFBean {
                 );
                 return true;
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
                 return false;
             }
         }
     }
 
-    public boolean salvarMensagemConvencao(MensagemConvencao mensagemConvencao) {
+    public boolean saveMensagemConvencao(MensagemConvencao mensagemConvencao) {
         MensagemConvencaoDB db = new MensagemConvencaoDBToplink();
         NovoLog novoLog = new NovoLog();
         if (mensagemConvencao.getId() == -1) {
@@ -189,11 +210,11 @@ public class GrupoCidadesJSFBean {
 
     public String novo() {
         grupoCidades = new GrupoCidades();
-        msgConfirma = "";
+        message = "";
         return "grupoCidades";
     }
 
-    public String excluir() {
+    public String delete() {
 //        GrupoCidadesDB db = new GrupoCidadesDBToplink();
 //        NovoLog log = new NovoLog();
 //        if(grupoCidades.getId()!=-1){
@@ -201,36 +222,33 @@ public class GrupoCidadesJSFBean {
 //            grupoCidades = db.pesquisaCodigo(grupoCidades.getId());
 //            if (db.delete(grupoCidades)){
 //                db.getEntityManager().getTransaction().commit();
-//                msgConfirma = "Grupo Excluida com sucesso!";
+//                message = "Grupo Excluida com sucesso!";
 //                log.novo("Excluido", grupoCidades.getId()+" - Grupo Cidade: "+grupoCidades.getCidade().getCidade());
 //            }else{
 //                db.getEntityManager().getTransaction().rollback();
-//            msgConfirma = "Grupo não pode ser excluido!";}
+//            message = "Grupo não pode ser excluido!";}
 //        }
         //msgGrupoCidade = "";
         //grupoCidades = new GrupoCidades();
         cidade = new Cidade();
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("cidadePesquisa");
+        GenericaSessao.remove("cidadePesquisa");
         return "grupoCidades";
     }
 
-    public List getListaGrupoCidades() {
+    public List getListGrupoCidades() {
 //        Pesquisa pesquisa = new Pesquisa();
         List result = null;
 //        result = pesquisa.pesquisar("GrupoCidades", "descricao", descPesquisa, "descricao", comoPesquisa);
         return result;
     }
 
-    public void refreshForm() {
-    }
-
-    public String editar() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("grupoCidadesPesquisa", grupoCidades);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+    public String edit() {
+        GenericaSessao.put("grupoCidadesPesquisa", grupoCidades);
+        GenericaSessao.put("linkClicado", true);
         return "grupoCidades";
     }
 
-    public void inserirCidade() {
+    public void addCidade() {
         //GrupoCidadesDB db = new GrupoCidadesDBToplink();
         if (grupoCidades.getGrupoCidade().getId() == -1) {
             msgGrupoCidade = "Pesquise um grupo Cidades";
@@ -244,70 +262,59 @@ public class GrupoCidadesJSFBean {
             return;
         }
 
-        for (int i = 0; i < listaCidade.size(); i++) {
-            if (listaCidade.get(i).getCidade().getId() == cidade.getId()) {
+        for (int i = 0; i < listCidade.size(); i++) {
+            if (listCidade.get(i).getCidade().getId() == cidade.getId()) {
                 msgGrupoCidade = "Cidade já pertencente a um grupo!";
                 GenericaMensagem.warn("Erro", msgGrupoCidade);
                 return;
             }
         }
 
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
 
-        sv.abrirTransacao();
+        di.openTransaction();
 
         GrupoCidades gc = new GrupoCidades();
         gc.setGrupoCidade(grupoCidades.getGrupoCidade());
         gc.setCidade(cidade);
-        if (!sv.inserirObjeto(gc)) {
-            msgConfirma = "Erro ao salvar grupo Cidades";
-            GenericaMensagem.warn("Erro", msgConfirma);
+        if (!di.save(gc)) {
+            message = "Erro ao salvar grupo Cidades";
+            GenericaMensagem.warn("Erro", message);
             return;
         }
         NovoLog novoLog = new NovoLog();
         novoLog.save(
-                "ID: " + grupoCidades.getId()
-                + " - Cidade: (" + grupoCidades.getCidade().getId() + ") " + grupoCidades.getCidade().getCidade()
-                + " - Grupo Cidade: (" + grupoCidades.getGrupoCidade().getId() + ") " + grupoCidades.getGrupoCidade().getDescricao()
+                "ID: " + gc.getId()
+                + " - Cidade: (" + gc.getCidade().getId() + ") " + gc.getCidade().getCidade()
+                + " - Grupo Cidade: (" + gc.getGrupoCidade().getId() + ") " + gc.getGrupoCidade().getDescricao()
         );
         GenericaMensagem.info("Sucesso", "Cidade Adicionada com Sucesso!");
-        listaCidade.clear();
+        listCidade.clear();
         cidade = new Cidade();
         msgGrupoCidade = "";
 
-        sv.comitarTransacao();
+        di.commit();
     }
 
-    public String removerCidade(GrupoCidades gc) {
-        grupoCidades = gc;//(GrupoCidades) listaCidade.get(idIndex);
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+    public void removeCidade(GrupoCidades gc) {
+        grupoCidades = gc;
+        DaoInterface di = new Dao();
         NovoLog novoLog = new NovoLog();
-        sv.abrirTransacao();
-
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(grupoCidades.getId(), "GrupoCidades"))) {
-            msgConfirma = "Erro ao excluir Cidade do Grupo!";
-            GenericaMensagem.warn("Erro", msgConfirma);
-            sv.desfazerTransacao();
-            return null;
+        di.openTransaction();
+        if (!di.delete(grupoCidades)) {
+            message = "Erro ao excluir Cidade do Grupo!";
+            GenericaMensagem.warn("Erro", message);
+            di.rollback();
         } else {
             novoLog.delete(
                     "ID: " + grupoCidades.getId()
                     + " - Cidade: (" + grupoCidades.getCidade().getId() + ") " + grupoCidades.getCidade().getCidade()
                     + " - Grupo Cidade: (" + grupoCidades.getGrupoCidade().getId() + ") " + grupoCidades.getGrupoCidade().getDescricao()
-            );            
-            msgConfirma = "Registro excluido com Sucesso!";
-            GenericaMensagem.info("Sucesso", msgConfirma);
-            listaCidade.clear();
-            sv.comitarTransacao();
+            );
+            message = "Registro excluido com Sucesso!";
+            GenericaMensagem.info("Sucesso", message);
+            listCidade.clear();
+            di.commit();
         }
-        return null;
-    }
-
-    public int getIdIndex() {
-        return idIndex;
-    }
-
-    public void setIdIndex(int idIndex) {
-        this.idIndex = idIndex;
     }
 }

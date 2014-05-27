@@ -3,18 +3,20 @@ package br.com.rtools.pessoa.beans;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
-import javax.faces.context.FacesContext;
 
 @ManagedBean
 @SessionScoped
-public class PessoaBean {
+public class PessoaBean implements Serializable {
+
     private Pessoa pessoa = new Pessoa();
     private String descPesquisa = "";
     private String porPesquisa = "nome";
@@ -70,20 +72,20 @@ public class PessoaBean {
     }
 
     public String salvar() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         if (pessoa.getId() == -1) {
-            salvarAcumuladoDB.abrirTransacao();
-            if(salvarAcumuladoDB.inserirObjeto(pessoa)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.save(pessoa)) {
+                di.commit();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
             }
         } else {
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.alterarObjeto(pessoa)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.update(pessoa)) {
+                di.commit();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
             }
         }
         return null;
@@ -95,14 +97,13 @@ public class PessoaBean {
     }
 
     public String excluir() {
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        DaoInterface di = new Dao();
         if (pessoa.getId() != -1) {
-            setPessoa( (Pessoa) salvarAcumuladoDB.pesquisaObjeto(pessoa.getId(), "Pessoa"));
-            salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.deletarObjeto(pessoa)) {
-                salvarAcumuladoDB.comitarTransacao();
+            di.openTransaction();
+            if (di.delete(pessoa)) {
+                di.commit();
             } else {
-                salvarAcumuladoDB.desfazerTransacao();
+                di.rollback();
             }
         }
         setPessoa(pessoa = new Pessoa());
@@ -124,20 +125,20 @@ public class PessoaBean {
     }
 
     public String pesquisarPessoa() {
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("urlRetorno", "agenda");
+        GenericaSessao.put("urlRetorno", "agenda");
         return "pesquisaPessoa";
     }
 
     public String editar(Pessoa p) {
         pessoa = p;
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("pessoaPesquisa", pessoa);
-        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("linkClicado", true);
+        GenericaSessao.put("pessoaPesquisa", pessoa);
+        GenericaSessao.put("linkClicado", true);
         pessoa = new Pessoa();
         descPesquisa = "";
         porPesquisa = "nome";
         comoPesquisa = "";
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno") != null) {
-            return (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("urlRetorno");
+        if (GenericaSessao.exists("urlRetorno")) {
+            return GenericaSessao.getString("urlRetorno");
         } else {
             return null;
         }
@@ -175,8 +176,8 @@ public class PessoaBean {
     public void setListaPessoa(List<Pessoa> listaPessoa) {
         this.listaPessoa = listaPessoa;
     }
-    
-    public String getMascaraPesquisa(){
+
+    public String getMascaraPesquisa() {
         return Mask.getMascaraPesquisa(porPesquisa, true);
-    }      
+    }
 }

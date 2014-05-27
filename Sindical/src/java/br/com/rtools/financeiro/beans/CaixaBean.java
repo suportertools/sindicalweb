@@ -1,59 +1,79 @@
 package br.com.rtools.financeiro.beans;
 
 import br.com.rtools.financeiro.Caixa;
+import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
+import br.com.rtools.utilitarios.GenericaSessao;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.model.SelectItem;
 
-
 @ManagedBean
 @SessionScoped
-public class CaixaBean implements Serializable{
+public class CaixaBean implements Serializable {
+
     private int idFilial;
-    private List<SelectItem> listaFiliais = new ArrayList<SelectItem>();
-    private Caixa caixa = new Caixa();
-    private List<Caixa> listaCaixa = new ArrayList<Caixa>();
-    
-    public void excluir(Caixa c){
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        sv.abrirTransacao();
-        
-        if (!sv.deletarObjeto(sv.pesquisaCodigo(c.getId(), "Caixa"))){
-            sv.desfazerTransacao();
-            GenericaMensagem.warn("Erro", "Não foi possível excluir Caixa!");
-        }else{
-            sv.comitarTransacao();
-            listaCaixa.clear();
-            GenericaMensagem.info("Sucesso", "Caixa excluido com Sucesso!");
-        }
-        
+    private List<SelectItem> listaFiliais;
+    private Caixa caixa;
+    private List<Caixa> listaCaixa;
+
+    @PostConstruct
+    public void init() {
+        idFilial = 0;
+        listaFiliais = new ArrayList<SelectItem>();
+        caixa = new Caixa();
+        listaCaixa = new ArrayList<Caixa>();
     }
-    
-    public void salvar(){
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-        
-        sv.abrirTransacao();
-        
-        caixa.setFilial( (Filial)sv.pesquisaCodigo(Integer.valueOf(listaFiliais.get(idFilial).getDescription()), "Filial") );
-        if (!sv.inserirObjeto(caixa)){
-            sv.desfazerTransacao();
+
+    @PreDestroy
+    public void destroy() {
+        GenericaSessao.remove("caixaBean");
+    }
+
+    public void salvar() {
+        DaoInterface di = new Dao();
+        caixa.setFilial((Filial) di.find(new Filial(), Integer.valueOf(listaFiliais.get(idFilial).getDescription())));
+        if (!di.save(caixa, true)) {
             GenericaMensagem.warn("Erro", "Não foi possível salvar Caixa!");
-        }else{
-            sv.comitarTransacao();
+        } else {
+            NovoLog novoLog = new NovoLog();
+            novoLog.save(
+                    "ID: " + caixa.getId()
+                    + " - Filial: (" + caixa.getFilial().getId() + ") " + caixa.getFilial().getFilial().getPessoa().getNome()
+                    + " - Caixa: " + caixa.getCaixa()
+                    + " - Descrição: " + caixa.getDescricao()
+            );
             caixa = new Caixa();
             listaCaixa.clear();
             GenericaMensagem.info("Sucesso", "Caixa adicionado com Sucesso!");
         }
     }
-    
+
+    public void excluir(Caixa c) {
+        DaoInterface di = new Dao();
+        if (!di.delete(c, true)) {
+            GenericaMensagem.warn("Erro", "Não foi possível excluir Caixa!");
+        } else {
+            NovoLog novoLog = new NovoLog();
+            novoLog.delete(
+                    "ID: " + c.getId()
+                    + " - Filial: (" + c.getFilial().getId() + ") " + c.getFilial().getFilial().getPessoa().getNome()
+                    + " - Caixa: " + c.getCaixa()
+                    + " - Descrição: " + c.getDescricao()
+            );
+            listaCaixa.clear();
+            GenericaMensagem.info("Sucesso", "Caixa excluido com Sucesso!");
+        }
+    }
+
     public int getIdFilial() {
         return idFilial;
     }
@@ -64,11 +84,10 @@ public class CaixaBean implements Serializable{
 
     public List<SelectItem> getListaFiliais() {
         if (listaFiliais.isEmpty()) {
-            SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-            List<Filial> list = (List<Filial>) salvarAcumuladoDB.listaObjeto("Filial", true);
+            DaoInterface di = new Dao();
+            List<Filial> list = (List<Filial>) di.list(new Filial(), true);
             for (int i = 0; i < list.size(); i++) {
-                listaFiliais.add(new SelectItem(new Integer(i),
-                        list.get(i).getFilial().getPessoa().getDocumento() + " - " + list.get(i).getFilial().getPessoa().getNome(),
+                listaFiliais.add(new SelectItem(i, list.get(i).getFilial().getPessoa().getDocumento() + " - " + list.get(i).getFilial().getPessoa().getNome(),
                         Integer.toString(list.get(i).getId())));
             }
         }
@@ -88,9 +107,9 @@ public class CaixaBean implements Serializable{
     }
 
     public List<Caixa> getListaCaixa() {
-        if (listaCaixa.isEmpty()){
-            SalvarAcumuladoDB sv  = new SalvarAcumuladoDBToplink();
-            listaCaixa = sv.listaObjeto("Caixa");
+        if (listaCaixa.isEmpty()) {
+            DaoInterface di = new Dao();
+            listaCaixa = di.list(new Caixa(), true);
         }
         return listaCaixa;
     }

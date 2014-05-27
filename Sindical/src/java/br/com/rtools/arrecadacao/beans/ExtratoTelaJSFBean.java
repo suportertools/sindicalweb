@@ -16,11 +16,16 @@ import br.com.rtools.seguranca.controleUsuario.ControleAcessoBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
+import java.io.Serializable;
 import java.util.*;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
-public class ExtratoTelaJSFBean {
+@ManagedBean(name = "extratoTelaBean")
+@SessionScoped
+public class ExtratoTelaJSFBean implements Serializable {
 
     private int idContribuicao = 0;
     private int idTipoServico = 0;
