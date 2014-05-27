@@ -42,6 +42,9 @@ public class PesquisaLogDBTopLink extends DB implements PesquisaLogDB {
         if (idInEvento != null) {
             listWhere.add(" L.evento.id IN( " + idInEvento + ") ");
         }
+        if (!descricao.isEmpty()) {
+            listWhere.add(" UPPER(L.conteudoOriginal) LIKE '%"+descricao.toUpperCase()+"%' OR UPPER(L.conteudoAlterado) LIKE '%"+descricao.toUpperCase()+"%' ");
+        }
         try {
             String where = "";
             if (!listWhere.isEmpty()) {

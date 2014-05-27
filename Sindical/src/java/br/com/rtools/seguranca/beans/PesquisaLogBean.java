@@ -157,6 +157,7 @@ public class PesquisaLogBean implements Serializable {
             filtroEvento[2] = false;
             filtroEvento[3] = false;
         } else if (close.equals("descricao")) {
+            filtro[4] = false;
             descPesquisa = "";
             porPesquisa = "";
         }
@@ -311,7 +312,7 @@ public class PesquisaLogBean implements Serializable {
 
             }
             PesquisaLogDB pldb = new PesquisaLogDBTopLink();
-            listLogs = (List<Log>) pldb.pesquisaLogs(dtInicial, dtFinal, hrInicial, hrFinal, idU, idR, idInEventos, "");
+            listLogs = (List<Log>) pldb.pesquisaLogs(dtInicial, dtFinal, hrInicial, hrFinal, idU, idR, idInEventos, descPesquisa);
         }
         return listLogs;
     }
