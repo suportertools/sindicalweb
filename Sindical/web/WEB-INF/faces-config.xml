@@ -23,23 +23,10 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>motivoInativacaoBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.MotivoInativacaoJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-
-    <managed-bean>
         <managed-bean-name>contaCobrancaBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.ContaCobrancaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-
-    <managed-bean>
-        <managed-bean-name>grupoCidadesBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.GrupoCidadesJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    
     <managed-bean>
         <managed-bean-name>contribuicaoBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.arrecadacao.beans.ContribuicaoJSFBean</managed-bean-class>
@@ -51,22 +38,10 @@
         <managed-bean-class>br.com.rtools.arrecadacao.beans.UpdateBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
-    
-    <managed-bean>
-        <managed-bean-name>processamentoIndividualBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.ProcessamentoIndividualJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
 
     <managed-bean>
         <managed-bean-name>movimentosReceberBean</managed-bean-name>
         <managed-bean-class>br.com.rtools.financeiro.beans.MovimentosReceberJSFBean</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    
-    <managed-bean>
-        <managed-bean-name>extratoTelaBean</managed-bean-name>
-        <managed-bean-class>br.com.rtools.arrecadacao.beans.ExtratoTelaJSFBean</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>
     </managed-bean>
 

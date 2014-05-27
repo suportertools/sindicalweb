@@ -105,7 +105,7 @@
                                 </p:column>
                             </h:panelGrid>
                             <p:messages id="i_msg" showDetail="true" closable="true" />  
-                                <p:dataTable  value="#{correcaoBean.listaCorrecao}" var="linha" id="tbl" emptyMessage="Nenhuma Correção foi encontrada!">
+                            <p:dataTable  value="#{correcaoBean.listaCorrecao}" var="linha" id="tbl" emptyMessage="Nenhuma Correção foi encontrada!" styleClass="margin-top-max">
                                     <p:column headerText="Excluir" style="text-align: center">
                                         <p:commandButton icon="ui-icon-trash" action="#{correcaoBean.btnExcluir(linha)}" update=":formCorrecao" disabled="#{controleAcessoBean.botaoExcluir}" />
                                     </p:column>
