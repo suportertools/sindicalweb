@@ -163,12 +163,12 @@
                                 </p:column>
                             </p:dataTable>
 
-                            <p:dialog widgetVar="PF('dlg_save')" header="Salvar esta mensagem?" resizable="false" width="400" modal="true">
+                            <p:dialog widgetVar="dlg_save" header="Salvar esta mensagem?" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Salvar"   type="submit" styleClass="ui-confirmdialog-yes" action="#{mensagemConvencaoBean.salvar()}" onclick="PF('dlg_save').hide()" update="formMensagem" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_save').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
 
-                            <p:dialog widgetVar="PF('dlg_delete')" header="Excluir esta mensagem" resizable="false" width="400" modal="true">
+                            <p:dialog widgetVar="dlg_delete" header="Excluir esta mensagem" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Excluir"   type="submit" styleClass="ui-confirmdialog-yes" action="#{mensagemConvencaoBean.excluir()}" onclick="PF('dlg_delete').hide()" update="formMensagem" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_delete').hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>  
