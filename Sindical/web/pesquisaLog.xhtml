@@ -36,13 +36,16 @@
                                         <p:selectBooleanButton value="#{pesquisaLogBean.filtro[3]}" onLabel="Evento - Edição" offLabel="Evento - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
                                         </p:selectBooleanButton>
-                                        <p:commandButton value="Visualizar" icon="ui-icon-disk" title="Visualizar" styleClass="margin-top-max" update=":form_logs_list:" action="#{pesquisaLogBean.listLogs.clear()}" />
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[4]}" onLabel="Texto - Edição" offLabel="Texto - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
+                                        </p:selectBooleanButton>
+                                        <p:commandButton value="Filtrar" title="Filtrar" styleClass="margin-top-max" update=":form_logs_list:" action="#{pesquisaLogBean.listLogs.clear()}" />
                                     </h:panelGrid>
                                 </p:tab>
                             </p:accordionPanel>
                         </h:column>
                         <h:column>
-                            <p:panel id="id_panel_logs" style="width: 800px;" >
+                            <p:panel id="id_panel_logs" style="width: 800px;" header="Aplicar os filtros">
                                 <c:if test="#{pesquisaLogBean.filtro[0]}">
                                     <h:panelGrid columns="2">
                                         <p:outputLabel value="Período " styleClass="bold" />
@@ -50,7 +53,7 @@
                                     </h:panelGrid>
                                     <h:panelGrid columns="2">
                                         <h:column>
-                                            <h:panelGrid columns="4">
+                                            <h:panelGrid columns="8">
                                                 <p:outputLabel value="Data: " />
                                                 <p:calendar value="#{pesquisaLogBean.data[0]}" pattern="dd/MM/yyyy" size="10" navigator="true" onclick="$(this).mask('99/99/9999');">
                                                     <p:ajax event="dateSelect" listener="#{pesquisaLogBean.selectedDataInicial}" />
@@ -59,9 +62,7 @@
                                                 <p:calendar value="#{pesquisaLogBean.data[1]}" pattern="dd/MM/yyyy"  size="10" navigator="true" onclick="$(this).mask('99/99/9999');">
                                                     <p:ajax event="dateSelect" listener="#{pesquisaLogBean.selectedDataFinal}" />
                                                 </p:calendar>
-                                            </h:panelGrid>
-                                            <h:panelGrid columns="4">
-                                                <p:outputLabel value="Horário: " />
+                                                <p:outputLabel value="Horário: " style="margin-left: 25px"/>
                                                 <p:inputMask value="#{pesquisaLogBean.hora[0]}" mask="99:99" size="5"/>
                                                 <p:outputLabel value=" ás " />
                                                 <p:inputMask value="#{pesquisaLogBean.hora[1]}" mask="99:99" size="5"/>
@@ -108,6 +109,15 @@
                                     </h:column>
                                     <hr />
                                 </c:if>
+                                <c:if test="#{pesquisaLogBean.filtro[4]}">
+                                    <h:column>
+                                        <h:panelGrid columns="3">
+                                            <p:outputLabel value="Descrição:" styleClass="bold"/>
+                                            <p:inputText size="50" value="#{pesquisaLogBean.descPesquisa}" />
+                                            <p:commandButton icon="ui-icon-close" action="#{pesquisaLogBean.close('descricao')}" title="Remover filtro"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </c:if>                                    
                             </p:panel>
                         </h:column>
                     </h:panelGrid>                    
@@ -115,28 +125,69 @@
             </p:panel>
             <h:form id="form_logs_list">
                 <p:panel styleClass="wrapper no-border">
-                    <p:dataTable value="#{pesquisaLogBean.listLogs}" scrollable="true" scrollHeight="400" var="log" emptyMessage="Nenhum registro encontrado!" rows="10" paginator="true">
+                    <p:dataTable value="#{pesquisaLogBean.listLogs}" scrollable="true" scrollHeight="400" var="log" emptyMessage="Nenhum registro encontrado!" rows="10" paginator="true" id="i_logs">
+                        <p:column width="25" exportable="false">  
+                            <p:rowToggler />  
+                        </p:column>              
+                        <p:rowExpansion styleClass="bg-yellow-ligth">
+                            <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                            <p:outputLabel value="De: #{log.conteudoOriginal}" /><br /><br />
+                            <h:column rendered="#{!log.conteudoAlterado.equals('')}">
+                                <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                                <p:outputLabel value="Para: #{log.conteudoAlterado}"/>
+                            </h:column>
+                        </p:rowExpansion>
                         <f:facet name="header">
-                            Lista de Logs
+                            <h:outputText value="Lista de Logs" />
                         </f:facet>
-                        <p:column width="25">
+                        <p:column width="25"  exportable="false">
                             <p:commandButton icon="ui-icon-link" onclick="PF('dlg_log_details').show()" update=":form_logs_list:i_log_details_1 :form_logs_list:i_log_details_2" action="#{pesquisaLogBean.details(log)}" />
                         </p:column>
                         <p:column headerText="Data" styleClass="text-center" width="80">
-                            #{log.data}
+                            <f:facet name="header">
+                                <h:outputText value="Data" />
+                            </f:facet>
+                            <h:outputText value="#{log.data}" />
                         </p:column>
                         <p:column headerText="Hora" styleClass="text-center" width="40">
-                            #{log.hora}
+                            <f:facet name="header">
+                                <h:outputText value="Hora" />
+                            </f:facet>
+                            <h:outputText value="#{log.hora}" />
                         </p:column>
                         <p:column headerText="Rotina">
-                            #{log.rotina.rotina}
+                            <f:facet name="header">
+                                <h:outputText value="Rotina" />
+                            </f:facet>                                
+                            <h:outputText value="#{log.rotina.rotina}" />
                         </p:column>
                         <p:column headerText="Evento" styleClass="text-center" width="60">
-                            #{log.evento.descricao}
+                            <f:facet name="header">
+                                <h:outputText value="Evento" />
+                            </f:facet>                            
+                            <h:outputText value="#{log.evento.descricao}" />
                         </p:column>
                         <p:column headerText="Usuário">
-                            #{log.usuario.login}
+                            <f:facet name="header">
+                                <h:outputText value="Usuario" />
+                            </f:facet>
+                            <h:outputText value="#{log.usuario.login}" />
                         </p:column>
+                        <p:column width="25" style="visibility: hidden;" exportable="true">
+                            <f:facet name="header">
+                                <h:outputText value="Detalhes" />
+                            </f:facet>
+                            <h:outputText value="De: #{log.conteudoOriginal} - Para: #{log.conteudoAlterado}" style="width: 1px!important; height: 1px!important; position: absolute"/>
+                        </p:column>
+                        <p:column width="25" exportable="false" rendered="false">
+                            <p:commandButton icon="ui-icon-info" title="De: #{log.conteudoOriginal} - Para: #{log.conteudoAlterado}" />
+                        </p:column>
+                        <f:facet name="footer">
+                            <h:commandLink>
+                                <p:button icon="ui-icon-print" readonly="true" title="Exportar esta lista de logs"/>
+                                <p:dataExporter type="pdf" target="i_logs" fileName="logs" pageOnly="true" encoding="ISO-8859-1" />
+                            </h:commandLink>                            
+                        </f:facet>  
                     </p:dataTable>
                 </p:panel>
                 <p:dialog id="id_log_details" widgetVar="dlg_log_details" width="1000" modal="true" resizable="false">
