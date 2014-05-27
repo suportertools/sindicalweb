@@ -13,10 +13,6 @@
             .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
             .ui-button { padding: 3px!important; }   
         </style>
-        
-        <script type="text/javascript">
-            
-        </script>
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
@@ -33,40 +29,40 @@
                             <c:set scope="request" var="object" value="${grupoCidadesBean.grupoCidades}"/>
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid id="i_panel" columns="2">
-                                    <p:commandButton title="Pesquisar Grupo de Cidade"  action="#{chamadaPaginaBean.grupoCidade}" value="Pesquisar Grupo Cidade" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id == -1}"/>
+                                    <p:commandButton title="Pesquisar Grupo de Cidade"  action="#{chamadaPaginaBean.paginaSimples('GrupoCidade', 'Cadastro Grupo Cidade')}" value="Pesquisar Grupo Cidade" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id == -1}"/>
                                     <h:outputText value="Grupo Cidade: #{grupoCidadesBean.grupoCidades.grupoCidade.descricao}" style="font-weight: bold" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id != -1}"/>
                                     <p:commandButton icon="ui-icon-trash" action="#{grupoCidadesBean.removerGrupoCidade()}" title="Remover Grupo Cidade" rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id != -1}" update="i_panel i_panel_cidade tbl" style="margin-right: 20px;"/>
                                 </h:panelGrid>
                             </p:panel>
-                            
+
                             <p:messages id="i_msg" showDetail="true" />
-                            
+
                             <h:panelGrid id="i_panel_cidade">
                                 <h:panelGrid rendered="#{grupoCidadesBean.grupoCidades.grupoCidade.id != -1}" columns="5">
                                     <p:commandButton value="Adicionar Cidade" title="Pesquisar Cidade"  action="#{chamadaPaginaBean.cidade}" rendered="#{grupoCidadesBean.cidade.id == -1}"/>
                                     <h:outputLabel value="Cidade: #{grupoCidadesBean.cidade.cidade}" rendered="#{grupoCidadesBean.cidade.id != -1}" style="font-size: 12pt!important"/>
 
-                                    <p:commandButton value="Salvar" title="Adicionar" action="#{grupoCidadesBean.inserirCidade}" rendered="#{grupoCidadesBean.cidade.id != -1}" update="tbl i_panel_cidade i_msg"/>
+                                    <p:commandButton value="Salvar" title="Adicionar" action="#{grupoCidadesBean.addCidade}" rendered="#{grupoCidadesBean.cidade.id != -1}" update="tbl i_panel_cidade i_msg"/>
 
-                                    <p:commandButton value="Remover" title="Remover" action="#{grupoCidadesBean.excluir}" rendered="#{grupoCidadesBean.cidade.id != -1}"/>
+                                    <p:commandButton value="Remover" title="Remover" action="#{grupoCidadesBean.delete}" rendered="#{grupoCidadesBean.cidade.id != -1}"/>
                                 </h:panelGrid>
                             </h:panelGrid>
-                            
-                            <p:dataTable value="#{grupoCidadesBean.listaCidade}" var="linha" id="tbl" emptyMessage="Nenhuma Cidade foi encontrada!">
+
+                            <p:dataTable value="#{grupoCidadesBean.listCidade}" var="grupoCidades" id="tbl" emptyMessage="Nenhuma Cidade foi encontrada!">
                                 <p:column headerText="..." style="text-align: center">
-                                    <p:commandButton icon="ui-icon-trash" action="#{grupoCidadesBean.removerCidade(linha)}" disabled="#{controleAcessoBean.botaoExcluir}" update="tbl :formGrupoCidades:i_msg"/>
+                                    <p:commandButton icon="ui-icon-trash" action="#{grupoCidadesBean.removeCidade(grupoCidades)}" disabled="#{controleAcessoBean.botaoExcluir}" update="tbl :formGrupoCidades:i_msg"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="ID" style="text-align: center">
-                                    <h:outputText value="#{linha.cidade.id}"/>
+                                    <h:outputText value="#{grupoCidades.cidade.id}"/>
                                 </p:column>
-                                    
+
                                 <p:column headerText="Cidade">
-                                    <h:outputText value="#{linha.cidade.cidade}"/>
+                                    <h:outputText value="#{grupoCidades.cidade.cidade}"/>
                                 </p:column>
-                                
+
                                 <p:column headerText="UF" style="text-align: center">
-                                    <h:outputText value="#{linha.cidade.uf}"/>
+                                    <h:outputText value="#{grupoCidades.cidade.uf}"/>
                                 </p:column>
                             </p:dataTable>
                         </h:form>
