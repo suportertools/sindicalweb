@@ -1599,7 +1599,13 @@
             <from-outcome>modeloCarteirinha</from-outcome>
             <to-view-id>/modeloCarteirinha.jsf</to-view-id>
             <redirect/>
-        </navigation-case>        
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>email</from-outcome>
+            <to-view-id>/email.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
         
         <!-- 
         <navigation-case>
