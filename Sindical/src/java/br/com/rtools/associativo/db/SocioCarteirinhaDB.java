@@ -1,8 +1,9 @@
 package br.com.rtools.associativo.db;
 
+import br.com.rtools.associativo.AutorizaImpressaoCartao;
 import br.com.rtools.associativo.HistoricoCarteirinha;
+import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
-import br.com.rtools.endereco.Endereco;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,7 +29,20 @@ public interface SocioCarteirinhaDB {
 
     public List listaPesquisaEtiqueta(int id_pessoa);
 
-    public boolean verificaSocioCarteirinhaExiste(int id_socio);
+    public boolean verificaSocioCarteirinhaExiste(int id_pessoa);
     
-    public List<HistoricoCarteirinha> listaHistoricoCarteirinha(int id_socio);
+    public List<HistoricoCarteirinha> listaHistoricoCarteirinha(int id_pessoa);
+    
+    public List<AutorizaImpressaoCartao> listaAutoriza(int id_pessoa, int id_modelo);
+    
+    public AutorizaImpressaoCartao pesquisaAutorizaSemHistorico(int id_pessoa, int id_modelo);
+    
+    public AutorizaImpressaoCartao pesquisaAutorizaPorHistorico(int id_historico);
+            
+    public List<SocioCarteirinha> listaSocioCarteirinhaAutoriza(int id_pessoa, int id_modelo);
+    
+    public ModeloCarteirinha pesquisaModeloCarteirinhaCategoria(int id_categoria, int id_rotina);
+    
+    public SocioCarteirinha pesquisaCarteirinhaPessoa(int id_pessoa, int id_modelo);
+    
 }

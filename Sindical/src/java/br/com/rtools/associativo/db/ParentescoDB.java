@@ -19,6 +19,8 @@ public interface ParentescoDB {
     public List pesquisaTodos();
 
     public List pesquisaTodosSemTitular();
+    
+    public List<Parentesco> pesquisaTodosSemTitularCategoria(int id_categoria);
 
     public List pesquisaTodosSemTitularPorSexo(String sexo);
 }

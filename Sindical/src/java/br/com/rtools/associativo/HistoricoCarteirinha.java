@@ -1,5 +1,6 @@
 package br.com.rtools.associativo;
 
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.Column;
@@ -21,9 +22,6 @@ public class HistoricoCarteirinha implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_SOCIO", referencedColumnName = "ID")
-    @ManyToOne
-    private Socios socios;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
@@ -31,39 +29,37 @@ public class HistoricoCarteirinha implements java.io.Serializable {
     private String hora;
     @Column(name = "DS_DESCRICAO")
     private String descricao;
-
+    @JoinColumn(name = "ID_CARTEIRINHA", referencedColumnName = "ID")
+    @ManyToOne
+    private SocioCarteirinha carteirinha;
+    @JoinColumn(name = "ID_MOVIMENTO", referencedColumnName = "ID")
+    @ManyToOne
+    private Movimento movimento;
+    
     public HistoricoCarteirinha() {
         this.id = -1;
-        this.socios = new Socios();
         this.setEmissao(DataHoje.data());
         this.hora = DataHoje.horaMinuto();
         this.descricao = "";
+        this.carteirinha = new SocioCarteirinha();
+        this.movimento = null;
     }
     
-    public HistoricoCarteirinha(int id, Socios socios, String emissao, String hora, String descricao) {
+    public HistoricoCarteirinha(int id, String emissao, String hora, String descricao, SocioCarteirinha carteirinha, Movimento movimento) {
         this.id = id;
-        this.socios = socios;
         this.setEmissao(emissao);
         this.hora = hora;
         this.descricao = descricao;
+        this.carteirinha = carteirinha;
+        this.movimento = movimento;
     }
 
-    
-    
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Socios getSocios() {
-        return socios;
-    }
-
-    public void setSocios(Socios socios) {
-        this.socios = socios;
     }
 
     public Date getDtEmissao() {
@@ -102,5 +98,21 @@ public class HistoricoCarteirinha implements java.io.Serializable {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public SocioCarteirinha getCarteirinha() {
+        return carteirinha;
+    }
+
+    public void setCarteirinha(SocioCarteirinha carteirinha) {
+        this.carteirinha = carteirinha;
+    }
+
+    public Movimento getMovimento() {
+        return movimento;
+    }
+
+    public void setMovimento(Movimento movimento) {
+        this.movimento = movimento;
     }
 }

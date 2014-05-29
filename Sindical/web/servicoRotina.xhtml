@@ -37,23 +37,21 @@
                             <p:panel styleClass="fundoCinza margin-top-max">
                                 <h:panelGrid id="i_panel" columns="3">
                                     <p:column>
-                                        <p:outputLabel value="Serviço" />
+                                        <p:selectOneMenu id="idServicos" value="#{servicoRotinaBean.index[0]}" style="width: 430px" panelStyle="width:430px" filter="true" filterMatchMode="startsWith">
+                                            <p:ajax event="change" listener="#{servicoRotinaBean.clear(1)}" update="i_panel tbl"/>
+                                            <f:selectItem itemValue="" itemLabel="Selecionar"/>
+                                            <f:selectItems value="#{servicoRotinaBean.listServicos}"/>
+                                        </p:selectOneMenu>
                                     </p:column>
+                                    
                                     <p:column>
-                                        <p:outputLabel value="Rotina" />                                        
+                                        <p:selectOneMenu id="idRotinas" value="#{servicoRotinaBean.index[1]}" style="width: 430px" panelStyle="width:430px" filter="true" filterMatchMode="startsWith">
+                                            <p:ajax event="change" listener="#{servicoRotinaBean.clear(2)}" update="i_panel tbl"/>
+                                            <f:selectItem itemValue="" itemLabel="Selecionar"/>
+                                            <f:selectItems value="#{servicoRotinaBean.listRotinas}"/>
+                                        </p:selectOneMenu>
                                     </p:column>
-                                    <p:column>
-                                    </p:column>
-                                    <p:selectOneMenu id="idServicos" value="#{servicoRotinaBean.index[0]}">
-                                        <p:ajax event="change" listener="#{servicoRotinaBean.clear(1)}" update="i_panel tbl"/>
-                                        <f:selectItem itemValue="" itemLabel="Selecionar"/>
-                                        <f:selectItems value="#{servicoRotinaBean.listServicos}"/>
-                                    </p:selectOneMenu>
-                                    <p:selectOneMenu id="idRotinas" value="#{servicoRotinaBean.index[1]}">
-                                        <p:ajax event="change" listener="#{servicoRotinaBean.clear(2)}" update="i_panel tbl"/>
-                                        <f:selectItem itemValue="" itemLabel="Selecionar"/>
-                                        <f:selectItems value="#{servicoRotinaBean.listRotinas}"/>
-                                    </p:selectOneMenu>
+                                    
                                     <p:commandButton value="Adicionar" action="#{servicoRotinaBean.add}" update="i_panel :formServicoRotina:tbl i_msg"/>
                                 </h:panelGrid>
                             </p:panel>                            

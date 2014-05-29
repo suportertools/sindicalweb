@@ -173,6 +173,21 @@
                                                         <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
                                                     </p:selectBooleanCheckbox>
                                                 </p:column>                                        
+                                                <p:column colspan="2">
+                                                    <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.cobrancaCarteirinha}" itemLabel="Cobrança Carteirinha">
+                                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                                    </p:selectBooleanCheckbox>
+                                                </p:column>                                        
+                                                <p:column colspan="2">
+                                                    <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.validadeBarras}" itemLabel="Validade Barras">
+                                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                                    </p:selectBooleanCheckbox>
+                                                </p:column>                                        
+                                                <p:column colspan="2">
+                                                    <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.fotoCartao}" itemLabel="Foto no Cartão (Obrigatório)">
+                                                        <p:ajax event="change" listener="#{registroEmpresarialBean.salvarSemSenha}" update=":form_registro_empresarial:id_messages"/>
+                                                    </p:selectBooleanCheckbox>
+                                                </p:column>                                        
                                             </p:row>
                                             <p:row>                                    
                                                 <p:column colspan="2">

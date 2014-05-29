@@ -17,6 +17,7 @@ public class CartaoSocial {
     private String profissao;
     private String cpf;
     private String rg;
+    private int id_pessoa;
 
     public CartaoSocial() {
         this.matricula = "";
@@ -34,9 +35,10 @@ public class CartaoSocial {
         this.profissao = "";
         this.cpf = "";
         this.rg = "";
+        this.id_pessoa = 0;
     }
         
-    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg) {
+    public CartaoSocial(String matricula, String barras, String nome, String empresa, String cnpj, String admissao, String validade, String e_cidade, String e_uf, String logo, String imagem, String filiacao, String profissao, String cpf, String rg, int id_pessoa) {
         this.matricula = matricula;
         this.barras = barras;
         this.nome = nome;
@@ -52,6 +54,7 @@ public class CartaoSocial {
         this.profissao = profissao;
         this.cpf = cpf;
         this.rg = rg;
+        this.id_pessoa = id_pessoa;
     }
     
     public String getMatricula() {
@@ -173,4 +176,12 @@ public class CartaoSocial {
     public void setRg(String rg) {
         this.rg = rg;
     }    
+
+    public int getId_pessoa() {
+        return id_pessoa;
+    }
+
+    public void setId_pessoa(int id_pessoa) {
+        this.id_pessoa = id_pessoa;
+    }
 }

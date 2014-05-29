@@ -1239,7 +1239,7 @@ public class ImprimirBoleto {
                 BigDecimal valor_calculado = new BigDecimal(Moeda.somaValores(lista.get(i).getValor(), Moeda.subtracaoValores(
                         Moeda.somaValores(Moeda.somaValores(multa.floatValue(), juros.floatValue()), correcao.floatValue()), desconto.floatValue())));
 
-                if (lista.get(i).getTipoServico().getId() == 4) {
+                if (lista.get(i).getTipoServico().getId() == 4 && lista.get(i).isAtivo()) {
                     vetor1.add(new DemonstrativoAcordo(
                             acordo.getId(), // codacordo
                             acordo.getData(), // data
@@ -1294,7 +1294,7 @@ public class ImprimirBoleto {
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
-                } else {
+                } else if (lista.get(i).isAtivo()){
                     vetor2.add(new DemonstrativoAcordo(
                             acordo.getId(), // codacordo
                             acordo.getData(), // data

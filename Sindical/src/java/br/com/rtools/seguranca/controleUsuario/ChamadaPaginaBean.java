@@ -983,6 +983,17 @@ public class ChamadaPaginaBean implements Serializable {
         return metodoGenerico(2, "reciboGerado");
     }
     
+    public synchronized String autorizaCarteirinha() {
+        GenericaSessao.remove("autorizaCarteirinhaBean");
+        GenericaSessao.remove("fisicaPesquisa");
+        return metodoGenerico(2, "autorizaCarteirinha");
+    }
+    
+    public synchronized String modeloCarteirinha() {
+        GenericaSessao.remove("modeloCarteirinhaBean");
+        return metodoGenerico(2, "modeloCarteirinha");
+    }
+    
     // CADASTROS SIMPLES ----------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------
     // ----------------------------------------------------------------------------------------------------------------

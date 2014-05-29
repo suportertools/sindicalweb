@@ -38,7 +38,7 @@ public interface SociosDB {
 
     public float descontoSocioEve(int idPessoa, int idServico);
 
-    public List<SocioCarteirinha> pesquisaCarteirinhasPorSocio(int idSocios);
+    public List<SocioCarteirinha> pesquisaCarteirinhasPorPessoa(int id_pessoa, int id_modelo);
 
     public List pesquisaMotivoInativacao();
     

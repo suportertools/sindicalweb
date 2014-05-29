@@ -345,11 +345,13 @@ public class SociosDBToplink extends DB implements SociosDB {
     }
 
     @Override
-    public List<SocioCarteirinha> pesquisaCarteirinhasPorSocio(int idSocios) {
+    public List<SocioCarteirinha> pesquisaCarteirinhasPorPessoa(int id_pessoa, int id_modelo) {
         try {
-            Query qry = getEntityManager().createQuery("select sc "
-                    + "  from SocioCarteirinha sc"
-                    + " where sc.socios.id = " + idSocios);
+            Query qry = getEntityManager().createQuery(
+                    " SELECT sc "
+                    + " FROM SocioCarteirinha sc "
+                    + "WHERE sc.pessoa.id = " + id_pessoa
+                    + "  AND sc.modeloCarteirinha.id = "+id_modelo);
             return (qry.getResultList());
         } catch (Exception e) {
             e.getMessage();

@@ -2,6 +2,7 @@ package br.com.rtools.associativo.db;
 
 import br.com.rtools.associativo.Parentesco;
 import br.com.rtools.principal.DB;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
 
@@ -82,6 +83,17 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
         } catch (Exception e) {
             e.getMessage();
             return null;
+        }
+    }
+    
+    @Override
+    public List<Parentesco> pesquisaTodosSemTitularCategoria(int id_categoria) {
+        try {
+            Query qry = getEntityManager().createQuery("SELECT sc.parentesco FROM ServicoCategoria sc WHERE sc.categoria.id = "+id_categoria+" AND sc.parentesco.id <> 1 ORDER BY sc.parentesco.id");
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList<Parentesco>();
         }
     }
 
