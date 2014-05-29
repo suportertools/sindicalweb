@@ -59,13 +59,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String porPesquisa = "nome";
     private String comoPesquisa = "";
     private String mensagem = "";
-    //private String log = "";
-    //private String desc = "";
-    //private String cid = "";
-    //private String uf = "";
     private String masc = "";
     private String maxl = "";
-    //private String renNovoEndereco = "false";
     private String enderecoCobranca = "";
     private String renAbreEnd = "true";
     private String msgSocio = "";
@@ -79,8 +74,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean endResidencial = false;
     private boolean fotoTemp = false;
     private boolean renderJuridicaPesquisa = false;
-    private boolean temFoto = false;
-    //private List listaEnd = new ArrayList();
     public List itens = new ArrayList();
     private List<DataObject> listaPessoa = new ArrayList();
     private List<Fisica> listaPessoaFisica = new ArrayList<Fisica>();
@@ -113,67 +106,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private int index_endereco = 0;
 
     public void novo() {
-//        fisica = new Fisica();
-//        pessoaEndereco = new PessoaEndereco();
-//        pessoaProfissao = new PessoaProfissao();
-//        pessoaEmpresa = new PessoaEmpresa();
-//        
-//        pessoaComplemento = new PessoaComplemento();
-//        socios = new Socios();
-//        renEndereco = "false";
-//        indicaTab = "pessoal";
-//        enderecoCompleto = "";
-//        descPesquisa = "";
-//        porPesquisa = "nome";
-//        comoPesquisa = "";
-//        mensagem = "";
-//        log = "";
-//        desc = "";
-//        cid = "";
-//        uf = "";
-//        masc = "";
-//        maxl = "";
-//        renNovoEndereco = "false";
-//        enderecoCobranca = "";
-//        renAbreEnd = "true";
-//        msgSocio = "";
-//        lblSocio = "";
-//        pesquisaPor = "";
-//        tipoSocio = "";
-//        alterarEnd = false;
-//        endResidencial = false;
-//        fotoTemp = false;
-//        renderJuridicaPesquisa = false;
-//        temFoto = false;
-//        readyOnlineNaturalidade = true;
-//        disabledNaturalidade = false;
-//        listaEnd.clear();
-//        itens.clear();
-//        listaPessoa.clear();
-//        listaProfissoes.clear();
-//        listaPessoaEmpresa.clear();
-//        idPais = 11;
-//        // idProfissao = 386; ANTES ESTAVA FUNCIONANDO
-//        idProfissao = 0;
-//        idIndexEndereco = 0;
-//        idIndexFisica = 0;
-//        idIndexPessoaEmp = 0;
-//        limpaFoto();
-//        GenericaSessao.remove("enderecoPesquisa");
-//        GenericaSessao.remove("enderecoNum");
-//        GenericaSessao.remove("enderecoComp");
-//        GenericaSessao.remove("juridicaPesquisa");
-//        GenericaSessao.remove("fisicaPesquisa");
-//        GenericaSessao.remove("FisicaBean");
-//        GenericaSessao.remove("pessoaComplementoBean");
-//        this.profissao = new Profissao();
-//        // EDITADO POR BRUNO
-//        indexPessoaFisica = 0;
-//        indexNovoEndereco = "";
-//        fotoPerfil = "";
-//        fotoArquivo = "";
-//        fotoTempPerfil = "";
-//        fotoTempArquivo = "";
         GenericaSessao.put("fisicaBean", new FisicaBean());
     }
 
@@ -202,12 +134,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         List listDocumento;
         if ((listaPessoaEndereco.isEmpty() || pessoa.getId() == -1) && enderecox.getId() != -1) {
             adicionarEnderecos();
-        }
-
-        if (temFoto) {
-            fisica.setDataFoto(DataHoje.data());
-        } else {
-            fisica.setDtFoto(null);
         }
 
         boolean sucesso = false;
@@ -1016,7 +942,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
                     if (Integer.parseInt(n) == fisica.getPessoa().getId()) {
                         nome = n;
                         fotoTemp = false;
-                        temFoto = true;
                         caminho = ((ServletContext) context.getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/fotoTemp.jpg");
                         File fl = new File(caminho);
                         fl.delete();
@@ -1047,6 +972,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             boolean rename = src.renameTo(des);
             fotoPerfil = "/Cliente/" + getCliente() + "/Imagens/Fotos/" + fisica.getPessoa().getId() + ".png";
             fotoTempPerfil = "";
+
             if (!rename) {
                 error = true;
             }
@@ -1315,14 +1241,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         this.renderJuridicaPesquisa = renderJuridicaPesquisa;
     }
 
-    public boolean isTemFoto() {
-        return temFoto;
-    }
-
-    public void setTemFoto(boolean temFoto) {
-        this.temFoto = temFoto;
-    }
-
     public int getIdIndexEndereco() {
         return idIndexEndereco;
     }
@@ -1545,6 +1463,34 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String getFotoPerfil() {
+        if (fisica.getId() != -1){
+            // TEM FOTO MAS NO BANCO ESTA FALSE == ALTERA PARA TRUE NO BANCO
+            if (!fotoPerfil.isEmpty() && fisica.getDataFoto().isEmpty()){
+                SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+                sv.abrirTransacao();
+
+                fisica.setDataFoto(DataHoje.data());
+                
+                sv.alterarObjeto(fisica);
+                sv.comitarTransacao();
+                return fotoPerfil;
+            }
+            
+            // TEM FOTO E NO BANCO ESTA TRUE == PERMANECE DO JEITO QUE ESTA
+            
+            // NÃO TEM FOTO E NO BANCO ESTA FALSE = PERMANECE DO JEITO QUE ESTA
+            
+            // NÃO TEM FOTO E NO BANCO ESTA TRUE = ALTERA PARA FALSE NO BANCO
+            if (fotoPerfil.isEmpty() && !fisica.getDataFoto().isEmpty()){
+                SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+                sv.abrirTransacao();
+
+                fisica.setDataFoto("");
+                
+                sv.alterarObjeto(fisica);
+                sv.comitarTransacao();
+            }
+        }
         return fotoPerfil;
     }
 

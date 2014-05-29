@@ -198,7 +198,7 @@
                                 <p:column>
                                     <h:outputLabel value="Grupo Categoria"/><br />
                                     <p:selectOneMenu value="#{sociosBean.idGrupoCategoria}" style="width: 380px" disabled="#{sociosBean.socios.id != -1}">
-                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos" listener="#{sociosBean.atualizarCategoria()}"/>
+                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.atualizarCategoria()}"/>
                                         <f:selectItems value="#{sociosBean.listaGrupoCategoria}"/>
                                     </p:selectOneMenu>
                                 </p:column>
@@ -206,7 +206,7 @@
                                 <p:column>
                                     <h:outputLabel value="Categoria" style="margin-left: 30px"/><br />
                                     <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" valueChangeListener="#{sociosBean.listaServicos.clear()}" disabled="#{sociosBean.socios.id != -1}">
-                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos" listener="#{sociosBean.listaServicos.clear()}" />
+                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.listaParentesco.clear()}" />
                                         <f:selectItems value="#{sociosBean.listaCategoria}"/>
                                     </p:selectOneMenu>
                                 </p:column>
@@ -251,7 +251,7 @@
                             </h:panelGrid>
 
                             <p:panel id="i_panel_dependente" header="Dependentes" style="margin-top: 10px">
-                                <p:commandButton value="Criar Dependente" action="#{sociosBean.adicionarDependente}" update="i_panel_dependente" icon="ui-icon-circle-plus"/>
+                                <p:commandButton value="Criar Dependente" action="#{sociosBean.adicionarDependente}" update="i_panel_dependente i_msg" icon="ui-icon-circle-plus"/>
                                 <p:commandLink value="Sócio com Dependentes Inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()"/>
                                 
                                 <p:dataTable var="linha" id="tbl" value="#{sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
@@ -443,8 +443,7 @@ n
 
                                                 <p:column>
                                                     <h:panelGrid style="width: 265px; text-align: center" id="i_panel_foto">
-                                                        <p:graphicImage value="/Imagens/user_female.png" width="250" rendered="#{sociosBean.novoDependente.sexo == 'F'}"/>
-                                                        <p:graphicImage value="/Imagens/user_male.png" width="250" rendered="#{sociosBean.novoDependente.sexo == 'M'}"/>
+                                                        <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px"/>
                                                     </h:panelGrid>
                                                 </p:column>
                                             </h:panelGrid>

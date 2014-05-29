@@ -48,8 +48,11 @@ public class ImpressaoParaSocios {
                     break;
                 }
             }
-
-            String matr = "000000".substring(0, 6 - ((List) (listaCartao.get(i))).get(10).toString().length()) + ((List) (listaCartao.get(i))).get(10).toString();
+            
+            String matr = "";
+            if (((List) (listaCartao.get(i))).get(10) != null)
+                matr = "000000".substring(0, 6 - ((List) (listaCartao.get(i))).get(10).toString().length()) + ((List) (listaCartao.get(i))).get(10).toString();
+            
             String via = "00";
             if (((List) (listaCartao.get(i))).get(11) != null) {
                 via = ((List) (listaCartao.get(i))).get(11).toString();
@@ -73,10 +76,11 @@ public class ImpressaoParaSocios {
                     getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg"), // CAMINHO FUNDO
                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
-                    getConverteNullString(((List) (listaCartao.get(i))).get(13).toString()), // FILIAÇÃO
+                    getConverteNullString(((List) (listaCartao.get(i))).get(13)), // FILIAÇÃO
                     getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO
                     getConverteNullString(((List) (listaCartao.get(i))).get(15)), // CPF
-                    getConverteNullString(((List) (listaCartao.get(i))).get(16)) // RG
+                    getConverteNullString(((List) (listaCartao.get(i))).get(16)), // RG
+                    Integer.valueOf(( (List) (listaCartao.get(i))).get(0).toString()) // ID_PESSOA
                     ));
         }
 

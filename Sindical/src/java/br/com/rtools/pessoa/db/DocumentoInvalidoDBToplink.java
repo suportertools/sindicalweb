@@ -88,9 +88,15 @@ public class DocumentoInvalidoDBToplink extends DB implements DocumentoInvalidoD
         List<DocumentoInvalido> result = new ArrayList();
         String textQuery = "";
         try {
-            textQuery = "select doc.id as idi, doc.ds_documento_invalido,pes.id "
-                    + "  from pes_documento_invalido doc, pes_pessoa pes "
-                    + " where '000'||substring(replace(replace(replace(pes.ds_documento,'/',''),'-',''),'.',''),1,12) = doc.ds_documento_invalido";
+//            textQuery = "select doc.id as idi, doc.ds_documento_invalido,pes.id "
+//                    + "  from pes_documento_invalido doc, pes_pessoa pes "
+//                    + " where '000'||substring(replace(replace(replace(pes.ds_documento,'/',''),'-',''),'.',''),1,12) = doc.ds_documento_invalido";
+            textQuery = "SELECT * "
+                      + "  FROM pes_documento_invalido "
+                      + " WHERE '000'||ds_documento_invalido in ( "
+                      + "       SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(ds_documento,'/',''),'-',''),'.',''),1,12) "
+                      + "         FROM pes_pessoa ORDER BY ds_documento "
+                      + ")";
             Query qry = getEntityManager().createNativeQuery(textQuery);
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {

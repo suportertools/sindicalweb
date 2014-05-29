@@ -1,14 +1,14 @@
 package br.com.rtools.associativo.beans;
 
-import br.com.rtools.associativo.GrupoCategoria;
+import br.com.rtools.associativo.AutorizaImpressaoCartao;
 import br.com.rtools.associativo.HistoricoCarteirinha;
+import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
-import br.com.rtools.associativo.Socios;
-import br.com.rtools.associativo.db.CategoriaDB;
-import br.com.rtools.associativo.db.CategoriaDBToplink;
 import br.com.rtools.associativo.db.SocioCarteirinhaDB;
 import br.com.rtools.associativo.db.SocioCarteirinhaDBToplink;
+import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.impressao.Etiquetas;
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
@@ -45,17 +45,34 @@ public class CartaoSocialBean implements Serializable {
     private String porLabel = "";
     private String indexOrdem = "0";
     
+    public CartaoSocialBean(){
+        this.naoImpressoTodos();
+    }
+    
     public void historicoCarteirinha(){
         if (listaSelecionado.size() > 0){
             SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
+            
             listaHistorico.clear();
             for (int i = 0; i < listaSelecionado.size(); i++){
-                List<HistoricoCarteirinha> listah = db.listaHistoricoCarteirinha( (Integer) listaSelecionado.get(i).get(12) );
-                for (int w = 0; w < listah.size(); w++){
-                    listaHistorico.add( new DataObject(listah.get(w), "", listaSelecionado.get(i).get(5)+" - "+listaSelecionado.get(i).get(7)) );
+                List<HistoricoCarteirinha> listah = db.listaHistoricoCarteirinha( (Integer) listaSelecionado.get(i).get(0) );
+                for (HistoricoCarteirinha listah1 : listah) {
+                    
+                    AutorizaImpressaoCartao ai = db.pesquisaAutorizaPorHistorico(listah1.getId());
+                    
+                    listaHistorico.add(new DataObject(listah1, "", listaSelecionado.get(i).get(5)+" - "+listaSelecionado.get(i).get(7), ai));
+                    
                 }
             }
         }
+    }
+    
+    public void naoImpressoTodos(){
+        por = "niEmpresaTodos";
+        porLabel = "Lista de TODOS NÃO IMPRESSOS";
+        
+        SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
+        listaCarteirinha = db.pesquisaCarteirinha("niEmpresa", "", indexOrdem);
     }
     
     public void naoImpressoEmpresa(){
@@ -73,6 +90,14 @@ public class CartaoSocialBean implements Serializable {
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         listaCarteirinha = db.pesquisaCarteirinha("niCNPJ", descricao, indexOrdem);
     }
+    
+    public void impressoTodos(){
+        por = "iEmpresaTodos";
+        porLabel = "Lista de TODOS IMPRESSOS";
+        
+        SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
+        listaCarteirinha = db.pesquisaCarteirinha("iEmpresa", "", indexOrdem);
+    }   
     
     public void impressoEmpresa(){
         por = "iEmpresa";
@@ -98,25 +123,36 @@ public class CartaoSocialBean implements Serializable {
         listaCarteirinha = db.pesquisaCarteirinha("iDias", descricao, indexOrdem);
     }    
     
-    public void sociosNome(){
+    public void pessoaNome(){
         por = "iNome";
-        porLabel = "Pesquisa por Sócios / NOME";
+        porLabel = "Pesquisa por Pessoa / NOME";
         
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         listaCarteirinha = db.pesquisaCarteirinha("iNome", descricao, indexOrdem);
     }
     
-    public void sociosCodigo(){
-        por = "iCodigo";
-        porLabel = "Pesquisa por Sócios / MATRÍCULA";
+    public void sociosMatricula(){
+        por = "iMatricula";
+        porLabel = "Pesquisa por Sócio / MATRÍCULA";
         
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-        listaCarteirinha = db.pesquisaCarteirinha("iCodigo", descricao, indexOrdem);
+        listaCarteirinha = db.pesquisaCarteirinha("iMatricula", descricao, indexOrdem);
     }
     
-    public void sociosCPF(){
+    public void pessoaID(){
+        por = "iID";
+        porLabel = "Pesquisa por Pessoa / Código";
+        
+        SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
+        if (!descricao.isEmpty())
+            listaCarteirinha = db.pesquisaCarteirinha("iID", descricao, indexOrdem);
+        else
+            listaCarteirinha = new ArrayList<Vector>();
+    }
+    
+    public void pessoaCPF(){
         por = "iCPF";
-        porLabel = "Pesquisa por Sócios / CPF";
+        porLabel = "Pesquisa por Pessoa / CPF";
         
         SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
         listaCarteirinha = db.pesquisaCarteirinha("iCPF", descricao, indexOrdem);
@@ -148,8 +184,12 @@ public class CartaoSocialBean implements Serializable {
             listaCarteirinha = db.pesquisaCarteirinha("iNome", descricao, indexOrdem);
         }
         
-        if (por.equals("iCodigo")){
-            listaCarteirinha = db.pesquisaCarteirinha("iCodigo", descricao, indexOrdem);
+        if (por.equals("iID")){
+            listaCarteirinha = db.pesquisaCarteirinha("iID", descricao, indexOrdem);
+        }
+        
+        if (por.equals("iMatricula")){
+            listaCarteirinha = db.pesquisaCarteirinha("iMatricula", descricao, indexOrdem);
         }
         
         if (por.equals("iCPF")){
@@ -166,64 +206,73 @@ public class CartaoSocialBean implements Serializable {
             sv.abrirTransacao();
             DataHoje dh = new DataHoje();
             for (int i = 0; i < listaSelecionado.size(); i++) {
-                Socios socios = (Socios) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(12), "Socios");
+                SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
+                Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
-                CategoriaDB dbCat = new CategoriaDBToplink();
-                GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-                if (db.pesquisaSocioCarteirinhaSocio(socios.getId()).isEmpty()) {
+                
+                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinhaCategoria(-1, 170);
+                
+                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
+                
+                if (carteirinha.getDtEmissao() == null) {
 
                     carteirinha.setEmissao(DataHoje.data());
-                    carteirinha.setSocios(socios);
-                    if (!sv.inserirObjeto(carteirinha)) {
+                    if (!sv.alterarObjeto(carteirinha)) {
                         sv.desfazerTransacao();
                         return;
                     }
-                    
-                    socios.setNrViaCarteirinha(1);
-                    socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
-                    // ATUALIZA VALIDADE NA GRID
-                    // ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
-                    listaSelecionado.get(i).set(6, socios.getValidadeCarteirinha());
-                    if (!sv.alterarObjeto(socios)) {
-                        sv.desfazerTransacao();
-                        return;
-                    }
+                    listaSelecionado.get(i).set(6, carteirinha.getValidadeCarteirinha());
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
-                    hc.setSocios(socios);
+                    hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Primeira Impressão de Carteirinha");
+                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                    if (m != null)
+                        hc.setMovimento(m);
+                    
+                    
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
                         return;
                     }
+                    
+                
+                    AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), modeloc.getId());
+
+                    if (ai != null){
+                        ai.setHistoricoCarteirinha(hc);
+                        if (!sv.alterarObjeto(ai)){
+                            sv.desfazerTransacao();
+                            return;
+                        }
+                    }
+
                     
                 } else {
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
-                    hc.setSocios(socios);
+                    hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Impressão de Carteirinha");
+                    
+                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                    if (m != null)
+                        hc.setMovimento(m);
+                    
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
                         return;
                     }
-//                    carteirinha.setEmissao(DataHoje.data());
-//                    carteirinha.setSocios(socios);
-//                    if (!db.verificaSocioCarteirinhaExiste(socios.getId())) {
-//                        if (!sv.inserirObjeto(carteirinha)) {
-//                            sv.desfazerTransacao();
-//                            return;
-//                        }
-//                    }
-//                    
-//                    socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
-                    // ATUALIZA VALIDADE NA GRID
-                    //((List) listaaux.get(i)).set(11, socios.getNrViaCarteirinha());
-                    //((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
-                    if (!sv.alterarObjeto(socios)) {
-                        sv.desfazerTransacao();
-                        return;
-                    }
                     
+                    
+                    AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), modeloc.getId());
+
+                    if (ai != null){
+                        ai.setHistoricoCarteirinha(hc);
+                        if (!sv.alterarObjeto(ai)){
+                            sv.desfazerTransacao();
+                            return;
+                        }
+                    }
                 }
             }
 
@@ -245,73 +294,56 @@ public class CartaoSocialBean implements Serializable {
             sv.abrirTransacao();
             DataHoje dh = new DataHoje();
             for (int i = 0; i < listaSelecionado.size(); i++) {
-                Socios socios = (Socios) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(12), "Socios");
+                SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
+                Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
-                CategoriaDB dbCat = new CategoriaDBToplink();
-                GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(socios.getMatriculaSocios().getCategoria().getId());
-                if (db.pesquisaSocioCarteirinhaSocio(socios.getId()).isEmpty()) {
+                
+                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinhaCategoria(-1, 170);
+                
+                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
+                
+                if (carteirinha.getDtEmissao() == null) {
 
                     carteirinha.setEmissao(DataHoje.data());
-                    carteirinha.setSocios(socios);
-                    if (!sv.inserirObjeto(carteirinha)) {
+                    if (!sv.alterarObjeto(carteirinha)) {
                         sv.desfazerTransacao();
                         return;
                     }
-                    
-                    socios.setNrViaCarteirinha(1);
-                    socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
-                    listaSelecionado.get(i).set(6, socios.getValidadeCarteirinha());
-                    // ATUALIZA VALIDADE NA GRID
-                    // ((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
-                    if (!sv.alterarObjeto(socios)) {
-                        sv.desfazerTransacao();
-                        return;
-                    }
+                    listaSelecionado.get(i).set(6, carteirinha.getValidadeCarteirinha());
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
-                    hc.setSocios(socios);
-                    hc.setDescricao("Primeira Reimpressão de Carteirinha 2º Via");
+                    hc.setCarteirinha(carteirinha);
+                    hc.setDescricao("Primeira ReImpressão de Carteirinha 2º Via");
+                    
+                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                    if (m != null)
+                        hc.setMovimento(m);
+                    
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
                         return;
                     }
                 } else {
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
-                    hc.setSocios(socios);
+                    
+                    carteirinha.setVia(carteirinha.getVia()+1);
+                    if (!sv.alterarObjeto(carteirinha)) {
+                        sv.desfazerTransacao();
+                        return;
+                    }
+                    hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Reimpressão de Carteirinha 2º Via");
+                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                    if (m != null)
+                        hc.setMovimento(m);
+                    
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
                         return;
                     }
-                    
-                    
-                    carteirinha.setEmissao(DataHoje.data());
-                    carteirinha.setSocios(socios);
-//                    if (!db.verificaSocioCarteirinhaExiste(socios.getId())) {
-//                        if (!sv.inserirObjeto(carteirinha)) {
-//                            sv.desfazerTransacao();
-//                            return;
-//                        }
-//                    }
-                    
-                    socios.setNrViaCarteirinha(socios.getNrViaCarteirinha() + 1);
-                    socios.setDtValidadeCarteirinha(DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data())));
-                    
-                    // ATUALIZA VALIDADE NA GRID
-                    listaSelecionado.get(i).set(11, socios.getNrViaCarteirinha());
-                    listaSelecionado.get(i).set(6, socios.getValidadeCarteirinha());
-                    
-                    //((List) listaaux.get(i)).set(11, socios.getNrViaCarteirinha());
-                    //((List) listaaux.get(i)).set(6, socios.getValidadeCarteirinha());
-                    if (!sv.alterarObjeto(socios)) {
-                        sv.desfazerTransacao();
-                        return;
-                    }
-                    
                 }
             }
-
-
+            
             if (ImpressaoParaSocios.imprimirCarteirinha(listaSelecionado)) {
                 sv.comitarTransacao();
             } else {

@@ -17,7 +17,7 @@
                 </p:selectOneMenu>
             </p:column>
             
-            <p:column>
+            <p:column rendered="false">
                 <br />
                 <p:selectBooleanCheckbox id="idDescontoFolha" value="#{pessoaComplementoBean.pessoaComplemento.cobrancaBancaria}" itemLabel="Desconto em Folha?">
                     <p:ajax event="change" update="idDescontoFolha"  listener="#{pessoaComplementoBean.atualizar(idPessoa)}" />

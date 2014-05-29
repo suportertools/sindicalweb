@@ -1,8 +1,6 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.arrecadacao.GrupoCidades;
-import br.com.rtools.arrecadacao.db.GrupoCidadesDB;
-import br.com.rtools.arrecadacao.db.GrupoCidadesDBToplink;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
 import br.com.rtools.associativo.db.SocioCarteirinhaDB;
@@ -71,7 +69,7 @@ public class SocioCarteirinhaJSFBean {
         List<SelectItem> result = new ArrayList();
         if (tipoPesCidades.equals("especificas")) {
             for (int i = 0; i < lista.size(); i++) {
-                result.add(new SelectItem(new Integer(i),
+                result.add(new SelectItem(i,
                         lista.get(i).getCidade().getCidade() + " - " + lista.get(i).getCidade().getUf(),
                         Integer.toString(lista.get(i).getCidade().getId())));
             }
@@ -85,7 +83,7 @@ public class SocioCarteirinhaJSFBean {
         List<SelectItem> result = new ArrayList();
         if (tipoPesFilial.equals("especificas")) {
             for (int i = 0; i < listaFilial.size(); i++) {
-                result.add(new SelectItem(new Integer(i),
+                result.add(new SelectItem(i,
                         listaFilial.get(i).getFilial().getPessoa().getDocumento() + " - " + listaFilial.get(i).getFilial().getPessoa().getNome(),
                         Integer.toString(listaFilial.get(i).getFilial().getPessoa().getId())));
             }
@@ -127,15 +125,15 @@ public class SocioCarteirinhaJSFBean {
     }
 
     public String adicionarSocio() {
-        for (int i = 0; i < listaSoc.size(); i++) {
-            if (((Socios) ((DataObject) listaSoc.get(i)).getArgumento1()).getId() == socioCarteirinha.getSocios().getId()) {
+        for (Object listaSoc1 : listaSoc) {
+            if (((Socios) ((DataObject) listaSoc1).getArgumento1()).getServicoPessoa().getId() == socioCarteirinha.getPessoa().getId()) {
                 renderAdc = false;
                 return "emissaoCarteirinha";
             }
         }
         FilialCidadeDB dbC = new FilialCidadeDBToplink();
         PessoaEnderecoDB dbE = new PessoaEnderecoDBToplink();
-        PessoaEndereco pesEnde = dbE.pesquisaEndPorPessoaTipo(socioCarteirinha.getSocios().getServicoPessoa().getPessoa().getId(), 1);
+        PessoaEndereco pesEnde = dbE.pesquisaEndPorPessoaTipo(socioCarteirinha.getPessoa().getId(), 1);
         FilialCidade filCidade;
         if (pesEnde != null) {
             filCidade = dbC.pesquisaFilialPorCidade(pesEnde.getEndereco().getCidade().getId());
@@ -143,7 +141,7 @@ public class SocioCarteirinhaJSFBean {
             filCidade = new FilialCidade();
         }
         listaSoc.add(new DataObject(true,
-                socioCarteirinha.getSocios(),
+                socioCarteirinha.getPessoa(),
                 filCidade,
                 null,
                 null,
@@ -766,7 +764,7 @@ public class SocioCarteirinhaJSFBean {
 
     public SocioCarteirinha getSocioCarteirinha() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa") != null) {
-            socioCarteirinha.setSocios((Socios) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa"));
+            socioCarteirinha.setPessoa( ((Socios) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("socioPesquisa")).getServicoPessoa().getPessoa() );
             FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("socioPesquisa");
             renderAdc = true;
         }

@@ -1,5 +1,6 @@
 package br.com.rtools.associativo;
 
+import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.Column;
@@ -18,43 +19,55 @@ import javax.persistence.TemporalType;
 @Table(name = "SOC_CARTEIRINHA")
 @NamedQuery(name = "SocioCarteirinha.pesquisaID", query = "select sc from SocioCarteirinha sc where sc.id=:pid")
 public class SocioCarteirinha implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    @JoinColumn(name = "ID_SOCIO", referencedColumnName = "ID", nullable = true)
-    @ManyToOne
-    private Socios socios;
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_EMISSAO")
     private Date dtEmissao;
-
-    public SocioCarteirinha(int id, Socios socios, Date dtEmissao) {
-        this.id = id;
-        this.socios = socios;
-        this.dtEmissao = dtEmissao;
-    }
+    @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID")
+    @ManyToOne
+    private Pessoa pessoa;
+    @JoinColumn(name = "ID_MODELO_CARTEIRINHA", referencedColumnName = "ID")
+    @ManyToOne
+    private ModeloCarteirinha modeloCarteirinha;
+    @Column(name = "NR_CARTAO")
+    private int cartao;
+    @Column(name = "NR_VIA")
+    private int via;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DT_VALIDADE_CARTEIRINHA")
+    private Date dtValidadeCarteirinha;
 
     public SocioCarteirinha() {
         this.id = -1;
-        this.socios = new Socios();
-        this.dtEmissao = null;
+        this.setEmissao(DataHoje.data());
+        this.pessoa = new Pessoa();
+        this.modeloCarteirinha = new ModeloCarteirinha();
+        this.cartao = 0;
+        this.via = 0;
+        this.setValidadeCarteirinha("");
     }
 
+    public SocioCarteirinha(int id, String emissao, Pessoa pessoa, ModeloCarteirinha modeloCarteirinha, int cartao, int via, String validadeCarteirinha) {
+        this.id = id;
+        this.setEmissao(emissao);
+        this.pessoa = pessoa;
+        this.modeloCarteirinha = modeloCarteirinha;
+        this.cartao = cartao;
+        this.via = via;
+        this.setValidadeCarteirinha(validadeCarteirinha);
+    }
+    
+    
+    
+    
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Socios getSocios() {
-        return socios;
-    }
-
-    public void setSocios(Socios socios) {
-        this.socios = socios;
     }
 
     public Date getDtEmissao() {
@@ -78,4 +91,59 @@ public class SocioCarteirinha implements java.io.Serializable {
             this.dtEmissao = DataHoje.converte(emissao);
         }
     }
+
+    public Pessoa getPessoa() {
+        return pessoa;
+    }
+
+    public void setPessoa(Pessoa pessoa) {
+        this.pessoa = pessoa;
+    }
+
+    public ModeloCarteirinha getModeloCarteirinha() {
+        return modeloCarteirinha;
+    }
+
+    public void setModeloCarteirinha(ModeloCarteirinha modeloCarteirinha) {
+        this.modeloCarteirinha = modeloCarteirinha;
+    }
+
+    public int getCartao() {
+        return cartao;
+    }
+
+    public void setCartao(int cartao) {
+        this.cartao = cartao;
+    }
+
+    public int getVia() {
+        return via;
+    }
+
+    public void setVia(int via) {
+        this.via = via;
+    }
+
+    public Date getDtValidadeCarteirinha() {
+        return dtValidadeCarteirinha;
+    }
+
+    public void setDtValidadeCarteirinha(Date dtValidadeCarteirinha) {
+        this.dtValidadeCarteirinha = dtValidadeCarteirinha;
+    }
+    
+    public String getValidadeCarteirinha() {
+        if (dtValidadeCarteirinha != null) {
+            return DataHoje.converteData(dtValidadeCarteirinha);
+        } else {
+            return "";
+        }
+    }
+
+    public void setValidadeCarteirinha(String validadeCarteirinha) {
+        if (!validadeCarteirinha.isEmpty()) {
+            this.dtValidadeCarteirinha = DataHoje.converte(validadeCarteirinha);
+        }
+    }        
+    
 }

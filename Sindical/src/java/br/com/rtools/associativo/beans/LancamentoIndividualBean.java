@@ -151,7 +151,7 @@ public class LancamentoIndividualBean {
                     0, // VALOR BAIXA
                     td, // FTipo_documento 13 - CARTEIRA, 2 - BOLETO
                     0, // REPASSE AUTOMATICO
-                    new MatriculaSocios() // MATRICULA SÓCIO
+                    null // MATRICULA SÓCIO
             ), 
                     Moeda.converteR$Float(Moeda.converteFloatR$Float(valor))
             ));
@@ -274,7 +274,7 @@ public class LancamentoIndividualBean {
             int i = 0;
             ServicoRotinaDB db = new ServicoRotinaDBToplink();
             List<Servicos> select = db.pesquisaTodosServicosComRotinas(131);
-            if (select.isEmpty()){
+            if (!select.isEmpty()){
                 while (i < select.size()) {
                     listaServicos.add(new SelectItem(i,
                                       select.get(i).getDescricao(),
@@ -408,13 +408,15 @@ public class LancamentoIndividualBean {
         if (fisica.getId() != -1 && !listaServicos.isEmpty()){
             LancamentoIndividualDB db = new LancamentoIndividualDBToplink();
             
-            Servicos se = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos"));
-            
-            List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), se.getId());
-            float vl = Float.valueOf( ((Double)valor.get(0).get(0)).toString() );
-            
-            if (!se.isAlterarValor())
-                totalPagar = Moeda.converteR$Float(vl);
+            if (!listaServicos.get(idServico).getDescription().equals("0")){
+                Servicos se = (Servicos)(new SalvarAcumuladoDBToplink().pesquisaCodigo(Integer.parseInt(listaServicos.get(idServico).getDescription()), "Servicos"));
+
+                List<Vector> valor = db.pesquisaServicoValor(fisica.getPessoa().getId(), se.getId());
+                float vl = Float.valueOf( ((Double)valor.get(0).get(0)).toString() );
+
+                if (!se.isAlterarValor())
+                    totalPagar = Moeda.converteR$Float(vl);
+            }
         }
         return Moeda.converteR$(totalPagar);
     }

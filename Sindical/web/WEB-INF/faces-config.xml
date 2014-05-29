@@ -1589,6 +1589,18 @@
             <redirect/>
         </navigation-case>        
         
+        <navigation-case>
+            <from-outcome>autorizaCarteirinha</from-outcome>
+            <to-view-id>/autorizaCarteirinha.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
+        <navigation-case>
+            <from-outcome>modeloCarteirinha</from-outcome>
+            <to-view-id>/modeloCarteirinha.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>        
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
