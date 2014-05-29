@@ -501,7 +501,7 @@ public class EnviarEmail {
 
     }
 
-    private static Session configureSession(String host, int port, final String email, final String password, boolean auth, int protocol) {
+    public static Session configureSession(String host, int port, final String email, final String password, boolean auth, int protocol) {
         try {
             Properties properties = new Properties();
             properties.put("mail.smtp.host", host);
