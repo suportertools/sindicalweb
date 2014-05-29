@@ -1,21 +1,27 @@
 package br.com.rtools.seguranca.beans;
 
 import br.com.rtools.financeiro.Servicos;
-import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.SisEmailProtocolo;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
+import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
-import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -140,12 +146,12 @@ public class RegistroEmpresarialBean implements Serializable {
                     codigoServico = registro.getServicos().getId();
                 }
                 List<SelectItem> list = getListaSisEmailProtocolo();
-                for(int i = 0; i < list.size(); i++) {
-                    if(registro.getSisEmailProtocolo().getId() == Integer.parseInt(list.get(i).getDescription())) {
+                for (int i = 0; i < list.size(); i++) {
+                    if (registro.getSisEmailProtocolo().getId() == Integer.parseInt(list.get(i).getDescription())) {
                         idSisEmailProtocolo = i;
                         break;
                     }
-                }                
+                }
             }
         }
         return registro;
@@ -284,15 +290,44 @@ public class RegistroEmpresarialBean implements Serializable {
             GenericaMensagem.warn("Validação", "Informar e-mail!");
             return;
         }
-        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
-        Juridica juridica = (Juridica) sadb.find(new Juridica(), 1);
-        juridica.getPessoa().setEmail1(emailTeste);
-        String msgEmail = EnviarEmail.EnviarEmailTeste(emailTeste);
-        if (msgEmail.isEmpty()) {
-            GenericaMensagem.warn("Validação", "Erro ao enviar mensagem!");
-            return;
+        DaoInterface di = new Dao();
+        Mail mail = new Mail();
+        mail.setEmail(
+                new Email(
+                        -1,
+                        DataHoje.dataHoje(),
+                        DataHoje.livre(new Date(), "HH:mm"),
+                        (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                        (Rotina) di.find(new Rotina(), 111),
+                        null,
+                        "Email teste.",
+                        "",
+                        false,
+                        false
+                )
+        );
+        List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+        EmailPessoa emailPessoa = new EmailPessoa();
+        emailPessoa.setDestinatario(emailTeste);
+        emailPessoa.setPessoa(null);
+        emailPessoa.setRecebimento(null);
+        emailPessoas.add(emailPessoa);
+        mail.setEmailPessoas(emailPessoas);
+        String[] string = mail.send();
+        if (string[0].isEmpty()) {
+            GenericaMensagem.warn("Validação", "Erro ao enviar mensagem!" + string[0]);
+        } else {
+            GenericaMensagem.info("Sucesso", "Email enviado com sucesso!");
         }
-        GenericaMensagem.info("Sucesso", msgEmail);
+//        SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
+//        Juridica juridica = (Juridica) sadb.find(new Juridica(), 1);
+//        juridica.getPessoa().setEmail1(emailTeste);
+//        String msgEmail = EnviarEmail.EnviarEmailTeste(emailTeste);
+//        if (msgEmail.isEmpty()) {
+//            GenericaMensagem.warn("Validação", "Erro ao enviar mensagem!");
+//            return;
+//        }
+        //GenericaMensagem.info("Sucesso", msgEmail);
     }
 
     public String getEmailTeste() {
