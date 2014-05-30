@@ -74,13 +74,13 @@ public class Mail extends MailTemplate implements Serializable {
 
     public String[] send(String templateHtml) {
         String[] strings = new String[]{"", "", "", ""};
-        if (getRegistro() == null) {
+        if (getRegistro() == null || getRegistro().getId() == -1) {
             strings[0] = "Informar registro!";
             return strings;
         }
         DaoInterface di = new Dao();
         Juridica sindicato = (Juridica) di.find(new Juridica(), 1);
-        if (personal.isEmpty()) {
+        if (personal == null || personal.isEmpty()) {
             personal = sindicato.getPessoa().getNome();
         }
         if (strings[0].isEmpty()) {
@@ -127,7 +127,7 @@ public class Mail extends MailTemplate implements Serializable {
                                     + "<html>"
                                     + "     <body style='background-color: white'>"
                                     + "         <h2><b>" + registro.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
-                                    + "         <p> " + emailPessoas.get(i).getEmail().getMensagem() + "</p>"
+                                    + "         <p> " + email.getMensagem() + "</p>"
                                     + "         <br /><br />"
                                     + "     </body>"
                                     + "</html>";
@@ -216,7 +216,7 @@ public class Mail extends MailTemplate implements Serializable {
     }
 
     public Registro getRegistro() {
-        if (registro == null) {
+        if (registro == null || registro.getId() == -1) {
             DaoInterface di = new Dao();
             registro = (Registro) di.find(new Registro(), 1);
         }
