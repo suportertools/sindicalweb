@@ -212,38 +212,38 @@ public class EnviarArquivosBean implements Serializable {
         for (int i = 0; i < listaArquivos.size(); i++) {
             aux2.add((File) ((DataObject) listaArquivos.get(i)).getArgumento0());
         }
-        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
-        Registro r = (Registro) salvarAcumuladoDB.pesquisaObjeto(1, "Registro");
-        String[] retorno = EnviarEmail.EnviarEmailPersonalizado(r, aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
-//        DaoInterface di = new Dao();
-//        Mail mail = new Mail();
-//        mail.setFiles(aux2);
-//        mail.setEmail(
-//                new Email(
-//                        -1,
-//                        DataHoje.dataHoje(),
-//                        DataHoje.livre(new Date(), "HH:mm"),
-//                        (Usuario) GenericaSessao.getObject("sessaoUsuario"),
-//                        (Rotina) di.find(new Rotina(), 175),
-//                        null,
-//                        mensagem.getAssunto(),
-//                        mensagem.getMensagem(),
-//                        false,
-//                        false
-//                )
-//        );
-//        List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
-//        EmailPessoa emailPessoa = new EmailPessoa();
-//        List<Pessoa> pessoas = (List<Pessoa>) aux;
-//        for (Pessoa p : pessoas) {
-//            emailPessoa.setDestinatario(p.getEmail1());
-//            emailPessoa.setPessoa(p);
-//            emailPessoa.setRecebimento(null);
-//            emailPessoas.add(emailPessoa);
-//            mail.setEmailPessoas(emailPessoas);
-//            emailPessoa = new EmailPessoa();
-//        }
-//        String[] retorno = mail.send();
+//        SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+//        Registro r = (Registro) salvarAcumuladoDB.pesquisaObjeto(1, "Registro");
+//        String[] retorno = EnviarEmail.EnviarEmailPersonalizado(r, aux, mensagem.getMensagem(), aux2, mensagem.getAssunto());
+        DaoInterface di = new Dao();
+        Mail mail = new Mail();
+        mail.setFiles(aux2);
+        mail.setEmail(
+                new Email(
+                        -1,
+                        DataHoje.dataHoje(),
+                        DataHoje.livre(new Date(), "HH:mm"),
+                        (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                        (Rotina) di.find(new Rotina(), 175),
+                        null,
+                        mensagem.getAssunto(),
+                        mensagem.getMensagem(),
+                        false,
+                        false
+                )
+        );
+        List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+        EmailPessoa emailPessoa = new EmailPessoa();
+        List<Pessoa> pessoas = (List<Pessoa>) aux;
+        for (Pessoa p : pessoas) {
+            emailPessoa.setDestinatario(p.getEmail1());
+            emailPessoa.setPessoa(p);
+            emailPessoa.setRecebimento(null);
+            emailPessoas.add(emailPessoa);
+            mail.setEmailPessoas(emailPessoas);
+            emailPessoa = new EmailPessoa();
+        }
+        String[] retorno = mail.send();
 
         if (retorno[1].isEmpty()) {
             if (!listaArquivos.isEmpty()) {
