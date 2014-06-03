@@ -7,6 +7,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "SIS_EMAIL_PESSOA")
+@NamedQuery(name = "findByEmail", query = "SELECT EP FROM EmailPessoa AS EP WHERE EP.email.id = :p1 ")
 public class EmailPessoa implements Serializable {
 
     @Id
