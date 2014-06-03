@@ -243,7 +243,7 @@ public class EnviarArquivosBean implements Serializable {
             mail.setEmailPessoas(emailPessoas);
             emailPessoa = new EmailPessoa();
         }
-        String[] retorno = mail.send();
+        String[] retorno = mail.send("personalizado");
 
         if (retorno[1].isEmpty()) {
             if (!listaArquivos.isEmpty()) {
