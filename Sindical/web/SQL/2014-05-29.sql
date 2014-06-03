@@ -33,10 +33,10 @@ SELECT setval('est_tipo_id_seq', max(id)) FROM est_tipo;
 -- TERCEIRA VERSÃO NO COMERCIO
 
 
-ALTER TABLE seg_registro ADD COLUMN is_cobranca_carteirinha boolean;
+ALTER TABLE seg_registro ADD COLUMN is_cobranca_carteirinha BOOLEAN DEFAULT FALSE;
 UPDATE seg_registro SET is_cobranca_carteirinha  = false;
 
-ALTER TABLE seg_registro ADD COLUMN is_validade_barras boolean;
+ALTER TABLE seg_registro ADD COLUMN is_validade_barras BOOLEAN DEFAULT FALSE;;
 UPDATE seg_registro SET is_validade_barras = false;
 
 -- Table: soc_modelo_carteirinha
@@ -257,7 +257,7 @@ ALTER TABLE soc_autoriza_impressao_cartao ADD COLUMN id_modelo_carteirinha integ
 
 -- ALTER TABLE seg_registro DROP COLUMN is_foto_cartao;
 
-ALTER TABLE seg_registro ADD COLUMN is_foto_cartao boolean;
+ALTER TABLE seg_registro ADD COLUMN is_foto_cartao BOOLEAN DEFAULT FALSE;
 UPDATE seg_registro SET is_foto_cartao = false;
 
   
