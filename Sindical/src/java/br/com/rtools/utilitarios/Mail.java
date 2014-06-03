@@ -1,6 +1,8 @@
 package br.com.rtools.utilitarios;
 
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.pessoa.db.JuridicaDBToplink;
+import br.com.rtools.seguranca.EmailMarketing;
 import br.com.rtools.seguranca.Registro;
 import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailArquivo;
@@ -91,21 +93,26 @@ public class Mail extends MailTemplate implements Serializable {
                 boolean saveArquivosEmail = false;
                 for (int i = 0; i < emailPessoas.size(); i++) {
                     try {
-                        Session session = EnviarEmail.configureSession(getRegistro().getSmtp(), registro.getSisEmailPorta(), registro.getEmail(), registro.getSenha(), registro.isEmailAutenticado(), registro.getSisEmailProtocolo().getId());
+                        Session session;
+                        if (registro.isSisEmailMarketing()) {
+                            session = EnviarEmail.configureSession(EmailMarketing.getHOSTNAME(), EmailMarketing.getPORT(), EmailMarketing.getLOGIN(), EmailMarketing.getPASSWORD(), EmailMarketing.isAUTH(), EmailMarketing.getPROTOCOL());
+                        } else {
+                            session = EnviarEmail.configureSession(getRegistro().getSmtp(), registro.getSisEmailPorta(), registro.getEmail(), registro.getSenha(), registro.isEmailAutenticado(), registro.getSisEmailProtocolo().getId());
+                        }
                         if (session == null) {
                             strings[0] = "Não foi possível realizar autenticação!";
                         }
                         MimeMessage msg = new MimeMessage(session);
                         InternetAddress internetAddress = new InternetAddress();
-                        if (!registro.getEmail().equals("fale.sender")) {
+                        if (registro.isSisEmailMarketing()) {
+                            msg.setFrom(new InternetAddress(registro.getSisEmailResposta(), personal));
+                        } else {
                             if (!registro.getSisEmailResposta().isEmpty()) {
                                 internetAddress.setPersonal(registro.getSisEmailResposta());
                                 msg.setFrom(internetAddress);
                             } else {
                                 msg.setFrom(new InternetAddress(registro.getEmail()));
                             }
-                        } else {
-                            msg.setFrom(new InternetAddress(registro.getSisEmailResposta(), personal));
                         }
                         String to = "";
                         if (emailPessoas.get(i).getPessoa() != null) {
@@ -129,6 +136,27 @@ public class Mail extends MailTemplate implements Serializable {
                                     + "         <h2><b>" + registro.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
                                     + "         <p> " + email.getMensagem() + "</p>"
                                     + "         <br /><br />"
+                                    + "     </body>"
+                                    + "</html>";
+                        } else if (templateHtml.equals("personalizado")) {
+                            Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(emailPessoas.get(i).getPessoa().getId());
+                            if (jur == null) {
+                                jur = registro.getFilial();
+                            }
+                            htmlString += ""
+                                    + "<html>"
+                                    + "     <body style='background-color: white'>"
+                                    + "         <h2>"
+                                    + "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>"
+                                    + "         </h2><br /><br />"
+                                    + "         <p>"
+                                    + "             <h3>"
+                                    + "                 Caso queira entrar em contato envie para: <b>" + registro.getFilial().getPessoa().getEmail1() + "</b>"
+                                    + "             </h3>"
+                                    + "         </p><br /><br />"
+                                    + "         <h3>"
+                                    + "             A/C"
+                                    + "         </h3><b> " + jur.getContato() + " </b><br /><br />" + email.getMensagem()
                                     + "     </body>"
                                     + "</html>";
                         }
