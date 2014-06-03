@@ -105,6 +105,8 @@ public class Registro implements java.io.Serializable {
     private boolean fotoCartao;
     @Column(name = "HOM_NR_LIMITE_MESES", columnDefinition = "INTEGER DEFAULT 3")
     private int homolocaoLimiteMeses;
+    @Column(name = "SIS_IS_EMAIL_MARKETING", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean sisEmailMarketing;
 
     public Registro() {
         this.id = -1;
@@ -150,8 +152,9 @@ public class Registro implements java.io.Serializable {
         this.cobrancaCarteirinha = false;
         this.validadeBarras = false;
         this.fotoCartao = false;
-       this.homolocaoLimiteMeses = 3;
-   }
+        this.homolocaoLimiteMeses = 3;
+        this.sisEmailMarketing = false;
+    }
 
     public Registro(int id,
             Juridica filial,
@@ -193,9 +196,10 @@ public class Registro implements java.io.Serializable {
             int sisEmailPorta,
             SisEmailProtocolo sisEmailProtocolo,
             boolean cobrancaCarteirinha,
-            boolean validadeBarras, 
+            boolean validadeBarras,
             boolean fotoCartao,
-            int homolocaoLimiteMeses) {
+            int homolocaoLimiteMeses,
+            boolean sisEmailMarketing) {
 
         this.id = id;
         this.filial = filial;
@@ -240,6 +244,7 @@ public class Registro implements java.io.Serializable {
         this.validadeBarras = validadeBarras;
         this.fotoCartao = fotoCartao;
         this.homolocaoLimiteMeses = homolocaoLimiteMeses;
+        this.sisEmailMarketing = sisEmailMarketing;
     }
 
     public int getId() {
@@ -581,7 +586,7 @@ public class Registro implements java.io.Serializable {
     public void setSisEmailProtocolo(SisEmailProtocolo sisEmailProtocolo) {
         this.sisEmailProtocolo = sisEmailProtocolo;
     }
-    
+
     public boolean isCobrancaCarteirinha() {
         return cobrancaCarteirinha;
     }
@@ -605,12 +610,20 @@ public class Registro implements java.io.Serializable {
     public void setFotoCartao(boolean fotoCartao) {
         this.fotoCartao = fotoCartao;
     }
-    
+
     public int getHomolocaoLimiteMeses() {
         return homolocaoLimiteMeses;
     }
 
     public void setHomolocaoLimiteMeses(int homolocaoLimiteMeses) {
         this.homolocaoLimiteMeses = homolocaoLimiteMeses;
+    }
+
+    public boolean isSisEmailMarketing() {
+        return sisEmailMarketing;
+    }
+
+    public void setSisEmailMarketing(boolean sisEmailMarketing) {
+        this.sisEmailMarketing = sisEmailMarketing;
     }
 }
