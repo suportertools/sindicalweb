@@ -30,6 +30,9 @@ public class RepisMovimento implements Serializable {
     @JoinColumn(name = "ID_REPIS_STATUS", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private RepisStatus repisStatus;
+    @JoinColumn(name = "ID_PATRONAL", referencedColumnName = "ID", nullable = false)
+    @ManyToOne
+    private Patronal patronal;
 
     public RepisMovimento() {
         this.id = -1;
@@ -39,9 +42,10 @@ public class RepisMovimento implements Serializable {
         this.dataResposta = new Date();
         this.ano = 0;
         this.repisStatus = new RepisStatus();
+        this.patronal = new Patronal();
     }
 
-    public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus) {
+    public RepisMovimento(int id, String dataEmissaoString, String contato, Pessoa pessoa, String dataRespostaString, int ano, RepisStatus repisStatus, Patronal patronal) {
         this.id = id;
         setDataEmissaoString(dataEmissaoString);
         this.contato = contato;
@@ -49,6 +53,7 @@ public class RepisMovimento implements Serializable {
         setDataRespostaString(dataRespostaString);
         this.ano = ano;
         this.repisStatus = repisStatus;
+        this.patronal = patronal;
     }
 
     public int getId() {
@@ -121,5 +126,13 @@ public class RepisMovimento implements Serializable {
 
     public void setRepisStatus(RepisStatus repisStatus) {
         this.repisStatus = repisStatus;
+    }
+
+    public Patronal getPatronal() {
+        return patronal;
+    }
+
+    public void setPatronal(Patronal patronal) {
+        this.patronal = patronal;
     }
 }
