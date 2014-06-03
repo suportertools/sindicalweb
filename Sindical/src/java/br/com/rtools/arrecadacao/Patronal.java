@@ -5,7 +5,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ARR_PATRONAL")
+@Table(name = "ARR_PATRONAL",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"ID_PESSOA", "DS_BASE_TERRITORIAL"})
+)
 @NamedQuery(name = "Patronal.pesquisaID", query = "select p from Patronal p where p.id = :pid")
 public class Patronal implements Serializable {
 
@@ -15,28 +17,18 @@ public class Patronal implements Serializable {
     @JoinColumn(name = "ID_PESSOA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @JoinColumn(name = "ID_CONVENCAO", referencedColumnName = "ID", nullable = false)
-    @ManyToOne
-    private Convencao convencao;
-    @JoinColumn(name = "ID_GRUPO_CIDADE", referencedColumnName = "ID", nullable = false)
-    @ManyToOne
-    private GrupoCidade grupoCidade;
     @Column(name = "DS_BASE_TERRITORIAL", length = 2000, nullable = true)
     private String baseTerritorial;
 
     public Patronal() {
         this.id = -1;
         this.pessoa = new Pessoa();
-        this.convencao = new Convencao();
-        this.grupoCidade = new GrupoCidade();
         this.baseTerritorial = "";
     }
 
-    public Patronal(int id, Pessoa pessoa, Convencao convencao, GrupoCidade grupoCidade, String baseTerritorial) {
+    public Patronal(int id, Pessoa pessoa, String baseTerritorial) {
         this.id = id;
         this.pessoa = pessoa;
-        this.convencao = convencao;
-        this.grupoCidade = grupoCidade;
         this.baseTerritorial = baseTerritorial;
     }
 
@@ -54,22 +46,6 @@ public class Patronal implements Serializable {
 
     public void setPessoa(Pessoa pessoa) {
         this.pessoa = pessoa;
-    }
-
-    public Convencao getConvencao() {
-        return convencao;
-    }
-
-    public void setConvencao(Convencao convencao) {
-        this.convencao = convencao;
-    }
-
-    public GrupoCidade getGrupoCidade() {
-        return grupoCidade;
-    }
-
-    public void setGrupoCidade(GrupoCidade grupoCidade) {
-        this.grupoCidade = grupoCidade;
     }
 
     public String getBaseTerritorial() {
