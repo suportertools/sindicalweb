@@ -22,23 +22,24 @@ import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.seguranca.db.UsuarioDB;
 import br.com.rtools.seguranca.db.UsuarioDBToplink;
 import br.com.rtools.utilitarios.AnaliseString;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvaArquivos;
-import br.com.rtools.utilitarios.SalvarAcumuladoDB;
-import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -48,7 +49,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
-public class WebREPISBean {
+public class WebREPISBean implements Serializable {
 
     private Pessoa pessoa = new Pessoa();
     private Endereco endereco = new Endereco();
@@ -57,24 +58,24 @@ public class WebREPISBean {
     private Pessoa pessoaContabilidade = new Pessoa();
     private Pessoa pessoaSolicitante = new Pessoa();
     private Pessoa escritorio = new Pessoa();
-    private List<SelectItem> listaComboPessoa = new Vector<SelectItem>();
-    private List<SelectItem> listaComboRepisStatus = new Vector<SelectItem>();
-    private List<RepisMovimento> listaRepisMovimento = new ArrayList<RepisMovimento>();
-    private List<RepisMovimento> listaRepisMovimentoPatronal = new ArrayList<RepisMovimento>();
+    private List<SelectItem> listComboPessoa = new ArrayList<SelectItem>();
+    private List<SelectItem> listComboRepisStatus = new ArrayList<SelectItem>();
+    private List<RepisMovimento> listRepisMovimento = new ArrayList<RepisMovimento>();
+    private List<RepisMovimento> listRepisMovimentoPatronal = new ArrayList<RepisMovimento>();
     private int idPessoa = 0;
     private int idRepisStatus = 0;
     private boolean renderContabil = false;
     private boolean renderEmpresa = false;
     private boolean showProtocolo = false;
     private boolean showPessoa = true;
-    private String msg = "";
+    private String message = "";
     private RepisMovimento repisMovimento = new RepisMovimento();
     private String descPesquisa = "";
     private String porPesquisa = "nome";
     private String comoPesquisa = "";
     private String tipoPesquisa = "";
     private String descricao = "";
-    private List listaArquivosEnviados = new ArrayList();
+    private List listArquivosEnviados = new ArrayList();
 
     public WebREPISBean() {
         UsuarioDB db = new UsuarioDBToplink();
@@ -105,37 +106,37 @@ public class WebREPISBean {
         WebREPISDB db = new WebREPISDBToplink();
 
         //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
-        listaRepisMovimentoPatronal.clear();
-        getListaRepisMovimentoPatronal();
+        listRepisMovimentoPatronal.clear();
+        getListRepisMovimentoPatronal();
 
         List<RepisMovimento> lista = new ArrayList<RepisMovimento>();
-        for (int i = 0; i < listaRepisMovimentoPatronal.size(); i++) {
+        for (int i = 0; i < listRepisMovimentoPatronal.size(); i++) {
             if (tipoPesquisa.equals("nome")) {
-                if (listaRepisMovimentoPatronal.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimentoPatronal.get(i));
+                if (listRepisMovimentoPatronal.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimentoPatronal.get(i));
                 }
             } else if (tipoPesquisa.equals("cnpj")) {
-                if (listaRepisMovimentoPatronal.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimentoPatronal.get(i));
+                if (listRepisMovimentoPatronal.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimentoPatronal.get(i));
                 }
             } else if (tipoPesquisa.equals("protocolo")) {
-                if (Integer.toString(listaRepisMovimentoPatronal.get(i).getId()).equals(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimentoPatronal.get(i));
+                if (Integer.toString(listRepisMovimentoPatronal.get(i).getId()).equals(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimentoPatronal.get(i));
                 }
             } else if (tipoPesquisa.equals("status")) {
-                if (listaRepisMovimentoPatronal.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimentoPatronal.get(i));
+                if (listRepisMovimentoPatronal.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimentoPatronal.get(i));
                 }
             } else if (tipoPesquisa.equals("socilitante")) {
-                if (listaRepisMovimentoPatronal.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimentoPatronal.get(i));
+                if (listRepisMovimentoPatronal.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimentoPatronal.get(i));
                 }
             }
         }
 
-        listaRepisMovimentoPatronal.clear();
+        listRepisMovimentoPatronal.clear();
 
-        listaRepisMovimentoPatronal.addAll(lista);
+        listRepisMovimentoPatronal.addAll(lista);
         return "webLiberacaoREPIS";
     }
 
@@ -143,53 +144,53 @@ public class WebREPISBean {
         WebREPISDB db = new WebREPISDBToplink();
 
         //listaRepisMovimento = db.listaRepisMovimento("nome", descricao.toUpperCase());
-        listaRepisMovimento.clear();
-        getListaRepisMovimento();
+        listRepisMovimento.clear();
+        getListRepisMovimento();
 
         List<RepisMovimento> lista = new ArrayList<RepisMovimento>();
-        for (int i = 0; i < listaRepisMovimento.size(); i++) {
+        for (int i = 0; i < listRepisMovimento.size(); i++) {
             if (tipoPesquisa.equals("nome")) {
-                if (listaRepisMovimento.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimento.get(i));
+                if (listRepisMovimento.get(i).getPessoa().getNome().contains(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimento.get(i));
                 }
             } else if (tipoPesquisa.equals("cnpj")) {
-                if (listaRepisMovimento.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimento.get(i));
+                if (listRepisMovimento.get(i).getPessoa().getDocumento().contains(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimento.get(i));
                 }
             } else if (tipoPesquisa.equals("protocolo")) {
-                if (Integer.toString(listaRepisMovimento.get(i).getId()).equals(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimento.get(i));
+                if (Integer.toString(listRepisMovimento.get(i).getId()).equals(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimento.get(i));
                 }
             } else if (tipoPesquisa.equals("status")) {
-                if (listaRepisMovimento.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimento.get(i));
+                if (listRepisMovimento.get(i).getRepisStatus().getDescricao().toUpperCase().equals(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimento.get(i));
                 }
             } else if (tipoPesquisa.equals("socilitante")) {
-                if (listaRepisMovimento.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
-                    lista.add(listaRepisMovimento.get(i));
+                if (listRepisMovimento.get(i).getContato().toUpperCase().contains(descricao.toUpperCase())) {
+                    lista.add(listRepisMovimento.get(i));
                 }
             }
         }
 
-        listaRepisMovimento.clear();
+        listRepisMovimento.clear();
 
-        listaRepisMovimento.addAll(lista);
-        return "webSolicitaREPIS";
+        listRepisMovimento.addAll(lista);
+        return null;
     }
 
     public void limpar() {
-        msg = "";
+        message = "";
         repisMovimento = new RepisMovimento();
         showProtocolo = false;
         pessoaSolicitante = new Pessoa();
         idPessoa = 0;
-        listaRepisMovimento.clear();
+        listRepisMovimento.clear();
     }
 
     public String limparRepisLiberacao() {
         repisMovimento = new RepisMovimento();
         setShowPessoa(true);
-        listaRepisMovimentoPatronal.clear();
+        listRepisMovimentoPatronal.clear();
         return "webLiberacaoREPIS";
     }
 
@@ -201,7 +202,7 @@ public class WebREPISBean {
         this.repisMovimento = repisMovimento;
     }
 
-    public List listaPessoaRepisAno() {
+    public List listPessoaRepisAno() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
         //getPessoa();
         List result = new ArrayList();
@@ -221,92 +222,90 @@ public class WebREPISBean {
         return false;
     }
 
-    public String btnSolicitarREPIS() {
-        msg = "";
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+    public void solicitarREPIS() {
+        message = "";
+        DaoInterface di = new Dao();
 
 //        if (listaArquivosEnviados.isEmpty()){
-//            msg = " PROCURAR SÍNDICATO! ";
+//            message = " PROCURAR SÍNDICATO! ";
 //            return null;
 //        }
-        if (!listaComboPessoa.isEmpty()) {
-            if (Integer.parseInt(listaComboPessoa.get(idPessoa).getDescription()) > 0) {
-                setPessoaSolicitante((Pessoa) sv.find(new Pessoa(), Integer.parseInt(listaComboPessoa.get(idPessoa).getDescription())));
+        if (!listComboPessoa.isEmpty()) {
+            if (Integer.parseInt(listComboPessoa.get(idPessoa).getDescription()) > 0) {
+                setPessoaSolicitante((Pessoa) di.find(new Pessoa(), Integer.parseInt(listComboPessoa.get(idPessoa).getDescription())));
             }
         } else {
             setPessoaSolicitante(getPessoa());
         }
         WebREPISDB dbr = new WebREPISDBToplink();
         if (!dbr.listaAcordoAberto(pessoaSolicitante.getId()).isEmpty()) {
-            msg = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
-            return null;
+            message = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
+            return;
         }
 
         HomologacaoDB db = new HomologacaoDBToplink();
         setShowProtocolo(false);
 
         if (!db.pesquisaPessoaDebito(pessoaSolicitante.getId(), DataHoje.data()).isEmpty()) {
-            msg = " PROCURAR SÍNDICATO! ";
-            return null;
+            message = " PROCURAR SÍNDICATO! ";
         } else {
             if (repisMovimento.getContato().isEmpty()) {
-                msg = " Informar o nome do solicitante! ";
-                return null;
+                message = " Informar o nome do solicitante! ";
+                return;
+            }
+            Patronal patronal = dbr.pesquisaPatronalPorSolicitante(getPessoaSolicitante().getId());
+            if (patronal == null) {
+                message = "Nenhum patronal encontrado!";
+                return;
             }
             repisMovimento.setAno(getAno());
-            repisMovimento.setRepisStatus((RepisStatus) sv.find(new RepisStatus(), 1));
+            repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), 1));
             repisMovimento.setPessoa(getPessoaSolicitante());
             repisMovimento.setDataResposta(null);
             repisMovimento.setDataEmissao(DataHoje.dataHoje());
-            sv.abrirTransacao();
+            repisMovimento.setPatronal(patronal);
+            di.openTransaction();
             if (!showAndamentoProtocolo(pessoaSolicitante.getId())) {
-                if (sv.inserirObjeto(repisMovimento)) {
-                    sv.comitarTransacao();
-                    msg = "Solicitação encaminhada com sucesso.";
-                    return null;
+                if (di.save(repisMovimento)) {
+                    di.commit();
+                    message = "Solicitação encaminhada com sucesso.";
                 } else {
-                    sv.desfazerTransacao();
-                    msg = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
-                    return null;
+                    di.rollback();
+                    message = "Não foi possível concluir sua solicitação. Consulte o sindícato.";
                 }
             } else {
-                msg = " Repis já solicitado! ";
-                sv.desfazerTransacao();
-                return null;
+                message = " Repis já solicitado! ";
+                di.rollback();
             }
         }
     }
 
-    public String btnSalvarStatus() {
-        msg = "";
-        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+    public void updateStatus() {
+        message = "";
+        DaoInterface di = new Dao();
         if (repisMovimento.getId() != -1) {
-            repisMovimento.setRepisStatus((RepisStatus) sv.find(new RepisStatus(), Integer.parseInt(listaComboRepisStatus.get(idRepisStatus).getDescription())));
+            repisMovimento.setRepisStatus((RepisStatus) di.find(new RepisStatus(), Integer.parseInt(listComboRepisStatus.get(idRepisStatus).getDescription())));
             repisMovimento.setDataResposta(DataHoje.dataHoje());
-            sv.abrirTransacao();
-            if (sv.alterarObjeto(repisMovimento)) {
-                sv.comitarTransacao();
-                msg = "Status atualizado com sucesso.";
+            di.openTransaction();
+            if (di.update(repisMovimento)) {
+                di.commit();
+                message = "Status atualizado com sucesso.";
                 setShowPessoa(true);
-                listaRepisMovimento.clear();
+                listRepisMovimento.clear();
                 repisMovimento = new RepisMovimento();
-                return null;
             } else {
-                sv.desfazerTransacao();
-                msg = "Falha na atualização do Status!";
-                return null;
+                di.rollback();
+                message = "Falha na atualização do Status!";
             }
         }
-        return null;
     }
 
-    public String editar(int id) {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        repisMovimento = (RepisMovimento) dB.find(new RepisMovimento(), listaRepisMovimentoPatronal.get(id).getId());
+    public String edit(RepisMovimento rm) {
+        repisMovimento = rm;
         if (repisMovimento.getId() != -1) {
             setShowPessoa(false);
-            for (int i = 0; i < getListaComboRepisStatus().size(); i++) {
-                if (Integer.parseInt(listaComboRepisStatus.get(i).getDescription()) == repisMovimento.getRepisStatus().getId()) {
+            for (int i = 0; i < getListComboRepisStatus().size(); i++) {
+                if (Integer.parseInt(listComboRepisStatus.get(i).getDescription()) == repisMovimento.getRepisStatus().getId()) {
                     setIdRepisStatus(i);
                 }
             }
@@ -316,36 +315,35 @@ public class WebREPISBean {
                 escritorio = jur.getPessoa();
             }
         }
-        return "webLiberacaoREPIS";
+        return null;
     }
 
-    public String imprimirCertificado(int id) {
-        SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-        setRepisMovimento((RepisMovimento) dB.find(new RepisMovimento(), id));
+    public String printCertificado(RepisMovimento rm) {
         JuridicaDB dbj = new JuridicaDBToplink();
-        Juridica jur = dbj.pesquisaJuridicaPorPessoa(repisMovimento.getPessoa().getId());
+        Juridica jur = dbj.pesquisaJuridicaPorPessoa(rm.getPessoa().getId());
         WebREPISDB dbw = new WebREPISDBToplink();
         List<List> listax = dbj.listaJuridicaContribuinte(jur.getId());
         if (listax.isEmpty()) {
-            msg = "Empresa não contribuinte";
+            message = "Empresa não contribuinte";
             return null;
         }
         int id_convencao = (Integer) listax.get(0).get(5), id_grupo = (Integer) listax.get(0).get(6);
-
-        Patronal patronal = dbw.pesquisaPatronalPorConvGrupo(id_convencao, id_grupo);
+        //Patronal patronal = dbw.pesquisaPatronalPorConvGrupo(id_convencao, id_grupo);
+        Patronal patronal = rm.getPatronal();
         if (patronal.getId() == -1) {
-            msg = "Patronal não encontrada, contate seu sindicato!";
+            message = "Patronal não encontrada, contate seu sindicato!";
             return null;
         }
-        byte[] arquivo = new byte[0];
+        byte[] arquivo;
+        arquivo = new byte[0];
 
-        if (repisMovimento.getId() != -1) {
+        if (rm.getId() != -1) {
             try {
                 JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/REPIS.jasper")));
                 Collection vetor = new ArrayList<ParametroCertificado>();
-                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(repisMovimento.getAno(), patronal.getId(), jur.getPorte().getId());
+                PisoSalarialLote lote = dbw.pesquisaPisoSalarial(rm.getAno(), patronal.getId(), jur.getPorte().getId());
                 if (lote.getId() == -1) {
-                    msg = "Lote Salarial não encontrado, contate seu sindicato!";
+                    message = "Piso / Lote Salarial não encontrado, contate seu sindicato!";
                     return null;
                 }
                 List<PisoSalarial> lista = dbw.listaPisoSalarialLote(lote.getId());
@@ -379,8 +377,8 @@ public class WebREPISBean {
                                     patronal.getBaseTerritorial(),
                                     sindicato.getPessoa().getNome(),
                                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                                    repisMovimento.getPessoa().getNome(),
-                                    repisMovimento.getPessoa().getDocumento(),
+                                    rm.getPessoa().getNome(),
+                                    rm.getPessoa().getDocumento(),
                                     jur.getPorte().getDescricao(),
                                     lista.get(i).getDescricao(),
                                     valor,
@@ -392,9 +390,9 @@ public class WebREPISBean {
                                     //((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/"+ controleUsuarioJSFBean.getCliente()+"/Imagens/LogoFundo.png"),
                                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoSelo.png"),
                                     ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Imagens/LogoFundo.png"),
-                                    String.valueOf(repisMovimento.getId()),
-                                    "0000000000".substring(0, 10 - String.valueOf(repisMovimento.getId()).length()) + String.valueOf(repisMovimento.getId()),
-                                    DataHoje.dataExtenso(repisMovimento.getDataEmissaoString(), 3))
+                                    String.valueOf(rm.getId()),
+                                    "0000000000".substring(0, 10 - String.valueOf(rm.getId()).length()) + String.valueOf(rm.getId()),
+                                    DataHoje.dataExtenso(rm.getDataEmissaoString(), 3))
                     );
                 }
 
@@ -405,7 +403,7 @@ public class WebREPISBean {
                         dtSource);
                 arquivo = JasperExportManager.exportReportToPdf(print);
 
-                String nomeDownload = "repis_" + repisMovimento.getId() + "_" + repisMovimento.getPessoa().getId() + ".pdf";
+                String nomeDownload = "repis_" + rm.getId() + "_" + rm.getPessoa().getId() + ".pdf";
                 String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis");
                 SalvaArquivos sa = new SalvaArquivos(arquivo,
                         nomeDownload,
@@ -417,8 +415,9 @@ public class WebREPISBean {
                         "application/pdf",
                         FacesContext.getCurrentInstance());
                 download.baixar();
-            } catch (Exception e) {
-                e.printStackTrace();
+                download.remover();
+            } catch (JRException e) {
+                e.getMessage();
             }
         }
         return null;
@@ -428,8 +427,8 @@ public class WebREPISBean {
         PessoaEnderecoDB enderecoDB = new PessoaEnderecoDBToplink();
         PessoaEndereco ende = null;
         List listaEnd = enderecoDB.pesquisaEndPorPessoa(repisMovimento.getPessoa().getId());
-        String strCompl = "";
-        String enderecoString = "";
+        String strCompl;
+        String enderecoString;
         if (!listaEnd.isEmpty()) {
             ende = (PessoaEndereco) listaEnd.get(0);
         }
@@ -449,9 +448,9 @@ public class WebREPISBean {
         return enderecoString;
     }
 
-    public void btnAndamentoProtocolo() {
+    public void clear() {
         setShowProtocolo(true);
-        getListaRepisMovimento();
+        getListRepisMovimento();
     }
 
     public Pessoa getPessoa() {
@@ -489,12 +488,12 @@ public class WebREPISBean {
         this.idPessoa = idPessoa;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public int getAno() {
@@ -509,21 +508,21 @@ public class WebREPISBean {
         this.showProtocolo = showProtocolo;
     }
 
-    public List<RepisMovimento> getListaRepisMovimento() {
-        if (listaRepisMovimento.isEmpty()) {
-            if (!listaPessoaRepisAno().isEmpty()) {
-                listaRepisMovimento = listaPessoaRepisAno();
+    public List<RepisMovimento> getListRepisMovimento() {
+        if (listRepisMovimento.isEmpty()) {
+            if (!listPessoaRepisAno().isEmpty()) {
+                listRepisMovimento = listPessoaRepisAno();
             }
         }
-        return listaRepisMovimento;
+        return listRepisMovimento;
     }
 
-    public void setListaRepisMovimento(List<RepisMovimento> listaRepisMovimento) {
-        this.listaRepisMovimento = listaRepisMovimento;
+    public void setListRepisMovimento(List<RepisMovimento> listRepisMovimento) {
+        this.listRepisMovimento = listRepisMovimento;
     }
 
-    public List<SelectItem> getListaComboPessoa() {
-        if (listaComboPessoa.isEmpty()) {
+    public List<SelectItem> getListComboPessoa() {
+        if (listComboPessoa.isEmpty()) {
             JuridicaDB dbJur = new JuridicaDBToplink();
             getPessoa();
             List<Juridica> select = null;
@@ -531,35 +530,29 @@ public class WebREPISBean {
             if (select != null) {
                 int i = 0;
                 while (i < select.size()) {
-                    listaComboPessoa.add(new SelectItem(i,
+                    listComboPessoa.add(new SelectItem(i,
                             (String) (select.get(i)).getPessoa().getNome(),
                             Integer.toString((select.get(i)).getPessoa().getId())));
                     i++;
                 }
             }
         }
-        return listaComboPessoa;
+        return listComboPessoa;
     }
 
-    public List<SelectItem> getListaComboRepisStatus() {
-        if (listaComboRepisStatus.isEmpty()) {
-            SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
-            List<RepisStatus> select = null;
-            select = dB.listaObjeto("RepisStatus");
-            if (select != null) {
-                int i = 0;
-                while (i < select.size()) {
-                    listaComboRepisStatus.add(new SelectItem(i, select.get(i).getDescricao(), Integer.toString(select.get(i).getId())));
-                    i++;
-                }
+    public List<SelectItem> getListComboRepisStatus() {
+        if (listComboRepisStatus.isEmpty()) {
+            DaoInterface di = new Dao();
+            List<RepisStatus> list = di.list(new RepisStatus());
+            for (int i = 0; i < list.size(); i++) {
+                listComboRepisStatus.add(new SelectItem(i, list.get(i).getDescricao(), Integer.toString(list.get(i).getId())));
             }
-
         }
-        return listaComboRepisStatus;
+        return listComboRepisStatus;
     }
 
-    public void setListaComboPessoa(List<SelectItem> listaComboPessoa) {
-        this.listaComboPessoa = listaComboPessoa;
+    public void setListComboPessoa(List<SelectItem> listComboPessoa) {
+        this.listComboPessoa = listComboPessoa;
     }
 
     public Pessoa getPessoaSolicitante() {
@@ -596,29 +589,30 @@ public class WebREPISBean {
 
     public void acaoPesquisaInicial() {
         comoPesquisa = "I";
-        listaRepisMovimento.clear();
+        listRepisMovimento.clear();
     }
 
     public void acaoPesquisaParcial() {
         comoPesquisa = "P";
-        listaRepisMovimento.clear();
+        listRepisMovimento.clear();
     }
 
-    public List<RepisMovimento> getListaRepisMovimentoPatronal() {
+    public List<RepisMovimento> getListRepisMovimentoPatronal() {
         WebREPISDB wsrepisdb = new WebREPISDBToplink();
-        if (listaRepisMovimentoPatronal.isEmpty()) {
+        if (listRepisMovimentoPatronal.isEmpty()) {
             Patronal patro = wsrepisdb.pesquisaPatronalPorPessoa(pessoa.getId());
-            listaRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronalCnae(patro.getId());
+//            listaRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronalCnae(patro.getId());
+            listRepisMovimentoPatronal = wsrepisdb.listaProtocolosPorPatronal(patro.getId());
         }
-        return listaRepisMovimentoPatronal;
+        return listRepisMovimentoPatronal;
     }
 
-    public void setListaRepisMovimentoPatronal(List<RepisMovimento> listaRepisMovimentoPatronal) {
-        this.listaRepisMovimentoPatronal = listaRepisMovimentoPatronal;
+    public void setListRepisMovimentoPatronal(List<RepisMovimento> listRepisMovimentoPatronal) {
+        this.listRepisMovimentoPatronal = listRepisMovimentoPatronal;
     }
 
-    public void setListaComboRepisStatus(List<SelectItem> listaComboRepisStatus) {
-        this.listaComboRepisStatus = listaComboRepisStatus;
+    public void setListComboRepisStatus(List<SelectItem> listComboRepisStatus) {
+        this.listComboRepisStatus = listComboRepisStatus;
     }
 
     public int getIdRepisStatus() {
@@ -669,7 +663,7 @@ public class WebREPISBean {
         this.renderEmpresa = renderEmpresa;
     }
 
-    public List getListaArquivosEnviados() {
+    public List getListArquivosEnviados() {
 
         String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/repis/" + pessoa.getId() + "/");
         File file = new File(caminho);
@@ -680,22 +674,22 @@ public class WebREPISBean {
         for (int i = 0; i < listFile.length; i++) {
             if (listFile[i].isFile()) {
                 listFile[i].renameTo(new File(file.getPath() + "/" + listFile[i].getName()));
-                listaArquivosEnviados.clear();
+                listArquivosEnviados.clear();
             }
         }
 
         File list[] = file.listFiles();
-        if (listaArquivosEnviados.size() != list.length) {
+        if (listArquivosEnviados.size() != list.length) {
             for (int i = 0; i < list.length; i++) {
-                listaArquivosEnviados.add(list[i].getName());
+                listArquivosEnviados.add(list[i].getName());
             }
         }
 
-        return listaArquivosEnviados;
+        return listArquivosEnviados;
     }
 
-    public void setListaArquivosEnviados(List listaArquivosEnviados) {
-        this.listaArquivosEnviados = listaArquivosEnviados;
+    public void setListArquivosEnviados(List listArquivosEnviados) {
+        this.listArquivosEnviados = listArquivosEnviados;
     }
 
     public String getTipoPesquisa() {
