@@ -131,6 +131,12 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         }
     }
 
+    /**
+     * <p>Mudança de estrutura.</p>
+     * @deprecated 
+     * @param id_patronal
+     * @return 
+     */
     @Override
     public List listaProtocolosPorPatronalCnae(int id_patronal) {
         List<RepisMovimento> result = new ArrayList();
@@ -161,6 +167,20 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     }
 
     @Override
+    public List<RepisMovimento> listaProtocolosPorPatronal(int idPatronal) {
+        try {
+            Query query = getEntityManager().createQuery("SELECT RM FROM RepisMovimento AS RM WHERE RM.patronal.id = :p1 ORDER BY RM.dataEmissao DESC");
+            query.setParameter("p1", idPatronal);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
+    }
+
+    @Override
     public Patronal pesquisaPatronalPorPessoa(int idPessoa) {
         Patronal patronal = new Patronal();
         try {
@@ -186,10 +206,13 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
     public PisoSalarialLote pesquisaPisoSalarial(int ano, int id_patronal, int id_porte) {
         PisoSalarialLote ps = new PisoSalarialLote();
         try {
-            Query qry = getEntityManager().createQuery("select ps from PisoSalarialLote ps where ps.ano = " + ano + " and ps.patronal.id = " + id_patronal + " and ps.porte.id = " + id_porte);
+            Query qry = getEntityManager().createQuery("SELECT PS FROM PisoSalarialLote AS PS WHERE PS.ano = :p1 AND PS.patronal.id = :p2 AND PS.porte.id = :p3");
+            qry.setParameter("p1", ano);
+            qry.setParameter("p2", id_patronal);
+            qry.setParameter("p3", id_porte);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
-                ps = (PisoSalarialLote) qry.getSingleResult();                
+                ps = (PisoSalarialLote) qry.getSingleResult();
             }
         } catch (Exception e) {
         }
@@ -221,44 +244,70 @@ public class WebREPISDBToplink extends DB implements WebREPISDB {
         }
         return true;
     }
-    
+
     public List<RepisMovimento> listaRepisMovimento(String por, String descricao) {
         List result = new ArrayList();
         try {
-            String text = 
-                "SELECT rm " + 
-                "  FROM RepisMovimento rm ";
-                    
-            if (por.equals("nome"))
-                text += " WHERE rm.pessoa.nome LIKE '%"+descricao+"%'";
-            
+            String text
+                    = "SELECT rm "
+                    + "  FROM RepisMovimento rm ";
+
+            if (por.equals("nome")) {
+                text += " WHERE rm.pessoa.nome LIKE '%" + descricao + "%'";
+            }
+
             Query qry = getEntityManager().createQuery(text);
             return qry.getResultList();
         } catch (Exception e) {
-            
+
         }
         return result;
     }
-    
+
     @Override
     public Juridica pesquisaEscritorioDaEmpresa(int id_pessoa) {
         try {
-            Query qry = getEntityManager().createQuery("SELECT j.contabilidade FROM Juridica j where j.pessoa.id = "+id_pessoa);
-            
+            Query qry = getEntityManager().createQuery("SELECT j.contabilidade FROM Juridica j where j.pessoa.id = " + id_pessoa);
+
             return (Juridica) qry.getSingleResult();
         } catch (Exception e) {
             return new Juridica();
         }
     }
-    
+
     @Override
     public List<Movimento> listaAcordoAberto(int id_pessoa) {
         try {
             Query qry = getEntityManager().createQuery("SELECT m FROM Movimento m WHERE m.tipoServico.id = 4 AND m.baixa IS NULL AND m.pessoa.id = " + id_pessoa);
-            
+
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList<Movimento>();
         }
     }
+
+    @Override
+    public Patronal pesquisaPatronalPorSolicitante(int id_solicitante) {
+        try {
+            Query queryNative = getEntityManager().createNativeQuery(""
+                    + "SELECT C.id_convencao,            "
+                    + "       C.id_grupo_cidade          "
+                    + "  FROM arr_contribuintes_vw AS C  "
+                    + " WHERE C.id_pessoa = " + id_solicitante);
+            List list = queryNative.getResultList();
+            if (!list.isEmpty()) {
+                Query query = getEntityManager().createQuery("SELECT PC.patronal FROM PatronalConvencao AS PC WHERE PC.convencao.id = :p1 AND PC.grupoCidade.id = :p2");
+                int idConvencao = Integer.parseInt(((List) list.get(0)).get(0).toString());
+                int idGrupoCidade = Integer.parseInt(((List) list.get(0)).get(1).toString());
+                query.setParameter("p1", idConvencao);
+                query.setParameter("p2", idGrupoCidade);
+                if (!query.getResultList().isEmpty()) {
+                    return (Patronal) query.getSingleResult();
+                }
+            }
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
 }

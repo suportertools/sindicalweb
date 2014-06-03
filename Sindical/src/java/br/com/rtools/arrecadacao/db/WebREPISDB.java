@@ -30,13 +30,25 @@ public interface WebREPISDB {
 
     public List<PisoSalarial> listaPisoSalarialLote(int id_piso_lote);
 
+    /**
+     * <p>
+     * Mudança de estrutura.</p>
+     *
+     * @deprecated
+     * @param id_patronal
+     * @return
+     */
     public List listaProtocolosPorPatronalCnae(int id_patronal);
 
     public boolean pesquisaCnaePermitido(int id_cnae, int id_grupo_cidade);
-    
+
     public List<RepisMovimento> listaRepisMovimento(String por, String descricao);
-    
+
     public Juridica pesquisaEscritorioDaEmpresa(int id_pessoa);
-    
+
     public List<Movimento> listaAcordoAberto(int id_pessoa);
+
+    public Patronal pesquisaPatronalPorSolicitante(int id_solicitante);
+
+    public List<RepisMovimento> listaProtocolosPorPatronal(int idPatronal);
 }
