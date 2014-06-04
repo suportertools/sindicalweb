@@ -2145,6 +2145,7 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
     public Guia pesquisaGuias(int id_lote) {
         try {
             Query qry = getEntityManager().createQuery("select g from Guia g where g.lote.id = "+id_lote);
+            qry.setMaxResults(1);
             Guia result = (Guia)qry.getSingleResult();
             return result;
         } catch (Exception e) {

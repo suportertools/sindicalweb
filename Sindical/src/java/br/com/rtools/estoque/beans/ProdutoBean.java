@@ -9,12 +9,14 @@ import br.com.rtools.estoque.ProdutoUnidade;
 import br.com.rtools.estoque.dao.ProdutoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.sistema.Cor;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -351,7 +353,7 @@ public class ProdutoBean implements Serializable {
                         + " - Custo Médio: " + estoque.getCustoMedio()
                 );
                 di.commit();
-                GenericaMensagem.info("Sucesso", "Registro inserido som sucesso");
+                GenericaMensagem.info("Sucesso", "Registro inserido com sucesso");
             } else {
                 di.rollback();
                 GenericaMensagem.warn("Erro", "Ao inserir registro!");
@@ -376,7 +378,7 @@ public class ProdutoBean implements Serializable {
                         + " - Custo Médio: " + estoque.getCustoMedio()
                 );
                 di.commit();
-                GenericaMensagem.info("Sucesso", "Registro atualizado som sucesso");
+                GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
             } else {
                 di.rollback();
                 GenericaMensagem.warn("Erro", "Ao atualizado registro!");
@@ -454,7 +456,7 @@ public class ProdutoBean implements Serializable {
             return;
         }
         if (dao.save(produtoSubGrupo, true)) {
-            GenericaMensagem.info("Sucesso", "Registro inserido som sucesso");
+            GenericaMensagem.info("Sucesso", "Registro inserido com sucesso");
         } else {
             GenericaMensagem.warn("Erro", "Ao inserir registro!");
         }
@@ -497,7 +499,7 @@ public class ProdutoBean implements Serializable {
         NovoLog novoLog = new NovoLog();
         if (dao.save(object, true)) {
             novoLog.save("Adicionado via cadastro de produto: " + object.toString());
-            GenericaMensagem.info("Sucesso", "Registro inserido som sucesso");
+            GenericaMensagem.info("Sucesso", "Registro inserido com sucesso");
         } else {
             GenericaMensagem.warn("Erro", "Ao inserir registro!");
         }
@@ -554,7 +556,29 @@ public class ProdutoBean implements Serializable {
     public List<Produto> getListaProdutos() {
         if (listaProdutos.isEmpty()) {
             ProdutoDao produtoDao = new ProdutoDao();
-            listaProdutos = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
+            
+            Filial filial = MacFilial.getAcessoFilial().getFilial();
+            
+            if (filial.getId() != -1){
+                List<Produto> listap = new ArrayList<Produto>();
+                if (produtoPesquisa.getDescricao().isEmpty())
+                    listap = (List<Produto>) new SalvarAcumuladoDBToplink().listaObjeto("Produto");
+                else
+                    listap = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
+                
+                for (Produto prod : listap){
+                    Estoque es = new Estoque();
+                    es = produtoDao.listaEstoquePorProdutoFilial(prod, filial);
+                    
+                    if (es != null){
+                        listaProdutos.add(prod);
+                    }
+                }
+                
+                if (!listaProdutos.isEmpty())
+                    return listaProdutos;
+            }else
+                listaProdutos = (List<Produto>) produtoDao.pesquisaProduto(produtoPesquisa, 0, comoPesquisa);
         }
         return listaProdutos;
     }

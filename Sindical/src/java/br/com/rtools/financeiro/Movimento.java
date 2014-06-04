@@ -228,7 +228,7 @@ public class Movimento implements Serializable {
         this.valorBaixa = valorBaixa;
         this.repasseAutomatico = repasseAutomatico;
         this.tipoDocumento = tipoDocumento;
-        this.matriculaSocios = matriculaSocios;
+        this.setMatriculaSocios(matriculaSocios);
     }
 
     public int getId() {
@@ -502,6 +502,16 @@ public class Movimento implements Serializable {
     }
 
     public void setMatriculaSocios(MatriculaSocios matriculaSocios) {
+        if (id == -1 && matriculaSocios != null){
+            if (beneficiario != null && beneficiario.getId() != -1){
+                SociosDB dbs = new SociosDBToplink();
+                Socios soc = dbs.pesquisaSocioPorPessoaAtivo(beneficiario.getId());
+                if (soc.getId() != -1)
+                    matriculaSocios = soc.getMatriculaSocios();
+                else
+                    matriculaSocios = null;
+            }
+        }
         this.matriculaSocios = matriculaSocios;
     }    
 }

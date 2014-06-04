@@ -714,7 +714,7 @@ public class GerarMovimento extends DB {
         List<Movimento> lista = new ArrayList();
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         try {
-            if (movimento == null || movimento.getBaixa() == null || !movimento.isAtivo()) {
+            if (movimento == null || movimento.getBaixa() == null || (!movimento.isAtivo() && movimento.getLote().getRotina().getId() != 132)) {
                 return true;
             }
 

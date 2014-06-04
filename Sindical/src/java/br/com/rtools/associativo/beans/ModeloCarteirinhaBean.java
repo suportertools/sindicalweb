@@ -2,6 +2,9 @@ package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.Categoria;
 import br.com.rtools.associativo.ModeloCarteirinha;
+import br.com.rtools.associativo.ModeloCarteirinhaCategoria;
+import br.com.rtools.associativo.db.SocioCarteirinhaDB;
+import br.com.rtools.associativo.db.SocioCarteirinhaDBToplink;
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -10,17 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
 
 @ManagedBean
 @SessionScoped
 public class ModeloCarteirinhaBean {
     private ModeloCarteirinha modelo = new ModeloCarteirinha();
+    private ModeloCarteirinhaCategoria modeloCategoria = new ModeloCarteirinhaCategoria();
     private int idCategoria = 0;
     private int idRotina = 0;
     private List<SelectItem> listaCategoria = new ArrayList<SelectItem>();
     private List<SelectItem> listaRotina = new ArrayList<SelectItem>();
-    private List<ModeloCarteirinha> listaModelo = new ArrayList<ModeloCarteirinha>();
+    private List<ModeloCarteirinhaCategoria> listaModelo = new ArrayList<ModeloCarteirinhaCategoria>();
     
     public void salvar(){
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
@@ -37,12 +42,29 @@ public class ModeloCarteirinhaBean {
         
         sv.abrirTransacao();
         
-        modelo.setCategoria( (Categoria) sv.pesquisaCodigo(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), "Categoria") );
-        modelo.setRotina( (Rotina) sv.pesquisaCodigo(Integer.valueOf(listaRotina.get(idRotina).getDescription()), "Rotina") );
+        
+        Rotina rotina = (Rotina) sv.pesquisaCodigo(Integer.valueOf(listaRotina.get(idRotina).getDescription()), "Rotina");
+                
+        Categoria categoria = null;
+        if (Integer.valueOf(listaCategoria.get(idCategoria).getDescription()) != -1)
+            categoria = (Categoria) sv.pesquisaCodigo(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), "Categoria");
         
         if (modelo.getId() == -1){
             if (!sv.inserirObjeto(modelo)){
                 GenericaMensagem.warn("Erro", "Não foi possível adicionar Modelo!");
+                sv.desfazerTransacao();
+                return;
+            }
+            
+            ModeloCarteirinhaCategoria mcc = new ModeloCarteirinhaCategoria(
+                    -1, 
+                    rotina, 
+                    categoria, 
+                    modelo
+            );
+            
+            if (!sv.inserirObjeto(mcc)){
+                GenericaMensagem.warn("Erro", "Não foi possível salvar Modelo Categoria!");
                 sv.desfazerTransacao();
                 return;
             }
@@ -52,15 +74,37 @@ public class ModeloCarteirinhaBean {
                 sv.desfazerTransacao();
                 return;
             }
+            
+            
+            SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
+            
+            if (db.pesquisaModeloCarteirinhaCategoria(modelo.getId(), (categoria == null) ? -1 : categoria.getId(), rotina.getId()) == null){
+                ModeloCarteirinhaCategoria mcc = new ModeloCarteirinhaCategoria(
+                    -1, 
+                    rotina, 
+                    categoria, 
+                    modelo
+                );
+                
+                if (!sv.inserirObjeto(mcc)){
+                    GenericaMensagem.warn("Erro", "Não foi possível salvar Modelo Categoria!");
+                    sv.desfazerTransacao();
+                    return;
+                }
+            }
         }
         
         sv.comitarTransacao();
         listaModelo.clear();
-        modelo = new ModeloCarteirinha();
-        GenericaMensagem.info("Sucesso", "Modelo Adicionado!");
+        //modelo = new ModeloCarteirinha();
+        GenericaMensagem.info("Sucesso", "Modelo Salvo!");
     }
     
-    public void excluir(ModeloCarteirinha linha){
+    public void novo(){
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("modeloCarteirinhaBean", new ModeloCarteirinhaBean());
+    }
+    
+    public void excluir(ModeloCarteirinhaCategoria linha){
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         
         sv.abrirTransacao();
@@ -75,17 +119,23 @@ public class ModeloCarteirinhaBean {
         GenericaMensagem.info("Sucesso", "Modelo Excluído!");
     }
     
-    public void editar(ModeloCarteirinha linha){
-        modelo = linha;
-        
+    public void editar(ModeloCarteirinhaCategoria linha){
+        modeloCategoria = linha;
+        modelo = modeloCategoria.getModeloCarteirinha();
+        boolean cat = false;
         for (int i = 0; i < listaCategoria.size(); i++){
-            if (Integer.valueOf(listaCategoria.get(i).getDescription()) == modelo.getCategoria().getId() ){
+            if (Integer.valueOf(listaCategoria.get(i).getDescription()) == modeloCategoria.getCategoria().getId() ){
                 idCategoria = i;
+                cat = true;
             }
         }
         
+        if (!cat){
+            idCategoria = 0;
+        }
+        
         for (int i = 0; i < listaRotina.size(); i++){
-            if (Integer.valueOf(listaRotina.get(i).getDescription()) == modelo.getRotina().getId() ){
+            if (Integer.valueOf(listaRotina.get(i).getDescription()) == modeloCategoria.getRotina().getId() ){
                 idRotina = i;
             }
         }
@@ -120,8 +170,9 @@ public class ModeloCarteirinhaBean {
             List<Categoria> result = (new SalvarAcumuladoDBToplink()).listaObjeto("Categoria");
             
             if (!result.isEmpty()){
-                for (int i = 0; i < result.size(); i++) {
-                    listaCategoria.add(new SelectItem(i, result.get(i).getCategoria(), Integer.toString(result.get(i).getId())));
+                listaCategoria.add(new SelectItem(0, "Sem Categoria", "-1"));
+                for (int i = 1; (i-1) < result.size(); i++) {
+                    listaCategoria.add(new SelectItem(i, result.get((i-1)).getCategoria(), Integer.toString(result.get((i-1)).getId())));
                 }
             }else{
                 listaCategoria.add(new SelectItem(0, "Nenhuma Categoria encontrada", "0"));
@@ -138,6 +189,7 @@ public class ModeloCarteirinhaBean {
         if (listaRotina.isEmpty()){
             List<Rotina> result = new ArrayList<Rotina>();
             result.add((Rotina)new SalvarAcumuladoDBToplink().pesquisaCodigo(170, "Rotina"));
+            result.add((Rotina)new SalvarAcumuladoDBToplink().pesquisaCodigo(122, "Rotina"));
             
             if (!result.isEmpty()){
                 for (int i = 0; i < result.size(); i++) {
@@ -154,14 +206,14 @@ public class ModeloCarteirinhaBean {
         this.listaRotina = listaRotina;
     }
 
-    public List<ModeloCarteirinha> getListaModelo() {
+    public List<ModeloCarteirinhaCategoria> getListaModelo() {
         if (listaModelo.isEmpty()){
-            listaModelo = new SalvarAcumuladoDBToplink().listaObjeto("ModeloCarteirinha");
+            listaModelo = new SalvarAcumuladoDBToplink().listaObjeto("ModeloCarteirinhaCategoria");
         }
         return listaModelo;
     }
 
-    public void setListaModelo(List<ModeloCarteirinha> listaModelo) {
+    public void setListaModelo(List<ModeloCarteirinhaCategoria> listaModelo) {
         this.listaModelo = listaModelo;
     }
     

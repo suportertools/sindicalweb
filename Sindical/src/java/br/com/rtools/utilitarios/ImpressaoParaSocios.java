@@ -61,8 +61,22 @@ public class ImpressaoParaSocios {
                 via = "0" + via;
             }
 
-            String bc = ((List) (listaCartao.get(i))).get(0).toString() + via;
-            String barras = "0000000000".substring(0, 10 - bc.length()) + bc;
+            Registro reg = (Registro) new SalvarAcumuladoDBToplink().pesquisaCodigo(1, "Registro");
+            String bc = ((List) (listaCartao.get(i))).get(18).toString() + via; //             String bc = ((List) (listaCartao.get(i))).get(0).toString() + via; // id_pessoa
+            String barras = "";
+            
+            if (reg.isValidadeBarras() && ((List) (listaCartao.get(i))).get(6) != null){
+                Date vencto = DataHoje.converte(((List) (listaCartao.get(i))).get(6).toString());
+                Date dataModel = DataHoje.converte("07/10/1997");
+                long dias = vencto.getTime() - dataModel.getTime();
+                
+                long total = dias / 86400000;
+                bc += "0000".substring(0, 4-Long.toString(total).length()) + Long.toString(total);
+                barras = "00000000000000".substring(0, 14 - bc.length()) + bc;
+            }else
+                barras = "0000000000".substring(0, 10 - bc.length()) + bc;
+            //String barras = "0000000000".substring(0, 10 - bc.length()) + bc;
+            
             listax.add(
                     new CartaoSocial(
                     matr, // CODIGO

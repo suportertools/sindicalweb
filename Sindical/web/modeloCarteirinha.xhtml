@@ -50,7 +50,7 @@
                             
                             <p:messages showDetail="true" closable="true"/>
                             
-                            <h:panelGrid columns="3">
+                            <h:panelGrid columns="4">
                                 <p:column>
                                     <h:outputLabel value="Categoria"/><br />
                                     <p:selectOneMenu value="#{modeloCarteirinhaBean.idCategoria}" style="width: 350px; margin-right: 15px;">
@@ -68,6 +68,11 @@
                                     <br />
                                     <p:commandButton value="Salvar" action="#{modeloCarteirinhaBean.salvar()}" update="formModeloCarteirinha"/>
                                 </p:column>
+                                
+                                <p:column>
+                                    <br />
+                                    <p:commandButton value="Novo" action="#{modeloCarteirinhaBean.novo()}" update="formModeloCarteirinha"/>
+                                </p:column>
                             </h:panelGrid>
                             
                             <p:dataTable var="linha" id="tbl" value="#{modeloCarteirinhaBean.listaModelo}" emptyMessage="Nenhum modelo Adicionado!" style="margin-top: 30px;">
@@ -76,11 +81,11 @@
                                 </p:column>
                                 
                                 <p:column headerText="Nome">
-                                    <p:commandLink value="#{linha.descricao}" action="#{modeloCarteirinhaBean.editar(linha)}" update=":formModeloCarteirinha"/>
+                                    <p:commandLink value="#{linha.modeloCarteirinha.descricao}" action="#{modeloCarteirinhaBean.editar(linha)}" update=":formModeloCarteirinha"/>
                                 </p:column>
                                 
                                 <p:column headerText="Jasper">
-                                    <h:outputText value="#{linha.jasper}"/>
+                                    <h:outputText value="#{linha.modeloCarteirinha.jasper}"/>
                                 </p:column>
                                 
                                 <p:column headerText="Categoria" style="text-align: center">

@@ -3,6 +3,7 @@ package br.com.rtools.associativo.db;
 import br.com.rtools.associativo.AutorizaImpressaoCartao;
 import br.com.rtools.associativo.HistoricoCarteirinha;
 import br.com.rtools.associativo.ModeloCarteirinha;
+import br.com.rtools.associativo.ModeloCarteirinhaCategoria;
 import br.com.rtools.associativo.SocioCarteirinha;
 import java.util.List;
 import java.util.Vector;
@@ -41,7 +42,9 @@ public interface SocioCarteirinhaDB {
             
     public List<SocioCarteirinha> listaSocioCarteirinhaAutoriza(int id_pessoa, int id_modelo);
     
-    public ModeloCarteirinha pesquisaModeloCarteirinhaCategoria(int id_categoria, int id_rotina);
+    public ModeloCarteirinha pesquisaModeloCarteirinha(int id_categoria, int id_rotina);
+    
+    public ModeloCarteirinhaCategoria pesquisaModeloCarteirinhaCategoria(int id_modelo, int id_categoria, int id_rotina);
     
     public SocioCarteirinha pesquisaCarteirinhaPessoa(int id_pessoa, int id_modelo);
     

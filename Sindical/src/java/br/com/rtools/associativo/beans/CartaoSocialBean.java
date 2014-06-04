@@ -210,7 +210,7 @@ public class CartaoSocialBean implements Serializable {
                 Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
                 
-                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinhaCategoria(-1, 170);
+                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
                 
                 carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
                 
@@ -298,7 +298,7 @@ public class CartaoSocialBean implements Serializable {
                 Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
                 
-                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinhaCategoria(-1, 170);
+                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
                 
                 carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
                 

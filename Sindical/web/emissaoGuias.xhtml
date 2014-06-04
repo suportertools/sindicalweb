@@ -7,7 +7,7 @@
                 xmlns:a4j="http://richfaces.org/a4j">
 
     <h:head>
-        <title>Emissão de Guias</title>
+        <title>Sindical - Emissão de Guias</title>
         <meta http-equiv="X-UA-Compatible" content="IE=9" />
         <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>
     </h:head>
@@ -52,6 +52,7 @@
                                     </p:selectOneMenu>
                                 </h:panelGrid>
                             </p:panel>
+                            
                             <p:panel header="Serviços" id="i_panel_servicos" styleClass="margin-top-max">
                                 <h:panelGrid>
                                     <p:selectOneMenu id="idServicos" value="#{emissaoGuiasBean.index[2]}" disabled="#{emissaoGuiasBean.lote.id != -1}" >
@@ -67,7 +68,7 @@
                                     <p:outputLabel value="Valor: "  />
                                     <p:commandButton id="i_valor" value="R$ #{emissaoGuiasBean.valor}" action="#{emissaoGuiasBean.openModalPedido}" icon="ui-icon-cart" readonly="true" onclick="PF('dlg_pedido').show()" title="Adicionar itens (produtos) ao serviço" disabled="#{!emissaoGuiasBean.enabledItensPedido}" />
                                     <p:outputLabel value="Desconto (R$): " rendered="#{!emissaoGuiasBean.enabledItensPedido}"/>
-                                    <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.enabledItensPedido}">
+                                    <p:inputText id="idDesconto" size="10" dir="RTL" value="#{emissaoGuiasBean.desconto}" rendered="#{!emissaoGuiasBean.enabledItensPedido}" disabled="true">
                                         <p:ajax event="change" update="i_panel_servicos" />
                                     </p:inputText>
                                     <p:commandButton icon="ui-icon-plus" action="#{emissaoGuiasBean.addServico()}" update="i_message i_tbl_eg" disabled="#{emissaoGuiasBean.lote.id != -1}" />
@@ -149,11 +150,12 @@
                                     <p:commandButton value="Jurídica / Empresa" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" icon="ui-icon-search"/>
                                 </h:panelGrid>
                             </p:dialog>                    
+                            
                             <p:dialog id="dlg_pedido" widgetVar="dlg_pedido" width="800" resizable="false" modal="true" visible="#{emissaoGuiasBean.modalPedido}" header="Produtos do serviço" draggable="false">
                                 <p:ajax event="close" listener="#{emissaoGuiasBean.closeModalPedido()}" update="@this i_valor"/>
                                 <h:panelGrid id="i_grid_pedido">
                                     <!-- TELA CADASTRO -->
-                                    <p:messages autoUpdate="true" showSummary="true" showDetail="true" id="i_message_pedido"/>
+                                    <p:messages autoUpdate="true" showDetail="true" id="i_message_pedido"/>
                                     <h:panelGrid columns="2">
                                         <p:commandButton value="Pesquisar" icon="ui-icon-search" title="Pesquisar Produto" action="#{chamadaPaginaBean.pesquisaProduto()}" disabled="#{emissaoGuiasBean.lote.id != -1}"/>
                                         <p:outputLabel value="#{emissaoGuiasBean.pedido.produto.descricao} -  Marca: #{emissaoGuiasBean.pedido.produto.marca} - #{emissaoGuiasBean.pedido.produto.fabricante}" />
@@ -200,10 +202,10 @@
                                             <p:outputLabel value="#{emissaoGuiasBean.valorTotalPedido(pedido)}" />
                                         </p:column>                                
                                         <p:column styleClass="text-center" style="width: 15px">
-                                            <p:commandButton icon="ui-icon-trash" action="#{emissaoGuiasBean.removeItemPedido(index)}" update=":form_eg:dlg_pedido" title="Remover registro"/>
+                                            <p:commandButton icon="ui-icon-trash" action="#{emissaoGuiasBean.removeItemPedido(index)}" update=":form_eg" title="Remover registro"/>
                                         </p:column>
                                         <f:facet name="footer">                                    
-                                            Valor Total: R$#{emissaoGuiasBean.valorTotal}
+                                            Valor Total: R$#{emissaoGuiasBean.valorTotal} 
                                         </f:facet>
                                     </p:dataTable>
 
@@ -227,7 +229,7 @@
                             <p:dialog id="i_panel_save" widgetVar="dlg_save"  modal="true" resizable="true" header="Deseja realmente gerar este lançamento?" width="400">
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
-                                        <p:commandButton value="Sim" title="Excluir" action="#{emissaoGuiasBean.save()}" update=":form_eg:" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();"/>
+                                        <p:commandButton value="Sim" title="Salvar" action="#{emissaoGuiasBean.save()}" update=":form_eg:" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();"/>
                                         <p:commandButton value="Não" title="Cancelar" onclick="PF('dlg_save').hide();"/>
                                     </h:panelGrid>
                                 </f:facet>
@@ -244,7 +246,7 @@
                                 <p:outputLabel value="- Realizar acesso com filial!" styleClass="font-color-red font-size-14" /><br /><br />
                                 <p:outputLabel value="- Contate o administrador do sistema." styleClass="font-size-12"/>
                                 <f:facet name="footer">
-                                    <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" />
+                                    <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" immediate="true"/>
                                 </f:facet>
                             </p:dialog>                            
                         </h:form>

@@ -1,10 +1,12 @@
 package br.com.rtools.associativo.beans;
 
+import br.com.rtools.associativo.db.LancamentoIndividualDB;
+import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDB;
 import br.com.rtools.associativo.db.MovimentosReceberSocialDBToplink;
 import br.com.rtools.financeiro.Baixa;
-import br.com.rtools.financeiro.Caixa;
 import br.com.rtools.financeiro.FormaPagamento;
+import br.com.rtools.financeiro.Guia;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.financeiro.db.MovimentoDB;
 import br.com.rtools.financeiro.db.MovimentoDBToplink;
@@ -23,7 +25,6 @@ import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.Moeda;
-import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -135,9 +136,19 @@ public class MovimentosReceberSocialJSFBean {
                     }
                 }
                 
-                
                 List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
                 for (int i = 0; i < lista.size(); i++){
+                    String conveniada = "";
+                    if (lista.get(i).getLote().getRotina().getId() == 132){
+                        Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
+                        if (gu.getId() != -1){
+                            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+                            List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
+                            if (!list.isEmpty())
+                                conveniada = list.get(0).getPessoa().getNome();
+                        }
+                    }
+                    
                         vetor.add(new ParametroRecibo(
                                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                                 sindicato.getPessoa().getNome(), 
@@ -172,7 +183,9 @@ public class MovimentosReceberSocialJSFBean {
                                 formas[6], 
                                 formas[7], 
                                 formas[8], 
-                                formas[9])
+                                formas[9],
+                                conveniada
+                        )
                         );
                     
                 }
@@ -285,6 +298,9 @@ public class MovimentosReceberSocialJSFBean {
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
+        
+        if (mov.getLote().getRotina() != null && mov.getLote().getRotina().getId() == 132)
+            mov.setAtivo(false);
         
         if (!GerarMovimento.estornarMovimento(mov)) {
             est = false;

@@ -89,7 +89,31 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
     @Override
     public List<Parentesco> pesquisaTodosSemTitularCategoria(int id_categoria) {
         try {
-            Query qry = getEntityManager().createQuery("SELECT sc.parentesco FROM ServicoCategoria sc WHERE sc.categoria.id = "+id_categoria+" AND sc.parentesco.id <> 1 ORDER BY sc.parentesco.id");
+            Query qry = getEntityManager().createQuery(
+                            "  SELECT sc.parentesco "
+                            + "  FROM ServicoCategoria sc "
+                            + " WHERE sc.categoria.id = "+id_categoria+" "
+                            + "   AND sc.parentesco.id <> 1 "
+                            + " ORDER BY sc.parentesco.id"
+            );
+            return qry.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+            return new ArrayList<Parentesco>();
+        }
+    }
+    
+    @Override
+    public List<Parentesco> pesquisaTodosSemTitularCategoriaSexo(int id_categoria, String sexo) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                      " SELECT sc.parentesco "
+                    + "   FROM ServicoCategoria sc "
+                    + "  WHERE sc.categoria.id = "+id_categoria+" "
+                    + " AND sc.parentesco.id <> 1 "
+                    + " AND sc.parentesco.sexo = '"+sexo+"' "
+                    + " ORDER BY sc.parentesco.id"
+            );
             return qry.getResultList();
         } catch (Exception e) {
             e.getMessage();
@@ -97,18 +121,18 @@ public class ParentescoDBToplink extends DB implements ParentescoDB {
         }
     }
 
-    @Override
-    public List pesquisaTodosSemTitularPorSexo(String sexo) {
-        try {
-            Query qry = getEntityManager().createQuery("select p from Parentesco p "
-                    + " where p.ativo = true "
-                    + "   and p.id <> 1 "
-                    + "   and p.sexo = '" + sexo + "'"
-                    + "order by p.id");
-            return (qry.getResultList());
-        } catch (Exception e) {
-            e.getMessage();
-            return null;
-        }
-    }
+//    @Override
+//    public List pesquisaTodosSemTitularPorSexo(String sexo) {
+//        try {
+//            Query qry = getEntityManager().createQuery("select p from Parentesco p "
+//                    + " where p.ativo = true "
+//                    + "   and p.id <> 1 "
+//                    + "   and p.sexo = '" + sexo + "'"
+//                    + "order by p.id");
+//            return (qry.getResultList());
+//        } catch (Exception e) {
+//            e.getMessage();
+//            return null;
+//        }
+//    }
 }
