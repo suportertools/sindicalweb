@@ -225,7 +225,7 @@ public class MatriculaAcademiaBean implements Serializable {
             SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
             SociosDB sociosDB = new SociosDBToplink();
             SocioCarteirinhaDB scdb = new SocioCarteirinhaDBToplink();
-            ModeloCarteirinha modeloCarteirinha = scdb.pesquisaModeloCarteirinhaCategoria(1, 122);
+            ModeloCarteirinha modeloCarteirinha = scdb.pesquisaModeloCarteirinha(-1, 122);
             if (modeloCarteirinha == null) {
                 message = "Informar modelo da carneirinha!";
                 return;

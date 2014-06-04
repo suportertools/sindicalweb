@@ -48,6 +48,7 @@ import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
+import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
@@ -156,26 +157,20 @@ public class BaixaGeralBean {
     public void refreshForm() {
     }
     
+    
     public void salvarRecibo(byte[] arquivo, Baixa baixa){
         //SalvaArquivos sa = new SalvaArquivos(arquivo, String.valueOf(baixa.getId()), false);
         if (baixa.getCaixa() == null)
             return;
         
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/recibo/");
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/"+"Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+        Diretorio.criar("Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
         
-        String path_caixa = caminho + "/" +baixa.getCaixa().getCaixa();
-        File file_caixa = new File(path_caixa);
-        file_caixa.mkdir();
-        
-        String path_data = path_caixa + "/" + DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-");
-        File file_data = new File(path_data);
-        file_data.mkdir();
-        
-        String path_arquivo = path_data + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + ".pdf";
+        String path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + ".pdf";
         File file_arquivo = new File(path_arquivo);
         
         if (file_arquivo.exists()){
-            path_arquivo = path_data + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + "_(2).pdf";
+            path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + "_(2).pdf";
         }
         
         try {
@@ -189,9 +184,8 @@ public class BaixaGeralBean {
         }
         
     }
-
+    
     public String imprimirRecibo() {
-
         if (!listaMovimentos.isEmpty()) {
             try {
                 Collection vetor = new ArrayList();
@@ -255,7 +249,9 @@ public class BaixaGeralBean {
                             formas[6],
                             formas[7],
                             formas[8],
-                            formas[9])
+                            formas[9], 
+                            ""
+                    )
                     );
 
                 }
@@ -299,6 +295,9 @@ public class BaixaGeralBean {
                 GenericaSessao.put("linkClicado", true);
                 return "lancamentoFinanceiro";
                 //return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).lancamentoFinanceiro();
+            } else if (url.equals("emissaoGuias")){
+                GenericaSessao.put("linkClicado", true);
+                return "emissaoGuias";
             } else {
                 return null;
             }

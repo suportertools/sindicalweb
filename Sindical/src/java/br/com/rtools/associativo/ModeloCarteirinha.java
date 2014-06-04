@@ -1,13 +1,10 @@
 package br.com.rtools.associativo;
 
-import br.com.rtools.seguranca.Rotina;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
@@ -23,27 +20,17 @@ public class ModeloCarteirinha  implements java.io.Serializable {
     private String descricao;
     @Column(name = "DS_JASPER", length = 150)
     private String jasper;
-    @JoinColumn(name = "ID_ROTINA", referencedColumnName = "ID")
-    @ManyToOne
-    private Rotina rotina;
-    @JoinColumn(name = "ID_CATEGORIA", referencedColumnName = "ID")
-    @ManyToOne
-    private Categoria categoria;
 
     public ModeloCarteirinha() {
         this.id = -1;
         this.descricao = "";
         this.jasper = "";
-        this.rotina = null;
-        this.categoria = null;
     }
     
-    public ModeloCarteirinha(int id, String descricao, String jasper, Rotina rotina, Categoria categoria) {
+    public ModeloCarteirinha(int id, String descricao, String jasper) {
         this.id = id;
         this.descricao = descricao;
         this.jasper = jasper;
-        this.rotina = rotina;
-        this.categoria = categoria;
     }
 
     public int getId() {
@@ -69,22 +56,4 @@ public class ModeloCarteirinha  implements java.io.Serializable {
     public void setJasper(String jasper) {
         this.jasper = jasper;
     }
-
-    public Rotina getRotina() {
-        return rotina;
-    }
-
-    public void setRotina(Rotina rotina) {
-        this.rotina = rotina;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-    
-    
 }

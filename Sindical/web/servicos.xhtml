@@ -159,7 +159,7 @@
                                                     </p:column>         
                                                     <p:column headerText="Valor:  R$#{servicosBean.servicoValorDetalhe.valorString}" width="100" styleClass="text-center">
                                                         <p:column>
-                                                            <p:inputText value="#{listServicosCategoriaDesconto.valorDescontoString}" styleClass="text-center font-color-red bold" disabled="true" size="5">
+                                                            <p:inputText value="#{listServicosCategoriaDesconto.valorDescontoString}" styleClass="text-center font-color-red bold" size="5">
                                                                 <p:ajax event="blur" update=":form_servicos:id_tab_view:tblDesconto" listener="#{servicosBean.updateDescontoCategoriaValor(listServicosCategoriaDesconto)}" />
                                                             </p:inputText>
                                                         </p:column>

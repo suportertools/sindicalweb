@@ -239,7 +239,7 @@ public class Fisica implements java.io.Serializable {
     }
 
     public void setNascimento(String nascimento) {
-        if (!(nascimento.isEmpty())) {
+        if (nascimento != null && !nascimento.isEmpty()) {
             this.dtNascimento = DataHoje.converte(nascimento);
         }
     }

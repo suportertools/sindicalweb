@@ -36,24 +36,24 @@
                         </h:panelGrid>   
                     </p:panel>
                 </p:panel>
-                <p:panel id="i_tbl" styleClass="no-border">
+                <p:panel id="i_tbl" styleClass="wrapper no-border">
                     <p:dataTable value="#{produtoBean.listaProdutos}" var="produto" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
-                        <p:column headerText="Descrição" width="60" styleClass="text-center">
+                        <p:column headerText="Descrição" width="200">
                             <p:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.descricao}"  />
                         </p:column>                                    
-                        <p:column headerText="Marca" width="140" styleClass="text-center">
+                        <p:column headerText="Marca" width="60" styleClass="text-center">
                             <h:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.marca}"  />
                         </p:column>                                    
-                        <p:column headerText="Fabricante" >
+                        <p:column headerText="Fabricante" rendered="false">
                             <h:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.fabricante}" />
                         </p:column>
-                        <p:column headerText="Grupo" styleClass="text-center" width="120">
+                        <p:column headerText="Grupo" styleClass="text-center">
                             <h:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.produtoGrupo.descricao}"  />
                         </p:column>                                    
-                        <p:column headerText="SubGrupo" width="80" styleClass="text-center">
+                        <p:column headerText="SubGrupo" styleClass="text-center">
                             <h:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.produtoSubGrupo.descricao}"  />
                         </p:column>
-                        <p:column headerText="Cor" width="80" styleClass="text-center">
+                        <p:column headerText="Cor" styleClass="text-center">
                             <h:commandLink action="#{produtoBean.edit(produto)}" value="#{produto.cor.descricao}"  />
                         </p:column>                        
                     </p:dataTable>

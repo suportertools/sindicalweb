@@ -124,7 +124,7 @@ public class EmissaoGuiasBean implements Serializable {
         validaPessoa = false;
         // MODIFICAÇÕES BRUNO
         modalPedido = false;
-        quantidadePedido = 0;
+        quantidadePedido = 1;
         valorUnitarioPedido = "";
         descontoUnitarioPedido = "";
         listPedidos = new ArrayList<Pedido>();
@@ -458,6 +458,9 @@ public class EmissaoGuiasBean implements Serializable {
 
     public void removeServico(ListMovimentoEmissaoGuias lmeg) {
         for (int i = 0; i < listaMovimento.size(); i++) {
+
+            
+            
             if (lmeg.getMovimento().getServicos().getId() == listaMovimento.get(i).getMovimento().getServicos().getId()) {
                 if (lmeg.getMovimento().getServicos().getId() != -1) {
 
@@ -466,6 +469,12 @@ public class EmissaoGuiasBean implements Serializable {
                 PF.update("form_eg:i_tbl_eg");
                 break;
             }
+        }
+        
+        total = "0";
+        for (int i = 0; i < listaMovimento.size(); i++) {
+            String total_desconto = listaMovimento.get(i).getTotal();
+            total = Moeda.converteR$Float(Moeda.somaValores(Moeda.converteUS$(total), Moeda.converteUS$(total_desconto)));
         }
     }
 
@@ -836,7 +845,7 @@ public class EmissaoGuiasBean implements Serializable {
         estoque = new Estoque();
         valorUnitarioPedido = "";
         descontoUnitarioPedido = "";
-        quantidadePedido = 0;
+        quantidadePedido = 1;
     }
 
     public void editarItemPedido(int index) {
@@ -888,7 +897,7 @@ public class EmissaoGuiasBean implements Serializable {
         listPedidos = new ArrayList<Pedido>();
         descontoUnitarioPedido = "0,00";
         valorUnitarioPedido = "0,00";
-        quantidadePedido = 0;
+        quantidadePedido = 1;
     }
 
     public void openModalPedido() {
@@ -896,7 +905,7 @@ public class EmissaoGuiasBean implements Serializable {
         pedido = new Pedido();
         descontoUnitarioPedido = "0,00";
         valorUnitarioPedido = "0,00";
-        quantidadePedido = 0;
+        quantidadePedido = 1;
     }
 
     public void closeModalPedido() {

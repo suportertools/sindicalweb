@@ -17,13 +17,15 @@
         <script type="text/javascript">
             // BLOQUEIA -- DESABILITA -- DISABLED -- ENTER
             // VERIFICA SE OQ ESTOU DIGITANDO É STRING
-            function stopRKey(evt) { 
-              var evt = (evt) ? evt : ((event) ? event : null); 
-              //var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
-              if (evt.keyCode === 13)  {return false;} 
-            } 
+            function stopRKey(evt) {
+                var evt = (evt) ? evt : ((event) ? event : null);
+                //var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+                if (evt.keyCode === 13) {
+                    return false;
+                }
+            }
 
-            document.onkeypress = stopRKey; 
+            document.onkeypress = stopRKey;
         </script>
     </h:head>
     <h:body>
@@ -39,14 +41,14 @@
                         <h:outputText value="Cadastro do Sócio" styleClass="fonteHeader" />
                         <h:form id="formSocios">
                             <c:set scope="request" var="object" value="${sociosBean.socios}"/>
-                            
+
                             <p:dialog widgetVar="i_dlg_c" header="Salvo" resizable="false" modal="true">
                                 <p:messages id="i_msg" showDetail="true" />  
                                 <h:panelGrid style="clear: both; width: 100%" columns="2">
                                     <p:commandButton value="OK" onclick="i_dlg_c.hide()" style="float: left" icon="ui-icon-check"/>  
                                 </h:panelGrid>
                             </p:dialog>
-                            
+
                             <p:panel styleClass="fundoCinza" style="clear: both">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Dados da Pessoa " style="font-weight: bold"/><br />
@@ -206,7 +208,7 @@
                                 <p:column>
                                     <h:outputLabel value="Categoria" style="margin-left: 30px"/><br />
                                     <p:selectOneMenu value="#{sociosBean.idCategoria}" style="margin-left: 30px; width: 380px" valueChangeListener="#{sociosBean.listaServicos.clear()}" disabled="#{sociosBean.socios.id != -1}">
-                                        <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="#{sociosBean.listaParentesco.clear()}" />
+                                        <!-- <p:ajax event="change" update="i_panel_tipo i_panel_servicos i_panel_dependente" listener="# {sociosBean.listaParentesco.clear()}" /> -->
                                         <f:selectItems value="#{sociosBean.listaCategoria}"/>
                                     </p:selectOneMenu>
                                 </p:column>
@@ -223,7 +225,7 @@
                                         <h:outputLabel value="Matrícula"/><br />
                                         <p:inputText value="#{sociosBean.matriculaSocios.nrMatricula}" style="font-size: 10pt!important; text-align: center" size="5"/>    
                                     </p:column>
-                                        
+
                                     <p:column>
                                         <br />
                                         <p:commandButton value="OK" styleClass="ui-confirmdialog-no" onclick="PF('i_dlg_matricula').hide()" style="float: left" icon="ui-icon-check" update="i_panel_tipo"/>
@@ -231,7 +233,7 @@
                                 </h:panelGrid>
                                 <h:outputLabel value=" * SALVE PARA ALTERAR esta matrícula" style="color: red"/>
                             </p:dialog>
-                            
+
                             <h:panelGrid columns="2" style="width: 100%">
                                 <p:column>
                                     <h:outputLabel value="Observação" /><br />
@@ -253,7 +255,7 @@
                             <p:panel id="i_panel_dependente" header="Dependentes" style="margin-top: 10px">
                                 <p:commandButton value="Criar Dependente" action="#{sociosBean.adicionarDependente}" update="i_panel_dependente i_msg" icon="ui-icon-circle-plus"/>
                                 <p:commandLink value="Sócio com Dependentes Inativos" rendered="#{sociosBean.listaDependentesInativos.size() > 0}" style="float: right" onclick="PF('i_dlg_deps').show()"/>
-                                
+
                                 <p:dataTable var="linha" id="tbl" value="#{sociosBean.listaDependentes}" emptyMessage="Nenhum Dependente Adicionado." rowIndexVar="index">
                                     <p:column>
                                         <p:commandButton icon="ui-icon-close" action="#{sociosBean.excluirDependente(linha, index)}" update="tbl" />
@@ -263,11 +265,12 @@
                                         <p:commandLink rendered="#{linha.argumento0.pessoa.id == -1}" value="Cadastrar ou Pesquisar um Dependente" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
                                         <p:commandLink rendered="#{linha.argumento0.pessoa.id != -1}" value="#{linha.argumento0.pessoa.documento} - #{linha.argumento0.pessoa.nome}" oncomplete="PF('dlg_dependente').show()" action="#{sociosBean.editarOUsalvar(index)}" update=":formSocios:tab_view:i_panel_dados :formSocios:tab_view:i_panel_pesquisa" style="font-size: 10pt!important" />
                                     </p:column>
-n
+                                    
                                     <p:column headerText="Parentesco" >
                                         <p:selectOneMenu value="#{linha.argumento1}" style="width: 120px">
                                             <p:ajax event="change" update="i_validade_dependente" listener="#{sociosBean.atualizaValidadeTela(index)}"/>
-                                            <f:selectItems value="#{sociosBean.listaParentesco}"/>
+                                            <!-- <f:selectItems value="# {sociosBean.listaParentesco}"/> -->
+                                            <f:selectItems value="#{linha.argumento6}"/>
                                         </p:selectOneMenu>
                                     </p:column>
 
@@ -288,13 +291,13 @@ n
                                     </p:column>
                                 </p:dataTable>
                             </p:panel>
-                            
+
                             <p:dialog widgetVar="i_dlg_deps" header="Lista de Dependentes Inativos" resizable="false" width="400" modal="true">
                                 <p:dataTable value="#{sociosBean.listaDependentesInativos}" var="linha" rowIndexVar="index" emptyMessage="Nenhum Dependente Inativo">
                                     <p:column headerText="Nome">
                                         <h:outputLabel value="#{linha.argumento0.pessoa.nome}" />
                                     </p:column>
-                                    
+
                                     <p:column headerText="Validade Dependente" style="text-align: center">
                                         <p:inputMask id="i_validade_dependente_inativo" value="#{linha.argumento4}" size="5" mask="99/9999"/>
                                     </p:column>
@@ -304,15 +307,15 @@ n
                                     <h:outputLabel value=" * Clique em ALTERAR para CONFIRMAR as alterações" style="color: red"/>
                                 </h:panelGrid>
                             </p:dialog>
-                            
+
                             <h:panelGrid columns="10">
                                 <p:commandButton ajax="false" value="Voltar" action="#{sociosBean.editarTitular()}" />
                                 <p:commandButton onclick="PF('i_dlg_s').show()" value="#{sociosBean.lblSocio}" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <p:commandButton onclick="PF('i_dlg_e').show()" value="EXCLUIR" disabled="#{controleAcessoBean.botaoExcluir}" />
                                 <p:commandButton onclick="PF('i_dlg_i').show()" value="INATIVAR" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                
+
                                 <p:selectBooleanCheckbox value="#{sociosBean.imprimirVerso}" itemLabel="Imprimir Verso" disabled="true" style="margin-left: 190px" />
-                                
+
                                 <p:selectOneMenu value="#{sociosBean.tipoDestinario}" disabled="#{sociosBean.desabilitaImpressao}" rendered="false">
                                     <f:selectItem itemValue="socio"   itemLabel="para o Sócio"/>
                                     <f:selectItem itemValue="empresa" itemLabel="para a Empresa"/>
@@ -321,139 +324,145 @@ n
                                 <p:commandButton ajax="false" value="Visualizar Carteirinha" action="#{sociosBean.visualizarCarteirinha}" disabled="#{sociosBean.desabilitaImpressao}" style="margin-left: 20px;"/>
                                 <p:commandButton ajax="false" value="Imprimir Ficha"         action="#{sociosBean.imprimirFichaSocial}" disabled="#{sociosBean.desabilitaImpressao}"/>
                             </h:panelGrid>
-                            
+
                             <p:dialog widgetVar="i_dlg_s" header="Deseja #{sociosBean.lblSocio} este Sócio" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.salvar()}" update="formSocios" onclick="PF('i_dlg_s').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_s.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_e" header="Deseja EXCLUIR DEFINITIVAMENTE este Sócio" resizable="false" width="400" modal="true">
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.excluir()}" update="formSocios" onclick="PF('i_dlg_e').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_e.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_i" header="Deseja INATIVAR este Sócio" resizable="false" width="400" modal="true">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Data de inativação" /><br />
                                     <p:inputMask value="#{sociosBean.dataInativacao}" size="8" maxlength="10" mask="99/99/9999"/>
-                                    
+
                                     <p:selectOneMenu value="#{sociosBean.idInativacao}" style="padding-right: 15px">
                                         <f:selectItems value="#{sociosBean.listaMotivoInativacao}"/>
                                     </p:selectOneMenu>
                                 </h:panelGrid>
-                                
+
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.inativarSocio()}" update="formSocios" onclick="PF('i_dlg_i').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_i.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
+
                             <p:dialog widgetVar="i_dlg_re" header="Deseja REATIVAR este Sócio" resizable="false" width="400" modal="true">
                                 <h:panelGrid columns="2">
                                     <h:outputLabel value="Data de reativação" /><br />
                                     <p:inputMask value="#{sociosBean.dataReativacao}" size="8" maxlength="10" mask="99/99/9999"/>
                                 </h:panelGrid>
-                                
+
                                 <p:commandButton value="Sim"      type="submit" styleClass="ui-confirmdialog-yes" action="#{sociosBean.reativarSocio()}" update="formSocios" onclick="PF('i_dlg_re').hide()" style="clear: both; float: left" icon="ui-icon-check" oncomplete="PF('i_dlg_c').show()"/>  
                                 <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" onclick="i_dlg_re.hide()" style="float: left" icon="ui-icon-close"/>       
                             </p:dialog>
-                            
-                            
-                            <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="800">
+
+                            <p:dialog header="Cadastrar ou Pesquisar um Dependente" widgetVar="dlg_dependente" modal="true" resizable="false" width="800" visible="#{sociosBean.modelVisible}">
+                                <p:ajax event="close" listener="#{sociosBean.fechaModal()}" update="formSocios"/>  
                                 <p:tabView id="tab_view">
                                     <p:tab id="tab_cadastro" title="Cadastro de Dependente">
-                                            <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px">
-                                                <p:column>
-                                                    
-                                                    <p:messages id="i_msg" showDetail="true" closable="true" />   
-                                                        
-                                                    <p:panel styleClass="fundoCinza">
-                                                        <h:panelGrid columns="4" style="width: 200px">
-                                                            <p:column>
-                                                                <h:outputLabel value="Cadastrado"/><br />
-                                                                <p:inputMask value="#{sociosBean.novoDependente.pessoa.criacao}" size="8" mask="99/99/9999"/>
-                                                            </p:column>
+                                        <h:panelGrid id="i_panel_dados" columns="2" style="width: 400px">
+                                            <p:column>
 
-                                                            <p:column>
-                                                                <h:outputLabel value="CPF" style="margin-left: 10px"/><br />
-                                                                <p:inputMask size="13" value="#{sociosBean.novoDependente.pessoa.documento}" mask="999.999.999-99" style="margin-left: 10px">
-                                                                    <p:ajax event="blur" update="i_panel_dados" listener="#{sociosBean.pesquisaCPF()}"/>
-                                                                </p:inputMask>
-                                                            </p:column>
+                                                <p:messages id="i_msg" showDetail="true" closable="true" />   
 
-                                                            <p:column>
-                                                                <h:outputLabel value="RG" style="margin-left: 10px"/><br />
-                                                                <p:inputText size="12" maxlength="10" value="#{sociosBean.novoDependente.rg}" style="margin-left: 10px">
-                                                                    <p:ajax event="blur" update="@this" />
-                                                                </p:inputText>
-                                                            </p:column>
-
-                                                            <p:column>
-                                                                <h:outputLabel value="Nascimento" style="margin-left: 10px"/><br />
-                                                                <p:inputMask size="8" value="#{sociosBean.novoDependente.nascimento}" mask="99/99/9999" style="margin-left: 10px">
-                                                                    <p:ajax event="blur" update="@this" />
-                                                                </p:inputMask>
-                                                            </p:column>
-                                                        </h:panelGrid>
-
-                                                        <h:panelGrid columns="1" style="margin-top: 10px; width: 200px">
-                                                            <p:column>
-                                                                <h:outputLabel value="Nome do Dependente" /><br />
-                                                                <p:inputText value="#{sociosBean.novoDependente.pessoa.nome}" converter="#{toUpperCase}" style="width: 430px">
-                                                                    <p:ajax event="blur" update="@this"/>
-                                                                </p:inputText>
-                                                            </p:column>
-                                                        </h:panelGrid>
-                                                    </p:panel>
-                                                    <h:panelGrid columns="2" style="margin-top: 10px; width: 200px">
+                                                <p:panel styleClass="fundoCinza">
+                                                    <h:panelGrid columns="4" style="width: 200px">
                                                         <p:column>
-                                                            <h:outputLabel value="Sexo"/><br />
-                                                            <p:selectOneRadio value="#{sociosBean.novoDependente.sexo}">
-                                                                <p:ajax event="change" update="i_panel_foto" />
-                                                                <f:selectItem itemValue="F" itemLabel="Feminino"/>
-                                                                <f:selectItem itemValue="M" itemLabel="Masculino"/>
-                                                            </p:selectOneRadio>
+                                                            <h:outputLabel value="Cadastrado"/><br />
+                                                            <p:inputMask value="#{sociosBean.novoDependente.pessoa.criacao}" size="8" mask="99/99/9999"/>
                                                         </p:column>
 
-                                                        <h:column>
-                                                            <h:outputLabel value="Estado Civil" style="margin-left: 20px;"/><br />
-                                                            <p:selectOneMenu value="#{sociosBean.novoDependente.estadoCivil}" style="width: 130px; margin-left: 20px;">
-                                                                <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
-                                                                <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
-                                                                <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
-                                                                <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
-                                                                <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
-                                                                <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
-                                                                <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
-                                                                <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
-                                                            </p:selectOneMenu>
-                                                        </h:column>
+                                                        <p:column>
+                                                            <h:outputLabel value="CPF" style="margin-left: 10px"/><br />
+                                                            <p:inputMask size="13" value="#{sociosBean.novoDependente.pessoa.documento}" mask="999.999.999-99" style="margin-left: 10px">
+                                                                <p:ajax event="blur" update="i_panel_dados" listener="#{sociosBean.pesquisaCPF()}"/>
+                                                            </p:inputMask>
+                                                        </p:column>
+
+                                                        <p:column>
+                                                            <h:outputLabel value="RG" style="margin-left: 10px"/><br />
+                                                            <p:inputText size="12" maxlength="10" value="#{sociosBean.novoDependente.rg}" style="margin-left: 10px">
+                                                                <p:ajax event="blur" update="@this" />
+                                                            </p:inputText>
+                                                        </p:column>
+
+                                                        <p:column>
+                                                            <h:outputLabel value="Nascimento" style="margin-left: 10px"/><br />
+                                                            <p:inputMask size="8" value="#{sociosBean.novoDependente.nascimento}" mask="99/99/9999" style="margin-left: 10px">
+                                                                <p:ajax event="blur" update="@this" />
+                                                            </p:inputMask>
+                                                        </p:column>
                                                     </h:panelGrid>
 
-                                                    <h:panelGrid columns="1">
-                                                        <h:outputLabel value="Nome do  Pai" />
-                                                        <p:inputText maxlength="100" value="#{sociosBean.novoDependente.pai}" converter="#{toUpperCase}" style="width: 460px">
-                                                            <f:ajax event="blur" render="@this" />
-                                                        </p:inputText>           
-
-                                                        <h:outputLabel value="Nome da Mãe" />
-                                                        <p:inputText maxlength="100" value="#{sociosBean.novoDependente.mae}" converter="#{toUpperCase}" style="width: 460px">
-                                                            <f:ajax event="blur" render="@this" />
-                                                        </p:inputText>                                
+                                                    <h:panelGrid columns="1" style="margin-top: 10px; width: 200px">
+                                                        <p:column>
+                                                            <h:outputLabel value="Nome do Dependente" /><br />
+                                                            <p:inputText value="#{sociosBean.novoDependente.pessoa.nome}" converter="#{toUpperCase}" style="width: 430px">
+                                                                <p:ajax event="blur" update="@this"/>
+                                                            </p:inputText>
+                                                        </p:column>
                                                     </h:panelGrid>
-                                                </p:column>
+                                                </p:panel>
+                                                <h:panelGrid columns="2" style="margin-top: 10px; width: 200px">
+                                                    <p:column>
+                                                        <h:outputLabel value="Sexo"/><br />
+                                                        <p:selectOneRadio value="#{sociosBean.novoDependente.sexo}">
+                                                            <p:ajax event="change" update="i_panel_foto" />
+                                                            <f:selectItem itemValue="F" itemLabel="Feminino"/>
+                                                            <f:selectItem itemValue="M" itemLabel="Masculino"/>
+                                                        </p:selectOneRadio>
+                                                    </p:column>
 
-                                                <p:column>
-                                                    <h:panelGrid style="width: 265px; text-align: center" id="i_panel_foto">
-                                                        <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px"/>
-                                                    </h:panelGrid>
-                                                </p:column>
-                                            </h:panelGrid>
-                                            <h:panelGrid columns="3">
-                                                <p:commandButton value="Salvar e Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente"/>
-                                                <p:commandButton value="Novo" action="#{sociosBean.novoCadastroDependente}" update="i_panel_dados i_panel_pesquisa"/>
-                                                <p:commandButton value="Cancelar" onclick="PF('dlg_dependente').hide()"/>
-                                            </h:panelGrid>
+                                                    <h:column>
+                                                        <h:outputLabel value="Estado Civil" style="margin-left: 20px;"/><br />
+                                                        <p:selectOneMenu value="#{sociosBean.novoDependente.estadoCivil}" style="width: 130px; margin-left: 20px;">
+                                                            <f:selectItem itemValue="Solteiro(a)" itemLabel="Solteiro(a)"/>
+                                                            <f:selectItem itemValue="Casado(a)" itemLabel="Casado(a)"/>
+                                                            <f:selectItem itemValue="Divorciado(a)" itemLabel="Divorciado(a)"/>
+                                                            <f:selectItem itemValue="Viúvo(a)" itemLabel="Viúvo(a)"/>
+                                                            <f:selectItem itemValue="Amasiado(a)" itemLabel="Amasiado(a)"/>
+                                                            <f:selectItem itemValue="Desquitado(a)" itemLabel="Desquitado(a)"/>
+                                                            <f:selectItem itemValue="Separado(a)" itemLabel="Separado(a)"/>
+                                                            <f:selectItem itemValue="Indefinido" itemLabel="Indefinido"/>
+                                                        </p:selectOneMenu>
+                                                    </h:column>
+                                                </h:panelGrid>
+
+                                                <h:panelGrid columns="1">
+                                                    <h:outputLabel value="Nome do  Pai" />
+                                                    <p:inputText maxlength="100" value="#{sociosBean.novoDependente.pai}" converter="#{toUpperCase}" style="width: 460px">
+                                                        <f:ajax event="blur" render="@this" />
+                                                    </p:inputText>           
+
+                                                    <h:outputLabel value="Nome da Mãe" />
+                                                    <p:inputText maxlength="100" value="#{sociosBean.novoDependente.mae}" converter="#{toUpperCase}" style="width: 460px">
+                                                        <f:ajax event="blur" render="@this" />
+                                                    </p:inputText>                                
+                                                </h:panelGrid>
+                                            </p:column>
+
+                                            <p:column>
+                                                <h:panelGrid style="width: 265px; text-align: center" id="i_panel_foto">
+                                                    <p:graphicImage value="#{sociosBean.fotoPerfilDependente}" id="i_perfil" style="max-width: 250px; max-height: 395px"/>
+                                                </h:panelGrid>
+                                                
+                                                <p:commandButton icon="ui-icon-trash" title="Remover Foto" action="#{sociosBean.apagarImagem()}" style="float: right" rendered="#{!sociosBean.fotoTempPerfil.equals('') or !sociosBean.fotoPerfilDependente.equals('')}" update="i_panel_dados"/>
+                                                <p:commandButton value="Upload Foto" type="button" onclick="dgl_upload.show();" id="id_btn_uploads" style="float: right"/>
+                                                <p:commandButton value="Capturar" onclick="dgl_captura.show();" />
+                                            </p:column>
+                                        </h:panelGrid>
+
+                                        <h:panelGrid columns="3">
+                                            <p:commandButton value="Salvar e Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente"/>
+                                            <p:commandButton value="Novo" action="#{sociosBean.novoCadastroDependente}" update="i_panel_dados i_panel_pesquisa"/>
+                                            <p:commandButton value="Cancelar" onclick="PF('dlg_dependente').hide()"/>
+                                        </h:panelGrid>
                                     </p:tab>
 
+                                        
                                     <p:tab id="tab_pesquisa" title="Pesquisa">
                                         <p:messages id="i_msg2" showDetail="true" closable="true" />   
                                         <h:panelGrid id="i_panel_pesquisa" columns="1" style="width: 400px">
@@ -462,7 +471,7 @@ n
                                                             var="fisica" itemLabel="#{fisica.pessoa.nome}" itemValue="#{fisica}" converter="fisicaConverter" forceSelection="true">
                                                 <p:ajax event="itemSelect" listener="#{sociosBean.selectDependente()}" update="i_panel_pesquisa i_panel_dados"/>
                                             </p:autoComplete>
-                                        
+
                                             <p:panel styleClass="fundoCinza" rendered="#{sociosBean.fisicaPesquisa.id != -1}" style="margin-top: 20px">
                                                 <h:panelGrid columns="4" style="width: 200px">
                                                     <p:column>
@@ -488,12 +497,38 @@ n
                                             </p:panel>
                                             <p:commandButton value="Adicionar" action="#{sociosBean.salvarFisicaDependente}" update="i_panel_dados :formSocios:i_panel_dependente i_msg2" rendered="#{sociosBean.fisicaPesquisa.id != -1}"/>
                                         </h:panelGrid>
-                                        
+
                                     </p:tab>
                                 </p:tabView>
                             </p:dialog>
+                                                                    
+                                        <p:dialog id="i_captura" widgetVar="dgl_captura" modal="true" header="Foto Perfil" resizable="true"  maximizable="true" minimizable="true">
+                                            <h:panelGrid id="i_panel_imagem" columns="1">
+                                                <p:photoCam widgetVar="pc" listener="#{sociosBean.capturar}" update=":formSocios:tab_view:i_panel_dados"/>
+                                                <h:column>
+                                                    <h:panelGrid columns="2">
+                                                        <p:commandButton type="button" value="Capturar Foto" onclick="PF('pc').capture();" />
+                                                    </h:panelGrid>
+                                                </h:column>
+                                            </h:panelGrid>                        
+                                        </p:dialog>
                         </h:form>
                     </p:panel>
+                    
+                    
+                    <h:form id="form_dependente_upload" enctype="multipart/form-data" acceptcharset="UTF-8">
+                        <p:dialog id="id_dgl_anexos" widgetVar="dgl_upload" modal="true"  header="Anexar Foto" >
+                            <p:fileUpload label="Procurar"
+                                          cancelLabel="Cancelar"
+                                          uploadLabel="Anexar"
+                                          mode="advanced"                                          
+                                          multiple="false"
+                                          sizeLimit="204800"
+                                          update=":formSocios:tab_view:i_panel_dados"
+                                          fileUploadListener="#{sociosBean.upload}"
+                                          oncomplete="PF('dgl_upload').hide()" />
+                        </p:dialog>
+                    </h:form>    
                 </f:view>
                 <!-- FINALIZA div wrap main -->
             </div>

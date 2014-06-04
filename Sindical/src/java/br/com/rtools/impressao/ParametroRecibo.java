@@ -37,11 +37,12 @@ public class ParametroRecibo {
     private String formaPagamento8;
     private String formaPagamento9;
     private String formaPagamento10;
+    private String conveniada;
 
     public ParametroRecibo(String sinLogo, String sinNome, String sinEndereco, String sinLogradouro, String sinNumero, String sinComplemento, String sinBairro, String sinCep, String sinCidade, String sinUF, 
                            String sinTelefone, String sinEmail, String sinSite, String sinDocumento, String responsavel, String idResponsavel, String idBaixa, String beneficiario, String servico, String vencimento, 
                            BigDecimal valorBaixa, String usuario, String dataPagamento, String horaPagamento, String formaPagamento1, String formaPagamento2, String formaPagamento3, String formaPagamento4, String formaPagamento5,
-                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10) {
+                           String formaPagamento6, String formaPagamento7, String formaPagamento8, String formaPagamento9, String formaPagamento10, String conveniada) {
         this.sinLogo = sinLogo;
         this.sinNome = sinNome;
         this.sinEndereco = sinEndereco;
@@ -76,6 +77,7 @@ public class ParametroRecibo {
         this.formaPagamento8 = formaPagamento8;
         this.formaPagamento9 = formaPagamento9;
         this.formaPagamento10 = formaPagamento10;
+        this.conveniada = conveniada;
     }
 
     public String getSinLogo() {
@@ -348,6 +350,14 @@ public class ParametroRecibo {
 
     public void setFormaPagamento10(String formaPagamento10) {
         this.formaPagamento10 = formaPagamento10;
+    }
+
+    public String getConveniada() {
+        return conveniada;
+    }
+
+    public void setConveniada(String conveniada) {
+        this.conveniada = conveniada;
     }
 
 

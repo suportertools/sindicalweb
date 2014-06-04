@@ -3,6 +3,7 @@ package br.com.rtools.associativo.db;
 import br.com.rtools.associativo.AutorizaImpressaoCartao;
 import br.com.rtools.associativo.HistoricoCarteirinha;
 import br.com.rtools.associativo.ModeloCarteirinha;
+import br.com.rtools.associativo.ModeloCarteirinhaCategoria;
 import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.principal.DB;
 import br.com.rtools.seguranca.Registro;
@@ -102,7 +103,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                         "       pj.ds_nome,                                     " +
                         "       to_char(sc.dt_emissao, 'DD/MM/YYYY'),           " +
                         "       c.ds_cidade,                                    " +
-                        "       to_char(s.validade_carteirinha, 'DD/MM/YYYY'),  " +
+                        "       to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'),  " +
                         "       c.ds_uf,                                        " +
                         "       to_char(pe.dt_admissao, 'DD/MM/YYYY'),          " +
                         "       j.ds_fantasia,                                  " +
@@ -112,7 +113,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                         "       to_char(s.filiacao, 'DD/MM/YYYY'),              " +
                         "       pr.ds_profissao as cargo,                       " +
                         "       p.ds_documento,                                 " +
-                        "       f.ds_rg, max(m.id)                              " +
+                        "       f.ds_rg, max(m.id), sc.nr_cartao                " +
                         "  FROM pes_fisica f                                    " +
                         " INNER JOIN pes_pessoa p on p.id = f.id_pessoa         " +
                         "  LEFT JOIN soc_socios_vw s on s.codsocio = f.id_pessoa AND s.inativacao IS NULL " +
@@ -257,7 +258,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                      + " pj.ds_nome, "
                      + " sc.dt_emissao, "
                      + " c.ds_cidade, "
-                     + " to_char(s.validade_carteirinha, 'DD/MM/YYYY'), "
+                     + " to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), "
                      + " c.ds_uf, "
                      + " to_char(pe.dt_admissao, 'DD/MM/YYYY'), "
                      + " j.ds_fantasia, "
@@ -267,7 +268,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                      + " to_char(s.filiacao, 'DD/MM/YYYY'), "
                      + " pr.ds_profissao, "
                      + " p.ds_documento, "
-                     + " f.ds_rg ";
+                     + " f.ds_rg, "
+                     + " sc.nr_cartao  ";
             
             
             // ORDEM DA QUERY
@@ -572,24 +574,48 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
     }
     
     @Override
-    public ModeloCarteirinha pesquisaModeloCarteirinhaCategoria(int id_categoria, int id_rotina){
-        String text_qry = "SELECT mc FROM ModeloCarteirinha mc";
+    public ModeloCarteirinha pesquisaModeloCarteirinha(int id_categoria, int id_rotina){
+        String text_qry = "SELECT mcc.modeloCarteirinha FROM ModeloCarteirinhaCategoria mcc";
         
         if (id_rotina == -1 && id_categoria == -1){
             
         }else{
             if (id_categoria != -1 && id_rotina == -1){
-                text_qry += " WHERE mc.categoria IS NOT NULL AND mc.categoria.id = "+ id_categoria;
+                text_qry += " WHERE mcc.categoria IS NOT NULL AND mcc.categoria.id = "+ id_categoria;
             }else if (id_categoria != -1 && id_rotina != -1){
-                text_qry += " WHERE mc.categoria IS NOT NULL AND mc.categoria.id = "+ id_categoria+" AND mc.rotina.id = "+id_rotina;
+                text_qry += " WHERE mcc.categoria IS NOT NULL AND mcc.categoria.id = "+ id_categoria+" AND mcc.rotina.id = "+id_rotina;
             }else if (id_categoria == -1 && id_rotina != -1){
-                text_qry += " WHERE mc.rotina.id = "+id_rotina;
+                text_qry += " WHERE mcc.rotina.id = "+id_rotina;
             }
         }
         
         try {
             Query qry = getEntityManager().createQuery(text_qry);
             return (ModeloCarteirinha)qry.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public ModeloCarteirinhaCategoria pesquisaModeloCarteirinhaCategoria(int id_modelo, int id_categoria, int id_rotina){
+        String text_qry = "SELECT mcc FROM ModeloCarteirinhaCategoria mcc WHERE mcc.modeloCarteirinha.id = "+id_modelo+" ";
+        
+        if (id_rotina == -1 && id_categoria == -1){
+            
+        }else{
+            if (id_categoria != -1 && id_rotina == -1){
+                text_qry += " AND mcc.categoria IS NOT NULL AND mc.ccategoria.id = "+ id_categoria;
+            }else if (id_categoria != -1 && id_rotina != -1){
+                text_qry += " AND mcc.categoria IS NOT NULL AND mcc.categoria.id = "+ id_categoria+" AND mcc.rotina.id = "+id_rotina;
+            }else if (id_categoria == -1 && id_rotina != -1){
+                text_qry += " AND mcc.categoria IS NULL AND mcc.rotina.id = "+id_rotina;
+            }
+        }
+        
+        try {
+            Query qry = getEntityManager().createQuery(text_qry);
+            return (ModeloCarteirinhaCategoria)qry.getSingleResult();
         } catch (Exception e) {
             return null;
         }
