@@ -6,7 +6,11 @@ import br.com.rtools.academia.db.AcademiaDB;
 import br.com.rtools.academia.db.AcademiaDBToplink;
 import br.com.rtools.associativo.MatriculaAcademia;
 import br.com.rtools.associativo.MatriculaSocios;
+import br.com.rtools.associativo.ModeloCarteirinha;
+import br.com.rtools.associativo.SocioCarteirinha;
 import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.SocioCarteirinhaDB;
+import br.com.rtools.associativo.db.SocioCarteirinhaDBToplink;
 import br.com.rtools.associativo.db.SociosDB;
 import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.escola.db.MatriculaEscolaDB;
@@ -58,6 +62,7 @@ import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -217,10 +222,41 @@ public class MatriculaAcademiaBean implements Serializable {
         }
         NovoLog novoLog = new NovoLog();
         if (matriculaAcademia.getId() == -1) {
+            SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
+            SociosDB sociosDB = new SociosDBToplink();
+            SocioCarteirinhaDB scdb = new SocioCarteirinhaDBToplink();
+            ModeloCarteirinha modeloCarteirinha = scdb.pesquisaModeloCarteirinhaCategoria(1, 122);
+            if (modeloCarteirinha == null) {
+                message = "Informar modelo da carneirinha!";
+                return;
+            }
+            SocioCarteirinha scx = scdb.pesquisaCarteirinhaPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId(), modeloCarteirinha.getId());
+            if (scx.getId() == -1) {
+                Socios s = sociosDB.pesquisaSocioPorPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId());
+                socioCarteirinha.setDtEmissao(new Date());
+                socioCarteirinha.setCartao(matriculaAcademia.getServicoPessoa().getPessoa().getId());
+                socioCarteirinha.setDtValidadeCarteirinha(null);
+                socioCarteirinha.setPessoa(matriculaAcademia.getServicoPessoa().getPessoa());
+                socioCarteirinha.setPessoa(matriculaAcademia.getServicoPessoa().getPessoa());
+                if (s == null || s.getId() == -1) {
+                    socioCarteirinha.setModeloCarteirinha(null);
+                } else {
+                    socioCarteirinha.setModeloCarteirinha(modeloCarteirinha);
+                }
+            } else {
+                socioCarteirinha = null;
+            }
             Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
             matriculaAcademia.setUsuario(usuario);
             matriculaAcademia.getServicoPessoa().setServicos(matriculaAcademia.getAcademiaServicoValor().getServicos());
             di.openTransaction();
+            if (socioCarteirinha != null) {
+                if (!di.save(socioCarteirinha)) {
+                    di.rollback();
+                    message = "Erro ao adicionar sócio carteirinha!";
+                    return;
+                }
+            }
             if (!di.save(matriculaAcademia.getServicoPessoa())) {
                 di.rollback();
                 message = "Erro ao adicionar serviço pessoa!";
