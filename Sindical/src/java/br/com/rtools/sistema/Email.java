@@ -2,8 +2,7 @@ package br.com.rtools.sistema;
 
 import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
-import br.com.rtools.utilitarios.Dao;
-import br.com.rtools.utilitarios.DaoInterface;
+import br.com.rtools.utilitarios.DataHoje;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.*;
@@ -78,6 +77,14 @@ public class Email implements Serializable {
 
     public void setData(Date data) {
         this.data = data;
+    }
+
+    public String getDataString() {
+        return DataHoje.converteData(data);
+    }
+
+    public void setDataString(String data) {
+        this.data = DataHoje.converte(data);
     }
 
     public String getHora() {
