@@ -161,8 +161,9 @@
                     </p:dialog>
                     <p:dialog widgetVar="dlg_message" header="Mensagem" resizable="false" width="400" modal="true" closable="true">
                         <p:outputLabel value="#{matriculaAcademiaBean.message}" id="id_mensagem" /> 
-                        <div class="clear"></div>
-                        <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dlg_message').hide();"/>
+                        <f:facet name="footer">
+                            <p:commandButton value="OK" type="submit" styleClass="ui-confirmdialog-yes" onclick="PF('dlg_message').hide();"/>
+                        </f:facet>
                     </p:dialog>                    
                 </h:form>
             </div>
