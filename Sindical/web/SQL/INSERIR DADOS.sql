@@ -297,7 +297,7 @@ SELECT setval('seg_nivel_id_seq', max(id)) FROM seg_nivel;
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 109, 'CORREÇÃO', '"/Sindical/correcao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 109);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 110, 'RELATÓRIO MOVIMENTOS', '"/Sindical/relatorioMovimentos.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 110);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 111, 'REGISTRO EMPRESARIAL', '"/Sindical/registroEmpresarial.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 111);
--- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 112, 'ENVIAR EMAIL', '"/Sindical/enviarEmail.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 112);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 112, 'EMAIL', '"/Sindical/email.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 112);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 113, 'AGENDAMENTO', '"/Sindical/agendamento.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 113);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 114, 'HOMOLOGAÇÃO', '"/Sindical/homologacao.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 114);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 115, 'FERIÁDOS', '"/Sindical/feriados.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 115);
