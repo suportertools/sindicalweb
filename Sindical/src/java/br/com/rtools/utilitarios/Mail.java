@@ -4,6 +4,7 @@ import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.seguranca.EmailMarketing;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.sistema.Email;
 import br.com.rtools.sistema.EmailArquivo;
 import br.com.rtools.sistema.EmailPessoa;
@@ -149,11 +150,10 @@ public class Mail extends MailTemplate implements Serializable {
                                     + "         <h2>"
                                     + "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>"
                                     + "         </h2><br /><br />"
-                                    + "         <p>"
-                                    + "             <h3>"
-                                    + "                 Caso queira entrar em contato envie para: <b>" + registro.getFilial().getPessoa().getEmail1() + "</b>"
-                                    + "             </h3>"
-                                    + "         </p><br /><br />"
+                                    + "         <h3>"
+                                    + "             Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong>"
+                                    + "         </h3>"
+                                    + "         <br /><br />"
                                     + "         <h3>"
                                     + "             A/C"
                                     + "         </h3><b> " + jur.getContato() + " </b><br /><br />" + email.getMensagem()
@@ -192,14 +192,21 @@ public class Mail extends MailTemplate implements Serializable {
                         msg.setSentDate(new Date());
                         msg.setHeader("X-Mailer", "Tov Are's program");
                         Transport.send(msg);
+                        boolean updateEmail = false;
+                        email.setData(new Date());
+                        email.setHora(DataHoje.livre(new Date(), "HH:mm"));
+                        if (emailPessoas.get(i).getPessoa() == null || emailPessoas.get(i).getPessoa().getId() == -1) {
+                            emailPessoas.get(i).setPessoa(null);
+                        }
                         if (email.getId() == -1) {
+                            if (email.getUsuario().getId() == -1) {
+                                email.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
+                            }
                             if (email.getEmailPrioridade() == null) {
                                 email.setEmailPrioridade((EmailPrioridade) di.find(new EmailPrioridade(), 1));
                             } else {
                                 email.setEmailPrioridade((EmailPrioridade) di.find(new EmailPrioridade(), email.getEmailPrioridade().getId()));
                             }
-                            email.setData(new Date());
-                            email.setHora(DataHoje.livre(new Date(), "HH:mm"));
                             if (di.save(email, true)) {
                                 emailPessoas.get(i).setEmail(email);
                                 di.save(emailPessoas.get(i), true);
@@ -218,8 +225,16 @@ public class Mail extends MailTemplate implements Serializable {
                                 }
                             }
                         } else {
+                            if (!updateEmail) {
+                                di.update(email, true);
+                                updateEmail = true;
+                            }
                             emailPessoas.get(i).setEmail(email);
-                            di.save(emailPessoas.get(i), true);
+                            if (emailPessoas.get(i).getId() == -1) {
+                                di.save(emailPessoas.get(i), true);
+                            } else {
+                                di.update(emailPessoas.get(i), true);
+                            }
                         }
                         strings[0] = "Enviado com Sucesso.";
                     } catch (AddressException e) {
