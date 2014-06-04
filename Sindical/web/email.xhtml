@@ -27,7 +27,192 @@
                         <h:outputText value="Email" styleClass="fonteHeader" />
                         <div class="clear"></div>
                         <h:form id="form_email">
-                            
+                            <!-- <p:ajaxStatus onstart="PF('dlg_status').show()" oncomplete="PF('dlg_status').show()"></p:ajaxStatus> -->
+                            <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="true" />
+                            <p:panel styleClass="fundoCinza margin-top">
+                                <h:panelGrid columns="2" columnClasses="verticalAlignTop,verticalAlignTop">
+                                    <h:column>
+                                        <h:panelGrid width="400">
+                                            <h:column>
+                                                <p:commandButton value="Nova Mensagem" action="#{emailBean.newMessage}" rendered="#{!emailBean.filterNewMessage}" update=":form_email:" />
+                                                <p:commandButton icon="ui-icon-arrowreturnthick-1-w" title="Voltar" action="#{emailBean.clear}" rendered="#{emailBean.filterNewMessage}" update=":form_email:" styleClass="margin-left-max"/>
+                                                <p:commandButton icon="ui-icon-disk" title="Salvar em rascunho" rendered="#{emailBean.filterNewMessage}" action="#{emailBean.saveDraft()}" update=":form_email:" styleClass="margin-left-max"/>
+                                                <p:commandButton value="Enviar" rendered="#{emailBean.filterNewMessage}" styleClass="margin-left-max" action="#{emailBean.send()}" update=":form_email:" />
+                                                <p:selectBooleanCheckbox value="#{emailBean.filter}" rendered="#{!emailBean.filterNewMessage}" styleClass="margin-left-max" itemLabel="Filtrar">
+                                                    <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}" />
+                                                </p:selectBooleanCheckbox>
+                                                <p:selectBooleanCheckbox value="#{emailBean.filterRascunho}"  rendered="#{!emailBean.filterNewMessage}" styleClass="margin-left-max" itemLabel="Rascunhos">
+                                                    <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}"/>
+                                                </p:selectBooleanCheckbox>
+                                            </h:column>
+                                            <c:if test="#{emailBean.filter}">
+                                                <h:panelGrid rendered="#{!emailBean.filterNewMessage}" columns="2" styleClass="margin-top-max">
+                                                    <p:selectBooleanButton value="#{emailBean.filterByRotina}" onLabel="Desabilita Rotina:" offLabel="Habilita Rotina:" style="width: 150px">
+                                                        <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}" />
+                                                    </p:selectBooleanButton>
+                                                    <h:column>
+                                                        <h:panelGrid columns="6" cellpadding="5">
+                                                            <p:selectOneMenu value="#{emailBean.index[0]}" disabled="#{!emailBean.filterByRotina}">
+                                                                <p:ajax event="change" update="@this, :form_email:" />
+                                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                                <f:selectItems value="#{emailBean.listRotinas}" />
+                                                            </p:selectOneMenu>
+                                                            <p:outputLabel value="Por:" />
+                                                            <p:selectOneMenu value="#{emailBean.filterBy}" style="padding-right: 25px">
+                                                                <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}"/>
+                                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                                <f:selectItem itemValue="email" itemLabel="Email" />
+                                                                <f:selectItem itemValue="assunto" itemLabel="Assunto" />
+                                                            </p:selectOneMenu>                                      
+                                                            <p:inputText size="40" placeholder="Digite aqui o termo a ser pesquisado" disabled="#{emailBean.filterBy.equals('')}">
+                                                                <p:ajax event="blur" update="@this, :form_email:i_tbl" listener="#{emailBean.listEmailPessoas.clear()}"/>
+                                                            </p:inputText>
+                                                        </h:panelGrid>
+                                                    </h:column>
+                                                    <h:column>
+                                                        <p:outputLabel value="Data: " style="float: right;" />
+                                                    </h:column>
+                                                    <h:column>
+                                                        <h:panelGrid columns="5" cellpadding="5">
+                                                            <p:calendar value="#{emailBean.date[0]}" pattern="dd/MM/yyyy" size="10" navigator="true" onclick="$(this).mask('99/99/9999');">
+                                                                <p:ajax event="dateSelect" listener="#{emailBean.selectedDataInicial}" />
+                                                            </p:calendar>
+                                                            <p:outputLabel value=" até" />
+                                                            <p:calendar value="#{emailBean.date[1]}" pattern="dd/MM/yyyy"  size="10" navigator="true" onclick="$(this).mask('99/99/9999');">
+                                                                <p:ajax event="dateSelect" listener="#{emailBean.selectedDataFinal}" />
+                                                            </p:calendar>
+                                                            <p:commandButton value="Filtrar" action="#{emailBean.listEmailPessoas.clear()}" update=":form_email:" />
+                                                            <p:commandButton icon="ui-icon-circle-minus" action="#{emailBean.clear(1)}" update=":form_email:" title="Limpar data"/>
+                                                        </h:panelGrid>
+                                                    </h:column>
+                                                    <h:column>
+                                                        <p:outputLabel value="Ordernar por:" style="float: right;" />
+                                                    </h:column>
+                                                    <h:column>
+                                                        <h:panelGrid cellpadding="5">
+                                                            <p:selectOneMenu value="#{emailBean.orderBy}" style="padding-right: 25px">
+                                                                <p:ajax event="change" update="@this, :form_email:i_tbl" listener="#{emailBean.listEmailPessoas.clear()}"/>
+                                                                <f:selectItem itemValue="" itemLabel="Nenhum" />
+                                                                <f:selectItem itemValue=" EP.email.assunto ASC " itemLabel="Assunto de A-Z" />
+                                                                <f:selectItem itemValue=" EP.email.assunto DESC " itemLabel="Assunto de Z-A" />
+                                                                <f:selectItem itemValue=" EP.email.data ASC, EP.email.hora DESC " itemLabel="Data de 1900-2000" />
+                                                                <f:selectItem itemValue=" EP.email.data DESC, EP.email.hora DESC  " itemLabel="Data de 2000-1900" />
+                                                                <f:selectItem itemValue=" EP.destinatario ASC" itemLabel="Email de A-Z" />
+                                                                <f:selectItem itemValue=" EP.destinatario DESC " itemLabel="Email de Z-A" />
+                                                                <f:selectItem itemValue=" EP.pessoa.nome ASC " itemLabel="Nome de A-Z" />
+                                                                <f:selectItem itemValue=" EP.pessoa.nome DESC " itemLabel="Nome de Z-A" />
+                                                            </p:selectOneMenu>                                                                                                            
+                                                        </h:panelGrid>
+                                                    </h:column>
+                                                </h:panelGrid>
+                                            </c:if>
+                                            <h:panelGrid rendered="#{emailBean.filterNewMessage}" columns="1" styleClass="margin-top-max" cellpadding="2">
+                                                <p:outputLabel value="Prioridade:" />
+                                                <p:selectOneMenu value="#{emailBean.index[1]}" >
+                                                    <p:ajax event="change" update="@this" />
+                                                    <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                    <f:selectItems value="#{emailBean.listEmailPrioridades}" />
+                                                </p:selectOneMenu>
+                                                <p:commandButton icon="ui-icon-plus" value="Adicionar destinatários" onclick="PF('dlg_address').show();" action="#{emailBean.openDialogModal}"/>
+                                                <h:column>
+                                                    <h:panelGrid id="i_add_list_mail">
+                                                        <p:dataTable value="#{emailBean.addEmailPessoas}" var="emailPessoa" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="300" paginator="true" styleClass="margin-top-max" rowIndexVar="index">
+                                                            <f:facet name="header">
+                                                                Enviar para
+                                                            </f:facet>
+                                                            <p:column width="15" exportable="false">  
+                                                                <p:rowToggler />  
+                                                            </p:column>              
+                                                            <p:column width="30">
+                                                                <p:commandButton icon="ui-icon-close" action="#{emailBean.removeEmail(index)}" update=":form_email:i_add_list_mail"/>
+                                                            </p:column>
+                                                            <p:column headerText="Pessoa Email">
+                                                                #{emailPessoa.destinatario}
+                                                            </p:column>
+                                                            <p:rowExpansion styleClass="bg-yellow-ligth">
+                                                                <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                                                                <p:outputLabel value="Nome: #{emailPessoa.pessoa.nome}" />
+                                                                <p:outputLabel value="CC: #{emailPessoa.cc}" rendered="#{emailPessoa.cc.equals('')}" />
+                                                                <p:outputLabel value="BCC: #{emailPessoa.bcc}" rendered="#{emailPessoa.bcc.equals('')}" />
+                                                            </p:rowExpansion>
+                                                        </p:dataTable>                                            
+                                                    </h:panelGrid>
+                                                </h:column>
+                                            </h:panelGrid>
+                                        </h:panelGrid>
+                                    </h:column>
+                                    <h:column>
+                                        <h:panelGrid columns="1" width="560" rendered="#{emailBean.filterNewMessage}">
+                                            <h:outputLabel value="Assunto" />
+                                            <p:inputText value="#{emailBean.email.assunto}" placeholder="Assunto" style="visibility: visible; width: 100%"/>
+                                            <h:column>
+                                                <br />
+                                                <p:outputLabel value="Mensagem"  />
+                                            </h:column>
+                                            <p:editor controls="redo undo bold italic underline strikethrough highlight color link unlink alignleft alignright center justify font size" value="#{emailBean.email.mensagem}" style="width: 100%!important;" height="400" />
+                                        </h:panelGrid>
+                                    </h:column>
+                                </h:panelGrid>
+                            </p:panel>
+                            <h:panelGrid columns="1" rendered="#{!emailBean.filterNewMessage}" styleClass="margin-top-max" id="i_tbl">
+                                <p:dataTable value="#{emailBean.listEmailPessoas}" var="emailPessoa" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="500" paginator="true" rows="25" resizableColumns="true">
+                                    <p:column width="15">
+                                        <p:rowToggler />
+                                    </p:column>                                     
+                                    <p:column width="30"  styleClass="text-center" rendered="#{emailBean.filterRascunho}">
+                                        <p:commandButton icon="ui-icon-link" action="#{emailBean.edit(emailPessoa)}"  update=":form_email:" />
+                                    </p:column>
+                                    <p:column headerText="Data" width="100"  styleClass="text-center">
+                                        #{emailPessoa.email.dataString}
+                                    </p:column>
+                                    <p:column headerText="Hora" width="50" styleClass="text-center">
+                                        #{emailPessoa.email.hora}
+                                    </p:column>
+                                    <p:column headerText="Rotina">
+                                        #{emailPessoa.email.rotina.rotina}
+                                    </p:column>
+                                    <p:column headerText="Assunto">
+                                        #{emailPessoa.email.assunto}
+                                    </p:column>
+                                    <p:column headerText="Destinatário">
+                                        #{emailPessoa.destinatario}
+                                    </p:column>                                   
+                                    <p:column headerText="Nome">
+                                        #{emailPessoa.pessoa.nome}
+                                    </p:column>
+                                    <p:rowExpansion styleClass="bg-yellow-ligth" rendered="#{emailPessoa.pessoa.id != -1}">
+                                        <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                                        <p:outputLabel value="Nome: #{emailPessoa.pessoa.nome}" /><br />
+                                        <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                                        <p:outputLabel value="CC: #{emailPessoa.cc}" rendered="#{emailPessoa.cc.equals('')}" /><br />
+                                        <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
+                                        <p:outputLabel value="BCC: #{emailPessoa.bcc}" rendered="#{emailPessoa.bcc.equals('')}" /><br />
+                                    </p:rowExpansion>                                    
+                                </p:dataTable>
+                            </h:panelGrid>
+                            <p:dialog widgetVar="dlg_address" width="1000" modal="true" header="Destinatário" visible="#{emailBean.openModal}">
+                                <p:ajax event="close" listener="#{emailBean.closeDialogModal()}" update=":form_email:"/>
+                                <h:panelGrid id="i_dlg_panel">
+                                    <p:messages showDetail="true" showSummary="true" autoUpdate="true" closable="true" />
+                                    <h:panelGrid columns="2" styleClass="margin-top-max">
+                                        <p:commandButton icon="ui-icon-search" value="Pesquisar pessoa" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoa')}" immediate="true"/>
+                                        <p:outputLabel value="#{emailBean.emailPessoa.pessoa.nome}" />
+                                        <p:outputLabel value="Destinatário" />
+                                        <p:inputText value="#{emailBean.emailPessoa.destinatario}" size="50"/>
+                                        <p:outputLabel value="Cópia" />
+                                        <p:inputText value="#{emailBean.emailPessoa.cc}" size="50"/>
+                                        <p:outputLabel value="Cópia Oculta" />
+                                        <p:inputText value="#{emailBean.emailPessoa.bcc}" size="50"/>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                                <f:facet name="footer">
+                                    <p:commandButton value="Adicionar email" action="#{emailBean.addEmail()}" update=":form_email:" />
+                                    <p:commandButton value="Sair" action="#{emailBean.closeDialogModal()}" oncomplete="PF('dlg_address').hide();" update=":form_email:" />
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_status" width="400" modal="true" header="Destinatário" closable="true" resizable="false">
+                                <p:outputLabel value="Aguarde..." />
+                            </p:dialog>
                         </h:form>
                     </p:panel>
                 </f:view>
@@ -35,7 +220,6 @@
             </div>
         </div>
         <!-- FINALIZA div wrap main -->
-
         <div id="footerx">
             <f:subview id="footer">
                 <ui:include src="templateFooter.xhtml"/>
