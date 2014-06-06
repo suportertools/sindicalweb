@@ -1,7 +1,7 @@
 
 -- Index: ds_cep
 
-DROP INDEX ds_cep;
+-- DROP INDEX ds_cep;
 
 CREATE INDEX ds_cep
   ON end_endereco

@@ -1,6 +1,6 @@
 -- Index: ds_logradouro
 
-DROP INDEX ds_logradouro;
+-- DROP INDEX ds_logradouro;
 
 CREATE INDEX ds_logradouro
   ON end_logradouro
