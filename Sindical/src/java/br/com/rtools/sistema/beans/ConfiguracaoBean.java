@@ -1,12 +1,15 @@
 package br.com.rtools.sistema.beans;
 
 import br.com.rtools.pessoa.Juridica;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.sistema.Configuracao;
+import br.com.rtools.sistema.ConfiguracaoUpload;
 import br.com.rtools.sistema.db.ConfiguracaoDB;
 import br.com.rtools.sistema.db.ConfiguracaoDBTopLink;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Upload;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +17,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import org.primefaces.event.FileUploadEvent;
 
 @ManagedBean
 @SessionScoped
@@ -24,6 +28,7 @@ public class ConfiguracaoBean implements Serializable {
     private String mensagem;
     private String descricaoPesquisa;
     private Juridica juridica;
+    private Usuario usuario;
 
     @PostConstruct
     public void init() {
@@ -32,6 +37,7 @@ public class ConfiguracaoBean implements Serializable {
         mensagem = "";
         descricaoPesquisa = "";
         juridica = new Juridica();
+        usuario = new Usuario();
     }
 
     @PreDestroy
@@ -172,5 +178,25 @@ public class ConfiguracaoBean implements Serializable {
 
     public void setJuridica(Juridica juridica) {
         this.juridica = juridica;
+    }
+
+    public void upload(FileUploadEvent event) {
+        ConfiguracaoUpload cu = new ConfiguracaoUpload();
+        cu.setArquivo(event.getFile().getFileName());
+        cu.setDiretorio("Imagens");
+        //cu.setArquivo("l");
+        cu.setSubstituir(true);
+        cu.setRenomear("LogoCliente" + ".png");
+        cu.setEvent(event);
+        Upload.enviar(cu, true);
+    }
+
+    public Usuario getUsuario() {
+        usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }
