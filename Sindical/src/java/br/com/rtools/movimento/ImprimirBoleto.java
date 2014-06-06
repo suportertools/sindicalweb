@@ -685,7 +685,8 @@ public class ImprimirBoleto {
             List ljasper = new ArrayList();
             //* JASPER 1 *//
             jasper = (JasperReport) JRLoader.loadObject(
-                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper"));
+                    ((ServletContext) faces.getExternalContext().getContext()).getRealPath("/Relatorios/DEMOSTRATIVO_ACORDO.jasper")
+            );
             JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
             ljasper.add(JasperFillManager.fillReport(jasper, null, dtSource));
             //* ------------- *//
@@ -1294,7 +1295,7 @@ public class ImprimirBoleto {
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
                             "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
-                } else if (lista.get(i).isAtivo()){
+                } else if (!lista.get(i).isAtivo()){
                     vetor2.add(new DemonstrativoAcordo(
                             acordo.getId(), // codacordo
                             acordo.getData(), // data

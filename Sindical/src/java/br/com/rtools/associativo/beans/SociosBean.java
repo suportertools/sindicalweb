@@ -1193,7 +1193,7 @@ public class SociosBean implements Serializable {
             String vencimento_dep = DataHoje.data().substring(0, 2)+ "/"+listaDependentesInativos.get(i).getArgumento4().toString();
             String data_hoje =      DataHoje.data();
             
-            if ( DataHoje.igualdadeData(vencimento_dep, data_hoje) || DataHoje.maiorData(vencimento_dep, data_hoje)){
+            if ( DataHoje.igualdadeData(vencimento_dep, data_hoje) || DataHoje.maiorData(vencimento_dep, data_hoje) || listaDependentesInativos.get(i).getArgumento4().toString().isEmpty()){
                 listaDependentes.add(listaDependentesInativos.get(i));
                 listaDependentesInativos.remove(i);
             }

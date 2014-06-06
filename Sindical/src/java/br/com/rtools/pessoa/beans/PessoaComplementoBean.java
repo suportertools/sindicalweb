@@ -102,7 +102,7 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
     }
 
     public Registro getRegistro() {
-        if (registro.getId() == -1) {
+        if (registro == null || registro.getId() == -1) {
             SalvarAcumuladoDB sadb = new SalvarAcumuladoDBToplink();
             registro = (Registro) sadb.pesquisaObjeto(1, "Registro");
         }

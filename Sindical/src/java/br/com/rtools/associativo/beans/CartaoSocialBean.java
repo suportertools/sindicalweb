@@ -209,10 +209,12 @@ public class CartaoSocialBean implements Serializable {
                 SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
                 Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
+                carteirinha = (SocioCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "SocioCarteirinha"); 
                 
-                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
+                //ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
+                //ModeloCarteirinha modeloc = (ModeloCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "ModeloCarteirinha");
+                //carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
                 
-                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
                 
                 if (carteirinha.getDtEmissao() == null) {
 
@@ -237,7 +239,8 @@ public class CartaoSocialBean implements Serializable {
                     }
                     
                 
-                    AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), modeloc.getId());
+                    //AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), modeloc.getId());
+                    AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), carteirinha.getModeloCarteirinha().getId());
 
                     if (ai != null){
                         ai.setHistoricoCarteirinha(hc);
@@ -264,7 +267,8 @@ public class CartaoSocialBean implements Serializable {
                     }
                     
                     
-                    AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), modeloc.getId());
+                    //AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), modeloc.getId());
+                    AutorizaImpressaoCartao ai = dbc.pesquisaAutorizaSemHistorico(pessoa.getId(), carteirinha.getModeloCarteirinha().getId());
 
                     if (ai != null){
                         ai.setHistoricoCarteirinha(hc);
@@ -297,10 +301,11 @@ public class CartaoSocialBean implements Serializable {
                 SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
                 Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
                 SocioCarteirinha carteirinha = new SocioCarteirinha();
+                carteirinha = (SocioCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "SocioCarteirinha"); 
                 
-                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
-                
-                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
+//                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
+//                
+//                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
                 
                 if (carteirinha.getDtEmissao() == null) {
 

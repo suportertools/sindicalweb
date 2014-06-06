@@ -113,7 +113,11 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                         "       to_char(s.filiacao, 'DD/MM/YYYY'),              " +
                         "       pr.ds_profissao as cargo,                       " +
                         "       p.ds_documento,                                 " +
-                        "       f.ds_rg, max(m.id), sc.nr_cartao                " +
+                        "       f.ds_rg,                                        " +
+                        "       max(m.id),                                      " +
+                        "       sc.nr_cartao,                                   " +
+                        "       sc.id,                                          " +
+                        "       mc.ds_descricao                                 " +
                         "  FROM pes_fisica f                                    " +
                         " INNER JOIN pes_pessoa p on p.id = f.id_pessoa         " +
                         "  LEFT JOIN soc_socios_vw s on s.codsocio = f.id_pessoa AND s.inativacao IS NULL " +
@@ -126,7 +130,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                         "  LEFT JOIN end_cidade c on c.id = ende.id_cidade      " +
                         " INNER JOIN soc_carteirinha sc on sc.id_pessoa = p.id  " +
                         "  LEFT JOIN fin_movimento m on m.id_pessoa = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) " +
-                        "  LEFT JOIN soc_historico_carteirinha sh on sh.id_movimento = m.id ";
+                        "  LEFT JOIN soc_historico_carteirinha sh on sh.id_movimento = m.id " +
+                        " INNER JOIN soc_modelo_carteirinha mc on mc.id = sc.id_modelo_carteirinha ";
                 
             // NÃO IMPRESSOS / EMPRESAS
             if (tipo.equals("niEmpresa")) {
@@ -269,7 +274,9 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                      + " pr.ds_profissao, "
                      + " p.ds_documento, "
                      + " f.ds_rg, "
-                     + " sc.nr_cartao  ";
+                     + " sc.nr_cartao, "
+                     + " sc.id, "
+                     + " mc.ds_descricao ";
             
             
             // ORDEM DA QUERY

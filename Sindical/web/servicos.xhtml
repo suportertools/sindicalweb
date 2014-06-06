@@ -32,7 +32,7 @@
                                 </f:facet>
                                 <div class="clear"></div>
                                 <p:panel styleClass="no-border">
-                                    <p:tabView id="id_tab_view" >
+                                    <p:tabView id="id_tab_view" activeIndex="#{servicosBean.activeIndex}">
                                         <p:tab id="servico" title="Serviços">
                                             <p:panelGrid columns="2" styleClass="sbb">
                                                 <p:outputLabel value="Serviço: " for="idDSServicos"/>
@@ -105,7 +105,7 @@
                                                     </p:inputText>
                                                 </p:panelGrid>
                                                 <p:panelGrid columns="4" styleClass="sbb  margin-top-max" id="id_acao">
-                                                    <p:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.saveServicoValor}" title="Adicionar serviço valor" update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl"/>
+                                                    <p:commandButton value="#{servicosBean.textoBtnServico}" action="#{servicosBean.saveServicoValor}" title="Adicionar serviço valor" update="tblDesconto id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl"/>
                                                     <p:commandButton value="Limpar" action="#{servicosBean.clearServicoValor}"  title="Novo serviço valor"  update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl id_acao" />
                                                     <p:commandButton value="Remover"  action="#{servicosBean.removeServicoValor}" title="Remover serviço valor" update="id_painel_servico_valor tbl_valor :form_servicos:id_tab_view:id_messages_growl" />                                            
                                                 </p:panelGrid>
@@ -178,7 +178,7 @@
                                 </p:panel>
                                 <p:panelGrid columns="4" id="id_acao" styleClass="sbb">
                                     <p:commandButton onclick="PF('dlg_save').show()" value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" />
-                                    <p:commandButton value="Novo" title="Novo registro / Limpar" action="#{servicosBean.novo}" update="id_painel_servicos"/>
+                                    <p:commandButton ajax="false" value="Novo" title="Novo registro / Limpar" action="#{servicosBean.novo}"/>
                                     <p:commandButton onclick="PF('dlg_delete').show()" value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" title="Excluir"/>
                                     <p:commandButton styleClass="idPesquisar iLink" value="Pesquisar" action="#{chamadaPaginaBean.pesquisaServicos}" title="Pesquisar serviços"/>
                                 </p:panelGrid>
