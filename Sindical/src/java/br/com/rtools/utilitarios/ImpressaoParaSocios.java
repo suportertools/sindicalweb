@@ -151,7 +151,16 @@ public class ImpressaoParaSocios {
             
             for (Entry<Integer, List> entry : hash.entrySet()){
                 modelo = (ModeloCarteirinha) new SalvarAcumuladoDBToplink().pesquisaCodigo(entry.getKey(), "ModeloCarteirinha");
-                File file = new File(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper()));
+                String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper());
+                
+                if (caminho == null){
+                    GenericaMensagem.error("Erro jasper: "+modelo.getJasper(), "Modelo não encontrado na pasta Relatório!");
+                    continue;
+                }
+                
+                File file = new File(
+                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Relatorios/" + modelo.getJasper())
+                );
                 //* ADD LISTA DE JASPERS *//
                 jasper = (JasperReport) JRLoader.loadObject(file);
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(entry.getValue());
