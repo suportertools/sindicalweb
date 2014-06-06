@@ -249,17 +249,24 @@ public class ServicosBean implements Serializable {
         }
     }
 
-    public void novo() {
-        servicos = new Servicos();
-        listCategoriaDesconto.clear();
-        listServicoValor.clear();
-        listServicos.clear();
-        valorf = "0";
-        desconto = "0";
-        taxa = "0";
-        activeIndex = 0; 
-//        tabViewTitle = "0";
+    public String novo() {
+//        servicos = new Servicos();
+//        listCategoriaDesconto.clear();
+//        listServicoValor.clear();
+//        listServicos.clear();
+//        valorf = "0";
+//        desconto = "0";
+//        taxa = "0";
+//        activeIndex = 0; 
+////        tabViewTitle = "0";
+        
+        //GenericaSessao.newSessionBean("servicosBean", new ServicosBean());
+        GenericaSessao.put("servicosBean", new ServicosBean());
+        
         GenericaSessao.remove("contaCobrancaPesquisa");
+        
+        
+        return null;
     }
 
     public String novox() {
@@ -445,6 +452,7 @@ public class ServicosBean implements Serializable {
                     GenericaMensagem.warn("Erro", "Ao atualizar registro!");
                 }
             }
+            listServicosCategoriaDesconto.clear();
         } else {
             GenericaMensagem.warn("Validação", "Informar o valor / taxa!");
         }

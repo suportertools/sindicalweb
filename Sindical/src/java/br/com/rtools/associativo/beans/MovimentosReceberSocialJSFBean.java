@@ -69,29 +69,28 @@ public class MovimentosReceberSocialJSFBean {
     private boolean addMais = false;
     private Pessoa pessoa = new Pessoa();
     private List<Pessoa> listaPessoa = new ArrayList();
-    
+
     private String matricula = "";
     private String categoria = "";
     private String grupo = "";
     private String status = "";
-    
-    
-    
-    public void salvarRecibo(byte[] arquivo, Baixa baixa){
+
+    public void salvarRecibo(byte[] arquivo, Baixa baixa) {
         //SalvaArquivos sa = new SalvaArquivos(arquivo, String.valueOf(baixa.getId()), false);
-        if (baixa.getCaixa() == null)
+        if (baixa.getCaixa() == null) {
             return;
-        
-        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/"+"Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
-        Diretorio.criar("Arquivos/recibo/"+baixa.getCaixa().getCaixa()+"/"+DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
-        
+        }
+
+        String caminho = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/" + "Arquivos/recibo/" + baixa.getCaixa().getCaixa() + "/" + DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+        Diretorio.criar("Arquivos/recibo/" + baixa.getCaixa().getCaixa() + "/" + DataHoje.converteData(baixa.getDtBaixa()).replace("/", "-"));
+
         String path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + ".pdf";
         File file_arquivo = new File(path_arquivo);
-        
-        if (file_arquivo.exists()){
+
+        if (file_arquivo.exists()) {
             path_arquivo = caminho + "/" + String.valueOf(baixa.getUsuario().getId()) + "_" + String.valueOf(baixa.getId()) + "_(2).pdf";
         }
-        
+
         try {
             File fl = new File(path_arquivo);
             FileOutputStream out = new FileOutputStream(fl);
@@ -101,120 +100,119 @@ public class MovimentosReceberSocialJSFBean {
         } catch (IOException e) {
             System.out.println(e);
         }
-        
+
     }
-    
-    public String recibo(int id_movimento){
-        
+
+    public String recibo(int id_movimento) {
+
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
-       
+
         movimento = db.pesquisaCodigo(id_movimento);
-            try {
-                Collection vetor = new ArrayList();
-                Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
-                PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
+        try {
+            Collection vetor = new ArrayList();
+            Juridica sindicato = (Juridica) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Juridica");
+            PessoaEnderecoDB dbp = new PessoaEnderecoDBToplink();
                 //MovimentosReceberSocialDB dbs = new MovimentosReceberSocialDBToplink();
-                
-                PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
-                String formas[] = new String[10];
-                
-                
-                // PESQUISA FORMA DE PAGAMENTO
-                List<FormaPagamento> fp = db.pesquisaFormaPagamento(movimento.getBaixa().getId());
-                
-                for (int i = 0; i < fp.size(); i++){
-                    // 4 - CHEQUE    
-                    if (fp.get(i).getTipoPagamento().getId() == 4){
-                        formas[i] = fp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(fp.get(i).getValor()) + " (B: "+fp.get(i).getChequeRec().getBanco()+" Ag: "+fp.get(i).getChequeRec().getAgencia()+ " C: "+ fp.get(i).getChequeRec().getConta()+" CH: "+fp.get(i).getChequeRec().getCheque();
+
+            PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 2);
+            String formas[] = new String[10];
+
+            // PESQUISA FORMA DE PAGAMENTO
+            List<FormaPagamento> fp = db.pesquisaFormaPagamento(movimento.getBaixa().getId());
+
+            for (int i = 0; i < fp.size(); i++) {
+                // 4 - CHEQUE    
+                if (fp.get(i).getTipoPagamento().getId() == 4) {
+                    formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor()) + " (B: " + fp.get(i).getChequeRec().getBanco() + " Ag: " + fp.get(i).getChequeRec().getAgencia() + " C: " + fp.get(i).getChequeRec().getConta() + " CH: " + fp.get(i).getChequeRec().getCheque();
                     // 5 - CHEQUE PRÉ
-                    }else if (fp.get(i).getTipoPagamento().getId() == 5){
-                        formas[i] = fp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(fp.get(i).getValor()) + " (B: "+fp.get(i).getChequeRec().getBanco()+" Ag: "+fp.get(i).getChequeRec().getAgencia()+ " C: "+ fp.get(i).getChequeRec().getConta()+" CH: "+fp.get(i).getChequeRec().getCheque()+" P: "+fp.get(i).getChequeRec().getVencimento()+")";
+                } else if (fp.get(i).getTipoPagamento().getId() == 5) {
+                    formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor()) + " (B: " + fp.get(i).getChequeRec().getBanco() + " Ag: " + fp.get(i).getChequeRec().getAgencia() + " C: " + fp.get(i).getChequeRec().getConta() + " CH: " + fp.get(i).getChequeRec().getCheque() + " P: " + fp.get(i).getChequeRec().getVencimento() + ")";
                     // QUALQUER OUTRO    
-                    }else{
-                        formas[i] = fp.get(i).getTipoPagamento().getDescricao()+": R$ "+Moeda.converteR$Float(fp.get(i).getValor());
-                    }
+                } else {
+                    formas[i] = fp.get(i).getTipoPagamento().getDescricao() + ": R$ " + Moeda.converteR$Float(fp.get(i).getValor());
                 }
-                
-                List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
-                for (int i = 0; i < lista.size(); i++){
-                    String conveniada = "";
-                    if (lista.get(i).getLote().getRotina().getId() == 132){
-                        Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
-                        if (gu.getId() != -1){
-                            LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
-                            List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
-                            if (!list.isEmpty())
-                                conveniada = list.get(0).getPessoa().getNome();
+            }
+
+            List<Movimento> lista = db.listaMovimentoBaixaOrder(movimento.getBaixa().getId());
+            for (int i = 0; i < lista.size(); i++) {
+                String conveniada = "";
+                if (lista.get(i).getLote().getRotina().getId() == 132) {
+                    Guia gu = db.pesquisaGuias(lista.get(i).getLote().getId());
+                    if (gu.getId() != -1) {
+                        LancamentoIndividualDB dbl = new LancamentoIndividualDBToplink();
+                        List<Juridica> list = (List<Juridica>) dbl.listaEmpresaConveniadaPorSubGrupo(gu.getSubGrupoConvenio().getId());
+                        if (!list.isEmpty()) {
+                            conveniada = list.get(0).getFantasia();
                         }
                     }
-                    
-                        vetor.add(new ParametroRecibo(
-                                ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
-                                sindicato.getPessoa().getNome(), 
-                                pe.getEndereco().getDescricaoEndereco().getDescricao(), 
-                                pe.getEndereco().getLogradouro().getDescricao(), 
-                                pe.getNumero(), 
-                                pe.getComplemento(), 
-                                pe.getEndereco().getBairro().getDescricao(), 
-                                pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5), 
-                                pe.getEndereco().getCidade().getCidade(), 
-                                pe.getEndereco().getCidade().getUf(), 
-                                sindicato.getPessoa().getTelefone1(), 
-                                sindicato.getPessoa().getEmail1(), 
-                                sindicato.getPessoa().getSite(), 
-                                sindicato.getPessoa().getDocumento(), 
-                                lista.get(i).getLote().getPessoa().getNome(), // RESPONSÁVEL
-                                String.valueOf(lista.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
-                                String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
-                                lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
-                                lista.get(i).getServicos().getDescricao(), // SERVICO
-                                lista.get(i).getVencimento(), // VENCIMENTO
-                                new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
-                                lista.get(i).getBaixa().getUsuario().getLogin(), 
-                                lista.get(i).getBaixa().getBaixa(), 
-                                DataHoje.horaMinuto(),
-                                formas[0], 
-                                formas[1], 
-                                formas[2],
-                                formas[3],
-                                formas[4],
-                                formas[5], 
-                                formas[6], 
-                                formas[7], 
-                                formas[8], 
-                                formas[9],
-                                conveniada
-                        )
-                        );
-                    
                 }
 
-                
-                JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+                vetor.add(new ParametroRecibo(
+                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                        sindicato.getPessoa().getNome(),
+                        pe.getEndereco().getDescricaoEndereco().getDescricao(),
+                        pe.getEndereco().getLogradouro().getDescricao(),
+                        pe.getNumero(),
+                        pe.getComplemento(),
+                        pe.getEndereco().getBairro().getDescricao(),
+                        pe.getEndereco().getCep().substring(0, 5) + "-" + pe.getEndereco().getCep().substring(5),
+                        pe.getEndereco().getCidade().getCidade(),
+                        pe.getEndereco().getCidade().getUf(),
+                        sindicato.getPessoa().getTelefone1(),
+                        sindicato.getPessoa().getEmail1(),
+                        sindicato.getPessoa().getSite(),
+                        sindicato.getPessoa().getDocumento(),
+                        lista.get(i).getLote().getPessoa().getNome(), // RESPONSÁVEL
+                        String.valueOf(lista.get(i).getLote().getPessoa().getId()), // ID_RESPONSAVEL
+                        String.valueOf(lista.get(i).getBaixa().getId()), // ID_BAIXA
+                        lista.get(i).getBeneficiario().getNome(), // BENEFICIÁRIO
+                        lista.get(i).getServicos().getDescricao(), // SERVICO
+                        lista.get(i).getVencimento(), // VENCIMENTO
+                        new BigDecimal(lista.get(i).getValorBaixa()), // VALOR BAIXA
+                        lista.get(i).getBaixa().getUsuario().getLogin(),
+                        lista.get(i).getBaixa().getBaixa(),
+                        DataHoje.horaMinuto(),
+                        formas[0],
+                        formas[1],
+                        formas[2],
+                        formas[3],
+                        formas[4],
+                        formas[5],
+                        formas[6],
+                        formas[7],
+                        formas[8],
+                        formas[9],
+                        conveniada
+                )
+                );
 
-                JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
-                JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
-                
-                byte[] arquivo = JasperExportManager.exportReportToPdf(print);
-                salvarRecibo(arquivo, lista.get(0).getBaixa());
-                
-                HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
-                res.setContentType("application/pdf");
-                res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
-                res.getOutputStream().write(arquivo);
-                res.getCharacterEncoding();
-                
-                FacesContext.getCurrentInstance().responseComplete();
-            } catch (JRException ex) {
-                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
+
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/RECIBO.jasper"));
+
+            JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(vetor);
+            JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
+
+            byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+            salvarRecibo(arquivo, lista.get(0).getBaixa());
+
+            HttpServletResponse res = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            res.setContentType("application/pdf");
+            res.setHeader("Content-disposition", "inline; filename=\"" + "boleto_x" + ".pdf\"");
+            res.getOutputStream().write(arquivo);
+            res.getCharacterEncoding();
+
+            FacesContext.getCurrentInstance().responseComplete();
+        } catch (JRException ex) {
+            Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MovimentosReceberSocialJSFBean.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         return null;
     }
-    
+
     public String removerPesquisa() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pessoaPesquisa");
         pessoa = new Pessoa();
@@ -226,7 +224,6 @@ public class MovimentosReceberSocialJSFBean {
         listaMovimento.clear();
         return "movimentosReceberSocial";
     }
-
 
     public boolean baixado() {
         for (int i = 0; i < listaMovimento.size(); i++) {
@@ -245,7 +242,7 @@ public class MovimentosReceberSocialJSFBean {
         }
         return false;
     }
-    
+
     public boolean acordados() {
         for (int i = 0; i < listaMovimento.size(); i++) {
             if ((Boolean) listaMovimento.get(i).getArgumento0() && String.valueOf(listaMovimento.get(i).getArgumento3()).equals("Acordo")) {
@@ -255,7 +252,7 @@ public class MovimentosReceberSocialJSFBean {
         return false;
     }
 
-    public String estornarBaixa() { 
+    public String estornarBaixa() {
         if (listaMovimento.isEmpty()) {
             msgConfirma = "Não existem boletos para serem estornados!";
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -265,21 +262,21 @@ public class MovimentosReceberSocialJSFBean {
         MovimentoDB db = new MovimentoDBToplink();
         int qnt = 0;
         Movimento mov = null;
-        
+
         for (int i = 0; i < listaMovimento.size(); i++) {
             if ((Boolean) listaMovimento.get(i).getArgumento0()) {
                 qnt++;
                 mov = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
             }
         }
-        
-        if (qnt == 0){
+
+        if (qnt == 0) {
             msgConfirma = "Nenhum Movimento selecionado!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
-        if (qnt > 1){
+
+        if (qnt > 1) {
             msgConfirma = "Mais de um movimento foi selecionado!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
@@ -290,22 +287,23 @@ public class MovimentosReceberSocialJSFBean {
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
+
         boolean est = true;
-        
+
         if (!mov.isAtivo()) {
             msgConfirma = "Boleto ID: " + mov.getId() + " esta inativo, não é possivel concluir estorno!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
-        if (mov.getLote().getRotina() != null && mov.getLote().getRotina().getId() == 132)
+
+        if (mov.getLote().getRotina() != null && mov.getLote().getRotina().getId() == 132) {
             mov.setAtivo(false);
-        
+        }
+
         if (!GerarMovimento.estornarMovimento(mov)) {
             est = false;
         }
-        
+
         if (!est) {
             msgConfirma = "Ocorreu erros ao estornar boletos, verifique o log!";
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -322,20 +320,20 @@ public class MovimentosReceberSocialJSFBean {
         List lista = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
-            MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
+        MacFilial macFilial = (MacFilial) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("acessoFilial");
 
         if (macFilial == null) {
             msgConfirma = "Não existe filial na sessão!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
+
         if (macFilial.getCaixa() == null) {
             msgConfirma = "Configurar Caixa nesta estação de trabalho!";
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
+
         if (baixado()) {
             msgConfirma = "Existem boletos baixados na lista!";
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -354,8 +352,8 @@ public class MovimentosReceberSocialJSFBean {
                     movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
 
                     movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
-                    movimento.setJuros(Moeda.converteUS$( listaMovimento.get(i).getArgumento20().toString() ));
-                    movimento.setCorrecao(Moeda.converteUS$( listaMovimento.get(i).getArgumento21().toString()));
+                    movimento.setJuros(Moeda.converteUS$(listaMovimento.get(i).getArgumento20().toString()));
+                    movimento.setCorrecao(Moeda.converteUS$(listaMovimento.get(i).getArgumento21().toString()));
                     movimento.setDesconto(Moeda.converteUS$(listaMovimento.get(i).getArgumento8().toString()));
 
                     //movimento.setValor( Float.valueOf( listaMovimento.get(i).getArgumento9().toString() ) );
@@ -385,8 +383,7 @@ public class MovimentosReceberSocialJSFBean {
         List lista = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
         Movimento movimento = new Movimento();
-       
-        
+
 //                    movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
         movimento = db.pesquisaCodigo(id_movimento);
 
@@ -397,14 +394,13 @@ public class MovimentosReceberSocialJSFBean {
 //                    movimento.setDesconto(Moeda.converteUS$(listaMovimento.get(i).getArgumento8().toString()));
 //
 //                    movimento.setValor(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()));
-
-                    // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
+        // movimento.setValorBaixa( Moeda.subtracaoValores(movimento.getValor(), movimento.getDesconto()) );
 //                    movimento.setValorBaixa(Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
         lista.add(movimento);
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("listaMovimento", lista);
         return ((ChamadaPaginaBean) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("chamadaPaginaBean")).alterarMovimento();
     }
-    
+
     public String telaAcordo() {
         List lista = new ArrayList();
         MovimentoDB db = new MovimentoDBToplink();
@@ -420,7 +416,7 @@ public class MovimentosReceberSocialJSFBean {
             GenericaMensagem.warn("Erro", msgConfirma);
             return null;
         }
-        
+
         if (acordados()) {
             msgConfirma = "Boletos do tipo Acordo não podem ser Reacordados!";
             GenericaMensagem.warn("Erro", msgConfirma);
@@ -432,8 +428,8 @@ public class MovimentosReceberSocialJSFBean {
                     movimento = db.pesquisaCodigo(Integer.parseInt(String.valueOf(listaMovimento.get(i).getArgumento1())));
 
                     movimento.setMulta(Moeda.converteUS$(listaMovimento.get(i).getArgumento19().toString()));
-                    movimento.setJuros(Moeda.converteUS$( listaMovimento.get(i).getArgumento20().toString()));
-                    movimento.setCorrecao(Moeda.converteUS$( listaMovimento.get(i).getArgumento21().toString()));
+                    movimento.setJuros(Moeda.converteUS$(listaMovimento.get(i).getArgumento20().toString()));
+                    movimento.setCorrecao(Moeda.converteUS$(listaMovimento.get(i).getArgumento21().toString()));
 
                     movimento.setDesconto(Moeda.converteUS$(listaMovimento.get(i).getArgumento8().toString()));
 
@@ -468,20 +464,19 @@ public class MovimentosReceberSocialJSFBean {
         }
 
         descPorcento = Moeda.multiplicarValores(Moeda.divisaoValores(Float.valueOf(desconto), calc), 100);
-        
-        
+
         for (int i = 0; i < listaMovimento.size(); i++) {
             if ((Boolean) listaMovimento.get(i).getArgumento0() && Moeda.converteUS$(listaMovimento.get(i).getArgumento11().toString()) == 0.0) {
                 acre = Moeda.converteUS$(listaMovimento.get(i).getArgumento7().toString());
-                
+
                 float valor_calc = Moeda.somaValores(Moeda.converteUS$(listaMovimento.get(i).getArgumento6().toString()), acre);
                 desc = Moeda.divisaoValores(Moeda.multiplicarValores(valor_calc, descPorcento), 100);
-                
-                listaMovimento.get(i).setArgumento8( Moeda.converteR$(String.valueOf(desc)) );
-                listaMovimento.get(i).setArgumento9( Moeda.converteR$(String.valueOf(Moeda.subtracaoValores(valor_calc, desc) )));
-            }else{
-                listaMovimento.get(i).setArgumento8( "0,00" );
-                listaMovimento.get(i).setArgumento9( Moeda.converteR$(listaMovimento.get(i).getArgumento6().toString()) );
+
+                listaMovimento.get(i).setArgumento8(Moeda.converteR$(String.valueOf(desc)));
+                listaMovimento.get(i).setArgumento9(Moeda.converteR$(String.valueOf(Moeda.subtracaoValores(valor_calc, desc))));
+            } else {
+                listaMovimento.get(i).setArgumento8("0,00");
+                listaMovimento.get(i).setArgumento9(Moeda.converteR$(listaMovimento.get(i).getArgumento6().toString()));
             }
         }
     }
@@ -520,7 +515,7 @@ public class MovimentosReceberSocialJSFBean {
         }
     }
 
-    public String getValorPraDesconto(){
+    public String getValorPraDesconto() {
         if (!listaMovimento.isEmpty()) {
             float soma = 0;
             for (int i = 0; i < listaMovimento.size(); i++) {
@@ -533,7 +528,7 @@ public class MovimentosReceberSocialJSFBean {
             return "0";
         }
     }
-    
+
     public String getTotalCalculado() {
         if (!listaMovimento.isEmpty()) {
             float soma = 0;
@@ -554,7 +549,7 @@ public class MovimentosReceberSocialJSFBean {
         tipo = (String) linha.getArgumento3(); // 1 - TIPO SERVIÇO
         referencia = (String) linha.getArgumento4(); // 2 - REFERENCIA
         id_baixa = linha.getArgumento26().toString(); // 23 - ID_BAIXA
-        
+
         beneficiario = (String) linha.getArgumento14(); // 12 - BENEFICIARIO
         data = linha.getArgumento16().toString(); // 16 - CRIACAO
         boleto = (String) linha.getArgumento17(); // 17 - BOLETO
@@ -566,17 +561,17 @@ public class MovimentosReceberSocialJSFBean {
         documento = (linha.getArgumento23() == null) ? "Sem Documento" : linha.getArgumento23().toString(); // 24 - DOCUMENTO
 
         int id_lote = Integer.valueOf(linha.getArgumento27().toString());
-        
+
         MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
         List<Vector> lista = db.dadosSocio(id_lote);
-        
-        if (!lista.isEmpty()){
+
+        if (!lista.isEmpty()) {
             titular = lista.get(0).get(0).toString(); // TITULAR
             matricula = lista.get(0).get(1).toString(); // MATRICULA
             categoria = lista.get(0).get(2).toString(); // CATEGORIA
             grupo = lista.get(0).get(3).toString(); // GRUPO
             status = lista.get(0).get(4).toString(); // CASE
-        }else{
+        } else {
             titular = "";
             matricula = "";
             categoria = "";
@@ -598,7 +593,7 @@ public class MovimentosReceberSocialJSFBean {
             listaMovimento.get(i).setArgumento0(chkSeleciona);
         }
     }
-   
+
     public List<DataObject> getListaMovimento() {
         if (listaMovimento.isEmpty() && !listaPessoa.isEmpty()) {
             MovimentosReceberSocialDB db = new MovimentosReceberSocialDBToplink();
@@ -613,63 +608,62 @@ public class MovimentosReceberSocialJSFBean {
             //float soma = 0;
             boolean chk = false, disabled = false;
             String dataBaixa = "";
-            
-            
+
             for (int i = 0; i < lista.size(); i++) {
-                if (lista.get(i).get(8) != null){
-                    dataBaixa = DataHoje.converteData( (Date)lista.get(i).get(8) );
-                }else{
+                if (lista.get(i).get(8) != null) {
+                    dataBaixa = DataHoje.converteData((Date) lista.get(i).get(8));
+                } else {
                     dataBaixa = "";
                 }
                 //soma = Moeda.somaValores(Moeda.converteR$(lista.get(i).get(5).toString()), Moeda.converteUS$(listaMovimento.get(i).getArgumento9().toString()));
                 // DATA DE HOJE MENOR OU IGUAL A DATA DE VENCIMENTO
-                if ( DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) <= 
-                     DataHoje.converteDataParaInteger(DataHoje.data()) &&
-                     dataBaixa.isEmpty()){
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date) lista.get(i).get(3)))
+                        <= DataHoje.converteDataParaInteger(DataHoje.data())
+                        && dataBaixa.isEmpty()) {
                     chk = true;
-                }else{
+                } else {
                     chk = false;
                 }
-                
+
                 // DATA DE HOJE MENOR QUE DATA DE VENCIMENTO
-                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date)lista.get(i).get(3))) < 
-                    DataHoje.converteDataParaInteger(DataHoje.data()) && dataBaixa.isEmpty()){
-                   disabled = true; 
-                }else{
-                   disabled = false;
+                if (DataHoje.converteDataParaInteger(DataHoje.converteData((Date) lista.get(i).get(3)))
+                        < DataHoje.converteDataParaInteger(DataHoje.data()) && dataBaixa.isEmpty()) {
+                    disabled = true;
+                } else {
+                    disabled = false;
                 }
-                
+
                 listaMovimento.add(new DataObject(
-                            chk, // ARG 0
-                            lista.get(i).get(14), // ARG 1 ID_MOVIMENTO
-                            lista.get(i).get(0), // ARG 2 SERVICO
-                            lista.get(i).get(1), // ARG 3 TIPO_SERVICO
-                            lista.get(i).get(2), // ARG 4 REFERENCIA
-                            DataHoje.converteData((Date)lista.get(i).get(3)), // ARG 5 VENCIMENTO
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(4))), // ARG 6 VALOR
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(5))), // ARG 7 ACRESCIMO
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(6))), // ARG 8 DESCONTO
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 9 VALOR CALCULADO
-                            dataBaixa, // ARG 10 DATA BAIXA
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(9))), // ARG 11 VALOR_BAIXA
-                            lista.get(i).get(10), // ARG 12 ES
-                            lista.get(i).get(11), // ARG 13 RESPONSAVEL
-                            lista.get(i).get(12), // ARG 14 BENEFICIARIO
-                            lista.get(i).get(13), // ARG 15 TITULAR
-                            DataHoje.converteData((Date)lista.get(i).get(16)), // ARG 16 CRIACAO
-                            lista.get(i).get(17), // ARG 17 BOLETO
-                            lista.get(i).get(18), // ARG 18 DIAS DE ATRASO
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(19))), // ARG 29 MULTA
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(20))), // ARG 20 JUROS
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(21))), // ARG 21 CORRECAO
-                            getConverteNullString(lista.get(i).get(22)), // ARG 22 CAIXA
-                            lista.get(i).get(24), // ARG 23 DOCUMENTO
-                            Moeda.converteR$(getConverteNullString(lista.get(i).get(7))),  // ARG 24 VALOR CALCULADO ORIGINAL
-                            disabled, 
-                            lista.get(i).get(18), // ARG 26 ID_BAIXA
-                            lista.get(i).get(15) // ARG 27 ID_LOTE
-                            )
-                        );
+                        chk, // ARG 0
+                        lista.get(i).get(14), // ARG 1 ID_MOVIMENTO
+                        lista.get(i).get(0), // ARG 2 SERVICO
+                        lista.get(i).get(1), // ARG 3 TIPO_SERVICO
+                        lista.get(i).get(2), // ARG 4 REFERENCIA
+                        DataHoje.converteData((Date) lista.get(i).get(3)), // ARG 5 VENCIMENTO
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(4))), // ARG 6 VALOR
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(5))), // ARG 7 ACRESCIMO
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(6))), // ARG 8 DESCONTO
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 9 VALOR CALCULADO
+                        dataBaixa, // ARG 10 DATA BAIXA
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(9))), // ARG 11 VALOR_BAIXA
+                        lista.get(i).get(10), // ARG 12 ES
+                        lista.get(i).get(11), // ARG 13 RESPONSAVEL
+                        lista.get(i).get(12), // ARG 14 BENEFICIARIO
+                        lista.get(i).get(13), // ARG 15 TITULAR
+                        DataHoje.converteData((Date) lista.get(i).get(16)), // ARG 16 CRIACAO
+                        lista.get(i).get(17), // ARG 17 BOLETO
+                        lista.get(i).get(18), // ARG 18 DIAS DE ATRASO
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(19))), // ARG 29 MULTA
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(20))), // ARG 20 JUROS
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(21))), // ARG 21 CORRECAO
+                        getConverteNullString(lista.get(i).get(22)), // ARG 22 CAIXA
+                        lista.get(i).get(24), // ARG 23 DOCUMENTO
+                        Moeda.converteR$(getConverteNullString(lista.get(i).get(7))), // ARG 24 VALOR CALCULADO ORIGINAL
+                        disabled,
+                        lista.get(i).get(18), // ARG 26 ID_BAIXA
+                        lista.get(i).get(15) // ARG 27 ID_LOTE
+                )
+                );
             }
         }
         return listaMovimento;
@@ -793,18 +787,18 @@ public class MovimentosReceberSocialJSFBean {
         addMais = true;
         //return "movimentosReceberSocial";
     }
-    
+
     public Pessoa getPessoa() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa") != null) {
-            if (!addMais){
+            if (!addMais) {
                 pessoa = new Pessoa();
                 pessoa = (Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa");
-                
+
                 listaPessoa.clear();
-                
+
                 listaPessoa.add(pessoa);
                 listaMovimento.clear();
-            }else{
+            } else {
                 listaPessoa.add((Pessoa) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pessoaPesquisa"));
                 listaMovimento.clear();
                 addMais = false;
@@ -826,7 +820,7 @@ public class MovimentosReceberSocialJSFBean {
     public void setListaPessoa(List<Pessoa> listaPessoa) {
         this.listaPessoa = listaPessoa;
     }
-    
+
     public String getConverteNullString(Object object) {
         if (object == null) {
             return "";
