@@ -228,10 +228,12 @@ public class CartaoSocialBean implements Serializable {
                     
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Primeira Impressão de Carteirinha");
-                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
-                    if (m != null)
-                        hc.setMovimento(m);
                     
+                    if (listaSelecionado.get(i).get(17) != null){
+                        Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                        if (m != null)
+                            hc.setMovimento(m);
+                    }
                     
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
@@ -257,9 +259,11 @@ public class CartaoSocialBean implements Serializable {
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Impressão de Carteirinha");
                     
-                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
-                    if (m != null)
-                        hc.setMovimento(m);
+                    if (listaSelecionado.get(i).get(17) != null){
+                        Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                        if (m != null)
+                            hc.setMovimento(m);
+                    }
                     
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
@@ -320,9 +324,11 @@ public class CartaoSocialBean implements Serializable {
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Primeira ReImpressão de Carteirinha 2º Via");
                     
-                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
-                    if (m != null)
-                        hc.setMovimento(m);
+                    if (listaSelecionado.get(i).get(17) != null){
+                        Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                        if (m != null)
+                            hc.setMovimento(m);
+                    }
                     
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
@@ -338,9 +344,11 @@ public class CartaoSocialBean implements Serializable {
                     }
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("Reimpressão de Carteirinha 2º Via");
-                    Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
-                    if (m != null)
-                        hc.setMovimento(m);
+                    if (listaSelecionado.get(i).get(17) != null){
+                        Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
+                        if (m != null)
+                            hc.setMovimento(m);
+                    }
                     
                     if (!sv.inserirObjeto(hc)) {
                         sv.desfazerTransacao();
