@@ -1,7 +1,7 @@
 
 -- Index: ref_faturamento_folha_empresa
 
-DROP INDEX ref_faturamento_folha_empresa;
+-- DROP INDEX ref_faturamento_folha_empresa;
 
 CREATE INDEX ref_faturamento_folha_empresa
   ON arr_faturamento_folha_empresa

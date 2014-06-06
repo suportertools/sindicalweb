@@ -1,7 +1,7 @@
 
 -- Index: chave_desconto_empregado
 
-DROP INDEX chave_desconto_empregado;
+-- DROP INDEX chave_desconto_empregado;
 
 CREATE INDEX chave_desconto_empregado
   ON arr_desconto_empregado
