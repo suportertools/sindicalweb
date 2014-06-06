@@ -1,6 +1,6 @@
 -- Index: ds_bairro
 
-DROP INDEX ds_bairro;
+-- DROP INDEX ds_bairro;
 
 CREATE INDEX ds_bairro
   ON end_bairro

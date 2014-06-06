@@ -1,6 +1,6 @@
 -- Index: ds_cidade
 
-DROP INDEX ds_cidade;
+-- DROP INDEX ds_cidade;
 
 CREATE INDEX ds_cidade
   ON end_cidade
