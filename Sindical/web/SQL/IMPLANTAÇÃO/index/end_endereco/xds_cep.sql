@@ -1,7 +1,7 @@
 
 -- Index: xds_cep
 
-DROP INDEX xds_cep;
+-- DROP INDEX xds_cep;
 
 CREATE INDEX xds_cep
   ON end_endereco
