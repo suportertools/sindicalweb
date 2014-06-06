@@ -24,7 +24,7 @@
                             <p:accordionPanel styleClass="no-border" style="width: 200px;" dynamic="true" id="i_panel_accordion">
                                 <p:tab title="Avançado">
                                     <h:panelGrid columns="1" id="i_panel_avancado">
-                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[0]}" onLabel="Período - Edição" offLabel="Período - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;" >
+                                        <p:selectBooleanButton value="#{pesquisaLogBean.filtro[0]}" onLabel="Período - Edição" offLabel="Período - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_logs:id_panel_logs" listener="#{pesquisaLogBean.clear}" />
                                         </p:selectBooleanButton>
                                         <p:selectBooleanButton value="#{pesquisaLogBean.filtro[1]}" onLabel="Usuário - Edição" offLabel="Usuário - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
