@@ -312,7 +312,8 @@ public class CartaoSocialBean implements Serializable {
 //                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
                 
                 if (carteirinha.getDtEmissao() == null) {
-
+                    carteirinha.setVia(carteirinha.getVia()+1);
+                    carteirinha.setDtValidadeCarteirinha(DataHoje.dataHoje());
                     carteirinha.setEmissao(DataHoje.data());
                     if (!sv.alterarObjeto(carteirinha)) {
                         sv.desfazerTransacao();
@@ -338,6 +339,7 @@ public class CartaoSocialBean implements Serializable {
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
                     carteirinha.setVia(carteirinha.getVia()+1);
+                    carteirinha.setDtValidadeCarteirinha(DataHoje.dataHoje());
                     if (!sv.alterarObjeto(carteirinha)) {
                         sv.desfazerTransacao();
                         return;
