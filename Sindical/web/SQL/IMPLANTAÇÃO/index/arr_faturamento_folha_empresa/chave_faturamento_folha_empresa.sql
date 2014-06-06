@@ -1,6 +1,6 @@
 -- Index: chave_faturamento_folha_empresa
 
-DROP INDEX chave_faturamento_folha_empresa;
+-- DROP INDEX chave_faturamento_folha_empresa;
 
 CREATE INDEX chave_faturamento_folha_empresa
   ON arr_faturamento_folha_empresa
