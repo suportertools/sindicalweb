@@ -1,7 +1,7 @@
 
 -- Index: ds_descricao_endereco
 
-DROP INDEX ds_descricao_endereco;
+-- DROP INDEX ds_descricao_endereco;
 
 CREATE INDEX ds_descricao_endereco
   ON end_descricao_endereco
