@@ -42,7 +42,7 @@
                             <p:commandButton id="idInicial" value="Inicial" action="#{agendaTelefoneBean.acaoPesquisaInicial}" update="id_lista"/>
                             <p:commandButton id="idParcial" value="Parcial" action="#{agendaTelefoneBean.acaoPesquisaParcial}" update="id_lista"/>
                             <h:outputLabel value="Grupo: " styleClass="fontePadrao" />
-                            <p:selectOneMenu value="#{agendaTelefoneBean.indice[2]}">
+                            <p:selectOneMenu value="#{agendaTelefoneBean.indice[4]}">
                                 <p:ajax event="change" update="id_lista" listener="#{agendaTelefoneBean.listAgendas.clear()}" />
                                 <f:selectItems value="#{agendaTelefoneBean.listGrupoAgendas}" />
                             </p:selectOneMenu>
