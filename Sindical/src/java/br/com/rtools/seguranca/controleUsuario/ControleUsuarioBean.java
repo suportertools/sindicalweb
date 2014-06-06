@@ -8,6 +8,7 @@ import br.com.rtools.seguranca.db.*;
 import br.com.rtools.sistema.ContadorAcessos;
 import br.com.rtools.sistema.db.AtalhoDB;
 import br.com.rtools.sistema.db.AtalhoDBToplink;
+import br.com.rtools.utilitarios.Diretorio;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
@@ -48,8 +49,9 @@ public class ControleUsuarioBean implements Serializable {
 
     public String validacao() throws Exception {
         String pagina = null;
+        String nomeCliente = null;
         if (GenericaSessao.exists("sessaoCliente")) {
-            String nomeCliente = (String) GenericaSessao.getString("sessaoCliente");
+            nomeCliente = (String) GenericaSessao.getString("sessaoCliente");
             if (!nomeCliente.equals("Rtools") && !nomeCliente.equals("Sindical")) {
                 DBExternal dbe = new DBExternal();
                 if (dbe.getConnection() != null) {
@@ -115,6 +117,7 @@ public class ControleUsuarioBean implements Serializable {
         }
         usuario = db.ValidaUsuario(usuario.getLogin(), usuario.getSenha());
         if (usuario != null) {
+            Diretorio.criar("");
             pagina = "menuPrincipal";
             GenericaSessao.put("sessaoUsuario", usuario);
             GenericaSessao.put("usuarioLogin", usuario.getLogin());
@@ -384,4 +387,5 @@ public class ControleUsuarioBean implements Serializable {
     public void setUsuarioSuporteTecnico(Usuario usuarioSuporteTecnico) {
         this.usuarioSuporteTecnico = usuarioSuporteTecnico;
     }
+
 }
