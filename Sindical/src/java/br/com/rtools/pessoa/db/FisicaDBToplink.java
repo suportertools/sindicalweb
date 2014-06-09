@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.db;
 
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.principal.DB;
 import java.util.ArrayList;
@@ -545,6 +546,27 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     "  where fis.pessoa.id = " + id_pessoa
                     + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
                     + " where soc.servicoPessoa.ativo = true )";
+            Query qry = getEntityManager().createQuery(textQuery);
+            lista = qry.getResultList();
+        } catch (Exception e) {
+            return lista;
+        }
+        return lista;
+    }
+    
+    @Override
+    public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente) {
+        List lista = new Vector<Object>();
+        String textQuery = "SELECT sp FROM ServicoPessoa sp WHERE sp.ativo = TRUE";
+
+        if (dependente){
+            textQuery += " AND sp.pessoa.id = "+id_pessoa;
+        }else{
+            //textQuery += " AND sp.cobranca.id = "+id_pessoa+" OR sp.pessoa.id = "+id_pessoa;
+            textQuery += " AND sp.cobranca.id = "+id_pessoa+" OR (sp.pessoa.id = "+id_pessoa+" AND sp.ativo = TRUE)";
+        }
+        
+        try {
             Query qry = getEntityManager().createQuery(textQuery);
             lista = qry.getResultList();
         } catch (Exception e) {

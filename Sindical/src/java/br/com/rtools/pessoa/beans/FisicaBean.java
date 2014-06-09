@@ -7,6 +7,7 @@ import br.com.rtools.endereco.Cidade;
 import br.com.rtools.endereco.Endereco;
 import br.com.rtools.endereco.db.EnderecoDB;
 import br.com.rtools.endereco.db.EnderecoDBToplink;
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.homologacao.Agendamento;
 import br.com.rtools.homologacao.db.HomologacaoDB;
 import br.com.rtools.homologacao.db.HomologacaoDBToplink;
@@ -104,7 +105,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private boolean visibleEditarEndereco = false;
     private int index_endereco = 0;
-
+    private List<ServicoPessoa> listaServicoPessoa = new ArrayList<ServicoPessoa>();
+    private boolean chkDependente = false;
+    
+    
     public void novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
     }
@@ -461,6 +465,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
         }
 
+        listaServicoPessoa.clear();
         editarFisicaSocio(fisica);
         showImagemFisica();
         GenericaSessao.put("linkClicado", true);
@@ -524,6 +529,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             renderJuridicaPesquisa = false;
         }
 
+        listaServicoPessoa.clear();
         editarFisicaSocio(fisica);
         GenericaSessao.put("linkClicado", true);
         return url;
@@ -1700,5 +1706,25 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setVisibleEditarEndereco(boolean visibleEditarEndereco) {
         this.visibleEditarEndereco = visibleEditarEndereco;
+    }
+
+    public List<ServicoPessoa> getListaServicoPessoa() {
+        if (fisica.getId() != -1 && listaServicoPessoa.isEmpty()){
+            FisicaDB db = new FisicaDBToplink();
+            listaServicoPessoa = db.listaServicoPessoa(fisica.getPessoa().getId(), chkDependente);
+        }
+        return listaServicoPessoa;
+    }
+
+    public void setListaServicoPessoa(List<ServicoPessoa> listaServicoPessoa) {
+        this.listaServicoPessoa = listaServicoPessoa;
+    }
+
+    public boolean isChkDependente() {
+        return chkDependente;
+    }
+
+    public void setChkDependente(boolean chkDependente) {
+        this.chkDependente = chkDependente;
     }
 }
