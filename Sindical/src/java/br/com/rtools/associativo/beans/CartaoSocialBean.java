@@ -1,11 +1,16 @@
 package br.com.rtools.associativo.beans;
 
 import br.com.rtools.associativo.AutorizaImpressaoCartao;
+import br.com.rtools.associativo.GrupoCategoria;
 import br.com.rtools.associativo.HistoricoCarteirinha;
-import br.com.rtools.associativo.ModeloCarteirinha;
 import br.com.rtools.associativo.SocioCarteirinha;
+import br.com.rtools.associativo.Socios;
+import br.com.rtools.associativo.db.CategoriaDB;
+import br.com.rtools.associativo.db.CategoriaDBToplink;
 import br.com.rtools.associativo.db.SocioCarteirinhaDB;
 import br.com.rtools.associativo.db.SocioCarteirinhaDBToplink;
+import br.com.rtools.associativo.db.SociosDB;
+import br.com.rtools.associativo.db.SociosDBToplink;
 import br.com.rtools.financeiro.Movimento;
 import br.com.rtools.impressao.Etiquetas;
 import br.com.rtools.pessoa.Pessoa;
@@ -19,6 +24,7 @@ import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 import javax.faces.bean.ManagedBean;
@@ -299,26 +305,35 @@ public class CartaoSocialBean implements Serializable {
 
         if (!listaSelecionado.isEmpty()) {
             SocioCarteirinhaDB db = new SocioCarteirinhaDBToplink();
-            sv.abrirTransacao();
+            CategoriaDB dbCat = new CategoriaDBToplink();
             DataHoje dh = new DataHoje();
+            SociosDB dbs = new SociosDBToplink();
+            
+            sv.abrirTransacao();
+            
             for (int i = 0; i < listaSelecionado.size(); i++) {
-                SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
                 Pessoa pessoa = (Pessoa) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(0), "Pessoa");
-                SocioCarteirinha carteirinha = new SocioCarteirinha();
-                carteirinha = (SocioCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "SocioCarteirinha"); 
+                Socios socios = dbs.pesquisaSocioPorPessoa(pessoa.getId());
+                SocioCarteirinha carteirinha = (SocioCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "SocioCarteirinha"); 
                 
-//                ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(-1, 170);
-//                
-//                carteirinha = dbc.pesquisaCarteirinhaPessoa(pessoa.getId(), modeloc.getId());
+                if (socios.getId() != -1){
+                    GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(Integer.valueOf(socios.getMatriculaSocios().getCategoria().getId()));
+                    Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
+                    carteirinha.setDtValidadeCarteirinha(validadeCarteirinha);
+                }else{
+                    carteirinha.setDtValidadeCarteirinha(null);
+                }
                 
                 if (carteirinha.getDtEmissao() == null) {
-                    carteirinha.setVia(carteirinha.getVia()+1);
-                    carteirinha.setDtValidadeCarteirinha(DataHoje.dataHoje());
+                    
+                    carteirinha.setVia(carteirinha.getVia() + 1);
                     carteirinha.setEmissao(DataHoje.data());
+                    
                     if (!sv.alterarObjeto(carteirinha)) {
                         sv.desfazerTransacao();
                         return;
                     }
+                    
                     listaSelecionado.get(i).set(6, carteirinha.getValidadeCarteirinha());
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
@@ -338,14 +353,15 @@ public class CartaoSocialBean implements Serializable {
                 } else {
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
-                    carteirinha.setVia(carteirinha.getVia()+1);
-                    carteirinha.setDtValidadeCarteirinha(DataHoje.dataHoje());
+                    carteirinha.setVia(carteirinha.getVia() + 1);
+                    
                     if (!sv.alterarObjeto(carteirinha)) {
                         sv.desfazerTransacao();
                         return;
                     }
+                    
                     hc.setCarteirinha(carteirinha);
-                    hc.setDescricao("Reimpressão de Carteirinha 2º Via");
+                    hc.setDescricao("ReImpressão de Carteirinha 2º Via");
                     if (listaSelecionado.get(i).get(17) != null){
                         Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
                         if (m != null)

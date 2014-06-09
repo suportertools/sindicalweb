@@ -440,8 +440,45 @@
                                         </h:panelGrid>
                                     </p:tab>
 
-                                    <p:tab title="Histórico" disabled="true">
-
+                                    <p:tab id="i_historico" title="Histórico">
+                                        <br />
+                                        
+                                        <p:selectBooleanCheckbox value="#{fisicaBean.chkDependente}" itemLabel="Somente desta Pessoa" style="float: right">
+                                            <p:ajax event="change" update="i_tbl_servico" listener="#{fisicaBean.listaServicoPessoa.clear()}"/>
+                                        </p:selectBooleanCheckbox>
+                                            
+                                        <br /><br />
+                                        
+                                        <p:dataTable id="i_tbl_servico" value="#{fisicaBean.listaServicoPessoa}" var="linha" emptyMessage="Nenhum histórico para esta pessoa.">
+                                            <p:column headerText="Emissão">
+                                                <p:outputLabel value="#{linha.emissao}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Beneficiário">
+                                                <p:outputLabel value="#{linha.pessoa.nome}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Desconto em Folha" style="text-align: center">
+                                                <p:outputLabel value="NÃO" rendered="#{!linha.descontoFolha}"/>
+                                                <p:outputLabel value="SIM" rendered="#{linha.descontoFolha}"/>
+                                            </p:column>
+                                            
+                                            <p:column headerText="Desconto" style="text-align: center">
+                                                <p:outputLabel value="#{linha.nrDesconto}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Ref. Vigoração" style="text-align: center">
+                                                <p:outputLabel value="#{linha.referenciaVigoracao}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Ref. Validade" style="text-align: center">
+                                                <p:outputLabel value="#{linha.referenciaValidade}" />
+                                            </p:column>
+                                            
+                                            <p:column headerText="Serviço">
+                                                <p:outputLabel value="#{linha.servicos.descricao}" />
+                                            </p:column>
+                                        </p:dataTable>
                                     </p:tab>
 
                                     <p:tab id="idPessoaComplemento" title="Financeiro" >

@@ -1,5 +1,6 @@
 package br.com.rtools.pessoa.db;
 
+import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import java.util.Date;
 import java.util.List;
@@ -40,4 +41,6 @@ public interface FisicaDB {
     public List pesquisaFisicaPorNome(String nome);
 
     public List pesquisaPessoaSocioID(int id_pessoa);
+    
+    public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente);
 }
