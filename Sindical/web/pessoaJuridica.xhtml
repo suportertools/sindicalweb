@@ -117,7 +117,7 @@
                                                 
                                                 <p:column>
                                                     <br />
-                                                    <p:commandButton update="i_panel_cnae i_panel_convencao" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpj}"/>
+                                                    <p:commandButton update=":formPessoaJuridica" value="Pesquisar na Receita Federal" action="#{juridicaBean.pesquisaCnpj}"/>
                                                 </p:column>
                                                                                                 
                                                 <p:column>
@@ -132,7 +132,7 @@
                                                 <p:column>
                                                     <h:outputLabel value="Nome" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
-                                                        <p:ajax event="blur" update="i_razao" global="false"/>
+                                                        <p:ajax event="blur" update=":formPessoaJuridica" />
                                                     </p:inputText>
                                                 </p:column>
                                                 
