@@ -50,7 +50,7 @@
                                     <p:tab title="Dados Gerais">
                                         <h:panelGrid columns="6" id="i_panel_cnae">
                                             <p:column>
-                                                <p:commandButton value="Pesquisar CNAE" alt="Pesquisar Cnae" action="#{chamadaPaginaBean.pesquisaCnae}" rendered="#{juridicaBean.juridica.cnae.id == -1}" />
+                                                <p:commandButton value="Pesquisar CNAE" alt="Pesquisar Cnae" action="#{chamadaPaginaBean.pesquisaCnae}" rendered="#{juridicaBean.juridica.cnae == null or juridicaBean.juridica.cnae.id == -1}" />
                                             </p:column>
                                             
                                             <p:column>
@@ -66,7 +66,7 @@
                                             </p:column>
                                             
                                             <p:column>
-                                                <p:commandButton icon="ui-icon-close" action="#{juridicaBean.limparCnae()}" title="Limpar CNAE" rendered="#{juridicaBean.juridica.cnae != null and juridicaBean.juridica.cnae.id != -1}" update="i_panel_cnae"/>
+                                                <p:commandButton icon="ui-icon-close" action="#{juridicaBean.limparCnae()}" title="Limpar CNAE" rendered="#{juridicaBean.juridica.cnae != null and juridicaBean.juridica.cnae.id != -1}" update="i_panel_cnae i_panel_convencao"/>
                                             </p:column>
                                         </h:panelGrid>
                                         
