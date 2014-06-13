@@ -118,13 +118,14 @@ public class JuridicaBean implements Serializable {
 
         if (!validaTipoDocumento(2, documento)) {
             msgDocumento = "Documento inválido!";
+            GenericaMensagem.warn("Erro", "Documento Inválido!");
             return;
         }
         JuridicaDB dbj = new JuridicaDBToplink();
         List listDocumento = dbj.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
         for (int i = 0; i < listDocumento.size(); i++) {
             if (!listDocumento.isEmpty()) {
-                msgDocumento = "Empresa já esta cadastrada no Sistema!";
+                GenericaMensagem.warn("Erro", "Empresa já esta cadastrada no Sistema!");
                 return;
             }
         }
@@ -133,7 +134,7 @@ public class JuridicaBean implements Serializable {
 
         juridicaReceita = db.pesquisaJuridicaReceita(documento);
         if (juridicaReceita.getPessoa() != null && juridicaReceita.getPessoa().getId() != -1) {
-            msgDocumento = "Pessoa já cadastrada no Sistema!";
+            GenericaMensagem.warn("Erro", "Pessoa já cadastrada no Sistema!");
             return;
         }
         if (juridicaReceita.getId() == -1) {
@@ -142,30 +143,29 @@ public class JuridicaBean implements Serializable {
                 System.loadLibrary("knu");
             } catch (Exception e) {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
-                msgDocumento = "Consulta temporárimente indisponível!";
+                GenericaMensagem.warn("Erro", "Consulta temporárimente indisponível!");
                 return;
             } catch (UnsatisfiedLinkError e) {
                 System.out.println(e.getMessage() + " Erro Carregar Lib ");
-                msgDocumento = "Consulta temporárimente indisponível!";
+                GenericaMensagem.warn("Erro", "Consulta temporárimente indisponível!");
                 return;
             }
 
             knu.ReceitaCNPJ resultado = knu.knu.receitaCNPJ(documento);
 
-            msgDocumento = resultado.getDesc_erro();
             if (resultado.getCod_erro() != 0) {
+                GenericaMensagem.warn("Erro", resultado.getDesc_erro());
                 return;
-            } else {
-                msgDocumento = "";
             }
-
+            
             if (resultado.getNome_empresarial().isEmpty()) {
-                msgDocumento = "Erro ao pesquisar na Receita!";
+                GenericaMensagem.warn("Erro", "Erro ao pesquisar na Receita!");
                 return;
             }
 
             if (resultado.getSituacao_cadastral().equals("BAIXADA")) {
-                msgDocumento = "Esta empresa esta INATIVA na receita!";
+                GenericaMensagem.warn("Erro", "Erro ao pesquisar na Receita!");
+                return;
             }
 
             juridicaReceita.setNome(resultado.getNome_empresarial());
@@ -185,10 +185,11 @@ public class JuridicaBean implements Serializable {
             sv.abrirTransacao();
 
             if (!sv.inserirObjeto(juridicaReceita)) {
-                msgConfirma = "Erro ao Salvar pesquisa!";
+                GenericaMensagem.warn("Erro", "Erro ao Salvar pesquisa!");
                 sv.desfazerTransacao();
                 return;
             }
+            
             sv.comitarTransacao();
 
             juridica.getPessoa().setNome(juridicaReceita.getNome());
@@ -200,7 +201,7 @@ public class JuridicaBean implements Serializable {
             List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
 
             if (listac.isEmpty()) {
-                msgDocumento = "Erro ao pesquisar CNAE";
+                GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
                 return;
             }
             retornaCnaeReceita(listac.get(0));
@@ -229,7 +230,8 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco = new PessoaEndereco();
                 }
             } else {
-                msgDocumento = "Endereço não encontrado no Sistema - CEP: " + resultado.getCep() + " DESC: " + resultado.getLogradouro() + " BAIRRO: " + resultado.getBairro();
+                String msg = "Endereço não encontrado no Sistema - CEP: " + resultado.getCep() + " DESC: " + resultado.getLogradouro() + " BAIRRO: " + resultado.getBairro();
+                GenericaMensagem.warn("Erro", msg);
             }
         } else {
             juridica.getPessoa().setNome(juridicaReceita.getNome());
@@ -241,13 +243,13 @@ public class JuridicaBean implements Serializable {
             List<Cnae> listac = dbc.pesquisaCnae(result[0], "cnae", "I");
 
             if (listac.isEmpty()) {
-                msgDocumento = "Erro ao pesquisar CNAE";
+                GenericaMensagem.warn("Erro", "Erro ao pesquisar CNAE");
                 return;
             }
             retornaCnaeReceita(listac.get(0));
 
             if (juridicaReceita.getStatus().equals("BAIXADA")) {
-                msgDocumento = "Esta empresa esta INATIVA na receita!";
+                GenericaMensagem.warn("Erro", "Esta empresa esta INATIVA na receita!");
             }
 
             PessoaEnderecoDB dbe = new PessoaEnderecoDBToplink();
@@ -274,7 +276,8 @@ public class JuridicaBean implements Serializable {
                     pessoaEndereco = new PessoaEndereco();
                 }
             } else {
-                msgDocumento = "Endereço não encontrado no Sistema - CEP: " + juridicaReceita.getCep() + " DESC: " + juridicaReceita.getDescricaoEndereco() + " BAIRRO: " + juridicaReceita.getBairro();
+                String msg = "Endereço não encontrado no Sistema - CEP: " + juridicaReceita.getCep() + " DESC: " + juridicaReceita.getDescricaoEndereco() + " BAIRRO: " + juridicaReceita.getBairro();
+                GenericaMensagem.warn("Erro", msg);
             }
         }
     }
@@ -635,6 +638,9 @@ public class JuridicaBean implements Serializable {
             String beforeUpdate = "ID: " + jur.getId() + " - Pessoa: (" + jur.getPessoa().getId() + ") " + jur.getPessoa().getNome() + " - Abertura: " + jur.getAbertura() + " - Fechamento: " + jur.getAbertura() + " - I.E.: " + jur.getInscricaoEstadual() + " - Insc. Mun.: " + jur.getInscricaoMunicipal() + " - Responsável: " + jur.getResponsavel();
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
+                
+                dbSalvar.alterarObjeto(juridica.getContabilidade());
+                
                 GenericaMensagem.info("Sucesso", "Cadastro atualizado com Sucesso!");
                 dbSalvar.comitarTransacao();
                 NovoLog novoLog = new NovoLog();
