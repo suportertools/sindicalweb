@@ -80,11 +80,15 @@ public class ImpressaoParaSocios {
 
             if (reg.isValidadeBarras() && ((List) (listaCartao.get(i))).get(6) != null) {
                 Date vencto = DataHoje.converte(((List) (listaCartao.get(i))).get(6).toString());
-                Date dataModel = DataHoje.converte("07/10/1997");
-                long dias = vencto.getTime() - dataModel.getTime();
-
-                long total = dias / 86400000;
-                bc += "0000".substring(0, 4 - Long.toString(total).length()) + Long.toString(total);
+                if (vencto != null){
+                    Date dataModel = DataHoje.converte("07/10/1997");
+                    long dias = vencto.getTime() - dataModel.getTime();
+                    long total = dias / 86400000;
+                
+                    bc += "0000".substring(0, 4 - Long.toString(total).length()) + Long.toString(total);
+                }else{
+                    bc += "0000";
+                }
                 barras = "00000000000000".substring(0, 14 - bc.length()) + bc;
             } else {
                 barras = "0000000000".substring(0, 10 - bc.length()) + bc;
