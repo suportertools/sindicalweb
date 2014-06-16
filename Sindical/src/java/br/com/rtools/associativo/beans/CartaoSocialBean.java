@@ -316,7 +316,7 @@ public class CartaoSocialBean implements Serializable {
                 Socios socios = dbs.pesquisaSocioPorPessoa(pessoa.getId());
                 SocioCarteirinha carteirinha = (SocioCarteirinha) sv.pesquisaCodigo((Integer) ((List) listaSelecionado.get(i)).get(19), "SocioCarteirinha"); 
                 
-                if (socios.getId() != -1){
+                if (socios.getId() != -1 && socios.getMatriculaSocios().getId() != -1){
                     GrupoCategoria gpCat = dbCat.pesquisaGrupoPorCategoria(Integer.valueOf(socios.getMatriculaSocios().getCategoria().getId()));
                     Date validadeCarteirinha = DataHoje.converte(dh.incrementarMeses(gpCat.getNrValidadeMesCartao(), DataHoje.data()));
                     carteirinha.setDtValidadeCarteirinha(validadeCarteirinha);
