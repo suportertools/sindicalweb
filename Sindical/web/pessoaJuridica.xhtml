@@ -90,7 +90,7 @@
                                             <h:panelGrid columns="6" style="width: 100%">
                                                 <p:column>
                                                     <h:outputLabel value="Data" /><br />
-                                                    <p:inputMask size="8" value="#{juridicaBean.juridica.pessoa.criacao}" mask="99/99/9999"/>
+                                                    <p:inputMask size="8" value="#{juridicaBean.juridica.pessoa.criacao}" mask="99/99/9999" readonly="true"/>
                                                 </p:column>
                                                 
                                                 <p:column>
@@ -130,14 +130,14 @@
                                             
                                             <h:panelGrid columns="2" style="width: 100%">
                                                 <p:column>
-                                                    <h:outputLabel value="Nome" /><br />
+                                                    <h:outputLabel value="Razão Social" /><br />
                                                     <p:inputText value="#{juridicaBean.juridica.pessoa.nome}" style="width: 100%" converter="#{toUpperCase}">
                                                         <p:ajax event="blur" update=":formPessoaJuridica" />
                                                     </p:inputText>
                                                 </p:column>
                                                 
                                                 <p:column>
-                                                    <h:outputLabel value="Razão Social" /><br />
+                                                    <h:outputLabel value="Nome Fantasia" /><br />
                                                     <p:inputText id="i_razao" value="#{juridicaBean.juridica.fantasia}" style="width: 100%" converter="#{toUpperCase}">
                                                         <p:ajax event="blur" update="@this" global="false"/>
                                                     </p:inputText>
@@ -300,7 +300,7 @@
                             <h:panelGrid id="i_status_contribuinte" columns="3" style="width: 100%; text-align: left">
                                 <p:column>
                                     <h:outputLabel value="Status: "/>
-                                    <h:outputText value="#{juridicaBean.contribuinte}" style="font-size: 11pt!important; font-weight: bold"/>
+                                    <h:outputText value="#{juridicaBean.contribuinte}" style="color: #{juridicaBean.colorContri}; font-size: 11pt!important; font-weight: bold"/>
                                 </p:column>
                                 
                                 <p:column>
