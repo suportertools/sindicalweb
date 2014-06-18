@@ -9,10 +9,12 @@ import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
+import oracle.toplink.essentials.exceptions.EJBQLException;
 
 public class SociosDBToplink extends DB implements SociosDB {
 
@@ -167,16 +169,38 @@ public class SociosDBToplink extends DB implements SociosDB {
 //    }
     @Override
     public Socios pesquisaSocioPorPessoa(int idPessoa) {
-        Socios soc = new Socios();
+        Socios socio = new Socios();
+        
         try {
-            Query qry = getEntityManager().createQuery("SELECT s FROM Socios s WHERE s.servicoPessoa.pessoa.id = :pid ORDER BY s.servicoPessoa.id DESC");
-            qry.setParameter("pid", idPessoa);
             
-            soc = (Socios) qry.setMaxResults(1).getSingleResult();
-        } catch (Exception e) {
+            
+            Query qry = getEntityManager().createNativeQuery(
+                    "SELECT s.id " +
+                    "  FROM soc_socios s " +
+                    " INNER JOIN fin_servico_pessoa sp ON sp.id = s.id_servico_pessoa" +
+                    " INNER JOIN pes_pessoa p ON p.id = sp.id_pessoa" +
+                    " WHERE sp.id_pessoa = " + idPessoa +
+                    " ORDER BY sp.id");
+            
+            List<Vector> lista = qry.getResultList();
+            
+            for (int i = 0; i < lista.size(); i++){
+                socio = (Socios)(new SalvarAcumuladoDBToplink()).pesquisaCodigo((Integer) lista.get(i).get(0), "Socios");
+            }
+            
+//            Query qry = getEntityManager().createQuery(""
+//                    + " SELECT s "
+//                    + "   FROM Socios s "
+//                    + "  WHERE s.servicoPessoa.pessoa.id = :pid "
+//                    + "  ORDER BY s.servicoPessoa.id DESC");
+//            qry.setParameter("pid", idPessoa);
+            
+            //soc = (Socios) qry.setMaxResults(1).getSingleResult();
+//            soc = (Socios) qry.getSingleResult();
+        } catch (EJBQLException e) {
             e.getMessage();
         }
-        return soc;
+        return socio;
     }
 
     @Override

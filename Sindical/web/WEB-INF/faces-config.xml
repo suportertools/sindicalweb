@@ -1607,6 +1607,12 @@
             <redirect/>
         </navigation-case>          
         
+        <navigation-case>
+            <from-outcome>cobrancaMensal</from-outcome>
+            <to-view-id>/cobrancaMensal.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>

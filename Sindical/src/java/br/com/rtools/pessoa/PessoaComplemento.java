@@ -1,14 +1,11 @@
 package br.com.rtools.pessoa;
 
-import br.com.rtools.utilitarios.DataHoje;
-import java.util.Date;
 import javax.persistence.*;
 
 @Entity
 @Table(name = "PES_PESSOA_COMPLEMENTO")
 @NamedQuery(name = "PessoaComplemento.pesquisaID", query = "select pec from PessoaComplemento pec where pec.id = :pid")
 public class PessoaComplemento implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -19,19 +16,24 @@ public class PessoaComplemento implements java.io.Serializable {
     private int nrDiaVencimento;
     @Column(name = "IS_COBRANCA_BANCARIA")
     private boolean cobrancaBancaria;
-
+    @JoinColumn(name = "ID_RESPONSAVEL", referencedColumnName = "ID", nullable = true)
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Pessoa responsavel;
+    
     public PessoaComplemento() {
         this.id = -1;
         this.pessoa = new Pessoa();
         this.nrDiaVencimento = 0;
         this.cobrancaBancaria = false;
+        this.responsavel = null;
     }
 
-    public PessoaComplemento(int id, Pessoa pessoa, int nrDiaVencimento, boolean cobrancaBancaria) {
+    public PessoaComplemento(int id, Pessoa pessoa, int nrDiaVencimento, boolean cobrancaBancaria, Pessoa responsavel) {
         this.id = id;
         this.pessoa = pessoa;
         this.nrDiaVencimento = nrDiaVencimento;
         this.cobrancaBancaria = cobrancaBancaria;
+        this.responsavel = responsavel;
     }
 
     public int getId() {
@@ -64,5 +66,13 @@ public class PessoaComplemento implements java.io.Serializable {
 
     public void setCobrancaBancaria(boolean cobrancaBancaria) {
         this.cobrancaBancaria = cobrancaBancaria;
+    }
+
+    public Pessoa getResponsavel() {
+        return responsavel;
+    }
+
+    public void setResponsavel(Pessoa responsavel) {
+        this.responsavel = responsavel;
     }
 }

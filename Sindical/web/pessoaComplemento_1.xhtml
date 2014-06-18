@@ -8,6 +8,15 @@
             <h:outputLabel value="#{pessoaComplementoBean.pessoaComplementoPesquisaPessoa(idPessoa)}" />
         </h:panelGrid>
             
+        <h:panelGrid columns="2">
+            <p:column>
+                <h:outputLabel value="Responsável pela Cobrança" /><br />
+                <p:commandButton action="#{chamadaPaginaBean.pesquisaPessoa()}" value="Pesquisar" rendered="#{pessoaComplementoBean.responsavel.id == -1}"/>
+                
+                <h:outputLabel value="#{pessoaComplementoBean.responsavel.nome}" style="font-weight: bold;" rendered="#{pessoaComplementoBean.responsavel.id != -1}"/>
+            </p:column>
+        </h:panelGrid>
+            
         <h:panelGrid columns="3">
             <p:column>
                 <h:outputLabel for="idDataVencimento" value="Dia Vencimento" /><br />

@@ -216,7 +216,7 @@ public class MacFilialBean implements Serializable {
 
             listaCaixa.add(new SelectItem(0, "NENHUM CAIXA", "-1"));
             for (int i = 0; i < result.size(); i++) {
-                listaCaixa.add(new SelectItem(i,
+                listaCaixa.add(new SelectItem(i+1,
                         ((String.valueOf(result.get(i).getCaixa()).length() == 1) ? ("0" + String.valueOf(result.get(i).getCaixa())) : result.get(i).getCaixa()) + " - " + result.get(i).getDescricao(),
                         Integer.toString(result.get(i).getId())));
             }

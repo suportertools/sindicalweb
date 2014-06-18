@@ -111,6 +111,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     
     public void novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
+        GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
     }
 
     public String getEnderecoCobranca() {
