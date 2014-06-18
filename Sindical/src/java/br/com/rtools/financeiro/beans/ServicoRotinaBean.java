@@ -152,8 +152,10 @@ public class ServicoRotinaBean implements Serializable {
 
     public List<ServicoRotina> getListServicoRotina() {
         if (listServicoRotina.isEmpty()) {
-            ServicoRotinaDB db = new ServicoRotinaDBToplink();
-            listServicoRotina = db.pesquisaServicoRotinaPorServico(Integer.parseInt(getListServicos().get(index[0]).getDescription()));
+            if(!getListServicos().isEmpty()) {
+                ServicoRotinaDB db = new ServicoRotinaDBToplink();
+                listServicoRotina = db.pesquisaServicoRotinaPorServico(Integer.parseInt(getListServicos().get(index[0]).getDescription()));                
+            }
         }
         return listServicoRotina;
     }
