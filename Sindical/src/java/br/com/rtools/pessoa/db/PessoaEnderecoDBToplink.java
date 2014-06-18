@@ -20,7 +20,8 @@ public class PessoaEnderecoDBToplink extends DB implements PessoaEnderecoDB {
                     + " where pe.pessoa.id = :pid"
                     + " order by pe.tipoEndereco.id");
             qry.setParameter("pid", id);
-            return (qry.getResultList());
+            List list = qry.getResultList();
+            return list;
         } catch (Exception e) {
             return null;
         }
