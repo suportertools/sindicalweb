@@ -259,13 +259,12 @@ public class ServicosBean implements Serializable {
 //        taxa = "0";
 //        activeIndex = 0; 
 ////        tabViewTitle = "0";
-        
+
         //GenericaSessao.newSessionBean("servicosBean", new ServicosBean());
         GenericaSessao.put("servicosBean", new ServicosBean());
-        
+
         GenericaSessao.remove("contaCobrancaPesquisa");
-        
-        
+
         return null;
     }
 
@@ -422,8 +421,13 @@ public class ServicosBean implements Serializable {
                             + " - Taxa: " + servicoValor.getTaxa()
                             + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                     );
-                    listServicoValor.clear();
                     GenericaMensagem.info("Sucesso", "Registro adicionado com sucesso");
+                    listServicoValor.clear();
+                    servicoValor = new ServicoValor();
+                    servicoValor = new ServicoValor();
+                    valorf = "0";
+                    desconto = "0";
+                    taxa = "0";                    
                 } else {
                     GenericaMensagem.warn("Validação", "Este valor para o serviço já existe no sistema.");
                 }
@@ -448,6 +452,12 @@ public class ServicosBean implements Serializable {
                             + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                     );
                     GenericaMensagem.info("Sucesso", "Registro atualizado com sucesso");
+                    listServicoValor.clear();
+                    servicoValor = new ServicoValor();
+                    servicoValor = new ServicoValor();
+                    valorf = "0";
+                    desconto = "0";
+                    taxa = "0";                    
                 } else {
                     GenericaMensagem.warn("Erro", "Ao atualizar registro!");
                 }
@@ -507,12 +517,12 @@ public class ServicosBean implements Serializable {
                         + " - Taxa: " + servicoValor.getTaxa()
                         + " - Idade: " + servicoValor.getIdadeIni() + " - " + servicoValor.getIdadeFim()
                 );
-                if (clean) {
+//                if (clean) {
                     servicoValor = new ServicoValor();
                     valorf = "0";
                     desconto = "0";
                     taxa = "0";
-                }
+//                }
                 listServicoValor.clear();
                 GenericaMensagem.info("Sucesso", "Registro excluido com sucesso");
             } else {
@@ -692,12 +702,12 @@ public class ServicosBean implements Serializable {
 
             if (!result.isEmpty()) {
                 for (int i = 0; i < result.size(); i++) {
-                    if (result.get(i).getPlano5() == null){
+                    if (result.get(i).getPlano5() == null) {
                         listGrupo.add(new SelectItem(i,
                                 result.get(i).getDescricao(),
                                 Integer.toString(result.get(i).getId()))
                         );
-                    }else{
+                    } else {
                         listGrupo.add(new SelectItem(i,
                                 result.get(i).getDescricao() + " - " + result.get(i).getPlano5().getConta(),
                                 Integer.toString(result.get(i).getId()))
