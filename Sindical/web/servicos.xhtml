@@ -36,7 +36,7 @@
                                         <p:tab id="servico" title="Serviços">
                                             <p:panelGrid columns="2" styleClass="sbb">
                                                 <p:outputLabel value="Serviço: " for="idDSServicos"/>
-                                                <p:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" size="25"/>                                        
+                                                <p:inputText id="idDSServicos" value="#{servicosBean.servicos.descricao}" maxlength="100" size="130"/>                                        
                                                 <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPlano}" value="Conta Contábil" id="id_pesquisa_plano"/>
                                                 <p:column>
                                                     <p:outputLabel value="Pesquisar conta contábil" for="id_pesquisa_plano" rendered="#{servicosBean.servicos.plano5.id == -1}" style="border-bottom: 1px dashed #888"/>
