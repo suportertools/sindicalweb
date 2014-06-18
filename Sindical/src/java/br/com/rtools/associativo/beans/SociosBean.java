@@ -595,7 +595,9 @@ public class SociosBean implements Serializable {
                                 servicoPessoa.getTipoDocumento(),
                                 servicoPessoa.getCobranca(),
                                 servicoPessoa.isAtivo(),
-                                servicoPessoa.isBanco());
+                                servicoPessoa.isBanco(),
+                                0
+                        );
                         if (!sv.inserirObjeto(servicoPessoaDependente)) {
                             GenericaMensagem.warn("Erro", "Erro ao salvar Serviço Pessoa: " + ((Fisica) ((DataObject) listaDependentes.get(i)).getArgumento0()).getPessoa().getNome());
                             sv.desfazerTransacao();

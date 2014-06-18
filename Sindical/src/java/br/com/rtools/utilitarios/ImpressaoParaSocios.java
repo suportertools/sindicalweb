@@ -101,6 +101,12 @@ public class ImpressaoParaSocios {
             
             
             ModeloCarteirinha[] mod_obj = new ModeloCarteirinha[listaModelo.size()];
+            File file_img = new File( ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg") );
+            
+            String caminho_img = "";
+            
+            if (file_img.exists())
+                caminho_img = file_img.getPath();
             
             listax.add(
                 new CartaoSocial(
@@ -113,7 +119,7 @@ public class ImpressaoParaSocios {
                         getConverteNullString(((List) (listaCartao.get(i))).get(6)), // DATA VALIDADE
                         getConverteNullString(((List) (listaCartao.get(i))).get(5)), // CIDADE
                         getConverteNullString(((List) (listaCartao.get(i))).get(7)), // UF
-                        ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/cartao.jpg"), // CAMINHO FUNDO
+                        caminho_img, // CAMINHO FUNDO
                         ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/Fotos/" + imagem), // CAMINHO FOTO
                         getConverteNullString(((List) (listaCartao.get(i))).get(13)), // FILIAÇÃO
                         getConverteNullString(((List) (listaCartao.get(i))).get(14)), // PROFISSÃO

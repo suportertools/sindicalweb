@@ -170,8 +170,8 @@
                                                 <p:column>
                                                     <h:outputLabel value="E-Mail" />
                                                     <p:commandLink value="enviar Login e Senha para este email" action="#{juridicaBean.enviarEmail}" rendered="#{juridicaBean.renEnviarEmail}" style="float: right"/><br />
-                                                    <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email1}" onblur="lowerCase(this);" title="E-mail 1" style="width: 505px">
-
+                                                    <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email1}" converter="#{toLowerCase}" title="E-mail 1" style="width: 505px">
+                                                        <p:ajax event="blur" update="@this" global="false"/>
                                                     </p:inputText>
                                                 </p:column>
                                             </h:panelGrid>
@@ -249,15 +249,15 @@
 
                                             <p:column>
                                                 <h:outputLabel value="Email 2" /><br />
-                                                <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email2}" onblur="lowerCase(this);" title="E-mail 2">
-                                                
+                                                <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email2}" converter="#{toLowerCase}" title="E-mail 2">
+                                                    <p:ajax event="blur" update="@this" global="false"/>
                                                 </p:inputText>
                                             </p:column>
 
                                             <p:column>
                                                 <h:outputLabel value="Email 3" /><br />
-                                                <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email3}" onblur="lowerCase(this);" title="E-mail 3">
-                                                
+                                                <p:inputText size="70" maxlength="100" value="#{juridicaBean.juridica.pessoa.email3}" converter="#{toLowerCase}" title="E-mail 3">
+                                                    <p:ajax event="blur" update="@this" global="false"/>
                                                 </p:inputText>
                                             </p:column>
 

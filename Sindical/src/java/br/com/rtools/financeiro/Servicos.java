@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Table(name = "FIN_SERVICOS")
 @NamedQuery(name = "Servicos.pesquisaID", query = "SELECT S FROM Servicos AS S WHERE S.id = :pid")
 public class Servicos implements java.io.Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -46,6 +45,8 @@ public class Servicos implements java.io.Serializable {
     @JoinColumn(name = "ID_SUBGRUPO", referencedColumnName = "ID", nullable = true)
     @ManyToOne
     private SubGrupoFinanceiro subGrupoFinanceiro;
+    @Column(name = "IS_VALOR_FIXO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean valorFixo;
 
     public Servicos() {
         this.id = -1;
@@ -64,6 +65,7 @@ public class Servicos implements java.io.Serializable {
         this.agrupaBoleto = false;
         this.subGrupoFinanceiro = new SubGrupoFinanceiro();
         this.produto = false;
+        this.valorFixo = false;
     }
 
     public Servicos(int id,
@@ -81,7 +83,8 @@ public class Servicos implements java.io.Serializable {
             boolean eleicao,
             boolean agrupaBoleto,
             SubGrupoFinanceiro subGrupoFinanceiro,
-            boolean produto) {
+            boolean produto,
+            boolean valorFixo) {
         this.id = id;
         this.descricao = descricao;
         this.filial = filial;
@@ -98,6 +101,7 @@ public class Servicos implements java.io.Serializable {
         this.agrupaBoleto = agrupaBoleto;
         this.subGrupoFinanceiro = subGrupoFinanceiro;
         this.produto = produto;
+        this.valorFixo = valorFixo;
     }
 
     public int getId() {
@@ -231,5 +235,13 @@ public class Servicos implements java.io.Serializable {
     @Override
     public String toString() {
         return "Servicos{" + "id=" + id + ", descricao=" + descricao + ", filial=" + filial + ", plano5=" + plano5 + ", departamento=" + departamento + ", validade=" + validade + ", codigo=" + codigo + ", situacao=" + situacao + ", debito=" + debito + ", alterarValor=" + alterarValor + ", adm=" + adm + ", tabela=" + tabela + ", eleicao=" + eleicao + ", agrupaBoleto=" + agrupaBoleto + ", produto=" + produto + ", subGrupoFinanceiro=" + subGrupoFinanceiro + '}';
+    }
+
+    public boolean isValorFixo() {
+        return valorFixo;
+    }
+
+    public void setValorFixo(boolean valorFixo) {
+        this.valorFixo = valorFixo;
     }
 }

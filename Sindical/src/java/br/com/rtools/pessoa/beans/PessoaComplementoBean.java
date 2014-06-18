@@ -4,6 +4,7 @@ import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import java.io.Serializable;
@@ -19,6 +20,7 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
 
     private PessoaComplemento pessoaComplemento = new PessoaComplemento();
     private Pessoa pessoa = new Pessoa();
+    private Pessoa responsavel = new Pessoa();
     private Registro registro = new Registro();
     private int diaVencimento = 0;
     private List<SelectItem> listaDataVencimento = new ArrayList<SelectItem>();
@@ -32,6 +34,10 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
             SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
             pessoaComplemento.setPessoa((Pessoa) salvarAcumuladoDB.pesquisaCodigo(idPessoa, "Pessoa"));
             pessoaComplemento.setNrDiaVencimento(diaVencimento);
+            
+            if (responsavel != null)
+                pessoaComplemento.setResponsavel(responsavel);
+            
             salvarAcumuladoDB.abrirTransacao();
             if (pessoaComplemento.getId() == -1) {
                 if (salvarAcumuladoDB.inserirObjeto(pessoaComplemento)) {
@@ -111,5 +117,17 @@ public class PessoaComplementoBean extends PesquisarProfissaoBean implements Ser
 
     public void setRegistro(Registro registro) {
         this.registro = registro;
+    }
+
+    public Pessoa getResponsavel() {
+        if (GenericaSessao.exists("pessoaPesquisa")){
+            responsavel = (Pessoa)GenericaSessao.getObject("pessoaPesquisa");
+            GenericaSessao.remove("pessoaPesquisa");
+        }
+        return responsavel;
+    }
+
+    public void setResponsavel(Pessoa responsavel) {
+        this.responsavel = responsavel;
     }
 }

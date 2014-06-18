@@ -42,6 +42,8 @@ public class ServicoPessoa implements java.io.Serializable {
     private boolean ativo;
     @Column(name = "IS_BANCO", nullable = true, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean banco;
+    @Column(name = "NR_VALOR_FIXO", length = 10, nullable = true)
+    private float nrValorFixo;
     
     public ServicoPessoa() {
         this.id = -1;
@@ -57,10 +59,11 @@ public class ServicoPessoa implements java.io.Serializable {
         this.cobranca = new Pessoa();
         this.ativo = true;
         this.banco = false;
+        this.nrValorFixo = 0;
     }
 
     public ServicoPessoa(int id, String emissao, Pessoa pessoa, boolean descontoFolha, Servicos servicos, float nr_desconto, String referenciaVigoracao,
-            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco) {
+            String referenciaValidade, int nrDiaVencimento, FTipoDocumento tipoDocumento, Pessoa cobranca, boolean ativo, boolean banco, float nrValorFixo) {
         this.id = id;
         this.setEmissao(emissao);
         this.pessoa = pessoa;
@@ -74,6 +77,7 @@ public class ServicoPessoa implements java.io.Serializable {
         this.cobranca = cobranca;
         this.ativo = ativo;
         this.banco = banco;
+        this.nrValorFixo = nrValorFixo;
     }
 
     public int getId() {
@@ -192,5 +196,13 @@ public class ServicoPessoa implements java.io.Serializable {
 
     public void setBanco(boolean banco) {
         this.banco = banco;
+    }
+
+    public float getNrValorFixo() {
+        return nrValorFixo;
+    }
+
+    public void setNrValorFixo(float nrValorFixo) {
+        this.nrValorFixo = nrValorFixo;
     }
 }
