@@ -639,7 +639,8 @@ public class JuridicaBean implements Serializable {
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
                 
-                dbSalvar.alterarObjeto(juridica.getContabilidade());
+                if (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)
+                    dbSalvar.alterarObjeto(juridica.getContabilidade());
                 
                 GenericaMensagem.info("Sucesso", "Cadastro atualizado com Sucesso!");
                 dbSalvar.comitarTransacao();
@@ -1187,7 +1188,7 @@ public class JuridicaBean implements Serializable {
     public void verificarEndContabilidade() {
         PessoaEnderecoDB db = new PessoaEnderecoDBToplink();
         if (juridica.getId() != -1) {
-            if (juridica.isCobrancaEscritorio() && contabilidade.getId() != -1) {
+            if (juridica.isCobrancaEscritorio() && (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)) {
                 PessoaEndereco pesEndCon = db.pesquisaEndPorPessoaTipo(juridica.getContabilidade().getPessoa().getId(), 3);
                 if ((!listaEnd.isEmpty()) && pesEndCon != null) {
                     pessoaEndereco = (PessoaEndereco) listaEnd.get(1);
