@@ -324,9 +324,10 @@ public class CartaoSocialBean implements Serializable {
                     carteirinha.setDtValidadeCarteirinha(null);
                 }
                 
+                carteirinha.setVia(carteirinha.getVia() + 1);
+                listaSelecionado.get(i).set(6, carteirinha.getValidadeCarteirinha());
+                
                 if (carteirinha.getDtEmissao() == null) {
-                    
-                    carteirinha.setVia(carteirinha.getVia() + 1);
                     carteirinha.setEmissao(DataHoje.data());
                     
                     if (!sv.alterarObjeto(carteirinha)) {
@@ -334,7 +335,6 @@ public class CartaoSocialBean implements Serializable {
                         return;
                     }
                     
-                    listaSelecionado.get(i).set(6, carteirinha.getValidadeCarteirinha());
                     HistoricoCarteirinha hc = new HistoricoCarteirinha();
                     
                     hc.setCarteirinha(carteirinha);
@@ -362,6 +362,7 @@ public class CartaoSocialBean implements Serializable {
                     
                     hc.setCarteirinha(carteirinha);
                     hc.setDescricao("ReImpressão de Carteirinha 2º Via");
+                    
                     if (listaSelecionado.get(i).get(17) != null){
                         Movimento m = (Movimento)sv.pesquisaCodigo(Integer.valueOf(listaSelecionado.get(i).get(17).toString()), "Movimento");
                         if (m != null)
