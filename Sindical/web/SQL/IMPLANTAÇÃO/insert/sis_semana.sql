@@ -1,7 +1,4 @@
 -- DROP TABLE sis_semana;
-
-SELECT setval('sis_semana_id_seq', max(id)) FROM sis_semana;
-
 -- sis_semana
 -- Criate: 2013-07-24
 -- Last edition: 2013-07-24 - by: Bruno Vieira

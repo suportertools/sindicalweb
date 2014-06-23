@@ -5,7 +5,6 @@
 
 -- DELETE FROM arr_motivo_inativacao;
 
-SELECT setval('arr_motivo_inativacao_id_seq', max(id)) FROM arr_motivo_inativacao;
 
 INSERT INTO arr_motivo_inativacao (id, ds_descricao) SELECT 1, 'FECHOU'           WHERE NOT EXISTS ( SELECT id FROM arr_motivo_inativacao WHERE id = 1);
 INSERT INTO arr_motivo_inativacao (id, ds_descricao) SELECT 2, 'SEM EMPREGADO'    WHERE NOT EXISTS ( SELECT id FROM arr_motivo_inativacao WHERE id = 2);

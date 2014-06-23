@@ -5,8 +5,6 @@
 
 -- delete from soc_midia
 
-SELECT setval('soc_midia_id_seq', max(id)) FROM soc_midia;
-
 INSERT INTO soc_midia (id, ds_descricao) SELECT 1, 'Jornal' WHERE NOT EXISTS ( SELECT id FROM soc_midia WHERE id = 1);
 INSERT INTO soc_midia (id, ds_descricao) SELECT 2, 'Revista' WHERE NOT EXISTS ( SELECT id FROM soc_midia WHERE id = 2);
 INSERT INTO soc_midia (id, ds_descricao) SELECT 3, 'Internet' WHERE NOT EXISTS ( SELECT id FROM soc_midia WHERE id = 3);

@@ -4,8 +4,6 @@
 
 -- DELETE FROM matr_contrato_campos;
 
-SELECT setval('matr_contrato_campos_id_seq', max(id)) FROM matr_contrato_campos;
-
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 1,  'Nome do aluno',         '$aluno',               8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 1);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 2,  'CPF do Aluno',          '$cpfAluno',            8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 2);
 INSERT INTO matr_contrato_campos (id, ds_campo, ds_variavel, id_modulo) SELECT 3,  'RG do aluno',           '$rgAluno',             8 WHERE NOT EXISTS ( SELECT id FROM matr_contrato_campos WHERE id = 3);

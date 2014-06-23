@@ -5,8 +5,6 @@
 
 -- DELETE FROM fin_status;
 
-SELECT setval('fin_status_id_seq', max(id)) FROM fin_status;
-
 INSERT INTO fin_status (id, ds_descricao) SELECT 1, 'EFETIVO'   WHERE NOT EXISTS ( SELECT id FROM fin_status WHERE id = 1);
 INSERT INTO fin_status (id, ds_descricao) SELECT 2, 'PEDIDO'    WHERE NOT EXISTS ( SELECT id FROM fin_status WHERE id = 2);
 INSERT INTO fin_status (id, ds_descricao) SELECT 3, 'BLOQUEADO' WHERE NOT EXISTS ( SELECT id FROM fin_status WHERE id = 3);

@@ -1,5 +1,4 @@
 -- DELETE FROM SIS_MES
-SELECT setval('sis_mes_id_seq', max(id)) FROM sis_mes;
 
 -- sis_mes
 -- Criate: 2014-05-22

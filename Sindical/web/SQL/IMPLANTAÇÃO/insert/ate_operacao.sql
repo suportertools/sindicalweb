@@ -6,8 +6,6 @@
 
 -- DELETE FROM ate_operacao
 
-SELECT setval('ate_operacao_id_seq', max(id)) FROM ate_operacao;
-
 INSERT INTO ate_operacao (id, ds_descricao) SELECT 1, 'Calculos' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 1);
 INSERT INTO ate_operacao (id, ds_descricao) SELECT 2, 'Juridico' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 2);
 INSERT INTO ate_operacao (id, ds_descricao) SELECT 3, 'Colônia de Férias' WHERE NOT EXISTS ( SELECT id FROM ate_operacao WHERE id = 3);

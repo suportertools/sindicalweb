@@ -4,8 +4,6 @@
 
 -- DELETE FROM fin_indice;
 
-SELECT setval('fin_indice_id_seq', max(id)) FROM fin_indice;
-
 INSERT INTO fin_indice (id, ds_descricao) SELECT 1, 'ICV (Dieese)' WHERE NOT EXISTS ( SELECT id FROM fin_indice WHERE id = 1);
 INSERT INTO fin_indice (id, ds_descricao) SELECT 2, 'IGP-DI (FGV)' WHERE NOT EXISTS ( SELECT id FROM fin_indice WHERE id = 2);
 INSERT INTO fin_indice (id, ds_descricao) SELECT 3, 'IPC do IGP (FGV)' WHERE NOT EXISTS ( SELECT id FROM fin_indice WHERE id = 3);

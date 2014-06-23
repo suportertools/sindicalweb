@@ -5,8 +5,6 @@
 
 -- DELETE FROM pes_conselho
 
-SELECT setval('pes_conselho_id_seq', max(id)) FROM pes_conselho;
-
 INSERT INTO pes_conselho (id, ds_conselho, ds_tipo_conselho) SELECT 1, 'CREA', 'Conselho Regional de Arquitetura' WHERE NOT EXISTS ( SELECT id FROM pes_conselho WHERE id = 1);
 INSERT INTO pes_conselho (id, ds_conselho, ds_tipo_conselho) SELECT 2, 'CRM', 'Conselho Regional de Medicina' WHERE NOT EXISTS ( SELECT id FROM pes_conselho WHERE id = 2);
 INSERT INTO pes_conselho (id, ds_conselho, ds_tipo_conselho) SELECT 3, 'CRP', 'Conselho Regional de Psicologia' WHERE NOT EXISTS ( SELECT id FROM pes_conselho WHERE id = 3);
