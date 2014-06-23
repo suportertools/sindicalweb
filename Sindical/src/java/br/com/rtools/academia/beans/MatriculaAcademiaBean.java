@@ -510,22 +510,24 @@ public class MatriculaAcademiaBean implements Serializable {
 
     public List<SelectItem> getListaPeriodosGrade() {
         if (listaPeriodosGrade.isEmpty()) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
-            DaoInterface di = new Dao();
-            List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()))).getServicos().getId());
-            List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
-            for (int i = 0; i < list.size(); i++) {
-                listSemana.clear();
-                listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
-                String periodoSemana = "";
-                for (int j = 0; j < listSemana.size(); j++) {
-                    if (j == 0) {
-                        periodoSemana += semanaResumo(listSemana.get(j).getSemana().getDescricao());
-                    } else {
-                        periodoSemana += " - " + semanaResumo(listSemana.get(j).getSemana().getDescricao());
+            if (!listaModalidades.isEmpty()) {
+                AcademiaDB academiaDB = new AcademiaDBToplink();
+                DaoInterface di = new Dao();
+                List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()))).getServicos().getId());
+                List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
+                for (int i = 0; i < list.size(); i++) {
+                    listSemana.clear();
+                    listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
+                    String periodoSemana = "";
+                    for (int j = 0; j < listSemana.size(); j++) {
+                        if (j == 0) {
+                            periodoSemana += semanaResumo(listSemana.get(j).getSemana().getDescricao());
+                        } else {
+                            periodoSemana += " - " + semanaResumo(listSemana.get(j).getSemana().getDescricao());
+                        }
                     }
+                    listaPeriodosGrade.add(new SelectItem(i, list.get(i).getPeriodo().getDescricao() + " - " + list.get(i).getAcademiaGrade().getHoraInicio() + "-" + list.get(i).getAcademiaGrade().getHoraFim() + " - " + periodoSemana, Integer.toString(list.get(i).getId())));
                 }
-                listaPeriodosGrade.add(new SelectItem(i, list.get(i).getPeriodo().getDescricao() + " - " + list.get(i).getAcademiaGrade().getHoraInicio() + "-" + list.get(i).getAcademiaGrade().getHoraFim() + " - " + periodoSemana, Integer.toString(list.get(i).getId())));
             }
         }
         return listaPeriodosGrade;

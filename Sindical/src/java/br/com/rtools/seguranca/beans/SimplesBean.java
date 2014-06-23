@@ -8,6 +8,7 @@ import br.com.rtools.associativo.ConviteMotivoSuspencao;
 import br.com.rtools.associativo.GrupoConvenio;
 import br.com.rtools.associativo.GrupoEvento;
 import br.com.rtools.associativo.Midia;
+import br.com.rtools.pessoa.Nacionalidade;
 import br.com.rtools.atendimento.AteOperacao;
 import br.com.rtools.endereco.Bairro;
 import br.com.rtools.endereco.DescricaoEndereco;
@@ -330,6 +331,8 @@ public class SimplesBean implements Serializable {
             objeto = (ProdutoUnidade) new ProdutoUnidade(id, descricao);
         } else if (tipo.equals("ProdutoGrupo")) {
             objeto = (ProdutoGrupo) new ProdutoGrupo(id, descricao);
+        } else if (tipo.equals("Nacionalidade")) {
+            objeto = (Nacionalidade) new Nacionalidade(id, descricao);
         } else if (tipo.equals("Cor")) {
             objeto = (Cor) new Cor(id, descricao);
         }
@@ -390,6 +393,8 @@ public class SimplesBean implements Serializable {
             ((ProdutoGrupo) objeto).setDescricao(descricao);
         } else if (tipo.equals("Cor")) {
             ((Cor) objeto).setDescricao(descricao);
+        } else if (tipo.equals("Nacionalidade")) {
+            ((Nacionalidade) objeto).setDescricao(descricao);
         }
     }
 
@@ -475,6 +480,9 @@ public class SimplesBean implements Serializable {
         } else if (obj.getClass().getSimpleName().equals("Cor")) {
             descricao = ((Cor) obj).getDescricao();
             id = ((Cor) objeto).getId();
+        } else if (obj.getClass().getSimpleName().equals("Nacionalidade")) {
+            descricao = ((Nacionalidade) obj).getDescricao();
+            id = ((Nacionalidade) objeto).getId();
         }
         Dao dao = new Dao();
         objeto = dao.rebind(objeto);
@@ -587,6 +595,10 @@ public class SimplesBean implements Serializable {
             }
         } else if (obj.getClass().getSimpleName().equals("Cor")) {
             if (((Cor) obj).getDescricao().contains(pesquisaLista)) {
+                return true;
+            }
+        } else if (obj.getClass().getSimpleName().equals("Nacionalidade")) {
+            if (((Nacionalidade) obj).getDescricao().contains(pesquisaLista)) {
                 return true;
             }
         }
