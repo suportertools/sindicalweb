@@ -30,6 +30,7 @@
         </script>
     </h:head>
     <h:body>
+        <h:outputScript name="script_primefaces.js" library="js" />
         <!-- INICIA DIV wrap e main -->
         <div id="wrapx">
             <div id="mainx">
@@ -149,22 +150,22 @@
                                             <h:panelGrid columns="4">
                                                 <p:column>
                                                     <h:outputLabel value="Telefones"/><br />
-                                                    <p:inputMask size="14" value="#{juridicaBean.juridica.pessoa.telefone1}" mask="(99) ****-*****" style="margin-right: 30px">
+                                                    <p:inputText size="14" value="#{juridicaBean.juridica.pessoa.telefone1}" class="ddd_telefone" style="margin-right: 30px">
                                                        
-                                                    </p:inputMask>
+                                                    </p:inputText>
                                                 </p:column>
                                                 <p:column>
                                                     <br />
-                                                    <p:inputMask size="14" value="#{juridicaBean.juridica.pessoa.telefone2}" mask="(99) ****-*****" style="margin-right: 30px">
+                                                    <p:inputText size="14" value="#{juridicaBean.juridica.pessoa.telefone2}" class="ddd_telefone" style="margin-right: 30px">
                                                         
-                                                    </p:inputMask>
+                                                    </p:inputText>
                                                 </p:column>
                                             
                                                 <p:column>
                                                     <br />
-                                                    <p:inputMask size="14" value="#{juridicaBean.juridica.pessoa.telefone3}" mask="(99) ****-*****" style="margin-right: 20px">
+                                                    <p:inputText size="14" value="#{juridicaBean.juridica.pessoa.telefone3}" class="ddd_telefone" style="margin-right: 20px">
                                                         
-                                                    </p:inputMask>
+                                                    </p:inputText>
                                                 </p:column>
                                                 
                                                 <p:column>
