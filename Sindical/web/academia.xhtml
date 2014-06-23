@@ -60,6 +60,7 @@
                                         <h:panelGrid columns="3" id="id_grid_periodo_grade">
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
                                                 <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular()}"/>
+                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaPeriodosGrade}"/>
                                             </p:selectOneMenu>
                                             <p:outputLabel value="Número parcelas:" styleClass="margin-left-max"/>
