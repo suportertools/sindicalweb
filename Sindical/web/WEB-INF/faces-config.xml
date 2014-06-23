@@ -1613,6 +1613,18 @@
             <redirect/>
         </navigation-case>          
         
+        <navigation-case>
+            <from-outcome>salarioMinimo</from-outcome>
+            <to-view-id>/salarioMinimo.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
+        
+        <navigation-case>
+            <from-outcome>classificacaoEconomica</from-outcome>
+            <to-view-id>/classificacaoEconomica.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
