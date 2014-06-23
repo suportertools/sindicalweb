@@ -81,6 +81,9 @@
                                         <p:menuitem value="Cnae"                  action="#{chamadaPaginaBean.pagina('cnae')}"/>
                                         <p:menuitem value="Profissão"             action="#{chamadaPaginaBean.pagina('profissao')}"/>
                                         <p:menuitem value="Enviar E-Mails"        action="#{chamadaPaginaBean.enviarEmail}"/>
+                                        <p:submenu label="Suporte">
+                                            <p:menuitem value="Nacionalidade"         action="#{chamadaPaginaBean.paginaSimples('Nacionalidade', 'Nacionalidade')}"/>
+                                        </p:submenu>
                                     </p:submenu>
                                     <p:submenu label="Endereço" icon="ui-icon-contact" style="margin-right: 15px">
                                         <p:menuitem value="Endereço"      action="#{chamadaPaginaBean.endereco}"/>
@@ -180,12 +183,13 @@
                                 </p:dialog>
                             </p:panel>
 
-                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="false">
-                                <h:outputLabel value="Comunicado Importante: " style="color: red; font-weight: bold; font-size: 12pt!important" />
-                                <br />
-                                <h:outputText value="Hoje excepcionalmente a Rtools fechará seu expediente das 11:30 às 14:00 hrs.
-                                              Qualquer problema técnico dentro deste horário enviar um email para " style="font-size: 10pt!important"/>
-                                <h:outputText value="suporte@rtools.com.br" style="font-weight: bold"/>
+                            <p:panel style="float: left; text-align: center; background: #f6f6f6; clear: both; position: absolute; margin-top: 130px; margin-left: 200px; width: 540px" rendered="true">
+                                <h:outputText style="font-size: 16pt!important; color: red; text-decoration: underline;" value="Comunicado Importante" />
+                                <br /><br />
+                                <h:outputText value="Prezados Clientes e colaboradores, através desta estamos informando que em virtude da Copa do Mundo, em todos os jogos que houver participação da seleção brasileira, entraremos em recesso duas horas antes (Horário de Brasília) do início da partida." style="font-size: 10pt!important"/>
+                                <br /><br />
+                                <h:outputText value="Qualquer problema técnico dentro deste horário enviar um email para  " style="font-size: 10pt!important"/>
+                                <h:outputLink value="mailto:suporte@rtools.com.br" style="font-weight: bold">suporte@rtools.com.br</h:outputLink>
                                 <h:outputText value=" sua solicitação será respondida após voltarmos." style="font-size: 10pt!important"/>
                             </p:panel>
 
