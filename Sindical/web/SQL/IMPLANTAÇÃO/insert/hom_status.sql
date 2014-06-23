@@ -2,8 +2,6 @@
 
 -- DELETE FROM hom_status
 
-SELECT setval('hom_status_id_seq', max(id)) FROM hom_status;
-
 INSERT INTO hom_status (id, ds_descricao) SELECT 1, 'Disponível'        WHERE NOT EXISTS ( SELECT id FROM hom_status WHERE id = 1);
 INSERT INTO hom_status (id, ds_descricao) SELECT 2, 'Agendado'          WHERE NOT EXISTS ( SELECT id FROM hom_status WHERE id = 2);
 INSERT INTO hom_status (id, ds_descricao) SELECT 3, 'Cancelado'         WHERE NOT EXISTS ( SELECT id FROM hom_status WHERE id = 3);

@@ -4,8 +4,6 @@
 
 -- DELETE FROM fin_tipo_pagamento;
 
-SELECT setval('fin_tipo_pagamento_id_seq', max(id)) FROM fin_tipo_pagamento;
-
 INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 1, 'Nota Fiscal' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_pagamento WHERE id = 1);
 INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 2, 'Boleto' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_pagamento WHERE id = 2);
 INSERT INTO fin_tipo_pagamento (id, ds_descricao) SELECT 3, 'Dinheiro' WHERE NOT EXISTS ( SELECT id FROM fin_tipo_pagamento WHERE id = 3);

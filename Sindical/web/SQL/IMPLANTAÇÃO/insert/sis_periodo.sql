@@ -1,7 +1,5 @@
 -- DELETE FROM sis_periodo
 
-SELECT setval('sis_periodo_id_seq', max(id)) FROM sis_periodo;
-
 -- sis_periodo
 -- Criate: 2013-07-24
 -- Last edition: 2013-07-24 - by: Bruno Vieira

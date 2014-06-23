@@ -1,6 +1,6 @@
 -- DELETE FROM seg_rotina
 
-SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
+-- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
 -- seg_rotina
 -- Criate: 2013-08-02
