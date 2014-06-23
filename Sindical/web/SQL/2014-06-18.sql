@@ -9,8 +9,8 @@ ALTER TABLE pes_pessoa_complemento
       ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 	  
-ALTER TABLE fin_servicos ADD COLUMN is_valor_fixo boolean;
-UPDATE fin_servicos SET is_valor_fixo = FALSE;
+ALTER TABLE fin_servicos ADD COLUMN is_valor_fixo BOOLEAN DEFAULT FALSE;
+-- UPDATE fin_servicos SET is_valor_fixo = FALSE;
 
 
 ALTER TABLE fin_servico_pessoa ADD COLUMN nr_valor_fixo double precision;
