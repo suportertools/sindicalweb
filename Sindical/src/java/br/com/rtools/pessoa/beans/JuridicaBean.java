@@ -1816,7 +1816,7 @@ public class JuridicaBean implements Serializable {
         return indicaTab;
     }
 
-    public Juridica getJuridica() {
+    public Juridica getJuridica() {        
         if (juridica.getFantasia().isEmpty() || juridica.getFantasia() == null) {
             juridica.setFantasia(juridica.getPessoa().getNome());
         }
