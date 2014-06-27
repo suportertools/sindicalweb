@@ -797,6 +797,52 @@ public class ControleAcessoBean implements Serializable {
         }
         return retorno;
     }
+    
+    public boolean getBotaoAlterarValorCobrancaMensal() {
+        //PESQUISA DE PERMISSAO-------------------------------------------------------------------------------------------
+        boolean retorno = false;
+        if ((Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {
+            Permissao permissao;
+            PermissaoUsuarioDB db = new PermissaoUsuarioDBToplink();
+            Usuario user = (Usuario) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario");
+            if (user.getId() == 1) {
+                return false;
+            }
+            if (modulo.getId() != -1) {
+                permissao = db.pesquisaPermissao(modulo.getId(), 254, 3);
+            } else {
+                permissao = db.pesquisaPermissao(9, 254, 3);
+            }
+
+            if (permissao.getId() != -1) {
+                List<PermissaoUsuario> permissaoUsuarios = db.listaPermissaoUsuario(user.getId());
+                for (int i = 0; i < permissaoUsuarios.size(); i++) {
+                    PermissaoDepartamento permissaoDepartamento = db.pesquisaPermissaoDepartamento(permissaoUsuarios.get(i).getDepartamento().getId(), permissaoUsuarios.get(i).getNivel().getId(), permissao.getId());
+                    if (permissaoDepartamento.getId() == -1) {
+                        retorno = true;
+                    } else {
+                        retorno = false;
+                        break;
+                    }
+                }
+//                if (retorno) {
+                UsuarioAcesso usuarioAcesso = db.pesquisaUsuarioAcesso(user.getId(), permissao.getId());
+                if (usuarioAcesso.getId() != -1) {
+                    if (usuarioAcesso.isPermite()) {
+                        retorno = false;
+                    } else {
+                        retorno = true;
+                    }
+                }
+//                }
+            } else {
+                retorno = true;
+            }
+        } else {
+            retorno = true;
+        }
+        return retorno;
+    }
 
     public boolean verificarUsuario() {
         if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("sessaoUsuario") != null) {

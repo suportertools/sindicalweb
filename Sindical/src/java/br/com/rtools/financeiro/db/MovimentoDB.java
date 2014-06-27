@@ -169,4 +169,6 @@ public interface MovimentoDB {
     public HistoricoEmissaoGuias pesquisaHistoricoEmissaoGuiasPorMovimento(int id_usuario, int id_movimento);
     public Guia pesquisaGuias(int id_lote) ;
     public List<Movimento> pesquisaMovimentoCadastrado(String documento);
+    
+    public List<Impressao> listaImpressao(int id_movimento);
 }

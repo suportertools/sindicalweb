@@ -1188,6 +1188,15 @@ public class ArquivoBancoBean implements Serializable{
                         } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
                             result = "NÃO EXISTE SIGCB PARA ESTA CONTA!";
                         }
+                    } else if (ArquivoRetorno.SANTANDER == scc.getContaBanco().getBanco().getId()) {
+                        if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                            arquivoRetorno = new Santander(scc, pendentes);
+                            result = arquivoRetorno.darBaixaSicob(caminhoCompleto, usuario);
+                        } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                            result = "NÃO EXISTE SINDICAL PARA ESTA CONTA!";
+                        } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                            result = "NÃO EXISTE SIGCB PARA ESTA CONTA!";
+                        }
                     }
                     //------------------------------------------------------
                 } else {
@@ -1388,6 +1397,20 @@ public class ArquivoBancoBean implements Serializable{
                 } else if (ArquivoRetorno.ITAU == scc.getContaBanco().getBanco().getId()) {
                     if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
                         if (((String) lista.get(0)).substring(32, 37).equals(scc.getCodCedente())) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    } else if (ArquivoRetorno.SINDICAL == scc.getLayout().getId()) {
+                        return false;
+                    } else if (ArquivoRetorno.SIGCB == scc.getLayout().getId()) {
+                        return false;
+                    }
+                } else if (ArquivoRetorno.SANTANDER == scc.getContaBanco().getBanco().getId()) {
+                    if (ArquivoRetorno.SICOB == scc.getLayout().getId()) {
+                        int codc = Integer.valueOf( lista.get(0).toString().substring(53, 61) );
+                        int compara = Integer.valueOf( scc.getCodCedente() );
+                        if (codc == compara) {
                             return true;
                         } else {
                             return false;
