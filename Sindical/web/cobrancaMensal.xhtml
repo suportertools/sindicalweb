@@ -16,7 +16,17 @@
         </style>
 
         <script type="text/javascript">
+            // BLOQUEIA -- DESABILITA -- DISABLED -- ENTER
+            // VERIFICA SE OQ ESTOU DIGITANDO É STRING
+            function stopRKey(evt) {
+                var evt = (evt) ? evt : ((event) ? event : null);
+                //var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
+                if (evt.keyCode === 13) {
+                    return false;
+                }
+            }
 
+            document.onkeypress = stopRKey;
         </script>
     </h:head>
     <h:body>
@@ -31,6 +41,7 @@
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Cobrança Mensal" styleClass="fonteHeader" />
                         <h:form id="formCobrancaMensal">
+                            <c:set scope="request" var="object" value="${cobrancaMensalBean.servicoPessoa}"/> 
                             <p:panel styleClass="fundoCinza" style="clear: both" rendered="false">
                                 <ui:include src="pessoaComplemento_1.xhtml" rendered="#{cobrancaMensalBean.servicoPessoa.pessoa.id != -1}">  
                                     <ui:param name="idPessoa" value="#{cobrancaMensalBean.servicoPessoa.pessoa.id}" />
@@ -46,7 +57,7 @@
 
                                     <p:column>
                                         <h:outputLabel value="Beneficiário" /><br />
-                                        <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoa()}" ajax="false" rendered="#{cobrancaMensalBean.servicoPessoa.pessoa.id == -1}"/>
+                                        <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisaPessoaFisica()}" ajax="false" rendered="#{cobrancaMensalBean.servicoPessoa.pessoa.id == -1}"/>
                                         <p:inputText value="#{cobrancaMensalBean.servicoPessoa.pessoa.nome}" rendered="#{cobrancaMensalBean.servicoPessoa.pessoa.id != -1}" style="font-size: 11pt!important; font-weight: bold; width: 875px" readonly="true"/><br />
                                     </p:column>
                                 </h:panelGrid>
@@ -54,7 +65,8 @@
                                 <h:panelGrid columns="1">
                                     <p:column>
                                         <h:outputLabel value="Responsável" rendered="#{cobrancaMensalBean.servicoPessoa.cobranca.id != -1}"/><br />
-                                        <h:outputLabel value="#{cobrancaMensalBean.servicoPessoa.cobranca.nome}" rendered="#{cobrancaMensalBean.servicoPessoa.cobranca.id != -1}" style="font-size: 11pt!important; font-weight: bold; color: #DC8700"/>                                    
+                                        <h:outputLabel value="#{cobrancaMensalBean.servicoPessoa.cobranca.nome}" rendered="#{cobrancaMensalBean.servicoPessoa.cobranca.id != -1}" style="font-size: 11pt!important; font-weight: bold; color: #DC8700"/>
+                                        <p:commandLink value="Alterar Responsável" action="#{chamadaPaginaBean.pesquisaPessoa()}" rendered="#{cobrancaMensalBean.servicoPessoa.cobranca.id != -1}" style="margin-left: 20px"/>
                                     </p:column>
                                 </h:panelGrid>
 
@@ -89,31 +101,53 @@
                                     
                                     <p:column rendered="#{cobrancaMensalBean.servicos.valorFixo}">
                                         <h:outputLabel value="Valor Fixo" /><br />
-                                        <p:inputText value="#{cobrancaMensalBean.servicoPessoa.nrValorFixo}" size="7" style="text-align: right"/>
+                                        <p:inputText value="#{cobrancaMensalBean.valorFixo}" size="7" style="text-align: right">
+                                            <p:ajax event="blur" update="@this"/>
+                                        </p:inputText>
                                     </p:column>
                                 </h:panelGrid>
                                 
-                                <h:panelGrid columns="2">
-                                    <p:commandButton value="Salvar" />
+                                <h:panelGrid columns="3">
+                                    <p:commandButton value="Salvar" onclick="PF('dlg_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{cobrancaMensalBean.servicoPessoa.id == -1}"/>
+                                    <p:commandButton value="Atualizar" onclick="PF('dlg_salvar').show()" disabled="#{controleAcessoBean.botaoSalvar}" rendered="#{cobrancaMensalBean.servicoPessoa.id != -1}"/>
                                     <p:commandButton value="Novo" action="#{cobrancaMensalBean.novo()}" update=":formCobrancaMensal"/>
+                                    <p:commandButton value="Excluir" onclick="PF('dlg_excluir').show()" rendered="#{cobrancaMensalBean.servicoPessoa.id != -1}"/>
                                 </h:panelGrid>
                             </p:panel>
                             
-                            <h:panelGrid columns="4" style="margin-top: 20px">
-                                <h:outputLabel value="Corrigir Valores em " style="font-weight: bold"/><p:inputText value="#{cobrancaMensalBean.valor}" size="6"/>%<p:commandButton value="Atualizar Grid" />
+                            <p:messages autoUpdate="true" showDetail="true" closable="true"/>
+                            
+                            <h:panelGrid columns="2" style="margin-top: 20px; width: 100%">
+                                <p:column>
+                                    <h:outputLabel value="Corrigir Valores em " style="font-weight: bold"/>
+                                    <p:inputText value="#{cobrancaMensalBean.valorCorrige}" size="6"/>%
+                                    <p:commandButton value="Atualizar Valor Fixo" onclick="PF('dlg_valor').show()" disabled="#{controleAcessoBean.botaoAlterarValorCobrancaMensal}"/>
+                                </p:column>
+                                
+                                <p:column>
+                                    <h:panelGrid columns="4" style="float: right">
+                                        <h:outputLabel value="Filtro" style="font-weight: bold; margin-right: 10px"/>
+                                        <p:selectOneMenu value="#{cobrancaMensalBean.tipoFiltro}">
+                                            <f:selectItem itemLabel="Beneficiário" itemValue="beneficiario" />
+                                            <f:selectItem itemLabel="Responsável" itemValue="responsavel" />
+                                        </p:selectOneMenu>
+                                        <p:inputText value="#{cobrancaMensalBean.descFiltro}" size="40"/>
+                                        <p:commandButton value="Filtrar" action="#{cobrancaMensalBean.filtrar()}" update="tbl"/>
+                                    </h:panelGrid>
+                                </p:column>
                             </h:panelGrid>
                             
-                            <p:dataTable value="#{cobrancaMensalBean.listaCobrancaMensal}" var="linha" emptyMessage="Nenhuma Cobrança Mensal encontrada!" paginator="true" rows="15">
+                            <p:dataTable id="tbl" value="#{cobrancaMensalBean.listaCobrancaMensal}" var="linha" emptyMessage="Nenhuma Cobrança Mensal encontrada!" paginator="true" rows="15">
                                 <p:column headerText="Emissão">
                                     <h:outputText value="#{linha.emissao}"/>
                                 </p:column>
                                 
                                 <p:column headerText="Beneficiário">
-                                    <p:commandLink value="#{linha.pessoa.nome}" />
+                                    <p:commandLink value="#{linha.pessoa.nome}" action="#{cobrancaMensalBean.editar(linha)}" update=":formCobrancaMensal"/>
                                 </p:column>
                                 
                                 <p:column headerText="Responsável">
-                                    <p:commandLink value="#{linha.cobranca.nome}" />
+                                    <p:commandLink value="#{linha.cobranca.nome}" action="#{cobrancaMensalBean.editar(linha)}" update=":formCobrancaMensal"/>
                                 </p:column>
                                 
                                 <p:column headerText="Serviço">
@@ -138,9 +172,30 @@
                                 </p:column>
                                 
                                 <p:column headerText="Valor" style="text-align: center">
-                                    <h:outputText value="0,00"/>
+                                    <h:outputText value="#{cobrancaMensalBean.valor(linha.nrValorFixo)}"/>
                                 </p:column>
                             </p:dataTable>
+                            
+                            <p:dialog widgetVar="dlg_salvar" modal="true" header="Salvar Conbrança Mensal" width="400" resizable="false">
+                                <h:outputLabel value="Deseja realmente SALVAR essa Cobrança Mensal?" />
+                                <br /><br />
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{cobrancaMensalBean.salvar()}" update="formCobrancaMensal" oncomplete="PF('dlg_salvar').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_salvar').hide()" style="float: left" icon="ui-icon-close"/>    
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_excluir" modal="true" header="Excluir Conbrança Mensal" width="400" resizable="false">
+                                <h:outputLabel value="Deseja realmente EXCLUIR essa Cobrança Mensal?" />
+                                <br /><br />
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{cobrancaMensalBean.excluir()}" update="formCobrancaMensal" oncomplete="PF('dlg_excluir').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_excluir').hide()" style="float: left" icon="ui-icon-close"/>    
+                            </p:dialog>
+                            
+                            <p:dialog widgetVar="dlg_valor" modal="true" header="Alterar valores da lista" width="400" resizable="false">
+                                <h:outputLabel value="Deseja realmente ALTERAR para essa porcentagem, ATENÇÃO: essa alteração não poderá ser desfeita!" />
+                                <br /><br />
+                                <p:commandButton value="Sim" type="submit" styleClass="ui-confirmdialog-yes" action="#{cobrancaMensalBean.atualizarGrid()}" update="formCobrancaMensal" oncomplete="PF('dlg_valor').hide()" style="clear: both; float: left" icon="ui-icon-check"/>  
+                                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" onclick="PF('dlg_valor').hide()" style="float: left" icon="ui-icon-close"/>    
+                            </p:dialog>                            
                         </h:form>
                     </p:panel>
                 </f:view>
