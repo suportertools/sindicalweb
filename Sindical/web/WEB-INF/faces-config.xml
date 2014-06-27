@@ -1625,6 +1625,18 @@
             <redirect/>
         </navigation-case>          
         
+        <navigation-case>
+            <from-outcome>rais</from-outcome>
+            <to-view-id>/rais.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
+        
+        <navigation-case>
+            <from-outcome>pesquisaRais</from-outcome>
+            <to-view-id>/pesquisaRais.jsf</to-view-id>
+            <redirect/>
+        </navigation-case>          
+        
         <!-- 
         <navigation-case>
             <from-outcome>#{navigationRules.param}</from-outcome>
