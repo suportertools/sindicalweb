@@ -1,0 +1,301 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>RAIS - Relação de Informações Sociais</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+        <link rel="shortcut icon" href="#{facesContext.externalContext.requestContextPath}/Imagens/favicon.ico"/>  
+        <style type="text/css">
+            .ui-widget-content .ui-inputfield{ padding: 8px!important; } 
+            .ui-button { padding: 3px!important; }
+            .ui-selectonemenu {padding-right: 25px!important;}
+        </style>
+
+        <script type="text/javascript">
+
+        </script>
+    </h:head>
+    <h:body>
+        <!-- INICIA DIV wrap e main -->
+        <div id="wrapx">
+            <div id="mainx">
+                <!-- INICIA DIV wrap e main -->  
+                <f:subview id="header">
+                    <ui:include src="templatePrime.xhtml"/>
+                </f:subview>
+                <f:view>
+                    <p:panel styleClass="wrapper" style="border: 0px;">
+                        <h:form id="form_rais">
+                            <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.ano}" styleClass="fonteHeader" />
+                            <div class="clear"></div>
+                            <c:set scope="request" var="object" value="${raisBean.rais}"/>
+                            <p:tabView dynamic="true" id="i_tab_view">
+                                <p:tab title="Cadastro">
+                                    <p:panel styleClass="fundoCinza">
+                                        <h:panelGrid columns="2" cellpadding="4">
+                                            <p:outputLabel value="Emissão:" />
+                                            <h:column>
+                                                <h:panelGrid columns="8" columnClasses="margin-left margin-left">
+                                                    <p:inputMask value="#{raisBean.rais.emissaoString}"  mask="99/99/9999" converter="#{isDateString}" size="8" styleClass="bg-yellow-ligth" readonly="true">
+                                                        <p:ajax event="blur" update="@this" />
+                                                    </p:inputMask>
+                                                    <p:outputLabel value="CPF:"  styleClass="margin-left-max"/>
+                                                    <p:inputMask value="#{raisBean.rais.sisPessoa.documento}" mask="999.999.999-99" size="12" disabled="#{raisBean.rais.id != -1}">
+                                                        <p:ajax event="blur" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
+                                                    </p:inputMask>
+                                                    <p:outputLabel value="Nascimento:" styleClass="margin-left-max"/>
+                                                    <p:inputMask value="#{raisBean.rais.sisPessoa.nascimento}" mask="99/99/9999" converter="#{isDateString}" size="8">
+                                                        <p:ajax event="blur" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
+                                                    </p:inputMask>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <p:outputLabel value="Nome:"/>
+                                            <p:inputText size="100" value="#{raisBean.rais.sisPessoa.nome}" converter="#{toUpperCase}">
+                                                <p:ajax event="blur" update="@this :form_rais:" listener="#{raisBean.searchSisPessoa()}"/>
+                                            </p:inputText>
+                                        </h:panelGrid>                                    
+                                        <br />
+                                        <p:commandButton action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaFisica')}" value="Importar Pessoa Associativo" rendered="#{raisBean.rais.id == -1}"/>
+                                    </p:panel>
+                                    <p:panel styleClass="margin-top-max">
+                                        <h:panelGrid columns="2" cellpadding="4">
+                                            <p:outputLabel value="Sexo: " />
+                                            <h:column>
+                                                <h:panelGrid columns="8" columnClasses="margin-left margin-left">
+                                                    <p:selectOneMenu value="#{raisBean.rais.sisPessoa.sexo}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="M" itemLabel="Masculino" />
+                                                        <f:selectItem itemValue="F" itemLabel="Feminino" />
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value="Raça: " styleClass="margin-left-max"/>
+                                                    <p:selectOneMenu value="#{raisBean.indexRaca}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                        <f:selectItems value="#{raisBean.listRaca}"/>
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value="Nacionalidade: " styleClass="margin-left-max"/>
+                                                    <p:selectOneMenu value="#{raisBean.indexNacionalidade}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                        <f:selectItems value="#{raisBean.listNacionalidade}"/>
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>                                                
+                                            </h:column>
+                                        </h:panelGrid>
+                                        <br />
+                                        <h:outputLabel value="Observação: " />
+                                        <br /><br />
+                                        <p:inputTextarea placeholder="Observações aqui" rows="5" cols="150" value="#{raisBean.rais.observacao}" />
+                                    </p:panel>
+                                </p:tab>
+                                <p:tab title="Informações Profissionais" >
+                                    <p:panel styleClass="fundoCinza">
+                                        <h:panelGrid columns="3">
+                                            <p:commandButton icon="ui-icon-search" value="Local de trabalho:" action="#{chamadaPaginaBean.pesquisa('pesquisaPessoaJuridica')}" title="Pesquisar local de trabalho"/>
+                                            <p:outputLabel value="#{raisBean.rais.empresa.pessoa.documento} - #{raisBean.rais.empresa.pessoa.nome}" />
+                                            <p:commandButton icon="ui-icon-contact" update=":form_rais:i_pessoa_juridica_card" action="#{pessoaCardBean.cardJuridica(raisBean.rais.empresa.pessoa.id)}" oncomplete="PF('dlg_pessoa_juridica_card').show()" title="Ver detalhes" rendered="#{raisBean.rais.empresa.pessoa.id != -1}" styleClass="margin-left-max"/>
+                                        </h:panelGrid>                                        
+                                        <h:panelGrid columns="2" styleClass="margin-top">
+                                            <p:outputLabel value="Admissão:"/>
+                                            <h:column>
+                                                <h:panelGrid columns="8" columnClasses="margin-left margin-left">
+                                                    <p:inputMask value="#{raisBean.rais.admissaoString}" mask="99/99/9999" converter="#{isDateString}" size="8">
+                                                        <p:ajax event="blur" update="@this" />
+                                                    </p:inputMask>                                                    
+                                                    <p:outputLabel value="Demissão: " styleClass="margin-left-max"/>
+                                                    <p:inputMask value="#{raisBean.rais.demissaoString}" mask="99/99/9999" converter="#{isDateString}" size="8" >
+                                                        <p:ajax event="blur" update="@this" />
+                                                    </p:inputMask>
+                                                    <p:outputLabel value="Afastamento: " styleClass="margin-left-max"/>      
+                                                    <p:inputMask value="#{raisBean.rais.afastamentoString}" mask="99/99/9999" converter="#{isDateString}" size="8">
+                                                        <p:ajax event="blur" update="@this :form_rais:" />
+                                                    </p:inputMask>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <h:column>                                                
+                                                <p:outputLabel value="Motivo Afastamento" rendered="#{!raisBean.rais.afastamentoString.equals('')}"/>
+                                            </h:column>
+                                            <h:column>
+                                                <h:panelGrid columns="8" columnClasses="margin-left margin-left" rendered="#{!raisBean.rais.afastamentoString.equals('')}">
+                                                    <p:inputText value="#{raisBean.rais.motivoAfastamento}" size="100"/>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <p:outputLabel value="Salário (R$): " />      
+                                            <h:column>
+                                                <h:panelGrid columns="6" columnClasses="margin-left margin-left">
+                                                    <p:inputText value="#{raisBean.rais.salarioString}" converter="#{toCurrency}" size="8" styleClass="text-right input-text-min font-size-12 bold bg-yellow-ligth" title="Salário mínimo vigente - Mensal: R$#{raisBean.salarioMinimo.valorMensalString} - Diário: R$#{raisBean.salarioMinimo.valorDiarioString} - Hora: R$#{raisBean.salarioMinimo.valorHoraString}">
+                                                        <p:ajax event="blur" update="@this" />
+                                                    </p:inputText>
+                                                    <p:outputLabel value="Tipo Remuneração: " styleClass="margin-left-max"/>  
+                                                    <p:selectOneMenu value="#{raisBean.indexTipoRemuneracao}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                        <f:selectItems value="#{raisBean.listTipoRemuneracao}"/>
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value="Carga Horária: " styleClass="margin-left-max"/>  
+                                                    <p:inputText value="#{raisBean.rais.cargaHorariaString}" converter="#{thisNumber}" size="1" maxlength="2" styleClass="text-center">
+                                                        <p:ajax event="blur" update="@this" />
+                                                    </p:inputText>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <p:selectBooleanCheckbox itemLabel="Alvará: " value="#{raisBean.rais.alvara}">
+                                                <p:ajax event="change" update="@this :form_rais:i_tab_view:i_panel_profissao" />
+                                            </p:selectBooleanCheckbox>
+                                            <h:column>
+                                                <h:panelGrid id="i_panel_profissao">
+                                                    <p:selectOneMenu value="#{raisBean.indexIndicadorAlvara}" rendered="#{raisBean.rais.alvara}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                        <f:selectItems value="#{raisBean.listIndicadorAlvara}"/>
+                                                    </p:selectOneMenu>                                                
+                                                </h:panelGrid>
+                                            </h:column>
+                                        </h:panelGrid>                                        
+                                    </p:panel>
+                                    <p:panel styleClass="margin-top-max">
+                                        <h:panelGrid columns="6">
+                                            <p:commandButton icon="ui-icon-search" onclick="PF('dlg_profissao').show()" value="Profissão:" title="Selecionar profissão" />
+                                            <p:outputLabel value="#{raisBean.rais.profissao.cbo} #{raisBean.rais.profissao.profissao}"/>
+                                            <p:outputLabel value="Função: " styleClass="margin-left-max"/>                                                   
+                                            <p:inputText size="30" value="#{raisBean.rais.funcao}" />
+                                        </h:panelGrid>
+                                    </p:panel>
+                                    <p:panel styleClass="margin-top-max" header="CLT">
+                                        <h:panelGrid columns="6">
+                                            <p:outputLabel value="Carteira: " />
+                                            <p:inputText size="8" value="#{raisBean.rais.carteira}" maxlength="9" style="margin-right: 10px">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
+                                            <p:outputLabel value="Série: " />
+                                            <p:inputText size="3" value="#{raisBean.rais.serie}" maxlength="15" style="margin-right: 10px">
+                                                <p:ajax event="blur" update="@this" />
+                                            </p:inputText>
+                                            <p:outputLabel value="Pis: "/>
+                                            <p:inputMask size="13" mask="999.999.999-**"   value="#{raisBean.rais.pis}" style="margin-right: 12px"/>
+                                        </h:panelGrid>
+                                    </p:panel>
+                                </p:tab>
+                                <p:tab title="Complementar">
+                                    <p:panel>
+                                        <h:panelGrid columns="2" cellpadding="4">
+                                            <p:outputLabel value="Escolaridade:" />
+                                            <p:selectOneMenu value="#{raisBean.indexEscolaridade}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                <f:selectItems value="#{raisBean.listEscolaridade}"/>
+                                            </p:selectOneMenu>
+                                            <p:outputLabel value="Deficiência:" />
+                                            <p:selectOneMenu value="#{raisBean.indexTipoDeficiencia}">
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                <f:selectItems value="#{raisBean.listTipoDeficiencia}"/>
+                                            </p:selectOneMenu>
+                                            <p:outputLabel value="Classificação Econômica: " />
+                                            <h:column>
+                                                <h:panelGrid columns="2">
+                                                    <p:selectOneMenu value="#{raisBean.indexClassificacaoEconomica}">
+                                                        <p:ajax event="change" update="@this" />
+                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
+                                                        <f:selectItems value="#{raisBean.listClassificacaoEconomica}"/>
+                                                    </p:selectOneMenu>
+                                                    <p:outputLabel value="Salario Minimo atual: R$#{raisBean.salarioMinimo.valorMensalString} (Mensal)" styleClass="font-color-red margin-left-max"/>
+                                                </h:panelGrid>
+                                            </h:column>
+                                            <h:column />
+                                            <p:selectBooleanCheckbox itemLabel="Filiado ao Síndicato" value="#{raisBean.rais.empregadoFiliado}"/>
+                                        </h:panelGrid>                                    
+                                    </p:panel>
+                                </p:tab>
+                            </p:tabView>
+                            <br />
+                            <p:outputLabel value="Responsável cadastro: #{raisBean.rais.responsavelCadastro.nome}" />
+                            <h:panelGrid styleClass="margin-top-max" columns="5">
+                                <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()"/>
+                                <p:commandButton value="Novo" action="#{raisBean.clear()}" update=":form_rais:"/>
+                                <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" rendered="#{raisBean.rais.id != -1}"/>
+                                <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaRais')}" />
+                                <h:commandLink action="#{imprimirRais.imprimir(raisBean.rais)}" target="_blank" title="Imprimir" rendered="#{raisBean.rais.id != -1}">
+                                    <p:button value="Imprimir" icon="ui-icon-print" />
+                                </h:commandLink>
+                            </h:panelGrid>
+                            <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" width="400" modal="true" closable="true">                                
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" action="#{raisBean.save()}" update=":form_rais:" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" />
+                                        <p:commandButton value="Não" onclick="PF('dlg_save').hide();" />
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_delete" header="Deseja excluir este registro?" width="400" modal="true" closable="true" resizable="false">                                
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Sim" action="#{raisBean.delete()}" update=":form_rais:" oncomplete="PF('dlg_delete').hide(); PF('dlg_message').show();" />
+                                        <p:commandButton value="Não" onclick="PF('dlg_delete').hide();" />
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                            <p:dialog widgetVar="dlg_message" header="Mensagem" width="400" modal="true" closable="true" resizable="false">
+                                <p:messages showDetail="true" showSummary="false" />
+                                <f:facet name="footer">
+                                    <h:panelGrid columns="2">
+                                        <p:commandButton value="Ok" onclick="PF('dlg_message').hide();" />
+                                    </h:panelGrid>
+                                </f:facet>
+                            </p:dialog>
+                            <!-- PESQUISAR PROFISSAO -->
+                            <p:dialog modal="true" width="1024" height="600" widgetVar="dlg_profissao" closable="true" header="Pesquisar Profissão">
+                                <p:panel id="i_painel_profissao" styleClass="no-border">
+                                    <p:panelGrid columns="7" styleClass="sbb">
+                                        <h:outputLabel value="Profissão: " />
+                                        <p:inputText id="idProf" size="20" value="#{raisBean.profissao.profissao}" onkeypress="return event.keyCode !== 13;" />
+                                        <p:commandButton value="Inicial" action="#{raisBean.inicial}" update="i_tbl_prof" />
+                                        <p:commandButton value="Parcial" action="#{raisBean.parcial}" update="i_tbl_prof" />
+                                        <p:outputLabel value="Por: " />
+                                        <p:selectOneMenu id="idPor" value="#{raisBean.combo}" >
+                                            <f:selectItem itemValue="cbo" itemLabel="Cbo"/>
+                                            <f:selectItem itemValue="profissao"  itemLabel="Profissão"/>
+                                        </p:selectOneMenu>
+                                        <p:commandButton value="Cadastrar Novo" action="#{chamadaPaginaBean.profissao}" icon="ui-icon-plus" title="Cadastrar nova profissão"/>
+                                    </p:panelGrid>
+                                    <p:panel id="i_tbl_prof" styleClass="margin-top-max sbb no-border" >
+                                        <p:dataTable var="profissao" value="#{raisBean.listaProfissao}" scrollHeight="300" scrollable="true" emptyMessage="Nenhum registro encontrado!">
+                                            <p:column headerText="ID" styleClass="text-center" width="50">
+                                                <p:commandLink action="#{raisBean.rais.setProfissao(profissao)}" value="#{profissao.id}" update=":form_rais:" oncomplete="PF('dlg_profissao').hide()" styleClass="underline-hover" />
+                                            </p:column>
+                                            <p:column headerText="Cbo" styleClass="text-center" width="50">
+                                                <p:commandLink action="#{raisBean.rais.setProfissao(profissao)}" value="#{profissao.cbo}" update=":form_rais:"  oncomplete="PF('dlg_profissao').hide()" styleClass="underline-hover" />
+                                            </p:column>
+                                            <p:column headerText="Profissão" width="300">
+                                                <p:commandLink action="#{raisBean.rais.setProfissao(profissao)}" value="#{profissao.profissao}" update=":form_rais:"  oncomplete="PF('dlg_profissao').hide()" styleClass="underline-hover" />
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:panel>
+                                </p:panel>
+                            </p:dialog>  
+                            <p:dialog widgetVar="dlg_pessoa_juridica_card" modal="true" resizable="false" height="400" width="600" header="Detalhes">
+                                <p:ajax event="close" listener="#{pessoaCardBean.close}"/>  
+                                <p:panel id="i_pessoa_juridica_card">
+                                    <ui:include src="pessoaJuridicaCard.xhtml">
+                                        <ui:param name="idPessoa" value="#{raisBean.rais.empresa.pessoa.id}" />
+                                    </ui:include>      
+                                </p:panel>
+                            </p:dialog>                            
+                        </h:form>
+                    </p:panel>
+                </f:view>
+                <!-- FINALIZA div wrap main -->
+            </div>
+        </div>
+        <!-- FINALIZA div wrap main -->
+
+        <div id="footerx">
+            <f:subview id="footer">
+                <ui:include src="templateFooter.xhtml"/>
+            </f:subview>
+        </div>                
+    </h:body>
+</ui:composition>
