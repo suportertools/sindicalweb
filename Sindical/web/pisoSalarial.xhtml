@@ -56,13 +56,13 @@
                                 </p:inputTextarea>
                             </p:panel>
                             <p:panel header="Pisos / Valores" styleClass="margin-top-max">
-                                <h:panelGrid columns="6">
+                                <h:panelGrid columns="7">
                                     <p:outputLabel value="Descrição: "/>
                                     <p:inputTextarea value="#{pisoSalarialBean.descricao}" cols="80" rows="2" converter="#{toUpperCase}" title="Descrição">
                                         <p:ajax event="blur" update="@this" />
                                     </p:inputTextarea>
                                     <p:outputLabel value="Valor (R$): "/>
-                                    <p:inputText value="#{pisoSalarialBean.valor}" size="10" maxlength="10">
+                                    <p:inputText value="#{pisoSalarialBean.valor}" size="10" maxlength="10" title="Salário mínimo R$#{pisoSalarialBean.salarioMinimo.valorMensalString}, vigente desde #{pisoSalarialBean.salarioMinimo.vigenciaString}">
                                         <p:ajax event="blur" update="@this"/>                                    
                                     </p:inputText>
                                     <p:commandButton icon="ui-icon-plus" action="#{pisoSalarialBean.addPisoSalariaLote}" value="Salvar Mais" update=":form_ps:" />
