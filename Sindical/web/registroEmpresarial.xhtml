@@ -295,6 +295,9 @@
                                                 <p:ajax event="dateSelect" update=":form_registro_empresarial:id_messages :form_registro_empresarial:id_messages_growl" listener="#{registroEmpresarialBean.salvarSemSenha}"/>
                                             </p:calendar>
                                         </p:column>
+                                        <p:selectBooleanCheckbox value="#{registroEmpresarialBean.habilitaCorrecao}" itemLabel="Habilita Correção">
+                                            <p:ajax event="change" update="@this" />
+                                        </p:selectBooleanCheckbox>
                                         <div style="clear: both;"></div>
                                         <p:accordionPanel>
                                             <p:tab title="Documentos Necessários Homologação">
