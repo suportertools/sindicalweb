@@ -1610,6 +1610,12 @@ public class LancamentoFinanceiroBean implements Serializable {
 
     public List<SelectItem> getListaTipoCentroCusto() {
         if (listaTipoCentroCusto.isEmpty()) {
+            if (Integer.valueOf(getListaCentroCusto().get(idCentroCusto).getDescription()) == 0){
+                GenericaMensagem.error("Erro", "Cadastre um Centro de Custo para fazer um Lançamento!");
+                listaTipoCentroCusto.add(new SelectItem(0, "Nenhum Tipo Encontrado", "0"));
+                return listaTipoCentroCusto;
+            }
+            
             CentroCusto centroCusto = (CentroCusto) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(Integer.valueOf(getListaCentroCusto().get(idCentroCusto).getDescription()), "CentroCusto");
             List<CentroCustoContabilSub> listaCentroContabil = (new LancamentoFinanceiroDBToplink()).listaTipoCentroCusto(centroCusto.getCentroCustoContabil().getId(), es);
             if (!listaCentroContabil.isEmpty()) {

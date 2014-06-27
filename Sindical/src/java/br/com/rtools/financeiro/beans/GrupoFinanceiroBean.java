@@ -148,8 +148,7 @@ public final class GrupoFinanceiroBean implements Serializable {
         }
         novoLog.delete(
                 "ID: " + grupoFinanceiro.getId()
-                + " - Plano 5: (" + grupoFinanceiro.getPlano5().getId() + ") " + grupoFinanceiro.getPlano5().getConta()
-                + " - Descriçao: " + grupoFinanceiro.getDescricao()
+                + " Descriçao: " + grupoFinanceiro.getDescricao()
         );
         GenericaMensagem.info("Sucesso", "Grupo EXCLUÍDO!");
         sv.comitarTransacao();
@@ -184,7 +183,6 @@ public final class GrupoFinanceiroBean implements Serializable {
             }
             novoLog.save(
                     "ID: " + grupoFinanceiro.getId()
-                    + " - Plano 5: (" + grupoFinanceiro.getPlano5().getId() + ") " + grupoFinanceiro.getPlano5().getConta()
                     + " - Descriçao: " + grupoFinanceiro.getDescricao()
             );
             GenericaMensagem.info("Sucesso", "Grupo SALVO!");
@@ -192,7 +190,6 @@ public final class GrupoFinanceiroBean implements Serializable {
             GrupoFinanceiro gf = (GrupoFinanceiro) sv.pesquisaObjeto(grupoFinanceiro.getId(), "GrupoFinanceiro");
             String beforeUpdate
                     = "ID: " + gf.getId()
-                    + " - Plano 5: (" + gf.getPlano5().getId() + ") " + gf.getPlano5().getConta()
                     + " - Descriçao: " + gf.getDescricao();
             if (!sv.alterarObjeto(grupoFinanceiro)) {
                 GenericaMensagem.warn("Erro", "Não foi possivel ALTERAR Grupo!");
@@ -201,7 +198,6 @@ public final class GrupoFinanceiroBean implements Serializable {
             }
             novoLog.update(beforeUpdate,
                     "ID: " + grupoFinanceiro.getId()
-                    + " - Plano 5: (" + grupoFinanceiro.getPlano5().getId() + ") " + grupoFinanceiro.getPlano5().getConta()
                     + " - Descriçao: " + grupoFinanceiro.getDescricao()
             );
             GenericaMensagem.info("Sucesso", "Grupo ATUALIZADO!");
@@ -225,10 +221,6 @@ public final class GrupoFinanceiroBean implements Serializable {
         grupoFinanceiro = new GrupoFinanceiro();
     }
 
-    public void removerPlano5() {
-        grupoFinanceiro.setPlano5(new Plano5());
-    }
-
     public int getIdGrupo() {
         return idGrupo;
     }
@@ -244,7 +236,7 @@ public final class GrupoFinanceiroBean implements Serializable {
             if (!result.isEmpty()) {
                 for (int i = 0; i < result.size(); i++) {
                     listaGrupo.add(new SelectItem(i,
-                            result.get(i).getDescricao() + " - " + result.get(i).getPlano5().getNumero() + " " + result.get(i).getPlano5().getConta(),
+                            result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
                 }
@@ -283,10 +275,6 @@ public final class GrupoFinanceiroBean implements Serializable {
     }
 
     public GrupoFinanceiro getGrupoFinanceiro() {
-        if (FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pesquisaPlano") != null) {
-            grupoFinanceiro.setPlano5((Plano5) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("pesquisaPlano"));
-            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("pesquisaPlano");
-        }
         return grupoFinanceiro;
     }
 

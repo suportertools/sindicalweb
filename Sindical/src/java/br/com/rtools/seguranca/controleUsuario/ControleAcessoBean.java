@@ -197,10 +197,19 @@ public class ControleAcessoBean implements Serializable {
                     cont.setAcessos(cont.getAcessos() + 1);
                     SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
                     salvarAcumuladoDB.abrirTransacao();
-                    if (salvarAcumuladoDB.alterarObjeto(cont)) {
-                        salvarAcumuladoDB.comitarTransacao();
-                    } else {
-                        salvarAcumuladoDB.desfazerTransacao();
+                    
+                    if (cont.getId() == -1){
+                        if (salvarAcumuladoDB.inserirObjeto(cont)) {
+                            salvarAcumuladoDB.comitarTransacao();
+                        } else {
+                            salvarAcumuladoDB.desfazerTransacao();
+                        }
+                    }else{
+                        if (salvarAcumuladoDB.alterarObjeto(cont)) {
+                            salvarAcumuladoDB.comitarTransacao();
+                        } else {
+                            salvarAcumuladoDB.desfazerTransacao();
+                        }
                     }
                 }
 

@@ -702,17 +702,10 @@ public class ServicosBean implements Serializable {
 
             if (!result.isEmpty()) {
                 for (int i = 0; i < result.size(); i++) {
-                    if (result.get(i).getPlano5() == null) {
-                        listGrupo.add(new SelectItem(i,
-                                result.get(i).getDescricao(),
-                                Integer.toString(result.get(i).getId()))
-                        );
-                    } else {
-                        listGrupo.add(new SelectItem(i,
-                                result.get(i).getDescricao() + " - " + result.get(i).getPlano5().getConta(),
-                                Integer.toString(result.get(i).getId()))
-                        );
-                    }
+                    listGrupo.add(new SelectItem(i,
+                            result.get(i).getDescricao(),
+                            Integer.toString(result.get(i).getId()))
+                    );
                 }
             } else {
                 listGrupo.add(new SelectItem(0, "Nenhum Grupo Financeiro Adicionado", "0"));
