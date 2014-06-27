@@ -55,15 +55,8 @@
                                     <h:outputLabel value="Alterar Grupo" style="font-weight: bold; font-size: 12pt!important" rendered="#{grupoFinanceiroBean.adicionar and grupoFinanceiroBean.grupoFinanceiro.id != -1 }"/>
 
                                     <h:panelGrid columns="1">
-                                        <p:commandButton icon="ui-icon-search" action="#{chamadaPaginaBean.pesquisaPlano}" value="Conta Contábil" rendered="#{grupoFinanceiroBean.grupoFinanceiro.plano5.id == -1 and grupoFinanceiroBean.adicionar}"/>
-                                        
-                                        <p:column>
-                                            <h:outputLabel value="#{grupoFinanceiroBean.grupoFinanceiro.plano5.numero} - #{grupoFinanceiroBean.grupoFinanceiro.plano5.conta}" rendered="#{grupoFinanceiroBean.grupoFinanceiro.plano5.id != -1 and grupoFinanceiroBean.adicionar}" style="font-weight: bold"/>
-                                            <p:commandButton icon="ui-icon-trash" action="#{grupoFinanceiroBean.removerPlano5}" rendered="#{grupoFinanceiroBean.grupoFinanceiro.plano5.id != -1}" update="i_panel_plano5" style="margin-left: 5px; width: 18px; height: 18px"/>
-                                        </p:column>
-                                        
-                                        <p:inputText id="i_input_grupo" value="#{grupoFinanceiroBean.grupoFinanceiro.descricao}" rendered="#{grupoFinanceiroBean.grupoFinanceiro.plano5.id != -1 and grupoFinanceiroBean.adicionar}" size="70"/>
-                                        <p:commandButton value="Salvar" action="#{grupoFinanceiroBean.salvarGrupo}" update="i_panel_plano5 i_panel_adicionar i_msg tbl" rendered="#{grupoFinanceiroBean.grupoFinanceiro.plano5.id != -1 and grupoFinanceiroBean.adicionar}"/>
+                                        <p:inputText id="i_input_grupo" value="#{grupoFinanceiroBean.grupoFinanceiro.descricao}" rendered="#{grupoFinanceiroBean.adicionar}" size="70"/>
+                                        <p:commandButton value="Salvar" action="#{grupoFinanceiroBean.salvarGrupo}" update="i_panel_plano5 i_panel_adicionar i_msg tbl" rendered="#{grupoFinanceiroBean.adicionar}"/>
                                         <p:watermark value="Descrição deste Grupo" for="i_input_grupo"/>
                                     </h:panelGrid>
                                 </h:panelGrid>
