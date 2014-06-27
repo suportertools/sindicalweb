@@ -10,6 +10,6 @@ INSERT INTO pes_escolaridade (id, ds_descricao) SELECT 8, 'Ensino médio/colegia
 INSERT INTO pes_escolaridade (id, ds_descricao) SELECT 9, 'Superior incompleto' WHERE NOT EXISTS ( SELECT id FROM pes_escolaridade WHERE id = 9);
 INSERT INTO pes_escolaridade (id, ds_descricao) SELECT 10, 'Superior completo' WHERE NOT EXISTS ( SELECT id FROM pes_escolaridade WHERE id = 10);
 INSERT INTO pes_escolaridade (id, ds_descricao) SELECT 11, 'Pós-graduação / Mestrado / Doutorado' WHERE NOT EXISTS ( SELECT id FROM pes_escolaridade WHERE id = 11);
-INSERT INTO pes_escolaridade (id, ds_descricao) SELECT 12, 'NR' WHERE NOT EXISTS ( SELECT id FROM pes_escolaridade WHERE id = 12);
+INSERT INTO pes_escolaridade (id, ds_descricao) SELECT 12, '(NR)' WHERE NOT EXISTS ( SELECT id FROM pes_escolaridade WHERE id = 12);
 SELECT setval('pes_escolaridade_id_seq', max(id)) FROM pes_escolaridade;
 

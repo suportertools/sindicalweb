@@ -27,3 +27,5 @@ WITH (
 );
 ALTER TABLE fin_impressao
   OWNER TO postgres;
+
+ALTER TABLE seg_registro ADD COLUMN hom_dt_habilita_correcao DATE;
