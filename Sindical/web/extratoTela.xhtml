@@ -4,7 +4,8 @@
                 xmlns:f="http://java.sun.com/jsf/core"
                 xmlns:a4j="http://richfaces.org/a4j"
                 xmlns:rich="http://richfaces.org/rich"
-                xmlns:c="http://java.sun.com/jsp/jstl/core">
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
 
     <h:head>
         <title>Extrato de Tela</title>
@@ -288,6 +289,11 @@
                                             <h:outputText value="#{linha.argumento23}"/>
                                         </div>
                                     </rich:column>
+                                    
+                                    <rich:column style="text-align: center">
+                                        <f:facet name="header"><h:outputText value="Ult. Impressão"/></f:facet>
+                                        <a4j:commandLink onclick="modalOpcao('divUltimaImpressao');" value="#{extratoTelaBean.getUltimaImpressão(linha.argumento1)}" action="#{extratoTelaBean.verUltimaImpressão(linha.argumento1)}" title="Ver Lista de Impressões" render="tbl_impressao"/>
+                                    </rich:column>
                                 </rich:dataTable>
                             </h:panelGroup>
                         </rich:panel>
@@ -369,6 +375,44 @@
                     </div>
                 </center>
 
+                <div id="boxes">
+                    <div id="divUltimaImpressao" class="window">
+                        <a4j:commandLink styleClass="close closeModal" title="Fechar">
+                            <h:graphicImage value="/Imagens/iconExcluir.png" alt="Fechar"/>
+                        </a4j:commandLink>
+                        <br />
+                        <center>
+                            <h:panelGrid id="tbl_impressao">
+                                <rich:dataTable value="#{extratoTelaBean.listaImpressao}" var="linha" iterationStatusVar="it" style="width: 400px">
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
+                                            <h:outputText value="Impressão"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.impressao}"/>
+                                    </rich:column> 
+                                    
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
+                                            <h:outputText value="Vencimento"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.vencimento}"/>
+                                    </rich:column> 
+                                    
+                                    <rich:column styleClass="coluna">
+                                        <f:facet name="header">
+                                            <h:outputText value="Usuário"/>
+                                        </f:facet>
+                                        <h:outputText value="#{linha.usuario.pessoa.nome}"/>
+                                    </rich:column> 
+                                </rich:dataTable>
+                            </h:panelGrid>
+                            
+                            <a4j:commandLink value="Ok" styleClass="idNovo iLink" oncomplete="fecharModal()" />
+                        </center>
+                    </div>
+                    <div id="mask"></div>
+                </div>  
+                
                 <div id="boxes">
                     <div id="divAlterarVencimento" class="window">
                         <a4j:commandLink styleClass="close closeModal" title="Fechar">

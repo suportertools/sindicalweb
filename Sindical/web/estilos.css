@@ -376,6 +376,14 @@ span.loading-status {background: url(Imagens/espere.gif) no-repeat; background-s
   -moz-border-radius: 10px 10px 0 0 ; -webkit-border-radius: 10px 10px 0 0 ; border-radius: 10px 10px 0 0;
 }
 
+#boxes #divUltimaImpressao {
+  width:500px;
+  height:600px;
+  background-color:#ffffff;
+  -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px;
+  -moz-box-shadow: 0px 0px 15px #888; -webkit-box-shadow: 0px 0px 15px #888; box-shadow: 0px 0px 15px #888;
+}
+
 #boxes #divProfissao, #divAlterarVencimento {
   width:500px;
   height:400px;
