@@ -9,7 +9,7 @@ SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 CREATE TABLE fin_impressao
 (
   id serial NOT NULL,
-  ds_hora character varying(255) NOT NULL,
+  ds_hora character varying(8) NOT NULL,
   dt_vencimento date,
   dt_impressao date NOT NULL,
   id_usuario integer NOT NULL,
