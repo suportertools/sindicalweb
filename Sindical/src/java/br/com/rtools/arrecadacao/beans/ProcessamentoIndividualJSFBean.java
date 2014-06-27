@@ -15,6 +15,7 @@ import br.com.rtools.pessoa.PessoaEndereco;
 import br.com.rtools.pessoa.beans.JuridicaBean;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.sistema.Links;
@@ -24,6 +25,7 @@ import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -512,18 +514,38 @@ public class ProcessamentoIndividualJSFBean extends MovimentoValorJSFBean implem
 
         Movimento movi = null;
         if (!listMovimentos.isEmpty()) {
+            Usuario usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            
+            sv.abrirTransacao();
             for (int i = 0; i < listMovimentos.size(); i++) {
                 movi = (Movimento) listMovimentos.get(i).getArgumento1();
                 movs.add(movi);
                 listaValores.add(Moeda.substituiVirgulaFloat((String) listMovimentos.get(i).getArgumento7()));
                 //listaValores.add(movi.getValor());
                 listaVencimentos.add(movi.getVencimento());
+                
+                Impressao impressao = new Impressao();
+                
+                impressao.setUsuario(usuario);
+                impressao.setDtVencimento(movi.getDtVencimento());
+                impressao.setMovimento(movi);
+                
+                if (!sv.inserirObjeto(impressao)){
+                    sv.desfazerTransacao();
+                    GenericaMensagem.error("Erro", "Não foi possível SALVAR impressão!");
+                    return null;
+                }
             }
-
+            
+            sv.comitarTransacao();
+            
             ImprimirBoleto imp = new ImprimirBoleto();
 
             movs = imp.atualizaContaCobrancaMovimento(movs);
+            
             imp.imprimirBoleto(movs, listaValores, listaVencimentos, imprimeVerso);
+
             imp.visualizar(null);
         }
         return null;

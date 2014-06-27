@@ -575,8 +575,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntContrib = "";
         }
         if (nrBoletos == true) {
-            cntNrBoletos = " and m.nr_num_documento >= '" + descNrBoletoIni + "'"
-                    + " and m.nr_num_documento <= '" + descNrBoletoFin + "'";
+            cntNrBoletos = " and b.ds_boleto >= '" + descNrBoletoIni + "'"
+                    + " and b.ds_boleto <= '" + descNrBoletoFin + "'";
         } else {
             cntNrBoletos = "";
         }
@@ -691,8 +691,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntContrib = "";
         }
         if (nrBoletos == true) {
-            cntNrBoletos = " and m.nr_num_documento >= '" + descNrBoletoIni + "'"
-                    + " and m.nr_num_documento <= '" + descNrBoletoFin + "'";
+            cntNrBoletos = " and b.ds_boleto >= '" + descNrBoletoIni + "'"
+                    + " and b.ds_boleto <= '" + descNrBoletoFin + "'";
         } else {
             cntNrBoletos = "";
         }
@@ -805,8 +805,8 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
             cntContrib = "";
         }
         if (nrBoletos == true) {
-            cntNrBoletos = " and m.nr_num_documento >= '" + descNrBoletoIni + "'"
-                    + " and m.nr_num_documento <= '" + descNrBoletoFin + "'";
+            cntNrBoletos = " and b.ds_boleto >= '" + descNrBoletoIni + "'"
+                    + " and b.ds_boleto <= '" + descNrBoletoFin + "'";
         } else {
             cntNrBoletos = "";
         }
@@ -2159,6 +2159,22 @@ public class MovimentoDBToplink extends DB implements MovimentoDB {
                 "SELECT m " +
                 "  FROM Movimento m "+
                 " WHERE m.baixa.documentoBaixa LIKE '%"+documento+"%'";
+        try {
+            Query qry = getEntityManager().createQuery(text_qry);
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+    }
+    
+    @Override
+    public List<Impressao> listaImpressao(int id_movimento) {
+        String text_qry = 
+                "SELECT i " +
+                "  FROM Impressao i "+
+                " WHERE i.movimento.id = "+ id_movimento + 
+                " ORDER BY i.dtImpressao, i.dtVencimento DESC";
         try {
             Query qry = getEntityManager().createQuery(text_qry);
             

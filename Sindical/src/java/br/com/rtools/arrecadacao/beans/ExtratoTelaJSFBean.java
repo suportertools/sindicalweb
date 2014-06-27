@@ -67,6 +67,7 @@ public class ExtratoTelaJSFBean implements Serializable {
     private String historico = "";
     private String tipoEnvio = "empresa";
     private String valorExtenso = "";
+    private List<Impressao> listaImpressao = new ArrayList();
 
     public ExtratoTelaJSFBean() {
         ControleAcessoBean controx = new ControleAcessoBean();
@@ -120,6 +121,29 @@ public class ExtratoTelaJSFBean implements Serializable {
         return "extratoTela";
     }
 
+    public String getUltimaImpressão(int id_movimento){
+        MovimentoDB db = new MovimentoDBToplink();
+        
+        List<Impressao> lista_result = db.listaImpressao(id_movimento);
+        
+        if (!lista_result.isEmpty()){
+            return lista_result.get(0).getImpressao();
+        }else{
+            
+        }
+        return "SEM IMPRESSÃO";
+    }
+    
+    public String verUltimaImpressão(int id_movimento){
+        MovimentoDB db = new MovimentoDBToplink();
+        listaImpressao = db.listaImpressao(id_movimento);
+        return null;
+    }
+    
+    public List<Impressao> getListaImpressao(){
+        return listaImpressao;
+    }
+    
     public List getListaMovimentos() {
         boolean habData = false;
         float somaValores = 0;

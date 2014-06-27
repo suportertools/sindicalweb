@@ -31,6 +31,7 @@ public abstract class ArquivoRetorno {
     //public final static int BANESPA = 82;
     public final static int BANCO_BRASIL = 36;
     public final static int ITAU = 63;
+    public final static int SANTANDER = 88;
 
     public abstract List<GenericaRetorno> sicob(boolean baixar, String host);
 

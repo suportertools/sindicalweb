@@ -4,6 +4,7 @@ import br.com.rtools.associativo.db.CobrancaMensalDB;
 import br.com.rtools.associativo.db.CobrancaMensalDBToplink;
 import br.com.rtools.associativo.db.LancamentoIndividualDB;
 import br.com.rtools.associativo.db.LancamentoIndividualDBToplink;
+import br.com.rtools.financeiro.FTipoDocumento;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.financeiro.Servicos;
 import br.com.rtools.financeiro.db.ServicoRotinaDB;
@@ -18,6 +19,8 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Moeda;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
@@ -34,24 +37,154 @@ public class CobrancaMensalBean {
     private final List<SelectItem> listaServicos = new ArrayList<SelectItem>();
     private int idServicos = 0;
     private List<ServicoPessoa> listaCobrancaMensal = new ArrayList<ServicoPessoa>();
-    private float valor = 0;
+    private float valorCorrige = 0;
+    private String valorFixo = "0,00";
     private Servicos servicos = new Servicos();
+    private String descFiltro = "";
+    private String tipoFiltro = "beneficiario";
     
     public void novo(){
-        GenericaSessao.put("CobrancaMensalBean", new CobrancaMensalBean());
+        GenericaSessao.put("cobrancaMensalBean", new CobrancaMensalBean());
+    }
+    
+    public void salvar(){
+        if (servicoPessoa.getPessoa().getId() == -1){
+            GenericaMensagem.warn("Atenção", "Pesquise um Beneficiário para esta cobrança!");
+            return;
+        }
+        
+        if (servicoPessoa.getCobranca().getId() == -1){
+            GenericaMensagem.warn("Atenção", "Pesquise um Responsável para esta cobrança!");
+            return;
+        }
+        
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        CobrancaMensalDB db = new CobrancaMensalDBToplink();
+        
+        if (servicoPessoa.getId() == -1){
+            if (!db.listaCobrancaMensalServico( servicoPessoa.getPessoa().getId(), servicos.getId() ).isEmpty()){
+                GenericaMensagem.warn("Atenção", "Serviço para esse Beneficiário já existe!");
+                return;
+            }
+        }else{
+            if ( servicoPessoa.getServicos().getId() !=  servicos.getId() ){
+                if (!db.listaCobrancaMensalServico( servicoPessoa.getPessoa().getId(), servicos.getId() ).isEmpty()){
+                    GenericaMensagem.warn("Atenção", "Serviço para esse Beneficiário já existe!");
+                    return;
+                }
+            }
+        }
+        
+        servicoPessoa.setTipoDocumento((FTipoDocumento)sv.pesquisaCodigo(13, "FTipoDocumento"));
+        servicoPessoa.setServicos(servicos);
+        servicoPessoa.setNrValorFixo(Moeda.converteUS$(valorFixo));
+        
+        sv.abrirTransacao();
+        if (servicoPessoa.getId() == -1){
+            if (!sv.inserirObjeto(servicoPessoa)){
+                GenericaMensagem.error("Erro", "Não foi possível salvar Cobrança Mensal!");
+                sv.desfazerTransacao();
+                return;
+            }
+            GenericaMensagem.info("Sucesso", "Cobrança Mensal salva!");
+        }else{
+            if (!sv.alterarObjeto(servicoPessoa)){
+                GenericaMensagem.error("Erro", "Não foi possível atualizar Cobrança Mensal!");
+                sv.desfazerTransacao();
+                return;
+            }
+            GenericaMensagem.info("Sucesso", "Cobrança Mensal atualizada!");
+        }
+        servicoPessoa = new ServicoPessoa();
+        listaCobrancaMensal.clear();
+        sv.comitarTransacao();
+    }
+    
+    public void excluir(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        sv.abrirTransacao();
+        
+        if (!sv.deletarObjeto( sv.pesquisaCodigo(servicoPessoa.getId(), "ServicoPessoa") )){
+            GenericaMensagem.error("Erro", "Não foi possível Excluir Cobrança Mensal!");
+            sv.desfazerTransacao();
+            return;
+        }
+        sv.comitarTransacao();
+        
+        GenericaMensagem.info("Sucesso", "Cobrança Mensal excluída!");
+        servicoPessoa = new ServicoPessoa();
+        listaCobrancaMensal.clear();
+    }
+    
+    public void editar(ServicoPessoa linha){
+        servicoPessoa = linha;
+        
+        for (int i = 0; i < listaServicos.size(); i++){
+            if ( Integer.valueOf(listaServicos.get(i).getDescription()) == servicoPessoa.getServicos().getId() ){
+                idServicos = i;
+            }
+        }
+        valorFixo = Moeda.converteR$Float(servicoPessoa.getNrValorFixo());
+    }
+    
+    public void atualizarGrid(){
+        SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+        
+        sv.abrirTransacao();
+        for (int i = 0; i < listaCobrancaMensal.size(); i++){
+            float calculo = 0;
+            
+            calculo = Moeda.divisaoValores(Moeda.multiplicarValores(listaCobrancaMensal.get(i).getNrValorFixo(), valorCorrige), 100);
+            
+            calculo = Moeda.subtracaoValores(listaCobrancaMensal.get(i).getNrValorFixo(), calculo);
+            
+            listaCobrancaMensal.get(i).setNrValorFixo( calculo );
+            
+            ServicoPessoa sp = (ServicoPessoa)sv.pesquisaCodigo(listaCobrancaMensal.get(i).getId(), "ServicoPessoa");
+            sp.setNrValorFixo(calculo);
+            
+            if (!sv.alterarObjeto(sp)){
+                sv.desfazerTransacao();
+                GenericaMensagem.error("Erro", "Não foi possível alterar porcentagem!");
+                return;
+            }
+        }
+        
+        sv.comitarTransacao();
+        GenericaMensagem.info("Sucesso", "Todos Valores foram Atualizados!");
+        //listaCobrancaMensal.clear();
+        
+        //CobrancaMensalDB db = new CobrancaMensalDBToplink();
+        //listaCobrancaMensal = db.listaCobrancaMensalFiltro(tipoFiltro, descFiltro);
+    }
+    
+    public void filtrar(){
+        listaCobrancaMensal.clear();
+        
+        CobrancaMensalDB db = new CobrancaMensalDBToplink();
+        listaCobrancaMensal = db.listaCobrancaMensalFiltro(tipoFiltro, descFiltro);
     }
     
     public ServicoPessoa getServicoPessoa() {
-        if (GenericaSessao.getObject("pessoaPesquisa") != null){
-            servicoPessoa.setPessoa((Pessoa)GenericaSessao.getObject("pessoaPesquisa"));
-            GenericaSessao.remove("pessoaPesquisa");
+        if (GenericaSessao.getObject("fisicaPesquisa") != null || GenericaSessao.getObject("pessoaPesquisa") != null){
+            if (GenericaSessao.getObject("fisicaPesquisa") != null){
+                servicoPessoa.setPessoa( ((Fisica)GenericaSessao.getObject("fisicaPesquisa")).getPessoa() );
+                GenericaSessao.remove("fisicaPesquisa");
+            }
             
             FunctionsDB fc = new FunctionsDBTopLink();
             
-            int id_resp = fc.responsavel(servicoPessoa.getPessoa().getId(), false);
+            int id_resp = -1; 
             
-            if (id_resp == -1){
-                return servicoPessoa;
+            if (GenericaSessao.getObject("pessoaPesquisa") == null){
+                id_resp = fc.responsavel(servicoPessoa.getPessoa().getId(), false);
+                if (id_resp == -1){
+                    return servicoPessoa;
+                }
+            }else{
+                id_resp = ((Pessoa)GenericaSessao.getObject("pessoaPesquisa")).getId();
+                GenericaSessao.remove("pessoaPesquisa");
             }
             
             JuridicaDB dbj = new JuridicaDBToplink();
@@ -112,7 +245,6 @@ public class CobrancaMensalBean {
                 }
                 servicoPessoa.setCobranca(fi.getPessoa());
             }
-            
         }
         return servicoPessoa;
     }
@@ -163,12 +295,8 @@ public class CobrancaMensalBean {
         this.listaCobrancaMensal = listaCobrancaMensal;
     }
 
-    public float getValor() {
-        return valor;
-    }
-
-    public void setValor(float valor) {
-        this.valor = valor;
+    public String valor(float valorx) {
+        return Moeda.converteR$Float(valorx);
     }
 
     public Servicos getServicos() {
@@ -177,6 +305,38 @@ public class CobrancaMensalBean {
 
     public void setServicos(Servicos servicos) {
         this.servicos = servicos;
+    }
+
+    public float getValorCorrige() {
+        return valorCorrige;
+    }
+
+    public void setValorCorrige(float valorCorrige) {
+        this.valorCorrige = valorCorrige;
+    }
+
+    public String getValorFixo() {
+        return Moeda.converteR$(valorFixo);
+    }
+
+    public void setValorFixo(String valorFixo) {
+        this.valorFixo = Moeda.substituiVirgula(valorFixo);
+    }
+
+    public String getDescFiltro() {
+        return descFiltro;
+    }
+
+    public void setDescFiltro(String descFiltro) {
+        this.descFiltro = descFiltro;
+    }
+
+    public String getTipoFiltro() {
+        return tipoFiltro;
+    }
+
+    public void setTipoFiltro(String tipoFiltro) {
+        this.tipoFiltro = tipoFiltro;
     }
     
     
