@@ -234,6 +234,7 @@
             <p:panel styleClass="no-border" style="margin: 0 auto;">
                 <h:form id="form_cancelar_data_table">
                     <p:panel rendered="#{homologacaoBean.renderHomologacao}" styleClass="no-border">
+                        <p:commandButton icon="ui-icon-info" value="Existe(m) atendimento(s) não finalizado" rendered="#{homologacaoBean.listAtendimentoAberto().size() > 0}" style="color: red; margin-bottom: 15px!important;" onclick="PF('dlg_atendimentos').show()" update="id_atendimentos"/>
                         <p:panel style="margin: 0 auto;" styleClass="fundoCinza">
                             <h:panelGrid columns="5" style="margin: 0 auto;">
                                 <h:outputLabel value="Data: " />
@@ -304,6 +305,51 @@
                             </p:dataTable>                                
                         </h:panelGrid>
                     </p:panel>
+                    <p:dialog widgetVar="dlg_atendimentos" header="Atendimento(s) pendente(s)" modal="true" width="1024" resizable="false" closable="true">
+                        <h:panelGrid id="id_atendimentos">
+                            <p:dataTable value="#{homologacaoBean.listAtendimentoAberto()}" var="agendamento" emptyMessage="Nenhum registro encontrado!" id="i_table">
+                                <p:column styleClass="text-center" width="60">
+                                    <f:facet name="header">
+                                        Data
+                                    </f:facet>
+                                    <h:outputText  value="#{agendamento.data}"/>
+                                </p:column>
+                                <p:column styleClass="text-center" width="30">
+                                    <f:facet name="header">
+                                        Horario
+                                    </f:facet>
+                                    <h:outputText  value="#{agendamento.horarios.hora}" />
+                                </p:column>
+                                <p:column styleClass="text-center" width="120">
+                                    <f:facet name="header">
+                                        CNPJ
+                                    </f:facet>
+                                    <h:outputText  value="#{agendamento.pessoaEmpresa.juridica.pessoa.documento}"/>
+                                </p:column>
+                                <p:column styleClass="text-center">
+                                    <f:facet name="header">
+                                        Empresa
+                                    </f:facet>
+                                    <h:outputText  value="#{agendamento.pessoaEmpresa.juridica.pessoa.nome}"/>
+                                </p:column>
+                                <p:column width="150">
+                                    <f:facet name="Funcionário">
+                                        <h:outputLabel value="Empresa" />
+                                    </f:facet>
+                                    <h:outputText  value="#{agendamento.pessoaEmpresa.fisica.pessoa.nome}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                        <f:facet name="footer">
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Sair" onclick="PF('dlg_atendimentos').hide()" />
+                                <h:commandLink>
+                                    <p:commandButton icon="ui-icon-print" title="Imprimir atendimentos pendentes" />
+                                    <p:dataExporter type="pdf" target="i_table" fileName="atendimento_pendente" />
+                                </h:commandLink>
+                            </h:panelGrid>
+                        </f:facet>
+                    </p:dialog> 
                 </h:form>            
             </p:panel>                    
         </f:view>
