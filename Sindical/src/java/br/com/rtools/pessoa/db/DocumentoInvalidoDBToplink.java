@@ -93,7 +93,11 @@ public class DocumentoInvalidoDBToplink extends DB implements DocumentoInvalidoD
 //                    + " where '000'||substring(replace(replace(replace(pes.ds_documento,'/',''),'-',''),'.',''),1,12) = doc.ds_documento_invalido";
             textQuery = "SELECT * "
                       + "  FROM pes_documento_invalido "
-                      + " WHERE '000'||ds_documento_invalido in ( "
+                      + " WHERE '000'||ds_documento_invalido IN ( "
+                      + "       SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(ds_documento,'/',''),'-',''),'.',''),1,12) "
+                      + "         FROM pes_pessoa ORDER BY ds_documento "
+                      + ")"
+                      + "    OR ds_documento_invalido IN ( "
                       + "       SELECT '000'||SUBSTRING(REPLACE(REPLACE(REPLACE(ds_documento,'/',''),'-',''),'.',''),1,12) "
                       + "         FROM pes_pessoa ORDER BY ds_documento "
                       + ")";
