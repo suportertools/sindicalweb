@@ -258,5 +258,9 @@
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 252, 'PESQUISAR LOGS', '"/Sindical/pesquisaLog.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 252);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 253, 'COBRANÇA MENSAL', '"/Sindical/cobrancaMensal.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 253);
 -- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 254, 'ALTERAR VALOR FIXO', '"/Sindical/cobrancaMensal.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 254);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 255, 'SALÁRIO MÍNIMO', '"/Sindical/salarioMinimo.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 255);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 256, 'CLASSIFICAÇÃO ECONÔMICA', '"/Sindical/classificacaoEconomica.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 256);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 257, 'NACIONALIDADE', '"/Sindical/nacionalidade.jsf"', 'Nacionalidade', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 257);
+-- INSERT INTO seg_rotina (id, ds_rotina, ds_nome_pagina, ds_classe, is_ativo) SELECT 258, 'RAIS', '"/Sindical/rais.jsf"', '', true WHERE NOT EXISTS ( SELECT id FROM seg_rotina WHERE id = 258);
 -- SELECT setval('seg_rotina_id_seq', max(id)) FROM seg_rotina;
 
