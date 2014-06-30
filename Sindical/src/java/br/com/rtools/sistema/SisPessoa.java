@@ -50,6 +50,9 @@ public class SisPessoa implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_NASCIMENTO")
     private Date dtNascimento;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DT_IMPORTACAO")
+    private Date dtImportacao;
 
     public SisPessoa() {
         this.id = -1;
@@ -68,6 +71,7 @@ public class SisPessoa implements java.io.Serializable {
         this.endereco = new Endereco();
         this.dtCriacao = DataHoje.dataHoje();
         this.dtNascimento = DataHoje.dataHoje();
+        this.dtImportacao = new Date();
     }
 
     public SisPessoa(int id, String nome, String documento, String rg, String telefone, String celular, String email1, String email2, String observacao, String complemento, String numero, String sexo, TipoDocumento tipoDocumento, Endereco endereco, String criacao, String nascimento) {
@@ -241,6 +245,14 @@ public class SisPessoa implements java.io.Serializable {
     public void selecionaDataNascimento(SelectEvent event) {
         SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dtNascimento = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public Date getDtImportacao() {
+        return dtImportacao;
+    }
+
+    public void setDtImportacao(Date dtImportacao) {
+        this.dtImportacao = dtImportacao;
     }
 
 }

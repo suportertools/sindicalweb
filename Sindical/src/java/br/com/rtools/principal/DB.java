@@ -80,6 +80,7 @@ public class DB {
                 || cliente.equals("HoteleiroRP")
                 || cliente.equals("GaragistaRP")
                 || cliente.equals("MetalBatatais")
+                || cliente.equals("ServidoresRP")
                 || cliente.equals("SeaacFranca")) {
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
@@ -102,15 +103,19 @@ public class DB {
             configuracao.setSenha("989899");
         } else {
             if (cliente.equals("Sindical")) {
-                cliente = "c_limeira_base";
-                //cliente = "ComercioRP";
+                //cliente = "c_limeira_base";
+                cliente = "ComercioRP";
+                configuracao.setHost("192.168.1.102");
+                configuracao.setSenha("r#@tools");
             }
+//            } else {
+//                if (cliente.equals("ServidoresRP")) {
+//                    configuracao.setHost("localhost");
+//                    configuracao.setSenha("989899");
+//                }
+//            }
             configuracao.setCaminhoSistema(cliente);
             configuracao.setPersistence(cliente);
-            //configuracao.setHost("192.168.1.102");
-            //configuracao.setSenha("r#@tools");
-            configuracao.setHost("localhost");
-            configuracao.setSenha("989899");
         }
         return configuracao;
     }

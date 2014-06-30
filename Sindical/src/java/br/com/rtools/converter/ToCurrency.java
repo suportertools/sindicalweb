@@ -20,8 +20,12 @@ public class ToCurrency implements Converter {
             if (value.isEmpty()) {
                 value = "0";
             }
-            String somenteLetras = value.replaceAll("[^a-zA-Z]", "");
+            String  somenteLetras = value.replaceAll("[^a-zA-Z]", "");
             if (somenteLetras.length() > 0) {
+                return null;
+            }
+            value = value.replace("-", "");
+            if (value.isEmpty()) {
                 return null;
             }
             return Moeda.converteR$(value);

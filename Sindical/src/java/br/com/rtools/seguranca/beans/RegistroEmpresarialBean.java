@@ -47,9 +47,11 @@ public class RegistroEmpresarialBean implements Serializable {
     private int idDiaVencimento;
     private int idSisEmailProtocolo;
     private List<SelectItem> listaDataVencimento;
+    private boolean habilitaCorrecao;
 
     @PostConstruct
     public void init() {
+        habilitaCorrecao = false;
         registro = new Registro();
         senha = "";
         confirmaSenha = "";
@@ -60,6 +62,27 @@ public class RegistroEmpresarialBean implements Serializable {
         idDiaVencimento = 0;
         idSisEmailProtocolo = 0;
         listaDataVencimento = new ArrayList<SelectItem>();
+        if (registro.getId() == -1) {
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            registro = (Registro) sv.find(new Registro(), 1);
+            senha = registro.getSenha();
+            if (registro.getServicos() != null) {
+                codigoServico = registro.getServicos().getId();
+            }
+            List<SelectItem> list = getListaSisEmailProtocolo();
+            for (int i = 0; i < list.size(); i++) {
+                if (registro.getSisEmailProtocolo().getId() == Integer.parseInt(list.get(i).getDescription())) {
+                    idSisEmailProtocolo = i;
+                    break;
+                }
+            }
+            if (registro.getHomolocaoHabilitaCorrecao() != null && DataHoje.converteData(registro.getHomolocaoHabilitaCorrecao()).equals(DataHoje.data())) {
+                habilitaCorrecao = true;
+            }
+        }
+        if (registro == null) {
+            return;
+        }
     }
 
     @PreDestroy
@@ -88,6 +111,12 @@ public class RegistroEmpresarialBean implements Serializable {
         registro.setSisEmailProtocolo((SisEmailProtocolo) sv.find(new SisEmailProtocolo(), Integer.parseInt(getListaSisEmailProtocolo().get(idSisEmailProtocolo).getDescription())));
         registro.setFinDiaVencimentoCobranca(idDiaVencimento);
         registro.setServicos(servicos);
+        if (habilitaCorrecao) {
+            registro.setHomolocaoHabilitaCorrecao(new Date());
+        } else {
+            registro.setHomolocaoHabilitaCorrecao(null);
+
+        }
         if (sv.alterarObjeto(registro)) {
             sv.comitarTransacao();
             GenericaMensagem.info("Sucesso", "Registro atualizado");
@@ -137,23 +166,6 @@ public class RegistroEmpresarialBean implements Serializable {
     }
 
     public Registro getRegistro() {
-        if (registro != null) {
-            if (registro.getId() == -1) {
-                SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-                registro = (Registro) sv.find(new Registro(), 1);
-                senha = registro.getSenha();
-                if (registro.getServicos() != null) {
-                    codigoServico = registro.getServicos().getId();
-                }
-                List<SelectItem> list = getListaSisEmailProtocolo();
-                for (int i = 0; i < list.size(); i++) {
-                    if (registro.getSisEmailProtocolo().getId() == Integer.parseInt(list.get(i).getDescription())) {
-                        idSisEmailProtocolo = i;
-                        break;
-                    }
-                }
-            }
-        }
         return registro;
     }
 
@@ -336,6 +348,14 @@ public class RegistroEmpresarialBean implements Serializable {
 
     public void setEmailTeste(String emailTeste) {
         this.emailTeste = emailTeste;
+    }
+
+    public boolean isHabilitaCorrecao() {
+        return habilitaCorrecao;
+    }
+
+    public void setHabilitaCorrecao(boolean habilitaCorrecao) {
+        this.habilitaCorrecao = habilitaCorrecao;
     }
 
 }

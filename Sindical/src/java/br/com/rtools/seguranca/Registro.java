@@ -76,7 +76,7 @@ public class Registro implements java.io.Serializable {
     private int intervaloEnvios;
     @Column(name = "FIN_DIA_VENCIMENTO_COBRANCA")
     private int finDiaVencimentoCobranca;
-    @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO ")
+    @Column(name = "DT_LIMITE_AGENDAMENTO_RETROATIVO")
     @Temporal(TemporalType.DATE)
     private Date agendamentoRetroativo;
     @JoinColumn(name = "ID_SERVICO_CARTAO", referencedColumnName = "ID", nullable = false)
@@ -107,7 +107,10 @@ public class Registro implements java.io.Serializable {
     private int homolocaoLimiteMeses;
     @Column(name = "SIS_IS_EMAIL_MARKETING", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean sisEmailMarketing;
-
+    @Column(name = "HOM_DT_HABILITA_CORRECAO")
+    @Temporal(TemporalType.DATE)
+    private Date homolocaoHabilitaCorrecao;
+    
     public Registro() {
         this.id = -1;
         this.filial = new Juridica();
@@ -154,6 +157,7 @@ public class Registro implements java.io.Serializable {
         this.fotoCartao = false;
         this.homolocaoLimiteMeses = 3;
         this.sisEmailMarketing = false;
+        this.homolocaoHabilitaCorrecao = new Date();
     }
 
     public Registro(int id,
@@ -199,6 +203,7 @@ public class Registro implements java.io.Serializable {
             boolean validadeBarras,
             boolean fotoCartao,
             int homolocaoLimiteMeses,
+            Date homolocaoHabilitaCorrecao,
             boolean sisEmailMarketing) {
 
         this.id = id;
@@ -245,6 +250,7 @@ public class Registro implements java.io.Serializable {
         this.fotoCartao = fotoCartao;
         this.homolocaoLimiteMeses = homolocaoLimiteMeses;
         this.sisEmailMarketing = sisEmailMarketing;
+        this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
     }
 
     public int getId() {
@@ -625,5 +631,13 @@ public class Registro implements java.io.Serializable {
 
     public void setSisEmailMarketing(boolean sisEmailMarketing) {
         this.sisEmailMarketing = sisEmailMarketing;
+    }
+
+    public Date getHomolocaoHabilitaCorrecao() {
+        return homolocaoHabilitaCorrecao;
+    }
+
+    public void setHomolocaoHabilitaCorrecao(Date homolocaoHabilitaCorrecao) {
+        this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
     }
 }
