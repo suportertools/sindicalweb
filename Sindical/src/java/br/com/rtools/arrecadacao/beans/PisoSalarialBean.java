@@ -5,6 +5,8 @@ import br.com.rtools.arrecadacao.PisoSalarial;
 import br.com.rtools.arrecadacao.PisoSalarialLote;
 import br.com.rtools.arrecadacao.db.WebREPISDB;
 import br.com.rtools.arrecadacao.db.WebREPISDBToplink;
+import br.com.rtools.financeiro.SalarioMinimo;
+import br.com.rtools.financeiro.dao.SalarioMinimoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Porte;
 import br.com.rtools.utilitarios.Dao;
@@ -40,6 +42,7 @@ public class PisoSalarialBean {
     private String porPesquisa;
     private String comoPesquisa;
     private String descricao;
+    private SalarioMinimo salarioMinimo;
 
     @PostConstruct
     public void init() {
@@ -58,6 +61,12 @@ public class PisoSalarialBean {
         comoPesquisa = "";
         pisoSalarial = new PisoSalarial();
         descricao = "";
+        SalarioMinimoDao smd = new SalarioMinimoDao();
+        salarioMinimo = smd.salarioMinimoVigente();
+        if (salarioMinimo == null) {
+            salarioMinimo = new SalarioMinimo();
+        }
+        valor = salarioMinimo.getValorMensalString();
     }
 
     @PreDestroy
@@ -438,5 +447,13 @@ public class PisoSalarialBean {
 
     public void setPisoSalarialLote(PisoSalarialLote pisoSalarialLote) {
         this.pisoSalarialLote = pisoSalarialLote;
+    }
+
+    public SalarioMinimo getSalarioMinimo() {
+        return salarioMinimo;
+    }
+
+    public void setSalarioMinimo(SalarioMinimo salarioMinimo) {
+        this.salarioMinimo = salarioMinimo;
     }
 }

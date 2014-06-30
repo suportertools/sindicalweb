@@ -7,6 +7,7 @@ import br.com.rtools.homologacao.Demissao;
 import br.com.rtools.homologacao.ListaAgendamento;
 import br.com.rtools.homologacao.Senha;
 import br.com.rtools.homologacao.Status;
+import br.com.rtools.homologacao.dao.HomologacaoDao;
 import br.com.rtools.homologacao.db.*;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
@@ -252,15 +253,32 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
         agendamento = a;
         cancelamento = new Cancelamento();
         int nrStatus = Integer.parseInt(((SelectItem) getListaStatus().get(idStatus)).getDescription());
-        if (nrStatus == 3 || nrStatus == 4 || nrStatus == 5) {
+        if (nrStatus == 4) {
             if (!desabilitaEdicao(agendamento.getDtData(), 30)) {
-                return "homologacao";
+                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
+                PF.update("form_homologacao:i_painel_mensagem");
+                PF.openDialog("dgl_painel_mensagem");
+                return null;
+            }
+        } else if (nrStatus == 3 || nrStatus == 5) {
+            boolean hc = false;
+            if (registro.getHomolocaoHabilitaCorrecao() != null && DataHoje.converteData(registro.getHomolocaoHabilitaCorrecao()).equals(DataHoje.data())) {
+                hc = true;
+            }
+            if (!desabilitaEdicao(agendamento.getDtData(), 30) && !hc) {
+                msgConfirma = "Não é possível realizar alterações com datas superiores a 30 dias a data de hoje. Contate o administrador do sistema para habilitar a correção de homologações pendentes!";
+                PF.update("form_homologacao:i_painel_mensagem");
+                PF.openDialog("dgl_painel_mensagem");
+                return null;
             }
         } else {
             if (DataHoje.converteDataParaInteger(DataHoje.converteData(data)) == DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()))) {
                 if (registro.isSenhaHomologacao()) {
                     Senha senha = db.pesquisaSenhaAgendamento(agendamento.getId());
                     if (senha.getId() == -1) {
+                        msgConfirma = "Não há senha definida!";
+                        PF.update("form_homologacao:i_painel_mensagem");
+                        PF.openDialog("dgl_painel_mensagem");
                         return "homologacao";
                     }
                 }
@@ -451,7 +469,7 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
     public void homologar() {
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
         agendamento.setHomologador((Usuario) GenericaSessao.getObject("sessaoUsuario"));
-        agendamento.setStatus((Status) sv.find(new Status() ,4));
+        agendamento.setStatus((Status) sv.find(new Status(), 4));
         new Cancelamento().getAgendamento().getId();
         Cancelamento c = (Cancelamento) sv.pesquisaObjeto(agendamento.getId(), "Cancelamento", "agendamento.id");
         sv.abrirTransacao();
@@ -867,6 +885,15 @@ public class HomologacaoBean extends PesquisarProfissaoBean implements Serializa
 
     public void setListaHomologacoes(List<ListaAgendamento> listaHomologacoes) {
         this.listaHomologacoes = listaHomologacoes;
+    }
+
+    public List<Agendamento> listAtendimentoAberto() {
+        List<Agendamento> list = new ArrayList<Agendamento>();
+        if (GenericaSessao.exists("sessaoUsuario")) {
+            HomologacaoDao dao = new HomologacaoDao();
+            list = (List<Agendamento>) dao.pesquisaAgendamentoAtendimentoAberto(((Usuario) GenericaSessao.getObject("sessaoUsuario")).getId());
+        }
+        return list;
     }
 
 }

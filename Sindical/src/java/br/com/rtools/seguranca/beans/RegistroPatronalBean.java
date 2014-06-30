@@ -4,6 +4,8 @@ import br.com.rtools.arrecadacao.Convencao;
 import br.com.rtools.arrecadacao.GrupoCidade;
 import br.com.rtools.arrecadacao.Patronal;
 import br.com.rtools.arrecadacao.PatronalConvencao;
+import br.com.rtools.financeiro.SalarioMinimo;
+import br.com.rtools.financeiro.dao.SalarioMinimoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -113,7 +115,7 @@ public class RegistroPatronalBean implements Serializable {
             novoLog.update(beforeUpdate, "ID: " + patronal.getId() + " - Pessoa: (" + patronal.getPessoa().getId() + ") " + patronal.getPessoa().getNome());
             message = "Patronal atualizado com Sucesso!";
         }
-        
+
         for (PatronalConvencao pc : listaPatronalConvencao) {
             if (pc.getId() == -1) {
                 if (pc.getPatronal().getId() == -1) {
@@ -125,7 +127,7 @@ public class RegistroPatronalBean implements Serializable {
                     message = "Erro ao inserir / atualizar registro!";
                     return;
                 }
-                novoLog.save("Patronal Convenção - ID: " + pc.getId() 
+                novoLog.save("Patronal Convenção - ID: " + pc.getId()
                         + " - Patronal: (" + pc.getPatronal().getId() + ") " + pc.getPatronal().getPessoa().getNome()
                         + " - Convenção: (" + pc.getConvencao().getId() + ") " + pc.getConvencao().getDescricao()
                         + " - Grupo Cidade: (" + pc.getGrupoCidade().getId() + ") " + pc.getGrupoCidade().getDescricao()
@@ -163,11 +165,11 @@ public class RegistroPatronalBean implements Serializable {
                         GenericaMensagem.warn("Erro", "Ao excluir registro!");
                         return;
                     }
-                    novoLog.delete("Patronal Convenção - ID: " + listaPatronalConvencao.get(i).getId() 
+                    novoLog.delete("Patronal Convenção - ID: " + listaPatronalConvencao.get(i).getId()
                             + " - Patronal: (" + listaPatronalConvencao.get(i).getPatronal().getId() + ") " + listaPatronalConvencao.get(i).getPatronal().getPessoa().getNome()
                             + " - Convenção: (" + listaPatronalConvencao.get(i).getConvencao().getId() + ") " + listaPatronalConvencao.get(i).getConvencao().getDescricao()
                             + " - Grupo Cidade: (" + listaPatronalConvencao.get(i).getGrupoCidade().getId() + ") " + listaPatronalConvencao.get(i).getGrupoCidade().getDescricao()
-                    );                    
+                    );
                 }
                 listaPatronalConvencao.remove(i);
             }
@@ -236,22 +238,22 @@ public class RegistroPatronalBean implements Serializable {
                 return;
             }
         }
-        if(patronal.getId() == -1) {
-            listaPatronalConvencao.add(patronalConvencao);            
+        if (patronal.getId() == -1) {
+            listaPatronalConvencao.add(patronalConvencao);
             message = "Item adicionado a lista";
         } else {
             NovoLog novoLog = new NovoLog();
-            if(di.save(patronalConvencao,true )) {
+            if (di.save(patronalConvencao, true)) {
                 message = "Item salvo com sucesso a lista";
                 listaPatronalConvencao.clear();
-                novoLog.save("Patronal Convenção - ID: " + patronalConvencao.getId() 
+                novoLog.save("Patronal Convenção - ID: " + patronalConvencao.getId()
                         + " - Patronal: (" + patronalConvencao.getPatronal().getId() + ") " + patronalConvencao.getPatronal().getPessoa().getNome()
                         + " - Convenção: (" + patronalConvencao.getConvencao().getId() + ") " + patronalConvencao.getConvencao().getDescricao()
                         + " - Grupo Cidade: (" + patronalConvencao.getGrupoCidade().getId() + ") " + patronalConvencao.getGrupoCidade().getDescricao()
                 );
                 patronalConvencao = new PatronalConvencao();
             } else {
-                message = "Erro ao inserir regostro!";                
+                message = "Erro ao inserir regostro!";
             }
         }
         GenericaMensagem.info("Validação", message);

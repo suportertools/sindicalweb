@@ -1,6 +1,7 @@
 package br.com.rtools.pessoa.beans;
 
 import br.com.rtools.financeiro.SalarioMinimo;
+import br.com.rtools.financeiro.dao.SalarioMinimoDao;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.ClassificacaoEconomica;
 import br.com.rtools.utilitarios.Dao;
@@ -116,8 +117,11 @@ public class ClassificacaoEconomicaBean {
 
     public SalarioMinimo getSalarioMinimo() {
         if (salarioMinimo.getId() == -1) {
-            DaoInterface di = new Dao();
-            salarioMinimo = ((List<SalarioMinimo>) di.list("SalarioMinimo", true)).get(0);
+            SalarioMinimoDao dao = new SalarioMinimoDao();
+            salarioMinimo = dao.salarioMinimoVigente();
+            if(salarioMinimo == null) {
+                salarioMinimo = new SalarioMinimo();
+            }
         }
         return salarioMinimo;
     }
