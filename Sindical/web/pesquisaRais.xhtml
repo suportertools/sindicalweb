@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>Pesquisa Rais</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=9" />
+    </h:head>
+    <h:body>
+        <f:subview id="header">
+            <ui:include src="templatePrime.xhtml"/>
+        </f:subview>
+        <f:view>
+
+            <p:ajaxStatus id="i_status" onstart="i_dlg_modal.show();" onsuccess="i_dlg_modal.hide();" />
+            <p:dialog modal="true" widgetVar="i_dlg_modal" header="Status" draggable="false" closable="false">  
+                <h:outputLabel value=" ... Aguarde" />
+            </p:dialog>
+            <h:form id="form_pesquisa_rais">
+                <p:panel styleClass="wrapper no-border">
+                    <h:outputText value="Pesquisa Rais" styleClass="fonteHeader" />
+                    <div class="clear"></div>
+                    <p:panel id="i_panel_pesquisa" styleClass="fundoCinza">
+                        <h:panelGrid columns="8">
+                            <p:outputLabel value="Pesquisar: "/>
+                            <c:if test="#{!raisBean.removeFiltro}">
+                                <p:inputMask mask="#{raisBean.mascara}" value="#{raisBean.descricaoPesquisa}" disabled="#{raisBean.porPesquisa == 'todos'}">
+                                    <p:ajax event="change" update="@this" />
+                                </p:inputMask>
+                            </c:if>
+                            <c:if test="#{raisBean.removeFiltro}">
+                                <p:inputMask mask="#{oposicaoBean.mascara}" value="#{raisBean.descricaoPesquisa}" >
+                                    <p:ajax event="change" update="@this" />
+                                </p:inputMask>
+                            </c:if>
+                            <h:outputLabel value="Por: "/>
+                            <p:selectOneMenu id="idTipoClasse" value="#{raisBean.porPesquisa}">
+                                <p:ajax event="change" update="i_panel_pesquisa, i_tbl" listener="#{raisBean.listRais.clear()}"/>
+                                <f:selectItem itemValue="todos"         itemLabel="Todos" />
+                                <f:selectItem itemValue="nome"          itemLabel="Nome" />
+                                <f:selectItem itemValue="empresa"       itemLabel="Empresa" />
+                                <f:selectItem itemValue="data"          itemLabel="Emissão" />
+                                <f:selectItem itemValue="cnpj"          itemLabel="CNPJ" />
+                                <f:selectItem itemValue="cpf"           itemLabel="CPF" />
+                            </p:selectOneMenu>
+                            <c:if test="#{!raisBean.removeFiltro}">
+                                <c:if test="#{raisBean.porPesquisa != 'todos'}">
+                                    <p:commandButton id="idInicial" value="Inicial">
+                                        <p:ajax listener="#{raisBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
+                                    </p:commandButton>
+                                    <p:commandButton id="idParcial" value="Parcial">
+                                        <p:ajax listener="#{raisBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                    </p:commandButton>
+                                </c:if> 
+                                <c:if test="#{raisBean.porPesquisa == 'todos'}">
+                                    <p:commandButton value="Atualizar">
+                                        <p:ajax listener="#{raisBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                    </p:commandButton>
+                                </c:if>
+                            </c:if>
+                            <c:if test="#{raisBean.removeFiltro}">
+                                <p:commandButton id="idInicial" value="Inicial">
+                                    <p:ajax listener="#{raisBean.acaoPesquisaInicial}" update="i_panel_pesquisa i_tbl"/>
+                                </p:commandButton>
+                                <p:commandButton id="idParcial" value="Parcial">
+                                    <p:ajax listener="#{raisBean.acaoPesquisaParcial}" update="i_panel_pesquisa i_tbl"/>
+                                </p:commandButton>                                
+                            </c:if>
+                        </h:panelGrid>   
+                    </p:panel>
+                </p:panel>
+                <p:panel id="i_tbl" styleClass="no-border">
+                    <p:dataTable value="#{raisBean.listRais}" var="rais" scrollable="true" scrollHeight="400" emptyMessage="Nenhum registro encontrado!" styleClass="margin" rows="10" paginator="true">
+                        <p:column width="30" styleClass="text-center">
+                            <p:commandButton icon="ui-icon-link" action="#{raisBean.edit(rais)}" />
+                        </p:column>                                    
+                        <p:column headerText="Emissão" width="80" styleClass="text-center">
+                            #{rais.emissaoString}
+                        </p:column>                                    
+                        <p:column headerText="CPF" styleClass="text-center" width="120">
+                            #{rais.sisPessoa.documento}
+                        </p:column>                      
+                        <p:column headerText="Nome" >
+                            #{rais.sisPessoa.nome}
+                        </p:column>
+                        <p:column headerText="CNPJ" width="140" styleClass="text-center">
+                            #{rais.empresa.pessoa.documento}
+                        </p:column>                                    
+                        <p:column headerText="Empresa" >
+                            #{rais.empresa.pessoa.nome}
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+            </h:form>                     
+        </f:view>
+    </h:body>
+</ui:composition>
