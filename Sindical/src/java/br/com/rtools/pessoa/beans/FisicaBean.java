@@ -82,7 +82,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private final List<SelectItem> listaProfissoes = new ArrayList();
     private int idPais = 11;
     private int idProfissao = 0;
-    private int idIndexEndereco = 0;
     private int idIndexFisica = 0;
     private int idIndexPessoaEmp = 0;
     private Part file;
@@ -104,9 +103,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private String complemento = "";
     private PessoaEndereco pessoaEndereco = new PessoaEndereco();
     private boolean visibleEditarEndereco = false;
-    private int index_endereco = 0;
     private List<ServicoPessoa> listaServicoPessoa = new ArrayList<ServicoPessoa>();
     private boolean chkDependente = false;
+    
+    private int indexEndereco = 0;
     
     
     public void novo() {
@@ -558,6 +558,18 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
         }
     }
+    
+    public void alterarTodosEndereco() {
+        visibleEditarEndereco = false;
+        
+        for (int i = 0; i < listaPessoaEndereco.size(); i++) {
+            listaPessoaEndereco.get(i).setEndereco(pessoaEndereco.getEndereco());
+            listaPessoaEndereco.get(i).setNumero(pessoaEndereco.getNumero());
+            listaPessoaEndereco.get(i).setComplemento(pessoaEndereco.getComplemento());
+        }
+        
+        enderecox = new Endereco();
+    }
 
     public void adicionarEnderecos() {
         SalvarAcumuladoDB dB = new SalvarAcumuladoDBToplink();
@@ -582,7 +594,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             return;
         }
         // COMPARA ENDERECOS
-        // comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))
+        //comparaEndereco(pessoaEndeAnt, (PessoaEndereco) listaEnd.get(u))
         Endereco endereco = new Endereco();
 
         //GenericaSessao.put("enderecoNum", pessoaEndereco.getNumero());
@@ -592,7 +604,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public void editarPessoaEndereco(PessoaEndereco pessoaEnderecox, int index) {
         pessoaEndereco = pessoaEnderecox;
         visibleEditarEndereco = true;
-
+        indexEndereco = index;
         //GenericaSessao.put("enderecoPesquisa", pessoaEndereco.getEndereco());
         //log = pessoaEndereco.getEndereco().getLogradouro().getDescricao();
         //desc = pessoaEndereco.getEndereco().getDescricaoEndereco().getDescricao();
@@ -1246,14 +1258,6 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setRenderJuridicaPesquisa(boolean renderJuridicaPesquisa) {
         this.renderJuridicaPesquisa = renderJuridicaPesquisa;
-    }
-
-    public int getIdIndexEndereco() {
-        return idIndexEndereco;
-    }
-
-    public void setIdIndexEndereco(int idIndexEndereco) {
-        this.idIndexEndereco = idIndexEndereco;
     }
 
     public int getIdIndexFisica() {
