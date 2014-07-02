@@ -24,11 +24,19 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDB;
 import br.com.rtools.relatorios.db.RelatorioMovimentosDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -394,67 +402,137 @@ public class RelatorioMovimentoBean implements Serializable {
         // ENVIO DE EMAIL PARA EMPRESA SELECIONADA
         if (chkEmpresa && juridica.getId() != -1){
             try {
-                List<Pessoa> p = new ArrayList();
-                p.add(juridica.getPessoa());
+                List<Pessoa> pessoas = new ArrayList();
+                pessoas.add(juridica.getPessoa());
 
-                String[] ret = new String[2];
+                String mensagem = "";
+                List<File> fls = new ArrayList<File>();
                 if (!registro.isEnviarEmailAnexo()) {
-                    ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                            p,
-                            " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
-                            + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
-                            new ArrayList(),
-                            "Envio de Relatório");
+                    mensagem = " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
+                             + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />";
+//                    
+//                    ret = EnviarEmail.EnviarEmailPersonalizado(registro,
+//                            p,
+//                            " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
+//                            + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
+//                            new ArrayList(),
+//                            "Envio de Relatório");
                 } else {
-                    List<File> fls = new ArrayList<File>();
+                    
                     fls.add(new File(pathPasta + "/" + nomeDownload));
+                    mensagem = "<h5>Baixe seu relatório Anexado neste email</5><br /><br />";
+//                    ret = EnviarEmail.EnviarEmailPersonalizado(registro,
+//                            p,
+//                            " <h5>Baixe seu relatório Anexado neste email</5><br /><br />",
+//                            fls,
+//                            "Envio de Relatório");
+                }
+                
+                DaoInterface di = new Dao();
+                Mail mail = new Mail();
+                mail.setFiles(fls);
+                mail.setEmail(
+                        new Email(
+                                -1,
+                                DataHoje.dataHoje(),
+                                DataHoje.livre(new Date(), "HH:mm"),
+                                (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                                (Rotina) di.find(new Rotina(), 110),
+                                null,
+                                "Envio de Relatório",
+                                mensagem,
+                                false,
+                                false
+                        )
+                );
 
-                    ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                            p,
-                            " <h5>Baixe seu relatório Anexado neste email</5><br /><br />",
-                            fls,
-                            "Envio de Relatório");
+                List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+                EmailPessoa emailPessoa = new EmailPessoa();
+                for (Pessoa pe : pessoas) {
+                    emailPessoa.setDestinatario(pe.getEmail1());
+                    emailPessoa.setPessoa(pe);
+                    emailPessoa.setRecebimento(null);
+                    emailPessoas.add(emailPessoa);
+                    mail.setEmailPessoas(emailPessoas);
+                    emailPessoa = new EmailPessoa();
                 }
 
-                if (!ret[1].isEmpty()) {
-                    GenericaMensagem.warn("Envio para EMPRESA", ret[1]);
+                String[] retorno = mail.send("personalizado");
+
+                if (!retorno[1].isEmpty()) {
+
+                    GenericaMensagem.warn("Envio para EMPRESA", retorno[1]);
                 } else {
-                    GenericaMensagem.info("Envio para EMPRESA", ret[0]);
+                    GenericaMensagem.info("Envio para EMPRESA", retorno[0]);
                 }
-
             } catch (Exception e) {
             }
         }
         // ENVIO DE EMAIL PARA CONTABILIDADE SELECIONADA
+        
         if (chkContabilidade && !listaContabilidadeSelecionada.isEmpty()){
             for (int i = 0; i < listaContabilidadeSelecionada.size(); i++){
                 try {
-                    List<Pessoa> p = new ArrayList();
-                    p.add(listaContabilidadeSelecionada.get(i).getPessoa());
+                    List<Pessoa> pessoas = new ArrayList();
+                    pessoas.add(listaContabilidadeSelecionada.get(i).getPessoa());
 
-                    String[] ret = new String[2];
+                    String mensagem = "";
+                    List<File> fls = new ArrayList<File>();
                     if (!registro.isEnviarEmailAnexo()) {
-                        ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                                p,
-                                " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
-                                + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
-                                new ArrayList(),
-                                "Envio de Relatório");
+                        mensagem = " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
+                                 + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />";
+//                        ret = EnviarEmail.EnviarEmailPersonalizado(registro,
+//                                p,
+//                                " <h5>Visualize seu relatório clicando no link abaixo</5><br /><br />"
+//                                + " <a href='" + registro.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/relatorios/" + nomeDownload + "' target='_blank'>Clique aqui para abrir relatório</a><br />",
+//                                new ArrayList(),
+//                                "Envio de Relatório");
                     } else {
-                        List<File> fls = new ArrayList<File>();
                         fls.add(new File(pathPasta + "/" + nomeDownload));
+                        mensagem = "<h5>Baixe seu relatório Anexado neste email</5><br /><br />";
+                        
+//                        ret = EnviarEmail.EnviarEmailPersonalizado(registro,
+//                                p,
+//                                " <h5>Baixe seu relatório Anexado neste email</5><br /><br />",
+//                                fls,
+//                                "Envio de Relatório");
+                    }
+                    
+                    DaoInterface di = new Dao();
+                    Mail mail = new Mail();
+                    mail.setFiles(fls);
+                    mail.setEmail(
+                            new Email(
+                                    -1,
+                                    DataHoje.dataHoje(),
+                                    DataHoje.livre(new Date(), "HH:mm"),
+                                    (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                                    (Rotina) di.find(new Rotina(), 110),
+                                    null,
+                                    "Envio de Relatório",
+                                    mensagem,
+                                    false,
+                                    false
+                            )
+                    );
 
-                        ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                                p,
-                                " <h5>Baixe seu relatório Anexado neste email</5><br /><br />",
-                                fls,
-                                "Envio de Relatório");
+                    List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+                    EmailPessoa emailPessoa = new EmailPessoa();
+                    for (Pessoa pe : pessoas) {
+                        emailPessoa.setDestinatario(pe.getEmail1());
+                        emailPessoa.setPessoa(pe);
+                        emailPessoa.setRecebimento(null);
+                        emailPessoas.add(emailPessoa);
+                        mail.setEmailPessoas(emailPessoas);
+                        emailPessoa = new EmailPessoa();
                     }
 
-                    if (!ret[1].isEmpty()) {
-                        GenericaMensagem.warn("Envio para CONTABILIDADE", ret[1]);
+                    String[] retorno = mail.send("personalizado");
+
+                    if (!retorno[1].isEmpty()) {
+                        GenericaMensagem.warn("Envio para CONTABILIDADE", retorno[1]);
                     } else {
-                        GenericaMensagem.info("Envio para CONTABILIDADE", ret[0]);
+                        GenericaMensagem.info("Envio para CONTABILIDADE", retorno[0]);
                     }
 
                 } catch (Exception e) {

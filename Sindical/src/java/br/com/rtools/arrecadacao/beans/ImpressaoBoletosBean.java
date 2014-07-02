@@ -31,12 +31,21 @@ import br.com.rtools.relatorios.db.RelatorioContribuintesDBToplink;
 import br.com.rtools.relatorios.db.RelatorioGenericoDB;
 import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
+import br.com.rtools.utilitarios.GenericaMensagem;
+import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Linha;
+import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -1150,31 +1159,77 @@ public class ImpressaoBoletosBean implements Serializable {
             ImprimirBoleto imp = new ImprimirBoleto();
             imp.imprimirBoleto(mov, listaValores, listaVencimentos, false);
             String nome = imp.criarLink(jur.getPessoa(), reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
-            List<Pessoa> p = new ArrayList();
+            List<Pessoa> pessoas = new ArrayList();
+            pessoas.add(jur.getPessoa());
 
-            p.add(jur.getPessoa());
-
-            String[] ret = new String[2];
+            String mensagem = "";
+            //String[] ret = new String[2];
+            List<File> fls = new ArrayList<File>();
+            
             if (!reg.isEnviarEmailAnexo()) {
-
-                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-                        p,
-                        " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-                        + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
-                        + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />",
-                        new ArrayList(),
-                        "Envio de Boleto");
+                mensagem = " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+                         + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
+                         + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />";
+//                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+//                        p,
+//                        " <div style=\"background:#00ccff; padding: 15px; font-size:13pt\">Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+//                        + " <h5>Visualize seu boleto clicando no link abaixo</h5><br /><br />"
+//                        + " <a href=\"" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "\">Clique aqui para abrir boleto</a><br />",
+//                        new ArrayList(),
+//                        "Envio de Boleto");
             } else {
-                List<File> fls = new ArrayList<File>();
+                
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
-
-                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-                        p,
-                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
-                        + " <h5>Baixe seu boleto anexado neste email</5><br /><br />",
-                        fls,
-                        "Envio de Boleto");
+                mensagem = " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+                         + " <h5>Baixe seu boleto anexado neste email</5><br /><br />";
+//                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
+//                        p,
+//                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + jur.getPessoa().getNome() + " </b></div><br />"
+//                        + " <h5>Baixe seu boleto anexado neste email</5><br /><br />",
+//                        fls,
+//                        "Envio de Boleto");
             }
+            
+            DaoInterface di = new Dao();
+            Mail mail = new Mail();
+            mail.setFiles(fls);
+            mail.setEmail(
+                    new Email(
+                            -1,
+                            DataHoje.dataHoje(),
+                            DataHoje.livre(new Date(), "HH:mm"),
+                            (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                            (Rotina) di.find(new Rotina(), 90),
+                            null,
+                            "Envio de Boleto",
+                            mensagem,
+                            false,
+                            false
+                    )
+            );
+            
+            List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+            for (Pessoa pe : pessoas) {
+                emailPessoa.setDestinatario(pe.getEmail1());
+                emailPessoa.setPessoa(pe);
+                emailPessoa.setRecebimento(null);
+                emailPessoas.add(emailPessoa);
+                mail.setEmailPessoas(emailPessoas);
+                emailPessoa = new EmailPessoa();
+            }
+            
+            String[] retorno = mail.send("personalizado");
+//
+//            if (!retorno[1].isEmpty()) {
+//                msgConfirma = retorno[1];
+//                GenericaMensagem.warn("Erro", msgConfirma);
+//            } else {
+//                msgConfirma = retorno[0];
+//                GenericaMensagem.info("Sucesso", msgConfirma);
+//            }
+//            
+            
 //            if (!ret[1].isEmpty())
 //                msgImpressao = ret[1];
 //            else

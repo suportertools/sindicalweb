@@ -9,8 +9,12 @@ import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
+import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.utilitarios.*;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -18,6 +22,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
@@ -1641,11 +1646,53 @@ public class JuridicaBean implements Serializable {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         EnvioEmailsDB dbE = new EnvioEmailsDBToplink();
         if (juridica.getId() != -1) {
-            String msg = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), juridica);
-            if (msg.equals("Enviado com Sucesso. Confira email cadastrado!")) {
-                dbE.insert(envioEmails);
-                GenericaMensagem.warn("Erro", "Enviado com Sucesso. Confira email cadastrado!");
+//            String msg = EnviarEmail.EnviarEmail((Registro) salvarAcumuladoDB.pesquisaCodigo(1, "Registro"), juridica);
+//            if (msg.equals("Enviado com Sucesso. Confira email cadastrado!")) {
+//                dbE.insert(envioEmails);
+//                GenericaMensagem.warn("Erro", "Enviado com Sucesso. Confira email cadastrado!");
+//            }
+            
+            DaoInterface di = new Dao();
+            Mail mail = new Mail();
+            mail.setFiles(new ArrayList());
+            mail.setEmail(
+                    new Email(
+                            -1,
+                            DataHoje.dataHoje(),
+                            DataHoje.livre(new Date(), "HH:mm"),
+                            (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                            (Rotina) di.find(new Rotina(), 82),
+                            null,
+                            "Envio de Login e Senha",
+                            "<h5><b>Login: </b> " + juridica.getPessoa().getLogin() + "</h5><br /> <h5><b>Senha: </b> " + juridica.getPessoa().getSenha()+"</h5>",
+                            false,
+                            false
+                    )
+            );
+            List<Pessoa> pessoas = new ArrayList();
+            pessoas.add(juridica.getPessoa());
+            
+            List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+            for (Pessoa pe : pessoas) {
+                emailPessoa.setDestinatario(pe.getEmail1());
+                emailPessoa.setPessoa(pe);
+                emailPessoa.setRecebimento(null);
+                emailPessoas.add(emailPessoa);
+                mail.setEmailPessoas(emailPessoas);
+                emailPessoa = new EmailPessoa();
             }
+            
+            String[] retorno = mail.send("personalizado");
+
+            if (!retorno[1].isEmpty()) {
+                msgConfirma = retorno[1];
+                GenericaMensagem.error("Erro", msgConfirma);
+            } else {
+                msgConfirma = retorno[0];
+                GenericaMensagem.info("Sucesso", msgConfirma);
+            }
+            
         } else {
             GenericaMensagem.warn("Erro", "Pesquisar uma Empresa para envio!");
         }

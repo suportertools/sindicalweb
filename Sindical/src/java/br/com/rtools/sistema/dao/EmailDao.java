@@ -29,7 +29,7 @@ public class EmailDao extends DB {
                     listQuery.add("EP.email.data = :dateStart");
                 }
             }
-            if (!filterBy.isEmpty()) {
+            if (filterBy != null && !filterBy.isEmpty()) {
                 if (!descricaoPesquisa.isEmpty()) {
                     if (filterBy.equals("assunto")) {
                     } else if (filterBy.equals("email")) {
@@ -55,7 +55,7 @@ public class EmailDao extends DB {
                     queryString += " AND " + o.toString();
                 }
             }
-            if (!orderBy.isEmpty()) {
+            if (orderBy != null && !orderBy.isEmpty()) {
                 queryString += " ORDER BY " + orderBy + " , EP.email.id DESC  ";
             } else {
                 queryString += " ORDER BY EP.email.data DESC, EP.email.hora DESC, EP.email.id DESC ";
