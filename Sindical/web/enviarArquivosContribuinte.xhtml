@@ -55,20 +55,20 @@
                             <h:panelGrid id="i_panel_filtro" columns="6" cellpadding="5">
                                 <p:outputLabel value="Convenção: " />
                                 <p:selectCheckboxMenu label="Selecionar convenção" value="#{enviarArquivosBean.convencaoSelecionada}">
-                                    <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" />
-                                    <p:ajax event="change" update="i_panel_filtro i_panel" />
+                                    <p:ajax event="toggleSelect" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                    <p:ajax event="change" update="i_panel_filtro i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
                                     <f:selectItems value="#{enviarArquivosBean.convencaos}" />
                                 </p:selectCheckboxMenu>
                                 <p:outputLabel value="Grupo cidade:"/>
                                 <p:selectCheckboxMenu label="Selecionar grupo cidade" value="#{enviarArquivosBean.grupoCidadeSelecionada}" disabled="#{enviarArquivosBean.grupoCidades == null}">
-                                    <p:ajax event="toggleSelect" update="i_panel" />
-                                    <p:ajax event="change" update="i_panel"  />
+                                    <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                    <p:ajax event="change" update="i_panel"  listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
                                     <f:selectItems value="#{enviarArquivosBean.grupoCidades}" />
                                 </p:selectCheckboxMenu>
                                 <p:outputLabel value="Cnae conveção" />
                                 <p:selectCheckboxMenu label="Selecionar cnae convenção" value="#{enviarArquivosBean.cnaeSelecionado}" disabled="#{enviarArquivosBean.cnaes == null}">
-                                    <p:ajax event="toggleSelect" update="i_panel" />
-                                    <p:ajax event="change" update="i_panel" />
+                                    <p:ajax event="toggleSelect" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
+                                    <p:ajax event="change" update="i_panel" listener="#{enviarArquivosBean.listaContribuintes.clear()}"/>
                                     <f:selectItems value="#{enviarArquivosBean.cnaes}" />
                                 </p:selectCheckboxMenu>
                             </h:panelGrid>
