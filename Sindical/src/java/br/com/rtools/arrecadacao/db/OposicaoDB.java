@@ -29,7 +29,7 @@ public interface OposicaoDB {
 
     public boolean validaOposicao(Oposicao oposicao);
 
-    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes);
+    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes, String order);
 
     public List<ConvencaoPeriodo> listaConvencaoPeriodoPorOposicao();
 

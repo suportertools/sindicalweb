@@ -208,7 +208,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
     }
 
     @Override
-    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes) {
+    public List filtroRelatorio(int idEmpresa, Integer idFuncionario, String emissaoInicial, String emissaoFinal, String convencaoPeriodo, Relatorios r, String inCnaes, String order) {
         try {
             List listQuery = new ArrayList();
             String queryEmissao = "";
@@ -264,7 +264,15 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
                 }
             }
             String orderQuery = " O.dt_emissao ASC, PES.ds_nome ASC, P.ds_nome ASC ";
-            if (r != null) {
+            if (!order.isEmpty()) {
+                if (order.equals("empresa")) {
+                    orderQuery = " PES.ds_nome ASC ";
+                } else if (order.equals("funcionario")) {
+                    orderQuery = " P.ds_nome ASC ";
+                } else if (order.equals("emissao")) {
+                    orderQuery = " O.dt_emissao ASC ";
+                }
+            } else if (r != null) {
                 if (r.getId() != -1) {
                     if (!r.getQryOrdem().isEmpty()) {
                         orderQuery = r.getQryOrdem();
@@ -299,7 +307,7 @@ public class OposicaoDBToplink extends DB implements OposicaoDB {
     @Override
     public List<Cnae> listaCnaesPorOposicaoJuridica(String inIdsCnaeConvencao) {
         try {
-            Query query = getEntityManager().createQuery(" SELECT CC.cnae FROM CnaeConvencao AS CC WHERE CC.convencao.id IN("+inIdsCnaeConvencao+") ORDER BY CC.cnae.cnae ASC, CC.cnae.numero ASC");
+            Query query = getEntityManager().createQuery(" SELECT CC.cnae FROM CnaeConvencao AS CC WHERE CC.convencao.id IN(" + inIdsCnaeConvencao + ") ORDER BY CC.cnae.cnae ASC, CC.cnae.numero ASC");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;

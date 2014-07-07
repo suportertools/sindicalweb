@@ -49,6 +49,9 @@
                                         <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[3]}" onLabel="P. Cnae - Edição" offLabel="P. Cnae - Editar" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
                                             <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
                                         </p:selectBooleanButton>
+                                        <p:selectBooleanButton value="#{relatorioOposicaoBean.filtro[4]}" onLabel="Ordernação" offLabel="Ordernação" offIcon="ui-icon-circle-plus" onIcon="ui-icon-circle-minus" style="width: 165px; text-align: left;">
+                                            <p:ajax event="change" update="@this, :form_relatorio:id_panel_relatorio" listener="#{relatorioOposicaoBean.limpar}" />
+                                        </p:selectBooleanButton>
                                     </h:panelGrid>
                                 </p:tab>
                             </p:accordionPanel>
@@ -174,7 +177,21 @@
                                             </h:panelGrid>
                                         </p:panel>                                        
                                     </h:column>
-                                </c:if>                                    
+                                </c:if>  
+                                <c:if test="#{relatorioOposicaoBean.filtro[4]}">
+                                    <h:column>
+                                        <h:panelGrid columns="3" styleClass="margin-top-max">
+                                            <p:outputLabel value="Ordenar por: " />
+                                            <p:selectOneMenu value="#{relatorioOposicaoBean.order}" >
+                                                <p:ajax event="change" update="@this" />
+                                                <f:selectItem itemValue="empresa" itemLabel="Empresa" />
+                                                <f:selectItem itemValue="funcionario" itemLabel="Funcionário" />
+                                                <f:selectItem itemValue="emissao" itemLabel="Emissão" />
+                                            </p:selectOneMenu>
+                                            <p:commandButton icon="ui-icon-close" action="#{relatorioOposicaoBean.close('order')}" title="Remover filtro" update=":form_relatorio:"/>
+                                        </h:panelGrid>
+                                    </h:column>
+                                </c:if>
                                 <c:if test="#{relatorioOposicaoBean.tipoRelatorio == 'Simples'}">
                                     * Todas oposições
                                 </c:if>
