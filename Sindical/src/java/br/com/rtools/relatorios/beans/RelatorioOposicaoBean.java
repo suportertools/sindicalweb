@@ -21,7 +21,9 @@ import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.GenericaString;
+import br.com.rtools.utilitarios.PF;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -72,15 +74,17 @@ public class RelatorioOposicaoBean implements Serializable {
     private String indexAccordion;
     private String porPesquisa;
     private String descPorPesquisa;
+    private String order;
 
     @PostConstruct
     public void init() {
         oposicao = new Oposicao();
-        filtro = new Boolean[4];
+        filtro = new Boolean[5];
         filtro[0] = false;
         filtro[1] = false;
         filtro[2] = false;
         filtro[3] = false;
+        filtro[4] = false;
         selectedConvencao = new ArrayList<Convencao>();
         selectedGrupoCidades = new ArrayList<GrupoCidade>();
         selectedCnae = new ArrayList<Cnae>();
@@ -102,6 +106,7 @@ public class RelatorioOposicaoBean implements Serializable {
         indexAccordion = "Simples";
         porPesquisa = "";
         descPorPesquisa = "";
+        order = "";
     }
 
     @PreDestroy
@@ -179,7 +184,7 @@ public class RelatorioOposicaoBean implements Serializable {
                     listDetalhePesquisa.add(" Cnaes: " + cnaesList + "; ");
                 }
             }
-            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes);
+            List list = oposicaoDB.filtroRelatorio(pEmpresaI, pPessoaOposicaoI, pIStringI, pFStringI, referencia, relatorios, inCnaes, order);
             if (listDetalhePesquisa.isEmpty()) {
                 detalheRelatorio += "Pesquisar todos registros!";
             } else {
@@ -223,7 +228,7 @@ public class RelatorioOposicaoBean implements Serializable {
         }
         try {
             FacesContext faces = FacesContext.getCurrentInstance();
-            JasperReport jasper = (JasperReport) JRLoader.loadObject(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper()));
+            JasperReport jasper = (JasperReport) JRLoader.loadObject(new File(((ServletContext) faces.getExternalContext().getContext()).getRealPath(relatorios.getJasper())));
             try {
                 JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource((Collection) parametroOposicao);
                 JasperPrint print = JasperFillManager.fillReport(jasper, null, dtSource);
@@ -322,6 +327,9 @@ public class RelatorioOposicaoBean implements Serializable {
             listSelectItem[0] = new ArrayList<SelectItem>();
             listSelectItem[1] = new ArrayList<SelectItem>();
         }
+        if (!filtro[4]) {
+            order = "";
+        }
     }
 
     public void close(String close) {
@@ -345,8 +353,11 @@ public class RelatorioOposicaoBean implements Serializable {
             listSelectItem = new ArrayList[2];
             listSelectItem[0] = new ArrayList<SelectItem>();
             listSelectItem[1] = new ArrayList<SelectItem>();
+        } else if (close.equals("order")) {
+            order = "";
+            filtro[4] = false;
         }
-        RequestContext.getCurrentInstance().update("form_relatorio:id_panel");
+        PF.update("form_relatorio:id_panel");
     }
 
     public String getIndexAccordion() {
@@ -636,6 +647,14 @@ public class RelatorioOposicaoBean implements Serializable {
 
     public void setSelectedCnae(List selectedCnae) {
         this.selectedCnae = selectedCnae;
+    }
+
+    public String getOrder() {
+        return order;
+    }
+
+    public void setOrder(String order) {
+        this.order = order;
     }
 
 }
