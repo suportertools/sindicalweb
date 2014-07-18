@@ -529,6 +529,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  from Fisica f "
                     + " where UPPER(f.pessoa.nome) like '%" + nome + "%'";
             Query qry = getEntityManager().createQuery(textQuery);
+            
+            qry.setMaxResults(200);
             return qry.getResultList();
         } catch (Exception e) {
             return new ArrayList();

@@ -60,8 +60,8 @@
                                 </h:column>
                                 <h:column>
                                     <h:inputText value="#{atendimentoBean.ateMovimento.pessoa.documento}" maxlength="14" size="10" class="cpf" id="idCPF" disabled="#{atendimentoBean.desabilitaCamposPessoa}">
-                                        <a4j:ajax event="blur" listener="#{atendimentoBean.verificaCPF('cpf')}" render="idCPF idRG idNome idTelefone idEditarPessoa idMsgCPF idVerificaPessoaOposicao"/>
-                                        <a4j:ajax id="idVerificaPessoaOposicao" event="change" listener="#{atendimentoBean.verificaPessoaOposicao}" render="idPessoaOposicao"/>
+                                        <a4j:ajax event="blur" listener="#{atendimentoBean.verificaCPF('cpf')}" render="idForm"/>
+                                        <a4j:ajax event="change" listener="#{atendimentoBean.verificaPessoaOposicao}" render="idPessoaOposicao"/>
                                     </h:inputText>
                                     <h:outputText value=" #{atendimentoBean.msgCPF} " id="idMsgCPF" class="fontePadraoVermelho margin-left" /> 
                                     <h:outputText value=" #{atendimentoBean.msgOposicao} " id="idPessoaOposicao" class="fontePadraoVermelho margin-left" />
@@ -71,7 +71,7 @@
                                 </h:column>
                                 <h:column>
                                     <h:inputText id="idRG" value="#{atendimentoBean.ateMovimento.pessoa.rg}" maxlength="14" size="10" disabled="#{atendimentoBean.desabilitaCamposPessoa}">
-                                        <a4j:ajax event="blur" listener="#{atendimentoBean.verificaCPF('rg')}" render="idRG idCPF idNome idTelefone idEditarPessoa" />
+                                        <a4j:ajax event="blur" listener="#{atendimentoBean.verificaCPF('rg')}" render="idForm" />
                                     </h:inputText>
                                 </h:column>
                                 <h:column>
@@ -86,6 +86,13 @@
                                 </h:column>
                                 <h:column>
                                     <h:inputText id="idTelefone" class="telefone" value="#{atendimentoBean.ateMovimento.pessoa.telefone}" maxlength="15" size="10" disabled="#{atendimentoBean.desabilitaCamposPessoa}" />
+                                </h:column>
+                                <h:column>
+                                    <h:outputLabel value="Empresa: "/>
+                                </h:column>
+                                <h:column>
+                                    <h:commandLink id="empresa_um" value="#{atendimentoBean.empresa.pessoa.nome}" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id != -1}"/>
+                                    <h:commandLink id="empresa_dois" value="Pesquisar Empresa" action="#{chamadaPaginaBean.pesquisaPessoaJuridica()}" rendered="#{atendimentoBean.empresa.id == -1}"/>
                                 </h:column>
                                 <h:column>
                                     <h:outputLabel value="Histórico: "/>
@@ -202,6 +209,18 @@
                                                 </f:facet>
                                                 <h:outputLabel value="#{linha.filial.matriz.pessoa.nome}" styleClass="fontePadrao"/>
                                             </rich:column>
+                                            <rich:column style="text-align: center">
+                                                <f:facet name="header">
+                                                    <h:outputText value="Status"/>
+                                                </f:facet>
+                                                <h:outputLabel value="#{linha.status.descricao}" styleClass="fontePadrao"/>
+                                            </rich:column>
+                                            <rich:column style="text-align: center">
+                                                <f:facet name="header">
+                                                    <h:outputText value="Reimprimir"/>
+                                                </f:facet>
+                                                <h:commandLink value="#{atendimentoBean.verSenha(linha)}" action="#{atendimentoBean.imprimirSenha(linha)}" styleClass="fontePadrao"/>
+                                            </rich:column>
                                         </rich:dataTable>
                                     </h:panelGroup>
                                 </h:column>                    
@@ -220,7 +239,7 @@
                                     </h:panelGrid>
 
                                     <br />
-                                    <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{atendimentoBean.salvar}" oncomplete="modalMensagem()" render="outConfirma idFormAtendimento idForm" rendered="#{!atendimentoBean.editaPessoa}"/>
+                                    <h:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{atendimentoBean.salvar}" rendered="#{!atendimentoBean.editaPessoa}" onclick="fecharModal()"/>
                                     <a4j:commandLink styleClass="idNovo iLink" value="Sim" title="Salvar" action="#{atendimentoBean.atualizarPessoa}" oncomplete="modalMensagem()" render="outConfirma idFormAtendimento idForm" rendered="#{atendimentoBean.editaPessoa}"/>
                                     <a4j:commandLink styleClass="idNovo iLink closeModal" value="Não" title="Cancelar"/>
                                 </center>

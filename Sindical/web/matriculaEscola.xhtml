@@ -61,8 +61,9 @@
                                         <h:panelGrid columns="8">
                                             <p:outputLabel value="PESQUISAR ALUNO"  style="border-bottom: 1px dashed gray; color: gray;"  rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id == -1}" for="idPesquisarAluno"/>
                                             <p:outputLabel  id="idAluno" value="#{matriculaEscolaBean.matriculaEscola.aluno.nome}"  style="margin-left: 8px" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" />
-                                            <p:outputLabel  value=" - SÓCIO"  rendered="#{matriculaEscolaBean.socio}"/>
                                             <p:outputLabel  value=" - #{matriculaEscolaBean.idadeAluno} ano (s)"  rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}" styleClass="margin-left-max"/>
+                                            <p:outputLabel  value=" - MATRÍCULA #{matriculaEscolaBean.socios.matriculaSocios.nrMatricula}"  rendered="#{matriculaEscolaBean.socios.id != -1}" style="font-weight: bold"/>
+                                            <p:outputLabel  value=" - #{matriculaEscolaBean.socios.matriculaSocios.categoria.categoria}"  rendered="#{matriculaEscolaBean.socios.id != -1}" />
                                             <h:panelGrid columns="2" rendered="#{!matriculaEscolaBean.ocultaDescontoFolha}">
                                                 <p:selectBooleanCheckbox id="idDescontoFolha" value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.desabilitaDescontoFolha}" rendered="#{!matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?"/>
                                                 <p:selectBooleanCheckbox value="#{matriculaEscolaBean.matriculaEscola.descontoFolha}"  disabled="#{matriculaEscolaBean.matriculaIndividual.matriculaEscola.descontoFolha}" rendered="#{matriculaEscolaBean.desabilitaCamposMovimento}" itemLabel="Desconto em folha?">
@@ -75,7 +76,7 @@
                                     <h:column>
                                         <h:panelGrid columns="3">
                                             <p:outputLabel  id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" />
-                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="dgl_painel_trocar_responsavel.show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}"/>
+                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="dgl_painel_trocar_responsavel.show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}"/>
                                             <p:commandButton value="Alterar dia vencimento" onclick="dgl_alterar_dia_vencto.show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
                                         </h:panelGrid>
                                     </h:column>
@@ -283,7 +284,7 @@
                                         <p:inputText readonly="true" dir="RTL" id="idValorLiquido" size="5" maxlength="10" value="#{matriculaEscolaBean.valorLiquido}" title="Valor Liquído"  disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
                                     </p:column>
                                     <p:column style="text-align: center">
-                                        <p:selectOneMenu id="cbNumeros" value="#{matriculaEscolaBean.matriculaEscola.numeroParcelas}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}">
+                                        <p:selectOneMenu id="cbNumeros" value="#{matriculaEscolaBean.matriculaEscola.numeroParcelas}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" style="padding-right: 10px">
                                             <p:ajax event="change" listener="#{matriculaEscolaBean.calculaValorLiquido}" update="idTabela" />
                                             <f:selectItems value="#{matriculaEscolaBean.listaNumeros}" />
                                         </p:selectOneMenu>
@@ -383,8 +384,8 @@
                             </p:tabView>
                         </p:panel>
                         <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
-                            <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
-                            <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socio == ''}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                            <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
+                            <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
                         </p:dialog>                        
                         <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
                             <h:panelGrid columns="2" id="i_alterar_dia_vencto">

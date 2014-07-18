@@ -438,6 +438,23 @@
                                                 <p:inputMask value="#{fisicaBean.fisica.aposentadoria}" mask="99/99/9999" size="10" />                                    
                                             </p:column>
                                         </h:panelGrid>
+                                        
+                                        <h:panelGrid columns="3">
+                                            <p:column>
+                                                <p:outputLabel value="Título de Eleitor"/><br />
+                                                <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloEleitor}" />
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="Seção"/><br />
+                                                <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloSecao}" />
+                                            </p:column>
+                                            
+                                            <p:column>
+                                                <p:outputLabel value="Zona"/><br />
+                                                <p:inputText size="20" maxlength="20" value="#{fisicaBean.fisica.tituloZona}" />
+                                            </p:column>
+                                        </h:panelGrid>
                                     </p:tab>
 
                                     <p:tab id="i_historico" title="Histórico">
@@ -489,10 +506,8 @@
                                 </p:tabView>
 
                                 <!-- ENDEREÇO -->
-                                <p:accordionPanel id="i_acc_tab_endereco" activeIndex="#{fisicaBean.indexNovoEndereco}" widgetVar="wdg_acc_end" >
-
-                                    <p:tab id="i_tab_endereco" title="Endereço da Pessoa">
-
+                                <p:accordionPanel id="i_acc_tab_endereco" activeIndex="#{fisicaBean.indexNovoEndereco}" widgetVar="wdg_acc_end">
+                                    <p:tab id="i_tab_endereco" title="Endereço #{fisicaBean.strEndereco}" closable="#{fisicaBean.listaPessoaEndereco.size() == 0}">
                                         <h:panelGrid id="i_panel_add_endereco">
                                             <h:panelGrid columns="2" rendered="#{fisicaBean.enderecox.id == -1 and fisicaBean.listaPessoaEndereco.size() == 0}">
                                                 <p:commandButton icon="ui-icon-search" title="Pesquisar Endereço"  action="#{chamadaPaginaBean.pesquisaEndereco}" />
@@ -517,7 +532,7 @@
 
                                                     <p:column>
                                                         <br />
-                                                        <p:commandButton icon="ui-icon-plus"  action="#{fisicaBean.adicionarEnderecos}" update="i_panel_grid_pendereco i_panel_add_endereco" title="Adicionar"/>
+                                                        <p:commandButton icon="ui-icon-plus"  action="#{fisicaBean.adicionarEnderecos}" update="i_panel_grid_pendereco i_panel_add_endereco i_acc_tab_endereco" title="Adicionar"/>
                                                     </p:column>
                                                 </h:panelGrid>
                                             </h:panelGrid>

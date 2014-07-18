@@ -190,14 +190,24 @@ public class ExtratoTelaJSFBean implements Serializable {
                 its = 0;
             }
 
-            if (!boletoInicial.equals("") && boletoFinal.equals("")) {
+            if (!boletoInicial.isEmpty() && boletoFinal.isEmpty()) {
                 boletoFinal = boletoInicial;
             }
 
             if (boletoInicial.equals("") && !boletoFinal.equals("")) {
                 boletoInicial = boletoFinal;
             }
+            
+//chkData, chkContribuicao, chkNrBoletos, chkEmpresa, chkTipo, tipoDataPesquisa,
+//                        dtInicial, dtFinal, dataRefInicial, dataRefFinal, ic, its, boletoInicial,
+//                        boletoFinal, getPessoa().getId(), ordenacao
 
+            if (!chkContribuicao && !chkNrBoletos && !chkEmpresa && !chkTipo && dataInicial.isEmpty() && dataFinal.isEmpty() && 
+                 dataRefInicial.isEmpty() && dataRefFinal.isEmpty() && ic == 0 && its == 0 && boletoInicial.isEmpty() && boletoFinal.isEmpty() && getPessoa().getId() == -1){
+                return new ArrayList();
+            }
+        
+            
             if (porPesquisa.equals("todos")) {
                 if (!dataInicial.equals("") && (!dataFinal.equals(""))) {
                     dtInicial = DataHoje.converte(dataInicial);

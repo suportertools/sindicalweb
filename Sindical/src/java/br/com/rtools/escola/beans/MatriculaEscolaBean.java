@@ -108,6 +108,7 @@ public class MatriculaEscolaBean implements Serializable {
     private Pessoa responsavel;
     private PessoaComplemento pessoaComplemento;
     private Registro registro;
+    private Socios socios;
     private List listaGridMEscola;
     private List<SelectItem> listaStatus;
     private List<FTipoDocumento> listaFTipoDocumento;
@@ -159,7 +160,6 @@ public class MatriculaEscolaBean implements Serializable {
     private boolean ocultaBotaoSalvar;
     private boolean ocultaDescontoFolha;
     private boolean responsavelNaoSocio;
-    private boolean socio;
     private boolean taxa;
     private boolean visibility;
     private String comoPesquisa;
@@ -201,6 +201,7 @@ public class MatriculaEscolaBean implements Serializable {
         responsavel = new Pessoa();
         pessoaComplemento = new PessoaComplemento();
         registro = new Registro();
+        socios = new Socios();
         listaGridMEscola = new ArrayList();
         listaStatus = new ArrayList<SelectItem>();
         listaFTipoDocumento = new ArrayList<FTipoDocumento>();
@@ -253,7 +254,6 @@ public class MatriculaEscolaBean implements Serializable {
         ocultaBotaoSalvar = false;
         ocultaDescontoFolha = true;
         responsavelNaoSocio = false;
-        socio = false;
         taxa = false;
         visibility = false;
         comoPesquisa = "";
@@ -352,13 +352,13 @@ public class MatriculaEscolaBean implements Serializable {
                 }
                 horaInicial = matriculaIndividual.getInicio();
                 horaFinal = matriculaIndividual.getTermino();
-                periodoMeses = DataHoje.quantidadeMeses(matriculaIndividual.getDataInicio(), matriculaIndividual.getDataTermino()) + 1;
+                periodoMeses = DataHoje.quantidadeMeses(matriculaIndividual.getDataInicio(), matriculaIndividual.getDataTermino());
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesAnoInicialExtenso", DataHoje.dataExtenso(matriculaIndividual.getDataInicioString(), 1)));
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$mesAnoFinalExtenso", DataHoje.dataExtenso(matriculaIndividual.getDataTerminoString(), 1)));
             } else {
                 turmax = ((MatriculaTurma) salvarAcumuladoDB.find(matriculaTurma)).getTurma();
                 contratoCurso = matriculaTurma.getTurma().getCursos().getDescricao();
-                periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino()) + 1;
+                periodoMeses = DataHoje.quantidadeMeses(turma.getDtInicio(), turma.getDtTermino());
                 if (turmax.isSegunda()) {
                     listaDiaSemana.add("Seg");
                 }
@@ -537,6 +537,9 @@ public class MatriculaEscolaBean implements Serializable {
             } else {
                 matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("$localTrabalhoResponsavel", ""));
             }
+            
+            matriculaContrato.setDescricao(matriculaContrato.getDescricao().replace("<br>", "<br />"));
+            
             try {
                 File dirFile = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/contrato/"));
                 if (!dirFile.exists()) {
@@ -671,7 +674,9 @@ public class MatriculaEscolaBean implements Serializable {
                 }
                 int dataInicioInteger = DataHoje.converteDataParaInteger(matriculaIndividual.getDataInicioString());
                 int dataFinalInteger = DataHoje.converteDataParaInteger(matriculaIndividual.getDataTerminoString());
-                int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
+                //int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
+                int dataHojeInteger = DataHoje.converteDataParaInteger(matriculaEscola.getDataMatriculaString());
+                
                 if (dataInicioInteger < dataHojeInteger) {
                     mensagem = "A data inicial do curso deve ser maior ou igual a data de hoje!";
                     return;
@@ -728,7 +733,11 @@ public class MatriculaEscolaBean implements Serializable {
 //            }
 //        }
         if (tipoMatricula.equals("Individual")) {
-            matriculaIndividual.setCurso((Servicos) sv.find(new Servicos(), Integer.parseInt(listaIndividual.get(idIndividual).getDescription())));
+            if (Integer.parseInt(listaIndividual.get(idIndividual).getDescription()) != 0)
+                matriculaIndividual.setCurso((Servicos) sv.find(new Servicos(), Integer.parseInt(listaIndividual.get(idIndividual).getDescription())));
+            else
+                matriculaIndividual.setCurso(null);
+            
             matriculaIndividual.setProfessor((Professor) sv.find(new Professor(), Integer.parseInt(listaProfessor.get(idProfessor).getDescription())));
         } else if (tipoMatricula.equals("Turma")) {
 //            matriculaTurma.setTurma((Turma) sv.pesquisaCodigo(Integer.parseInt(listaTurma.get(idTurma).getDescription()), "Turma"));
@@ -743,7 +752,7 @@ public class MatriculaEscolaBean implements Serializable {
             MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
             FunctionsDB functionsDB = new FunctionsDBTopLink();
             int idNumeroVagas = functionsDB.vagasEscolaTurma(matriculaTurma.getTurma().getId());
-            if (idNumeroVagas == 0) {
+            if (idNumeroVagas == 0 && !tipoMatricula.equals("Individual")) {
                 matriculaEscola.setId(-1);
                 matriculaTurma.setId(-1);
                 matriculaIndividual.setId(-1);
@@ -1114,12 +1123,12 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public void atualizaValor() {
-        if (turma.getId() != -1) {
+        //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
             FunctionsDB functionsDB = new FunctionsDBTopLink();
             valor = Float.toString(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 0));
             matriculaEscola.setDescontoAteVencimento(functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 1));
             vTaxa = functionsDB.valorServico(aluno.getPessoa().getId(), idServico, DataHoje.dataHoje(), 2);
-        }
+        //}
     }
 
     public void updateGrid() {
@@ -1256,7 +1265,7 @@ public class MatriculaEscolaBean implements Serializable {
                             if (idResponsavelEmpresa != -1) {
                                 JuridicaDB juridicaDB = new JuridicaDBToplink();
                                 Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
-                                if (juridicaB.getId() != -1) {
+                                if (juridicaB != null && juridicaB.getId() != -1) {
                                     pessoaResponsavel = (Pessoa) salvarAcumuladoDB.find(new Pessoa(), idResponsavelEmpresa);
                                 } else {
                                     pessoaResponsavel = pessoaResponsavelTitular;
@@ -1574,8 +1583,12 @@ public class MatriculaEscolaBean implements Serializable {
         if (listaProfessor.isEmpty()) {
             SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
             List<Professor> list = (List<Professor>) sv.listaObjeto("Professor", true);
-            for (int i = 0; i < list.size(); i++) {
-                listaProfessor.add(new SelectItem(i, list.get(i).getProfessor().getNome(), "" + list.get(i).getId()));
+            if (!list.isEmpty()){
+                for (int i = 0; i < list.size(); i++) {
+                    listaProfessor.add(new SelectItem(i, list.get(i).getProfessor().getNome(), "" + list.get(i).getId()));
+                }
+            }else{
+                listaProfessor.add(new SelectItem(0, "Nenhum Professor Cadastrado", "0"));
             }
         }
         return listaProfessor;
@@ -1602,7 +1615,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public List<SelectItem> getListaNumeros() {
         if (listaNumeros.isEmpty()) {
-            for (int i = 1; i <= 12; i++) {
+            for (int i = 1; i <= 24; i++) {
                 listaNumeros.add(new SelectItem(Integer.toString(i)));
             }
         }
@@ -1724,10 +1737,17 @@ public class MatriculaEscolaBean implements Serializable {
         if (listaIndividual.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
             List list = db.pesquisaTodos(151);
-            for (int i = 0; i < list.size(); i++) {
-                listaIndividual.add(new SelectItem((int) i,
-                        (String) ((Servicos) list.get(i)).getDescricao(),
-                        Integer.toString(((Servicos) list.get(i)).getId())));
+            if (!list.isEmpty()){
+                for (int i = 0; i < list.size(); i++) {
+                    listaIndividual.add(new SelectItem((int) i,
+                            (String) ((Servicos) list.get(i)).getDescricao(),
+                            Integer.toString(((Servicos) list.get(i)).getId())));
+                }
+            }else{
+                listaIndividual.add(new SelectItem(0,
+                                    "Sem Serviço para esta rotina",
+                                    "0")
+                );
             }
         }
         return listaIndividual;
@@ -1896,7 +1916,7 @@ public class MatriculaEscolaBean implements Serializable {
 
     public MatriculaEscola getMatriculaEscola() {
         getAluno();
-        if (socio == false) {
+        if (socios.getId() == -1) {
             getJuridica();
         }
         if (matriculaEscola.getFilial().getId() == -1) {
@@ -1947,10 +1967,12 @@ public class MatriculaEscolaBean implements Serializable {
             if (listaIndividual.isEmpty()) {
                 getListaIndividual();
             }
-            if (turma.getId() != -1) {
-                idServico = turma.getCursos().getId();
-            }
+            //if (turma.getId() != -1) {
+                //idServico = turma.getCursos().getId();
+                idServico = Integer.valueOf(listaIndividual.get(idIndividual).getDescription());
+            //}
         } else {
+            idServico = 0;
             if (turma.getId() != -1) {
                 idServico = turma.getCursos().getId();
             }
@@ -2013,22 +2035,9 @@ public class MatriculaEscolaBean implements Serializable {
         this.desabilitaCampo = desabilitaCampo;
     }
 
-    public boolean isSocio() {
-        return socio;
-    }
-
-    public void setSocio(boolean socio) {
-        this.socio = socio;
-    }
-
     public void verificaSocio() {
         SociosDB dB = new SociosDBToplink();
-        Socios socios = dB.pesquisaSocioPorPessoa(aluno.getId());
-        if (socios.getId() != -1) {
-            setSocio(true);
-        } else {
-            setSocio(false);
-        }
+        socios = dB.pesquisaSocioPorPessoa(aluno.getPessoa().getId());
     }
 
     public void pesquisaFisica(String tipo) {
@@ -2690,7 +2699,7 @@ public class MatriculaEscolaBean implements Serializable {
             String mesAno;
             int iDtMr;
             int iDtVct;
-            for (int i = 0; i < listaNumeros.size(); i++) {
+            for (int i = 0; i < getListaNumeros().size(); i++) {
                 if (i > 0) {
                     data = dh.incrementarMeses(1, data);
                 }
@@ -2734,5 +2743,13 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setIdStatusFiltro(int idStatusFiltro) {
         this.idStatusFiltro = idStatusFiltro;
+    }
+
+    public Socios getSocios() {
+        return socios;
+    }
+
+    public void setSocios(Socios socios) {
+        this.socios = socios;
     }
 }

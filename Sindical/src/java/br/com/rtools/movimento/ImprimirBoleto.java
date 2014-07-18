@@ -401,8 +401,10 @@ public class ImprimirBoleto {
 
                     if (historico == null) {
                         mensagemErroMovimento += "Sem histórico para Acordo id_movimento " + lista.get(i).getId();
-                    }
-                    mensagem = historico.getHistorico();
+                        GenericaMensagem.error("Erro", mensagemErroMovimento);
+                        //continue;
+                    }else
+                        mensagem = historico.getHistorico();
                     ConvencaoCidadeDB dbCon = new ConvencaoCidadeDBToplink();
 
                     swap[25] = movDB.pesquisaDescMensagem(lista.get(i).getTipoServico().getId(), lista.get(i).getServicos().getId(), conv.getId(), dbCon.pesquisaGrupoCidadeJuridica(conv.getId(), id_cidade_endereco).getId());

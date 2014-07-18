@@ -33,6 +33,7 @@
                             <h:outputText value="RAIS - Relação de Informações Sociais - Ano Base #{raisBean.ano}" styleClass="fonteHeader" />
                             <div class="clear"></div>
                             <c:set scope="request" var="object" value="${raisBean.rais}"/>
+                                                     
                             <p:tabView dynamic="true" id="i_tab_view">
                                 <p:tab title="Cadastro">
                                     <p:panel styleClass="fundoCinza">
@@ -74,13 +75,11 @@
                                                     <p:outputLabel value="Raça: " styleClass="margin-left-max"/>
                                                     <p:selectOneMenu value="#{raisBean.indexRaca}">
                                                         <p:ajax event="change" update="@this" />
-                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                         <f:selectItems value="#{raisBean.listRaca}"/>
                                                     </p:selectOneMenu>
                                                     <p:outputLabel value="Nacionalidade: " styleClass="margin-left-max"/>
                                                     <p:selectOneMenu value="#{raisBean.indexNacionalidade}">
                                                         <p:ajax event="change" update="@this" />
-                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                         <f:selectItems value="#{raisBean.listNacionalidade}"/>
                                                     </p:selectOneMenu>
                                                 </h:panelGrid>                                                
@@ -133,10 +132,9 @@
                                                     <p:outputLabel value="Tipo Remuneração: " styleClass="margin-left-max"/>  
                                                     <p:selectOneMenu value="#{raisBean.indexTipoRemuneracao}">
                                                         <p:ajax event="change" update="@this" />
-                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                         <f:selectItems value="#{raisBean.listTipoRemuneracao}"/>
                                                     </p:selectOneMenu>
-                                                    <p:outputLabel value="Carga Horária: " styleClass="margin-left-max"/>  
+                                                    <p:outputLabel value="Carga Horária Semanal: " styleClass="margin-left-max"/>  
                                                     <p:inputText value="#{raisBean.rais.cargaHorariaString}" converter="#{thisNumber}" size="1" maxlength="2" styleClass="text-center">
                                                         <p:ajax event="blur" update="@this" />
                                                     </p:inputText>
@@ -149,7 +147,6 @@
                                                 <h:panelGrid id="i_panel_profissao">
                                                     <p:selectOneMenu value="#{raisBean.indexIndicadorAlvara}" rendered="#{raisBean.rais.alvara}">
                                                         <p:ajax event="change" update="@this" />
-                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                         <f:selectItems value="#{raisBean.listIndicadorAlvara}"/>
                                                     </p:selectOneMenu>                                                
                                                 </h:panelGrid>
@@ -175,7 +172,7 @@
                                                 <p:ajax event="blur" update="@this" />
                                             </p:inputText>
                                             <p:outputLabel value="Pis: "/>
-                                            <p:inputMask size="13" mask="999.999.999-**"   value="#{raisBean.rais.pis}" style="margin-right: 12px"/>
+                                            <p:inputMask size="13" mask="999.99999.99.9"   value="#{raisBean.rais.pis}" style="margin-right: 12px"/>
                                         </h:panelGrid>
                                     </p:panel>
                                 </p:tab>
@@ -185,13 +182,11 @@
                                             <p:outputLabel value="Escolaridade:" />
                                             <p:selectOneMenu value="#{raisBean.indexEscolaridade}">
                                                 <p:ajax event="change" update="@this" />
-                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                 <f:selectItems value="#{raisBean.listEscolaridade}"/>
                                             </p:selectOneMenu>
                                             <p:outputLabel value="Deficiência:" />
                                             <p:selectOneMenu value="#{raisBean.indexTipoDeficiencia}">
                                                 <p:ajax event="change" update="@this" />
-                                                <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                 <f:selectItems value="#{raisBean.listTipoDeficiencia}"/>
                                             </p:selectOneMenu>
                                             <p:outputLabel value="Classificação Econômica: " />
@@ -199,23 +194,22 @@
                                                 <h:panelGrid columns="2">
                                                     <p:selectOneMenu value="#{raisBean.indexClassificacaoEconomica}">
                                                         <p:ajax event="change" update="@this" />
-                                                        <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                         <f:selectItems value="#{raisBean.listClassificacaoEconomica}"/>
                                                     </p:selectOneMenu>
                                                     <p:outputLabel value="Salario Minimo atual: R$#{raisBean.salarioMinimo.valorMensalString} (Mensal)" styleClass="font-color-red margin-left-max"/>
                                                 </h:panelGrid>
                                             </h:column>
                                             <h:column />
-                                            <p:selectBooleanCheckbox itemLabel="Filiado ao Síndicato" value="#{raisBean.rais.empregadoFiliado}"/>
+                                            <p:selectBooleanCheckbox itemLabel="Filiado ao Sindicato" value="#{raisBean.rais.empregadoFiliado}"/>
                                         </h:panelGrid>                                    
                                     </p:panel>
                                 </p:tab>
                             </p:tabView>
                             <br />
-                            <p:outputLabel value="Responsável cadastro: #{raisBean.rais.responsavelCadastro.nome}" />
+                            <p:outputLabel value="Responsável pelo Cadastro: #{raisBean.rais.responsavelCadastro.nome}" />
                             <h:panelGrid styleClass="margin-top-max" columns="5">
                                 <p:commandButton value="Salvar" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save').show()"/>
-                                <p:commandButton value="Novo" action="#{raisBean.clear()}" update=":form_rais:"/>
+                                <p:commandButton value="Novo" action="#{raisBean.clear()}" update=":form_rais"/>
                                 <p:commandButton value="Excluir" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete').show()" rendered="#{raisBean.rais.id != -1}"/>
                                 <p:commandButton value="Pesquisar" action="#{chamadaPaginaBean.pesquisa('pesquisaRais')}" />
                                 <h:commandLink action="#{imprimirRais.imprimir(raisBean.rais)}" target="_blank" title="Imprimir" rendered="#{raisBean.rais.id != -1}">
@@ -225,7 +219,7 @@
                             <p:dialog widgetVar="dlg_save" header="Deseja salvar este registro?" width="400" modal="true" closable="true">                                
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
-                                        <p:commandButton value="Sim" action="#{raisBean.save()}" update=":form_rais:" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" />
+                                        <p:commandButton value="Sim" action="#{raisBean.save_void()}" update="form_rais" oncomplete="PF('dlg_save').hide(); PF('dlg_message').show();" />
                                         <p:commandButton value="Não" onclick="PF('dlg_save').hide();" />
                                     </h:panelGrid>
                                 </f:facet>
@@ -283,7 +277,7 @@
                                         <ui:param name="idPessoa" value="#{raisBean.rais.empresa.pessoa.id}" />
                                     </ui:include>      
                                 </p:panel>
-                            </p:dialog>                            
+                            </p:dialog>   
                         </h:form>
                     </p:panel>
                 </f:view>
