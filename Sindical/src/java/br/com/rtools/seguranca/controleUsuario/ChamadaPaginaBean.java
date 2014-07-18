@@ -803,6 +803,7 @@ public class ChamadaPaginaBean implements Serializable {
 
     public synchronized String atendimento() {
         FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("atendimentoBean");
+        FacesContext.getCurrentInstance().getExternalContext().getSessionMap().remove("juridicaPesquisa");
         return metodoGenerico(2, "atendimento");
     }
 

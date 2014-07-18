@@ -154,7 +154,7 @@ public class ServicosBean implements Serializable {
         NovoLog novoLog = new NovoLog();
         try {
             di.openTransaction();
-            if (!listSubGrupo.isEmpty()) {
+            if (!listSubGrupo.isEmpty() && Integer.valueOf(listSubGrupo.get(idSubGrupo).getDescription()) != 0) {
                 servicos.setSubGrupoFinanceiro((SubGrupoFinanceiro) di.find(new SubGrupoFinanceiro(), Integer.valueOf(listSubGrupo.get(idSubGrupo).getDescription())));
             } else {
                 servicos.setSubGrupoFinanceiro(null);
@@ -282,7 +282,7 @@ public class ServicosBean implements Serializable {
         taxa = "0";
 
         //List<SubGrupoFinanceiro> listax = (new SalvarAcumuladoDBToplink().listaObjeto("SubGrupoFinanceiro"));
-        if (servicos.getSubGrupoFinanceiro() != null && !listSubGrupo.isEmpty()) {
+        if (servicos.getSubGrupoFinanceiro() != null && !getListSubGrupo().isEmpty()) {
             listSubGrupo.clear();
             for (int i = 0; i < listGrupo.size(); i++) {
                 //for(SubGrupoFinanceiro sgf : listax){
@@ -298,6 +298,11 @@ public class ServicosBean implements Serializable {
                     idSubGrupo = i;
                 }
             }
+        }else{
+            listSubGrupo.clear();
+            listGrupo.clear();
+            idGrupo = 0;
+            idSubGrupo = 0;
         }
         if (GenericaSessao.exists("urlRetorno")) {
             return "servicos";
@@ -700,15 +705,16 @@ public class ServicosBean implements Serializable {
             DaoInterface di = new Dao();
             List<GrupoFinanceiro> result = di.list(new GrupoFinanceiro());
 
+            listGrupo.add(new SelectItem(0, "Nenhum Grupo Financeiro Adicionado", "0"));
             if (!result.isEmpty()) {
-                for (int i = 0; i < result.size(); i++) {
+//                if (servicos.getSubGrupoFinanceiro() == null)
+//                    listGrupo.add(new SelectItem(10000, "Nenhum Grupo Financeiro Adicionado", "0"));
+                for (int i = 1; i < result.size(); i++) {
                     listGrupo.add(new SelectItem(i,
                             result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
                 }
-            } else {
-                listGrupo.add(new SelectItem(0, "Nenhum Grupo Financeiro Adicionado", "0"));
             }
         }
         return listGrupo;
@@ -730,16 +736,17 @@ public class ServicosBean implements Serializable {
         if (listSubGrupo.isEmpty()) {
             FinanceiroDB db = new FinanceiroDBToplink();
 
-            List<SubGrupoFinanceiro> result = db.listaSubGrupo(Integer.valueOf(listGrupo.get(idGrupo).getDescription()));
+            List<SubGrupoFinanceiro> result = db.listaSubGrupo(Integer.valueOf(getListGrupo().get(idGrupo).getDescription()));
+            listSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", "0"));
             if (!result.isEmpty()) {
-                for (int i = 0; i < result.size(); i++) {
+//                if (servicos.getSubGrupoFinanceiro() == null)
+//                    listSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", "0"));
+                for (int i = 1; i < result.size(); i++) {
                     listSubGrupo.add(new SelectItem(i,
                             result.get(i).getDescricao(),
                             Integer.toString(result.get(i).getId()))
                     );
                 }
-            } else {
-                listSubGrupo.add(new SelectItem(0, "Nenhum Sub Grupo Financeiro Encontrado", "0"));
             }
 
         }

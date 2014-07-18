@@ -55,13 +55,13 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
     private List<SelectItem> listTipoRemuneracao;
     private List<SelectItem> listIndicadorAlvara;
     private List<SelectItem> listTipoDeficiencia;
-    private int indexNacionalidade;
-    private int indexEscolaridade;
-    private int indexRaca;
-    private int indexClassificacaoEconomica;
-    private int indexTipoRemuneracao;
-    private int indexIndicadorAlvara;
-    private int indexTipoDeficiencia;
+    private Integer indexNacionalidade;
+    private Integer indexEscolaridade;
+    private Integer indexRaca;
+    private Integer indexClassificacaoEconomica;
+    private Integer indexTipoRemuneracao;
+    private Integer indexIndicadorAlvara;
+    private Integer indexTipoDeficiencia;
     private String message;
     private String porPesquisa;
     private String descricaoPesquisa;
@@ -109,11 +109,16 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         GenericaSessao.remove("raisBean");
     }
 
-    public void clear() {
+//    public void clear() {
+//        GenericaSessao.remove("raisBean");
+//    }
+    
+    public String clear() {
         GenericaSessao.remove("raisBean");
+        return "rais";
     }
 
-    public void save() {
+    public void save_void() {
         if (rais.getSisPessoa().getNome().equals("")) {
             GenericaMensagem.warn("Validação", "Informar nome!");
             return;
@@ -159,17 +164,45 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
             return;
         }
         DaoInterface di = new Dao();
-        rais.setNacionalidade((Nacionalidade) di.find(new Nacionalidade(), Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription())));
-        rais.setEscolaridade((Escolaridade) di.find(new Escolaridade(), Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription())));
-        rais.setRaca((Raca) di.find(new Raca(), Integer.parseInt(getListRaca().get(indexRaca).getDescription())));
-        rais.setClassificacaoEconomica((ClassificacaoEconomica) di.find(new ClassificacaoEconomica(), Integer.parseInt(getListClassificacaoEconomica().get(indexClassificacaoEconomica).getDescription())));
-        rais.setTipoDeficiencia((TipoDeficiencia) di.find(new TipoDeficiencia(), Integer.parseInt(getListTipoDeficiencia().get(indexTipoDeficiencia).getDescription())));
-        rais.setTipoRemuneracao((TipoRemuneracao) di.find(new TipoRemuneracao(), Integer.parseInt(getListTipoRemuneracao().get(indexTipoRemuneracao).getDescription())));
+        if (Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription()) != 0)
+            rais.setNacionalidade((Nacionalidade) di.find(new Nacionalidade(), Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription()))); 
+        else
+            rais.setNacionalidade(null);
+        
+        if (Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription()) != 0)
+            rais.setEscolaridade((Escolaridade) di.find(new Escolaridade(), Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription())));
+        else
+            rais.setEscolaridade(null);
+        
+        if (Integer.parseInt(getListRaca().get(indexRaca).getDescription()) != 0)
+            rais.setRaca((Raca) di.find(new Raca(), Integer.parseInt(getListRaca().get(indexRaca).getDescription())));
+        else
+            rais.setRaca(null);
+        
+        if (Integer.parseInt(getListClassificacaoEconomica().get(indexClassificacaoEconomica).getDescription()) != 0)
+            rais.setClassificacaoEconomica((ClassificacaoEconomica) di.find(new ClassificacaoEconomica(), Integer.parseInt(getListClassificacaoEconomica().get(indexClassificacaoEconomica).getDescription())));
+        else
+            rais.setClassificacaoEconomica(null);
+        
+        if (Integer.parseInt(getListTipoDeficiencia().get(indexTipoDeficiencia).getDescription()) != 0)
+            rais.setTipoDeficiencia((TipoDeficiencia) di.find(new TipoDeficiencia(), Integer.parseInt(getListTipoDeficiencia().get(indexTipoDeficiencia).getDescription())));
+        else
+            rais.setTipoDeficiencia(null);
+        
+        if (Integer.parseInt(getListTipoRemuneracao().get(indexTipoRemuneracao).getDescription()) != 0)
+            rais.setTipoRemuneracao((TipoRemuneracao) di.find(new TipoRemuneracao(), Integer.parseInt(getListTipoRemuneracao().get(indexTipoRemuneracao).getDescription())));
+        else
+            rais.setTipoRemuneracao(null);
+            
         if (rais.isAlvara()) {
-            rais.setIndicadorAlvara((IndicadorAlvara) di.find(new IndicadorAlvara(), Integer.parseInt(getListIndicadorAlvara().get(indexIndicadorAlvara).getDescription())));
+            if (Integer.parseInt(getListIndicadorAlvara().get(indexIndicadorAlvara).getDescription()) != 0)
+                rais.setIndicadorAlvara((IndicadorAlvara) di.find(new IndicadorAlvara(), Integer.parseInt(getListIndicadorAlvara().get(indexIndicadorAlvara).getDescription())));
+            else
+                rais.setIndicadorAlvara(null);
         } else {
             rais.setIndicadorAlvara(null);
         }
+        
         di.openTransaction();
         if (rais.getSisPessoa().getId() == -1) {
             if(rais.getSisPessoa().getTipoDocumento().getId() == -1) {
@@ -212,6 +245,119 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
+    }
+    
+    public String save() {
+        if (rais.getSisPessoa().getNome().equals("")) {
+            GenericaMensagem.warn("Validação", "Informar nome!");
+            return "rais";
+        }
+        if (rais.getSisPessoa().getDocumento().equals("")) {
+            GenericaMensagem.warn("Validação", "Informar o documento!");
+            return "rais";
+        }
+        if (rais.getSisPessoa().getNascimento().equals("")) {
+            GenericaMensagem.warn("Validação", "Informar data de nascimento!");
+            return "rais";
+        }
+        if (rais.getEmpresa().getId() == -1) {
+            GenericaMensagem.warn("Validação", "Pesquisar empresa!");
+            return "rais";
+        }
+        if (rais.getAdmissaoString().equals("")) {
+            GenericaMensagem.warn("Validação", "Informar a data de admissão!");
+            return "rais";
+        }
+        if (!rais.getDemissaoString().equals("")) {
+            int admissao = DataHoje.converteDataParaInteger(rais.getAdmissaoString());
+            int demissao = DataHoje.converteDataParaInteger(rais.getDemissaoString());
+            if (demissao < admissao) {
+                GenericaMensagem.warn("Validação", "Demissão deve ser superior a data de admissão!");
+                return "rais";
+            }
+        }
+        if (!rais.getAfastamentoString().equals("")) {
+            int admissao = DataHoje.converteDataParaInteger(rais.getAdmissaoString());
+            int afastamento = DataHoje.converteDataParaInteger(rais.getAfastamentoString());
+            if (afastamento < admissao) {
+                GenericaMensagem.warn("Validação", "A data de afastamento deve ser superior a data de admissão!");
+                return "rais";
+            }
+            if (rais.getMotivoAfastamento().equals("")) {
+                GenericaMensagem.warn("Validação", "Informar o motivo do afastamento!");
+                return "rais";
+            }
+        }
+        if (rais.getProfissao().getId() == -1) {
+            GenericaMensagem.warn("Validação", "Informa profissão!");
+            return "rais";
+        }
+        DaoInterface di = new Dao();
+        if (Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription()) != 0)
+            rais.setNacionalidade((Nacionalidade) di.find(new Nacionalidade(), Integer.parseInt(getListNacionalidade().get(indexNacionalidade).getDescription()))); 
+        else
+            rais.setNacionalidade(null);
+        
+        if (Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription()) != 0)
+            rais.setEscolaridade((Escolaridade) di.find(new Escolaridade(), Integer.parseInt(getListEscolaridade().get(indexEscolaridade).getDescription())));
+        else
+            rais.setEscolaridade(null);
+        
+        if (Integer.parseInt(getListClassificacaoEconomica().get(indexClassificacaoEconomica).getDescription()) != 0)
+            rais.setRaca((Raca) di.find(new Raca(), Integer.parseInt(getListRaca().get(indexRaca).getDescription())));
+        else
+            rais.setRaca(null);
+        
+        rais.setTipoDeficiencia((TipoDeficiencia) di.find(new TipoDeficiencia(), Integer.parseInt(getListTipoDeficiencia().get(indexTipoDeficiencia).getDescription())));
+        rais.setTipoRemuneracao((TipoRemuneracao) di.find(new TipoRemuneracao(), Integer.parseInt(getListTipoRemuneracao().get(indexTipoRemuneracao).getDescription())));
+        if (rais.isAlvara()) {
+            rais.setIndicadorAlvara((IndicadorAlvara) di.find(new IndicadorAlvara(), Integer.parseInt(getListIndicadorAlvara().get(indexIndicadorAlvara).getDescription())));
+        } else {
+            rais.setIndicadorAlvara(null);
+        }
+        di.openTransaction();
+        if (rais.getSisPessoa().getId() == -1) {
+            if(rais.getSisPessoa().getTipoDocumento().getId() == -1) {
+                rais.getSisPessoa().setTipoDocumento((TipoDocumento) di.find(new TipoDocumento(), 1));                
+            }
+            if(rais.getSisPessoa().getEndereco().getId() == -1) { 
+                rais.getSisPessoa().setEndereco(null);
+            }
+            if (!di.save(rais.getSisPessoa())) {
+                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
+                di.rollback();
+                return "rais";
+            }
+        } else {
+            if (!di.update(rais.getSisPessoa())) {
+                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+                di.rollback();
+                return "rais";
+            }
+        }
+        if (rais.getId() == -1) {
+            RaisDao raisDao = new RaisDao();
+            if (raisDao.existeCadastroAno(rais)) {
+                GenericaMensagem.warn("Validação", "Certificado Rais já cadastrado para o ano atual!");
+                return "rais";
+            }
+            if (di.save(rais)) {
+                di.commit();
+                GenericaMensagem.info("Sucesso", "Registro adicionado");
+            } else {
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Ao adicionar registro!");
+            }
+        } else {
+            if (di.update(rais)) {
+                di.commit();
+                GenericaMensagem.info("Sucesso", "Registro atualizado");
+            } else {
+                di.rollback();
+                GenericaMensagem.warn("Erro", "Ao atualizar registro!");
+            }
+        }
+        return "rais";
     }
 
     public void delete() {
@@ -266,49 +412,69 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
 
     public String edit(Rais r) {
         rais = r;
-        for (int i = 0; i < listNacionalidade.size(); i++) {
-            if (r.getNacionalidade().getId() == Integer.parseInt(listNacionalidade.get(i).getDescription())) {
-                indexNacionalidade = i;
-                break;
+        if (r.getNacionalidade() != null){
+            for (int i = 0; i < getListNacionalidade().size(); i++) {
+                if (r.getNacionalidade().getId() == Integer.parseInt(listNacionalidade.get(i).getDescription())) {
+                    indexNacionalidade = i;
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < listEscolaridade.size(); i++) {
-            if (r.getEscolaridade().getId() == Integer.parseInt(listEscolaridade.get(i).getDescription())) {
-                indexEscolaridade = i;
-                break;
+        }else indexNacionalidade = 0;
+        
+        if (r.getEscolaridade() != null){
+            for (int i = 0; i < getListEscolaridade().size(); i++) {
+                if (r.getEscolaridade().getId() == Integer.parseInt(listEscolaridade.get(i).getDescription())) {
+                    indexEscolaridade = i;
+                    break;
+                }
             }
-
-        }
-        for (int i = 0; i < listRaca.size(); i++) {
-            if (r.getRaca().getId() == Integer.parseInt(listRaca.get(i).getDescription())) {
-                indexRaca = i;
-                break;
+        }else indexEscolaridade = 0;
+        
+        if (r.getRaca() != null){
+            for (int i = 0; i < getListRaca().size(); i++) {
+                if (r.getRaca().getId() == Integer.parseInt(listRaca.get(i).getDescription())) {
+                    indexRaca = i;
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < listClassificacaoEconomica.size(); i++) {
-            if (r.getClassificacaoEconomica().getId() == Integer.parseInt(listClassificacaoEconomica.get(i).getDescription())) {
-                indexClassificacaoEconomica = i;
-                break;
+        }else indexRaca = 0;
+        
+        if (r.getClassificacaoEconomica() != null){
+            for (int i = 0; i < getListClassificacaoEconomica().size(); i++) {
+                if (r.getClassificacaoEconomica().getId() == Integer.parseInt(listClassificacaoEconomica.get(i).getDescription())) {
+                    indexClassificacaoEconomica = i;
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < listTipoRemuneracao.size(); i++) {
-            if (r.getTipoRemuneracao().getId() == Integer.parseInt(listTipoRemuneracao.get(i).getDescription())) {
-                indexTipoRemuneracao = i;
-                break;
+        }else indexClassificacaoEconomica = 0;
+            
+        if (r.getTipoRemuneracao() != null){
+            for (int i = 0; i < getListTipoRemuneracao().size(); i++) {
+                if (r.getTipoRemuneracao().getId() == Integer.parseInt(listTipoRemuneracao.get(i).getDescription())) {
+                    indexTipoRemuneracao = i;
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < listIndicadorAlvara.size(); i++) {
-            if (r.getIndicadorAlvara().getId() == Integer.parseInt(listIndicadorAlvara.get(i).getDescription())) {
-                indexIndicadorAlvara = i;
-                break;
+        }else indexTipoRemuneracao = 0;
+        
+        if (r.getIndicadorAlvara() != null){
+            for (int i = 0; i < getListIndicadorAlvara().size(); i++) {
+                if (r.getIndicadorAlvara().getId() == Integer.parseInt(listIndicadorAlvara.get(i).getDescription())) {
+                    indexIndicadorAlvara = i;
+                    break;
+                }
             }
-        }
-        for (int i = 0; i < listTipoDeficiencia.size(); i++) {
-            if (r.getTipoDeficiencia().getId() == Integer.parseInt(listTipoDeficiencia.get(i).getDescription())) {
-                indexTipoDeficiencia = i;
-                break;
+        }else indexIndicadorAlvara = 0;
+        
+        if (r.getTipoDeficiencia() != null){
+            for (int i = 0; i < getListTipoDeficiencia().size(); i++) {
+                if (r.getTipoDeficiencia().getId() == Integer.parseInt(listTipoDeficiencia.get(i).getDescription())) {
+                    indexTipoDeficiencia = i;
+                    break;
+                }
             }
-        }
+        }else indexTipoDeficiencia = 0;
+            
         GenericaSessao.put("linkClicado", true);
         return "rais";
     }
@@ -387,8 +553,9 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (listNacionalidade.isEmpty()) {
             DaoInterface di = new Dao();
             List<Nacionalidade> list = di.list("Nacionalidade");
+            listNacionalidade.add(new SelectItem(0, "Selecionar", "0"));
             for (int i = 0; i < list.size(); i++) {
-                listNacionalidade.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+                listNacionalidade.add(new SelectItem(i+1, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
         return listNacionalidade;
@@ -402,9 +569,14 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (listEscolaridade.isEmpty()) {
             DaoInterface di = new Dao();
             List<Escolaridade> list = di.list("Escolaridade");
-            for (int i = 0; i < list.size(); i++) {
-                listEscolaridade.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
-                indexEscolaridade = i;
+            if (!list.isEmpty()){
+                listEscolaridade.add(new SelectItem(0, "Selecionar", "0"));
+                for (int i = 0; i < list.size(); i++) {
+                    listEscolaridade.add(new SelectItem(i+1, list.get(i).getDescricao(), "" + list.get(i).getId()));
+                    indexEscolaridade = i+1;
+                }
+            }else{
+                listEscolaridade.add(new SelectItem(0, "Nenhuma Escolaridade Encontrada", "0"));
             }
         }
         return listEscolaridade;
@@ -418,8 +590,9 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (listRaca.isEmpty()) {
             DaoInterface di = new Dao();
             List<Raca> list = di.list("Raca");
+            listRaca.add(new SelectItem(0, "Selecionar", "0"));
             for (int i = 0; i < list.size(); i++) {
-                listRaca.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+                listRaca.add(new SelectItem(i+1, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
         return listRaca;
@@ -433,6 +606,8 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (listClassificacaoEconomica.isEmpty()) {
             DaoInterface di = new Dao();
             List<ClassificacaoEconomica> list = di.list("ClassificacaoEconomica");
+            listClassificacaoEconomica.add(new SelectItem(0, "Selecionar", "0"));
+            
             for (int i = 0; i < list.size(); i++) {
                 String numInicial = "";
                 String numFinal = "";
@@ -446,7 +621,7 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
                     numInicial = "" + list.get(i).getSalarioMinimoInicial();
                     numFinal = "" + list.get(i).getSalarioMinimoFinal();
                 }
-                listClassificacaoEconomica.add(new SelectItem(i,
+                listClassificacaoEconomica.add(new SelectItem(i+1,
                         "Classe: " + list.get(i).getDescricao()
                         + " - De: " + numInicial
                         + " à  " + numFinal + " - (SM)",
@@ -498,51 +673,51 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         this.message = message;
     }
 
-    public int getIndexNacionalidade() {
+    public Integer getIndexNacionalidade() {
         return indexNacionalidade;
     }
 
-    public void setIndexNacionalidade(int indexNacionalidade) {
+    public void setIndexNacionalidade(Integer indexNacionalidade) {
         this.indexNacionalidade = indexNacionalidade;
     }
 
-    public int getIndexEscolaridade() {
+    public Integer getIndexEscolaridade() {
         return indexEscolaridade;
     }
 
-    public void setIndexEscolaridade(int indexEscolaridade) {
+    public void setIndexEscolaridade(Integer indexEscolaridade) {
         this.indexEscolaridade = indexEscolaridade;
     }
 
-    public int getIndexRaca() {
+    public Integer getIndexRaca() {
         return indexRaca;
     }
 
-    public void setIndexRaca(int indexRaca) {
+    public void setIndexRaca(Integer indexRaca) {
         this.indexRaca = indexRaca;
     }
 
-    public int getIndexClassificacaoEconomica() {
+    public Integer getIndexClassificacaoEconomica() {
         return indexClassificacaoEconomica;
     }
 
-    public void setIndexClassificacaoEconomica(int indexClassificacaoEconomica) {
+    public void setIndexClassificacaoEconomica(Integer indexClassificacaoEconomica) {
         this.indexClassificacaoEconomica = indexClassificacaoEconomica;
     }
 
-    public int getIndexTipoRemuneracao() {
+    public Integer getIndexTipoRemuneracao() {
         return indexTipoRemuneracao;
     }
 
-    public void setIndexTipoRemuneracao(int indexTipoRemuneracao) {
+    public void setIndexTipoRemuneracao(Integer indexTipoRemuneracao) {
         this.indexTipoRemuneracao = indexTipoRemuneracao;
     }
 
-    public int getIndexIndicadorAlvara() {
+    public Integer getIndexIndicadorAlvara() {
         return indexIndicadorAlvara;
     }
 
-    public void setIndexIndicadorAlvara(int indexIndicadorAlvara) {
+    public void setIndexIndicadorAlvara(Integer indexIndicadorAlvara) {
         this.indexIndicadorAlvara = indexIndicadorAlvara;
     }
 
@@ -550,8 +725,9 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (listTipoDeficiencia.isEmpty()) {
             DaoInterface di = new Dao();
             List<TipoDeficiencia> list = di.list("TipoDeficiencia");
+            listTipoDeficiencia.add(new SelectItem(0, "Selecionar", "0"));
             for (int i = 0; i < list.size(); i++) {
-                listTipoDeficiencia.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
+                listTipoDeficiencia.add(new SelectItem(i+1, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
         return listTipoDeficiencia;
@@ -561,11 +737,11 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         this.listTipoDeficiencia = listTipoDeficiencia;
     }
 
-    public int getIndexTipoDeficiencia() {
+    public Integer getIndexTipoDeficiencia() {
         return indexTipoDeficiencia;
     }
 
-    public void setIndexTipoDeficiencia(int indexTipoDeficiencia) {
+    public void setIndexTipoDeficiencia(Integer indexTipoDeficiencia) {
         this.indexTipoDeficiencia = indexTipoDeficiencia;
     }
 
@@ -578,7 +754,7 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String getAno() {
-        return DataHoje.livre(new Date(), "Y");
+        return String.valueOf(Integer.valueOf(DataHoje.livre(new Date(), "Y")) - 1);
     }
 
     public void acaoPesquisaInicial() {

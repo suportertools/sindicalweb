@@ -8,6 +8,7 @@
 package br.com.rtools.atendimento.db;
 
 import br.com.rtools.atendimento.AteMovimento;
+import br.com.rtools.homologacao.Senha;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.principal.DB;
 import br.com.rtools.utilitarios.DataHoje;
@@ -66,7 +67,7 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
             qry.setFirstResult(0);
             list = qry.getResultList();
             if (!list.isEmpty()) {
-                SisPessoa atePessoa = (SisPessoa) dB.pesquisaObjeto((Integer) ((List) list.get(0)).get(0), "AtePessoa");
+                SisPessoa atePessoa = (SisPessoa) dB.pesquisaObjeto((Integer) ((List) list.get(0)).get(0), "SisPessoa");
                 return atePessoa;
             } else {
                 return null;
@@ -165,5 +166,19 @@ public class AtendimentoDBTopLink extends DB implements AtendimentoDB {
         } catch (Exception e) {
         }
         return result;
+    }
+    
+    @Override
+    public Senha pesquisaSenha(int id_atendimento) {
+        String text_qry = "SELECT se"
+                        + "  FROM Senha se"
+                        + " WHERE se.ateMovimento.id = "+id_atendimento
+                        + "   AND se.agendamento IS NULL";
+        try {
+            Query qry = getEntityManager().createQuery(text_qry);
+            return (Senha) qry.getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

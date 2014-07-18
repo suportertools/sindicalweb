@@ -107,6 +107,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean chkDependente = false;
     
     private int indexEndereco = 0;
+    private String strEndereco = "";
     
     
     public void novo() {
@@ -448,7 +449,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
             profissao = pessoaEmpresa.getFuncao();
-            GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
+            //GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
             GenericaSessao.remove("juridicaPesquisa");
@@ -466,6 +467,8 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             }
         }
 
+        listaPessoaEndereco.clear();
+        getListaPessoaEndereco();
         listaServicoPessoa.clear();
         editarFisicaSocio(fisica);
         showImagemFisica();
@@ -522,14 +525,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         pessoaEmpresa = (PessoaEmpresa) db.pesquisaPessoaEmpresaPorFisica(fisica.getId());
         if (pessoaEmpresa.getId() != -1) {
             profissao = pessoaEmpresa.getFuncao();
-            GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
+            //GenericaSessao.put("juridicaPesquisa", pessoaEmpresa.getJuridica());
             renderJuridicaPesquisa = true;
         } else {
             GenericaSessao.remove("juridicaPesquisa");
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
-
+        
         listaServicoPessoa.clear();
         editarFisicaSocio(fisica);
         GenericaSessao.put("linkClicado", true);
@@ -1242,6 +1245,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     public PessoaEmpresa getPessoaEmpresa() {
         if (GenericaSessao.exists("juridicaPesquisa")) {
             pessoaEmpresa.setJuridica((Juridica) GenericaSessao.getObject("juridicaPesquisa"));
+            GenericaSessao.remove("juridicaPesquisa");
             renderJuridicaPesquisa = true;
         }
 
@@ -1731,5 +1735,20 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
     public void setChkDependente(boolean chkDependente) {
         this.chkDependente = chkDependente;
+    }
+
+    public String getStrEndereco() {
+        if (!listaPessoaEndereco.isEmpty())
+            strEndereco = 
+                    listaPessoaEndereco.get(1).getEndereco().getLogradouro().getDescricao() + " " +
+                    listaPessoaEndereco.get(1).getEndereco().getDescricaoEndereco().getDescricao() +" "+ listaPessoaEndereco.get(1).getNumero() + ", " +
+                    listaPessoaEndereco.get(1).getEndereco().getBairro().getDescricao() + ", " + listaPessoaEndereco.get(1).getComplemento() + " " +
+                    listaPessoaEndereco.get(1).getEndereco().getCidade().getCidade() + "  -  " +
+                    listaPessoaEndereco.get(1).getEndereco().getCidade().getUf();
+        return strEndereco;
+    }
+
+    public void setStrEndereco(String strEndereco) {
+        this.strEndereco = strEndereco;
     }
 }

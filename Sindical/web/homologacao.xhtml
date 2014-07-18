@@ -259,7 +259,7 @@
                         <h:panelGrid columns="1" id="tbl">
                             <p:dataTable value="#{homologacaoBean.listaHomologacoes}" var="linha" rowIndexVar="row" scrollHeight="400" scrollable="true" emptyMessage="Não existe resultados!">
                                 <f:facet name="footer">
-                                    <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}"/>
+                                    <p:commandButton value="Atendimento" action="#{homologacaoBean.atendimento()}" rendered="#{homologacaoBean.registro.senhaHomologacao}" update=":form_cancelar_data_table:panel_atendimento_simples"/>
                                 </f:facet>
                                 <p:column styleClass="text-center" width="30">
                                     <f:facet name="header">
@@ -305,6 +305,31 @@
                             </p:dataTable>                                
                         </h:panelGrid>
                     </p:panel>
+                    
+                    <p:dialog widgetVar="dlg_atendimento_simples" header="Atendimento" modal="true" width="700" resizable="false" closable="true">
+                        <h:panelGrid id="panel_atendimento_simples">
+                            <h:panelGrid columns="1">
+                                <h:outputLabel value="Nome" style="font-weight: bold"/>
+                                <h:outputLabel value="#{homologacaoBean.senhaAtendimento.ateMovimento.pessoa.nome}" />
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="1">
+                                <h:outputLabel value="Empresa" style="font-weight: bold"/>
+                                <h:outputLabel value="#{homologacaoBean.senhaAtendimento.ateMovimento.juridica.pessoa.nome}" />
+                            </h:panelGrid>
+                            
+                            <h:panelGrid columns="1">
+                                <h:outputLabel value="Usuário" style="font-weight: bold"/>
+                                <h:outputLabel value="#{homologacaoBean.senhaAtendimento.usuario.pessoa.nome}" />
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        
+                        <h:panelGrid columns="3">
+                            <p:commandButton value="Voltar" onclick="PF('dlg_atendimento_simples').hide()"/>
+                            <p:commandButton value="Atendido" action="#{homologacaoBean.atualizarSenhaSimples('atendido')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
+                            <p:commandButton value="Cancelado" action="#{homologacaoBean.atualizarSenhaSimples('cancelado')}" oncomplete="PF('dlg_atendimento_simples').hide()"/>
+                        </h:panelGrid>
+                    </p:dialog> 
                     <p:dialog widgetVar="dlg_atendimentos" header="Atendimento(s) pendente(s)" modal="true" width="1024" resizable="false" closable="true">
                         <h:panelGrid id="id_atendimentos">
                             <p:dataTable value="#{homologacaoBean.listAtendimentoAberto()}" var="agendamento" emptyMessage="Nenhum registro encontrado!" id="i_table">

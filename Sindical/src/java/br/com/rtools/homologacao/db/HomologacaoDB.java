@@ -58,6 +58,8 @@ public interface HomologacaoDB {
 
     public Senha pesquisaAtendimentoIniciado(int id_usuario, int nr_mesa, int id_filial);
 
+    public Senha pesquisaAtendimentoIniciadoSimples(int id_filial);
+    
     public boolean verificaNaoAtendidosSegRegistroAgendamento();
 
     public List<Agendamento> pesquisaAgendamentoPorProtocolo(int numeroProtocolo);

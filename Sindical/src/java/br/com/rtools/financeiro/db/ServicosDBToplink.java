@@ -198,4 +198,21 @@ public class ServicosDBToplink extends DB implements ServicosDB {
         }
         return result;
     }
+    
+    @Override
+    public List<Servicos> listaServicoSituacao(int id_rotina, String situacao) {
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  SELECT S.servicos "
+                    + "  FROM ServicoRotina AS S"
+                    + " WHERE S.rotina.id = :rotina"
+                    + "   AND S.servicos.situacao = '"+situacao+"'");
+            qry.setParameter("rotina", id_rotina);
+            
+            return qry.getResultList();
+        } catch (Exception e) {
+            
+        }
+        return new ArrayList();
+    }
 }

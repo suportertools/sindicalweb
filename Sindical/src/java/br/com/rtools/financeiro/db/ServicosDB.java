@@ -33,4 +33,6 @@ public interface ServicosDB {
     public List pesquisaTodosPeloContaCobranca(int idRotina);
 
     public List<Servicos> pesquisaTodosServicos();
+    
+    public List<Servicos> listaServicoSituacao(int id_rotina, String situacao);
 }

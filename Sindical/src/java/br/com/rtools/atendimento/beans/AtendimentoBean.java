@@ -2,29 +2,55 @@ package br.com.rtools.atendimento.beans;
 
 import br.com.rtools.atendimento.AteMovimento;
 import br.com.rtools.atendimento.AteOperacao;
+import br.com.rtools.atendimento.AteStatus;
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.atendimento.db.AtendimentoDB;
 import br.com.rtools.atendimento.db.AtendimentoDBTopLink;
+import br.com.rtools.homologacao.Senha;
+import br.com.rtools.homologacao.db.HomologacaoDB;
+import br.com.rtools.homologacao.db.HomologacaoDBToplink;
+import br.com.rtools.impressao.ParametroSenha;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
+import br.com.rtools.pessoa.PessoaEmpresa;
+import br.com.rtools.pessoa.TipoDocumento;
 import br.com.rtools.pessoa.db.FisicaDB;
 import br.com.rtools.pessoa.db.FisicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaDB;
 import br.com.rtools.pessoa.db.PessoaDBToplink;
+import br.com.rtools.pessoa.db.PessoaEmpresaDB;
+import br.com.rtools.pessoa.db.PessoaEmpresaDBToplink;
 import br.com.rtools.seguranca.MacFilial;
+import br.com.rtools.seguranca.Usuario;
+import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
 import br.com.rtools.utilitarios.AnaliseString;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Diretorio;
+import br.com.rtools.utilitarios.Download;
+import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.ValidaDocumentos;
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.ServletContext;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @ManagedBean
 @SessionScoped
@@ -60,7 +86,61 @@ public class AtendimentoBean {
     private String strCPF = "";
     private String strRG = "";
     private String strTelefone = "";
-
+    private Juridica empresa = new Juridica();
+    private Usuario usuario = new Usuario();
+    
+    public AtendimentoBean(){
+        usuario = (Usuario) GenericaSessao.getObject("sessaoUsuario");
+    }
+    
+    public String verSenha(AteMovimento atendimento){
+        AtendimentoDB db = new AtendimentoDBTopLink();
+        Senha senha = db.pesquisaSenha(atendimento.getId());
+        if (senha.getSenha() < 10)
+            return "0"+ String.valueOf(senha.getSenha());
+        else
+            return String.valueOf(senha.getSenha());
+    }
+    
+    public void imprimirSenha(AteMovimento atendimento) throws JRException{
+        AtendimentoDB db = new AtendimentoDBTopLink();
+        
+        Senha senha = db.pesquisaSenha(atendimento.getId());
+        
+        Collection lista = new ArrayList<ParametroSenha>();
+        
+        if (senha.getId() != -1) {
+            lista.add(new ParametroSenha(((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
+                    senha.getFilial().getFilial().getPessoa().getNome(),
+                    senha.getFilial().getFilial().getPessoa().getDocumento(),
+                    senha.getAteMovimento().getJuridica().getPessoa().getNome(),
+                    senha.getAteMovimento().getJuridica().getPessoa().getDocumento(),
+                    "", // PREPOSTO
+                    senha.getAteMovimento().getPessoa().getNome(),
+                    senha.getUsuario().getPessoa().getNome(),
+                    senha.getData(),
+                    senha.getHora(),
+                    String.valueOf(senha.getSenha())));
+        }
+        
+        JasperReport jasperReport = (JasperReport) JRLoader.loadObject(new File((((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Relatorios/HOM_SENHA.jasper"))));
+        JRBeanCollectionDataSource dtSource = new JRBeanCollectionDataSource(lista);
+        JasperPrint print = JasperFillManager.fillReport(jasperReport, null, dtSource);
+        byte[] arquivo = JasperExportManager.exportReportToPdf(print);
+        String nomeDownload = "senha_" + DataHoje.hora().replace(":", "") + ".pdf";
+        String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/senhas");
+        Diretorio.criar("Arquivos/senhas");
+        if (!new File(pathPasta).exists()) {
+            File file = new File(pathPasta);
+            file.mkdir();
+        }
+        SalvaArquivos salvaArquivos = new SalvaArquivos(arquivo, nomeDownload, false);
+        salvaArquivos.salvaNaPasta(pathPasta);
+        Download download = new Download(nomeDownload, pathPasta, "application/pdf", FacesContext.getCurrentInstance());
+        download.baixar();
+        download.remover();
+    }
+    
     public String novo() {
         setMsgCPF("");
         setEditaPessoa(false);
@@ -77,6 +157,7 @@ public class AtendimentoBean {
         idFilial = 0;
         idOperacao = 0;
         msgOposicao = "";
+        empresa = new Juridica();
         return "atendimento";
     }
 
@@ -91,7 +172,7 @@ public class AtendimentoBean {
         return "atendimento";
     }
 
-    public String salvar() {
+    public String salvar() throws JRException {
         msg = "";
         AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
         boolean isMostraDocumento = false;
@@ -125,11 +206,19 @@ public class AtendimentoBean {
             msg = "Informar o nome da pessoa!";
             return null;
         }
+        
+        
+        if (empresa.getId() == -1){
+            msg = "Pesquise uma Empresa para Agendar.";
+            return null;
+        }
         SisPessoa ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getDocumento());
         if (ap == null) {
             ap = atendimentoDB.pessoaDocumento(ateMovimento.getPessoa().getRg());
         }
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
+        ateMovimento.getPessoa().setTipoDocumento((TipoDocumento) salvarAcumuladoDB.pesquisaObjeto(1, "TipoDocumento"));
+        ateMovimento.getPessoa().setEndereco(null);
         if (ap != null) {
             if (ateMovimento.getId() > 0 || ap.getId() > 0) {
                 if (!ap.getNome().equals(ateMovimento.getPessoa().getNome()) || !ap.getTelefone().equals(ateMovimento.getPessoa().getTelefone()) || !ap.getRg().equals(ateMovimento.getPessoa().getRg()) || !ap.getDocumento().equals(ateMovimento.getPessoa().getDocumento())) {
@@ -150,6 +239,9 @@ public class AtendimentoBean {
         ateMovimento.setHoraEmissao(getHoraEmissaoString());
         ateMovimento.setFilial(filial);
         ateMovimento.setOperacao((AteOperacao) salvarAcumuladoDB.pesquisaObjeto(Integer.parseInt(listaAtendimentoOperacoes.get(idOperacao).getDescription()), "AteOperacao"));
+        ateMovimento.setStatus((AteStatus) salvarAcumuladoDB.pesquisaCodigo(1, "AteStatus"));
+        ateMovimento.setJuridica(empresa);
+        
         if (ateMovimento.getId() == -1) {
             ateMovimento.setHoraEmissao(getHoraEmissaoString());
             if (atendimentoDB.existeAtendimento(ateMovimento)) {
@@ -167,18 +259,30 @@ public class AtendimentoBean {
                     return null;
                 }
             }
+            
             salvarAcumuladoDB.abrirTransacao();
-            if (salvarAcumuladoDB.inserirObjeto(ateMovimento)) {
-                salvarAcumuladoDB.comitarTransacao();
-                msg = "Movimento inserido com sucesso.";
-                getListaAteMovimento().clear();
-                novo();
-                return null;
-            } else {
+            if (!salvarAcumuladoDB.inserirObjeto(ateMovimento)) {
                 msg = "Falha ao inserir o movimento!";
                 salvarAcumuladoDB.desfazerTransacao();
-                return null;
+            } else {
+                msg = "Movimento inserido com sucesso.";
             }
+            
+            HomologacaoDB dbh = new HomologacaoDBToplink();
+            int ultima_senha = dbh.pesquisaUltimaSenha(filial.getId()) + 1;
+            Senha senha = new Senha(-1, null, DataHoje.horaMinuto(), "", 0, usuario, DataHoje.data(), ultima_senha, filial, ateMovimento);
+            
+            if (salvarAcumuladoDB.inserirObjeto(senha)){
+                salvarAcumuladoDB.comitarTransacao();
+                getListaAteMovimento().clear();
+                imprimirSenha(ateMovimento);
+                novo();
+            }else{
+                msg = "Erro ao salvar Senha.";
+                salvarAcumuladoDB.desfazerTransacao();
+            }
+            
+            return "atendimento";
         } else {
             salvarAcumuladoDB.abrirTransacao();
             if (salvarAcumuladoDB.alterarObjeto(ateMovimento)) {
@@ -189,7 +293,7 @@ public class AtendimentoBean {
                 return null;
             }
             msg = "Falha na atualização do atendimento!";
-            return null;
+            return "atendimento";
         }
     }
 
@@ -281,7 +385,20 @@ public class AtendimentoBean {
         SalvarAcumuladoDB salvarAcumuladoDB = new SalvarAcumuladoDBToplink();
         if (ateMovimento.getId() > 0) {
             AteMovimento ateMov = (AteMovimento) salvarAcumuladoDB.pesquisaObjeto(ateMovimento.getId(), "AteMovimento");
+            AtendimentoDB db = new AtendimentoDBTopLink();
+            
+            Senha senha = db.pesquisaSenha(ateMovimento.getId());
+            
             salvarAcumuladoDB.abrirTransacao();
+            
+            if (senha != null){
+                if (!salvarAcumuladoDB.deletarObjeto( salvarAcumuladoDB.pesquisaObjeto(senha.getId(), "Senha"))){
+                    salvarAcumuladoDB.desfazerTransacao();
+                    msg = "Erro ao excluir Senha";
+                    return null;
+                }
+            }
+            
             if (salvarAcumuladoDB.deletarObjeto(ateMov)) {
                 salvarAcumuladoDB.comitarTransacao();
                 msg = "Movimento excluído com sucesso.";
@@ -353,11 +470,18 @@ public class AtendimentoBean {
                 }
                 setMsgCPF("");
                 setDesabilitaCamposPessoa(true);
+                PessoaEmpresaDB pedb = new PessoaEmpresaDBToplink();
+                
+                PessoaEmpresa pe = pedb.pesquisaPessoaEmpresaPorFisica(fisica.getId());
+                
+                if (pe.getId() != -1){
+                    empresa = pe.getJuridica();
+                }
             } else {
                 AtendimentoDB atendimentoDB = new AtendimentoDBTopLink();
                 SisPessoa atePessoaB = (SisPessoa) atendimentoDB.pessoaDocumento(valorPesquisa);
                 setMsgCPF("");
-                if (ateMovimento == null || atePessoaB.getId() == -1) {
+                if (ateMovimento == null || (atePessoaB == null || atePessoaB.getId() == -1)) {
 //                    AtePessoa atePes = new AtePessoa();
 //                    ateMovimento.setPessoa(atePes);
                     setEditaPessoa(false);
@@ -640,5 +764,17 @@ public class AtendimentoBean {
 
     public void setMsgCPF(String msgCPF) {
         this.msgCPF = msgCPF;
+    }
+
+    public Juridica getEmpresa() {
+        if (GenericaSessao.getObject("juridicaPesquisa") != null){
+            empresa = (Juridica)GenericaSessao.getObject("juridicaPesquisa");
+            GenericaSessao.remove("juridicaPesquisa");
+        }
+        return empresa;
+    }
+
+    public void setEmpresa(Juridica empresa) {
+        this.empresa = empresa;
     }
 }

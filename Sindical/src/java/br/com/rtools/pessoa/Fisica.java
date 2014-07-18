@@ -55,7 +55,13 @@ public class Fisica implements java.io.Serializable {
     @Temporal(TemporalType.DATE)
     @Column(name = "DT_FOTO")
     private Date dtFoto;
-
+    @Column(name = "DS_TITULO_ELEITOR", length = 20)
+    private String tituloEleitor;
+    @Column(name = "DS_TITULO_SECAO", length = 20)
+    private String tituloSecao;
+    @Column(name = "DS_TITULO_ZONA", length = 20)
+    private String tituloZona;
+    
     public Fisica() {
         this.id = -1;
         this.pessoa = new Pessoa();
@@ -76,11 +82,14 @@ public class Fisica implements java.io.Serializable {
         this.setAposentadoria("");
         this.setRecadastro(DataHoje.data());
         this.setDataFoto("");
+        this.tituloEleitor = "";
+        this.tituloSecao = "";
+        this.tituloZona = "";
     }
 
     public Fisica(int id, Pessoa pessoa, String rg, String carteira, String serie, String sexo, Date dtNascimento, String nacionalidade,
             String naturalidade, String orgaoEmissaoRG, String ufEmissaoRG, String estadoCivil, String pai, String mae, String nit,
-            String pis, String aposentadoria, String recadastro, String dataFoto) {
+            String pis, String aposentadoria, String recadastro, String dataFoto, String tituloEleitor, String tituloSecao, String tituloZona) {
         this.id = id;
         this.pessoa = pessoa;
         this.rg = rg;
@@ -100,6 +109,9 @@ public class Fisica implements java.io.Serializable {
         this.setAposentadoria(aposentadoria);
         this.setRecadastro(recadastro);
         this.setDataFoto(dataFoto);
+        this.tituloEleitor = tituloEleitor;
+        this.tituloSecao = tituloSecao;
+        this.tituloZona = tituloZona;
     }
 
     public int getId() {
@@ -300,5 +312,29 @@ public class Fisica implements java.io.Serializable {
     @Override
     public String toString() {
         return "Fisica{" + "id=" + id + ", pessoa=" + pessoa + ", rg=" + rg + ", carteira=" + carteira + ", serie=" + serie + ", sexo=" + sexo + ", dtNascimento=" + dtNascimento + ", nacionalidade=" + nacionalidade + ", naturalidade=" + naturalidade + ", orgaoEmissaoRG=" + orgaoEmissaoRG + ", ufEmissaoRG=" + ufEmissaoRG + ", estadoCivil=" + estadoCivil + ", pai=" + pai + ", mae=" + mae + ", nit=" + nit + ", pis=" + pis + ", dtAposentadoria=" + dtAposentadoria + ", dtRecadastro=" + dtRecadastro + ", dtFoto=" + dtFoto + '}';
+    }
+
+    public String getTituloEleitor() {
+        return tituloEleitor;
+    }
+
+    public void setTituloEleitor(String tituloEleitor) {
+        this.tituloEleitor = tituloEleitor;
+    }
+
+    public String getTituloSecao() {
+        return tituloSecao;
+    }
+
+    public void setTituloSecao(String tituloSecao) {
+        this.tituloSecao = tituloSecao;
+    }
+
+    public String getTituloZona() {
+        return tituloZona;
+    }
+
+    public void setTituloZona(String tituloZona) {
+        this.tituloZona = tituloZona;
     }
 }

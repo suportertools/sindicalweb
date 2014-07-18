@@ -2,6 +2,7 @@ package br.com.rtools.atendimento;
 
 import br.com.rtools.sistema.SisPessoa;
 import br.com.rtools.pessoa.Filial;
+import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.utilitarios.DataHoje;
 import java.util.Date;
 import javax.persistence.*;
@@ -30,7 +31,13 @@ public class AteMovimento implements java.io.Serializable {
     private AteOperacao operacao;
     @Column(name = "DS_HISTORICO", length = 500)
     private String historico;
-
+    @JoinColumn(name = "ID_STATUS", referencedColumnName = "ID", nullable = false)
+    @ManyToOne
+    private AteStatus status;
+    @JoinColumn(name = "ID_JURIDICA", referencedColumnName = "ID")
+    @ManyToOne
+    private Juridica juridica;
+    
     public AteMovimento() {
         this.id = -1;
         this.pessoa = new SisPessoa();
@@ -40,9 +47,11 @@ public class AteMovimento implements java.io.Serializable {
         this.horaEmissao = "";
         this.operacao = new AteOperacao();
         this.historico = "";
+        this.status = new AteStatus();
+        this.juridica = new Juridica();
     }
 
-    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico) {
+    public AteMovimento(int id, SisPessoa pessoa, Filial filial, String dataEmissao, String horaEmissao, AteOperacao operacao, String historico, AteStatus status, Juridica juridica) {
         this.id = id;
         this.pessoa = pessoa;
         this.filial = filial;
@@ -50,6 +59,8 @@ public class AteMovimento implements java.io.Serializable {
         this.horaEmissao = horaEmissao;
         this.operacao = operacao;
         this.historico = historico;
+        this.status = status;
+        this.juridica = juridica;
     }
 
     public int getId() {
@@ -114,5 +125,21 @@ public class AteMovimento implements java.io.Serializable {
 
     public void setDataEmissaoString(String criacao) {
         this.dataEmissao = DataHoje.converte(criacao);
+    }
+
+    public AteStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(AteStatus status) {
+        this.status = status;
+    }
+
+    public Juridica getJuridica() {
+        return juridica;
+    }
+
+    public void setJuridica(Juridica juridica) {
+        this.juridica = juridica;
     }
 }

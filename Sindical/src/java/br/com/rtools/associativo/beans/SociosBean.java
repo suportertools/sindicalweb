@@ -1228,7 +1228,7 @@ public class SociosBean implements Serializable {
                 
                 String vencimento_dep = "";
                 
-                if (!listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade().isEmpty())        
+                if (listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade() != null && !listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade().isEmpty())        
                     vencimento_dep = DataHoje.data().substring(0, 2)+ "/"+listaDepsAtivo.get(i).getServicoPessoa().getReferenciaValidade();
                 
                 String data_hoje = DataHoje.data();

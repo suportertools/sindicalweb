@@ -1,5 +1,6 @@
 package br.com.rtools.homologacao;
 
+import br.com.rtools.atendimento.AteMovimento;
 import br.com.rtools.pessoa.Filial;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.utilitarios.DataHoje;
@@ -45,6 +46,9 @@ public class Senha implements java.io.Serializable {
     @JoinColumn(name = "ID_FILIAL", referencedColumnName = "ID")
     @ManyToOne(fetch = FetchType.EAGER)
     private Filial filial;
+    @JoinColumn(name = "ID_ATENDIMENTO", referencedColumnName = "ID")
+    @ManyToOne(fetch = FetchType.EAGER)
+    private AteMovimento ateMovimento;
 
     public Senha() {
         this.id = -1;
@@ -56,9 +60,10 @@ public class Senha implements java.io.Serializable {
         this.setData("");
         this.senha = 0;
         this.filial = new Filial();
+        this.ateMovimento = null;
     }
 
-    public Senha(int id, Agendamento agendamento, String hora, String horaChamada, int mesa, Usuario usuario, String data, int senha, Filial filial) {
+    public Senha(int id, Agendamento agendamento, String hora, String horaChamada, int mesa, Usuario usuario, String data, int senha, Filial filial, AteMovimento ateMovimento) {
         this.id = id;
         this.agendamento = agendamento;
         this.hora = hora;
@@ -68,6 +73,7 @@ public class Senha implements java.io.Serializable {
         this.setData(data);
         this.senha = senha;
         this.filial = filial;
+        this.ateMovimento = ateMovimento;
     }
 
     public int getId() {
@@ -154,5 +160,13 @@ public class Senha implements java.io.Serializable {
         if (!(data.isEmpty())) {
             this.dtData = DataHoje.converte(data);
         }
+    }
+
+    public AteMovimento getAteMovimento() {
+        return ateMovimento;
+    }
+
+    public void setAteMovimento(AteMovimento ateMovimento) {
+        this.ateMovimento = ateMovimento;
     }
 }

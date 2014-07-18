@@ -315,7 +315,7 @@ public class TurmaBean implements Serializable {
     public List<SelectItem> getListServicos() {
         if (listServicos.isEmpty()) {
             ServicosDB db = new ServicosDBToplink();
-            List list = db.pesquisaTodos(150);
+            List list = db.listaServicoSituacao(150, "A");
             for (int i = 0; i < list.size(); i++) {
                 listServicos.add(new SelectItem((int) i, (String) ((Servicos) list.get(i)).getDescricao(), Integer.toString(((Servicos) list.get(i)).getId())));
             }

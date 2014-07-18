@@ -704,6 +704,31 @@ public class HomologacaoDBToplink extends DB implements HomologacaoDB {
         }
         return result;
     }
+    
+    @Override
+    public Senha pesquisaAtendimentoIniciadoSimples(int id_filial) {
+        Senha result = null;
+        try {
+            Query qry = getEntityManager().createQuery(
+                    "  SELECT S "
+                    + "  FROM Senha AS S "
+                    + " WHERE S.dtData = :data "
+                    + "   AND S.ateMovimento.status.id = 1 "
+                    + "   AND S.filial.id = :id_filial"
+                    + " ORDER BY S.dtData");
+            
+            qry.setParameter("data", DataHoje.dataHoje());
+            qry.setParameter("id_filial", id_filial);
+            qry.setMaxResults(1);
+            if (!qry.getResultList().isEmpty()) {
+                result = (Senha) qry.getSingleResult();
+            }
+        } catch (Exception e) {
+             //e.printStackTrace();
+             return null;
+        }
+        return result;
+    }
 
     @Override
     public boolean verificaNaoAtendidosSegRegistroAgendamento() {
