@@ -100,7 +100,7 @@ public class Rais implements Serializable {
     private boolean alvara;
     @Column(name = "IS_EMPREGADO_FILIADO", columnDefinition = "BOOLEAN DEFAULT FALSE")
     private boolean empregadoFiliado;
-    @Column(name = "DS_PIS", length = 13)
+    @Column(name = "DS_PIS", length = 14)
     private String pis;
 
     public Rais() {
