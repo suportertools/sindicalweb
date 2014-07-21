@@ -34,7 +34,7 @@
                             <div class="clear"></div>
                             <c:set scope="request" var="object" value="${raisBean.rais}"/>
                                                      
-                            <p:tabView dynamic="true" id="i_tab_view">
+                            <p:tabView dynamic="false" id="i_tab_view">
                                 <p:tab title="Cadastro">
                                     <p:panel styleClass="fundoCinza">
                                         <h:panelGrid columns="2" cellpadding="4">
@@ -236,7 +236,7 @@
                                 <p:messages showDetail="true" showSummary="false" />
                                 <f:facet name="footer">
                                     <h:panelGrid columns="2">
-                                        <p:commandButton value="Ok" onclick="PF('dlg_message').hide();" />
+                                        <p:commandButton value="Ok" onclick="PF('dlg_message').hide();" ajax="false"/>
                                     </h:panelGrid>
                                 </f:facet>
                             </p:dialog>
