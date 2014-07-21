@@ -725,9 +725,9 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
         if (listTipoDeficiencia.isEmpty()) {
             DaoInterface di = new Dao();
             List<TipoDeficiencia> list = di.list("TipoDeficiencia");
-            listTipoDeficiencia.add(new SelectItem(0, "Selecionar", "0"));
+            //listTipoDeficiencia.add(new SelectItem(0, "Selecionar", "0"));
             for (int i = 0; i < list.size(); i++) {
-                listTipoDeficiencia.add(new SelectItem(i+1, list.get(i).getDescricao(), "" + list.get(i).getId()));
+                listTipoDeficiencia.add(new SelectItem(i, list.get(i).getDescricao(), "" + list.get(i).getId()));
             }
         }
         return listTipoDeficiencia;
