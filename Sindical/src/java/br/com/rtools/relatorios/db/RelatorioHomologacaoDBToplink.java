@@ -10,7 +10,7 @@ public class RelatorioHomologacaoDBToplink extends DB implements RelatorioHomolo
 
     @Override
     public List pesquisaHomologacao(Relatorios relatorio, boolean booEmpresa, int id_empresa, boolean booFuncionario, int id_funcionario, boolean booData, String data_ini, String data_fim,
-            boolean booHomologador, int id_homologador, String ordem) {
+            boolean booHomologador, int id_homologador, int id_filial, String ordem) {
         String textQry = "select "
                 + " to_char(a.dt_data,'dd/mm/yyyy') as DataInicial,"
                 + " to_char(a.dt_data,'dd/mm/yyyy') as DataFinal,"
@@ -70,6 +70,9 @@ public class RelatorioHomologacaoDBToplink extends DB implements RelatorioHomolo
             }
         }
 
+        if (id_filial != -1){
+            filtro += " and a.id_filial = " + id_filial;
+        }
         String tordem = "";
         if (ordem.equals("data")) {
             tordem = " a.dt_data desc, h.ds_hora, empresa.ds_nome";

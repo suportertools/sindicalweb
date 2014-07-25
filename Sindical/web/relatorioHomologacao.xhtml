@@ -104,6 +104,18 @@
                                 </h:column>
                             </h:panelGrid>
                             
+                            <h:panelGrid columns="2" rendered="#{relatorioHomologacaoBean.booFilial}" style="float: left; margin: 10px">
+                                <h:column>
+                                    <h:outputLabel value="Filiais Disponíveis" styleClass="fontePadrao"/>
+                                </h:column>
+                                <h:column></h:column>
+                                <h:column>
+                                    <h:selectOneMenu value="#{relatorioHomologacaoBean.indexFilial}" style="width: 600px">
+                                        
+                                        <f:selectItems value="#{relatorioHomologacaoBean.listaFiliais}"/>
+                                    </h:selectOneMenu>
+                                </h:column>
+                            </h:panelGrid>
                             <h:panelGrid  style="float: left">
                                 <rich:panel>
                                     <h:outputLabel value="Ordenar por " styleClass="fonteFranklinNegrito"/>

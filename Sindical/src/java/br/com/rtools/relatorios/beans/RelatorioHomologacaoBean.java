@@ -1,6 +1,7 @@
 package br.com.rtools.relatorios.beans;
 
 import br.com.rtools.impressao.ParametroHomologacao;
+import br.com.rtools.pessoa.Filial;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.pessoa.Juridica;
 import br.com.rtools.pessoa.Pessoa;
@@ -10,6 +11,8 @@ import br.com.rtools.relatorios.db.RelatorioGenericoDBToplink;
 import br.com.rtools.relatorios.db.RelatorioHomologacaoDB;
 import br.com.rtools.relatorios.db.RelatorioHomologacaoDBToplink;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
@@ -36,18 +39,22 @@ import net.sf.jasperreports.engine.util.JRLoader;
 public class RelatorioHomologacaoBean implements Serializable {
 
     private int idRelatorio = 0;
+    private int indexFilial = 0;
     private String selectAccordion = "simples";
     private List<DataObject> listaMenuRHomologacao = new ArrayList();
     private boolean booEmpresa = false;
     private boolean booFuncionario = false;
     private boolean booData = false;
     private boolean booHomologador = false;
+    private boolean booFilial = false;
     private Juridica juridica = new Juridica();
     private Fisica fisica = new Fisica();
     private Pessoa usuario = new Pessoa();
     private String datai = "";
     private String dataf = "";
     private String tipoOrdem = "data";
+    private List<SelectItem> listaFiliais = new ArrayList();
+    
 
     public String visualizarRelatorio() {
         RelatorioGenericoDB db = new RelatorioGenericoDBToplink();
@@ -58,7 +65,7 @@ public class RelatorioHomologacaoBean implements Serializable {
         if (booData) {
         }
 
-        int id_empresa = -1, id_funcionario = -1, id_homologador = -1;
+        int id_empresa = -1, id_funcionario = -1, id_homologador = -1, id_filial = -1;
         if (booEmpresa) {
             if (juridica.getId() != -1) {
                 id_empresa = juridica.getId();
@@ -76,8 +83,12 @@ public class RelatorioHomologacaoBean implements Serializable {
                 id_homologador = usuario.getId();
             }
         }
+        
+        if (booFilial) {
+            id_filial = Integer.valueOf(getListaFiliais().get(indexFilial).getDescription());
+        }
 
-        List<Vector> result = dbh.pesquisaHomologacao(relatorios, booEmpresa, id_empresa, booFuncionario, id_funcionario, booData, datai, dataf, booHomologador, id_homologador, tipoOrdem);
+        List<Vector> result = dbh.pesquisaHomologacao(relatorios, booEmpresa, id_empresa, booFuncionario, id_funcionario, booData, datai, dataf, booHomologador, id_homologador, id_filial, tipoOrdem);
         Collection lista = new ArrayList<ParametroHomologacao>();
 
         for (int i = 0; i < result.size(); i++) {
@@ -117,6 +128,20 @@ public class RelatorioHomologacaoBean implements Serializable {
         return null;
     }
 
+    public List<SelectItem> getListaFiliais() {
+        if (listaFiliais.isEmpty()) {
+            DaoInterface di = new Dao();
+            List<Filial> list = (List<Filial>) di.list(new Filial(), true);
+            for (int i = 0; i < list.size(); i++) {
+                listaFiliais.add(new SelectItem(i,
+                        list.get(i).getFilial().getPessoa().getDocumento() + " / " + list.get(i).getFilial().getPessoa().getNome(),
+                        Integer.toString(list.get(i).getId())));
+            }
+        }
+        return listaFiliais;
+    }
+
+    
     public List<SelectItem> getListaTipoRelatorios() {
         List<SelectItem> relatorios = new Vector<SelectItem>();
         int i = 0;
@@ -161,6 +186,7 @@ public class RelatorioHomologacaoBean implements Serializable {
             listaMenuRHomologacao.add(new DataObject("* Nome Funcionário ", "Editar", null, null, null, null));
             listaMenuRHomologacao.add(new DataObject("* Data Inicial/Final ", "Editar", null, null, null, null));
             listaMenuRHomologacao.add(new DataObject("* Homologador ", "Editar", null, null, null, null));
+            listaMenuRHomologacao.add(new DataObject("* Filial ", "Editar", null, null, null, null));
         }
         return listaMenuRHomologacao;
     }
@@ -199,6 +225,12 @@ public class RelatorioHomologacaoBean implements Serializable {
                 booHomologador = false;
             } else {
                 booHomologador = true;
+            }
+        } else if (index == 4) {
+            if (booFilial) {
+                booFilial = false;
+            } else {
+                booFilial = true;
             }
         }
         return "relatorioHomologacao";
@@ -294,5 +326,21 @@ public class RelatorioHomologacaoBean implements Serializable {
 
     public void setTipoOrdem(String tipoOrdem) {
         this.tipoOrdem = tipoOrdem;
+    }
+
+    public int getIndexFilial() {
+        return indexFilial;
+    }
+
+    public void setIndexFilial(int indexFilial) {
+        this.indexFilial = indexFilial;
+    }
+
+    public boolean isBooFilial() {
+        return booFilial;
+    }
+
+    public void setBooFilial(boolean booFilial) {
+        this.booFilial = booFilial;
     }
 }

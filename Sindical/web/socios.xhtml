@@ -312,7 +312,7 @@
                                 <p:commandButton ajax="false" value="Voltar" action="#{sociosBean.editarTitular()}" />
                                 <p:commandButton onclick="PF('i_dlg_s').show()" value="#{sociosBean.lblSocio}" disabled="#{controleAcessoBean.botaoSalvar}" />
                                 <p:commandButton onclick="PF('i_dlg_e').show()" value="EXCLUIR" disabled="#{controleAcessoBean.botaoExcluir}" />
-                                <p:commandButton onclick="PF('i_dlg_i').show()" value="INATIVAR" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}" disabled="#{controleAcessoBean.botaoExcluir}" />
+                                <p:commandButton onclick="PF('i_dlg_i').show()" value="INATIVAR" rendered="#{sociosBean.matriculaSocios.motivoInativacao == null}" disabled="#{controleAcessoBean.botaoSalvar}" />
 
                                 <p:selectBooleanCheckbox value="#{sociosBean.imprimirVerso}" itemLabel="Imprimir Verso" disabled="true" style="margin-left: 190px" />
 

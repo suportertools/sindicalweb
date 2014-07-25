@@ -208,8 +208,8 @@
                                                 <h:panelGrid columns="2" style="margin-top: 10px">
                                                     <p:column>
                                                         <p:outputLabel value="E-Mail"/><br />
-                                                        <p:inputText label="Email" id="i_email" size="40" value="#{fisicaBean.fisica.pessoa.email1}" validatorMessage="Email inválido #{fisicaBean.fisica.pessoa.email1}" required="false" placeholder="Formato: meuemail@provedor.com" style="margin-right: 10px">
-                                                            <p:ajax event="blur" update="i_message_email" />
+                                                        <p:inputText label="Email" id="i_email" size="40" value="#{fisicaBean.fisica.pessoa.email1}" validatorMessage="Email inválido #{fisicaBean.fisica.pessoa.email1}" required="false" placeholder="Formato: meuemail@provedor.com" style="margin-right: 10px" converter="#{toLowerCase}">
+                                                            <p:ajax event="blur" update="i_message_email i_email" />
                                                             <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
                                                         </p:inputText>                                                
                                                         <p:message for="i_email" id="i_message_email" />

@@ -644,7 +644,7 @@ public class JuridicaBean implements Serializable {
             dbSalvar.alterarObjeto(juridica.getPessoa());
             if (dbSalvar.alterarObjeto(juridica)) {
                 
-                if (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1)
+                if (juridica.getContabilidade() != null && juridica.getContabilidade().getId() != -1 && juridica.getContabilidade().getId() != juridica.getId())
                     dbSalvar.alterarObjeto(juridica.getContabilidade());
                 
                 GenericaMensagem.info("Sucesso", "Cadastro atualizado com Sucesso!");
@@ -2302,9 +2302,9 @@ public class JuridicaBean implements Serializable {
     }
 
     public void limparCnae() {
-        if (juridica.getId() != -1) {
+        //if (juridica.getId() != -1) {
             juridica.setCnae(null);
-        }
+        //}
     }
 
     public String getMascaraPesquisaJuridica() {

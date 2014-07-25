@@ -125,7 +125,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                         "  LEFT JOIN pes_profissao as pr on pr.id = pe.id_funcao  " +
                         "  LEFT JOIN pes_juridica j on j.id = pe.id_juridica      " +
                         "  LEFT JOIN pes_pessoa pj on pj.id = j.id_pessoa       " +
-                        "  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = p.id AND pend.id_tipo_endereco = 1" +
+                        "  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2" + // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
+                        //"  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = p.id AND pend.id_tipo_endereco = 1" + // ENDEREÇO DO SÓCIO
                         "  LEFT JOIN end_endereco ende on ende.id = pend.id_endereco   " +
                         "  LEFT JOIN end_cidade c on c.id = ende.id_cidade      " +
                         " INNER JOIN soc_carteirinha sc on sc.id_pessoa = p.id  " +

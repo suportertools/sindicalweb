@@ -30,7 +30,7 @@
                         <h:panelGrid columns="2">
                             <p:outputLabel value="CPF: " />
                             <h:column>
-                                <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}"  maxlength="14" size="15" disabled="#{oposicaoBean.desabilitaPessoa}" widgetVar="input_cpf">
+                                <p:inputMask mask="999.999.999-99" id="idCPF" value="#{oposicaoBean.oposicao.oposicaoPessoa.cpf}"  maxlength="14" size="15" readonly="#{oposicaoBean.desabilitaPessoa}" widgetVar="input_cpf">
                                     <p:ajax event="change" listener="#{oposicaoBean.consultaPessoa}" update=":form_oposicao:" />
                                 </p:inputMask>
                                 <p:watermark value="999.999.999-99" for="idCPF" />
@@ -40,9 +40,9 @@
                                 <c:if test="#{oposicaoBean.oposicao.juridica.pessoa.id != -1}">
                                     <h:panelGrid columns="5">
                                         <p:outputLabel value="CNPJ:"  for="idPesquisaJuridica"/>
-                                        <p:inputText value="#{oposicaoBean.oposicao.juridica.pessoa.documento}" disabled="true" />
+                                        <p:inputText value="#{oposicaoBean.oposicao.juridica.pessoa.documento}" readonly="true" />
                                         <p:outputLabel value="Razão Social:" />
-                                        <p:inputText value="#{oposicaoBean.oposicao.juridica.pessoa.nome}" disabled="true"  size="80"/>
+                                        <p:inputText value="#{oposicaoBean.oposicao.juridica.pessoa.nome}" readonly="true"  size="80"/>
                                         <p:outputLabel value="#{oposicaoBean.msgEmpresa}" />
                                     </h:panelGrid>
                                 </c:if>
@@ -51,7 +51,7 @@
                                 </c:if>
                             </h:column>
                             <p:outputLabel value="Emissão: " />
-                            <p:inputText value="#{oposicaoBean.oposicao.emissao}" size="8" disabled="true"/>
+                            <p:inputText value="#{oposicaoBean.oposicao.emissao}" size="8" readonly ="true"/>
                             <p:outputLabel value="RG: " />
                             <h:column>
                                 <p:inputText id="idRG"  value="#{oposicaoBean.oposicao.oposicaoPessoa.rg}" maxlength="15" size="15"  rendered="#{oposicaoBean.oposicao.oposicaoPessoa.cpf == ''}" >
