@@ -166,7 +166,8 @@ public class RelatorioOposicaoBean implements Serializable {
             }
             if (porPesquisa.equals("cnpj") || porPesquisa.equals("empresa")) {
                 if (oposicao.getOposicaoPessoa().getId() != -1) {
-                    pEmpresaI = oposicao.getJuridica().getPessoa().getId();
+                    //pEmpresaI = oposicao.getJuridica().getPessoa().getId();
+                    pEmpresaI = oposicao.getJuridica().getId();
                     listDetalhePesquisa.add(" Pessoa Jurídica por " + porPesquisa + ". CNPJ: " + oposicao.getJuridica().getPessoa().getDocumento() + " - " + oposicao.getJuridica().getPessoa().getNome());
                 }
             }

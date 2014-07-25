@@ -672,17 +672,18 @@ public class MatriculaEscolaBean implements Serializable {
                     mensagem = "Informar a data de término!";
                     return;
                 }
+                
                 int dataInicioInteger = DataHoje.converteDataParaInteger(matriculaIndividual.getDataInicioString());
                 int dataFinalInteger = DataHoje.converteDataParaInteger(matriculaIndividual.getDataTerminoString());
                 //int dataHojeInteger = DataHoje.converteDataParaInteger(DataHoje.converteData(DataHoje.dataHoje()));
                 int dataHojeInteger = DataHoje.converteDataParaInteger(matriculaEscola.getDataMatriculaString());
                 
                 if (dataInicioInteger < dataHojeInteger) {
-                    mensagem = "A data inicial do curso deve ser maior ou igual a data de hoje!";
+                    mensagem = "A data inicial do curso deve ser maior ou igual a data de emissão!";
                     return;
                 }
                 if (dataFinalInteger < dataHojeInteger) {
-                    mensagem = "A data final do curso deve ser maior ou igual a data de hoje!";
+                    mensagem = "A data final do curso deve ser maior ou igual a data de emissão!";
                     return;
                 }
                 if (dataFinalInteger < dataInicioInteger) {
@@ -704,6 +705,11 @@ public class MatriculaEscolaBean implements Serializable {
             }
             if (listaProfessor.isEmpty()) {
                 mensagem = "Informar o nome do professor! Caso não exista cadastre um professor.";
+                return;
+            }
+            
+            if (!matriculaIndividual.isDomingo() && !matriculaIndividual.isSegunda() && !matriculaIndividual.isTerca() && !matriculaIndividual.isQuarta() && !matriculaIndividual.isQuinta() && !matriculaIndividual.isSexta() && !matriculaIndividual.isSabado()){
+                mensagem = "Selecione ao menos um Dia da Semana!";
                 return;
             }
         } else {
@@ -737,8 +743,10 @@ public class MatriculaEscolaBean implements Serializable {
                 matriculaIndividual.setCurso((Servicos) sv.find(new Servicos(), Integer.parseInt(listaIndividual.get(idIndividual).getDescription())));
             else
                 matriculaIndividual.setCurso(null);
-            
-            matriculaIndividual.setProfessor((Professor) sv.find(new Professor(), Integer.parseInt(listaProfessor.get(idProfessor).getDescription())));
+            if (Integer.parseInt(listaProfessor.get(idProfessor).getDescription()) != 0)
+                matriculaIndividual.setProfessor((Professor) sv.find(new Professor(), Integer.parseInt(listaProfessor.get(idProfessor).getDescription())));
+            else
+                matriculaIndividual.setProfessor(null);
         } else if (tipoMatricula.equals("Turma")) {
 //            matriculaTurma.setTurma((Turma) sv.pesquisaCodigo(Integer.parseInt(listaTurma.get(idTurma).getDescription()), "Turma"));
             matriculaTurma.setTurma(turma);
@@ -830,7 +838,7 @@ public class MatriculaEscolaBean implements Serializable {
                         return;
                     }
                     tipoMatriculaLog = " - Curso: " + matriculaIndividual.getCurso().getId() + " - " + matriculaIndividual.getCurso().getDescricao()
-                            + " - Professor: " + matriculaIndividual.getProfessor().getId() + " - " + matriculaIndividual.getProfessor().getProfessor()
+                            //+ " - Professor: " + matriculaIndividual.getProfessor().getId() + " - " + matriculaIndividual.getProfessor().getProfessor()
                             + " - Período: " + matriculaIndividual.getDataInicioString() + " até " + matriculaIndividual.getDataTerminoString();
                 }
                 pessoaResponsavelMemoria = matriculaEscola.getResponsavel();
@@ -928,9 +936,12 @@ public class MatriculaEscolaBean implements Serializable {
             }
         }
         setValorString(matriculaEscola.getValorTotalString());
-        if (porPesquisa.equals("matriculaIndividual")) {
-            tipoMatricula = "Individual";
-            matriculaIndividual = matriculaEscolaDB.pesquisaCodigoMIndividual(matriculaEscola.getId());
+        matriculaIndividual = matriculaEscolaDB.pesquisaCodigoMIndividual(matriculaEscola.getId());
+        matriculaTurma = matriculaEscolaDB.pesquisaCodigoMTurma(matriculaEscola.getId());
+        
+        
+        if (matriculaIndividual.getId() != -1) {
+            //tipoMatricula = "Individual";
             desabilitaTurma = true;
             desabilitaIndividual = false;
             for (int i = 0; i < listaProfessor.size(); i++) {
@@ -945,9 +956,8 @@ public class MatriculaEscolaBean implements Serializable {
                     break;
                 }
             }
-        } else {
-            tipoMatricula = "Turma";
-            matriculaTurma = matriculaEscolaDB.pesquisaCodigoMTurma(matriculaEscola.getId());
+        }else if (matriculaTurma.getId() != -1) {
+            //tipoMatricula = "Turma";
             turma = matriculaTurma.getTurma();
             for (int i = 0; i < listaTurma.size(); i++) {
                 if (matriculaTurma.getTurma().getId() == turma.getId()) {
@@ -957,6 +967,8 @@ public class MatriculaEscolaBean implements Serializable {
             }
             desabilitaTurma = false;
             desabilitaIndividual = true;
+        }else{
+            return null;
         }
         idFTipoDocumento = matriculaEscola.getTipoDocumento().getId();
         FisicaDB fisicaDB = new FisicaDBToplink();
@@ -968,6 +980,9 @@ public class MatriculaEscolaBean implements Serializable {
         pegarIdServico();
         atualizaValor();
         calculaValorLiquido();
+        
+        listaMesVencimento.clear();
+        
         pessoaResponsavelMemoria = matriculaEscola.getResponsavel();
         pessoaAlunoMemoria = matriculaEscola.getAluno();
         analisaResponsavel();
@@ -1047,8 +1062,8 @@ public class MatriculaEscolaBean implements Serializable {
                         return;
                     }
                     stringLogMatricula += "ID M. Individual: " + matriculaIndividual.getId()
-                            + "         - Curso: " + matriculaIndividual.getCurso().getId() + " - " + matriculaIndividual.getCurso().getDescricao()
-                            + "     - Professor: " + matriculaIndividual.getProfessor().getId() + " - " + matriculaIndividual.getProfessor().getProfessor().getNome();
+                            + "         - Curso: " + matriculaIndividual.getCurso().getId() + " - " + matriculaIndividual.getCurso().getDescricao();
+                            //+ "     - Professor: " + matriculaIndividual.getProfessor().getId() + " - " + matriculaIndividual.getProfessor().getProfessor().getNome();
                 } else {
                     if (!db.deletarObjeto((MatriculaTurma) db.find(matriculaTurma))) {
                         db.desfazerTransacao();
@@ -1080,7 +1095,7 @@ public class MatriculaEscolaBean implements Serializable {
     }
 
     public void calculaValorLiquido() {
-        if (turma.getId() != -1) {
+        //if (turma.getId() != -1) { // ROGÉRIO PEDIU PRA COMENTAR PORQUE NÃO ESTAVA CALCULANDO INDIVIDUAL
             valor = Moeda.substituiVirgula(valor);
             valorLiquido = "0";
             valorParcela = "0";
@@ -1119,7 +1134,7 @@ public class MatriculaEscolaBean implements Serializable {
                 }
             }
             valor = Moeda.converteR$(valor);
-        }
+        //}
     }
 
     public void atualizaValor() {

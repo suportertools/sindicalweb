@@ -38,7 +38,9 @@
                                 <p:watermark for="idCBO" value="Digite o CBO" />
 
                                 <h:outputLabel value="Profissão: " style="width: 80px;" title="Profissão"/>
-                                <p:inputText id="idProfissao" size="30" value="#{profissaoBean.prof.profissao}" maxlength="50"/>
+                                <p:inputText id="idProfissao" size="30" value="#{profissaoBean.prof.profissao}" maxlength="50" converter="#{toUpperCase}">
+                                    <p:ajax event="blur" update="idProfissao" />
+                                </p:inputText>
                                 <p:watermark for="idProfissao" value="Digite a Profissão" />
                                 <p:focus context="i_panel" />
                             </p:panel>

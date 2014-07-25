@@ -100,7 +100,7 @@ public class OposicaoBean implements Serializable {
             return;
         }
         if (oposicao.getConvencaoPeriodo().getId() == -1) {
-            message = "Informar o período de convenção!";
+            message = "Empresa Inativa!";
             return;
         }
         if (oposicao.getEmissao().isEmpty()) {

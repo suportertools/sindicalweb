@@ -35,6 +35,7 @@ public class UsuarioDBToplink extends DB implements UsuarioDB {
             qry.setParameter("sen", senha);
             result = (Pessoa) qry.getSingleResult();
         } catch (Exception e) {
+            e.printStackTrace();
         }
         return result;
     }

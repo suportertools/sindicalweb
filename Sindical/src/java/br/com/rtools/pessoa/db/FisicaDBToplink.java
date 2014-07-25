@@ -186,7 +186,6 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "  where fis.pessoa.id = pes.id  "
                         + "   and UPPER(pes." + por + ") like :desc "
                         + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        //+ " where soc.matriculaSocios.motivoInativacao is null )";
                         + " where soc.servicoPessoa.ativo = true )";
             } else if (como.equals("I")) {
                 por = "nome";
@@ -241,6 +240,8 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
                     + " where soc.servicoPessoa.ativo = true )";
         }
+        
+        
         if (por.equals("endereco")) {
             desc = desc.toLowerCase().toUpperCase();
             if (desc.isEmpty()) {
@@ -278,10 +279,23 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 textQuery = " SELECT FIS FROM Fisica AS FIS, Pessoa AS PES WHERE FIS.id IN(" + listaId + ") AND PES.id IN( SELECT SOC.servicoPessoa.pessoa.id from Socios AS SOC WHERE soc.servicoPessoa.ativo = true )";
             }
         }
+        
+        if (por.equals("matricula")) {
+            //por = "documento";
+            //desc = desc.toLowerCase().toUpperCase();
+            if (!desc.isEmpty()){
+                textQuery = "select fis from Fisica fis, "
+                        + "                 Pessoa pes     "
+                        + "  where fis.pessoa.id = pes.id  "
+                        + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
+                        + " where soc.servicoPessoa.ativo = true and soc.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+")";
+            }
+        }
+                
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco")) {
+                if (!por.equals("endereco") && !por.equals("matricula")) {
                     qry.setParameter("desc", desc);
                 }
             }
@@ -406,10 +420,21 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "      AND FIS.pessoa.id NOT IN( SELECT SOC2.servicoPessoa.pessoa.id FROM Socios SOC2 WHERE SOC2.servicoPessoa.ativo = true )             ";
             }
         }
+        
+        if (por.equals("matricula")) {
+            //por = "documento";
+            //desc = desc.toLowerCase().toUpperCase();
+            
+            if (!desc.isEmpty()){
+                textQuery = "select fis from Fisica fis " +
+                        "  where fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+") "
+                        + "  and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true and soc2.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+") ";
+            }
+        }
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco")) {
+                if (!por.equals("endereco") && !por.equals("matricula")) {
                     qry.setParameter("desc", desc);
                 }
             }
