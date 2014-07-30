@@ -112,7 +112,7 @@
                                                 <p:column>
                                                     <br />
                                                     <p:inputMask id="i_documento" size="18" value="#{juridicaBean.juridica.pessoa.documento}" mask="#{juridicaBean.colocarMascara}">
-                                                        <p:ajax event="change" listener="#{juridicaBean.pesquisaDocumento}"/>
+                                                        <p:ajax event="change" listener="#{juridicaBean.pesquisaDocumento}" update=":formPessoaJuridica:i_msg"/>
                                                     </p:inputMask>
                                                 </p:column>
                                                 

@@ -48,6 +48,7 @@
                                         <f:selectItem itemValue="email2" itemLabel="E-mail 2"/>
                                         <f:selectItem itemValue="endereco" itemLabel="Endereço"/>
                                         <f:selectItem itemValue="matricula" itemLabel="Matrícula"/>
+                                        <f:selectItem itemValue="codigo" itemLabel="Código do Funcionário"/>
                                     </p:selectOneMenu>                        
                                     <p:commandButton value="Pesquisar" action="#{fisicaBean.acaoPesquisaInicial}" update="tbl" rendered="#{fisicaBean.porPesquisa.equals('cpf')}"/>
                                     <p:commandButton value="Inicial" action="#{fisicaBean.acaoPesquisaInicial}" update="tbl" rendered="#{!fisicaBean.porPesquisa.equals('cpf')}"/>
