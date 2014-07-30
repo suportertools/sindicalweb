@@ -33,7 +33,9 @@ public class PessoaEmpresa implements java.io.Serializable {
     private String setor;
     @Column(name = "AVISO_TRABALHADO", nullable = true)
     private boolean avisoTrabalhado;
-
+    @Column(name = "DS_CODIGO", length = 30)
+    private String codigo;
+    
     public PessoaEmpresa() {
         this.id = -1;
         this.fisica = new Fisica();
@@ -43,9 +45,10 @@ public class PessoaEmpresa implements java.io.Serializable {
         setDemissao("");
         this.setor = "";
         this.avisoTrabalhado = true;
+        this.codigo = "";
     }
 
-    public PessoaEmpresa(int id, Fisica fisica, Juridica juridica, Profissao funcao, String admissao, String demissao, String setor, boolean avisoTrabalhado) {
+    public PessoaEmpresa(int id, Fisica fisica, Juridica juridica, Profissao funcao, String admissao, String demissao, String setor, boolean avisoTrabalhado, String codigo) {
         this.id = id;
         this.fisica = fisica;
         this.juridica = juridica;
@@ -54,6 +57,7 @@ public class PessoaEmpresa implements java.io.Serializable {
         setDemissao(demissao);
         this.setor = setor;
         this.avisoTrabalhado = avisoTrabalhado;
+        this.codigo = codigo;
     }
 
     public int getId() {
@@ -156,6 +160,14 @@ public class PessoaEmpresa implements java.io.Serializable {
     public void selecionaDataDemissao(SelectEvent event) {
         SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.dtDemissao = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
 }

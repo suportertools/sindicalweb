@@ -332,7 +332,7 @@
                                             <p:outputLabel value="#{fisicaBean.pessoaEmpresa.juridica.fantasia}" style="font-weight: bold"/>
                                         </h:panelGrid>
 
-                                        <h:panelGrid columns="2" style="margin-top: 10px">
+                                        <h:panelGrid columns="3" style="margin-top: 10px">
                                             <h:column>                                        
                                                 <p:outputLabel value="Data Admissão" /><br />
                                                 <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.admissao}" mask="99/99/9999" style="margin-right: 20px; text-align: center"/>
@@ -341,6 +341,11 @@
                                             <h:column>
                                                 <p:outputLabel value="Data Demissão" /><br />
                                                 <p:inputMask size="10" value="#{fisicaBean.pessoaEmpresa.demissao}" mask="99/99/9999" style="text-align: center"/>
+                                            </h:column>
+                                            
+                                            <h:column>
+                                                <p:outputLabel value="Código" /><br />
+                                                <p:inputText size="10" value="#{fisicaBean.pessoaEmpresa.codigo}" />
                                             </h:column>
                                         </h:panelGrid>                                
 

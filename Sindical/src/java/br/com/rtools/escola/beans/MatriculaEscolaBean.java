@@ -121,6 +121,7 @@ public class MatriculaEscolaBean implements Serializable {
     private List<SelectItem> listaIndividual;
     private List<SelectItem> listaDataTaxa;
     private List<SelectItem> listaMesVencimento;
+    private List<SelectItem> listaDiaParcela;
     private List<Turma> listaTurma;
     private List<Movimento> listaMovimentos;
     private List<Movimento> listaOutrosMovimentos;
@@ -129,6 +130,7 @@ public class MatriculaEscolaBean implements Serializable {
     private int diaVencimento;
     private int idDiaVencimento;
     private int idDiaVencimentoPessoa;
+    private int idDiaParcela;
     private int idDataTaxa;
     private int idMesVencimento;
     private int idFTipoDocumento;
@@ -215,6 +217,7 @@ public class MatriculaEscolaBean implements Serializable {
         listaDataVencimento = new ArrayList<SelectItem>();
         listaDataTaxa = new ArrayList<SelectItem>();
         listaMesVencimento = new ArrayList<SelectItem>();
+        listaDiaParcela = new ArrayList<SelectItem>();
         listaTurma = new ArrayList<Turma>();
         listaMovimentos = new ArrayList<Movimento>();
         listaOutrosMovimentos = new ArrayList<Movimento>();
@@ -753,7 +756,8 @@ public class MatriculaEscolaBean implements Serializable {
         }
         matriculaEscola.setEsEFinanceiro(null);
         matriculaEscola.setValorTotalString(valor);
-        matriculaEscola.setDiaVencimento(idDiaVencimento);
+        //matriculaEscola.setDiaVencimento(idDiaVencimento);
+        matriculaEscola.setDiaVencimento(idDiaParcela);
         sv.abrirTransacao();
         if (matriculaEscola.getId() == -1) {
             matriculaEscola.setEscStatus((EscStatus) sv.find(new EscStatus(), 1));
@@ -1231,11 +1235,24 @@ public class MatriculaEscolaBean implements Serializable {
 //                    String ano = matriculaEscola.getDataMatriculaString().substring(6, 10);
                     referencia = mes + "/" + ano;
 
-                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaEscola.getDiaVencimento()) {
-                        if (matriculaEscola.getDiaVencimento() < 10) {
-                            vencimento = "0" + matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+//                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaEscola.getDiaVencimento()) {
+//                        if (matriculaEscola.getDiaVencimento() < 10) {
+//                            vencimento = "0" + matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+//                        } else {
+//                            vencimento = matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+//                        }
+//                    } else {
+//                        String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
+//                        if (diaSwap.length() < 2) {
+//                            diaSwap = "0" + diaSwap;
+//                        }
+//                        vencimento = diaSwap + "/" + mes + "/" + ano;
+//                    }
+                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaParcela) {
+                        if (idDiaParcela < 10) {
+                            vencimento = "0" + idDiaParcela + "/" + mes + "/" + ano;
                         } else {
-                            vencimento = matriculaEscola.getDiaVencimento() + "/" + mes + "/" + ano;
+                            vencimento = idDiaParcela + "/" + mes + "/" + ano;
                         }
                     } else {
                         String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
@@ -2644,12 +2661,12 @@ public class MatriculaEscolaBean implements Serializable {
             sadb.abrirTransacao();
             if (sadb.alterarObjeto(pc)) {
                 matriculaEscola.setDiaVencimento(pc.getNrDiaVencimento());
-                if (sadb.alterarObjeto(matriculaEscola)) {
-                    sadb.comitarTransacao();
-                    listaMatriculaEscolas.clear();
-                } else {
-                    sadb.desfazerTransacao();
-                }
+                    if (sadb.alterarObjeto(matriculaEscola)) {
+                        sadb.comitarTransacao();
+                        listaMatriculaEscolas.clear();
+                    } else {
+                        sadb.desfazerTransacao();
+                    }
             } else {
                 sadb.desfazerTransacao();
             }
@@ -2766,5 +2783,30 @@ public class MatriculaEscolaBean implements Serializable {
 
     public void setSocios(Socios socios) {
         this.socios = socios;
+    }
+
+    public int getIdDiaParcela() {
+        return idDiaParcela;
+    }
+
+    public void setIdDiaParcela(int idDiaParcela) {
+        this.idDiaParcela = idDiaParcela;
+    }
+
+    public List<SelectItem> getListaDiaParcela() {
+        if (listaDiaParcela.isEmpty()) {
+            int dia = DataHoje.DataToArrayInt(matriculaEscola.getDataMatricula())[0];
+            for (int i = 1; i <= 31; i++) {
+                listaDiaParcela.add(new SelectItem(Integer.toString(i)));
+                if (dia == i)
+                    idDiaParcela = i;
+            }
+            
+        }
+        return listaDiaParcela;
+    }
+
+    public void setListaDiaParcela(List<SelectItem> listaDiaParcela) {
+        this.listaDiaParcela = listaDiaParcela;
     }
 }

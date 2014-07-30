@@ -182,6 +182,11 @@
                                     <h:inputText size="15" maxlength="15" value="#{webAgendamentoContribuinteBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);" readonly="#{webAgendamentoContribuinteBean.readonlyFisica}">
                                         <a4j:ajax event="change" render="this"/>
                                     </h:inputText>
+                                    
+                                    <h:outputText value="Código do Funcionário: " styleClass="fontePadrao"/>
+                                    <h:inputText id="idCodigoFunc" size="8" value="#{webAgendamentoContribuinteBean.pessoaEmpresa.codigo}" styleClass="fontePadraoNegrito" onkeypress="mascara(this,uppercase);">
+                                        <a4j:ajax event="change" render="this"/>
+                                    </h:inputText>
                                 </h:panelGrid>
                                 
                                 <h:panelGrid columns="2">

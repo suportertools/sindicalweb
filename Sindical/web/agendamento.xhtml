@@ -119,6 +119,10 @@
                                     <h:inputText id="iSerie" size="15" value="#{agendamentoBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
                                         <a4j:ajax event="blur" render="this"  />
                                     </h:inputText>
+                                    <h:outputText value="CÓDIGO DO FUNCIONÁRIO: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText id="iCodigo" size="8" value="#{agendamentoBean.pessoaEmpresa.codigo}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                        <a4j:ajax event="blur" render="this"  />
+                                    </h:inputText>
                                 </h:column>
                                 <h:outputText value="SEXO: " styleClass="fontePadrao"/>
                                 <h:selectOneRadio id="idSexo" value="#{agendamentoBean.fisica.sexo}" styleClass="fontePadrao">

@@ -224,6 +224,10 @@
                                     <h:inputText size="15" maxlength="15" value="#{webAgendamentoContabilidadeBean.fisica.serie}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
                                         <a4j:ajax event="change" render="this"/>
                                     </h:inputText>
+                                    <h:outputText value="CÓDIGO DO FUNCIONÁRIO: " styleClass="fontePadrao margin-left-max"/>
+                                    <h:inputText id="idCodigoFunc" size="8" value="#{webAgendamentoContabilidadeBean.pessoaEmpresa.setor}" styleClass="fontePadraoNegrito" onblur="upperCase(this);">
+                                        <a4j:ajax event="change" />
+                                    </h:inputText>
                                 </h:column>
                                 <h:column>
                                     <h:outputText value="SEXO:" styleClass="fontePadrao"/>

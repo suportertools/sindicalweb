@@ -346,13 +346,9 @@ public class JuridicaBean implements Serializable {
         JuridicaDB db = new JuridicaDBToplink();
         if (!juridica.getPessoa().getDocumento().isEmpty()) {
             List<Juridica> lista = db.pesquisaJuridicaPorDoc(juridica.getPessoa().getDocumento());
-            if (lista.isEmpty()) {
-                msgDocumento = "";
-            } else {
-                msgDocumento = "Esse documento já existe para: " + lista.get(0).getPessoa().getNome();
+            if (!lista.isEmpty()) {
+                GenericaMensagem.warn("Erro", "Esse documento já existe para: " + lista.get(0).getPessoa().getNome());
             }
-        } else {
-            msgDocumento = "";
         }
     }
 

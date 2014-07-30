@@ -77,50 +77,38 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             por = "nome";
             if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc";
+                textQuery = "select fis from Fisica fis"
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc";
+                textQuery = "select fis from Fisica fis "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc";
             }
         }
         if (por.equals("email1") || por.equals("email2")) {
             if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
                 textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc";
+                        + "  where UPPER(pes." + por + ") like :desc";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc";
+                textQuery = "select fis from Fisica fis "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc";
             }
         }
         if (por.equals("rg")) {
             por = "rg";
             desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis, "
-                    + "                 Pessoa pes     "
-                    + "  where fis.pessoa.id = pes.id  "
-                    + "   and UPPER(fis." + por + ") like :desc";
+            textQuery = "select fis from Fisica fis "
+                    + "  where UPPER(fis." + por + ") like :desc";
         }
         if (por.equals("cpf")) {
             por = "documento";
             desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis, "
-                    + "                 Pessoa pes     "
-                    + "  where fis.pessoa.id = pes.id  "
-                    + "   and UPPER(pes." + por + ") like :desc";
+            textQuery = "select fis from Fisica fis "
+                    + "  where UPPER(fis.pessoa." + por + ") like :desc";
         }
         if (por.equals("endereco")) {
             desc = desc.toLowerCase().toUpperCase();
@@ -159,6 +147,13 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 textQuery = " SELECT FIS FROM Fisica AS FIS WHERE FIS.id IN(" + listaId + ")";
             }
         }
+        
+        if (por.equals("codigo")) {
+            textQuery = 
+                    "SELECT pe.fisica FROM PessoaEmpresa pe " +
+                    " WHERE pe.codigo = :desc ";
+        }
+        
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
@@ -181,64 +176,46 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             por = "nome";
             if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc "
-                        + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.servicoPessoa.ativo = true )";
+                textQuery = "select fis from Fisica fis "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc  where soc.servicoPessoa.ativo = true )";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc "
-                        + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.servicoPessoa.ativo = true )";
+                textQuery = "select fis from Fisica fis "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
             }
         }
 
         if (por.equals("email1") || por.equals("email2")) {
             if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc "
-                        + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.servicoPessoa.ativo = true )";
+                textQuery = "select fis from Fisica fis "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and UPPER(pes." + por + ") like :desc "
-                        + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.servicoPessoa.ativo = true )";
+                textQuery = "select fis from Fisica fis "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
             }
         }
 
         if (por.equals("rg")) {
             por = "rg";
             desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis, "
-                    + "                 Pessoa pes     "
-                    + "  where fis.pessoa.id = pes.id  "
-                    + "   and UPPER(fis." + por + ") like :desc "
-                    + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                    + " where soc.servicoPessoa.ativo = true )";
+            textQuery = "select fis from Fisica fis "
+                    + "  where UPPER(fis." + por + ") like :desc "
+                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
         }
         if (por.equals("cpf")) {
             por = "documento";
             desc = desc.toLowerCase().toUpperCase() + "%";
-            textQuery = "select fis from Fisica fis, "
-                    + "                 Pessoa pes     "
-                    + "  where fis.pessoa.id = pes.id  "
-                    + "   and UPPER(pes." + por + ") like :desc"
-                    + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                    + " where soc.servicoPessoa.ativo = true )";
+            textQuery = "select fis from Fisica fis "
+                    + "  where UPPER(fis.pessoa." + por + ") like :desc"
+                    + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
         }
         
         
@@ -284,18 +261,23 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             //por = "documento";
             //desc = desc.toLowerCase().toUpperCase();
             if (!desc.isEmpty()){
-                textQuery = "select fis from Fisica fis, "
-                        + "                 Pessoa pes     "
-                        + "  where fis.pessoa.id = pes.id  "
-                        + "   and pes.id in ( select soc.servicoPessoa.pessoa.id from Socios soc "
-                        + " where soc.servicoPessoa.ativo = true and soc.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+")";
+                textQuery = "SELECT fis "
+                          + "  FROM Fisica fis "
+                          + " WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true AND soc.matriculaSocios.nrMatricula = :desc )";
             }
+        }
+        
+        if (por.equals("codigo")) {
+            textQuery = 
+                    "  SELECT pe.fisica FROM PessoaEmpresa pe " 
+                    + " WHERE pe.codigo = :desc "
+                    + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true )";
         }
                 
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco") && !por.equals("matricula")) {
+                if (!por.equals("endereco")) {
                     qry.setParameter("desc", desc);
                 }
             }
@@ -315,20 +297,14 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
                 textQuery = "select fis from Fisica fis "
-                        + //"                 Pessoa pes     " +
-                        //"  where fis.pessoa.id = pes.id  " +
-                        "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
                         + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
                 textQuery = "select fis from Fisica fis "
-                        + //"                 Pessoa pes     " +
-                        //"  where fis.pessoa.id = pes.id  " +
-                        "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
                         + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             }
@@ -337,32 +313,23 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             if (como.equals("P")) {
                 desc = "%" + desc.toLowerCase().toUpperCase() + "%";
                 textQuery = "select fis from Fisica fis "
-                        + //"                 Pessoa pes     " +
-                        //"  where fis.pessoa.id = pes.id  " +
-                        "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
                         + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                         + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             } else if (como.equals("I")) {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
-                textQuery = "select fis from Fisica fis "
-                        + //"                 Pessoa pes     " +
-                        //"  where fis.pessoa.id = pes.id  " +
-                        "  where UPPER(fis.pessoa." + por + ") like :desc "
-                        //+ "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
-                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                        + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
+                textQuery = " select fis from Fisica fis "
+                          + "  where UPPER(fis.pessoa." + por + ") like :desc "
+                          + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
+                          + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             }
         }
         if (por.equals("rg")) {
             por = "rg";
             desc = desc.toLowerCase().toUpperCase() + "%";
             textQuery = "select fis from Fisica fis "
-                    + //"                 Pessoa pes     " +
-                    //"  where fis.pessoa.id = pes.id  " +
-                    "  where UPPER(fis." + por + ") like :desc "
-                    //+ "    and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                    + "  where UPPER(fis." + por + ") like :desc "
                     + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                     + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
         }
@@ -370,10 +337,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             por = "documento";
             desc = desc.toLowerCase().toUpperCase() + "%";
             textQuery = "select fis from Fisica fis "
-                    + //"                 Pessoa pes     " +
-                    //"  where fis.pessoa.id = pes.id  " +
-                    "  where UPPER(fis.pessoa." + por + ") like :desc"
-                    //+ "   and fis.pessoa.id in     ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.motivoInativacao is not null ) "
+                    + "  where UPPER(fis.pessoa." + por + ") like :desc"
                     + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
                     + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
         }
@@ -422,19 +386,26 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         }
         
         if (por.equals("matricula")) {
-            //por = "documento";
-            //desc = desc.toLowerCase().toUpperCase();
-            
             if (!desc.isEmpty()){
-                textQuery = "select fis from Fisica fis " +
-                        "  where fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+") "
-                        + "  and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true and soc2.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+") ";
+                textQuery = "SELECT fis "
+                          + "  FROM Fisica fis "
+                          + "  WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.matriculaSocios.nrMatricula = :desc) "
+                          + "    AND fis.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true AND soc2.matriculaSocios.nrMatricula = :desc ) ";
             }
         }
+        
+        if (por.equals("codigo")) {
+            textQuery = 
+                    " SELECT pe.fisica FROM PessoaEmpresa pe "
+                    + " WHERE pe.codigo = :desc "
+                    + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc ) " 
+                    + "   AND pe.fisica.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true ) ";
+        }
+        
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco") && !por.equals("matricula")) {
+                if (!por.equals("endereco")) {
                     qry.setParameter("desc", desc);
                 }
             }
