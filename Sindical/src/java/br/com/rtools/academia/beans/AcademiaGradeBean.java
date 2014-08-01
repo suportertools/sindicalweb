@@ -26,8 +26,8 @@ import org.primefaces.event.SelectEvent;
 public class AcademiaGradeBean implements Serializable {
 
     private AcademiaGrade academiaGrade;
-    private AcademiaSemana academiaSemana;
-    private List<AcademiaSemana> academiaSemanas;
+    //private AcademiaSemana academiaSemana;
+    //private List<AcademiaSemana> academiaSemanas;
     private List<AcademiaGrade> listaAcademiaGrades;
     private List<Semana> listaSemana;
     private String mensagem;
@@ -45,8 +45,8 @@ public class AcademiaGradeBean implements Serializable {
     @PostConstruct
     public void init() {
         academiaGrade = new AcademiaGrade();
-        academiaSemana = new AcademiaSemana();
-        academiaSemanas = new ArrayList<AcademiaSemana>();
+        //academiaSemana = new AcademiaSemana();
+        //academiaSemanas = new ArrayList<AcademiaSemana>();
         listaAcademiaGrades = new ArrayList<AcademiaGrade>();
         listaSemana = new ArrayList<Semana>();
         mensagem = "";
@@ -93,44 +93,44 @@ public class AcademiaGradeBean implements Serializable {
             if (di.save(academiaGrade)) {
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
-                di.openTransaction();
-                if (dom) {
-                    addListaSemana(1);
-                }
-                if (seg) {
-                    addListaSemana(2);
-                }
-                if (ter) {
-                    addListaSemana(3);
-                }
-                if (qua) {
-                    addListaSemana(4);
-                }
-                if (qui) {
-                    addListaSemana(5);
-                }
-                if (sex) {
-                    addListaSemana(6);
-                }
-                if (sab) {
-                    addListaSemana(7);
-                }
+//                di.openTransaction();
+//                if (dom) {
+//                    addListaSemana(1);
+//                }
+//                if (seg) {
+//                    addListaSemana(2);
+//                }
+//                if (ter) {
+//                    addListaSemana(3);
+//                }
+//                if (qua) {
+//                    addListaSemana(4);
+//                }
+//                if (qui) {
+//                    addListaSemana(5);
+//                }
+//                if (sex) {
+//                    addListaSemana(6);
+//                }
+//                if (sab) {
+//                    addListaSemana(7);
+//                }
 
-                for (int i = 0; i < academiaSemanas.size(); i++) {
-                    if (!di.save(academiaSemanas.get(i))) {
-                        di.rollback();
-                        academiaSemanas.clear();
-                        break;
-                    }
-                    if (i == 0) {
-                        s = academiaSemanas.get(i).getSemana().getDescricao();
-                    } else {
-                        s += ", " + academiaSemanas.get(i).getSemana().getDescricao();
-                    }
-                }
+//                for (int i = 0; i < academiaSemanas.size(); i++) {
+//                    if (!di.save(academiaSemanas.get(i))) {
+//                        di.rollback();
+//                        academiaSemanas.clear();
+//                        break;
+//                    }
+//                    if (i == 0) {
+//                        s = academiaSemanas.get(i).getSemana().getDescricao();
+//                    } else {
+//                        s += ", " + academiaSemanas.get(i).getSemana().getDescricao();
+//                    }
+//                }
                 novoLog.save("ID: " + academiaGrade.getId() + ". Horário das: " + academiaGrade.getHoraInicio() + " às " + academiaGrade.getHoraFim() + " (hrs). Dias da semana: " + s);
-                di.commit();
-                academiaSemanas.clear();
+                //di.commit();
+                //academiaSemanas.clear();
                 listaAcademiaGrades.clear();
             } else {
                 di.rollback();
@@ -152,14 +152,14 @@ public class AcademiaGradeBean implements Serializable {
         clear();
     }
 
-    public void addListaSemana(int idSemana) {
-        for (int i = 0; i < getListaSemana().size(); i++) {
-            if (listaSemana.get(i).getId() == idSemana) {
-                academiaSemanas.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i)));
-                break;
-            }
-        }
-    }
+//    public void addListaSemana(int idSemana) {
+//        for (int i = 0; i < getListaSemana().size(); i++) {
+//            if (listaSemana.get(i).getId() == idSemana) {
+//                academiaSemanas.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i)));
+//                break;
+//            }
+//        }
+//    }
 
     public boolean showSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
         AcademiaDB academiaDB = new AcademiaDBToplink();
@@ -203,20 +203,8 @@ public class AcademiaGradeBean implements Serializable {
             DaoInterface di = new Dao();
             AcademiaDB academiaDB = new AcademiaDBToplink();
             di.openTransaction();
-            List<AcademiaSemana> list = academiaDB.listaAcademiaSemana(ag.getId());
             NovoLog novoLog = new NovoLog();
             String s = "";
-            for (int i = 0; i < list.size(); i++) {
-                if (!di.delete(list.get(i))) {
-                    di.rollback();
-                    break;
-                }
-                if (i == 0) {
-                    s = list.get(i).getSemana().getDescricao();
-                } else {
-                    s += ", " + list.get(i).getSemana().getDescricao();
-                }
-            }
             if (di.delete(ag)) {
                 di.commit();
                 novoLog.delete("ID: " + ag.getId() + ". Horário das: " + ag.getHoraInicio() + " às " + ag.getHoraFim() + " (hrs). Dias da semana: " + s);
@@ -255,25 +243,6 @@ public class AcademiaGradeBean implements Serializable {
 
     public void setListaAcademiaGrades(List<AcademiaGrade> listaAcademiaGrades) {
         this.listaAcademiaGrades = listaAcademiaGrades;
-    }
-
-    public void atualizarGradeSemana() {
-        AcademiaDB academiaDB = new AcademiaDBToplink();
-        List<AcademiaSemana> list = academiaDB.listaAcademiaSemana(academiaGrade.getId());
-//        for (int i = 0; i < listaSemana.size(); i++) {
-//            for (int j = 0; j < list.size(); j++) {
-//                if (dom) {                    
-//                } else if (seg) {
-//                } else if (ter) {
-//                } else if (qua) {
-//                } else if (qui) {
-//                } else if (sex) {                
-//                } else if (sab) {                
-//                }
-//            }
-//            
-//        }
-
     }
 
     public Date getHoraInicio() {
@@ -367,21 +336,21 @@ public class AcademiaGradeBean implements Serializable {
     public void setListaSemana(List<Semana> listaSemana) {
         this.listaSemana = listaSemana;
     }
-
-    public AcademiaSemana getAcademiaSemana() {
-        return academiaSemana;
-    }
-
-    public void setAcademiaSemana(AcademiaSemana academiaSemana) {
-        this.academiaSemana = academiaSemana;
-    }
-
-    public List<AcademiaSemana> getAcademiaSemanas() {
-        return academiaSemanas;
-    }
-
-    public void setAcademiaSemanas(List<AcademiaSemana> academiaSemanas) {
-        this.academiaSemanas = academiaSemanas;
-    }
+//
+//    public AcademiaSemana getAcademiaSemana() {
+//        return academiaSemana;
+//    }
+//
+//    public void setAcademiaSemana(AcademiaSemana academiaSemana) {
+//        this.academiaSemana = academiaSemana;
+//    }
+//
+//    public List<AcademiaSemana> getAcademiaSemanas() {
+//        return academiaSemanas;
+//    }
+//
+//    public void setAcademiaSemanas(List<AcademiaSemana> academiaSemanas) {
+//        this.academiaSemanas = academiaSemanas;
+//    }
 
 }

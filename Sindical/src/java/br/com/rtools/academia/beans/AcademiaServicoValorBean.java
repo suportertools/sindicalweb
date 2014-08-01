@@ -1,6 +1,7 @@
 package br.com.rtools.academia.beans;
 
 import br.com.rtools.academia.AcademiaGrade;
+import br.com.rtools.academia.AcademiaSemana;
 import br.com.rtools.academia.AcademiaServicoValor;
 import br.com.rtools.academia.db.AcademiaDB;
 import br.com.rtools.academia.db.AcademiaDBToplink;
@@ -9,6 +10,7 @@ import br.com.rtools.financeiro.db.ServicosDB;
 import br.com.rtools.financeiro.db.ServicosDBToplink;
 import br.com.rtools.logSistema.NovoLog;
 import br.com.rtools.sistema.Periodo;
+import br.com.rtools.sistema.Semana;
 import br.com.rtools.utilitarios.Dao;
 import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.GenericaMensagem;
@@ -41,7 +43,21 @@ public class AcademiaServicoValorBean implements Serializable {
     private Integer[] index;
     private int maximoParcelas;
     private boolean ocultaParcelas;
-
+    
+    // SEMANA
+    private boolean dom;
+    private boolean seg;
+    private boolean ter;
+    private boolean qua;
+    private boolean qui;
+    private boolean sex;
+    private boolean sab;
+    
+    private List<Semana> listaSemana;
+    private List<AcademiaSemana> listaAcademiaSemana;
+    
+    private int indexSemana;
+    
     @PostConstruct
     public void init() {
         academiaServicoValor = new AcademiaServicoValor();
@@ -54,13 +70,82 @@ public class AcademiaServicoValorBean implements Serializable {
         periodo = new Periodo();
         maximoParcelas = 0;
         ocultaParcelas = true;
+        listaSemana = new ArrayList<Semana>();
+        listaAcademiaSemana = new ArrayList<AcademiaSemana>();
+        indexSemana = 0;
     }
 
     @PreDestroy
     public void destroy() {
         clear();
     }
+    
+    public String getListaGrades(AcademiaServicoValor academiaServicoValor){
+        AcademiaDB db = new AcademiaDBToplink();
+        
+        List<AcademiaSemana> lista = db.listaAcademiaSemana(academiaServicoValor.getId());
+        
+        if (!lista.isEmpty()){
+            String text = "";
+            if (lista.size() != 1){
+                for (int i = 0; i < lista.size(); i++){
+                    text += lista.get(i).getSemana().getDescricao()+": "+lista.get(i).getAcademiaGrade().getHoraInicio()+" às "+lista.get(i).getAcademiaGrade().getHoraFim()+" ";
+                }
+            }else{
+                text += lista.get(0).getSemana().getDescricao()+": "+lista.get(0).getAcademiaGrade().getHoraInicio()+" às "+lista.get(0).getAcademiaGrade().getHoraFim();
+            }
+            return text;
+        }
+        
+        return null;
+    }
 
+    public void adicionarHorario(int id_semana){
+        indexSemana = id_semana;
+    }
+    
+    public void booleanHorario(int id_semana, boolean status){
+        indexSemana = id_semana;
+        
+        for (int i = 0; i < listaAcademiaSemana.size(); i++) {
+            if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana && status == false){
+                if (listaAcademiaSemana.get(i).getAcademiaServicoValor() != null){
+                    DaoInterface di = new Dao();
+                    
+                    di.openTransaction();
+                    
+                    di.delete(di.find(listaAcademiaSemana.get(i)));
+                    
+                    di.commit();
+                }
+                
+                listaAcademiaSemana.remove(i);
+                return;
+            }
+        }
+    }
+    
+    public void addListaSemana() {
+        for (int i = 0; i < listaAcademiaSemana.size(); i++) {
+            if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana){
+                listaAcademiaSemana.get(i).setAcademiaGrade(academiaGrade);
+                return;
+            }
+        }
+        
+        
+        for (int i = 0; i < getListaSemana().size(); i++) {
+            if (listaSemana.get(i).getId() == indexSemana) {
+                if (academiaServicoValor.getId() == -1)
+                    listaAcademiaSemana.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i), null));
+                else{
+                    listaAcademiaSemana.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i), academiaServicoValor));
+                }
+                break;
+            }
+        }
+    }
+    
     public void save() {
         DaoInterface di = new Dao();
         if (listSelectItem[0].isEmpty()) {
@@ -75,21 +160,22 @@ public class AcademiaServicoValorBean implements Serializable {
             GenericaMensagem.warn("Sistema", "Cadastrar grade de horários e dias da semana!");
             return;
         }
+        
+        
         academiaServicoValor.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[0]).getDescription())));
         academiaServicoValor.setPeriodo(periodo);
-        academiaServicoValor.setAcademiaGrade(academiaGrade);
+        
         NovoLog novoLog = new NovoLog();
+        di.openTransaction();
         if (academiaServicoValor.getId() == -1) {
             AcademiaDB academiaDB = new AcademiaDBToplink();
             if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
                 GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
                 return;
             }
-            di.openTransaction();
             if (di.save(academiaServicoValor)) {
-                di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
-                novoLog.save("ID: " + academiaServicoValor.getId() + " - Grade: " + academiaServicoValor.getAcademiaGrade().getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
+                novoLog.save("ID: " + academiaServicoValor.getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
                 listAcademiaServicoValors.clear();
             } else {
                 di.rollback();
@@ -97,11 +183,9 @@ public class AcademiaServicoValorBean implements Serializable {
             }
         } else {
             AcademiaServicoValor asv = (AcademiaServicoValor) di.find(academiaServicoValor);
-            String beforeString = "ID: " + asv.getId() + " - Grade: " + asv.getAcademiaGrade().getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao();
-            di.openTransaction();
+            String beforeString = "ID: " + asv.getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao();
             if (di.update(academiaServicoValor)) {
-                novoLog.update(beforeString, "ID: " + academiaServicoValor.getId() + " - Grade: " + academiaServicoValor.getAcademiaGrade().getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
-                di.commit();
+                novoLog.update(beforeString, "ID: " + academiaServicoValor.getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
                 GenericaMensagem.info("Sucesso", "Registro atualizado");
                 listAcademiaServicoValors.clear();
             } else {
@@ -109,6 +193,27 @@ public class AcademiaServicoValorBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
+        
+        for (int i = 0; i < listaAcademiaSemana.size(); i++){
+            if (listaAcademiaSemana.get(i).getAcademiaServicoValor() == null){
+                listaAcademiaSemana.get(i).setAcademiaServicoValor(academiaServicoValor);
+                if (!di.save(listaAcademiaSemana.get(i))){
+                    GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
+                    di.rollback();
+                    return;
+                }
+            }else if (listaAcademiaSemana.get(i).getId() == -1){
+                if (!di.save(listaAcademiaSemana.get(i))){
+                    GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
+                    di.rollback();
+                    return;
+                }
+            }else{
+                
+            }
+        }
+        
+        di.commit();
         clear();
     }
 
@@ -118,7 +223,7 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public void edit(AcademiaServicoValor asv) {
         academiaServicoValor = asv;
-        academiaGrade = academiaServicoValor.getAcademiaGrade();
+        
         periodo = academiaServicoValor.getPeriodo();
         for (int i = 0; i < getListServicos().size(); i++) {
             if (Integer.parseInt(getListServicos().get(i).getDescription()) == asv.getServicos().getId()) {
@@ -126,18 +231,45 @@ public class AcademiaServicoValorBean implements Serializable {
                 break;
             }
         }
+        AcademiaDB db = new AcademiaDBToplink();
+        listaAcademiaSemana = db.listaAcademiaSemana(academiaServicoValor.getId());
+        dom = false; seg = false; ter = false; qua = false; qui = false; sex = false; sab = false;
+        
+        for (AcademiaSemana las : listaAcademiaSemana) {
+            if (las.getSemana().getId() == 1){ dom = true; }
+            if (las.getSemana().getId() == 2){ seg = true; }
+            if (las.getSemana().getId() == 3){ ter = true; }
+            if (las.getSemana().getId() == 4){ qua = true; }
+            if (las.getSemana().getId() == 5){ qui = true; }
+            if (las.getSemana().getId() == 6){ sex = true; }
+            if (las.getSemana().getId() == 7){ sab = true; }
+        }
     }
 
     public void delete(AcademiaServicoValor asv) {
         if (asv.getId() != -1) {
             DaoInterface di = new Dao();
             NovoLog novoLog = new NovoLog();
+            AcademiaDB db = new AcademiaDBToplink();
             di.openTransaction();
+            
+            listaAcademiaSemana = db.listaAcademiaSemana(asv.getId());
+            
+            for (AcademiaSemana las : listaAcademiaSemana) {
+                AcademiaSemana as = (AcademiaSemana) di.find(las);
+                if (!di.delete(as)){
+                    di.rollback();
+                    GenericaMensagem.warn("Erro", "Não foi possível excluir Linha!");
+                    return;
+                }
+            }
+            
             if (di.delete(asv)) {
-                novoLog.delete("ID: " + asv.getId() + " - Grade: " + asv.getAcademiaGrade().getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao());
+                novoLog.delete("ID: " + asv.getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao());
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Excluído com sucesso");
                 listAcademiaServicoValors.clear();
+                listaAcademiaSemana.clear();
             } else {
                 di.rollback();
                 GenericaMensagem.warn("Erro", "Ao excluir registro!");
@@ -269,4 +401,155 @@ public class AcademiaServicoValorBean implements Serializable {
         this.periodo = periodo;
     }
 
+    public boolean isDom() {
+        return dom;
+    }
+
+    public void setDom(boolean dom) {
+        this.dom = dom;
+    }
+
+    public boolean isSeg() {
+        return seg;
+    }
+
+    public void setSeg(boolean seg) {
+        this.seg = seg;
+    }
+
+    public boolean isTer() {
+        return ter;
+    }
+
+    public void setTer(boolean ter) {
+        this.ter = ter;
+    }
+
+    public boolean isQua() {
+        return qua;
+    }
+
+    public void setQua(boolean qua) {
+        this.qua = qua;
+    }
+
+    public boolean isQui() {
+        return qui;
+    }
+
+    public void setQui(boolean qui) {
+        this.qui = qui;
+    }
+
+    public boolean isSex() {
+        return sex;
+    }
+
+    public void setSex(boolean sex) {
+        this.sex = sex;
+    }
+
+    public boolean isSab() {
+        return sab;
+    }
+
+    public void setSab(boolean sab) {
+        this.sab = sab;
+    }
+    
+    public List<Semana> getListaSemana() {
+        if (listaSemana.isEmpty()) {
+            DaoInterface di = new Dao();
+            listaSemana = (List<Semana>) di.list(new Semana());
+        }
+        return listaSemana;
+    }
+
+    public void setListaSemana(List<Semana> listaSemana) {
+        this.listaSemana = listaSemana;
+    }
+
+    public List<AcademiaSemana> getListaAcademiaSemana() {
+        return listaAcademiaSemana;
+    }
+
+    public void setListaAcademiaSemana(List<AcademiaSemana> listaAcademiaSemana) {
+        this.listaAcademiaSemana = listaAcademiaSemana;
+    }
+    
+    
+        
+    public String getMostraDomingo(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 1) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
+    
+    public String getMostraSegunda(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 2) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
+    
+    public String getMostraTerca(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 3) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
+    
+    public String getMostraQuarta(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 4) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
+    public String getMostraQuinta(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 5) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
+    public String getMostraSexta(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 6) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
+    public String getMostraSabado(){
+        if (!listaAcademiaSemana.isEmpty()){
+            for (AcademiaSemana horario : listaAcademiaSemana) {
+                if (horario.getSemana().getId() == 7) {
+                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                }
+            }
+        }
+        return null;
+    }
 }

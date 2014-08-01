@@ -57,6 +57,8 @@ import br.com.rtools.utilitarios.GenericaSessao;
 import br.com.rtools.utilitarios.Mask;
 import br.com.rtools.utilitarios.Moeda;
 import br.com.rtools.utilitarios.SalvaArquivos;
+import br.com.rtools.utilitarios.SalvarAcumuladoDB;
+import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
 import br.com.rtools.utilitarios.db.FunctionsDB;
 import br.com.rtools.utilitarios.db.FunctionsDBTopLink;
 import java.io.File;
@@ -111,6 +113,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private List<SelectItem> listaDiaVencimento;
     private List<SelectItem> listaModalidades;
     private List<SelectItem> listaPeriodosGrade;
+    private List<SelectItem> listaDiaParcela;
     private boolean taxa;
     private boolean ocultaBotaoSalvar;
     private boolean socio;
@@ -127,6 +130,7 @@ public class MatriculaAcademiaBean implements Serializable {
     private int idServico;
     private int idDiaVencimentoPessoa;
     private int idFTipoDocumento;
+    private int idDiaParcela;
     private float vTaxa;
     private float desconto;
     private float valorCartao;
@@ -161,6 +165,7 @@ public class MatriculaAcademiaBean implements Serializable {
         listaDiaVencimento = new ArrayList<SelectItem>();
         listaModalidades = new ArrayList<SelectItem>();
         listaPeriodosGrade = new ArrayList<SelectItem>();
+        listaDiaParcela = new ArrayList<SelectItem>();
         taxa = false;
         ocultaBotaoSalvar = false;
         socio = false;
@@ -180,6 +185,7 @@ public class MatriculaAcademiaBean implements Serializable {
         vTaxa = 0;
         desconto = 0;
         valorCartao = 0;
+        idDiaParcela = 0;
     }
 
     @PreDestroy
@@ -191,6 +197,20 @@ public class MatriculaAcademiaBean implements Serializable {
         GenericaSessao.remove("matriculaAcademiaBean");
     }
 
+    public void salvarData(){
+        if (matriculaAcademia.getServicoPessoa().getId() != -1){
+            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
+            sv.abrirTransacao();
+            
+            if (!sv.alterarObjeto(matriculaAcademia.getServicoPessoa())){
+                // ERRO
+                sv.desfazerTransacao();
+            }else{
+                sv.comitarTransacao();
+            }
+        }
+    }     
+    
     public void save() {
         if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
             message = "Pesquisar uma pessoa!";
@@ -231,7 +251,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 return;
             }
             SocioCarteirinha scx = scdb.pesquisaCarteirinhaPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId(), modeloCarteirinha.getId());
-            if (scx.getId() == -1) {
+            if (scx == null || scx.getId() == -1) {
                 Socios s = sociosDB.pesquisaSocioPorPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId());
                 socioCarteirinha.setDtEmissao(new Date());
                 socioCarteirinha.setCartao(matriculaAcademia.getServicoPessoa().getPessoa().getId());
@@ -383,46 +403,46 @@ public class MatriculaAcademiaBean implements Serializable {
     }
 
     public MatriculaAcademia getMatriculaAcademia() {
-        getAluno();
-        if (socio == false) {
-            getJuridica();
-        }
-        if (cobranca == null) {
-            DaoInterface di = new Dao();
-            FunctionsDB functionsDB = new FunctionsDBTopLink();
-            if (matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
-                int idResponsavel = functionsDB.responsavel(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
-                if (idResponsavel != -1) {
-                    cobranca = (Pessoa) di.find(new Pessoa(), idResponsavel);
-                } else {
-                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-                }
-            } else {
-                int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
-                if (idResponsavelEmpresa != -1) {
-                    JuridicaDB juridicaDB = new JuridicaDBToplink();
-                    Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
-                    if (juridicaB != null) {
-                        if (juridicaB.getId() != -1) {
-                            cobranca = (Pessoa) di.find(new Pessoa(), idResponsavelEmpresa);
-                        } else {
-                            cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-                        }
-                    } else {
-                        cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-                    }
-                } else {
-                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
-                }
-            }
-            if (cobranca.getId() == -1) {
-                cobranca = null;
-            }
-        }
-        JuridicaDB juridicaDB = new JuridicaDBToplink();
-        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
-        verificaSeContribuinteInativo();
-        getRegistro();
+//        getAluno();
+//        if (socio == false) {
+//            getJuridica();
+//        }
+//        if (cobranca == null) {
+//            DaoInterface di = new Dao();
+//            FunctionsDB functionsDB = new FunctionsDBTopLink();
+//            if (matriculaAcademia.getServicoPessoa().isDescontoFolha()) {
+//                int idResponsavel = functionsDB.responsavel(matriculaAcademia.getServicoPessoa().getPessoa().getId(), matriculaAcademia.getServicoPessoa().isDescontoFolha());
+//                if (idResponsavel != -1) {
+//                    cobranca = (Pessoa) di.find(new Pessoa(), idResponsavel);
+//                } else {
+//                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+//                }
+//            } else {
+//                int idResponsavelEmpresa = functionsDB.responsavel(aluno.getPessoa().getId(), true);
+//                if (idResponsavelEmpresa != -1) {
+//                    JuridicaDB juridicaDB = new JuridicaDBToplink();
+//                    Juridica juridicaB = juridicaDB.pesquisaJuridicaPorPessoa(idResponsavelEmpresa);
+//                    if (juridicaB != null) {
+//                        if (juridicaB.getId() != -1) {
+//                            cobranca = (Pessoa) di.find(new Pessoa(), idResponsavelEmpresa);
+//                        } else {
+//                            cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+//                        }
+//                    } else {
+//                        cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+//                    }
+//                } else {
+//                    cobranca = matriculaAcademia.getServicoPessoa().getCobranca();
+//                }
+//            }
+//            if (cobranca.getId() == -1) {
+//                cobranca = null;
+//            }
+//        }
+//        JuridicaDB juridicaDB = new JuridicaDBToplink();
+//        Juridica juridicas = juridicaDB.pesquisaJuridicaPorPessoa(matriculaAcademia.getServicoPessoa().getCobranca().getId());
+//        verificaSeContribuinteInativo();
+//        getRegistro();
         return matriculaAcademia;
     }
 
@@ -511,23 +531,43 @@ public class MatriculaAcademiaBean implements Serializable {
     public List<SelectItem> getListaPeriodosGrade() {
         if (listaPeriodosGrade.isEmpty()) {
             if (!listaModalidades.isEmpty()) {
-                AcademiaDB academiaDB = new AcademiaDBToplink();
+                AcademiaDB db = new AcademiaDBToplink();
+                
                 DaoInterface di = new Dao();
-                List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()))).getServicos().getId());
-                List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
-                for (int i = 0; i < list.size(); i++) {
-                    listSemana.clear();
-                    listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
-                    String periodoSemana = "";
-                    for (int j = 0; j < listSemana.size(); j++) {
-                        if (j == 0) {
-                            periodoSemana += semanaResumo(listSemana.get(j).getSemana().getDescricao());
-                        } else {
-                            periodoSemana += " - " + semanaResumo(listSemana.get(j).getSemana().getDescricao());
-                        }
+                
+                List<AcademiaServicoValor> listaAcademiaServicoValor = di.list("AcademiaServicoValor");
+                
+                
+                
+                for (int w = 0; w < listaAcademiaServicoValor.size(); w++){
+                    String text = "";
+                    List<AcademiaSemana> listaAcademiaSemana = db.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());                
+                    for (int i = 0; i < listaAcademiaSemana.size(); i++){
+                        text += listaAcademiaSemana.get(i).getSemana().getDescricao()+": "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraInicio()+" às "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraFim()+" -- ";
+                        //listaPeriodosGrade.add(new SelectItem(i, text, Integer.toString(listaAcademiaSemana.get(i).getId())));
                     }
-                    listaPeriodosGrade.add(new SelectItem(i, list.get(i).getPeriodo().getDescricao() + " - " + list.get(i).getAcademiaGrade().getHoraInicio() + "-" + list.get(i).getAcademiaGrade().getHoraFim() + " - " + periodoSemana, Integer.toString(list.get(i).getId())));
+                    
+                    text = listaAcademiaServicoValor.get(w).getPeriodo().getDescricao() + " - " + text;
+                    listaPeriodosGrade.add(new SelectItem(w, text, Integer.toString(listaAcademiaServicoValor.get(w).getId())));
                 }
+                
+//                AcademiaDB academiaDB = new AcademiaDBToplink();
+//                DaoInterface di = new Dao();
+//                List<AcademiaServicoValor> list = academiaDB.listaAcademiaServicoValorPorServico(((AcademiaServicoValor) di.find(new AcademiaServicoValor(), Integer.parseInt(listaModalidades.get(idModalidade).getDescription()))).getServicos().getId());
+//                List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
+//                for (int i = 0; i < list.size(); i++) {
+//                    listSemana.clear();
+//                    //listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
+//                    String periodoSemana = "";
+//                    for (int j = 0; j < listSemana.size(); j++) {
+//                        if (j == 0) {
+//                            periodoSemana += semanaResumo(listSemana.get(j).getSemana().getDescricao());
+//                        } else {
+//                            periodoSemana += " - " + semanaResumo(listSemana.get(j).getSemana().getDescricao());
+//                        }
+//                    }
+//                    //listaPeriodosGrade.add(new SelectItem(i, list.get(i).getPeriodo().getDescricao() + " - " + list.get(i).getAcademiaGrade().getHoraInicio() + "-" + list.get(i).getAcademiaGrade().getHoraFim() + " - " + periodoSemana, Integer.toString(list.get(i).getId())));
+//                }
             }
         }
         return listaPeriodosGrade;
@@ -1011,11 +1051,12 @@ public class MatriculaAcademiaBean implements Serializable {
                     String ano = matriculaAcademia.getServicoPessoa().getEmissao().substring(6, 10);
                     referencia = mes + "/" + ano;
 
-                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaAcademia.getServicoPessoa().getNrDiaVencimento()) {
-                        if (matriculaAcademia.getServicoPessoa().getNrDiaVencimento() < 10) {
-                            vencimento = "0" + matriculaAcademia.getServicoPessoa().getNrDiaVencimento() + "/" + mes + "/" + ano;
+                    //if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= matriculaAcademia.getServicoPessoa().getNrDiaVencimento()) {
+                    if (DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)) >= idDiaParcela) {
+                        if (idDiaParcela < 10) {
+                            vencimento = "0" + idDiaParcela + "/" + mes + "/" + ano;
                         } else {
-                            vencimento = matriculaAcademia.getServicoPessoa().getNrDiaVencimento() + "/" + mes + "/" + ano;
+                            vencimento = idDiaParcela + "/" + mes + "/" + ano;
                         }
                     } else {
                         String diaSwap = Integer.toString(DataHoje.qtdeDiasDoMes(Integer.parseInt(mes), Integer.parseInt(ano)));
@@ -1550,7 +1591,7 @@ public class MatriculaAcademiaBean implements Serializable {
         List<AcademiaSemana> listSemana = new ArrayList<AcademiaSemana>();
         for (int i = 0; i < list.size(); i++) {
             listSemana.clear();
-            listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
+//            listSemana = academiaDB.listaAcademiaSemana(list.get(i).getAcademiaGrade().getId());
             for (int j = 0; j < listSemana.size(); j++) {
                 if (j == 0) {
                     periodoSemana += listSemana.get(j).getSemana().getDescricao();
@@ -1655,4 +1696,24 @@ public class MatriculaAcademiaBean implements Serializable {
         this.alunoFoto = alunoFoto;
     }
 
+    public int getIdDiaParcela() {
+        return idDiaParcela;
+    }
+
+    public void setIdDiaParcela(int idDiaParcela) {
+        this.idDiaParcela = idDiaParcela;
+    }
+
+    public List<SelectItem> getListaDiaParcela() {
+        if (listaDiaParcela.isEmpty()) {
+            int dia = DataHoje.DataToArrayInt(matriculaAcademia.getServicoPessoa().getEmissao())[0];
+            for (int i = 1; i <= 31; i++) {
+                listaDiaParcela.add(new SelectItem(Integer.toString(i)));
+                if (dia == i)
+                    idDiaParcela = i;
+            }
+            
+        }
+        return listaDiaParcela;
+    }
 }

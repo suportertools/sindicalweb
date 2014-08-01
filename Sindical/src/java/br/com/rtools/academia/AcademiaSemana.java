@@ -21,17 +21,22 @@ public class AcademiaSemana implements Serializable {
     @JoinColumn(name = "ID_SEMANA", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Semana semana;
-
+    @JoinColumn(name = "ID_SERVICO_VALOR", referencedColumnName = "ID", nullable = false)
+    @ManyToOne
+    private AcademiaServicoValor academiaServicoValor;
+    
     public AcademiaSemana() {
         this.id = -1;
         this.academiaGrade = new AcademiaGrade();
         this.semana = new Semana();
+        this.academiaServicoValor = new AcademiaServicoValor();
     }
 
-    public AcademiaSemana(int id, AcademiaGrade academiaGrade, Semana semana) {
+    public AcademiaSemana(int id, AcademiaGrade academiaGrade, Semana semana, AcademiaServicoValor academiaServicoValor) {
         this.id = id;
         this.academiaGrade = academiaGrade;
         this.semana = semana;
+        this.academiaServicoValor = academiaServicoValor;
     }
 
     public int getId() {
@@ -91,5 +96,13 @@ public class AcademiaSemana implements Serializable {
     @Override
     public String toString() {
         return "AcademiaSemana{" + "id=" + id + ", academiaGrade=" + academiaGrade + ", semana=" + semana + '}';
+    }
+
+    public AcademiaServicoValor getAcademiaServicoValor() {
+        return academiaServicoValor;
+    }
+
+    public void setAcademiaServicoValor(AcademiaServicoValor academiaServicoValor) {
+        this.academiaServicoValor = academiaServicoValor;
     }
 }

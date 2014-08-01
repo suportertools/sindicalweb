@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Table(name = "ACA_SERVICO_VALOR")
 @NamedQueries({
     @NamedQuery(name = "AcademiaServicoValor.pesquisaID", query = "SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.id = :pid"),
-    @NamedQuery(name = "AcademiaServicoValor.findAll", query = "SELECT ASV FROM AcademiaServicoValor AS ASV ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC, ASV.academiaGrade.horaInicio ASC")
+    @NamedQuery(name = "AcademiaServicoValor.findAll", query = "SELECT ASV FROM AcademiaServicoValor AS ASV ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC")
 })
 public class AcademiaServicoValor implements Serializable {
 
@@ -22,9 +22,6 @@ public class AcademiaServicoValor implements Serializable {
     @JoinColumn(name = "ID_PERIODO", referencedColumnName = "ID", nullable = false)
     @ManyToOne
     private Periodo periodo;
-    @JoinColumn(name = "ID_GRADE", referencedColumnName = "ID", nullable = false)
-    @ManyToOne
-    private AcademiaGrade academiaGrade;
     @Column(name = "DS_FORMULA", length = 255)
     private String formula;
     @Column(name = "NR_PARCELAS")
@@ -34,16 +31,14 @@ public class AcademiaServicoValor implements Serializable {
         this.id = -1;
         this.servicos = new Servicos();
         this.periodo = new Periodo();
-        this.academiaGrade = new AcademiaGrade();
         this.formula = "";
         this.numeroParcelas = 0;
     }
 
-    public AcademiaServicoValor(int id, Servicos servicos, Periodo periodo, AcademiaGrade academiaGrade, String formula, int numeroParcelas) {
+    public AcademiaServicoValor(int id, Servicos servicos, Periodo periodo, String formula, int numeroParcelas) {
         this.id = id;
         this.servicos = servicos;
         this.periodo = periodo;
-        this.academiaGrade = academiaGrade;
         this.formula = formula;
         this.numeroParcelas = numeroParcelas;
     }
@@ -70,14 +65,6 @@ public class AcademiaServicoValor implements Serializable {
 
     public void setPeriodo(Periodo periodo) {
         this.periodo = periodo;
-    }
-
-    public AcademiaGrade getAcademiaGrade() {
-        return academiaGrade;
-    }
-
-    public void setAcademiaGrade(AcademiaGrade academiaGrade) {
-        this.academiaGrade = academiaGrade;
     }
 
     public String getFormula() {

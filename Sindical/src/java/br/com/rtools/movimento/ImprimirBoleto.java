@@ -680,7 +680,8 @@ public class ImprimirBoleto {
                         desconto,
                         lista.get(i).getTipoServico().getDescricao(),
                         lista.get(i).getReferencia(),
-                        "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
+                        "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
+                        acordo.getUsuario().getPessoa().getNome()));
                 i++;
             }
 
@@ -1071,7 +1072,8 @@ public class ImprimirBoleto {
                         desconto,
                         lista.get(i).getTipoServico().getDescricao(),
                         lista.get(i).getReferencia(),
-                        "Planilha de Débito"));
+                        "Planilha de Débito",
+                        ""));
                 i++;
             }
 
@@ -1296,7 +1298,8 @@ public class ImprimirBoleto {
                             desconto,
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
-                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
+                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
+                            acordo.getUsuario().getPessoa().getNome()));
                 } else if (!lista.get(i).isAtivo()){
                     vetor2.add(new DemonstrativoAcordo(
                             acordo.getId(), // codacordo
@@ -1351,7 +1354,8 @@ public class ImprimirBoleto {
                             desconto,
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
-                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
+                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
+                            acordo.getUsuario().getPessoa().getNome()));
                 }
                 i++;
             }
@@ -1577,7 +1581,8 @@ public class ImprimirBoleto {
                             desconto,
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
-                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
+                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
+                            acordo.getUsuario().getPessoa().getNome()));
 
                     ValorExtenso ve = new ValorExtenso(new BigDecimal(lista.get(i).getValor()));
                     vetor3.add(new Promissoria(
@@ -1656,7 +1661,8 @@ public class ImprimirBoleto {
                             desconto,
                             lista.get(i).getTipoServico().getDescricao(),
                             lista.get(i).getReferencia(),
-                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId()));
+                            "Planilha de Débito Referente ao Acordo Número " + acordo.getId(),
+                            acordo.getUsuario().getPessoa().getNome()));
                 }
                 i++;
 
