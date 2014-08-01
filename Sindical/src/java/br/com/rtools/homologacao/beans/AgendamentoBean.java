@@ -21,9 +21,12 @@ import br.com.rtools.pessoa.*;
 import br.com.rtools.pessoa.db.*;
 import br.com.rtools.seguranca.MacFilial;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ChamadaPaginaBean;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.utilitarios.*;
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +103,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         Registro reg = (Registro) (new SalvarAcumuladoDBToplink()).find("Registro", 1);
         if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(reg.getHomolocaoLimiteMeses(), DataHoje.data())))
                 < DataHoje.converteDataParaInteger(DataHoje.converteData(getDataTransferencia()))) {
-            msgConfirma = "Data maior que "+reg.getHomolocaoLimiteMeses()+" meses!";
+            msgConfirma = "Data maior que " + reg.getHomolocaoLimiteMeses() + " meses!";
             return null;
         }
 
@@ -162,8 +165,9 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
         ImprimirBoleto imp = new ImprimirBoleto();
         List<Movimento> lista = new ArrayList();
         List<Float> listaValores = new ArrayList<Float>();
+        Dao dao = new Dao();
         for (Object listaMovimento1 : listaMovimento) {
-            Movimento m = (Movimento) new SalvarAcumuladoDBToplink().find("Movimento", (Integer) ((List) listaMovimento1).get(0));
+            Movimento m = (Movimento) dao.find(new Movimento(), (Integer) ((List) listaMovimento1).get(0));
             lista.add(m);
             listaValores.add(m.getValor());
         }
@@ -204,33 +208,58 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
 
             String nome = imp.criarLink(pessoa, reg.getUrlPath() + "/Sindical/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/boletos");
             List<Pessoa> p = new ArrayList();
-
             p.add(pessoa);
-            //String[] ret = new String[2];
-            String[] ret;
+            Mail mail = new Mail();
+            Email email = new Email(
+                    -1,
+                    DataHoje.dataHoje(),
+                    DataHoje.livre(new Date(), "HH:mm"),
+                    (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                    (Rotina) dao.find(new Rotina(), 113),
+                    null,
+                    "Envio de Débitos",
+                    "",
+                    false,
+                    false
+            );
             if (!reg.isEnviarEmailAnexo()) {
-                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-                        p,
-                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + pessoa.getNome() + " </b></div><br />"
-                        + " <h5>Visualize sua planilha de débitos clicando no link abaixo</h5><br /><br />"
-                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir Planilha de Débitos</a><br />",
-                        new ArrayList(),
-                        "Envio de Débitos");
+                email.setMensagem(""
+                        + " <div style='background:#00ccff; padding: 15px; font-size:13pt'>"
+                        + " Envio cadastrado para <b>" + pessoa.getNome() + " </b>"
+                        + " </div>"
+                        + " <br />"
+                        + " <h5>Visualize sua planilha de débitos clicando no link abaixo</h5>"
+                        + " <br /><br />"
+                        + " <a href='" + reg.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nome + "'>Clique aqui para abrir Planilha de Débitos</a><br />"
+                );
             } else {
                 List<File> fls = new ArrayList<File>();
                 fls.add(new File(imp.getPathPasta() + "/" + nome));
-
-                ret = EnviarEmail.EnviarEmailPersonalizado(reg,
-                        p,
-                        " <div style='background:#00ccff; padding: 15px; font-size:13pt'>Envio cadastrado para <b>" + pessoa.getNome() + " </b></div><br />"
-                        + " <h5>Baixe sua planilha de débitos anexado neste email</5><br /><br />",
-                        fls,
-                        "Envio de Débitos");
+                mail.setFiles(fls);
+                email.setMensagem(""
+                        + " <div style='background:#00ccff; padding: 15px; font-size:13pt'>         "
+                        + "     Envio cadastrado para <b>" + pessoa.getNome() + " </b>              "
+                        + " </div><br />                                                            "
+                        + " <h5>Baixe sua planilha de débitos anexado neste email</5><br /><br />   "
+                );
             }
-            if (!ret[1].isEmpty()) {
-                msgConfirma = ret[1];
+            mail.setEmail(email);
+            List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+            List<Pessoa> pessoas = (List<Pessoa>) p;
+            for (Pessoa p1 : pessoas) {
+                emailPessoa.setDestinatario(p1.getEmail1());
+                emailPessoa.setPessoa(p1);
+                emailPessoa.setRecebimento(null);
+                emailPessoas.add(emailPessoa);
+                mail.setEmailPessoas(emailPessoas);
+                emailPessoa = new EmailPessoa();
+            }
+            String[] retorno = mail.send("personalizado");
+            if (!retorno[1].isEmpty()) {
+                msgConfirma = retorno[1];
             } else {
-                msgConfirma = ret[0];
+                msgConfirma = retorno[0];
             }
             //msgConfirma = "Envio Concluído!";
         } catch (Exception erro) {
@@ -329,7 +358,7 @@ public class AgendamentoBean extends PesquisarProfissaoBean implements Serializa
             msgAgendamento = "Agendamento retroativo liberado até dia " + reg.getAgendamentoRetroativoString();
         }
         if (DataHoje.converteDataParaInteger(((new DataHoje()).incrementarMeses(reg.getHomolocaoLimiteMeses(), DataHoje.data()))) < nrData) {
-            msgAgendamento = "Data maior que "+reg.getHomolocaoLimiteMeses()+" meses!";
+            msgAgendamento = "Data maior que " + reg.getHomolocaoLimiteMeses() + " meses!";
             return null;
         }
 

@@ -66,23 +66,55 @@ public class ImprimirRais implements Serializable {
         if (r.getIndicadorAlvara() != null) {
             indicadorAlvara = r.getIndicadorAlvara().getDescricao();
         }
+        String tipoDeficiencia;
+        String raca;
+        String nacionalidade;
+        String classificacaoEconomica;
+        String escolaridade;
+        if (r.getTipoDeficiencia() == null) {
+            tipoDeficiencia = "Não possui/informada";
+        } else {
+            tipoDeficiencia = r.getTipoDeficiencia().getDescricao();
+        }
+        if (r.getRaca() == null) {
+            raca = "Não específicada";
+        } else {
+            raca = r.getRaca().getDescricao();
+        }
+        if (r.getNacionalidade() == null) {
+            nacionalidade = "Não específicada";
+        } else {
+            nacionalidade = r.getNacionalidade().getDescricao();
+        }
+        if (r.getClassificacaoEconomica() == null) {
+            classificacaoEconomica = "Não específicada";
+        } else {
+            classificacaoEconomica = r.getClassificacaoEconomica().getDescricao() + " - De: " + r.getClassificacaoEconomica().getSalarioMinimoInicial() + " - " + r.getClassificacaoEconomica().getSalarioMinimoFinal() + " (SM) ";
+        }
+        if (r.getEscolaridade() == null) {
+            escolaridade = "Não específicada";
+        } else {
+            escolaridade = r.getEscolaridade().getDescricao();
+        }
+        int anoBase = Integer.parseInt(DataHoje.livre(r.getEmissao(), "Y")) - 1;
+
         lista.add(new ParametroRais("" + r.getId(),
                 DataHoje.data(),
                 r.getEmissaoString(),
-                r.getNacionalidade().getDescricao(),
-                r.getRaca().getDescricao(),
+                nacionalidade,
+                raca,
                 r.getEmpresa().getPessoa().getNome(),
                 r.getEmpresa().getPessoa().getDocumento(),
-                r.getEscolaridade().getDescricao(),
+                escolaridade,
                 r.getSisPessoa().getNome(),
                 r.getSisPessoa().getDocumento(),
                 r.getSisPessoa().getSexo(),
                 r.getSisPessoa().getNascimento(),
-                r.getClassificacaoEconomica().getDescricao() + " - De: " + r.getClassificacaoEconomica().getSalarioMinimoInicial() + " - " + r.getClassificacaoEconomica().getSalarioMinimoFinal() + " (SM) ",
+                classificacaoEconomica,
                 r.getProfissao().getProfissao(),
                 r.getProfissao().getCbo(),
                 r.getTipoRemuneracao().getDescricao(),
-                r.getTipoDeficiencia().getDescricao(),
+                tipoDeficiencia,
                 indicadorAlvara,
                 AnaliseString.converteNullString(r.getAdmissaoString()),
                 AnaliseString.converteNullString(r.getDemissaoString()),
@@ -96,7 +128,7 @@ public class ImprimirRais implements Serializable {
                 "",
                 "",
                 empregadoFiliado, r.getPis(),
-                DataHoje.livre(r.getEmissao(), "Y"),
+                "" + anoBase,
                 ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Imagens/LogoCliente.png"),
                 sindicato.getPessoa().getNome(),
                 sindicato.getPessoa().getSite(),
