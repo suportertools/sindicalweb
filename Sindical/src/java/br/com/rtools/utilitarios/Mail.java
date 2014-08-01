@@ -130,35 +130,40 @@ public class Mail extends MailTemplate implements Serializable {
                             to = emailPessoas.get(i).getDestinatario();
                         }
                         String htmlString = "";
-                        if (templateHtml.isEmpty()) {
-                            htmlString = ""
-                                    + "<html>"
-                                    + "     <body style='background-color: white'>"
-                                    + "         <h2><b>" + registro.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
-                                    + "         <p> " + email.getMensagem() + "</p>"
-                                    + "         <br /><br />"
-                                    + "     </body>"
-                                    + "</html>";
-                        } else if (templateHtml.equals("personalizado")) {
-                            Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(emailPessoas.get(i).getPessoa().getId());
-                            if (jur == null) {
-                                jur = registro.getFilial();
+                        if (html.isEmpty()) {
+                            if (templateHtml.isEmpty()) {
+                                htmlString = ""
+                                        + "<html>"
+                                        + "     <body style='background-color: white'>"
+                                        + "         <h2><b>" + registro.getFilial().getPessoa().getNome() + "</b></h2><br /><br />"
+                                        + "         <p> " + email.getMensagem() + "</p>"
+                                        + "         <br /><br />"
+                                        + "     </body>"
+                                        + "</html>";
+                            } else if (templateHtml.equals("personalizado")) {
+                                Juridica jur = (new JuridicaDBToplink()).pesquisaJuridicaPorPessoa(emailPessoas.get(i).getPessoa().getId());
+                                if (jur == null) {
+                                    jur = registro.getFilial();
+                                }
+                                htmlString += ""
+                                        + "<html>"
+                                        + "     <body style='background-color: white'>"
+                                        + "         <h2>"
+                                        + "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>   "
+                                        + "         </h2><br /><br />                                               "
+                                        + "         <h4> " + email.getMensagem() + "</h4><br /><br />               "
+                                        + "         <h3>                                                            "
+                                        + "             Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong>"
+                                        + "         </h3>"
+                                        + "         <br /><br />"
+                                        + "         <h3>"
+                                        + "             A/C"
+                                        + "         </h3><b> " + jur.getContato() + " </b><br /><br />"
+                                        + "     </body>"
+                                        + "</html>";
                             }
-                            htmlString += ""
-                                    + "<html>"
-                                    + "     <body style='background-color: white'>"
-                                    + "         <h2>"
-                                    + "             <b>" + registro.getFilial().getPessoa().getNome() + "</b>"
-                                    + "         </h2><br /><br />"
-                                    + "         <h3>"
-                                    + "             Caso queira entrar em contato envie para: <strong>" + registro.getFilial().getPessoa().getEmail1() + "</strong>"
-                                    + "         </h3>"
-                                    + "         <br /><br />"
-                                    + "         <h3>"
-                                    + "             A/C"
-                                    + "         </h3><b> " + jur.getContato() + " </b><br /><br />" + email.getMensagem()
-                                    + "     </body>"
-                                    + "</html>";
+                        } else {
+                            htmlString = html;
                         }
                         MimeMultipart multipart = new MimeMultipart("related");
                         BodyPart mainPart = new MimeBodyPart();
@@ -238,11 +243,11 @@ public class Mail extends MailTemplate implements Serializable {
                         }
                         strings[0] = "Enviado com Sucesso.";
                     } catch (AddressException e) {
-                        strings[0] = "Email de destinatário inválido!";
+                        strings[1] = "Email de destinatário inválido!";
                     } catch (MessagingException e) {
-                        strings[0] = "" + e;
+                        strings[1] = "" + e;
                     } catch (UnsupportedEncodingException ex) {
-                        strings[0] = "Erro";
+                        strings[1] = "Erro";
                     }
                 }
             }
