@@ -56,6 +56,7 @@ public class DemonstrativoAcordo {
     private String tipo;
     private String referencia;
     private String titulo;
+    private String usuario;
 
     public DemonstrativoAcordo(
             int codacordo,
@@ -109,7 +110,8 @@ public class DemonstrativoAcordo {
             BigDecimal desconto,
             String tipo,
             String referencia,
-            String titulo) {
+            String titulo,
+            String usuario) {
         this.codacordo = codacordo;
         this.data = data;
         this.contato = contato;
@@ -162,6 +164,7 @@ public class DemonstrativoAcordo {
         this.tipo = tipo;
         this.referencia = referencia;
         this.titulo = titulo;
+        this.usuario = usuario;
     }
 
     public DemonstrativoAcordo() {
@@ -217,6 +220,7 @@ public class DemonstrativoAcordo {
         this.tipo = "";
         this.referencia = "";
         this.titulo = "";
+        this.usuario = "";
     }
 
     public int getCodacordo() {
@@ -633,5 +637,13 @@ public class DemonstrativoAcordo {
 
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(String usuario) {
+        this.usuario = usuario;
     }
 }

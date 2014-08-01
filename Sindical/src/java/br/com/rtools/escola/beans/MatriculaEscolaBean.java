@@ -63,7 +63,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -83,6 +85,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.primefaces.context.RequestContext;
+import org.primefaces.event.SelectEvent;
 import org.primefaces.event.TabChangeEvent;
 
 @ManagedBean
@@ -289,6 +292,14 @@ public class MatriculaEscolaBean implements Serializable {
         GenericaSessao.remove("fisicaPesquisa");
     }
 
+    public void onDateSelect(SelectEvent event) {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        matriculaEscola.setDataMatricula(DataHoje.converte(format.format(event.getObject())));
+        listaMesVencimento.clear();
+        listaDiaParcela.clear();
+    }
+    
     public String novo() {
         GenericaSessao.remove("matriculaEscolaBean");
         return null;

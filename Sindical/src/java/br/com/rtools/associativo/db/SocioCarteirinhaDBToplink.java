@@ -621,7 +621,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             }else if (id_categoria != -1 && id_rotina != -1){
                 text_qry += " WHERE mcc.categoria IS NOT NULL AND mcc.categoria.id = "+ id_categoria+" AND mcc.rotina.id = "+id_rotina;
             }else if (id_categoria == -1 && id_rotina != -1){
-                text_qry += " WHERE mcc.rotina.id = "+id_rotina;
+                text_qry += " WHERE mcc.rotina.id = "+id_rotina +" AND mcc.categoria IS NULL";
             }
         }
         

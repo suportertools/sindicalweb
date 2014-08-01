@@ -263,7 +263,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             if (!desc.isEmpty()){
                 textQuery = "SELECT fis "
                           + "  FROM Fisica fis "
-                          + " WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true AND soc.matriculaSocios.nrMatricula = :desc )";
+                          + " WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true AND soc.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+" )";
             }
         }
         
@@ -277,7 +277,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco")) {
+                if (!por.equals("endereco") && !por.equals("matricula")) {
                     qry.setParameter("desc", desc);
                 }
             }
@@ -390,7 +390,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 textQuery = "SELECT fis "
                           + "  FROM Fisica fis "
                           + "  WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.matriculaSocios.nrMatricula = :desc) "
-                          + "    AND fis.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true AND soc2.matriculaSocios.nrMatricula = :desc ) ";
+                          + "    AND fis.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true AND soc2.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+" ) ";
             }
         }
         
@@ -405,7 +405,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
-                if (!por.equals("endereco")) {
+                if (!por.equals("endereco") && !por.equals("matricula")) {
                     qry.setParameter("desc", desc);
                 }
             }

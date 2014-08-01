@@ -14,7 +14,9 @@ public interface AcademiaDB {
 
     public List<AcademiaServicoValor> listaAcademiaServicoValor(int idServico);
 
-    public List<AcademiaSemana> listaAcademiaSemana(int idAcademiaGrade);
+    public List<AcademiaSemana> listaAcademiaSemana(int id_servico_valor);
+    
+    public List<AcademiaSemana> listaAcademiaSemana();
     
     public boolean existeAcademiaSemana(int idAcademiaGrade, int idSemana);
     

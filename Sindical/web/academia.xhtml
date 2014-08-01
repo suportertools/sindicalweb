@@ -26,12 +26,54 @@
                                 <h:panelGrid columns="2" cellpadding="3" width="800">
                                     <p:outputLabel value="Emissão:" />
                                     <h:column>
-                                        <h:panelGrid columns="3">
-                                            <p:outputLabel value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.emissao}" />
+                                        <h:panelGrid id="i_panel_dia_vencimento" columns="4">
+                                            <p:inputMask value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.emissao}" mask="99/99/9999" size="8"/>
                                             <p:outputLabel value="Dia do vencimento:" styleClass="margin-left-max" />
-                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
+                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}" disabled="true">
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaDiaVencimento}"/>
                                             </p:selectOneMenu>
+                                            <p:commandLink value="Alterar dia Vencimento" onclick="PF('dlg_dv').show()" rendered="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.id != -1}"/>
+                                            <p:dialog widgetVar="dlg_dv" header="Alterar dia de vencimento?" modal="true" width="300">
+                                                <center>
+                                                    <h:panelGrid columns="2">
+                                                        <h:outputLabel value="Dia do Vencimento: " />
+                                                        <h:selectOneMenu value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.nrDiaVencimento}" >
+                                                            <p:ajax event="change" update="@this i_panel_dia_vencimento" oncomplete="PF('dlg_dv').hide()" listener="#{sociosBean.salvarData}"/>
+                                                            <f:selectItem itemValue="1" itemLabel="01"/>
+                                                            <f:selectItem itemValue="2" itemLabel="02"/>
+                                                            <f:selectItem itemValue="3" itemLabel="03"/>
+                                                            <f:selectItem itemValue="4" itemLabel="04"/>
+                                                            <f:selectItem itemValue="5" itemLabel="05"/>
+                                                            <f:selectItem itemValue="6" itemLabel="06"/>
+                                                            <f:selectItem itemValue="7" itemLabel="07"/>
+                                                            <f:selectItem itemValue="8" itemLabel="08"/>
+                                                            <f:selectItem itemValue="9" itemLabel="09"/>
+                                                            <f:selectItem itemValue="10" itemLabel="10"/>
+                                                            <f:selectItem itemValue="11" itemLabel="11"/>
+                                                            <f:selectItem itemValue="12" itemLabel="12"/>
+                                                            <f:selectItem itemValue="13" itemLabel="13"/>
+                                                            <f:selectItem itemValue="14" itemLabel="14"/>
+                                                            <f:selectItem itemValue="15" itemLabel="15"/>
+                                                            <f:selectItem itemValue="16" itemLabel="16"/>
+                                                            <f:selectItem itemValue="17" itemLabel="17"/>
+                                                            <f:selectItem itemValue="18" itemLabel="18"/>
+                                                            <f:selectItem itemValue="19" itemLabel="19"/>
+                                                            <f:selectItem itemValue="20" itemLabel="20"/>
+                                                            <f:selectItem itemValue="21" itemLabel="21"/>
+                                                            <f:selectItem itemValue="22" itemLabel="22"/>
+                                                            <f:selectItem itemValue="23" itemLabel="23"/>
+                                                            <f:selectItem itemValue="24" itemLabel="24"/>
+                                                            <f:selectItem itemValue="25" itemLabel="25"/>
+                                                            <f:selectItem itemValue="26" itemLabel="26"/>
+                                                            <f:selectItem itemValue="27" itemLabel="27"/>
+                                                            <f:selectItem itemValue="28" itemLabel="28"/>
+                                                            <f:selectItem itemValue="29" itemLabel="29"/>
+                                                            <f:selectItem itemValue="30" itemLabel="30"/>
+                                                            <f:selectItem itemValue="31" itemLabel="31"/>
+                                                        </h:selectOneMenu>                        
+                                                    </h:panelGrid>
+                                                </center>
+                                            </p:dialog>
                                         </h:panelGrid>
                                     </h:column>
                                     <p:commandButton icon="ui-icon-search" value="Aluno" action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar aluno" id="idPesquisarAluno"  disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
@@ -57,8 +99,8 @@
                                     </p:selectOneMenu>
                                     <p:outputLabel value="Período / Grade:" />
                                     <h:column>
-                                        <h:panelGrid columns="3" id="id_grid_periodo_grade">
-                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
+                                        <h:panelGrid columns="3" id="id_grid_periodo_grade" style="width: 850px">
+                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 700px">
                                                 <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular()}"/>
                                                 <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaPeriodosGrade}"/>
@@ -94,6 +136,10 @@
                                             <p:inputText value="#{matriculaAcademiaBean.valorTaxa}" rendered="#{matriculaAcademiaBean.taxa}" readonly="true" size="5"/>
                                             <p:outputLabel value="Taxa cartão (R$):" rendered="#{matriculaAcademiaBean.taxaCartao}"/>
                                             <p:inputText value="#{matriculaAcademiaBean.valorCartao}" rendered="#{matriculaAcademiaBean.taxaCartao}" readonly="true" size="5"/>
+                                            <p:outputLabel value="Dia do Vencimento: " style="margin-left: 10px" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}"/>
+                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaParcela}" style="padding-right: 10px" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}">
+                                                <f:selectItems value="#{matriculaAcademiaBean.listaDiaParcela}" />
+                                            </p:selectOneMenu>
                                         </h:panelGrid>
                                     </p:column>
                                 </h:panelGrid>

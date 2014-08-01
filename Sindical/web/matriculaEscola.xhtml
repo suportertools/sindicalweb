@@ -37,9 +37,7 @@
                                     <h:column>
                                         <h:panelGrid columns="8">
                                             <p:calendar id="idDataMatricula" value="#{matriculaEscolaBean.matriculaEscola.dataMatricula}" maxlength="10" disabled="#{matriculaEscolaBean.desabilitaCampo}" size="8" title="Data da emissão" pattern="dd-MM-yyyy">
-                                                <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.matriculaEscola.listenerData}" />
-                                                <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.listaMesVencimento.clear()}" />
-                                                <p:ajax event="dateSelect" update="@this" listener="#{matriculaEscolaBean.listaDiaParcela.clear()}" />
+                                                <p:ajax event="dateSelect" update="@this i_panel_salvar_movimento" listener="#{matriculaEscolaBean.onDateSelect}" />
                                             </p:calendar>
                                             <p:outputLabel value=" Status: " />
                                             <p:selectOneMenu  id="cbStatus" value="#{matriculaEscolaBean.idStatus}" disabled="true">

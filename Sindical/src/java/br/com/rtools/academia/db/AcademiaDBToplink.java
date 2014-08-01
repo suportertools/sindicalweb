@@ -37,10 +37,10 @@ public class AcademiaDBToplink extends DB implements AcademiaDB {
     @Override
     public AcademiaServicoValor existeAcademiaServicoValor(AcademiaServicoValor asv) {
         try {
-            Query query = getEntityManager().createQuery("SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.servicos.id = :servico AND ASV.periodo.id = :periodo AND ASV.academiaGrade.id = :grade");
+            Query query = getEntityManager().createQuery("SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.servicos.id = :servico AND ASV.periodo.id = :periodo");
             query.setParameter("servico", asv.getServicos().getId());
             query.setParameter("periodo", asv.getPeriodo().getId());
-            query.setParameter("grade", asv.getAcademiaGrade().getId());
+            
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return (AcademiaServicoValor) query.getSingleResult();
@@ -54,7 +54,7 @@ public class AcademiaDBToplink extends DB implements AcademiaDB {
     @Override
     public List<AcademiaServicoValor> listaAcademiaServicoValor(int idServico) {
         try {
-            Query query = getEntityManager().createQuery("SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.servicos.id = :servicos ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC, ASV.academiaGrade.horaInicio ASC");
+            Query query = getEntityManager().createQuery("SELECT ASV FROM AcademiaServicoValor AS ASV WHERE ASV.servicos.id = :servicos ORDER BY ASV.periodo.descricao ASC, ASV.servicos.descricao ASC");
             query.setParameter("servicos", idServico);
             List list = query.getResultList();
             if (!list.isEmpty()) {
@@ -96,10 +96,25 @@ public class AcademiaDBToplink extends DB implements AcademiaDB {
     }
 
     @Override
-    public List<AcademiaSemana> listaAcademiaSemana(int idAcademiaGrade) {
+    public List<AcademiaSemana> listaAcademiaSemana(int id_servico_valor) {
         try {
-            Query query = getEntityManager().createQuery("SELECT ASE FROM AcademiaSemana AS ASE WHERE ASE.academiaGrade.id = :academiaGrade");
-            query.setParameter("academiaGrade", idAcademiaGrade);
+            Query query = getEntityManager().createQuery("SELECT ASE FROM AcademiaSemana AS ASE WHERE ASE.academiaServicoValor.id = :servicoValor");
+            query.setParameter("servicoValor", id_servico_valor);
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
+    
+    
+    @Override
+    public List<AcademiaSemana> listaAcademiaSemana() {
+        try {
+            Query query = getEntityManager().createQuery("SELECT ASE FROM AcademiaSemana AS ASE");
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
