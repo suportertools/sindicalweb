@@ -34,6 +34,8 @@ public class RaisDao extends DB {
             filtroString = " WHERE R.empresa.pessoa.documento LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("data")) {
             filtroString = " WHERE R.emissao = '" + DataHoje.livre(DataHoje.converte(descricaoPesquisa), "yyyy-MM-dd") + "'";
+        } else if (tipoPesquisa.equals("profissao")) {
+            filtroString = " WHERE UPPER(R.profissao.profissao) LIKE :descricaoPesquisa ";
         } else if (tipoPesquisa.equals("todos")) {
             DataHoje dh = new DataHoje();
             String dataAntiga = dh.decrementarMeses(1, DataHoje.data());

@@ -111,6 +111,9 @@ public class RaisBean extends PesquisarProfissaoBean implements Serializable {
     @PreDestroy
     public void destroy() {
         GenericaSessao.remove("raisBean");
+        GenericaSessao.remove("fisicaPesquisa");
+        GenericaSessao.remove("pessoaPesquisa");
+        GenericaSessao.remove("juridicaPesquisa");
     }
 
 //    public void clear() {
