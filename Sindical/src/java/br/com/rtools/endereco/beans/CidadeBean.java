@@ -156,7 +156,7 @@ public class CidadeBean implements Serializable {
             if (!GenericaSessao.getString("urlRetorno").equals("menuPrincipal")) {
                 urlRetorno = GenericaSessao.getString("urlRetorno");
             } else {
-                PF.openDialog("dlg_save");                
+                PF.openDialog("dlg_save");
             }
         } else {
             PF.openDialog("dlg_save");
@@ -181,7 +181,7 @@ public class CidadeBean implements Serializable {
                 PessoaEndereco pe = dbp.pesquisaEndPorPessoaTipo(1, 3);
                 cidade.setUf(pe.getEndereco().getCidade().getUf());
             } else {
-                listCidade = db.pesquisaCidade(cidade.getUf(), cidade.getCidade(), getComoPesquisa());
+                listCidade = db.pesquisaCidadePorCidade(cidade.getCidade(), getComoPesquisa());
             }
 
         }
