@@ -109,19 +109,19 @@ public class EnderecoDBToplink extends DB implements EnderecoDB {
             }
 
             Query qry = getEntityManager().createNativeQuery(
-                    "select ende.id "
-                    + "  from end_endereco ende,"
-                    + "       end_cidade cid,"
-                    + "       end_logradouro logr,"
-                    + "       end_descricao_endereco des"
-                    + " where ende.id_cidade = cid.id"
-                    + "   and ende.id_logradouro = logr.id"
-                    + "   and ende.id_descricao_endereco = des.id"
-                    + "   and cid.ds_cidade = '" + cidade + "'"
-                    + "   and cid.ds_uf = '" + uf + "'"
-                    + "   and logr.ds_descricao = '" + logradouro + "'"
-                    + "   and UPPER(translate(des.ds_descricao)) like '" + AnaliseString.removerAcentos(descricao) + "'"
-                    + " order by des.ds_descricao");
+                    "     SELECT ende.id "
+                    + "     FROM end_endereco ende,"
+                    + "          end_cidade cid,"
+                    + "          end_logradouro logr,"
+                    + "          end_descricao_endereco des"
+                    + "    WHERE ende.id_cidade = cid.id"
+                    + "      AND ende.id_logradouro = logr.id"
+                    + "      AND ende.id_descricao_endereco = des.id"
+                    + "      AND cid.ds_cidade = '" + cidade + "'"
+                    + "      AND cid.ds_uf = '" + uf + "'"
+                    + "      AND logr.ds_descricao = '" + logradouro + "'"
+                    + "      AND UPPER(translate(des.ds_descricao)) LIKE '" + AnaliseString.removerAcentos(descricao) + "'"
+                    + " ORDER BY des.ds_descricao");
             vetor = qry.getResultList();
             if (!vetor.isEmpty()) {
                 for (int i = 0; i < vetor.size(); i++) {
