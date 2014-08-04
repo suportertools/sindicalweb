@@ -72,7 +72,10 @@
                                         <p:outputLabel value="Url path: " />
                                         <p:inputText size="30" value="#{registroEmpresarialBean.registro.urlPath}"/>
                                         <p:column />
-                                        <h:outputLabel value="Email Resposta: "/>
+                                        <h:column>
+                                            <h:outputLabel value="Email Sistema:" rendered="#{registroEmpresarialBean.registro.sisEmailMarketing}"/>                                            
+                                            <h:outputLabel value="Email Resposta: " rendered="#{!registroEmpresarialBean.registro.sisEmailMarketing}"/>                                            
+                                        </h:column>
                                         <p:column>
                                             <p:inputText id="idEmailResposta" size="50" value="#{registroEmpresarialBean.registro.sisEmailResposta}" autocomplete="off" validatorMessage="Email resposta inválido #{registroEmpresarialBean.registro.sisEmailResposta}" required="false" placeholder="Formato: meuemail@provedor.com">
                                                 <p:ajax event="blur" update="i_message_email_resposta" />
@@ -89,6 +92,17 @@
                                         <p:selectBooleanCheckbox value="#{registroEmpresarialBean.registro.sisEmailMarketing}" itemLabel="Habilita E-mail Marketing">
                                             <p:ajax event="change" update=":form_registro_empresarial:" listener="#{registroEmpresarialBean.salvarSemSenha}" />
                                         </p:selectBooleanCheckbox>
+                                        <p:column></p:column>
+                                        <h:outputLabel value="Email Resposta: " rendered="#{registroEmpresarialBean.registro.sisEmailMarketing}"/>
+                                        <p:column rendered="#{registroEmpresarialBean.registro.sisEmailMarketing}">
+                                            <p:inputText id="idEmailMktResposta" size="50" value="#{registroEmpresarialBean.registro.sisEmailMarketingResposta}" autocomplete="off" validatorMessage="Email resposta inválido #{registroEmpresarialBean.registro.sisEmailResposta}" required="false" placeholder="Formato: meuemail@provedor.com">
+                                                <p:ajax event="blur" update="i_message_email_resposta_2" />
+                                                <f:validateRegex pattern="[\w\.-]*[a-zA-Z0-9_]@[\w\.-]*[a-zA-Z0-9]\.[a-zA-Z][a-zA-Z\.]*[a-zA-Z]" />
+                                            </p:inputText>
+                                            <div class="float-left">
+                                                <p:message for="idEmailMktResposta" id="i_message_email_resposta_2"/>
+                                            </div>
+                                        </p:column>                                        
                                         <p:column></p:column>
                                     </p:panelGrid>
                                     <p:commandButton value="Testar Email" onclick="PF('dlg_test_mail').show()" type="button" styleClass="margin-top-max"/>
