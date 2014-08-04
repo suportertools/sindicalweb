@@ -51,7 +51,7 @@
                                 <p:inputText id="i_cidade" size="50" value="#{cidadeBean.cidade.cidade}" />
                                 <p:watermark for="i_cidade" value="Digite o nome da Cidade" />
 
-                                <p:selectOneMenu value="#{cidadeBean.cidade.uf}" style="position: absolute; margin-left: 15px; margin-top: 2px; padding-right: 5px">
+                                <p:selectOneMenu value="#{cidadeBean.cidade.uf}" style="position: absolute; margin-left: 15px; margin-top: 2px; padding-right: 5px" rendered="false">
                                     <f:selectItem itemValue="AC" itemLabel="AC"/>
                                     <f:selectItem itemValue="AL" itemLabel="AL"/>
                                     <f:selectItem itemValue="AP" itemLabel="AP"/>
@@ -84,7 +84,7 @@
                                 <p:commandButton action="#{cidadeBean.acaoPesquisaInicial}" value="Inicial" style="margin-left: 80px" update=":formCidadePesquisar:i_panel_grid"/>
                                 <p:commandButton action="#{cidadeBean.acaoPesquisaParcial}" value="Parcial" update=":formCidadePesquisar:i_panel_grid" />
 
-                                <p:commandButton value="Adicionar nova Cidade" action="#{cidadeBean.clear()}" update=":formCidadeSalvar:i_panel_novo" disabled="#{controleAcessoBean.botaoSalvar}" style="float: right" onclick="PF('dlg_save').show()"/>
+                                <p:commandButton value="Adicionar nova Cidade" action="#{cidadeBean.clear()}" update=":formCidadeSalvar:i_panel_novo" disabled="#{controleAcessoBean.botaoSalvar}" style="float: right" onclick="PF('dlg_save').show()" rendered="false"/>
 
                             </p:panel>
                         </h:form>
@@ -97,8 +97,8 @@
                                         <p:commandLink value="#{cidade.id}" action="#{cidadeBean.edit(cidade)}"/>
                                     </p:column>          
 
-                                    <p:column headerText="Editar" width="50" styleClass="text-center">
-                                        <p:commandButton icon="ui-icon-search"  action="#{cidadeBean.editPagina(cidade)}" update=":formCidadeSalvar:i_panel_novo" onclick="PF('dlg_save').show()" title="Clique para editar esta Cidade"/>
+                                    <p:column headerText="Editar" width="50" styleClass="text-center" rendered="false">
+                                        <p:commandButton icon="ui-icon-search"  action="#{cidadeBean.editPagina(cidade)}" update=":formCidadeSalvar:i_panel_novo" onclick="PF('dlg_save').show()" title="Clique para editar esta Cidade" rendered="false" />
                                     </p:column>                  
 
                                     <p:column headerText="Cidade (clique para selecionar)">
