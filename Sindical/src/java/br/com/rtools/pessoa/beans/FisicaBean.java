@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 import javax.faces.application.FacesMessage;
@@ -105,11 +106,10 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     private boolean visibleEditarEndereco = false;
     private List<ServicoPessoa> listaServicoPessoa = new ArrayList<ServicoPessoa>();
     private boolean chkDependente = false;
-    
+
     private int indexEndereco = 0;
     private String strEndereco = "";
-    
-    
+
     public void novo() {
         GenericaSessao.put("fisicaBean", new FisicaBean());
         GenericaSessao.put("pessoaComplementoBean", new PessoaComplementoBean());
@@ -513,6 +513,21 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
         }
     }
 
+    public void existePessoaNomeNascimento() {
+        if (fisica.getId() == -1) {
+            if (!fisica.getNascimento().isEmpty() && !fisica.getPessoa().getNome().isEmpty()) {
+                FisicaDB db = new FisicaDBToplink();
+                Fisica f = db.pesquisaFisicaPorNomeNascimento(fisica.getPessoa().getNome(), fisica.getDtNascimento());
+                if (f != null) {
+                    String x = editarFisicaParametro(f);
+                    pessoaUpper();
+                    RequestContext.getCurrentInstance().update("form_pessoa_fisica:i_panel_pessoa_fisica");
+                    showImagemFisica();
+                }
+            }
+        }
+    }
+
     public String editarFisicaParametro(Fisica fis) {
         PessoaEmpresaDB db = new PessoaEmpresaDBToplink();
         fisica = fis;
@@ -532,7 +547,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
             profissao = new Profissao();
             renderJuridicaPesquisa = false;
         }
-        
+
         listaServicoPessoa.clear();
         editarFisicaSocio(fisica);
         GenericaSessao.put("linkClicado", true);
@@ -561,16 +576,16 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
 
         }
     }
-    
+
     public void alterarTodosEndereco() {
         visibleEditarEndereco = false;
-        
+
         for (int i = 0; i < listaPessoaEndereco.size(); i++) {
             listaPessoaEndereco.get(i).setEndereco(pessoaEndereco.getEndereco());
             listaPessoaEndereco.get(i).setNumero(pessoaEndereco.getNumero());
             listaPessoaEndereco.get(i).setComplemento(pessoaEndereco.getComplemento());
         }
-        
+
         enderecox = new Endereco();
     }
 
@@ -1478,30 +1493,28 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String getFotoPerfil() {
-        if (fisica.getId() != -1){
+        if (fisica.getId() != -1) {
             // TEM FOTO MAS NO BANCO ESTA FALSE == ALTERA PARA TRUE NO BANCO
-            if (!fotoPerfil.isEmpty() && fisica.getDataFoto().isEmpty()){
+            if (!fotoPerfil.isEmpty() && fisica.getDataFoto().isEmpty()) {
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
                 sv.abrirTransacao();
 
                 fisica.setDataFoto(DataHoje.data());
-                
+
                 sv.alterarObjeto(fisica);
                 sv.comitarTransacao();
                 return fotoPerfil;
             }
-            
+
             // TEM FOTO E NO BANCO ESTA TRUE == PERMANECE DO JEITO QUE ESTA
-            
             // NÃO TEM FOTO E NO BANCO ESTA FALSE = PERMANECE DO JEITO QUE ESTA
-            
             // NÃO TEM FOTO E NO BANCO ESTA TRUE = ALTERA PARA FALSE NO BANCO
-            if (fotoPerfil.isEmpty() && !fisica.getDataFoto().isEmpty()){
+            if (fotoPerfil.isEmpty() && !fisica.getDataFoto().isEmpty()) {
                 SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
                 sv.abrirTransacao();
 
                 fisica.setDataFoto("");
-                
+
                 sv.alterarObjeto(fisica);
                 sv.comitarTransacao();
             }
@@ -1718,7 +1731,7 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public List<ServicoPessoa> getListaServicoPessoa() {
-        if (fisica.getId() != -1 && listaServicoPessoa.isEmpty()){
+        if (fisica.getId() != -1 && listaServicoPessoa.isEmpty()) {
             FisicaDB db = new FisicaDBToplink();
             listaServicoPessoa = db.listaServicoPessoa(fisica.getPessoa().getId(), chkDependente);
         }
@@ -1738,13 +1751,14 @@ public class FisicaBean extends PesquisarProfissaoBean implements Serializable {
     }
 
     public String getStrEndereco() {
-        if (!listaPessoaEndereco.isEmpty())
-            strEndereco = 
-                    listaPessoaEndereco.get(1).getEndereco().getLogradouro().getDescricao() + " " +
-                    listaPessoaEndereco.get(1).getEndereco().getDescricaoEndereco().getDescricao() +" "+ listaPessoaEndereco.get(1).getNumero() + ", " +
-                    listaPessoaEndereco.get(1).getEndereco().getBairro().getDescricao() + ", " + listaPessoaEndereco.get(1).getComplemento() + " " +
-                    listaPessoaEndereco.get(1).getEndereco().getCidade().getCidade() + "  -  " +
-                    listaPessoaEndereco.get(1).getEndereco().getCidade().getUf();
+        if (!listaPessoaEndereco.isEmpty()) {
+            strEndereco
+                    = listaPessoaEndereco.get(1).getEndereco().getLogradouro().getDescricao() + " "
+                    + listaPessoaEndereco.get(1).getEndereco().getDescricaoEndereco().getDescricao() + " " + listaPessoaEndereco.get(1).getNumero() + ", "
+                    + listaPessoaEndereco.get(1).getEndereco().getBairro().getDescricao() + ", " + listaPessoaEndereco.get(1).getComplemento() + " "
+                    + listaPessoaEndereco.get(1).getEndereco().getCidade().getCidade() + "  -  "
+                    + listaPessoaEndereco.get(1).getEndereco().getCidade().getUf();
+        }
         return strEndereco;
     }
 

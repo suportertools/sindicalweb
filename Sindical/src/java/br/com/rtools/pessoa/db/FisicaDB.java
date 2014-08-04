@@ -43,4 +43,6 @@ public interface FisicaDB {
     public List pesquisaPessoaSocioID(int id_pessoa);
     
     public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente);
+    
+    public Fisica pesquisaFisicaPorNomeNascimento(String nome, Date nascimento);
 }
