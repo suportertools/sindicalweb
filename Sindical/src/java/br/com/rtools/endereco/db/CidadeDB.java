@@ -16,4 +16,7 @@ public interface CidadeDB {
     public Cidade idCidade(Cidade des_cidade);
 
     public List pesquisaCidade(String uf, String cidade, String como);
+    
+    public List pesquisaCidadePorCidade(String cidade, String como);
+    
 }

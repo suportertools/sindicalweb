@@ -2,6 +2,7 @@ package br.com.rtools.endereco.db;
 
 import br.com.rtools.principal.DB;
 import br.com.rtools.endereco.Cidade;
+import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Query;
@@ -32,17 +33,20 @@ public class CidadeDBToplink extends DB implements CidadeDB {
 
     @Override
     public List pesquisaCidadeObj(String des_uf) {
-        List result = new ArrayList();
         try {
             Query qry = getEntityManager().createQuery(
-                    "select cid "
-                    + "  from Cidade cid "
-                    + " where cid.uf = :des_uf");
-            qry.setParameter("des_uf", des_uf);
-            result = (List) qry.getResultList();
+                    "      SELECT C                 "
+                    + "      FROM Cidade AS C       "
+                    + "     WHERE C.uf = :uf        "
+                    + "  ORDER BY C.cidade ASC      ");
+            qry.setParameter("uf", des_uf);
+            List list = qry.getResultList();
+            if (!list.isEmpty()) {
+                return list;
+            }
         } catch (Exception e) {
         }
-        return result;
+        return new ArrayList();
     }
 
     @Override
@@ -99,5 +103,43 @@ public class CidadeDBToplink extends DB implements CidadeDB {
         } catch (Exception e) {
         }
         return result;
+    }
+
+    @Override
+    public List pesquisaCidadePorCidade(String cidade, String como) {
+        String queryString = "";
+        cidade = cidade.toLowerCase().toUpperCase();
+        if (como.equals("P")) {
+            if (!(cidade.equals(""))) {
+                cidade = "%" + cidade + "%";
+            }
+        } else if (como.equals("I")) {
+            if (!(cidade.equals(""))) {
+                cidade = cidade + "%";
+            }
+        }
+        queryString = "SELECT C.id FROM end_cidade AS C WHERE UPPER(TRANSLATE(C.ds_cidade)) LIKE '" + AnaliseString.removerAcentos(cidade) + "' ORDER BY C.ds_cidade ASC";
+        try {
+            Query qry = getEntityManager().createNativeQuery(queryString);
+            List listNative = qry.getResultList();
+            if (!listNative.isEmpty()) {
+                String inIds = "";
+                for (int i = 0; i < listNative.size(); i++) {
+                    if (i == 0) {
+                        inIds = "" + ((List) listNative.get(i)).get(0).toString();
+                    } else {
+                        inIds += "," + ((List) listNative.get(i)).get(0).toString();
+                    }
+                }
+                String queryOO = "SELECT C FROM Cidade AS C WHERE C.id IN("+inIds+")";
+                Query query = getEntityManager().createQuery(queryOO);
+                List list = query.getResultList();
+                if (!list.isEmpty()) {
+                    return list;
+                }
+            }
+        } catch (Exception e) {
+        }
+        return new ArrayList();
     }
 }
