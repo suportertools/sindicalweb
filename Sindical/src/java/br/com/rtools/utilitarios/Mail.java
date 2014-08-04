@@ -20,6 +20,7 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
+import javax.mail.Address;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -107,6 +108,10 @@ public class Mail extends MailTemplate implements Serializable {
                         InternetAddress internetAddress = new InternetAddress();
                         if (registro.isSisEmailMarketing()) {
                             msg.setFrom(new InternetAddress(registro.getSisEmailResposta(), personal));
+                            if (!registro.getSisEmailMarketingResposta().isEmpty()) {
+                                Address address[] = {new InternetAddress(registro.getSisEmailMarketingResposta())};
+                                msg.setReplyTo(address);
+                            }
                         } else {
                             if (!registro.getSisEmailResposta().isEmpty()) {
                                 internetAddress.setPersonal(registro.getSisEmailResposta());
