@@ -147,13 +147,13 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 textQuery = " SELECT FIS FROM Fisica AS FIS WHERE FIS.id IN(" + listaId + ")";
             }
         }
-        
+
         if (por.equals("codigo")) {
-            textQuery = 
-                    "SELECT pe.fisica FROM PessoaEmpresa pe " +
-                    " WHERE pe.codigo = :desc ";
+            textQuery
+                    = "SELECT pe.fisica FROM PessoaEmpresa pe "
+                    + " WHERE pe.codigo = :desc ";
         }
-        
+
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
@@ -217,8 +217,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  where UPPER(fis.pessoa." + por + ") like :desc"
                     + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc where soc.servicoPessoa.ativo = true )";
         }
-        
-        
+
         if (por.equals("endereco")) {
             desc = desc.toLowerCase().toUpperCase();
             if (desc.isEmpty()) {
@@ -256,24 +255,24 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 textQuery = " SELECT FIS FROM Fisica AS FIS, Pessoa AS PES WHERE FIS.id IN(" + listaId + ") AND PES.id IN( SELECT SOC.servicoPessoa.pessoa.id from Socios AS SOC WHERE soc.servicoPessoa.ativo = true )";
             }
         }
-        
+
         if (por.equals("matricula")) {
             //por = "documento";
             //desc = desc.toLowerCase().toUpperCase();
-            if (!desc.isEmpty()){
+            if (!desc.isEmpty()) {
                 textQuery = "SELECT fis "
-                          + "  FROM Fisica fis "
-                          + " WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true AND soc.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+" )";
+                        + "  FROM Fisica fis "
+                        + " WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true AND soc.matriculaSocios.nrMatricula = " + Integer.valueOf(desc) + " )";
             }
         }
-        
+
         if (por.equals("codigo")) {
-            textQuery = 
-                    "  SELECT pe.fisica FROM PessoaEmpresa pe " 
+            textQuery
+                    = "  SELECT pe.fisica FROM PessoaEmpresa pe "
                     + " WHERE pe.codigo = :desc "
                     + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.servicoPessoa.ativo = true )";
         }
-                
+
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
@@ -320,9 +319,9 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                 por = "nome";
                 desc = desc.toLowerCase().toUpperCase() + "%";
                 textQuery = " select fis from Fisica fis "
-                          + "  where UPPER(fis.pessoa." + por + ") like :desc "
-                          + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
-                          + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
+                        + "  where UPPER(fis.pessoa." + por + ") like :desc "
+                        + "   and fis.pessoa.id in ( select soc.servicoPessoa.pessoa.id from Socios soc ) "
+                        + "   and fis.pessoa.id not in ( select soc2.servicoPessoa.pessoa.id from Socios soc2 where soc2.servicoPessoa.ativo = true ) ";
             }
         }
         if (por.equals("rg")) {
@@ -384,24 +383,24 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                         + "      AND FIS.pessoa.id NOT IN( SELECT SOC2.servicoPessoa.pessoa.id FROM Socios SOC2 WHERE SOC2.servicoPessoa.ativo = true )             ";
             }
         }
-        
+
         if (por.equals("matricula")) {
-            if (!desc.isEmpty()){
+            if (!desc.isEmpty()) {
                 textQuery = "SELECT fis "
-                          + "  FROM Fisica fis "
-                          + "  WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.matriculaSocios.nrMatricula = :desc) "
-                          + "    AND fis.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true AND soc2.matriculaSocios.nrMatricula = "+Integer.valueOf(desc)+" ) ";
+                        + "  FROM Fisica fis "
+                        + "  WHERE fis.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc WHERE soc.matriculaSocios.nrMatricula = :desc) "
+                        + "    AND fis.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true AND soc2.matriculaSocios.nrMatricula = " + Integer.valueOf(desc) + " ) ";
             }
         }
-        
+
         if (por.equals("codigo")) {
-            textQuery = 
-                    " SELECT pe.fisica FROM PessoaEmpresa pe "
+            textQuery
+                    = " SELECT pe.fisica FROM PessoaEmpresa pe "
                     + " WHERE pe.codigo = :desc "
-                    + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc ) " 
+                    + "   AND pe.fisica.pessoa.id IN ( SELECT soc.servicoPessoa.pessoa.id FROM Socios soc ) "
                     + "   AND pe.fisica.pessoa.id NOT IN ( SELECT soc2.servicoPessoa.pessoa.id FROM Socios soc2 WHERE soc2.servicoPessoa.ativo = true ) ";
         }
-        
+
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             if (!desc.equals("%%") && !desc.equals("%")) {
@@ -463,7 +462,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             Query qry = getEntityManager().createQuery(
                     "   SELECT FIS                           "
                     + "   FROM Fisica AS FIS                 "
-                    + "  WHERE FIS.pessoa.documento LIKE :documento " );
+                    + "  WHERE FIS.pessoa.documento LIKE :documento ");
             qry.setParameter("documento", doc);
             List list = qry.getResultList();
             if (!list.isEmpty()) {
@@ -525,7 +524,7 @@ public class FisicaDBToplink extends DB implements FisicaDB {
                     + "  from Fisica f "
                     + " where UPPER(f.pessoa.nome) like '%" + nome + "%'";
             Query qry = getEntityManager().createQuery(textQuery);
-            
+
             qry.setMaxResults(200);
             return qry.getResultList();
         } catch (Exception e) {
@@ -551,19 +550,19 @@ public class FisicaDBToplink extends DB implements FisicaDB {
         }
         return lista;
     }
-    
+
     @Override
     public List<ServicoPessoa> listaServicoPessoa(int id_pessoa, boolean dependente) {
         List lista = new Vector<Object>();
         String textQuery = "SELECT sp FROM ServicoPessoa sp WHERE sp.ativo = TRUE";
 
-        if (dependente){
-            textQuery += " AND sp.pessoa.id = "+id_pessoa;
-        }else{
+        if (dependente) {
+            textQuery += " AND sp.pessoa.id = " + id_pessoa;
+        } else {
             //textQuery += " AND sp.cobranca.id = "+id_pessoa+" OR sp.pessoa.id = "+id_pessoa;
-            textQuery += " AND sp.cobranca.id = "+id_pessoa+" OR (sp.pessoa.id = "+id_pessoa+" AND sp.ativo = TRUE)";
+            textQuery += " AND sp.cobranca.id = " + id_pessoa + " OR (sp.pessoa.id = " + id_pessoa + " AND sp.ativo = TRUE)";
         }
-        
+
         try {
             Query qry = getEntityManager().createQuery(textQuery);
             lista = qry.getResultList();
@@ -571,5 +570,23 @@ public class FisicaDBToplink extends DB implements FisicaDB {
             return lista;
         }
         return lista;
+    }
+
+    @Override
+    public Fisica pesquisaFisicaPorNomeNascimento(String nome, Date nascimento) {
+        if (nome.isEmpty() && nascimento != null) {
+            return null;
+        }
+        try {
+            Query query = getEntityManager().createQuery("SELECT F FROM Fisica AS F WHERE UPPER(F.pessoa.nome) LIKE :nome AND F.dtNascimento = :nascimento");
+            query.setParameter("nascimento", nascimento);
+            query.setParameter("nome", nome);
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return (Fisica) query.getSingleResult();
+            }
+        } catch (Exception e) {
+        }
+        return null;
     }
 }
