@@ -110,7 +110,9 @@ public class Registro implements java.io.Serializable {
     @Column(name = "HOM_DT_HABILITA_CORRECAO")
     @Temporal(TemporalType.DATE)
     private Date homolocaoHabilitaCorrecao;
-    
+    @Column(name = "SIS_EMAIL_MARKETING_RESPOSTA", length = 50)
+    private String sisEmailMarketingResposta;
+
     public Registro() {
         this.id = -1;
         this.filial = new Juridica();
@@ -158,6 +160,7 @@ public class Registro implements java.io.Serializable {
         this.homolocaoLimiteMeses = 3;
         this.sisEmailMarketing = false;
         this.homolocaoHabilitaCorrecao = new Date();
+        this.sisEmailMarketingResposta = "";
     }
 
     public Registro(int id,
@@ -204,7 +207,8 @@ public class Registro implements java.io.Serializable {
             boolean fotoCartao,
             int homolocaoLimiteMeses,
             Date homolocaoHabilitaCorrecao,
-            boolean sisEmailMarketing) {
+            boolean sisEmailMarketing,
+            String sisEmailMarketingResposta) {
 
         this.id = id;
         this.filial = filial;
@@ -251,6 +255,7 @@ public class Registro implements java.io.Serializable {
         this.homolocaoLimiteMeses = homolocaoLimiteMeses;
         this.sisEmailMarketing = sisEmailMarketing;
         this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
+        this.sisEmailMarketingResposta = sisEmailMarketingResposta;
     }
 
     public int getId() {
@@ -639,5 +644,19 @@ public class Registro implements java.io.Serializable {
 
     public void setHomolocaoHabilitaCorrecao(Date homolocaoHabilitaCorrecao) {
         this.homolocaoHabilitaCorrecao = homolocaoHabilitaCorrecao;
+    }
+
+    /**
+     * @return the sisEmailMarketingResposta
+     */
+    public String getSisEmailMarketingResposta() {
+        return sisEmailMarketingResposta;
+    }
+
+    /**
+     * @param sisEmailMarketingResposta the sisEmailMarketingResposta to set
+     */
+    public void setSisEmailMarketingResposta(String sisEmailMarketingResposta) {
+        this.sisEmailMarketingResposta = sisEmailMarketingResposta;
     }
 }

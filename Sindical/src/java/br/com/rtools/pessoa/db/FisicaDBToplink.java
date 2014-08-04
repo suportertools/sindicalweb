@@ -3,6 +3,7 @@ package br.com.rtools.pessoa.db;
 import br.com.rtools.financeiro.ServicoPessoa;
 import br.com.rtools.pessoa.Fisica;
 import br.com.rtools.principal.DB;
+import br.com.rtools.utilitarios.AnaliseString;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
