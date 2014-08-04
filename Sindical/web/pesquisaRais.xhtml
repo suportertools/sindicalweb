@@ -45,6 +45,7 @@
                                 <f:selectItem itemValue="data"          itemLabel="Emissão" />
                                 <f:selectItem itemValue="cnpj"          itemLabel="CNPJ" />
                                 <f:selectItem itemValue="cpf"           itemLabel="CPF" />
+                                <f:selectItem itemValue="profissao"     itemLabel="Profissão" />
                             </p:selectOneMenu>
                             <c:if test="#{!raisBean.removeFiltro}">
                                 <c:if test="#{raisBean.porPesquisa != 'todos'}">
@@ -91,6 +92,9 @@
                         </p:column>                                    
                         <p:column headerText="Empresa" >
                             #{rais.empresa.pessoa.nome}
+                        </p:column>
+                        <p:column headerText="Profissão" >
+                            #{rais.profissao.profissao}
                         </p:column>
                     </p:dataTable>
                 </p:panel>
