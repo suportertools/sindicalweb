@@ -61,9 +61,9 @@
                             </f:facet>
                             <p:row>
                                 <p:column>
-                                    <p:selectOneMenu value="#{enderecoBean.index[2]}">
+                                    <h:selectOneMenu value="#{enderecoBean.index[2]}">
                                         <f:selectItems value="#{enderecoBean.listLogradouro}" />
-                                    </p:selectOneMenu>
+                                    </h:selectOneMenu>
                                 </p:column>
                                 <p:column>
                                     <p:inputText value="#{enderecoBean.endereco.descricaoEndereco.descricao}" size="25" onkeypress="if (event.keyCode === 13) {
@@ -71,16 +71,16 @@
                                             }"/>
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu id="idListaCidades" value="#{enderecoBean.index[1]}">
+                                    <h:selectOneMenu id="idListaCidades" value="#{enderecoBean.index[1]}">
                                         <p:ajax event="change" update="idListaCidades"/>
                                         <f:selectItems value="#{enderecoBean.listCidade}" />
-                                    </p:selectOneMenu>                            
+                                    </h:selectOneMenu>                            
                                 </p:column>
                                 <p:column>
-                                    <p:selectOneMenu id="idUF" value="#{enderecoBean.cidadeBase.uf}" >
+                                    <h:selectOneMenu id="idUF" value="#{enderecoBean.cidadeBase.uf}" styleClass="ui-corner-all ui-hselectonemenu">
                                         <p:ajax event="change" update="idUF idListaCidades"/>
                                         <f:selectItems value="#{enderecoBean.listEstado}" />
-                                    </p:selectOneMenu>
+                                    </h:selectOneMenu>
                                 </p:column>
                                 <p:column>
                                     <p:commandButton id="btnInicial" action="#{enderecoBean.pesquisaInicial}" value="Inicial" update="i_tbl"/>
