@@ -487,7 +487,7 @@ public class SociosBean implements Serializable {
         DataHoje dh = new DataHoje();
         SociosDB db = new SociosDBToplink();
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
-        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), -1);
+        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(Integer.valueOf(listaCategoria.get(idCategoria).getDescription()), 170);
         
         if (modeloc == null){
             sv.desfazerTransacao();
@@ -557,7 +557,7 @@ public class SociosBean implements Serializable {
                         return null;
                     }
                     
-                    modeloc = dbc.pesquisaModeloCarteirinha(matriculaSocios.getCategoria().getId(), -1);
+                    modeloc = dbc.pesquisaModeloCarteirinha(matriculaSocios.getCategoria().getId(), 170);
                     
                     List<SocioCarteirinha> list_carteirinha_dep = db.pesquisaCarteirinhasPorPessoa(socioDependente.getServicoPessoa().getPessoa().getId(), modeloc.getId());
                     // VERIFICA SE SÓCIO DEPENDENTE TEM CARTEIRINHA -- SE TIVER NÃO ADICIONAR --
@@ -992,7 +992,7 @@ public class SociosBean implements Serializable {
         }
 
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
-        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), -1);
+        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
         
         List<SocioCarteirinha> list = db.pesquisaCarteirinhasPorPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
 
@@ -1085,7 +1085,7 @@ public class SociosBean implements Serializable {
         
         ServicoCategoria servicoCategoriaDep = dbSCat.pesquisaPorParECat(soc.getParentesco().getId(), servicoCategoria.getCategoria().getId());
         
-        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(servicoCategoriaDep.getCategoria().getId(), -1);
+        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(servicoCategoriaDep.getCategoria().getId(), 170);
         
         List<SocioCarteirinha> list = db.pesquisaCarteirinhasPorPessoa(soc.getServicoPessoa().getPessoa().getId(), modeloc.getId());
 
@@ -1408,7 +1408,7 @@ public class SociosBean implements Serializable {
 //        }
         
         SocioCarteirinhaDB dbc = new SocioCarteirinhaDBToplink();
-        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), -1);
+        ModeloCarteirinha modeloc = dbc.pesquisaModeloCarteirinha(socios.getMatriculaSocios().getCategoria().getId(), 170);
         SocioCarteirinha sc = dbc.pesquisaCarteirinhaPessoa(socios.getServicoPessoa().getPessoa().getId(), modeloc.getId());
         
         SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();

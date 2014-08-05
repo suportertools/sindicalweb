@@ -19,17 +19,23 @@ import br.com.rtools.pessoa.db.JuridicaDBToplink;
 import br.com.rtools.pessoa.db.PessoaEnderecoDB;
 import br.com.rtools.pessoa.db.PessoaEnderecoDBToplink;
 import br.com.rtools.seguranca.Registro;
+import br.com.rtools.seguranca.Rotina;
 import br.com.rtools.seguranca.Usuario;
 import br.com.rtools.seguranca.controleUsuario.ControleUsuarioBean;
+import br.com.rtools.sistema.Email;
+import br.com.rtools.sistema.EmailPessoa;
 import br.com.rtools.sistema.Links;
 import br.com.rtools.sistema.db.LinksDB;
 import br.com.rtools.sistema.db.LinksDBToplink;
+import br.com.rtools.utilitarios.Dao;
+import br.com.rtools.utilitarios.DaoInterface;
 import br.com.rtools.utilitarios.DataHoje;
 import br.com.rtools.utilitarios.DataObject;
 import br.com.rtools.utilitarios.Download;
 import br.com.rtools.utilitarios.EnviarEmail;
 import br.com.rtools.utilitarios.GenericaMensagem;
 import br.com.rtools.utilitarios.GenericaSessao;
+import br.com.rtools.utilitarios.Mail;
 import br.com.rtools.utilitarios.SalvaArquivos;
 import br.com.rtools.utilitarios.SalvarAcumuladoDB;
 import br.com.rtools.utilitarios.SalvarAcumuladoDBToplink;
@@ -828,30 +834,53 @@ public class NotificacaoJSFBean implements Serializable {
             List<Pessoa> pes_add = new ArrayList();
             pes_add.add(link.getPessoa());
             String pathPasta = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/notificacao/" + lote.getId());
-            String[] ret = new String[2];
+            
+            List<File> fls = new ArrayList<File>();
+            String mensagem= "";
+            
             if (!registro.isEnviarEmailAnexo()) {
-                ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                        pes_add,
-                        " <h5>Visualize sua notificação clicando no link abaixo</5><br /><br />"
-                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + link.getNomeArquivo() + "' target='_blank'>Clique aqui para abrir a Notificação</a><br />",
-                        new ArrayList(),
-                        "Envio de Notificação");
+                mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
+                 + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + link.getNomeArquivo() + "' target='_blank'>Clique aqui para abrir a notificacão</a><br />";
             } else {
-                List<File> fls = new ArrayList<File>();
-                //fls.add(new File(link.getCaminho() + "/" + link.getNomeArquivo()));
                 fls.add(new File(pathPasta + "/" + link.getNomeArquivo()));
+                mensagem = "<h5>Baixe sua notificação anexado neste email</5><br /><br />";
+            }            
 
-                ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                        pes_add,
-                        " <h5>Baixe sua notificação em Anexada neste email</5><br /><br />",
-                        fls,
-                        "Envio de Notificação");
+            DaoInterface di = new Dao();
+            Mail mail = new Mail();
+            mail.setFiles(fls);
+            mail.setEmail(
+                    new Email(
+                            -1,
+                            DataHoje.dataHoje(),
+                            DataHoje.livre(new Date(), "HH:mm"),
+                            (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                            (Rotina) di.find(new Rotina(), 106),
+                            null,
+                            "Envio de Boleto",
+                            mensagem,
+                            false,
+                            false
+                    )
+            );            
+            List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+
+            for (Pessoa pe : pes_add) {
+                emailPessoa.setDestinatario(pe.getEmail1());
+                emailPessoa.setPessoa(pe);
+                emailPessoa.setRecebimento(null);
+                emailPessoas.add(emailPessoa);
+                mail.setEmailPessoas(emailPessoas);
+                emailPessoa = new EmailPessoa();
             }
-            if (!ret[1].isEmpty()) {
-                msgConfirma = ret[1];
+
+            String[] retorno = mail.send("personalizado");            
+            if (!retorno[1].isEmpty()) {
+                msgConfirma = retorno[1];
                 GenericaMensagem.warn("Erro", msgConfirma);
             } else {
-                msgConfirma = ret[0];
+                msgConfirma = retorno[0];
                 GenericaMensagem.info("Sucesso", msgConfirma);
             }
         } catch (Exception e) {
@@ -897,30 +926,54 @@ public class NotificacaoJSFBean implements Serializable {
 
             List<Pessoa> pes_add = new ArrayList();
             pes_add.add(pessoa);
-
-            String[] ret = new String[2];
+            
+            List<File> fls = new ArrayList<File>();
+            String mensagem= "";
+            
             if (!registro.isEnviarEmailAnexo()) {
-                ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                        pes_add,
-                        " <h5>Visualize sua notificação clicando no link abaixo</5><br /><br />"
-                        + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir a Notificação</a><br />",
-                        new ArrayList(),
-                        "Envio de Notificação");
+                mensagem = " <h5> Visualize seu boleto clicando no link abaixo </5> <br /><br />"
+                 + " <a href='" + registro.getUrlPath() + "/Sindical/acessoLinks.jsf?cliente=" + ControleUsuarioBean.getCliente() + "&amp;arquivo=" + nomeDownload + "' target='_blank'>Clique aqui para abrir a notificacão</a><br />";
             } else {
-                List<File> fls = new ArrayList<File>();
                 fls.add(new File(pathPasta + "/" + link.getNomeArquivo()));
+                mensagem = "<h5>Baixe sua notificação anexado neste email</5><br /><br />";
+            }            
 
-                ret = EnviarEmail.EnviarEmailPersonalizado(registro,
-                        pes_add,
-                        " <h5>Baixe sua notificação em Anexada neste email</5><br /><br />",
-                        fls,
-                        "Envio de Notificação");
+            DaoInterface di = new Dao();
+            Mail mail = new Mail();
+            mail.setFiles(fls);
+            mail.setEmail(
+                    new Email(
+                            -1,
+                            DataHoje.dataHoje(),
+                            DataHoje.livre(new Date(), "HH:mm"),
+                            (Usuario) GenericaSessao.getObject("sessaoUsuario"),
+                            (Rotina) di.find(new Rotina(), 106),
+                            null,
+                            "Envio de Boleto",
+                            mensagem,
+                            false,
+                            false
+                    )
+            );            
+            List<EmailPessoa> emailPessoas = new ArrayList<EmailPessoa>();
+            EmailPessoa emailPessoa = new EmailPessoa();
+
+            for (Pessoa pe : pes_add) {
+                emailPessoa.setDestinatario(pe.getEmail1());
+                emailPessoa.setPessoa(pe);
+                emailPessoa.setRecebimento(null);
+                emailPessoas.add(emailPessoa);
+                mail.setEmailPessoas(emailPessoas);
+                emailPessoa = new EmailPessoa();
             }
-            if (!ret[1].isEmpty()) {
-                msgConfirma = ret[1];
+
+            String[] retorno = mail.send("personalizado");
+            
+            if (!retorno[1].isEmpty()) {
+                msgConfirma = retorno[1];
                 GenericaMensagem.warn("Erro", msgConfirma);
             } else {
-                msgConfirma = ret[0];
+                msgConfirma = retorno[0];
                 GenericaMensagem.info("Sucesso", msgConfirma);
             }
         } catch (Exception e) {

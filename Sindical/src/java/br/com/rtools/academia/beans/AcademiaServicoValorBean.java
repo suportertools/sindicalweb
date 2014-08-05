@@ -89,10 +89,10 @@ public class AcademiaServicoValorBean implements Serializable {
             String text = "";
             if (lista.size() != 1){
                 for (int i = 0; i < lista.size(); i++){
-                    text += lista.get(i).getSemana().getDescricao()+": "+lista.get(i).getAcademiaGrade().getHoraInicio()+" às "+lista.get(i).getAcademiaGrade().getHoraFim()+" ";
+                    text += lista.get(i).getAcademiaGrade().getHoraInicio()+" às "+lista.get(i).getAcademiaGrade().getHoraFim()+ " "+ lista.get(i).getSemana().getDescricao() + " ---- ";
                 }
             }else{
-                text += lista.get(0).getSemana().getDescricao()+": "+lista.get(0).getAcademiaGrade().getHoraInicio()+" às "+lista.get(0).getAcademiaGrade().getHoraFim();
+                text += lista.get(0).getAcademiaGrade().getHoraInicio()+" às "+lista.get(0).getAcademiaGrade().getHoraFim()+" " +lista.get(0).getSemana().getDescricao();
             }
             return text;
         }
@@ -169,10 +169,10 @@ public class AcademiaServicoValorBean implements Serializable {
         di.openTransaction();
         if (academiaServicoValor.getId() == -1) {
             AcademiaDB academiaDB = new AcademiaDBToplink();
-            if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
-                GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
-                return;
-            }
+//            if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
+//                GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
+//                return;
+//            }
             if (di.save(academiaServicoValor)) {
                 GenericaMensagem.info("Sucesso", "Registro inserido");
                 novoLog.save("ID: " + academiaServicoValor.getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
