@@ -160,7 +160,7 @@
                                     <p:column headerText="Período" styleClass="text-center">
                                         <p:commandLink value="#{academiaServicoValor.periodo.descricao}" update=":form_academia_servico_valor_novo:id_panel_grade_horarios" action="#{academiaServicoValorBean.edit(academiaServicoValor)}"/>
                                     </p:column>
-                                    <p:column headerText="Grade (hrs)">
+                                    <p:column headerText="Grade (hrs)" width="190">
                                         <h:outputLabel value="#{academiaServicoValorBean.getListaGrades(academiaServicoValor)}" />
                                     </p:column>
                                     <p:column headerText="Fórmula" styleClass="text-center">#{academiaServicoValor.formula}</p:column>

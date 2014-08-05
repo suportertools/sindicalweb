@@ -28,7 +28,7 @@
                                     <h:column>
                                         <h:panelGrid id="i_panel_dia_vencimento" columns="4">
                                             <p:inputMask value="#{matriculaAcademiaBean.matriculaAcademia.servicoPessoa.emissao}" mask="99/99/9999" size="8"/>
-                                            <p:outputLabel value="Dia do vencimento:" styleClass="margin-left-max" />
+                                            <p:outputLabel value="Vencimento para Boleto Bancário:" styleClass="margin-left-max" />
                                             <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}" disabled="true">
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaDiaVencimento}"/>
                                             </p:selectOneMenu>
@@ -100,17 +100,18 @@
                                     <p:outputLabel value="Período / Grade:" />
                                     <h:column>
                                         <h:panelGrid columns="3" id="id_grid_periodo_grade" style="width: 850px">
-                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 700px">
+                                            <p:selectOneMenu value="#{matriculaAcademiaBean.idPeriodoGrade}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" style="width: 890px">
                                                 <p:ajax event="change" update="@this id_panel_grid_calcula id_grid_periodo_grade" listener="#{matriculaAcademiaBean.recalcular()}"/>
                                                 <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                 <f:selectItems value="#{matriculaAcademiaBean.listaPeriodosGrade}"/>
                                             </p:selectOneMenu>
-                                            <p:outputLabel value="Número parcelas:" styleClass="margin-left-max"/>
-                                            <p:column>
-                                                <p:spinner value="#{matriculaAcademiaBean.matriculaAcademia.numeroParcelas}"  min="0" max="#{matriculaAcademiaBean.matriculaAcademia.academiaServicoValor.numeroParcelas}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" rendered="#{!matriculaAcademiaBean.ocultaParcelas}" />
-                                                <p:outputLabel value="0" rendered="#{matriculaAcademiaBean.ocultaParcelas}" />
-                                            </p:column>
+                                            
                                         </h:panelGrid>
+                                        <p:outputLabel value="Número parcelas: " style="font-weight: bold"/>
+                                        <p:column>
+                                            <p:spinner value="#{matriculaAcademiaBean.matriculaAcademia.numeroParcelas}"  min="0" max="#{matriculaAcademiaBean.matriculaAcademia.academiaServicoValor.numeroParcelas}" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}" rendered="#{!matriculaAcademiaBean.ocultaParcelas}" />
+                                            <p:outputLabel value="0" rendered="#{matriculaAcademiaBean.ocultaParcelas}" />
+                                        </p:column>
                                     </h:column>
                                     <h:column></h:column>
                                     <p:selectBooleanCheckbox value="#{matriculaAcademiaBean.taxa}" itemLabel="Cobrar taxa" disabled="#{matriculaAcademiaBean.desabilitaCamposMovimento}">
