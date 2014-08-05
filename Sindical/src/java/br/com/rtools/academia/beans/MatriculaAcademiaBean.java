@@ -543,7 +543,7 @@ public class MatriculaAcademiaBean implements Serializable {
                     String text = "";
                     List<AcademiaSemana> listaAcademiaSemana = db.listaAcademiaSemana(listaAcademiaServicoValor.get(w).getId());                
                     for (int i = 0; i < listaAcademiaSemana.size(); i++){
-                        text += listaAcademiaSemana.get(i).getSemana().getDescricao()+": "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraInicio()+" às "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraFim()+" -- ";
+                        text += listaAcademiaSemana.get(i).getSemana().getDescricao().substring(0, 3)+": "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraInicio()+" às "+listaAcademiaSemana.get(i).getAcademiaGrade().getHoraFim()+" ";
                         //listaPeriodosGrade.add(new SelectItem(i, text, Integer.toString(listaAcademiaSemana.get(i).getId())));
                     }
                     
