@@ -1,6 +1,6 @@
 ALTER TABLE pes_pessoa_empresa ADD COLUMN ds_codigo character varying(20);
 
-//** versão **//
+-- versão
 
 UPDATE seg_rotina SET ds_nome_pagina = '"/Sindical/academiaServicoValor.jsf"' WHERE id = 200;
 
