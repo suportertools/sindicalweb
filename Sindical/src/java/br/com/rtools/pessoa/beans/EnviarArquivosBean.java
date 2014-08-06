@@ -181,11 +181,13 @@ public class EnviarArquivosBean implements Serializable {
             GenericaMensagem.warn("Validação", "Informar mensagem!");
             return;
         }
+        int rotina = 0;
         boolean isEnviar = false;
         Juridica[] juridicasSelecionadas = null;
         ListaRelatorioContabilidade[] contabilidadesSelecionadas = null;
         List aux = new ArrayList();
         if (tipoEnvio.equals("contribuinte")) {
+            rotina = 176;
             if (contribuinteSelecionado != null) {
                 isEnviar = true;
                 juridicasSelecionadas = contribuinteSelecionado;
@@ -195,6 +197,7 @@ public class EnviarArquivosBean implements Serializable {
                 aux.add(pessoa);
             }
         } else {
+            rotina = 175;
             if (empresaSelecionada != null) {
                 isEnviar = true;
                 contabilidadesSelecionadas = empresaSelecionada;
@@ -224,7 +227,7 @@ public class EnviarArquivosBean implements Serializable {
                         DataHoje.dataHoje(),
                         DataHoje.livre(new Date(), "HH:mm"),
                         (Usuario) GenericaSessao.getObject("sessaoUsuario"),
-                        (Rotina) di.find(new Rotina(), 175),
+                        (Rotina) di.find(new Rotina(), rotina),
                         null,
                         mensagem.getAssunto(),
                         mensagem.getMensagem(),
