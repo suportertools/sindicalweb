@@ -75,11 +75,12 @@
                         </p:panel>
                         
                         <p:panel styleClass="margin-top-max">
-                            <h:panelGrid columns="4" cellpadding="5">
+                            <h:panelGrid columns="5" cellpadding="5">
                                 <p:outputLabel value="Assunto: " for="id_email_assunto" />
                                 <p:inputText id="id_email_assunto" size="110" value="#{enviarArquivosBean.mensagem.assunto}"/>
                                 <p:commandButton value="Anexar arquivos" type="button" onclick="PF('dgl_upload').show();" id="id_btn_uploads"/>
                                 <p:commandButton value="Anexos (#{enviarArquivosBean.listaArquivosContabilidade.size()})" type="button" onclick="PF('dgl_anexos').show();" id="id_btn_anexo"/>
+                                <p:commandButton icon="ui-icon-mail-open" action="#{chamadaPaginaBean.pagina('email')}" title="Ver emails enviados" actionListener="#{emailBean.showEmailRotina(176)}"/>
                             </h:panelGrid>
                         </p:panel>
                         
@@ -118,7 +119,7 @@
                         
                         <h:panelGrid columns="2" style="margin-top: 20px">
                             <p:commandButton value="Enviar" action="#{enviarArquivosBean.enviarArquivos('contribuinte')}" update="id_messages_growl" />
-                            <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novoContribuinte()}" />
+                            <p:commandButton ajax="false" value="Novo" action="#{enviarArquivosBean.novoContribuinte()}" />                            
                         </h:panelGrid>
                         
                         <p:ajaxStatus id="i_status" onstart="PF('i_dlg_modal').show();" onsuccess="i_dlg_modal.hide();" />

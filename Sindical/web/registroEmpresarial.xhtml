@@ -106,6 +106,7 @@
                                         <p:column></p:column>
                                     </p:panelGrid>
                                     <p:commandButton value="Testar Email" onclick="PF('dlg_test_mail').show()" type="button" styleClass="margin-top-max"/>
+                                    <p:commandButton icon="ui-icon-mail-open" action="#{chamadaPaginaBean.pesquisa('email')}" title="Ver emails enviados" actionListener="#{emailBean.showEmailRotina(111)}" styleClass="margin-left-max"/>
                                 </p:tab>
                             </c:if>
                             <c:if test="#{registroEmpresarialBean.codigoModulo == 0 or registroEmpresarialBean.codigoModulo == 3}">

@@ -44,6 +44,7 @@
                                                 <p:selectBooleanCheckbox value="#{emailBean.filterRascunho}"  rendered="#{!emailBean.filterNewMessage}" styleClass="margin-left-max" itemLabel="Rascunhos">
                                                     <p:ajax event="change" update="@this, :form_email:" listener="#{emailBean.listEmailPessoas.clear()}"/>
                                                 </p:selectBooleanCheckbox>
+                                                <p:commandButton icon="ui-icon-refresh" action="#{emailBean.listEmailPessoas.clear()}" rendered="#{!emailBean.filterNewMessage}" update=":form_email:" styleClass="margin-left-max" title="Atualizar enviados"/>
                                             </h:column>
                                             <c:if test="#{emailBean.filter}">
                                                 <h:panelGrid rendered="#{!emailBean.filterNewMessage}" columns="2" styleClass="margin-top-max">
@@ -63,8 +64,9 @@
                                                                 <f:selectItem itemValue="" itemLabel="Selecionar" />
                                                                 <f:selectItem itemValue="email" itemLabel="Email" />
                                                                 <f:selectItem itemValue="assunto" itemLabel="Assunto" />
+                                                                <f:selectItem itemValue="pessoa" itemLabel="Nome" />
                                                             </p:selectOneMenu>                                      
-                                                            <p:inputText size="40" placeholder="Digite aqui o termo a ser pesquisado" disabled="#{emailBean.filterBy.equals('')}">
+                                                            <p:inputText size="40" value="#{emailBean.descricaoPesquisa}" placeholder="Digite aqui o termo a ser pesquisado" disabled="#{emailBean.filterBy.equals('')}">
                                                                 <p:ajax event="blur" update="@this, :form_email:i_tbl" listener="#{emailBean.listEmailPessoas.clear()}"/>
                                                             </p:inputText>
                                                         </h:panelGrid>
@@ -155,18 +157,21 @@
                                 </h:panelGrid>
                             </p:panel>
                             <h:panelGrid columns="1" rendered="#{!emailBean.filterNewMessage}" styleClass="margin-top-max" id="i_tbl">
-                                <p:dataTable value="#{emailBean.listEmailPessoas}" var="emailPessoa" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="500" paginator="true" rows="25" resizableColumns="true">
+                                <p:dataTable value="#{emailBean.listEmailPessoas}" var="emailPessoa" emptyMessage="Nenhum registro encontrado!" scrollable="true" scrollHeight="500" paginator="true" rows="25" >
+                                    <p:column width="35" headerText="Lote" styleClass="text-center">
+                                        #{emailPessoa.email.id}
+                                    </p:column>                                    
                                     <p:column width="15">
                                         <p:rowToggler />
                                     </p:column>                                     
-                                    <p:column width="30"  styleClass="text-center" rendered="#{emailBean.filterRascunho}">
+                                    <p:column width="30" styleClass="text-center" rendered="#{emailBean.filterRascunho}">
                                         <p:commandButton icon="ui-icon-link" action="#{emailBean.edit(emailPessoa)}"  update=":form_email:" />
                                     </p:column>
-                                    <p:column headerText="Data" width="100"  styleClass="text-center">
-                                        #{emailPessoa.email.dataString}
+                                    <p:column headerText="Data" width="135"  styleClass="text-center">
+                                        #{emailPessoa.email.dataString} às #{emailPessoa.email.hora}
                                     </p:column>
-                                    <p:column headerText="Hora" width="50" styleClass="text-center">
-                                        #{emailPessoa.email.hora}
+                                    <p:column headerText="Saída" width="45" styleClass="text-center">
+                                        #{emailPessoa.horaSaida}
                                     </p:column>
                                     <p:column headerText="Rotina">
                                         #{emailPessoa.email.rotina.rotina}
@@ -187,7 +192,11 @@
                                         <p:outputLabel value="CC: #{emailPessoa.cc}" rendered="#{emailPessoa.cc.equals('')}" /><br />
                                         <span class="ui-icon ui-icon-arrowreturnthick-1-e float-left"></span>
                                         <p:outputLabel value="BCC: #{emailPessoa.bcc}" rendered="#{emailPessoa.bcc.equals('')}" /><br />
-                                    </p:rowExpansion>                                    
+                                    </p:rowExpansion>
+                                    <f:facet name="footer">
+                                        <h:outputText value="Quantidade exibida: #{emailBean.listEmailPessoas.size()} email(s)" /><br /><br />
+                                        * Lote = Número da remessa de o email(s) enviado(s).
+                                    </f:facet>
                                 </p:dataTable>
                             </h:panelGrid>
                             <p:dialog widgetVar="dlg_address" width="1000" modal="true" header="Destinatário" visible="#{emailBean.openModal}">
