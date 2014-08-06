@@ -203,12 +203,12 @@ public class Mail extends MailTemplate implements Serializable {
                         msg.setHeader("X-Mailer", "Tov Are's program");
                         Transport.send(msg);
                         boolean updateEmail = false;
-                        email.setData(new Date());
-                        email.setHora(DataHoje.livre(new Date(), "HH:mm"));
                         if (emailPessoas.get(i).getPessoa() == null || emailPessoas.get(i).getPessoa().getId() == -1) {
                             emailPessoas.get(i).setPessoa(null);
                         }
                         if (email.getId() == -1) {
+                            email.setData(new Date());
+                            email.setHora(DataHoje.livre(new Date(), "HH:mm"));
                             if (email.getUsuario().getId() == -1) {
                                 email.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
                             }
@@ -219,6 +219,7 @@ public class Mail extends MailTemplate implements Serializable {
                             }
                             if (di.save(email, true)) {
                                 emailPessoas.get(i).setEmail(email);
+                                emailPessoas.get(i).setHoraSaida(DataHoje.livre(new Date(), "HH:mm")); 
                                 di.save(emailPessoas.get(i), true);
                             }
                             if (!saveArquivosEmail) {
@@ -240,6 +241,7 @@ public class Mail extends MailTemplate implements Serializable {
                                 updateEmail = true;
                             }
                             emailPessoas.get(i).setEmail(email);
+                            emailPessoas.get(i).setHoraSaida(DataHoje.livre(new Date(), "HH:mm"));
                             if (emailPessoas.get(i).getId() == -1) {
                                 di.save(emailPessoas.get(i), true);
                             } else {

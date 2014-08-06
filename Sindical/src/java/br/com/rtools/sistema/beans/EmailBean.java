@@ -103,6 +103,19 @@ public class EmailBean implements Serializable {
         filterRascunho = false;
         orderBy = "";
         descricaoPesquisa = "";
+        if (GenericaSessao.exists("emailCodigoRotina")) {
+            int idCodigoRotina = GenericaSessao.getInteger("emailCodigoRotina", true);
+            for (int i = 0; i < getListRotinas().size(); i++) {
+                if (Integer.parseInt(getListRotinas().get(i).getDescription()) == idCodigoRotina) {
+                    index[0] = i;
+                    date[0] = new Date();
+                    date[1] = new Date();
+                    filter = true;
+                    filterByRotina = true;
+                    break;
+                }
+            }
+        }
     }
 
     @PreDestroy
@@ -183,7 +196,7 @@ public class EmailBean implements Serializable {
             di.save(email, true);
             for (int i = 0; i < addEmailPessoas.size(); i++) {
                 addEmailPessoas.get(i).setEmail(email);
-                if(addEmailPessoas.get(i).getId() == -1) {
+                if (addEmailPessoas.get(i).getId() == -1) {
                     addEmailPessoas.get(i).setPessoa(null);
                 }
                 di.save(addEmailPessoas.get(i), true);
@@ -211,8 +224,8 @@ public class EmailBean implements Serializable {
             return;
         }
         email.setRascunho(true);
-        if(email.getUsuario().getId() == -1) {
-            email.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));            
+        if (email.getUsuario().getId() == -1) {
+            email.setUsuario((Usuario) GenericaSessao.getObject("sessaoUsuario"));
         }
         email.setRotina((Rotina) di.find(new Rotina(), 112));
         email.setEmailPrioridade((EmailPrioridade) di.find(new EmailPrioridade(), Integer.parseInt(getListEmailPrioridades().get(index[1]).getDescription())));
@@ -277,7 +290,7 @@ public class EmailBean implements Serializable {
     }
 
     public void removeEmail(int rowKey) {
-        if(addEmailPessoas.size() == 1) {
+        if (addEmailPessoas.size() == 1) {
             GenericaMensagem.warn("Erro", "Não é possível remover todos destinatários!");
             return;
         }
@@ -580,5 +593,17 @@ public class EmailBean implements Serializable {
     public void selectedDataFinal(SelectEvent event) {
         SimpleDateFormat format = new SimpleDateFormat("d/M/yyyy");
         this.date[1] = DataHoje.converte(format.format(event.getObject()));
+    }
+
+    /**
+     * Listener usado no link para específicar quando for realizar uma
+     * navegação, para ver emails enviados da rotina na data de hoje, não
+     * funciona em data anteriores.
+     *
+     * @param crotina id da Rotina
+     */
+    public void showEmailRotina(int crotina) {
+        GenericaSessao.remove("emailBean");
+        GenericaSessao.put("emailCodigoRotina", crotina);
     }
 }

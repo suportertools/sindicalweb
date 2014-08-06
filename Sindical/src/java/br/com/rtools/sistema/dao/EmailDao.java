@@ -31,8 +31,7 @@ public class EmailDao extends DB {
             }
             if (filterBy != null && !filterBy.isEmpty()) {
                 if (!descricaoPesquisa.isEmpty()) {
-                    if (filterBy.equals("assunto")) {
-                    } else if (filterBy.equals("email")) {
+                    if (filterBy.equals("email")) {
                         listQuery.add(
                                 " ( UPPER(EP.pessoa.email1)    LIKE '%" + descricaoPesquisa.toUpperCase() + "%' "
                                 + " OR UPPER(EP.destinatario)  LIKE '%" + descricaoPesquisa.toUpperCase() + "%' "
@@ -41,8 +40,9 @@ public class EmailDao extends DB {
                                 + ") ");
 
                     } else if (filterBy.equals("assunto")) {
-                        listQuery.add("UPPER(EP.email.assunto) LIKE '%" + descricaoPesquisa.toUpperCase() + "'%");
+                        listQuery.add(" UPPER(EP.email.assunto) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' ");
                     } else if (filterBy.equals("pessoa")) {
+                        listQuery.add(" EP.pessoa IS NOT NULL AND UPPER(EP.pessoa.nome) LIKE '%" + descricaoPesquisa.toUpperCase() + "%' ");
                     }
                 }
 
@@ -56,9 +56,9 @@ public class EmailDao extends DB {
                 }
             }
             if (orderBy != null && !orderBy.isEmpty()) {
-                queryString += " ORDER BY " + orderBy + " , EP.email.id DESC  ";
+                queryString += " ORDER BY " + orderBy + " , EP.id DESC  ";
             } else {
-                queryString += " ORDER BY EP.email.data DESC, EP.email.hora DESC, EP.email.id DESC ";
+                queryString += " ORDER BY EP.email.data DESC, EP.email.hora DESC, EP.horaSaida DESC, EP.id DESC ";
             }
             Query query = getEntityManager().createQuery(queryString);
             if (isDate) {
@@ -67,12 +67,11 @@ public class EmailDao extends DB {
                     query.setParameter("dateFinish", dateFinish, TemporalType.DATE);
                 }
             }
-            query.setMaxResults(1000);
+            query.setMaxResults(2000);
             List list = query.getResultList();
             if (!list.isEmpty()) {
                 return list;
             }
-
         } catch (Exception e) {
             return new ArrayList();
         }
