@@ -1463,6 +1463,7 @@ public class SociosBean implements Serializable {
         String foto = getFotoSocio();
         String path = "/Relatorios/FICHACADASTRO.jasper";
         String pathVerso = "/Relatorios/FICHACADASTROVERSO.jasper";
+        Diretorio.criar("Arquivos/downloads/fichas");
         String caminhoDiretorio = ((ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext()).getRealPath("/Cliente/" + ControleUsuarioBean.getCliente() + "/Arquivos/downloads/fichas");
         ImpressaoParaSocios.comDependente(
                 caminhoDiretorio,
