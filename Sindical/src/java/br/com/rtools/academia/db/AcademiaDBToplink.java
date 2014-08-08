@@ -50,6 +50,27 @@ public class AcademiaDBToplink extends DB implements AcademiaDB {
         }
         return null;
     }
+    
+    @Override
+    public List<AcademiaSemana> existeAcademiaSemana(int id_grade, int id_semana, int id_servico, int id_periodo) {
+        try {
+            //Query query = getEntityManager().createQuery("SELECT s FROM AcademiaSemana s WHERE s.academiaGrade.id = :id_grade AND s.semana = :id_semana AND s.academiaServicoValor.id = :id_servico_valor");
+            Query query = getEntityManager().createQuery("SELECT s FROM AcademiaSemana s WHERE s.academiaGrade.id = :id_grade AND s.semana.id = :id_semana AND s.academiaServicoValor.periodo.id = :id_periodo AND s.academiaServicoValor.servicos.id = :id_servico");
+            query.setParameter("id_grade", id_grade);
+            query.setParameter("id_semana", id_semana);
+            query.setParameter("id_servico", id_servico);
+            query.setParameter("id_periodo", id_periodo);
+            
+            
+            List list = query.getResultList();
+            if (!list.isEmpty()) {
+                return query.getResultList();
+            }
+        } catch (Exception e) {
+            return new ArrayList();
+        }
+        return new ArrayList();
+    }
 
     @Override
     public List<AcademiaServicoValor> listaAcademiaServicoValor(int idServico) {

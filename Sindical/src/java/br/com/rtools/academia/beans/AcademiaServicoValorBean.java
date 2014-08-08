@@ -167,14 +167,15 @@ public class AcademiaServicoValorBean implements Serializable {
         
         NovoLog novoLog = new NovoLog();
         di.openTransaction();
+        AcademiaDB academiaDB = new AcademiaDBToplink();
         if (academiaServicoValor.getId() == -1) {
-            AcademiaDB academiaDB = new AcademiaDBToplink();
+            
 //            if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
 //                GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
 //                return;
 //            }
+//            
             if (di.save(academiaServicoValor)) {
-                GenericaMensagem.info("Sucesso", "Registro inserido");
                 novoLog.save("ID: " + academiaServicoValor.getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
                 listAcademiaServicoValors.clear();
             } else {
@@ -186,7 +187,6 @@ public class AcademiaServicoValorBean implements Serializable {
             String beforeString = "ID: " + asv.getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao();
             if (di.update(academiaServicoValor)) {
                 novoLog.update(beforeString, "ID: " + academiaServicoValor.getId() + " - Fórmula: " + academiaServicoValor.getFormula() + " - Serviço: (" + academiaServicoValor.getServicos().getId() + ") " + academiaServicoValor.getServicos().getDescricao() + " - Nº Parcelas: " + academiaServicoValor.getNumeroParcelas() + " - Período: " + academiaServicoValor.getPeriodo().getDescricao());
-                GenericaMensagem.info("Sucesso", "Registro atualizado");
                 listAcademiaServicoValors.clear();
             } else {
                 di.rollback();
@@ -194,25 +194,53 @@ public class AcademiaServicoValorBean implements Serializable {
             }
         }
         
+        if (!listaAcademiaSemana.isEmpty()){
+            int igual = 0;
+            for (AcademiaSemana listaAcademias : listaAcademiaSemana) {
+                if (!academiaDB.existeAcademiaSemana(listaAcademias.getAcademiaGrade().getId(), listaAcademias.getSemana().getId(), academiaServicoValor.getServicos().getId(), academiaServicoValor.getPeriodo().getId()).isEmpty()) {
+                    igual++;
+                }
+            }
+
+            if (igual == listaAcademiaSemana.size() && ( listaAcademiaSemana.get(0).getAcademiaServicoValor() != null && academiaServicoValor.getId() != listaAcademiaSemana.get(0).getAcademiaServicoValor().getId() || listaAcademiaSemana.get(0).getAcademiaServicoValor() == null)){
+                GenericaMensagem.warn("Erro", "Essa grade já existe!");
+                di.rollback();
+                academiaServicoValor = new AcademiaServicoValor();
+                return;
+            }
+        }
+        
         for (int i = 0; i < listaAcademiaSemana.size(); i++){
+//            if (academiaDB.existeAcademiaSemana(listaAcademiaSemana.get(i).getAcademiaGrade().getId(), listaAcademiaSemana.get(i).getSemana().getId(), academiaServicoValor.getServicos().getId(), academiaServicoValor.getPeriodo().getId()) != null){
+//                GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
+//                di.rollback();
+//                academiaServicoValor = new AcademiaServicoValor();
+//                return;
+//            }
+            
             if (listaAcademiaSemana.get(i).getAcademiaServicoValor() == null){
                 listaAcademiaSemana.get(i).setAcademiaServicoValor(academiaServicoValor);
                 if (!di.save(listaAcademiaSemana.get(i))){
                     GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
                     di.rollback();
+                    academiaServicoValor = new AcademiaServicoValor();
                     return;
                 }
             }else if (listaAcademiaSemana.get(i).getId() == -1){
                 if (!di.save(listaAcademiaSemana.get(i))){
                     GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
                     di.rollback();
+                    academiaServicoValor = new AcademiaServicoValor();
                     return;
                 }
             }else{
                 
             }
         }
-        
+        if (academiaServicoValor.getId() == -1) 
+            GenericaMensagem.info("Sucesso", "Registro Inserido!");
+        else
+            GenericaMensagem.info("Sucesso", "Registro Atualizado!");
         di.commit();
         clear();
     }

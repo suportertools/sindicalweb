@@ -20,6 +20,8 @@ public interface AcademiaDB {
     
     public boolean existeAcademiaSemana(int idAcademiaGrade, int idSemana);
     
+    public List<AcademiaSemana> existeAcademiaSemana(int id_grade, int id_semana, int id_servico, int id_periodo);
+    
     public AcademiaSemana pesquisaAcademiaSemana(int idAcademiaGrade, int idSemana);
     
     public boolean desfazerMovimento(MatriculaAcademia ma);

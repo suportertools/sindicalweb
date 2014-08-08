@@ -93,44 +93,8 @@ public class AcademiaGradeBean implements Serializable {
             if (di.save(academiaGrade)) {
                 di.commit();
                 GenericaMensagem.info("Sucesso", "Registro inserido");
-//                di.openTransaction();
-//                if (dom) {
-//                    addListaSemana(1);
-//                }
-//                if (seg) {
-//                    addListaSemana(2);
-//                }
-//                if (ter) {
-//                    addListaSemana(3);
-//                }
-//                if (qua) {
-//                    addListaSemana(4);
-//                }
-//                if (qui) {
-//                    addListaSemana(5);
-//                }
-//                if (sex) {
-//                    addListaSemana(6);
-//                }
-//                if (sab) {
-//                    addListaSemana(7);
-//                }
-
-//                for (int i = 0; i < academiaSemanas.size(); i++) {
-//                    if (!di.save(academiaSemanas.get(i))) {
-//                        di.rollback();
-//                        academiaSemanas.clear();
-//                        break;
-//                    }
-//                    if (i == 0) {
-//                        s = academiaSemanas.get(i).getSemana().getDescricao();
-//                    } else {
-//                        s += ", " + academiaSemanas.get(i).getSemana().getDescricao();
-//                    }
-//                }
                 novoLog.save("ID: " + academiaGrade.getId() + ". Horário das: " + academiaGrade.getHoraInicio() + " às " + academiaGrade.getHoraFim() + " (hrs). Dias da semana: " + s);
-                //di.commit();
-                //academiaSemanas.clear();
+                
                 listaAcademiaGrades.clear();
             } else {
                 di.rollback();
@@ -151,15 +115,6 @@ public class AcademiaGradeBean implements Serializable {
         }
         clear();
     }
-
-//    public void addListaSemana(int idSemana) {
-//        for (int i = 0; i < getListaSemana().size(); i++) {
-//            if (listaSemana.get(i).getId() == idSemana) {
-//                academiaSemanas.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i)));
-//                break;
-//            }
-//        }
-//    }
 
     public boolean showSemanaGrade(AcademiaGrade academiaGrade, Integer idSemana) {
         AcademiaDB academiaDB = new AcademiaDBToplink();
