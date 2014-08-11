@@ -218,26 +218,26 @@ public class MatriculaAcademiaBean implements Serializable {
         }
     }
 
-    public void save() {
+    public String save() {
         if (MacFilial.getAcessoFilial().getId() == -1) {
             message = "Para salvar convites não cortesia configurar Filial em sua estação trabalho!";
-            return;
+            return null;
         }
         if (matriculaAcademia.getServicoPessoa().getPessoa().getId() == -1) {
             message = "Pesquisar uma pessoa!";
-            return;
+            return null;
         }
         if (matriculaAcademia.getServicoPessoa().getCobranca().getId() == -1) {
             message = "Pesquisar um responsável!";
-            return;
+            return null;
         }
         if (listaModalidades.isEmpty()) {
             message = "Cadastrar modalidades!";
-            return;
+            return null;
         }
         if (listaPeriodosGrade.isEmpty()) {
             message = "Cadastrar período grade!";
-            return;
+            return null;
         }
         matriculaAcademia.getServicoPessoa().setNrDiaVencimento(idDiaParcela);
         DaoInterface di = new Dao();
@@ -250,8 +250,9 @@ public class MatriculaAcademiaBean implements Serializable {
         }
         if (responsavel != null) {
             matriculaAcademia.getServicoPessoa().setCobranca(responsavel);
-        }        
+        }
         NovoLog novoLog = new NovoLog();
+        matriculaAcademia.getServicoPessoa().setReferenciaVigoracao(DataHoje.livre(matriculaAcademia.getServicoPessoa().getDtEmissao(), "MM/yyyy"));
         if (matriculaAcademia.getId() == -1) {
             SocioCarteirinha socioCarteirinha = new SocioCarteirinha();
             SociosDB sociosDB = new SociosDBToplink();
@@ -259,7 +260,7 @@ public class MatriculaAcademiaBean implements Serializable {
             ModeloCarteirinha modeloCarteirinha = scdb.pesquisaModeloCarteirinha(-1, 122);
             if (modeloCarteirinha == null) {
                 message = "Informar modelo da carteirinha!";
-                return;
+                return null;
             }
             SocioCarteirinha scx = scdb.pesquisaCarteirinhaPessoa(matriculaAcademia.getServicoPessoa().getPessoa().getId(), modeloCarteirinha.getId());
             if (scx == null || scx.getId() == -1) {
@@ -285,19 +286,19 @@ public class MatriculaAcademiaBean implements Serializable {
                 if (!di.save(socioCarteirinha)) {
                     di.rollback();
                     message = "Erro ao adicionar sócio carteirinha!";
-                    return;
+                    return null;
                 }
             }
             if (!di.save(matriculaAcademia.getServicoPessoa())) {
                 di.rollback();
                 message = "Erro ao adicionar serviço pessoa!";
-                return;
+                return null;
             }
             matriculaAcademia.setEvt(null);
             if (!di.save(matriculaAcademia)) {
                 di.rollback();
                 message = "Erro ao adicionar registro!";
-                return;
+                return null;
             }
             MatriculaEscolaDB matriculaEscolaDB = new MatriculaEscolaDBToplink();
             pessoaComplemento = matriculaEscolaDB.pesquisaDataRefPessoaComplemto(matriculaAcademia.getServicoPessoa().getCobranca().getId());
@@ -308,7 +309,7 @@ public class MatriculaAcademiaBean implements Serializable {
                 if (!di.save(pessoaComplemento)) {
                     di.rollback();
                     message = "Falha ao inserir pessoa complemento!";
-                    return;
+                    return null;
                 }
             }
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
@@ -323,12 +324,13 @@ public class MatriculaAcademiaBean implements Serializable {
                     + " - Parcelas: " + matriculaAcademia.getNumeroParcelas() + " "
             );
             di.commit();
+            return gerarMovimento();
         } else {
             di.openTransaction();
             if (!di.update(matriculaAcademia.getServicoPessoa())) {
                 di.rollback();
                 message = "Erro ao atualizar serviço pessoa!";
-                return;
+                return null;
             }
             MatriculaAcademia ma = (MatriculaAcademia) di.find(matriculaAcademia);
             String beforeUpdate = ""
@@ -341,7 +343,7 @@ public class MatriculaAcademiaBean implements Serializable {
             if (!di.update(matriculaAcademia)) {
                 di.rollback();
                 message = "Erro ao atualizar registro!";
-                return;
+                return null;
             }
             pessoaAlunoMemoria = matriculaAcademia.getServicoPessoa().getPessoa();
             pessoaResponsavelMemoria = matriculaAcademia.getServicoPessoa().getCobranca();
@@ -356,6 +358,7 @@ public class MatriculaAcademiaBean implements Serializable {
             );
             di.commit();
         }
+        return null;
     }
 
     public void delete() {
@@ -580,7 +583,7 @@ public class MatriculaAcademiaBean implements Serializable {
 
                 DaoInterface di = new Dao();
 
-                List<AcademiaServicoValor> listaAcademiaServicoValor = di.list("AcademiaServicoValor");
+                List<AcademiaServicoValor> listaAcademiaServicoValor = di.list(new AcademiaServicoValor(), true);
 
                 for (int w = 0; w < listaAcademiaServicoValor.size(); w++) {
                     String text = "";

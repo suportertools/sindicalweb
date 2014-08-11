@@ -61,6 +61,7 @@ public class AcademiaServicoValorBean implements Serializable {
     @PostConstruct
     public void init() {
         academiaServicoValor = new AcademiaServicoValor();
+        academiaServicoValor.setValidade(null);
         listAcademiaServicoValors = new ArrayList<AcademiaServicoValor>();
         listSelectItem = new ArrayList[]{new ArrayList<SelectItem>()};
         index = new Integer[]{0};
@@ -160,11 +161,20 @@ public class AcademiaServicoValorBean implements Serializable {
             return;
         }
 
+//        if (academiaServicoValor.getValidade() != null) {
+//            int dataValidade = DataHoje.converteDataParaInteger(academiaServicoValor.getValidadeString());
+//            int dataHoje = DataHoje.converteDataParaInteger(DataHoje.data());
+//            if (dataValidade < dataHoje) {
+//                GenericaMensagem.warn("Sistema", "Data de válidade inválida! Deve ser maior ou igual a data de hoje.");
+//                return;
+//            }
+//        }
         academiaServicoValor.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[0]).getDescription())));
         academiaServicoValor.setPeriodo(periodo);
 
         NovoLog novoLog = new NovoLog();
         di.openTransaction();
+        academiaServicoValor.setFormula(academiaServicoValor.getFormula().toLowerCase());
         AcademiaDB academiaDB = new AcademiaDBToplink();
         if (academiaServicoValor.getId() == -1) {
 
