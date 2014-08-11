@@ -5,14 +5,7 @@
                 xmlns:c="http://java.sun.com/jsp/jstl/core"
                 xmlns:p="http://primefaces.org/ui">
     <h:head>
-        <title>Sindical - Academia / Tabela Preço</title>
-        <style type="text/css">
-            .ui-widget-content .ui-inputfield{ padding: 8px!important;} 
-            .ui-button { padding: 3px!important; }
-            .ui-selectonemenu-label .ui-inputfield{
-
-            }
-        </style>        
+        <title>Sindical - Academia / Tabela Preço</title>       
     </h:head>
     <h:body>
         <!-- INICIA DIV wrap e main -->
@@ -29,7 +22,6 @@
                         <h:form id="form_academia_servico_valor_novo">                     
                             <p:growl autoUpdate="true" id="id_messages_growl" showDetail="true" />
                             <c:set scope="request" var="object" value="${academiaServicoValorBean.academiaServicoValor}"/>
-                            
                             <p:panel id="id_panel_grade_horarios">
                                 <h:panelGrid columns="4">
                                     <p:column>
@@ -40,7 +32,7 @@
                                             <f:selectItems value="#{academiaServicoValorBean.listServicos}" />
                                         </p:selectOneMenu>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <p:outputLabel value="Período" /><br />
                                         <p:selectOneMenu value="#{academiaServicoValorBean.periodo}" converter="#{entityConverter}" style="padding-right: 20px;">
@@ -49,12 +41,12 @@
                                             <f:selectItems value="#{academiaServicoValorBean.listPeriodos}" itemLabel="#{periodo.descricao}" itemValue="#{periodo}" var="periodo"/>
                                         </p:selectOneMenu>
                                     </p:column>
-                                    
+
                                     <p:column rendered="#{!academiaServicoValorBean.ocultaParcelas}">
                                         <p:outputLabel value="Número parcelas" rendered="#{!academiaServicoValorBean.ocultaParcelas}" /><br />
                                         <p:spinner value="#{academiaServicoValorBean.academiaServicoValor.numeroParcelas}" size="10" maxlength="2"  min="0" max="#{academiaServicoValorBean.maximoParcelas}"/>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <p:outputLabel value="Fórmula" /><br />
                                         <h:column>
@@ -63,9 +55,9 @@
                                         </h:column>
                                     </p:column>
                                 </h:panelGrid>
-                                    
+
                                 <br />
-                                    
+
                                 <p:outputLabel value="Grade de Horários" style="font-weight: bold"/>
                                 <h:panelGrid id="i_dias" columns="7" style="width: 80%">
                                     <p:column>
@@ -124,12 +116,12 @@
                                         <p:commandLink value="#{academiaServicoValorBean.mostraSabado}" title="Alterar Horário de Sábado" action="#{academiaServicoValorBean.adicionarHorario(7)}" onclick="PF('dlg_grade').show()" rendered="#{academiaServicoValorBean.sab and academiaServicoValorBean.mostraSabado != null}" style="font-weight: bold"/>
                                     </p:column>
                                 </h:panelGrid>
-                                    
+
                                 <br /><br />
                                 <p:commandButton value="Salvar" title="Adicionar" action="#{academiaServicoValorBean.save()}"  disabled="#{controleAcessoBean.botaoSalvar}" styleClass="margion-left-max"  update=":form_academia_servico_valor_novo:id_panel_grade_horarios :form_academia_servico_valor:i_panel_grid_valores"/>
                                 <p:commandButton value="Novo" title="Novo" action="#{academiaServicoValorBean.clear()}" update=":form_academia_servico_valor_novo:" styleClass="margion-left-max"/>
                             </p:panel>
-                            
+
                             <p:dialog widgetVar="dlg_grade" header="Horários" width="250" modal="true" resizable="false" draggable="false">
                                 <h:panelGrid>
                                     <p:column>
@@ -139,7 +131,7 @@
                                             <f:selectItems value="#{academiaServicoValorBean.listAcademiaGrades}" itemLabel="#{academiaGrade.horaInicio} - #{academiaGrade.horaFim}" itemValue="#{academiaGrade}" var="academiaGrade"/>
                                         </p:selectOneMenu>
                                     </p:column>
-                                    
+
                                     <p:column>
                                         <p:commandButton value="OK" title="Adicionar este horário" action="#{academiaServicoValorBean.addListaSemana()}" update="i_dias" oncomplete="PF('dlg_grade').hide()"/>
                                         <p:commandButton value="Cancelar" onclick="PF('dlg_grade').hide()"/>
@@ -148,8 +140,8 @@
                             </p:dialog>
 
                         </h:form>
-                        
-                        
+
+
                         <h:form id="form_academia_servico_valor">
                             <p:panelGrid id="i_panel_grid_valores" style="margin-top: 15px; float: left; margin-bottom: 15px;" columns="1">
                                 <p:dataTable value="#{academiaServicoValorBean.listAcademiaServicoValors}" var="academiaServicoValor" scrollable="true" scrollHeight="250" emptyMessage="Não existe(m) serviços(s) cadastrados" >
@@ -170,7 +162,7 @@
                                     </p:column>                             
                                 </p:dataTable>
                             </p:panelGrid>
-                            
+
                             <p:dialog widgetVar="dlg_example" header="Exemplos" width="400" modal="true" resizable="false" draggable="false">
                                 <h:panelGrid>
                                     <p:column>

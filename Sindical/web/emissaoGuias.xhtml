@@ -20,6 +20,7 @@
                     <ui:include src="templatePrime.xhtml"/>
                 </f:subview>
                 <f:view>
+                    <ui:include src="templateAcessoFilial.xhtml" />
                     <p:panel styleClass="wrapper" style="border: 0px;">
                         <h:outputText value="Emissão de Guias" styleClass="fonteHeader" />
                         <div class="clear"></div>
@@ -240,13 +241,6 @@
                                 </h:panelGrid> 
                                 <f:facet name="footer">
                                     <p:commandButton value="Ok" title="Ok" onclick="PF('dlg_message').hide();" />
-                                </f:facet>
-                            </p:dialog>
-                            <p:dialog widgetVar="dlg_block" modal="true" resizable="false" header="Importante!" width="400" draggable="false" closable="false" visible="#{emissaoGuiasBean.filial.id == -1}">
-                                <p:outputLabel value="- Realizar acesso com filial!" styleClass="font-color-red font-size-14" /><br /><br />
-                                <p:outputLabel value="- Contate o administrador do sistema." styleClass="font-size-12"/>
-                                <f:facet name="footer">
-                                    <p:commandLink ajax="false" value="Início" action="#{chamadaPaginaBean.menuPrincipal()}" title="Voltar" immediate="true"/>
                                 </f:facet>
                             </p:dialog>                            
                         </h:form>

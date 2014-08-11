@@ -1,4 +1,4 @@
-<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+Alt<ui:composition xmlns="http://www.w3.org/1999/xhtml"
                 xmlns:ui="http://java.sun.com/jsf/facelets"
                 xmlns:h="http://java.sun.com/jsf/html"
                 xmlns:f="http://java.sun.com/jsf/core"
@@ -76,8 +76,8 @@
                                     <h:column>
                                         <h:panelGrid columns="3">
                                             <p:outputLabel  id="idResp" value="#{matriculaEscolaBean.matriculaEscola.responsavel.nome}" />
-                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="dgl_painel_trocar_responsavel.show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}"/>
-                                            <p:commandButton value="Alterar dia vencimento" onclick="dgl_alterar_dia_vencto.show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
+                                            <p:commandButton value="Pesquisar/Alterar Responsável" onclick="PF('dgl_painel_trocar_responsavel').show();" disabled="#{matriculaEscolaBean.desabilitaIndividual}" type="button" icon="ui-icon-search" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}"/>
+                                            <p:commandButton value="Alterar dia vencimento" onclick="PF('dgl_alterar_dia_vencto').show();" update="i_alterar_dia_vencto" rendered="#{matriculaEscolaBean.alterarPessoaComplemento}"/>
                                         </h:panelGrid>
                                     </h:column>
                                     <h:column>
@@ -226,7 +226,7 @@
                                 </h:panelGrid>              
                             </p:tab>
                         </p:accordionPanel>
-                        <p:panel styleClass="margin-top-max" header="Cálculo" rendered="#{matriculaEscolaBean.matriculaEscola.aluno.id != -1}">
+                        <p:panel styleClass="margin-top-max" header="Cálculo">
                             <p:panelGrid columnClasses="text-center" id="idTabela">
                                 <f:facet name="header">
                                     <p:row>
@@ -392,8 +392,10 @@
                             </p:tabView>
                         </p:panel>
                         <p:dialog id="id_painel_trocar_responsavel"  widgetVar="dgl_painel_trocar_responsavel" modal="true" header="Selecione a pesquisa" resizable="false">
-                            <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
-                            <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                            <h:panelGrid columns="2">
+                                <p:commandButton value="Pessoa Física" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaFisica}" title="Pesquisar pessoa física" id="idPesquisarPFisica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}" actionListener="#{matriculaEscolaBean.pesquisaFisica('responsavel')}" />
+                                <p:commandButton value="Pessoa Jurídica" icon="ui-icon-search"  action="#{chamadaPaginaBean.pesquisaPessoaJuridica}" title="Pesquisar pessoa jurídica" id="idPesquisarPJuridica" rendered="#{matriculaEscolaBean.aluno.pessoa.id != -1 and matriculaEscolaBean.socios.id == -1}" disabled="#{matriculaEscolaBean.desabilitaCamposMovimento}"/>
+                            </h:panelGrid>
                         </p:dialog>                        
                         <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
                             <h:panelGrid columns="2" id="i_alterar_dia_vencto">
@@ -478,7 +480,7 @@
                                     <p:commandButton value="Sim" title="Salvar" action="#{matriculaEscolaBean.gerarMovimento}" update="i_panel_matricula_escola, growl" rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}" oncomplete="PF('dgl_panel_salvar_movimento').hide();"/>
                                     <p:commandButton value="Não" title="Cancelar" onclick="dgl_panel_salvar_movimento.hide();"  rendered="#{matriculaEscolaBean.matriculaEscola.evt.id != -1}"/>
                                 </h:panelGrid>
-                                </center>
+                            </center>
                         </p:dialog>
                         <p:dialog widgetVar="dgl_panel_desfazer_movimento" id="id_panel_desfazer_movimento" modal="true"  header="Deseja desfazer esse movimento?" width="400">
                             <center>
