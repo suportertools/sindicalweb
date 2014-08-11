@@ -41,14 +41,14 @@
                                                         <f:selectItems value="#{matriculaAcademiaBean.listaDiaVencimento}"/>
                                                     </p:selectOneMenu>
                                                     <p:commandLink value="Alterar dia Vencimento" onclick="PF('dgl_alterar_dia_vencto').show()" rendered="#{matriculaAcademiaBean.aluno.id != -1}"/>
-                                                    
+
                                                     <p:dialog id="id_alterar_dia_vencto"  widgetVar="dgl_alterar_dia_vencto" modal="true" header="Selecione o dia" resizable="false">
                                                         <p:selectOneMenu value="#{matriculaAcademiaBean.idDiaVencimento}">
                                                             <p:ajax event="change" update="@this i_l_m :form_academia:" oncomplete="PF('dgl_alterar_dia_vencto').hide()" listener="#{matriculaAcademiaBean.salvarData}"/>
                                                             <f:selectItems value="#{matriculaAcademiaBean.listaDiaVencimento}"/>
                                                         </p:selectOneMenu>
                                                     </p:dialog>
-                                                    
+
                                                     <p:dialog widgetVar="dlg_dv" header="Alterar dia de vencimento?" modal="true" width="300">
                                                         <center>
                                                             <h:panelGrid columns="2">
@@ -194,10 +194,12 @@
                     </p:panel>
                     <h:panelGrid columns="8" id="id_acao" styleClass="margin-top-max">
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
-                            <p:commandButton value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save_movimento').show();" type="button"/>
+                            <c:if test="false">
+                                <p:commandButton value="Gerar Parcelas" title="Gerar Parcelas" rendered="#{!matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoSalvar}" onclick="PF('dlg_save_movimento').show();" type="button"/>
+                            </c:if>
                         </h:column>
                         <h:column rendered="#{matriculaAcademiaBean.matriculaAcademia.id != -1}">
-                            <c:if test="false">
+                            <c:if test="true">
                                 <p:commandButton value="Desfazer Movimento" title="Desfazer Movimento" rendered="#{matriculaAcademiaBean.desabilitaCamposMovimento}" disabled="#{controleAcessoBean.botaoExcluir}" onclick="PF('dlg_delete_movimento').show();" type="button"/>
                             </c:if>
                         </h:column>                        

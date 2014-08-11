@@ -54,6 +54,15 @@
                                             <p:commandButton value="Exemplos" onclick="PF('dlg_example').show()" type="button" styleClass="margin-left-max"/>
                                         </h:column>
                                     </p:column>
+                                    
+                                    <p:column>
+                                        <p:outputLabel value="Validade" styleClass="margin-left-max"/><br />
+                                        <h:column>
+                                            <p:inputMask mask="99/99/9999" value="#{academiaServicoValorBean.academiaServicoValor.validadeString}" converter="#{isDateString}" styleClass="margin-left-max">
+                                                <f:ajax event="blur" render="@this" />
+                                            </p:inputMask>
+                                        </h:column>
+                                    </p:column>
                                 </h:panelGrid>
 
                                 <br />
@@ -155,6 +164,7 @@
                                     <p:column headerText="Grade (hrs)" width="190">
                                         <h:outputLabel value="#{academiaServicoValorBean.getListaGrades(academiaServicoValor)}" />
                                     </p:column>
+                                    <p:column headerText="Validade" styleClass="text-center">#{academiaServicoValor.validadeString}</p:column>
                                     <p:column headerText="Fórmula" styleClass="text-center">#{academiaServicoValor.formula}</p:column>
                                     <p:column headerText="Parcelas" styleClass="text-center">#{academiaServicoValor.numeroParcelas}</p:column>
                                     <p:column styleClass="text-center" width="25">
