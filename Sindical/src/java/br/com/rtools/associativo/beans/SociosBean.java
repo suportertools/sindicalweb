@@ -249,14 +249,13 @@ public class SociosBean implements Serializable {
     
     public void salvarData(){
         if (servicoPessoa.getId() != -1){
-            SalvarAcumuladoDB sv = new SalvarAcumuladoDBToplink();
-            sv.abrirTransacao();
-            
-            if (!sv.alterarObjeto(servicoPessoa)){
+            Dao dao = new Dao();
+            dao.openTransaction();            
+            if (!dao.update(servicoPessoa)){
                 // ERRO
-                sv.desfazerTransacao();
+                dao.rollback();
             }else{
-                sv.comitarTransacao();
+                dao.commit();
             }
         }
     }       

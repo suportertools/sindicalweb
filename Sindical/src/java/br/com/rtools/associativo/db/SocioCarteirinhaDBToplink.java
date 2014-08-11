@@ -93,95 +93,95 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
     @Override
     public List<Vector> pesquisaCarteirinha(String tipo, String descricao, String indexOrdem) {
         String textqry = "";
-        Registro registro = (Registro)(new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
-        
+        Registro registro = (Registro) (new SalvarAcumuladoDBToplink()).pesquisaCodigo(1, "Registro");
+
         try {
-                textqry = 
-                        "SELECT p.id,                                           " +
-                        "       p.ds_nome,                                      " +
-                        "       pj.ds_documento,                                " +
-                        "       pj.ds_nome,                                     " +
-                        "       to_char(sc.dt_emissao, 'DD/MM/YYYY'),           " +
-                        "       c.ds_cidade,                                    " +
-                        "       to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'),  " +
-                        "       c.ds_uf,                                        " +
-                        "       to_char(pe.dt_admissao, 'DD/MM/YYYY'),          " +
-                        "       j.ds_fantasia,                                  " +
-                        "       s.matricula,                                    " +
-                        "       s.nr_via,                                       " +
-                        "       s.id_socio,                                     " +
-                        "       to_char(s.filiacao, 'DD/MM/YYYY'),              " +
-                        "       pr.ds_profissao as cargo,                       " +
-                        "       p.ds_documento,                                 " +
-                        "       f.ds_rg,                                        " +
-                        "       max(m.id),                                      " +
-                        "       sc.nr_cartao,                                   " +
-                        "       sc.id,                                          " +
-                        "       mc.ds_descricao                                 " +
-                        "  FROM pes_fisica f                                    " +
-                        " INNER JOIN pes_pessoa p on p.id = f.id_pessoa         " +
-                        "  LEFT JOIN soc_socios_vw s on s.codsocio = f.id_pessoa AND s.inativacao IS NULL " +
-                        "  LEFT JOIN pes_pessoa_empresa pe on f.id = pe.id_fisica AND pe.dt_demissao IS NULL " +
-                        "  LEFT JOIN pes_profissao as pr on pr.id = pe.id_funcao  " +
-                        "  LEFT JOIN pes_juridica j on j.id = pe.id_juridica      " +
-                        "  LEFT JOIN pes_pessoa pj on pj.id = j.id_pessoa       " +
-                        "  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2" + // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
-                        //"  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = p.id AND pend.id_tipo_endereco = 1" + // ENDEREÇO DO SÓCIO
-                        "  LEFT JOIN end_endereco ende on ende.id = pend.id_endereco   " +
-                        "  LEFT JOIN end_cidade c on c.id = ende.id_cidade      " +
-                        " INNER JOIN soc_carteirinha sc on sc.id_pessoa = p.id  " +
-                        "  LEFT JOIN fin_movimento m on m.id_pessoa = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) " +
-                        "  LEFT JOIN soc_historico_carteirinha sh on sh.id_movimento = m.id " +
-                        " INNER JOIN soc_modelo_carteirinha mc on mc.id = sc.id_modelo_carteirinha ";
-                
+            textqry
+                    = "SELECT p.id,                                           "
+                    + "       p.ds_nome,                                      "
+                    + "       pj.ds_documento,                                "
+                    + "       pj.ds_nome,                                     "
+                    + "       to_char(sc.dt_emissao, 'DD/MM/YYYY'),           "
+                    + "       c.ds_cidade,                                    "
+                    + "       to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'),  "
+                    + "       c.ds_uf,                                        "
+                    + "       to_char(pe.dt_admissao, 'DD/MM/YYYY'),          "
+                    + "       j.ds_fantasia,                                  "
+                    + "       s.matricula,                                    "
+                    + "       s.nr_via,                                       "
+                    + "       s.id_socio,                                     "
+                    + "       to_char(s.filiacao, 'DD/MM/YYYY'),              "
+                    + "       pr.ds_profissao as cargo,                       "
+                    + "       p.ds_documento,                                 "
+                    + "       f.ds_rg,                                        "
+                    + "       max(m.id),                                      "
+                    + "       sc.nr_cartao,                                   "
+                    + "       sc.id,                                          "
+                    + "       mc.ds_descricao                                 "
+                    + "  FROM pes_fisica f                                    "
+                    + " INNER JOIN pes_pessoa p on p.id = f.id_pessoa         "
+                    + "  LEFT JOIN soc_socios_vw s on s.codsocio = f.id_pessoa AND s.inativacao IS NULL "
+                    + "  LEFT JOIN pes_pessoa_empresa pe on f.id = pe.id_fisica AND pe.dt_demissao IS NULL "
+                    + "  LEFT JOIN pes_profissao as pr on pr.id = pe.id_funcao  "
+                    + "  LEFT JOIN pes_juridica j on j.id = pe.id_juridica      "
+                    + "  LEFT JOIN pes_pessoa pj on pj.id = j.id_pessoa       "
+                    + "  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = pj.id AND pend.id_tipo_endereco = 2" + // NO COMERCIO O ENDEREÇO É DA EMPRESA -- EM ITAPETININGA NÃO SEI 24/07/2014 -- MODIFICAÇÃO PEDIDA PELA PRISCILA
+                    //"  LEFT JOIN pes_pessoa_endereco pend on pend.id_pessoa = p.id AND pend.id_tipo_endereco = 1" + // ENDEREÇO DO SÓCIO
+                    "  LEFT JOIN end_endereco ende on ende.id = pend.id_endereco   "
+                    + "  LEFT JOIN end_cidade c on c.id = ende.id_cidade      "
+                    + " INNER JOIN soc_carteirinha sc on sc.id_pessoa = p.id  "
+                    + "  LEFT JOIN fin_movimento m on m.id_pessoa = sc.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 170) "
+                    + "  LEFT JOIN soc_historico_carteirinha sh on sh.id_movimento = m.id "
+                    + " INNER JOIN soc_modelo_carteirinha mc on mc.id = sc.id_modelo_carteirinha ";
+
             // NÃO IMPRESSOS / EMPRESAS
             if (tipo.equals("niEmpresa")) {
-                if (registro.isCobrancaCarteirinha()){
-                    textqry += " WHERE ( " +
-                               "	(m.id_servicos IS NOT NULL AND sh.id_movimento IS NULL) OR " +
-                               "	(p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE id_historico_carteirinha IS NULL)) " +
-                               "       ) ";
-                }else{
+                if (registro.isCobrancaCarteirinha()) {
+                    textqry += " WHERE ( "
+                            + "	(m.id_servicos IS NOT NULL AND sh.id_movimento IS NULL) OR "
+                            + "	(p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE id_historico_carteirinha IS NULL)) "
+                            + "       ) ";
+                } else {
                     textqry += " WHERE sc.id NOT IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
-                
+
                 if (!descricao.isEmpty()) {
                     textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' ";
-                } 
-                
-                if (registro.isFotoCartao()){
+                }
+
+                if (registro.isFotoCartao()) {
                     textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) ";
                 }
             }
 
             // NÃO IMPRESSOS / CNPJ
             if (tipo.equals("niCNPJ")) {
-                if (registro.isCobrancaCarteirinha()){
-                    textqry += " WHERE ( " +
-                               "	(m.id_servicos IS NOT NULL AND sh.id_movimento IS NULL) OR " +
-                               "	(p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE id_historico_carteirinha IS NULL)) " +
-                               "       ) ";
-                }else{
+                if (registro.isCobrancaCarteirinha()) {
+                    textqry += " WHERE ( "
+                            + "	(m.id_servicos IS NOT NULL AND sh.id_movimento IS NULL) OR "
+                            + "	(p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE id_historico_carteirinha IS NULL)) "
+                            + "       ) ";
+                } else {
                     textqry += " WHERE sc.id NOT IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
-                
+
                 if (!descricao.isEmpty()) {
                     textqry += "   AND lower(pj.ds_documento)  LIKE '%" + descricao.toLowerCase() + "%' ";
                 }
-                
-                if (registro.isFotoCartao()){
+
+                if (registro.isFotoCartao()) {
                     textqry += "    AND (f.dt_foto IS NOT NULL OR p.id IN (SELECT id_pessoa FROM soc_autoriza_impressao_cartao WHERE is_foto = TRUE AND id_historico_carteirinha IS NULL)) ";
                 }
             }
 
             // IMPRESSOS / EMPRESAS
             if (tipo.equals("iEmpresa")) {
-                if (registro.isCobrancaCarteirinha()){
+                if (registro.isCobrancaCarteirinha()) {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
-                }else{
+                } else {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
-                
+
                 if (!descricao.isEmpty()) {
                     textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' ";
                 }
@@ -189,12 +189,12 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
 
             // IMPRESSOS / CNPJ
             if (tipo.equals("iCNPJ")) {
-                if (registro.isCobrancaCarteirinha()){
+                if (registro.isCobrancaCarteirinha()) {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
-                }else{
+                } else {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
-                
+
                 if (!descricao.isEmpty()) {
                     textqry += "    AND lower(pj.ds_documento)  LIKE '%" + descricao.toLowerCase() + "%' ";
                 }
@@ -202,15 +202,15 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
 
             // IMPRESSOS / ULTIMOS 30 DIAS
             if (tipo.equals("iDias")) {
-                if (registro.isCobrancaCarteirinha()){
+                if (registro.isCobrancaCarteirinha()) {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) AND sh.id_movimento IS NOT NULL";
-                }else{
+                } else {
                     textqry += " WHERE sc.id IN (select id_carteirinha FROM soc_historico_carteirinha) ";
                 }
-                
+
                 if (!descricao.isEmpty()) {
                     textqry += "    AND lower(pj.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' "
-                            +  "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
+                            + "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
                 } else {
                     textqry += "    AND to_char(sc.dt_emissao, 'DD/MM/YYYY') is not null and to_char(sc.dt_emissao,'yyyymmyy')>=to_char(current_date-30,'yyyymmyy')";
                 }
@@ -224,7 +224,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             if (tipo.equals("iNome")) {
                 if (!descricao.isEmpty()) {
                     textqry += "    WHERE lower(p.ds_nome)  LIKE '%" + descricao.toLowerCase() + "%' ";
-                }else {
+                } else {
                     textqry += " ";
                 }
             }
@@ -233,16 +233,16 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             if (tipo.equals("iMatricula")) {
                 if (!descricao.isEmpty()) {
                     textqry += "    WHERE s.matricula = " + Integer.parseInt(descricao);
-                }else {
+                } else {
                     textqry += "  ";
                 }
             }
-            
+
             // PESSOA / CODIGO
             if (tipo.equals("iID")) {
                 if (!descricao.isEmpty()) {
                     textqry += "    WHERE p.id = " + Integer.parseInt(descricao);
-                }else {
+                } else {
                     textqry += "  ";
                 }
             }
@@ -251,35 +251,34 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             if (tipo.equals("iCPF")) {
                 if (!descricao.isEmpty()) {
                     textqry += "    WHERE lower(p.ds_documento) LIKE '%" + descricao.toLowerCase() + "%' ";
-                }else {
+                } else {
                     textqry += " ";
                 }
             }
 
             // GROUP DA QUERY
             textqry += " GROUP BY "
-                     + " p.id, "
-                     + " p.ds_nome, "
-                     + " pj.ds_documento, "
-                     + " pj.ds_nome, "
-                     + " sc.dt_emissao, "
-                     + " c.ds_cidade, "
-                     + " to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), "
-                     + " c.ds_uf, "
-                     + " to_char(pe.dt_admissao, 'DD/MM/YYYY'), "
-                     + " j.ds_fantasia, "
-                     + " s.matricula, "
-                     + " s.nr_via, "
-                     + " s.id_socio, "
-                     + " to_char(s.filiacao, 'DD/MM/YYYY'), "
-                     + " pr.ds_profissao, "
-                     + " p.ds_documento, "
-                     + " f.ds_rg, "
-                     + " sc.nr_cartao, "
-                     + " sc.id, "
-                     + " mc.ds_descricao ";
-            
-            
+                    + " p.id, "
+                    + " p.ds_nome, "
+                    + " pj.ds_documento, "
+                    + " pj.ds_nome, "
+                    + " sc.dt_emissao, "
+                    + " c.ds_cidade, "
+                    + " to_char(sc.dt_validade_carteirinha, 'DD/MM/YYYY'), "
+                    + " c.ds_uf, "
+                    + " to_char(pe.dt_admissao, 'DD/MM/YYYY'), "
+                    + " j.ds_fantasia, "
+                    + " s.matricula, "
+                    + " s.nr_via, "
+                    + " s.id_socio, "
+                    + " to_char(s.filiacao, 'DD/MM/YYYY'), "
+                    + " pr.ds_profissao, "
+                    + " p.ds_documento, "
+                    + " f.ds_rg, "
+                    + " sc.nr_cartao, "
+                    + " sc.id, "
+                    + " mc.ds_descricao ";
+
             // ORDEM DA QUERY
             if (indexOrdem.equals("0")) {
                 textqry += " ORDER BY p.ds_nome ";
@@ -293,7 +292,7 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 textqry += " ORDER BY sc.dt_emissao desc, pj.ds_nome, pj.ds_documento, p.ds_nome";
             }
             Query qry = getEntityManager().createNativeQuery(textqry);
- 
+
             return qry.getResultList();
         } catch (NumberFormatException e) {
             e.getMessage();
@@ -460,8 +459,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
     @Override
     public List filtroCartao(int id_pessoa) {
         List lista = new ArrayList();
-        String textqry = 
-                "     SELECT p.codigo AS codigo,                                            " + // 0 CÓDIGO
+        String textqry
+                = "     SELECT p.codigo AS codigo,                                            " + // 0 CÓDIGO
                 "            p.nome AS nome,                                            " + // 1 NOME
                 "            p.cnpj AS cnpj,                                            " + // 2 CNPJ
                 "            p.empresa AS empresa,                                      " + // 3 EMPRESA
@@ -479,20 +478,20 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            p.cpf,                                                     " + // 15 CPF
                 "            p.ds_rg AS rg,                                             " + // 16 RG 
                 "            max(m.id),                                                 " + // ID MOVIMENTO 
-                "            c.nr_cartao,                                               " +
-                "            c.id,                                                      " +
-                "            mc.ds_descricao                                            " + 
-                "       FROM pes_pessoa_vw AS p                                         " + 
-                "    INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo             " +
-                "    INNER JOIN soc_carteirinha as c on c.id_pessoa = s.codsocio        " +
-                "    INNER JOIN soc_modelo_carteirinha mc on mc.id = c.id_modelo_carteirinha " +
-                "     LEFT JOIN fin_movimento m on m.id_pessoa = c.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 120) " +
-                "    WHERE s.codsocio = " + id_pessoa;
+                "            c.nr_cartao,                                               "
+                + "            c.id,                                                      "
+                + "            mc.ds_descricao                                            "
+                + "       FROM pes_pessoa_vw AS p                                         "
+                + "    INNER JOIN soc_socios_vw AS s on s.codsocio = p.codigo             "
+                + "    INNER JOIN soc_carteirinha as c on c.id_pessoa = s.codsocio        "
+                + "    INNER JOIN soc_modelo_carteirinha mc on mc.id = c.id_modelo_carteirinha "
+                + "     LEFT JOIN fin_movimento m on m.id_pessoa = c.id_pessoa AND m.id_servicos in (SELECT id_servicos FROM fin_servico_rotina where id_rotina = 120) "
+                + "    WHERE s.codsocio = " + id_pessoa;
 //                "      AND c.id in (                                                    " +
 //                "                      SELECT MAX(id) from soc_carteirinha              " +
 //                "                       WHERE id_pessoa = " + id_pessoa + "             " +
 //                "        )";
-        
+
         textqry += " GROUP BY "
                 + " p.codigo,                                               " + // 0 CÓDIGO
                 "            p.nome,                                        " + // 1 NOME
@@ -507,13 +506,13 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
                 "            s.matricula,                                   " + // 10 MATRICULA
                 "            s.nr_via,                                      " + // 11 VIA
                 "            s.id_socio,                                    " + // 12 CÓDIGO SÓCIO
-                "            to_char(s.filiacao, 'DD/MM/YYYY'),             " + 
-                "            p.profissao,                                   " + // 14 PROFISSÃO
+                "            to_char(s.filiacao, 'DD/MM/YYYY'),             "
+                + "            p.profissao,                                   " + // 14 PROFISSÃO
                 "            p.cpf,                                         " + // 15 CPF
                 "            p.ds_rg,                                       " + // 16 RG 
-                "            c.nr_cartao,                                   " +
-                "            c.id,                                          " +
-                "            mc.ds_descricao                                ";
+                "            c.nr_cartao,                                   "
+                + "            c.id,                                          "
+                + "            mc.ds_descricao                                ";
         try {
             Query qry = getEntityManager().createNativeQuery(textqry);
             if (!qry.getResultList().isEmpty()) {
@@ -551,8 +550,6 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
         return false;
     }
 
-    
-    
     @Override
     public List<HistoricoCarteirinha> listaHistoricoCarteirinha(int id_pessoa) {
         String text_qry = "SELECT hc FROM HistoricoCarteirinha hc WHERE hc.carteirinha.pessoa.id = " + id_pessoa;
@@ -566,8 +563,8 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
     }
 
     @Override
-    public List<AutorizaImpressaoCartao> listaAutoriza(int id_pessoa, int id_modelo){
-        String text_qry = "SELECT ai FROM AutorizaImpressaoCartao ai WHERE ai.pessoa.id = "+ id_pessoa +" AND ai.modeloCarteirinha.id = "+id_modelo;
+    public List<AutorizaImpressaoCartao> listaAutoriza(int id_pessoa, int id_modelo) {
+        String text_qry = "SELECT ai FROM AutorizaImpressaoCartao ai WHERE ai.pessoa.id = " + id_pessoa + " AND ai.modeloCarteirinha.id = " + id_modelo;
         try {
             Query qry = getEntityManager().createQuery(text_qry);
             return qry.getResultList();
@@ -575,32 +572,32 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             return new ArrayList<AutorizaImpressaoCartao>();
         }
     }
-    
+
     @Override
-    public AutorizaImpressaoCartao pesquisaAutorizaSemHistorico(int id_pessoa, int id_modelo){
-        String text_qry = "SELECT ai FROM AutorizaImpressaoCartao ai WHERE ai.pessoa.id = "+ id_pessoa +" AND ai.modeloCarteirinha.id = "+id_modelo+" AND ai.historicoCarteirinha IS NULL";
+    public AutorizaImpressaoCartao pesquisaAutorizaSemHistorico(int id_pessoa, int id_modelo) {
+        String text_qry = "SELECT ai FROM AutorizaImpressaoCartao ai WHERE ai.pessoa.id = " + id_pessoa + " AND ai.modeloCarteirinha.id = " + id_modelo + " AND ai.historicoCarteirinha IS NULL";
         try {
             Query qry = getEntityManager().createQuery(text_qry);
-            return (AutorizaImpressaoCartao)qry.getSingleResult();
+            return (AutorizaImpressaoCartao) qry.getSingleResult();
         } catch (Exception e) {
             return null;
         }
     }
-    
+
     @Override
-    public AutorizaImpressaoCartao pesquisaAutorizaPorHistorico(int id_historico){
-        String text_qry = "SELECT ai FROM AutorizaImpressaoCartao ai WHERE ai.historicoCarteirinha.id = "+ id_historico;
+    public AutorizaImpressaoCartao pesquisaAutorizaPorHistorico(int id_historico) {
+        String text_qry = "SELECT ai FROM AutorizaImpressaoCartao ai WHERE ai.historicoCarteirinha.id = " + id_historico;
         try {
             Query qry = getEntityManager().createQuery(text_qry);
-            return (AutorizaImpressaoCartao)qry.getSingleResult();
+            return (AutorizaImpressaoCartao) qry.getSingleResult();
         } catch (Exception e) {
             return null;
         }
     }
-    
+
     @Override
-    public List<SocioCarteirinha> listaSocioCarteirinhaAutoriza(int id_pessoa, int id_modelo){
-        String text_qry = "SELECT sc FROM SocioCarteirinha sc WHERE sc.pessoa.id = "+ id_pessoa +" AND sc.modeloCarteirinha.id = "+id_modelo;
+    public List<SocioCarteirinha> listaSocioCarteirinhaAutoriza(int id_pessoa, int id_modelo) {
+        String text_qry = "SELECT sc FROM SocioCarteirinha sc WHERE sc.pessoa.id = " + id_pessoa + " AND sc.modeloCarteirinha.id = " + id_modelo;
         try {
             Query qry = getEntityManager().createQuery(text_qry);
             return qry.getResultList();
@@ -608,66 +605,70 @@ public class SocioCarteirinhaDBToplink extends DB implements SocioCarteirinhaDB 
             return new ArrayList<SocioCarteirinha>();
         }
     }
-    
+
     @Override
-    public ModeloCarteirinha pesquisaModeloCarteirinha(int id_categoria, int id_rotina){
+    public ModeloCarteirinha pesquisaModeloCarteirinha(int id_categoria, int id_rotina) {
         String text_qry = "SELECT mcc.modeloCarteirinha FROM ModeloCarteirinhaCategoria mcc";
-        
-        if (id_rotina == -1 && id_categoria == -1){
-            
-        }else{
-            if (id_categoria != -1 && id_rotina == -1){
+
+        if (id_rotina == -1 && id_categoria == -1) {
+
+        } else {
+            if (id_categoria != -1 && id_rotina == -1) {
                 text_qry += " WHERE mcc.categoria IS NOT NULL AND mcc.categoria.id = " + id_categoria;
-            }else if (id_categoria != -1 && id_rotina != -1){
-                text_qry += " WHERE mcc.categoria IS NOT NULL AND mcc.categoria.id = "+ id_categoria+" AND mcc.rotina.id = "+id_rotina;
-            }else if (id_categoria == -1 && id_rotina != -1){
-                text_qry += " WHERE mcc.rotina.id = "+id_rotina +" AND mcc.categoria IS NULL";
+            } else if (id_categoria != -1 && id_rotina != -1) {
+                text_qry += " WHERE mcc.categoria IS NOT NULL AND mcc.categoria.id = " + id_categoria + " AND mcc.rotina.id = " + id_rotina;
+            } else if (id_categoria == -1 && id_rotina != -1) {
+                text_qry += " WHERE mcc.rotina.id = " + id_rotina + " AND mcc.categoria IS NULL";
             }
         }
-        
+
         try {
-            Query qry = getEntityManager().createQuery(text_qry);
-            return (ModeloCarteirinha)qry.getSingleResult();
+            Query query = getEntityManager().createQuery(text_qry);
+            List list = query.getResultList();
+            if (!list.isEmpty() && list.size() == 1) {
+                return (ModeloCarteirinha) query.getSingleResult();
+            }
         } catch (Exception e) {
             return null;
         }
+        return null;
     }
-    
+
     @Override
-    public ModeloCarteirinhaCategoria pesquisaModeloCarteirinhaCategoria(int id_modelo, int id_categoria, int id_rotina){
-        String text_qry = "SELECT mcc FROM ModeloCarteirinhaCategoria mcc WHERE mcc.modeloCarteirinha.id = "+id_modelo+" ";
-        
-        if (id_rotina == -1 && id_categoria == -1){
-            
-        }else{
-            if (id_categoria != -1 && id_rotina == -1){
-                text_qry += " AND mcc.categoria IS NOT NULL AND mc.ccategoria.id = "+ id_categoria;
-            }else if (id_categoria != -1 && id_rotina != -1){
-                text_qry += " AND mcc.categoria IS NOT NULL AND mcc.categoria.id = "+ id_categoria+" AND mcc.rotina.id = "+id_rotina;
-            }else if (id_categoria == -1 && id_rotina != -1){
-                text_qry += " AND mcc.categoria IS NULL AND mcc.rotina.id = "+id_rotina;
+    public ModeloCarteirinhaCategoria pesquisaModeloCarteirinhaCategoria(int id_modelo, int id_categoria, int id_rotina) {
+        String text_qry = "SELECT mcc FROM ModeloCarteirinhaCategoria mcc WHERE mcc.modeloCarteirinha.id = " + id_modelo + " ";
+
+        if (id_rotina == -1 && id_categoria == -1) {
+
+        } else {
+            if (id_categoria != -1 && id_rotina == -1) {
+                text_qry += " AND mcc.categoria IS NOT NULL AND mc.ccategoria.id = " + id_categoria;
+            } else if (id_categoria != -1 && id_rotina != -1) {
+                text_qry += " AND mcc.categoria IS NOT NULL AND mcc.categoria.id = " + id_categoria + " AND mcc.rotina.id = " + id_rotina;
+            } else if (id_categoria == -1 && id_rotina != -1) {
+                text_qry += " AND mcc.categoria IS NULL AND mcc.rotina.id = " + id_rotina;
             }
         }
-        
+
         try {
             Query qry = getEntityManager().createQuery(text_qry);
-            return (ModeloCarteirinhaCategoria)qry.getSingleResult();
+            return (ModeloCarteirinhaCategoria) qry.getSingleResult();
         } catch (Exception e) {
             return null;
         }
     }
-    
+
     @Override
-    public SocioCarteirinha pesquisaCarteirinhaPessoa(int id_pessoa, int id_modelo){
-        String text_qry = "SELECT sc FROM SocioCarteirinha sc WHERE sc.pessoa.id = "+ id_pessoa +" AND sc.modeloCarteirinha.id = "+id_modelo;
+    public SocioCarteirinha pesquisaCarteirinhaPessoa(int id_pessoa, int id_modelo) {
+        String text_qry = "SELECT sc FROM SocioCarteirinha sc WHERE sc.pessoa.id = " + id_pessoa + " AND sc.modeloCarteirinha.id = " + id_modelo;
         try {
             Query qry = getEntityManager().createQuery(text_qry);
-            return (SocioCarteirinha)qry.getSingleResult();
+            return (SocioCarteirinha) qry.getSingleResult();
         } catch (Exception e) {
             return null;
         }
     }
-    
+
 }
 
 //@Override

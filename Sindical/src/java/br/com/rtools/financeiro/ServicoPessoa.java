@@ -2,6 +2,7 @@ package br.com.rtools.financeiro;
 
 import br.com.rtools.pessoa.Pessoa;
 import br.com.rtools.utilitarios.DataHoje;
+import br.com.rtools.utilitarios.Moeda;
 import java.util.Date;
 import javax.persistence.*;
 
@@ -44,7 +45,7 @@ public class ServicoPessoa implements java.io.Serializable {
     private boolean banco;
     @Column(name = "NR_VALOR_FIXO", length = 10, nullable = true)
     private float nrValorFixo;
-    
+
     public ServicoPessoa() {
         this.id = -1;
         this.setEmissao(DataHoje.data());
@@ -126,6 +127,14 @@ public class ServicoPessoa implements java.io.Serializable {
 
     public void setNrDesconto(float nrDesconto) {
         this.nrDesconto = nrDesconto;
+    }
+
+    public String getNrDescontoString() {
+        return Moeda.converteR$Float(nrDesconto);
+    }
+
+    public void setNrDescontoString(String nrDescontoString) {
+        this.nrDesconto = Moeda.converteUS$(nrDescontoString);
     }
 
     public String getReferenciaVigoracao() {

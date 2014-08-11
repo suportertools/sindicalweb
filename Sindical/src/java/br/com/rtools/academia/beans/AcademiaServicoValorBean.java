@@ -43,7 +43,7 @@ public class AcademiaServicoValorBean implements Serializable {
     private Integer[] index;
     private int maximoParcelas;
     private boolean ocultaParcelas;
-    
+
     // SEMANA
     private boolean dom;
     private boolean seg;
@@ -52,12 +52,12 @@ public class AcademiaServicoValorBean implements Serializable {
     private boolean qui;
     private boolean sex;
     private boolean sab;
-    
+
     private List<Semana> listaSemana;
     private List<AcademiaSemana> listaAcademiaSemana;
-    
+
     private int indexSemana;
-    
+
     @PostConstruct
     public void init() {
         academiaServicoValor = new AcademiaServicoValor();
@@ -79,73 +79,72 @@ public class AcademiaServicoValorBean implements Serializable {
     public void destroy() {
         clear();
     }
-    
-    public String getListaGrades(AcademiaServicoValor academiaServicoValor){
+
+    public String getListaGrades(AcademiaServicoValor academiaServicoValor) {
         AcademiaDB db = new AcademiaDBToplink();
-        
+
         List<AcademiaSemana> lista = db.listaAcademiaSemana(academiaServicoValor.getId());
-        
-        if (!lista.isEmpty()){
+
+        if (!lista.isEmpty()) {
             String text = "";
-            if (lista.size() != 1){
-                for (int i = 0; i < lista.size(); i++){
-                    text += lista.get(i).getAcademiaGrade().getHoraInicio()+" às "+lista.get(i).getAcademiaGrade().getHoraFim()+ " "+ lista.get(i).getSemana().getDescricao() + " ---- ";
+            if (lista.size() != 1) {
+                for (int i = 0; i < lista.size(); i++) {
+                    text += "[" + lista.get(i).getAcademiaGrade().getHoraInicio() + " às " + lista.get(i).getAcademiaGrade().getHoraFim() + " " + lista.get(i).getSemana().getDescricao() + "] ";
                 }
-            }else{
-                text += lista.get(0).getAcademiaGrade().getHoraInicio()+" às "+lista.get(0).getAcademiaGrade().getHoraFim()+" " +lista.get(0).getSemana().getDescricao();
+            } else {
+                text += lista.get(0).getAcademiaGrade().getHoraInicio() + " às " + lista.get(0).getAcademiaGrade().getHoraFim() + " " + lista.get(0).getSemana().getDescricao();
             }
             return text;
         }
-        
+
         return null;
     }
 
-    public void adicionarHorario(int id_semana){
+    public void adicionarHorario(int id_semana) {
         indexSemana = id_semana;
     }
-    
-    public void booleanHorario(int id_semana, boolean status){
+
+    public void booleanHorario(int id_semana, boolean status) {
         indexSemana = id_semana;
-        
+
         for (int i = 0; i < listaAcademiaSemana.size(); i++) {
-            if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana && status == false){
-                if (listaAcademiaSemana.get(i).getAcademiaServicoValor() != null){
+            if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana && status == false) {
+                if (listaAcademiaSemana.get(i).getAcademiaServicoValor() != null) {
                     DaoInterface di = new Dao();
-                    
+
                     di.openTransaction();
-                    
+
                     di.delete(di.find(listaAcademiaSemana.get(i)));
-                    
+
                     di.commit();
                 }
-                
+
                 listaAcademiaSemana.remove(i);
                 return;
             }
         }
     }
-    
+
     public void addListaSemana() {
         for (int i = 0; i < listaAcademiaSemana.size(); i++) {
-            if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana){
+            if (listaAcademiaSemana.get(i).getSemana().getId() == indexSemana) {
                 listaAcademiaSemana.get(i).setAcademiaGrade(academiaGrade);
                 return;
             }
         }
-        
-        
+
         for (int i = 0; i < getListaSemana().size(); i++) {
             if (listaSemana.get(i).getId() == indexSemana) {
-                if (academiaServicoValor.getId() == -1)
+                if (academiaServicoValor.getId() == -1) {
                     listaAcademiaSemana.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i), null));
-                else{
+                } else {
                     listaAcademiaSemana.add(new AcademiaSemana(-1, academiaGrade, listaSemana.get(i), academiaServicoValor));
                 }
                 break;
             }
         }
     }
-    
+
     public void save() {
         DaoInterface di = new Dao();
         if (listSelectItem[0].isEmpty()) {
@@ -160,16 +159,15 @@ public class AcademiaServicoValorBean implements Serializable {
             GenericaMensagem.warn("Sistema", "Cadastrar grade de horários e dias da semana!");
             return;
         }
-        
-        
+
         academiaServicoValor.setServicos((Servicos) di.find(new Servicos(), Integer.parseInt(getListServicos().get(index[0]).getDescription())));
         academiaServicoValor.setPeriodo(periodo);
-        
+
         NovoLog novoLog = new NovoLog();
         di.openTransaction();
         AcademiaDB academiaDB = new AcademiaDBToplink();
         if (academiaServicoValor.getId() == -1) {
-            
+
 //            if (((AcademiaServicoValor) academiaDB.existeAcademiaServicoValor(academiaServicoValor)) != null) {
 //                GenericaMensagem.warn("Sistema", "Horário já cadastrado!");
 //                return;
@@ -193,8 +191,8 @@ public class AcademiaServicoValorBean implements Serializable {
                 GenericaMensagem.warn("Erro", "Ao atualizar registro!");
             }
         }
-        
-        if (!listaAcademiaSemana.isEmpty()){
+
+        if (!listaAcademiaSemana.isEmpty()) {
             int igual = 0;
             for (AcademiaSemana listaAcademias : listaAcademiaSemana) {
                 if (!academiaDB.existeAcademiaSemana(listaAcademias.getAcademiaGrade().getId(), listaAcademias.getSemana().getId(), academiaServicoValor.getServicos().getId(), academiaServicoValor.getPeriodo().getId()).isEmpty()) {
@@ -202,45 +200,46 @@ public class AcademiaServicoValorBean implements Serializable {
                 }
             }
 
-            if (igual == listaAcademiaSemana.size() && ( listaAcademiaSemana.get(0).getAcademiaServicoValor() != null && academiaServicoValor.getId() != listaAcademiaSemana.get(0).getAcademiaServicoValor().getId() || listaAcademiaSemana.get(0).getAcademiaServicoValor() == null)){
+            if (igual == listaAcademiaSemana.size() && (listaAcademiaSemana.get(0).getAcademiaServicoValor() != null && academiaServicoValor.getId() != listaAcademiaSemana.get(0).getAcademiaServicoValor().getId() || listaAcademiaSemana.get(0).getAcademiaServicoValor() == null)) {
                 GenericaMensagem.warn("Erro", "Essa grade já existe!");
                 di.rollback();
                 academiaServicoValor = new AcademiaServicoValor();
                 return;
             }
         }
-        
-        for (int i = 0; i < listaAcademiaSemana.size(); i++){
+
+        for (int i = 0; i < listaAcademiaSemana.size(); i++) {
 //            if (academiaDB.existeAcademiaSemana(listaAcademiaSemana.get(i).getAcademiaGrade().getId(), listaAcademiaSemana.get(i).getSemana().getId(), academiaServicoValor.getServicos().getId(), academiaServicoValor.getPeriodo().getId()) != null){
 //                GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
 //                di.rollback();
 //                academiaServicoValor = new AcademiaServicoValor();
 //                return;
 //            }
-            
-            if (listaAcademiaSemana.get(i).getAcademiaServicoValor() == null){
+
+            if (listaAcademiaSemana.get(i).getAcademiaServicoValor() == null) {
                 listaAcademiaSemana.get(i).setAcademiaServicoValor(academiaServicoValor);
-                if (!di.save(listaAcademiaSemana.get(i))){
+                if (!di.save(listaAcademiaSemana.get(i))) {
                     GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
                     di.rollback();
                     academiaServicoValor = new AcademiaServicoValor();
                     return;
                 }
-            }else if (listaAcademiaSemana.get(i).getId() == -1){
-                if (!di.save(listaAcademiaSemana.get(i))){
+            } else if (listaAcademiaSemana.get(i).getId() == -1) {
+                if (!di.save(listaAcademiaSemana.get(i))) {
                     GenericaMensagem.warn("Erro", "Não foi possível salvar lista de grades!");
                     di.rollback();
                     academiaServicoValor = new AcademiaServicoValor();
                     return;
                 }
-            }else{
-                
+            } else {
+
             }
         }
-        if (academiaServicoValor.getId() == -1) 
+        if (academiaServicoValor.getId() == -1) {
             GenericaMensagem.info("Sucesso", "Registro Inserido!");
-        else
+        } else {
             GenericaMensagem.info("Sucesso", "Registro Atualizado!");
+        }
         di.commit();
         clear();
     }
@@ -251,7 +250,7 @@ public class AcademiaServicoValorBean implements Serializable {
 
     public void edit(AcademiaServicoValor asv) {
         academiaServicoValor = asv;
-        
+
         periodo = academiaServicoValor.getPeriodo();
         for (int i = 0; i < getListServicos().size(); i++) {
             if (Integer.parseInt(getListServicos().get(i).getDescription()) == asv.getServicos().getId()) {
@@ -261,16 +260,36 @@ public class AcademiaServicoValorBean implements Serializable {
         }
         AcademiaDB db = new AcademiaDBToplink();
         listaAcademiaSemana = db.listaAcademiaSemana(academiaServicoValor.getId());
-        dom = false; seg = false; ter = false; qua = false; qui = false; sex = false; sab = false;
-        
+        dom = false;
+        seg = false;
+        ter = false;
+        qua = false;
+        qui = false;
+        sex = false;
+        sab = false;
+
         for (AcademiaSemana las : listaAcademiaSemana) {
-            if (las.getSemana().getId() == 1){ dom = true; }
-            if (las.getSemana().getId() == 2){ seg = true; }
-            if (las.getSemana().getId() == 3){ ter = true; }
-            if (las.getSemana().getId() == 4){ qua = true; }
-            if (las.getSemana().getId() == 5){ qui = true; }
-            if (las.getSemana().getId() == 6){ sex = true; }
-            if (las.getSemana().getId() == 7){ sab = true; }
+            if (las.getSemana().getId() == 1) {
+                dom = true;
+            }
+            if (las.getSemana().getId() == 2) {
+                seg = true;
+            }
+            if (las.getSemana().getId() == 3) {
+                ter = true;
+            }
+            if (las.getSemana().getId() == 4) {
+                qua = true;
+            }
+            if (las.getSemana().getId() == 5) {
+                qui = true;
+            }
+            if (las.getSemana().getId() == 6) {
+                sex = true;
+            }
+            if (las.getSemana().getId() == 7) {
+                sab = true;
+            }
         }
     }
 
@@ -280,18 +299,18 @@ public class AcademiaServicoValorBean implements Serializable {
             NovoLog novoLog = new NovoLog();
             AcademiaDB db = new AcademiaDBToplink();
             di.openTransaction();
-            
+
             listaAcademiaSemana = db.listaAcademiaSemana(asv.getId());
-            
+
             for (AcademiaSemana las : listaAcademiaSemana) {
                 AcademiaSemana as = (AcademiaSemana) di.find(las);
-                if (!di.delete(as)){
+                if (!di.delete(as)) {
                     di.rollback();
                     GenericaMensagem.warn("Erro", "Não foi possível excluir Linha!");
                     return;
                 }
             }
-            
+
             if (di.delete(asv)) {
                 novoLog.delete("ID: " + asv.getId() + " - Fórmula: " + asv.getFormula() + " - Serviço: (" + asv.getServicos().getId() + ") " + asv.getServicos().getDescricao() + " - Nº Parcelas: " + asv.getNumeroParcelas() + " - Período: " + asv.getPeriodo().getDescricao());
                 di.commit();
@@ -306,7 +325,7 @@ public class AcademiaServicoValorBean implements Serializable {
     }
 
     public List<AcademiaServicoValor> getListAcademiaServicoValors() {
-        if(!getListServicos().isEmpty()) {
+        if (!getListServicos().isEmpty()) {
             if (listAcademiaServicoValors.isEmpty()) {
                 AcademiaDB academiaDB = new AcademiaDBToplink();
                 listAcademiaServicoValors = academiaDB.listaAcademiaServicoValor(Integer.parseInt(getListServicos().get(index[0]).getDescription()));
@@ -484,7 +503,7 @@ public class AcademiaServicoValorBean implements Serializable {
     public void setSab(boolean sab) {
         this.sab = sab;
     }
-    
+
     public List<Semana> getListaSemana() {
         if (listaSemana.isEmpty()) {
             DaoInterface di = new Dao();
@@ -504,77 +523,78 @@ public class AcademiaServicoValorBean implements Serializable {
     public void setListaAcademiaSemana(List<AcademiaSemana> listaAcademiaSemana) {
         this.listaAcademiaSemana = listaAcademiaSemana;
     }
-    
-    
-        
-    public String getMostraDomingo(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraDomingo() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 1) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }
         return null;
     }
-    
-    public String getMostraSegunda(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraSegunda() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 2) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }
         return null;
     }
-    
-    public String getMostraTerca(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraTerca() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 3) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }
         return null;
     }
-    
-    public String getMostraQuarta(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraQuarta() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 4) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }
         return null;
     }
-    public String getMostraQuinta(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraQuinta() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 5) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }
         return null;
     }
-    public String getMostraSexta(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraSexta() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 6) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }
         return null;
     }
-    public String getMostraSabado(){
-        if (!listaAcademiaSemana.isEmpty()){
+
+    public String getMostraSabado() {
+        if (!listaAcademiaSemana.isEmpty()) {
             for (AcademiaSemana horario : listaAcademiaSemana) {
                 if (horario.getSemana().getId() == 7) {
-                    return horario.getAcademiaGrade().getHoraInicio()+" às "+ horario.getAcademiaGrade().getHoraFim();
+                    return horario.getAcademiaGrade().getHoraInicio() + " às " + horario.getAcademiaGrade().getHoraFim();
                 }
             }
         }

@@ -125,6 +125,7 @@ public class ChamadaPaginaBean implements Serializable {
      */
     public synchronized String pagina(String pagina, String bean) throws IOException {
         GenericaSessao.remove(bean + "Bean");
+        GenericaSessao.remove(bean);
         String redirect = metodoGenerico(2, pagina);
         return redirect;
     }
